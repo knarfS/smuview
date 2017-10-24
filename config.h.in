@@ -1,0 +1,40 @@
+/*
+ * This file is part of the SmuView project.
+ *
+ * Copyright (C) 2012 Alexandru Gagniuc <mr.nuke.me@gmail.com>
+ * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#ifndef CONFIG_H
+#define CONFIG_H
+
+/* Application details */
+#define SV_TITLE "@SV_TITLE@"
+#define SV_BIN_NAME "@PROJECT_NAME@"
+
+/* SmuView version information */
+#define SV_VERSION_MAJOR @SV_VERSION_MAJOR@
+#define SV_VERSION_MINOR @SV_VERSION_MINOR@
+#define SV_VERSION_MICRO @SV_VERSION_MICRO@
+#define SV_VERSION_SUFFIX @SV_VERSION_SUFFIX@
+#define SV_VERSION_STRING "@SV_VERSION_STRING@"
+
+/* Platform properties */
+#cmakedefine HAVE_UNALIGNED_LITTLE_ENDIAN_ACCESS
+
+#define SV_GLIBMM_VERSION "@SV_GLIBMM_VERSION@"
+
+#endif // CONFIG_H

@@ -1,0 +1,50 @@
+-------------------------------------------------------------------------------
+INSTALL
+-------------------------------------------------------------------------------
+
+Requirements
+------------
+
+ - git (only needed when building from git)
+ - A C++ compiler with C++11 support (-std=c++11 option), e.g.
+   - g++ (>= 4.8.1)
+   - clang++ (>= 3.3)
+ - make
+ - libtool (only needed when building from git)
+ - pkg-config >= 0.22
+ - cmake >= 2.8.12
+ - libglib >= 2.28.0
+ - glibmm-2.4 (>= 2.28.0)
+ - Qt5 (including the following components):
+    - Qt5Core, Qt5Gui, Qt5Widgets, Qt5Svg
+ - libsigrokcxx >= 0.6.0 (libsigrok C++ bindings)
+
+
+Building and installing
+-----------------------
+
+In order to get the PulseView source code and build it, run:
+
+ $ git clone https://github.com/knarfS/smuview.git
+ $ cd pulseview
+ $ mkdir build
+ $ cd build
+ $ cmake ../
+ $ make
+
+For installing PulseView:
+
+ $ sudo make install
+
+
+Creating a source distribution package
+--------------------------------------
+
+In order to build a source package begin with an unconfigured source tree.
+
+ $ cd pulseview
+ $ mkdir dist
+ $ cd dist
+ $ cmake ../
+ $ make package_source
+

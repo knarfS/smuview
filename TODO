@@ -1,0 +1,55 @@
+SmuView
+=======
+
+ToDo
+
+- Remove "hp3478a" from gpib_libgpib_name_ and list all available names.
+
+------------------------
+
+
+Done
+
+- Check in connect.cpp if GPIB is part of build info (libsigrok -> backend.c)
+
+------------------------
+
+
+Search for:
+
+ENABLE_DECODE
+pv
+pulse
+
+
+
+PulseView
+=========
+
+
+libsigrok
+=========
+
+- Add GPIB address to libgpib:conn as paramenter
+- Change key naming (see load + psu wiki pages)
+- Provied SR_DF_META packets for the Re:load Pro and the HP3478A for changed values/states (e.g. output switched on/off, ovp, otp, ...)
+- Re:load Pro: when acquisition is running and we send a command (e.g. "set xxx"), there are 2 listeners (1st send_cmd() (<-serial_write_blocking) and 2nd handle_new_data() (<-serial_read_nonblocking))
+- Re:load Pro: when 2 responses are send fast afer each other, serial_read_nonblocking reads them both and the \n\r gets in beetween
+- Re:load Pro: sometimes only a ^M is send from the rlp
+- Re:load Pro: Sometimes the responses are mixed up (2 listeners??, Re:load Pro not keeping up??)
+- Re:load Pro: how to clear otp_active and uvc_active?
+- Re:load Pro: send "monitor 0" when device is closed
+
+
+Doku
+====
+
+- Link API to the psu and load wiki pages
+
+
+Re:load Pro Firmware
+====================
+
+- Add "output" command (returns "on" / "off") to determin in wich state the output is (git commit 448cf71, 558bc0e (part))
+- Send "on" / "off" when output state was changed at the device directly
+- Send "uvlo xxx" when undervoltage threshold was changed at the device directly (git commit 224ab62)
