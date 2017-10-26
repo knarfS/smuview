@@ -205,6 +205,7 @@ void Device::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
 	float *channel_data = data.get();
 	qWarning("feed_in_analog() data: %f", *channel_data);
 	for (auto sr_channel : sr_channels) {
+		qWarning() << "Channel.Id: " << QString::fromStdString(sr_channel->name());
 		shared_ptr<data::AnalogSegment> segment;
 
 		// Try to get the segment of the channel
@@ -240,7 +241,7 @@ void Device::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
 		segment->append_interleaved_samples(channel_data++, sample_count,
 			channel_count);
 
-		Q_EMIT data_received(segment);
+		//Q_EMIT data_received(segment);
 	}
 
 	if (sweep_beginning) {

@@ -31,6 +31,7 @@ using std::recursive_mutex;
 using std::shared_ptr;
 using std::string;
 using std::unordered_set;
+using std::vector;
 
 namespace sigrok {
 class ConfigKey;
@@ -95,6 +96,10 @@ private:
 	uint64_t cur_samplerate_;
 	map< shared_ptr<sigrok::Channel>, shared_ptr<data::AnalogSegment> >
 		cur_analog_segments_;
+
+	vector<shared_ptr<double>> data_ch1_;
+	vector<shared_ptr<double>> data_ch2_;
+	vector<shared_ptr<double>> time_;
 
 	bool out_of_memory_;
 	bool frame_began_;

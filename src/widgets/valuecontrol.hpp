@@ -34,12 +34,12 @@ class ValueControl : public QWidget
     Q_OBJECT
 
 public:
-	ValueControl(int digits, const QString unit,
-		double min, double max, double steps, QWidget *parent);
+	ValueControl(const uint digits, const QString unit,
+		const double min, const double max, const double steps, QWidget *parent);
 
 private:
 	double value_;
-	int digits_;
+	uint digits_;
 	QString unit_;
 	double min_;
 	double max_;

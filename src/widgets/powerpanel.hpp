@@ -20,13 +20,23 @@
 #ifndef WIDGETS_POWERPANEL_HPP
 #define WIDGETS_POWERPANEL_HPP
 
-#include <QWidget>
+#include <memory>
+
 #include <QDoubleSpinBox>
+#include <QTimer>
+#include <QWidget>
 #include <qwt_knob.h>
 
 #include "lcddisplay.hpp"
 
+using std::shared_ptr;
+
 namespace sv {
+
+namespace devices {
+class HardwareDevice;
+}
+
 namespace widgets {
 
 class PowerPanel : public QWidget
@@ -34,9 +44,18 @@ class PowerPanel : public QWidget
     Q_OBJECT
 
 public:
-	PowerPanel(QWidget *parent);
+	PowerPanel(shared_ptr<devices::HardwareDevice> device, QWidget *parent);
+	~PowerPanel();
 
 private:
+	shared_ptr<devices::HardwareDevice> device_;
+
+	QTimer *timer_;
+	qint64 start_time_;
+	qint64 last_time_;
+	double actual_amp_hours_;
+	double actual_watt_hours_;
+
 	widgets::LcdDisplay *voltageDisplay;
 	widgets::LcdDisplay *currentDisplay;
 	widgets::LcdDisplay *resistanceDisplay;
@@ -45,6 +64,12 @@ private:
 	widgets::LcdDisplay *wattHourDisplay;
 
 	void setup_ui();
+	void init_timer();
+	void stop_timer();
+	void reset();
+
+public Q_SLOTS:
+	void on_update();
 };
 
 } // namespace widgets

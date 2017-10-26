@@ -36,8 +36,6 @@
 
 using std::make_shared;
 
-Q_DECLARE_METATYPE(shared_ptr<sv::data::AnalogSegment>);
-
 namespace sv
 {
 
@@ -50,9 +48,8 @@ MainWindow::MainWindow(DeviceManager &device_manager, QWidget *parent) :
 {
 	qRegisterMetaType<util::Timestamp>("util::Timestamp");
 	qRegisterMetaType<uint64_t>("uint64_t");
-	qRegisterMetaType<shared_ptr<sv::data::AnalogSegment> >("std::shared_ptr<sv::data::AnalogSegment>");
 
-    setupUi();
+    setup_ui();
 
 	// Actions
 	connect(actionAddView, SIGNAL(triggered(bool)),
@@ -213,7 +210,7 @@ void MainWindow::remove_view(shared_ptr<devices::HardwareDevice> device)
 }
 
 
-void MainWindow::setupUi()
+void MainWindow::setup_ui()
 {
 	this->resize(724, 444);
 
@@ -261,14 +258,14 @@ void MainWindow::setupUi()
 	mainToolBar->addAction(actionAbout);
 	mainToolBar->addAction(actionExit);
 
-	retranslateUi();
+	retranslate_ui();
 
 	tabWidget->setCurrentIndex(1);
 
 	//QMetaObject::connectSlotsByName(SmuView);
 }
 
-void MainWindow::retranslateUi()
+void MainWindow::retranslate_ui()
 {
 	this->setWindowTitle(QApplication::translate("SmuView", "SmuView", Q_NULLPTR));
 	actionExit->setText(QApplication::translate("SmuView", "Exit", Q_NULLPTR));

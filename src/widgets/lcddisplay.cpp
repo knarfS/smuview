@@ -24,7 +24,7 @@
 namespace sv {
 namespace widgets {
 
-LcdDisplay::LcdDisplay(int digits, const QString unit, QWidget *parent) :
+LcdDisplay::LcdDisplay(const uint digits, const QString unit, QWidget *parent) :
 	QFrame(parent),
 	digits_(digits),
 	unit_(unit)
@@ -33,6 +33,11 @@ LcdDisplay::LcdDisplay(int digits, const QString unit, QWidget *parent) :
 
 	lcdValue->setDigitCount(digits_);
 	lcdUnit->setText(unit_);
+
+	QString init_value("");
+	for (uint i=0; i<digits_; i++)
+		init_value.append("_");
+	lcdValue->display(init_value);
 }
 
 void LcdDisplay::setup_ui()
@@ -75,7 +80,13 @@ void LcdDisplay::setup_ui()
 
 void LcdDisplay::set_value(const double value)
 {
-	lcdValue->display(QString("%1").arg(value, 0, 'f', 3));
+	QString str_value;
+	if (value == std::numeric_limits<double>::max())
+		str_value = QString("OL");
+	else
+		str_value = QString("%1").arg(value, 0, 'f', 3);
+
+	lcdValue->display(str_value);
 }
 
 } // namespace widgets

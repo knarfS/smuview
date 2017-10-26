@@ -87,8 +87,8 @@ private:
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
 
-	void setupUi();
-	void retranslateUi();
+	void setup_ui();
+	void retranslate_ui();
 	void session_error(const QString text, const QString info_text);
 
 private Q_SLOTS:

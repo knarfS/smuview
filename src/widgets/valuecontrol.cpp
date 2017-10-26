@@ -24,8 +24,9 @@
 namespace sv {
 namespace widgets {
 
-ValueControl::ValueControl(int digits, const QString unit,
-		double min, double max, double steps, QWidget *parent) :
+ValueControl::ValueControl(const uint digits, const QString unit,
+		const double min, const double max, const double steps,
+		QWidget *parent) :
 	QWidget(parent),
 	digits_(digits),
 	unit_(unit),
@@ -75,7 +76,6 @@ void ValueControl::change_value(const double value)
 	if (value == value_)
 		return;
 
-	/*
 	disconnect(knob, SIGNAL(valueChanged(double)),
 		this, SLOT(on_value_changed(const double)));
 	disconnect(doubleSpinBox, SIGNAL(valueChanged(double)),
@@ -83,7 +83,7 @@ void ValueControl::change_value(const double value)
 
 	value_ = value;
 
-	lcdDisplay->setValue(value);
+	lcdDisplay->set_value(value);
 	doubleSpinBox->setValue(value);
 	knob->setValue(value);
 
@@ -91,7 +91,6 @@ void ValueControl::change_value(const double value)
 		this, SLOT(on_value_changed(double)));
 	connect(doubleSpinBox, SIGNAL(valueChanged(double)),
 		this, SLOT(on_value_changed(double)));
-	*/
 }
 
 void ValueControl::on_value_changed(const double value)

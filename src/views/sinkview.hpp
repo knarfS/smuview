@@ -48,12 +48,12 @@ public:
 	SinkView(shared_ptr<devices::HardwareDevice> device, QWidget *parent);
 
 private:
+	shared_ptr<devices::HardwareDevice> device_;
+
 	widgets::ControlButton *setEnableButton;
 	widgets::ValueControl *setValueControl;
 	widgets::PowerPanel *powerPanel;
 	QwtPlot *plot;
-
-	shared_ptr<devices::HardwareDevice> device_;
 
 	void init_values();
 	void setup_ui();
@@ -61,7 +61,6 @@ private:
 public Q_SLOTS:
 	void on_value_changed(const double value);
 	void on_enabled_changed(const bool enabled);
-	//void on_data_received(shared_ptr<sv::data::AnalogSegment>);
 };
 
 } // namespace views

@@ -49,16 +49,8 @@ SinkView::SinkView(shared_ptr<devices::HardwareDevice> device,
 	connect(setEnableButton, SIGNAL(state_changed(bool)),
 		this, SLOT(on_enabled_changed(const bool)));
 
-	/*
 	connect(device_.get(), SIGNAL(current_limit_changed(const double)),
 		setValueControl, SLOT(change_value(const double)));
-	*/
-
-	// Displays
-	/*
-	connect(device_.get(), SIGNAL(data_received(shared_ptr<sv::data::AnalogSegment>)),
-		this, SLOT(on_data_received(shared_ptr<sv::data::AnalogSegment>)));
-	*/
 }
 
 
@@ -85,7 +77,7 @@ void SinkView::setup_ui()
 	device_->list_current_limit(min, max, step);
 	setValueControl = new widgets::ValueControl(5, "A", min, max, step, this);
 	setValuesVLayout->addWidget(setValueControl);
-	setValuesVLayout->addStretch(4);
+	setValuesVLayout->addStretch(5);
 	setHLayout->addItem(setValuesVLayout);
 
 	// Enable button
@@ -103,7 +95,7 @@ void SinkView::setup_ui()
 	QVBoxLayout *getValuesVLayout = new QVBoxLayout(this);
 
 	// Power panel
-	powerPanel = new widgets::PowerPanel(this);
+	powerPanel = new widgets::PowerPanel(device_, this);
 	getValuesVLayout->addWidget(powerPanel);
 	getValuesVLayout->addStretch(5);
 
@@ -130,28 +122,8 @@ void SinkView::on_value_changed(const double value)
 
 void SinkView::on_enabled_changed(const bool enabled)
 {
-	if (enabled)
-		device_->set_enable(true);
-	else
-		device_->set_enable(false);
+	device_->set_enable(enabled);
 }
-
-/*
-void SinkView::on_data_received(shared_ptr<sv::data::AnalogSegment> segment)
-{
-	const int64_t last_sample = segment->get_sample_count() - 1;
-	qWarning() << "on_data_received: last_sample" << last_sample;
-	float *sample_block = new float[2];
-	segment->get_samples(last_sample, last_sample+1, sample_block);
-
-	double voltage = sample_block[1];
-	double current = sample_block[0];
-	double power = voltage * current;
-	voltageDisplay->set_value(voltage);
-	currentDisplay->set_value(current);
-	powerDisplay->set_value(power);
-}
-	*/
 
 } // namespace views
 } // namespace sv

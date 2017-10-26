@@ -32,7 +32,7 @@ class LcdDisplay : public QFrame
     Q_OBJECT
 
 private:
-	int digits_;
+	uint digits_;
 	QString unit_;
 	float value_;
 
@@ -42,7 +42,7 @@ private:
 	void setup_ui();
 
 public:
-	LcdDisplay(int digits, const QString unit, QWidget *parent);
+	LcdDisplay(const uint digits, const QString unit, QWidget *parent);
 
 	void set_value(const double value);
 };
