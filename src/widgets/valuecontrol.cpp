@@ -28,6 +28,7 @@ ValueControl::ValueControl(const uint digits, const QString unit,
 		const double min, const double max, const double steps,
 		QWidget *parent) :
 	QWidget(parent),
+	value_(0),
 	digits_(digits),
 	unit_(unit),
 	min_(min),
@@ -47,6 +48,7 @@ void ValueControl::setup_ui()
 	QVBoxLayout *getValuesVLayout = new QVBoxLayout(this);
 
 	lcdDisplay = new widgets::LcdDisplay(digits_, unit_, this);
+	lcdDisplay->set_value(0);
 	getValuesVLayout->addWidget(lcdDisplay);
 
 	QHBoxLayout *getValuesHLayout = new QHBoxLayout(this);

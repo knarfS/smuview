@@ -17,55 +17,45 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DATA_ANALOG_HPP
-#define DATA_ANALOG_HPP
+#ifndef DATA_CURVEDATA_HPP
+#define DATA_CURVEDATA_HPP
 
 #include <memory>
 
-#include <QObject>
-
-#include "signaldata.hpp"
+#include <QPointer>
+#include <qwt_series_data.h>
 
 using std::shared_ptr;
-using std::vector;
 
 namespace sv {
 namespace data {
 
-class AnalogSegment;
+class Analog;
 
-class Analog : public SignalData
+class CurveData : public QwtSeriesData<QPointF>
 {
-	Q_OBJECT
 
 public:
-	Analog();
+	CurveData(shared_ptr<Analog> x_signal_data,
+		shared_ptr<Analog> y_signal_data);
 
-	void clear();
+	/*
+	const shared_ptr<Analog> values() const;
+	shared_ptr<Analog> values();
+	*/
 
-	size_t get_sample_count() const;
-	vector<double> get_samples(size_t start_sample, size_t end_sample) const;
-	double get_sample(size_t pos) const;
+	virtual QPointF sample( size_t i ) const;
+	virtual size_t size() const;
 
-	void push_sample(void *sample);
-
-	double last_value() const;
-	double min_value() const;
-	double max_value() const;
-
-Q_SIGNALS:
-	void samples_cleared();
+	virtual QRectF boundingRect() const;
 
 private:
-	shared_ptr<vector<double>> data_;
-	size_t sample_count_;
+	shared_ptr<Analog> x_signal_data_;
+	shared_ptr<Analog> y_signal_data_;
 
-	double last_value_;
-	double min_value_;
-	double max_value_;
 };
 
 } // namespace data
 } // namespace sv
 
-#endif // DATA_ANALOG_HPP
+#endif // DATA_CURVEDATA_HPP

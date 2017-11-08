@@ -17,94 +17,59 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QDebug>
-#include <QPushButton>
 #include <QHBoxLayout>
 #include <QGroupBox>
 
-#include "sinkview.hpp"
+#include "measureview.hpp"
 #include "src/data/analog.hpp"
 #include "src/data/curvedata.hpp"
 #include "src/data/signalbase.hpp"
-#include "src/widgets/controlbutton.hpp"
+#include "src/widgets/singlevaluepanel.hpp"
 #include "src/widgets/plot.hpp"
-#include "src/widgets/powerpanel.hpp"
-#include "src/widgets/valuecontrol.hpp"
-
-using std::shared_ptr;
 
 namespace sv {
 namespace views {
 
-SinkView::SinkView(shared_ptr<devices::HardwareDevice> device,
+MeasureView::MeasureView(shared_ptr<devices::HardwareDevice> device,
 		QWidget *parent) :
 	QWidget(parent),
 	device_(device)
 {
-	setup_ui();
+	digits_ = 5;
+	unit_ = QString("V");
 
+	setup_ui();
 	init_values();
 
-	// Control elements -> device
-	connect(setValueControl, SIGNAL(value_changed(const double)),
-		this, SLOT(on_value_changed(const double)));
-	connect(setEnableButton, SIGNAL(state_changed(bool)),
-		this, SLOT(on_enabled_changed(const bool)));
-
-	// Device -> control elements
-	connect(device_.get(), SIGNAL(current_limit_changed(const double)),
-		setValueControl, SLOT(change_value(const double)));
-	connect(device_.get(), SIGNAL(enabled_changed(const bool)),
-		setEnableButton, SLOT(on_state_changed(const bool)));
-
-	plot->start();
+	// TODO
+	//plot->start();
 }
 
 
-void SinkView::init_values()
+void MeasureView::init_values()
 {
-	setValueControl->on_value_changed(device_->get_current_limit());
-	setEnableButton->on_state_changed(device_->get_enabled());
 }
 
-void SinkView::setup_ui()
+void MeasureView::setup_ui()
 {
 	QVBoxLayout *mainLayout = new QVBoxLayout(this);
 
 	// Group Box for Setting
 	QGroupBox *setValuesGroupBox = new QGroupBox(this);
 	setValuesGroupBox->setTitle("Set Values");
-
-	QHBoxLayout *setHLayout = new QHBoxLayout(this);
-	QVBoxLayout *setValuesVLayout = new QVBoxLayout(this);
-
-	double min;
-	double max;
-	double step;
-	device_->list_current_limit(min, max, step);
-	setValueControl = new widgets::ValueControl(5, "A", min, max, step, this);
-	setValuesVLayout->addWidget(setValueControl);
-	setValuesVLayout->addStretch(5);
-	setHLayout->addItem(setValuesVLayout);
-
-	// Enable button
-	QVBoxLayout *setOptionsVLayout = new QVBoxLayout(this);
-	setEnableButton = new widgets::ControlButton(
-		device_->is_enable_getable(), device_->is_enable_setable(), this);
-	setOptionsVLayout->addWidget(setEnableButton);
-	setHLayout->addItem(setOptionsVLayout);
-
-	setValuesGroupBox->setLayout(setHLayout);
+	QVBoxLayout *setValuesLayout = new QVBoxLayout(this);
+	setValuesLayout->addStretch(10);
+	setValuesGroupBox->setLayout(setValuesLayout);
 
 	// Group Box for Values
 	QGroupBox *getValuesGroupBox = new QGroupBox(this);
 	getValuesGroupBox->setTitle("Actual Values");
 	QVBoxLayout *getValuesVLayout = new QVBoxLayout(this);
 
-	// Power panel
-	powerPanel = new widgets::PowerPanel(
-		device_->voltage_signal(), device_->current_signal(), this);
-	getValuesVLayout->addWidget(powerPanel);
+	// Value panel
+	singleValuePanel = new widgets::SingleValuePanel(
+		device_->measurement_signal(), this);
+	getValuesVLayout->addWidget(singleValuePanel);
 	getValuesVLayout->addStretch(5);
 
 	getValuesGroupBox->setLayout(getValuesVLayout);
@@ -116,30 +81,23 @@ void SinkView::setup_ui()
 	mainLayout->addItem(valueLayout);
 
 	// Graph
+	/*
 	data::CurveData *curve_data = new data::CurveData(
 		device_->time_data(),
-		device_->current_signal()->analog_data());
+		device_->measurement_signal()->analog_data());
 	plot = new widgets::Plot(curve_data, this);
-    plot->setIntervalLength(10);
+    plot->setIntervalLength(60);
     plot->setPlotMode(widgets::Plot::PlotModes::Additive);
     plot->setPlotInterval(1);
     //connect( ui->actionConnect, SIGNAL(triggered()), ui->mainPlot, SLOT(start()) );
     //connect( ui->actionDisconnect, SIGNAL(triggered()), ui->mainPlot, SLOT(stop()) );
 	mainLayout->addWidget(plot);
+	*/
 
 	// Spacer
 	mainLayout->addStretch(10);
 }
 
-void SinkView::on_value_changed(const double value)
-{
-	device_->set_current_limit(value);
-}
-
-void SinkView::on_enabled_changed(const bool enabled)
-{
-	device_->set_enable(enabled);
-}
-
 } // namespace views
 } // namespace sv
+

@@ -39,12 +39,20 @@ libsigrok
 - Re:load Pro: sometimes only a ^M is send from the rlp
 - Re:load Pro: Sometimes the responses are mixed up (2 listeners??, Re:load Pro not keeping up??)
 - Re:load Pro: how to clear otp_active and uvc_active?
+- hp3478a: device isn't closed after stopping acquisition
+- scpi-pps: protocol.c -> scpi_pps_receive_data() uses double, but output (e.g. analog) and DF_ANALOG receivers use hardcoded float. Using sr_analog_encoding.unitsize and .is_float to define the datatype (and size) (.unitsize = sizeof(double) (or by lurchi_: .unitsize=8 + float is double)) in the receiver functions!
 
 Done
 ----
 
 - Re:load Pro: send "monitor 0" when device is scaned to stop eventually running monitoring and version can be read properly
 - Re:load Pro: send "monitor 0" when device is closed
+- Wrong string to float/double conversion (because of locale settings):
+	- dmm/m2110.c: 2x sscanf((const char *)buf, "%f", &val) == 1 -> sr_atof_ascii((const char *)buf, &val) == SR_OK
+	- motech-lps-30x/protocol.c: sr_atod(devc->buf, &dbl)
+	- dmm/metex14.c: sscanf((const char *)&valstr, "%f", result) -> sr_atof_ascii((const char *)&valstr, result)
+	- scpi/scpi.c: sr_atod(response, scpi_response) -> sr_atod_ascii(response, scpi_response)
+- hp3478a: acquisition doesn't stop (sigrok-cli/smuview must be killed)
 
 
 Doku

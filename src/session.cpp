@@ -23,7 +23,6 @@
 #include <QDebug>
 
 #include "session.hpp"
-#include "data/segment.hpp"
 #include "data/signaldata.hpp"
 #include "devices/device.hpp"
 

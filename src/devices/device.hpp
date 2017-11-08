@@ -88,24 +88,13 @@ public:
 		shared_ptr<sigrok::Packet> sr_packet);
 
 private:
-	unordered_set< shared_ptr<data::SignalBase> > signalbases_;
-	unordered_set< shared_ptr<data::SignalData> > all_signal_data_;
-
 	mutable recursive_mutex data_mutex_;
-	shared_ptr<data::Analog> analog_data_;
+	unordered_set< shared_ptr<data::SignalData> > all_signal_data_;
 	uint64_t cur_samplerate_;
-	map< shared_ptr<sigrok::Channel>, shared_ptr<data::AnalogSegment> >
-		cur_analog_segments_;
-
-	vector<shared_ptr<double>> data_ch1_;
-	vector<shared_ptr<double>> data_ch2_;
-	vector<shared_ptr<double>> time_;
 
 	bool out_of_memory_;
 	bool frame_began_;
 
-	shared_ptr<data::SignalBase> signalbase_from_channel(
-		shared_ptr<sigrok::Channel> channel) const;
 	void feed_in_header();
 	void feed_in_meta(shared_ptr<sigrok::Meta> meta);
 	void feed_in_trigger();
@@ -116,8 +105,14 @@ private:
 protected:
 	shared_ptr<sigrok::Device> sr_device_;
 
+	// TODO: channel_data_ + time_data_ from the same typ!
+	map<shared_ptr<sigrok::Channel>, shared_ptr<data::SignalBase>> channel_data_;
+	shared_ptr<data::Analog> time_data_;
+	qint64 time_start_; // TODO: Move to time_data_?
+
 // TODO: move to hardwaredevice
 Q_SIGNALS:
+	void capture_state_changed(int);
 	void data_received(const shared_ptr<sv::data::AnalogSegment>);
 	void enabled_changed(const bool);
 	void voltage_target_changed(const double);

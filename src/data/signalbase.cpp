@@ -19,8 +19,9 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <assert.h>
+
 #include "analog.hpp"
-#include "analogsegment.hpp"
 #include "signalbase.hpp"
 #include "signaldata.hpp"
 #include "src/session.hpp"
@@ -34,13 +35,9 @@ using std::unique_lock;
 namespace sv {
 namespace data {
 
-const int SignalBase::ColourBGAlpha = 8 * 256 / 100;
-
 SignalBase::SignalBase(shared_ptr<sigrok::Channel> sr_channel, ChannelType channel_type) :
 	sr_channel_(sr_channel),
-	channel_type_(channel_type),
-	min_value_(0),
-	max_value_(0)
+	channel_type_(channel_type)
 {
 	if (sr_channel_)
 		internal_name_ = QString::fromStdString(sr_channel_->name());
@@ -106,16 +103,7 @@ QColor SignalBase::colour() const
 void SignalBase::set_colour(QColor colour)
 {
 	colour_ = colour;
-
-	bgcolour_ = colour;
-	bgcolour_.setAlpha(ColourBGAlpha);
-
 	colour_changed(colour);
-}
-
-QColor SignalBase::bgcolour() const
-{
-	return bgcolour_;
 }
 
 void SignalBase::set_data(shared_ptr<sv::data::SignalData> data)
@@ -153,6 +141,11 @@ void SignalBase::set_data(shared_ptr<sv::data::SignalData> data)
 	}
 }
 
+shared_ptr<sv::data::SignalData> SignalBase::data()
+{
+	return data_;
+}
+
 shared_ptr<data::Analog> SignalBase::analog_data() const
 {
 	shared_ptr<Analog> result = nullptr;
@@ -180,17 +173,6 @@ void SignalBase::restore_settings(QSettings &settings)
 void SignalBase::on_samples_cleared()
 {
 	samples_cleared();
-}
-
-void SignalBase::on_samples_added(QObject* segment, uint64_t start_sample,
-	uint64_t end_sample)
-{
-	samples_added(segment, start_sample, end_sample);
-}
-
-void SignalBase::on_min_max_changed(float min, float max)
-{
-	min_max_changed(min, max);
 }
 
 void SignalBase::on_capture_state_changed(int state)

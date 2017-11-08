@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VIEWS_SINKVIEW_HPP
-#define VIEWS_SINKVIEW_HPP
+#ifndef VIEWS_MEASUREVIEW_HPP
+#define VIEWS_MEASUREVIEW_HPP
 
 #include <memory>
 
@@ -31,38 +31,33 @@ using std::shared_ptr;
 namespace sv {
 
 namespace widgets {
-class ControlButton;
+class SingleValuePanel;
 class Plot;
-class PowerPanel;
-class ValueControl;
 }
 
 namespace views {
 
-class SinkView : public QWidget
+class MeasureView : public QWidget
 {
     Q_OBJECT
 
 public:
-	SinkView(shared_ptr<devices::HardwareDevice> device, QWidget *parent);
+	MeasureView(shared_ptr<devices::HardwareDevice> device, QWidget *parent);
 
 private:
 	shared_ptr<devices::HardwareDevice> device_;
+	uint digits_;
+	QString unit_;
 
-	widgets::ControlButton *setEnableButton;
-	widgets::ValueControl *setValueControl;
-	widgets::PowerPanel *powerPanel;
+	widgets::SingleValuePanel *singleValuePanel;
 	widgets::Plot *plot;
 
 	void init_values();
 	void setup_ui();
 
-public Q_SLOTS:
-	void on_value_changed(const double value);
-	void on_enabled_changed(const bool enabled);
 };
 
 } // namespace views
 } // namespace sv
 
-#endif // VIEWS_SINKVIEW_HPP
+#endif // VIEWS_MEASUREVIEW_HPP

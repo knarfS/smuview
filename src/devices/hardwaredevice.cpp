@@ -30,8 +30,6 @@
 #include "src/devicemanager.hpp"
 #include "src/session.hpp"
 #include "src/data/analog.hpp"
-#include "src/data/analogsegment.hpp"
-#include "src/data/segment.hpp"
 #include "src/data/signalbase.hpp"
 #include "src/data/signaldata.hpp"
 
@@ -39,6 +37,7 @@ using std::bad_alloc;
 using std::dynamic_pointer_cast;
 using std::lock_guard;
 using std::make_shared;
+using std::pair;
 using std::set;
 using std::shared_ptr;
 using std::static_pointer_cast;
@@ -56,6 +55,7 @@ HardwareDevice::HardwareDevice(const shared_ptr<sigrok::Context> &sr_context,
 	sr_context_(sr_context),
 	device_open_(false)
 {
+	// TODO: sigrok::Device and not sigrok::HardwareDevice in constructor?? then cast...
 	sr_device_ = sr_device;
 
 	const auto sr_keys = sr_device->driver()->config_keys();
@@ -68,14 +68,16 @@ HardwareDevice::HardwareDevice(const shared_ptr<sigrok::Context> &sr_context,
 	else
 		type_ = HardwareDevice::UNKNOWN;
 
+	vector<shared_ptr<sigrok::Channel>> sr_channels;
 	if (type_ == POWER_SUPPLY) {
 		// TODO: Multi channel PSU
 		sr_configurable_ = sr_device_;
+		sr_channels = sr_device_->channels();
 	}
 	else if (type_ == ELECTRONIC_LOAD) {
 		sr_configurable_ = sr_device_->channel_groups()["1"];
+		sr_channels = sr_device_->channel_groups()["1"]->channels();
 	}
-
 }
 
 HardwareDevice::~HardwareDevice()
@@ -155,6 +157,40 @@ void HardwareDevice::close()
 	device_open_ = false;
 }
 
+shared_ptr<data::SignalBase> HardwareDevice::voltage_signal() const
+{
+	for (auto const &iter : channel_data_) {
+		if (iter.second->internal_name().startsWith("V"))
+			return iter.second;
+	}
+
+	return Q_NULLPTR;
+}
+
+shared_ptr<data::SignalBase> HardwareDevice::current_signal() const
+{
+	for (auto const &iter : channel_data_) {
+		if (iter.second->internal_name().startsWith("I"))
+			return iter.second;
+	}
+
+	return Q_NULLPTR;
+}
+
+shared_ptr<data::SignalBase> HardwareDevice::measurement_signal() const
+{
+	for (auto const &iter : channel_data_) {
+		if (iter.second->internal_name() == "P1")
+			return iter.second;
+	}
+
+	return Q_NULLPTR;
+}
+
+shared_ptr<data::Analog> HardwareDevice::time_data() const
+{
+	return time_data_;
+}
 
 bool HardwareDevice::is_enable_getable()
 {

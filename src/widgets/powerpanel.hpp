@@ -22,10 +22,9 @@
 
 #include <memory>
 
-#include <QDoubleSpinBox>
+#include <QPushButton>
 #include <QTimer>
 #include <QWidget>
-#include <qwt_knob.h>
 
 #include "lcddisplay.hpp"
 
@@ -33,8 +32,8 @@ using std::shared_ptr;
 
 namespace sv {
 
-namespace devices {
-class HardwareDevice;
+namespace data {
+class SignalBase;
 }
 
 namespace widgets {
@@ -44,11 +43,14 @@ class PowerPanel : public QWidget
     Q_OBJECT
 
 public:
-	PowerPanel(shared_ptr<devices::HardwareDevice> device, QWidget *parent);
+	PowerPanel(shared_ptr<data::SignalBase> voltage_signal,
+		shared_ptr<data::SignalBase> current_signal,
+		QWidget *parent);
 	~PowerPanel();
 
 private:
-	shared_ptr<devices::HardwareDevice> device_;
+	shared_ptr<data::SignalBase> voltage_signal_;
+	shared_ptr<data::SignalBase> current_signal_;
 
 	QTimer *timer_;
 	qint64 start_time_;
@@ -62,13 +64,15 @@ private:
 	widgets::LcdDisplay *powerDisplay;
 	widgets::LcdDisplay *ampHourDisplay;
 	widgets::LcdDisplay *wattHourDisplay;
+	QPushButton *resetButton;
 
 	void setup_ui();
+	void reset_displays();
 	void init_timer();
 	void stop_timer();
-	void reset();
 
 public Q_SLOTS:
+	void on_reset();
 	void on_update();
 };
 

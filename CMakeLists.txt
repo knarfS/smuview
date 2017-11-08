@@ -143,19 +143,21 @@ set(smuview_SOURCES
   src/session.cpp
   src/util.cpp
   src/data/analog.cpp
-  src/data/analogsegment.cpp
-  src/data/segment.cpp
+  src/data/curvedata.cpp
   src/data/signalbase.cpp
   src/data/signaldata.cpp
   src/devices/device.cpp
   src/devices/hardwaredevice.cpp
   src/dialogs/connect.cpp
   #src/toolbars/maintoolbar.cpp
+  src/views/measureview.cpp
   src/views/sourceview.cpp
   src/views/viewbase.cpp
   src/widgets/controlbutton.cpp
   src/widgets/lcddisplay.cpp
+  src/widgets/plot.cpp
   src/widgets/powerpanel.cpp
+  src/widgets/singlevaluepanel.cpp
   src/widgets/valuecontrol.cpp
   src/views/sinkview.cpp
 )

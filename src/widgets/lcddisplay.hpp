@@ -45,6 +45,7 @@ public:
 	LcdDisplay(const uint digits, const QString unit, QWidget *parent);
 
 	void set_value(const double value);
+	void reset_value();
 };
 
 } // namespace widgets

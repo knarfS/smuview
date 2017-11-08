@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QApplication>
 #include <QDebug>
 
 #include "controlbutton.hpp"
@@ -51,7 +52,7 @@ void ControlButton::setupUi()
 
 	if (!is_readable_) {
 		this->setIcon(icon_grey_);
-		this->setText("On/Off");
+		this->setText(QApplication::translate("SmuView", "On/Off", Q_NULLPTR));
 		this->setChecked(false);
 	}
 }
@@ -66,12 +67,12 @@ void ControlButton::on_state_changed(bool enabled)
 {
 	if (!enabled) {
 		this->setIcon(icon_green_);
-		this->setText("On");
+		this->setText(QApplication::translate("SmuView", "On", Q_NULLPTR));
 		this->setChecked(true);
 		state_ = true;
 	} else if (enabled) {
 		this->setIcon(icon_red_);
-		this->setText("Off");
+		this->setText(QApplication::translate("SmuView", "Off", Q_NULLPTR));
 		this->setChecked(false);
 		state_ = false;
 	}

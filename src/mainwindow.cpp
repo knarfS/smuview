@@ -27,10 +27,10 @@
 #include "mainwindow.hpp"
 #include "devicemanager.hpp"
 #include "session.hpp"
-#include "data/analogsegment.hpp"
 #include "devices/hardwaredevice.hpp"
 #include "dialogs/connect.hpp"
 #include "src/views/viewbase.hpp"
+#include "src/views/measureview.hpp"
 #include "src/views/sinkview.hpp"
 #include "src/views/sourceview.hpp"
 
@@ -198,6 +198,8 @@ shared_ptr<devices::Device> MainWindow::add_view(
 		views::SinkView *sinkViewTab = new views::SinkView(device, window);
 		window->setCentralWidget(sinkViewTab);
 	} else if (type == views::ViewTypeMeasurement) {
+		views::MeasureView *measureViewTab = new views::MeasureView(device, window);
+		window->setCentralWidget(measureViewTab);
 	} else if (type == views::ViewTypeGraph) {
 	}
 

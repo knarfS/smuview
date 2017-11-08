@@ -17,52 +17,58 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VIEWS_SINKVIEW_HPP
-#define VIEWS_SINKVIEW_HPP
+#ifndef WIDGETS_SINGLEVALUEPANEL_HPP
+#define WIDGETS_SINGLEVALUEPANEL_HPP
 
 #include <memory>
 
+#include <QPushButton>
+#include <QTimer>
 #include <QWidget>
 
-#include "src/devices/hardwaredevice.hpp"
+#include "lcddisplay.hpp"
 
 using std::shared_ptr;
 
 namespace sv {
 
-namespace widgets {
-class ControlButton;
-class Plot;
-class PowerPanel;
-class ValueControl;
+namespace data {
+class SignalBase;
 }
 
-namespace views {
+namespace widgets {
 
-class SinkView : public QWidget
+class SingleValuePanel : public QWidget
 {
     Q_OBJECT
 
 public:
-	SinkView(shared_ptr<devices::HardwareDevice> device, QWidget *parent);
+	SingleValuePanel(shared_ptr<data::SignalBase> value_signal,
+		QWidget *parent);
+	~SingleValuePanel();
 
 private:
-	shared_ptr<devices::HardwareDevice> device_;
+	shared_ptr<data::SignalBase> value_signal_;
 
-	widgets::ControlButton *setEnableButton;
-	widgets::ValueControl *setValueControl;
-	widgets::PowerPanel *powerPanel;
-	widgets::Plot *plot;
+	QTimer *timer_;
+	qint64 start_time_;
+	qint64 last_time_;
 
-	void init_values();
+	widgets::LcdDisplay *valueDisplay;
+	QPushButton *resetButton;
+
 	void setup_ui();
+	void reset_display();
+	void init_timer();
+	void stop_timer();
 
 public Q_SLOTS:
-	void on_value_changed(const double value);
-	void on_enabled_changed(const bool enabled);
+	void on_reset();
+	void on_update();
 };
 
-} // namespace views
+} // namespace widgets
 } // namespace sv
 
-#endif // VIEWS_SINKVIEW_HPP
+#endif // WIDGETS_SINGLEVALUEPANEL_HPP
+

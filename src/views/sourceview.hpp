@@ -32,7 +32,7 @@ namespace sv {
 
 namespace widgets {
 class ControlButton;
-class LcdDisplay;
+class PowerPanel;
 class ValueControl;
 }
 
@@ -49,13 +49,12 @@ private:
 	widgets::ControlButton *setEnableButton;
 	widgets::ValueControl *setVoltageControl;
 	widgets::ValueControl *setCurrentControl;
-	widgets::LcdDisplay *voltageDisplay;
-	widgets::LcdDisplay *currentDisplay;
-	widgets::LcdDisplay *powerDisplay;
+	widgets::PowerPanel *powerPanel;
 
 	shared_ptr<devices::HardwareDevice> device_;
 
-	void setupUi();
+	void init_values();
+	void setup_ui();
 
 public Q_SLOTS:
 	void on_voltage_changed(double value);

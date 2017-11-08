@@ -98,6 +98,12 @@ public:
 	void open();
 	void close();
 
+	// TODO: Generic and from the same typ!
+	shared_ptr<data::SignalBase> voltage_signal() const;
+	shared_ptr<data::SignalBase> current_signal() const;
+	shared_ptr<data::SignalBase> measurement_signal() const;
+	shared_ptr<data::Analog> time_data() const;
+
 	bool is_enable_getable();
 	bool is_enable_setable();
 	bool get_enabled();

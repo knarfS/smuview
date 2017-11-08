@@ -17,23 +17,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QApplication>
 #include <QDateTime>
 #include <QDebug>
 #include <QVBoxLayout>
 
 #include "powerpanel.hpp"
-#include "src/devices/hardwaredevice.hpp"
+#include "src/data/signalbase.hpp"
+#include "src/data/analog.hpp"
 
 namespace sv {
 namespace widgets {
 
-PowerPanel::PowerPanel(shared_ptr<devices::HardwareDevice> device,
+PowerPanel::PowerPanel(shared_ptr<data::SignalBase> voltage_signal,
+		shared_ptr<data::SignalBase> current_signal,
 		QWidget *parent) :
 	QWidget(parent),
-	device_(device)
+	voltage_signal_(voltage_signal),
+	current_signal_(current_signal)
 {
 	setup_ui();
+	reset_displays();
+
+	timer_ = new QTimer(this);
 	init_timer();
+
+	connect(resetButton, SIGNAL(clicked(bool)), this, SLOT(on_reset()));
 }
 
 PowerPanel::~PowerPanel()
@@ -53,26 +62,45 @@ void PowerPanel::setup_ui()
 	ampHourDisplay = new widgets::LcdDisplay(5, "Ah", this);
 	wattHourDisplay = new widgets::LcdDisplay(5, "Wh", this);
 
-	QHBoxLayout *getUpperHLayout = new QHBoxLayout(this);
-	getUpperHLayout->addWidget(voltageDisplay);
-	getUpperHLayout->addWidget(powerDisplay);
-	getUpperHLayout->addWidget(ampHourDisplay);
-	getUpperHLayout->addStretch(5);
+	QHBoxLayout *upperHLayout = new QHBoxLayout(this);
+	upperHLayout->addWidget(voltageDisplay);
+	upperHLayout->addWidget(powerDisplay);
+	upperHLayout->addWidget(ampHourDisplay);
+	upperHLayout->addStretch(5);
 
-	QHBoxLayout *getLowerHLayout = new QHBoxLayout(this);
-	getLowerHLayout->addWidget(currentDisplay);
-	getLowerHLayout->addWidget(resistanceDisplay);
-	getLowerHLayout->addWidget(wattHourDisplay);
-	getLowerHLayout->addStretch(5);
+	QHBoxLayout *lowerHLayout = new QHBoxLayout(this);
+	lowerHLayout->addWidget(currentDisplay);
+	lowerHLayout->addWidget(resistanceDisplay);
+	lowerHLayout->addWidget(wattHourDisplay);
+	lowerHLayout->addStretch(5);
 
-	getValuesVLayout->addItem(getUpperHLayout);
-	getValuesVLayout->addItem(getLowerHLayout);
+	QHBoxLayout *buttonHLayout = new QHBoxLayout(this);
+	resetButton = new QPushButton(this);
+	resetButton->setText(
+		QApplication::translate("SmuView", "Reset", Q_NULLPTR));
+	buttonHLayout->addWidget(resetButton);
+	buttonHLayout->addStretch(5);
+
+	getValuesVLayout->addItem(upperHLayout);
+	getValuesVLayout->addItem(lowerHLayout);
+	getValuesVLayout->addItem(buttonHLayout);
 	getValuesVLayout->addStretch(4);
+}
+
+void PowerPanel::reset_displays()
+{
+	voltageDisplay->reset_value();
+	currentDisplay->reset_value();
+	resistanceDisplay->reset_value();
+	powerDisplay->reset_value();
+	ampHourDisplay->reset_value();
+	wattHourDisplay->reset_value();
 }
 
 void PowerPanel::init_timer()
 {
-	timer_ = new QTimer(this);
+	if (!voltage_signal_ && !current_signal_)
+		return;
 
 	start_time_ = QDateTime::currentMSecsSinceEpoch();
 	last_time_ = start_time_;
@@ -85,41 +113,41 @@ void PowerPanel::init_timer()
 
 void PowerPanel::stop_timer()
 {
+	if (!timer_->isActive())
+		return;
+
     timer_->stop();
     disconnect(timer_, SIGNAL(timeout()), this, SLOT(on_update()));
+
+	reset_displays();
 }
 
-void PowerPanel::reset()
+void PowerPanel::on_reset()
 {
-	start_time_ = QDateTime::currentMSecsSinceEpoch();
-	last_time_ = start_time_;
-	actual_amp_hours_ = 0;
-	actual_watt_hours_ = 0;
+	stop_timer();
+	init_timer();
 }
 
 void PowerPanel::on_update()
 {
-	/*
-	const int64_t last_sample = segment->get_sample_count() - 1;
-	qWarning() << "on_data_received: last_sample" << last_sample;
-	float *sample_block = new float[2];
-	segment->get_samples(last_sample, last_sample+1, sample_block);
-
-	double voltage = sample_block[1];
-	double current = sample_block[0];
-	*/
-
-	//double voltage = device_->get_last_data_1();
-	//double current = device_->get_last_data_2();
-	double voltage = 3.3;
-	double current = 0.5;
-	double resistance = current == 0 ?
-		std::numeric_limits<double>::max() : voltage / current;
-	double power = voltage * current;
+	if (voltage_signal_->analog_data()->get_sample_count() == 0)
+		return;
 
 	qint64 now = QDateTime::currentMSecsSinceEpoch();
 	double elapsed_time = (now - last_time_) / (double)3600000; // 1000 * 60 * 60 = 1h
 	last_time_ = now;
+
+	double voltage = 0;
+	if (voltage_signal_ && voltage_signal_->analog_data())
+		voltage = voltage_signal_->analog_data()->last_value();
+
+	double current = 0;
+	if (current_signal_ && current_signal_->analog_data())
+		current = current_signal_->analog_data()->last_value();
+
+	double resistance = current == 0 ?
+		std::numeric_limits<double>::max() : voltage / current;
+	double power = voltage * current;
 	actual_amp_hours_ = actual_amp_hours_ + (current * elapsed_time);
 	actual_watt_hours_ = actual_watt_hours_ + (power * elapsed_time);
 

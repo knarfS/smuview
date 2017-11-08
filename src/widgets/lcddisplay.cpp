@@ -89,5 +89,11 @@ void LcdDisplay::set_value(const double value)
 	lcdValue->display(str_value);
 }
 
+void LcdDisplay::reset_value()
+{
+	QString init_value("-----");
+	lcdValue->display(init_value);
+}
+
 } // namespace widgets
 } // namespace sv

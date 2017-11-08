@@ -22,7 +22,7 @@
 
 #include "sourceview.hpp"
 #include "src/widgets/controlbutton.hpp"
-#include "src/widgets/lcddisplay.hpp"
+#include "src/widgets/powerpanel.hpp"
 #include "src/widgets/valuecontrol.hpp"
 
 namespace sv {
@@ -33,15 +33,36 @@ SourceView::SourceView(shared_ptr<devices::HardwareDevice> device,
 	QWidget(parent),
 	device_(device)
 {
-	setupUi();
+	setup_ui();
 
+	init_values();
+
+	// Control elements -> device
 	connect(setVoltageControl, SIGNAL(value_changed(double)),
 		this, SLOT(on_voltage_changed(double)));
 	connect(setCurrentControl, SIGNAL(value_changed(double)),
 		this, SLOT(on_current_changed(double)));
+	connect(setEnableButton, SIGNAL(state_changed(bool)),
+		this, SLOT(on_enabled_changed(const bool)));
+
+	// Device -> control elements
+	connect(device_.get(), SIGNAL(voltage_target_changed(const double)),
+		setVoltageControl, SLOT(change_value(const double)));
+	connect(device_.get(), SIGNAL(current_limit_changed(const double)),
+		setCurrentControl, SLOT(change_value(const double)));
+	connect(device_.get(), SIGNAL(enabled_changed(const bool)),
+		setEnableButton, SLOT(on_state_changed(const bool)));
 }
 
-void SourceView::setupUi()
+
+void SourceView::init_values()
+{
+	setVoltageControl->on_value_changed(device_->get_voltage_target());
+	setCurrentControl->on_value_changed(device_->get_current_limit());
+	setEnableButton->on_state_changed(device_->get_enabled());
+}
+
+void SourceView::setup_ui()
 {
 	QHBoxLayout *mainLayout = new QHBoxLayout(this);
 
@@ -71,14 +92,15 @@ void SourceView::setupUi()
 	// Group Box for Values
 	QGroupBox *getValuesGroupBox = new QGroupBox(this);
 	getValuesGroupBox->setTitle("Actual Values");
-	QHBoxLayout *getValuesLayout = new QHBoxLayout(this);
-	voltageDisplay = new widgets::LcdDisplay(5, "V", this);
-	currentDisplay = new widgets::LcdDisplay(5, "A", this);
-	powerDisplay = new widgets::LcdDisplay(5, "W", this);
-	getValuesLayout->addWidget(voltageDisplay);
-	getValuesLayout->addWidget(currentDisplay);
-	getValuesLayout->addWidget(powerDisplay);
-	getValuesGroupBox->setLayout(getValuesLayout);
+	QVBoxLayout *getValuesVLayout = new QVBoxLayout(this);
+
+	// Power panel
+	powerPanel = new widgets::PowerPanel(
+		device_->voltage_signal(), device_->current_signal(), this);
+	getValuesVLayout->addWidget(powerPanel);
+	getValuesVLayout->addStretch(5);
+
+	getValuesGroupBox->setLayout(getValuesVLayout);
 
 	mainLayout->addWidget(setValuesGroupBox);
 	mainLayout->addWidget(getValuesGroupBox);

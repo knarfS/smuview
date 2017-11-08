@@ -44,11 +44,10 @@ public:
 	virtual ~SignalData() = default;
 
 public:
-	virtual vector< shared_ptr<Segment> > segments() const = 0;
-
 	virtual void clear() = 0;
 
-	virtual uint64_t max_sample_count() const = 0;
+	virtual size_t get_sample_count() const = 0;
+	virtual void push_sample(void *sample) = 0;
 };
 
 } // namespace data

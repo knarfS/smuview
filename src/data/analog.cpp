@@ -1,7 +1,6 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2012 Joel Holdsworth <joel@airwebreathe.org.uk>
  * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -20,64 +19,92 @@
 
 #include <cassert>
 
-#include "analog.hpp"
-#include "analogsegment.hpp"
+#include <QDebug>
 
-using std::deque;
-using std::max;
+#include "analog.hpp"
+
+using std::make_shared;
 using std::shared_ptr;
 using std::vector;
 
 namespace sv {
 namespace data {
 
-Analog::Analog() :
-	SignalData()
+Analog::Analog() : SignalData(),
+	sample_count_(0),
+	min_value_(std::numeric_limits<short>::min()),
+	max_value_(std::numeric_limits<short>::max())
 {
-}
-
-void Analog::push_segment(shared_ptr<AnalogSegment> &segment)
-{
-	segments_.push_front(segment);
-}
-
-const deque< shared_ptr<AnalogSegment> >& Analog::analog_segments() const
-{
-	return segments_;
-}
-
-vector< shared_ptr<Segment> > Analog::segments() const
-{
-	return vector< shared_ptr<Segment> >(
-		segments_.begin(), segments_.end());
+	data_ = make_shared<vector<double>>();
 }
 
 void Analog::clear()
 {
-	segments_.clear();
+	data_->clear();
+	sample_count_ = 0;
 
 	samples_cleared();
 }
 
-uint64_t Analog::max_sample_count() const
+size_t Analog::get_sample_count() const
 {
-	uint64_t l = 0;
-	for (const shared_ptr<AnalogSegment> s : segments_) {
-		assert(s);
-		l = max(l, s->get_sample_count());
-	}
-	return l;
+	return sample_count_;
 }
 
-void Analog::notify_samples_added(QObject* segment, uint64_t start_sample,
-	uint64_t end_sample)
+vector<double> Analog::get_samples(size_t start_sample, size_t end_sample) const
 {
-	samples_added(segment, start_sample, end_sample);
+	assert(start_sample = 0);
+	assert(start_sample < sample_count_);
+	assert(end_sample = 0);
+	assert(end_sample <= sample_count_);
+	assert(start_sample <= end_sample);
+
+	//lock_guard<recursive_mutex> lock(mutex_);
+
+	vector<double>::const_iterator first = data_->begin() + 100000;
+	vector<double>::const_iterator last = data_->begin() + 101000;
+
+	vector<double> newVec(first, last);
+	return newVec;
 }
 
-void Analog::notify_min_max_changed(float min, float max)
+double Analog::get_sample(size_t pos) const
 {
-	min_max_changed(min, max);
+	//assert(pos <= sample_count_);
+
+	if (pos < sample_count_)
+		return data_->at(pos);
+
+	return 0.;
+}
+
+void Analog::push_sample(void *sample)
+{
+ 	double dsample = (double) *(float*)sample;
+
+	last_value_ = dsample;
+	if (min_value_ > dsample)
+		min_value_ = dsample;
+	if (max_value_ < dsample)
+		max_value_ = dsample;
+
+	data_->push_back(dsample);
+	sample_count_++;
+}
+
+double Analog::last_value() const
+{
+	return last_value_;
+}
+
+double Analog::min_value() const
+{
+	return min_value_;
+}
+
+double Analog::max_value() const
+{
+	return max_value_;
 }
 
 } // namespace data
