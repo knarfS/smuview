@@ -86,11 +86,11 @@ void MeasureView::setup_ui()
 		device_->time_data(),
 		device_->measurement_signal()->analog_data());
 	plot = new widgets::Plot(curve_data, this);
-    plot->setIntervalLength(60);
-    plot->setPlotMode(widgets::Plot::PlotModes::Additive);
-    plot->setPlotInterval(1);
-    //connect( ui->actionConnect, SIGNAL(triggered()), ui->mainPlot, SLOT(start()) );
-    //connect( ui->actionDisconnect, SIGNAL(triggered()), ui->mainPlot, SLOT(stop()) );
+	plot->setIntervalLength(60);
+	plot->setPlotMode(widgets::Plot::PlotModes::Additive);
+	plot->setPlotInterval(1);
+	//connect( ui->actionConnect, SIGNAL(triggered()), ui->mainPlot, SLOT(start()) );
+	//connect( ui->actionDisconnect, SIGNAL(triggered()), ui->mainPlot, SLOT(stop()) );
 	mainLayout->addWidget(plot);
 	*/
 

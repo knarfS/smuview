@@ -120,11 +120,11 @@ void SinkView::setup_ui()
 		device_->time_data(),
 		device_->current_signal()->analog_data());
 	plot = new widgets::Plot(curve_data, this);
-    plot->setIntervalLength(10);
-    plot->setPlotMode(widgets::Plot::PlotModes::Additive);
-    plot->setPlotInterval(1);
-    //connect( ui->actionConnect, SIGNAL(triggered()), ui->mainPlot, SLOT(start()) );
-    //connect( ui->actionDisconnect, SIGNAL(triggered()), ui->mainPlot, SLOT(stop()) );
+	plot->setIntervalLength(10);
+	plot->setPlotMode(widgets::Plot::PlotModes::Additive);
+	plot->setPlotInterval(1);
+	//connect( ui->actionConnect, SIGNAL(triggered()), ui->mainPlot, SLOT(start()) );
+	//connect( ui->actionDisconnect, SIGNAL(triggered()), ui->mainPlot, SLOT(stop()) );
 	mainLayout->addWidget(plot);
 
 	// Spacer

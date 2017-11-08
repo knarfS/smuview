@@ -1,8 +1,0 @@
-libsigrok
-
-- why are packets of arachnid-labs-re-load-pro (edl), maynuo-m97 (edl) and
-	baylibre-acme (thermometer, powermeter) surrounded by SR_DF_FRAME_BEGIN +
-	SR_DF_FRAME_END. All other drivers containing frames are oscilloscopes.
-	That makes total sense for the oscilloscopes, but for the electronic loads,
-	that doesn't make any sense to me.
-	Can't say anything about the baylibre-acme.
