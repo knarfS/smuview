@@ -45,8 +45,8 @@ private:
 	double max_;
 	double steps_;
 
-    QDoubleSpinBox *doubleSpinBox;
-    QwtKnob *knob;
+	QDoubleSpinBox *doubleSpinBox;
+	QwtKnob *knob;
 	LcdDisplay *lcdDisplay;
 
 	void setup_ui();

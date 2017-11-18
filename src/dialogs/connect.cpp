@@ -162,13 +162,7 @@ void Connect::populate_drivers()
 	for (auto entry : device_manager_.context()->drivers()) {
 		auto name = entry.first;
 		auto driver = entry.second;
-		/**
-		 * We currently only support devices that can deliver
-		 * samples at a fixed samplerate i.e. oscilloscopes and
-		 * logic analysers.
-		 * @todo Add support for non-monotonic devices i.e. DMMs
-		 * and sensors.
-		 */
+
 		const auto keys = driver->config_keys();
 
 		bool supported_device = keys.count(ConfigKey::POWER_SUPPLY) |

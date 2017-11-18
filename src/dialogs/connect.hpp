@@ -43,18 +43,16 @@ namespace sigrok {
 class Driver;
 }
 
-namespace pv {
-namespace devices {
-class HardwareDevice;
-}
-}
-
 Q_DECLARE_METATYPE(shared_ptr<sigrok::Driver>);
 Q_DECLARE_METATYPE(shared_ptr<sv::devices::HardwareDevice>);
 
 namespace sv {
 
 class DeviceManager;
+
+namespace devices {
+class HardwareDevice;
+}
 
 namespace dialogs {
 
@@ -110,6 +108,7 @@ private:
 	QListWidget device_list_;
 
 	QDialogButtonBox button_box_;
+	
 };
 
 } // namespace dialogs

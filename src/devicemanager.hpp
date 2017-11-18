@@ -92,6 +92,7 @@ protected:
 	shared_ptr<sigrok::Context> context_;
 	list< shared_ptr<devices::HardwareDevice> > devices_;
 	list< shared_ptr<devices::HardwareDevice> > user_spec_devices_;
+
 };
 
 } // namespace sv

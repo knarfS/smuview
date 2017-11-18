@@ -90,9 +90,9 @@ void ValueControl::change_value(const double value)
 	knob->setValue(value);
 
 	connect(knob, SIGNAL(valueChanged(double)),
-		this, SLOT(on_value_changed(double)));
+		this, SLOT(on_value_changed(const double)));
 	connect(doubleSpinBox, SIGNAL(valueChanged(double)),
-		this, SLOT(on_value_changed(double)));
+		this, SLOT(on_value_changed(const double)));
 }
 
 void ValueControl::on_value_changed(const double value)
@@ -116,9 +116,9 @@ void ValueControl::on_value_changed(const double value)
 	Q_EMIT value_changed(value);
 
 	connect(knob, SIGNAL(valueChanged(double)),
-		this, SLOT(on_value_changed(double)));
+		this, SLOT(on_value_changed(const double)));
 	connect(doubleSpinBox, SIGNAL(valueChanged(double)),
-		this, SLOT(on_value_changed(double)));
+		this, SLOT(on_value_changed(const double)));
 }
 
 } // namespace widgets

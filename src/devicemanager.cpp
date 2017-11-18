@@ -234,12 +234,6 @@ DeviceManager::driver_scan(
 
 	assert(sr_driver);
 
-	/*
-	 * We currently only support devices that can deliver samples at
-	 * a fixed samplerate (i.e. oscilloscopes and logic analysers).
-	 *
-	 * @todo Add support for non-monotonic devices (DMMs, sensors, etc).
-	 */
 	const auto keys = sr_driver->config_keys();
 	bool supported_device = keys.count(sigrok::ConfigKey::POWER_SUPPLY) |
 		keys.count(sigrok::ConfigKey::ELECTRONIC_LOAD) |
