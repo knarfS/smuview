@@ -17,40 +17,61 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DATA_CURVEDATA_HPP
-#define DATA_CURVEDATA_HPP
+#ifndef VIEWS_SINKCONTROLVIEW_HPP
+#define VIEWS_SINKCONTROLVIEW_HPP
 
 #include <memory>
 
-#include <QPointer>
-#include <qwt_series_data.h>
+#include "src/views/baseview.hpp"
 
 using std::shared_ptr;
 
 namespace sv {
-namespace data {
 
-class Analog;
+class Session;
 
-class CurveData : public QwtSeriesData<QPointF>
+namespace devices {
+class HardwareDevice;
+}
+
+namespace widgets {
+class ControlButton;
+class ValueControl;
+}
+
+namespace views {
+
+class SinkControlView : public BaseView
 {
+	Q_OBJECT
 
 public:
-	CurveData(shared_ptr<Analog> x_signal_data,
-		shared_ptr<Analog> y_signal_data);
-
-	virtual QPointF sample( size_t i ) const;
-	virtual size_t size() const;
-
-	virtual QRectF boundingRect() const;
+	SinkControlView(Session& session,
+		std::shared_ptr< sv::devices::HardwareDevice > device,
+		QWidget* parent);
 
 private:
-	shared_ptr<Analog> x_signal_data_;
-	shared_ptr<Analog> y_signal_data_;
+	shared_ptr<devices::HardwareDevice> device_;
+
+	widgets::ControlButton *setEnableButton;
+	widgets::ValueControl *setValueControl;
+
+	void setup_ui();
+	void connect_signals();
+	void init_values();
+
+protected:
+
+public Q_SLOTS:
+
+private Q_SLOTS:
+	void on_value_changed(const double value);
+	void on_enabled_changed(const bool enabled);
 
 };
 
-} // namespace data
+} // namespace views
 } // namespace sv
 
-#endif // DATA_CURVEDATA_HPP
+#endif // VIEWS_SINKCONTROLVIEW_HPP
+

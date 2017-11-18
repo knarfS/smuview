@@ -17,40 +17,53 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DATA_CURVEDATA_HPP
-#define DATA_CURVEDATA_HPP
+#ifndef VIEWS_BASEVIEW_HPP
+#define VIEWS_BASEVIEW_HPP
 
-#include <memory>
-
-#include <QPointer>
-#include <qwt_series_data.h>
-
-using std::shared_ptr;
+#include <QSettings>
+#include <QWidget>
 
 namespace sv {
-namespace data {
 
-class Analog;
+class Session;
 
-class CurveData : public QwtSeriesData<QPointF>
+namespace views {
+
+enum ViewType {
+	ViewTypeMeasurementControl,
+	ViewTypeSinkControl,
+	ViewTypeSourceControl,
+	ViewTypeValuePanel,
+	ViewTypePowerPanel,
+	ViewTypeGraph
+};
+
+class BaseView : public QWidget
 {
-
-public:
-	CurveData(shared_ptr<Analog> x_signal_data,
-		shared_ptr<Analog> y_signal_data);
-
-	virtual QPointF sample( size_t i ) const;
-	virtual size_t size() const;
-
-	virtual QRectF boundingRect() const;
+	Q_OBJECT
 
 private:
-	shared_ptr<Analog> x_signal_data_;
-	shared_ptr<Analog> y_signal_data_;
+	static const int MaxViewAutoUpdateRate;
+
+public:
+	explicit BaseView(Session &session, QWidget *parent = nullptr);
+
+	Session& session();
+	const Session& session() const;
+
+	virtual void save_settings(QSettings &settings) const;
+	virtual void restore_settings(QSettings &settings);
+
+protected:
+	Session &session_;
+
+public Q_SLOTS:
+
+private Q_SLOTS:
 
 };
 
-} // namespace data
+} // namespace views
 } // namespace sv
 
-#endif // DATA_CURVEDATA_HPP
+#endif // VIEWS_BASEVIEW_HPP

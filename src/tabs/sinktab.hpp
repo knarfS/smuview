@@ -17,50 +17,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WIDGETS_CONTROLBUTTON_HPP
-#define WIDGETS_CONTROLBUTTON_HPP
+#ifndef TABS_SINKTAB_HPP
+#define TABS_SINKTAB_HPP
 
-#include <QPushButton>
+#include <memory>
+
+#include <QMainWindow>
+
+#include "src/devices/hardwaredevice.hpp"
+#include "src/tabs/devicetab.hpp"
+
+using std::shared_ptr;
 
 namespace sv {
-namespace widgets {
 
-class ControlButton : public QPushButton
+namespace tabs {
+
+class SinkTab : public DeviceTab
 {
     Q_OBJECT
 
 public:
-	ControlButton(bool readable, bool setable, QWidget *parent);
-
-	/*
-	enum State {
-		On,
-		Off,
-		Unknown
-	};
-	*/
+	SinkTab(Session &session,
+ 		shared_ptr<devices::HardwareDevice> device, QMainWindow *parent);
 
 private:
-	bool is_readable_;
-	bool is_setable_;
-	bool state_;
-
-	QIcon icon_red_;
-	QIcon icon_green_;
-	QIcon icon_grey_;
-
-	void setupUi();
+	void setup_ui();
 
 public Q_SLOTS:
-	void on_clicked();
-	void on_state_changed(const bool enabled);
 
-Q_SIGNALS:
-	void state_changed(const bool enabled);
 };
 
-} // namespace widgets
+} // namespace tabs
 } // namespace sv
 
-#endif // WIDGETS_CONTROLBUTTON_HPP
-
+#endif // TABS_SINKTAB_HPP

@@ -5,6 +5,9 @@ ToDo
 
 - Remove "hp3478a" from gpib_libgpib_name_ and list all available names.
 - Use util::Timestamp?
+- last_value_, min_value_, max_value_ -> std::atomic!
+- License headers are not the same
+- Plot: Sampling
 
 ------------------------
 
@@ -35,12 +38,27 @@ libsigrok
 - Change key naming (see load + psu wiki pages)
 - Provied SR_DF_META packets for the Re:load Pro and the HP3478A for changed values/states (e.g. output switched on/off, ovp, otp, ...)
 - Re:load Pro: when acquisition is running and we send a command (e.g. "set xxx"), there are 2 listeners (1st send_cmd() (<-serial_write_blocking) and 2nd handle_new_data() (<-serial_read_nonblocking))
+	- Make devc->acquisition_running thread safe, bool is NOT thread safe!
 - Re:load Pro: when 2 responses are send fast afer each other, serial_read_nonblocking reads them both and the \r\n gets in beetween
 - Re:load Pro: sometimes only a ^M is send from the rlp
 - Re:load Pro: Sometimes the responses are mixed up (2 listeners??, Re:load Pro not keeping up??)
 - Re:load Pro: how to clear otp_active and uvc_active?
 - hp3478a: device isn't closed after stopping acquisition
 - scpi-pps: protocol.c -> scpi_pps_receive_data() uses double, but output (e.g. analog) and DF_ANALOG receivers use hardcoded float. Using sr_analog_encoding.unitsize and .is_float to define the datatype (and size) (.unitsize = sizeof(double) (or by lurchi_: .unitsize=8 + float is double)) in the receiver functions!
+- Tests for convertion (st_ascii_tod) for locale "bugs"
+- use mutex around ibwrt() and ibrd() (scpi_libgpib.c) per device, so they are thread safe
+- use mutex around scpi_cmd_resp() and scpi_cmd() (helpers.c), so when a request has a response, they are thread safe.
+- dev_acquisition_start() has to do first measurement (3478a, scpi-pps, reload(?)), because 1. DF_HEADER, 2. trigger measurement
+	- If not: 3378a use scpi_cmd_resp() for use of mutex (wrt+read);
+- Can't add 2x scpi_libgpib devices: scpi_libgpib.c -> scpi_gpib_source_add() calls session.c -> sr_session_source_add() with fd = -1. This calls session.c -> sr_session_fd_source_add() with key = GINT_TO_POINTER(fd) and finally throws an error in session.c -> sr_session_source_add_internal() because "Event source with key %p already exists."
+- scpi-pps's have channel groups but options/keys/_lists_ (voltage_target, ...) apply to device
+- scpi-pps: when in acquisition send one write ":MEAS:VOLT?;:MEAS:CURR?" instead of 2 writes when possible
+- scpi-pps: add otp/ovp/ocp to pps_profiles[] (or to channel(group)) for HP 663xx
+- Mutex of scpi/helpers.c:
+	- find all ocurrence of (sr_scpi_send_variadic(), sr_scpi_send(), scpi_cmd(), scpi_cmd_resp(), rigol_ds_config_set(), ....) and check if thread safe
+	- Any functions missing, that need the mutex
+	- Valid for SCPI over something something?
+- Mutex of scpi_libgpib: Add to other transport variants (serial, tcp, ...), if so is the mutex in scpi/helpers.c enough?
 
 Done
 ----

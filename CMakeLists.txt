@@ -149,17 +149,22 @@ set(smuview_SOURCES
   src/devices/device.cpp
   src/devices/hardwaredevice.cpp
   src/dialogs/connect.cpp
+  src/tabs/basetab.cpp
+  src/tabs/devicetab.cpp
+  src/tabs/measurementtab.cpp
+  src/tabs/sinktab.cpp
+  src/tabs/sourcetab.cpp
   #src/toolbars/maintoolbar.cpp
-  src/views/measureview.cpp
-  src/views/sourceview.cpp
-  src/views/viewbase.cpp
+  src/views/baseview.cpp
+  src/views/plotview.cpp
+  src/views/powerpanelview.cpp
+  src/views/sinkcontrolview.cpp
+  src/views/sourcecontrolview.cpp
   src/widgets/controlbutton.cpp
   src/widgets/lcddisplay.cpp
   src/widgets/plot.cpp
-  src/widgets/powerpanel.cpp
   src/widgets/singlevaluepanel.cpp
   src/widgets/valuecontrol.cpp
-  src/views/sinkview.cpp
 )
 
 if(ENABLE_SIGNALS)

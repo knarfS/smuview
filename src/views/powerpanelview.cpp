@@ -3,9 +3,9 @@
  *
  * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
  *
- * This program is free software: you can redistribute it and/or modify
+ * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -14,43 +14,45 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <QApplication>
 #include <QDateTime>
-#include <QDebug>
+#include <QHBoxLayout>
 #include <QVBoxLayout>
 
-#include "powerpanel.hpp"
-#include "src/data/signalbase.hpp"
+#include "powerpanelview.hpp"
+#include "src/session.hpp"
 #include "src/data/analog.hpp"
+#include "src/data/signalbase.hpp"
+#include "src/widgets/lcddisplay.hpp"
 
 namespace sv {
-namespace widgets {
+namespace views {
 
-PowerPanel::PowerPanel(shared_ptr<data::SignalBase> voltage_signal,
-		shared_ptr<data::SignalBase> current_signal,
-		QWidget *parent) :
-	QWidget(parent),
+PowerPanelView::PowerPanelView(Session &session,
+	shared_ptr<data::SignalBase> voltage_signal,
+	shared_ptr<data::SignalBase> current_signal,
+	QWidget *parent) :
+		BaseView(session, parent),
 	voltage_signal_(voltage_signal),
 	current_signal_(current_signal)
 {
 	setup_ui();
+	connect_signals();
 	reset_displays();
 
 	timer_ = new QTimer(this);
 	init_timer();
-
-	connect(resetButton, SIGNAL(clicked(bool)), this, SLOT(on_reset()));
 }
 
-PowerPanel::~PowerPanel()
+PowerPanelView::~PowerPanelView()
 {
 	stop_timer();
 }
 
-void PowerPanel::setup_ui()
+void PowerPanelView::setup_ui()
 {
 	QVBoxLayout *getValuesVLayout = new QVBoxLayout(this);
 
@@ -87,7 +89,12 @@ void PowerPanel::setup_ui()
 	getValuesVLayout->addStretch(4);
 }
 
-void PowerPanel::reset_displays()
+void PowerPanelView::connect_signals()
+{
+	connect(resetButton, SIGNAL(clicked(bool)), this, SLOT(on_reset()));
+}
+
+void PowerPanelView::reset_displays()
 {
 	voltageDisplay->reset_value();
 	currentDisplay->reset_value();
@@ -97,7 +104,7 @@ void PowerPanel::reset_displays()
 	wattHourDisplay->reset_value();
 }
 
-void PowerPanel::init_timer()
+void PowerPanelView::init_timer()
 {
 	if (!voltage_signal_ && !current_signal_)
 		return;
@@ -107,28 +114,28 @@ void PowerPanel::init_timer()
 	actual_amp_hours_ = 0;
 	actual_watt_hours_ = 0;
 
-    connect(timer_, SIGNAL(timeout()), this, SLOT(on_update()));
-    timer_->start(250);
+	connect(timer_, SIGNAL(timeout()), this, SLOT(on_update()));
+	timer_->start(250);
 }
 
-void PowerPanel::stop_timer()
+void PowerPanelView::stop_timer()
 {
 	if (!timer_->isActive())
 		return;
 
-    timer_->stop();
-    disconnect(timer_, SIGNAL(timeout()), this, SLOT(on_update()));
+	timer_->stop();
+	disconnect(timer_, SIGNAL(timeout()), this, SLOT(on_update()));
 
 	reset_displays();
 }
 
-void PowerPanel::on_reset()
+void PowerPanelView::on_reset()
 {
 	stop_timer();
 	init_timer();
 }
 
-void PowerPanel::on_update()
+void PowerPanelView::on_update()
 {
 	if (voltage_signal_->analog_data()->get_sample_count() == 0)
 		return;
@@ -159,5 +166,6 @@ void PowerPanel::on_update()
 	wattHourDisplay->set_value(actual_watt_hours_);
 }
 
-} // namespace widgets
+} // namespace views
 } // namespace sv
+

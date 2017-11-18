@@ -42,45 +42,44 @@ public:
 	Plot(data::CurveData *curve_data, QWidget * = NULL);
 	virtual ~Plot();
 
-	enum PlotModes
-	{
-	Additive = 0,
-	Oscilloscope,
-	Rolling,
-	NumItems
+	enum PlotModes {
+		Additive = 0,
+		Oscilloscope,
+		Rolling,
+		NumItems
 	};
 
 	virtual void replot();
-	virtual bool eventFilter( QObject *, QEvent * );
-	void setPlotInterval( int interval ) { m_plotInterval = interval; }
-	void setPlotMode( Plot::PlotModes mode ) { m_plotMode = mode; }
+	virtual bool eventFilter(QObject *, QEvent *);
+	void setPlotInterval(int interval) { plot_interval_ = interval; }
+	void setPlotMode(Plot::PlotModes mode) { plot_mode_ = mode; }
 
 public Q_SLOTS:
 	void start();
 	void stop();
-	void setIntervalLength( double );
+	void setIntervalLength(double interval);
 
 protected:
-	virtual void showEvent( QShowEvent * );
-	virtual void resizeEvent( QResizeEvent * );
-	virtual void timerEvent( QTimerEvent * );
+	virtual void showEvent(QShowEvent *);
+	virtual void resizeEvent(QResizeEvent *);
+	virtual void timerEvent(QTimerEvent *);
 
 private:
 	void updateCurve();
 	void incrementInterval();
 
 	data::CurveData *curve_data_;
-	QwtPlotDirectPainter *m_valueDirectPainter;
-	QwtPlotCurve *m_valueCurve;
-	int m_paintedPoints;
+	QwtPlotDirectPainter *valueDirectPainter_;
+	QwtPlotCurve *value_curve_;
+	int painted_points_;
 
-	QwtInterval m_interval;
-	double m_intervalLength;
-	int m_timerId;
-	int m_plotInterval;
-	PlotModes m_plotMode;
+	QwtInterval interval_;
+	double interval_length_;
+	int timer_id_;
+	int plot_interval_;
+	PlotModes plot_mode_;
 
-	QwtSystemClock m_clock;
+	QwtSystemClock clock_;
 };
 
 } // namespace widgets

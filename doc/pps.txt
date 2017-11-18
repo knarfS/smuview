@@ -166,3 +166,43 @@ SR_CONF_OVER_VOLTAGE_PROTECTION_ACTIVE | SR_CONF_GET,
 SR_CONF_OVER_VOLTAGE_PROTECTION_THRESHOLD | SR_CONF_GET | SR_CONF_SET | SR_CONF_LIST,
 SR_CONF_OVER_TEMPERATURE_PROTECTION | SR_CONF_GET | SR_CONF_SET,
 
+
+
+
+SCPI-PPS
+========
+
+Agilent N5763A
+--------------
+Multi Commands: Agilent-N5700.pdf -> p.59
+
+Chroma 61604
+------------
+Multi Commands: Chroma-61500.pdf -> p.8-4
+
+Chroma 62000 series
+-------------------
+Multi Commands: Chroma-62000H.pdf -> chpt 5.3.5.8
+
+HP 6633A
+--------
+Multi Commands: NOT working! Returns only last requested value!
+
+HP 6632B
+--------
+Multi Commands: Working! Return: ret1;ret2
+
+Rigol DP800 series
+------------------
+(DP821A, DP831A, DP832, DP832A)
+
+Multi Commands: Rigol-DP800_Prog.pdf -> ??? nothing found
+
+Philips/Fluke PM2800 series
+---------------------------
+Multi Commands: Philips-PM2800_Ref.pdf -> p.1-68, p.1-84
+
+Rohde & Schwarz HMC8043
+-----------------------
+Multi Commands:
+

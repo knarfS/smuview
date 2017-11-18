@@ -17,40 +17,40 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DATA_CURVEDATA_HPP
-#define DATA_CURVEDATA_HPP
-
-#include <memory>
-
-#include <QPointer>
-#include <qwt_series_data.h>
-
-using std::shared_ptr;
+#include "baseview.hpp"
+#include "src/session.hpp"
 
 namespace sv {
-namespace data {
+namespace views {
 
-class Analog;
+const int BaseView::MaxViewAutoUpdateRate = 25; // No more than 25 Hz
 
-class CurveData : public QwtSeriesData<QPointF>
+BaseView::BaseView(Session &session, QWidget *parent) :
+		QWidget(parent),
+	session_(session)
 {
+	(void)parent;
+}
 
-public:
-	CurveData(shared_ptr<Analog> x_signal_data,
-		shared_ptr<Analog> y_signal_data);
+Session& BaseView::session()
+{
+	return session_;
+}
 
-	virtual QPointF sample( size_t i ) const;
-	virtual size_t size() const;
+const Session& BaseView::session() const
+{
+	return session_;
+}
 
-	virtual QRectF boundingRect() const;
+void BaseView::save_settings(QSettings &settings) const
+{
+	(void)settings;
+}
 
-private:
-	shared_ptr<Analog> x_signal_data_;
-	shared_ptr<Analog> y_signal_data_;
+void BaseView::restore_settings(QSettings &settings)
+{
+	(void)settings;
+}
 
-};
-
-} // namespace data
+} // namespace views
 } // namespace sv
-
-#endif // DATA_CURVEDATA_HPP

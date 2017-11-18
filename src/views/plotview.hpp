@@ -3,9 +3,9 @@
  *
  * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
  *
- * This program is free software: you can redistribute it and/or modify
+ * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -14,50 +14,62 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VIEWS_MEASUREVIEW_HPP
-#define VIEWS_MEASUREVIEW_HPP
+#ifndef VIEWS_PLOTVIEW_HPP
+#define VIEWS_PLOTVIEW_HPP
 
 #include <memory>
 
-#include <QWidget>
-
-#include "src/devices/hardwaredevice.hpp"
+#include "src/views/baseview.hpp"
 
 using std::shared_ptr;
 
 namespace sv {
 
+class Session;
+
+namespace data {
+class Analog;
+}
+
 namespace widgets {
-class SingleValuePanel;
 class Plot;
 }
 
 namespace views {
 
-class MeasureView : public QWidget
+class PlotView : public BaseView
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-	MeasureView(shared_ptr<devices::HardwareDevice> device, QWidget *parent);
+	PlotView(Session& session,
+		shared_ptr<data::Analog> x_signal_data,
+		shared_ptr<data::Analog> y_signal_data,
+		QWidget* parent);
 
 private:
-	shared_ptr<devices::HardwareDevice> device_;
-	uint digits_;
-	QString unit_;
+	shared_ptr<data::Analog> x_signal_data_;
+	shared_ptr<data::Analog> y_signal_data_;
 
-	widgets::SingleValuePanel *singleValuePanel;
 	widgets::Plot *plot;
 
-	void init_values();
 	void setup_ui();
+	void connect_signals();
+	void init_values();
+
+protected:
+
+public Q_SLOTS:
+
+private Q_SLOTS:
 
 };
 
 } // namespace views
 } // namespace sv
 
-#endif // VIEWS_MEASUREVIEW_HPP
+#endif // VIEWS_PLOTVIEW_HPP
+

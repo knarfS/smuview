@@ -20,6 +20,7 @@
 #include <memory>
 
 #include <QApplication>
+#include <QDebug>
 #include <QMessageBox>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -29,10 +30,10 @@
 #include "session.hpp"
 #include "devices/hardwaredevice.hpp"
 #include "dialogs/connect.hpp"
-#include "src/views/viewbase.hpp"
-#include "src/views/measureview.hpp"
-#include "src/views/sinkview.hpp"
-#include "src/views/sourceview.hpp"
+#include "src/tabs/basetab.hpp"
+#include "src/tabs/measurementtab.hpp"
+#include "src/tabs/sinktab.hpp"
+#include "src/tabs/sourcetab.hpp"
 
 using std::make_shared;
 
@@ -52,8 +53,8 @@ MainWindow::MainWindow(DeviceManager &device_manager, QWidget *parent) :
     setup_ui();
 
 	// Actions
-	connect(actionAddView, SIGNAL(triggered(bool)),
-		this, SLOT(on_actionAddView_triggered()));
+	connect(actionAddTab, SIGNAL(triggered(bool)),
+		this, SLOT(on_actionAddTab_triggered()));
 	connect(actionRun, SIGNAL(triggered(bool)),
 		this, SLOT(on_actionRun_triggered()));
 }
@@ -84,10 +85,11 @@ void MainWindow::init_default_session()
 	init_session();
 
 	for (auto user_device : device_manager_.user_spec_devices())
-		add_view(user_device);
+		add_tab(user_device);
 }
 
-void MainWindow::init_session_with_file(string open_file_name, string open_file_format)
+void MainWindow::init_session_with_file(
+	string open_file_name, string open_file_format)
 {
 	init_session();
 
@@ -147,6 +149,7 @@ void MainWindow::remove_session()
 	// event loop. We need to have this executed immediately or else it will
 	// be dismissed since the session object will be deleted by the time we
 	// leave this method and the event loop gets a chance to run again.
+	qWarning() << "remove_session(): stop_capture";
 	session_->stop_capture();
 	QApplication::processEvents();
 
@@ -160,19 +163,20 @@ void MainWindow::remove_session()
 	//	return s == session_; });
 }
 
-shared_ptr<devices::Device> MainWindow::add_view(
+shared_ptr<devices::Device> MainWindow::add_tab(
 	shared_ptr<devices::HardwareDevice> device)
 {
-	views::ViewType type;
-	QString title = QString::fromStdString(device->sr_hardware_device()->model());
+	tabs::TabType type;
+	QString title = QString::fromStdString(
+		device->sr_hardware_device()->model());
 
 	const auto keys = device->sr_hardware_device()->driver()->config_keys();
 	if (keys.count(sigrok::ConfigKey::POWER_SUPPLY))
-		type = views::ViewTypeSource;
+		type = tabs::TabTypeSource;
 	else if (keys.count(sigrok::ConfigKey::ELECTRONIC_LOAD))
-		type = views::ViewTypeSink;
+		type = tabs::TabTypeSink;
 	else
-		type = views::ViewTypeMeasurement;
+		type = tabs::TabTypeMeasurement;
 
 	QMainWindow *window = new QMainWindow();
 	window->setWindowFlags(Qt::Widget);  // Remove Qt::Window flag
@@ -182,33 +186,31 @@ shared_ptr<devices::Device> MainWindow::add_view(
 
 	window->setDockNestingEnabled(true);
 
-	/*
-	shared_ptr<views::ViewBase> main_view =
-		add_view(name, views::ViewTypeTrace, *session_);
-	*/
-
 	session_->add_device(device);
 	device_windows_[device] = window;
 	last_focused_device_ = device;
 
-	if (type == views::ViewTypeSource) {
-		views::SourceView *sourceViewTab = new views::SourceView(device, window);
-		window->setCentralWidget(sourceViewTab);
-	} else if (type == views::ViewTypeSink) {
-		views::SinkView *sinkViewTab = new views::SinkView(device, window);
-		window->setCentralWidget(sinkViewTab);
-	} else if (type == views::ViewTypeMeasurement) {
-		views::MeasureView *measureViewTab = new views::MeasureView(device, window);
-		window->setCentralWidget(measureViewTab);
-	} else if (type == views::ViewTypeGraph) {
+	if (type == tabs::TabTypeSource) {
+		tabs::SourceTab *sourceTab =
+			new tabs::SourceTab(*session_, device, window);
+		window->setCentralWidget(sourceTab);
+	} else if (type == tabs::TabTypeSink) {
+		tabs::SinkTab *sinkTab =
+			new tabs::SinkTab(*session_, device, window);
+		window->setCentralWidget(sinkTab);
+	} else if (type == tabs::TabTypeMeasurement) {
+		tabs::MeasurementTab *measurementTab =
+			new tabs::MeasurementTab(*session_, device, window);
+		window->setCentralWidget(measurementTab);
+	} else if (type == tabs::TabTypeViews) {
 	}
 
 	return device;
 }
 
-void MainWindow::remove_view(shared_ptr<devices::HardwareDevice> device)
+void MainWindow::remove_tab(shared_ptr<devices::HardwareDevice> device)
 {
-	device = device;
+	(shared_ptr<devices::HardwareDevice>)device;
 }
 
 
@@ -216,28 +218,41 @@ void MainWindow::setup_ui()
 {
 	this->resize(724, 444);
 
-	QIcon icon;
-	icon.addFile(QStringLiteral(":/icons/smuview.ico"), QSize(), QIcon::Normal, QIcon::Off);
-	setWindowIcon(icon);
+	QIcon mainIcon;
+	mainIcon.addFile(QStringLiteral(":/icons/smuview.ico"),
+		QSize(), QIcon::Normal, QIcon::Off);
+	setWindowIcon(mainIcon);
+
 	actionExit = new QAction(this);
-	QIcon icon1;
-	icon1.addFile(QStringLiteral(":/icons/application-exit.png"), QSize(), QIcon::Normal, QIcon::Off);
-	actionExit->setIcon(icon1);
+	QIcon exitIcon;
+	exitIcon.addFile(QStringLiteral(":/icons/application-exit.png"),
+		QSize(), QIcon::Normal, QIcon::Off);
+	actionExit->setIcon(exitIcon);
+
 	actionAbout = new QAction(this);
-	QIcon icon2;
-	icon2.addFile(QStringLiteral(":/icons/information.svg"), QSize(), QIcon::Normal, QIcon::Off);
-	actionAbout->setIcon(icon2);
+	QIcon aboutIcon;
+	aboutIcon.addFile(QStringLiteral(":/icons/information.svg"),
+		QSize(), QIcon::Normal, QIcon::Off);
+	actionAbout->setIcon(aboutIcon);
+
 	actionRun = new QAction(this);
-	QIcon icon3;
-	icon3.addFile(QStringLiteral(":/icons/status-red.svg"), QSize(), QIcon::Normal, QIcon::Off);
-	icon3.addFile(QStringLiteral(":/icons/status-green.svg"), QSize(), QIcon::Normal, QIcon::On);
-	icon3.addFile(QStringLiteral(":/icons/status-grey.svg"), QSize(), QIcon::Disabled, QIcon::Off);
-	icon3.addFile(QStringLiteral(":/icons/status-grey.svg"), QSize(), QIcon::Disabled, QIcon::On);
-	actionRun->setIcon(icon3);
-	actionAddView = new QAction(this);
-	QIcon icon4;
-	icon4.addFile(QStringLiteral(":/icons/window-new.png"), QSize(), QIcon::Normal, QIcon::Off);
-	actionAddView->setIcon(icon4);
+	QIcon runIcon;
+	runIcon.addFile(QStringLiteral(":/icons/status-red.svg"),
+		QSize(), QIcon::Normal, QIcon::Off);
+	runIcon.addFile(QStringLiteral(":/icons/status-green.svg"),
+		QSize(), QIcon::Normal, QIcon::On);
+	runIcon.addFile(QStringLiteral(":/icons/status-grey.svg"),
+		QSize(), QIcon::Disabled, QIcon::Off);
+	runIcon.addFile(QStringLiteral(":/icons/status-grey.svg"),
+		QSize(), QIcon::Disabled, QIcon::On);
+	actionRun->setIcon(runIcon);
+
+	actionAddTab = new QAction(this);
+	QIcon tabIcon;
+	tabIcon.addFile(QStringLiteral(":/icons/window-new.png"),
+		QSize(), QIcon::Normal, QIcon::Off);
+	actionAddTab->setIcon(tabIcon);
+
 	centralWidget = new QWidget(this);
 	QHBoxLayout *horizontalLayout = new QHBoxLayout(centralWidget);
 	horizontalLayout->setSpacing(2);
@@ -254,7 +269,7 @@ void MainWindow::setup_ui()
 	statusBar = new QStatusBar(this);
 	this->setStatusBar(statusBar);
 
-	mainToolBar->addAction(actionAddView);
+	mainToolBar->addAction(actionAddTab);
 	mainToolBar->addAction(actionRun);
 	mainToolBar->addSeparator();
 	mainToolBar->addAction(actionAbout);
@@ -279,9 +294,9 @@ void MainWindow::retranslate_ui()
 #ifndef QT_NO_TOOLTIP
 	actionRun->setToolTip(QApplication::translate("SmuView", "Run/Stop", Q_NULLPTR));
 #endif // QT_NO_TOOLTIP
-	actionAddView->setText(QApplication::translate("SmuView", "Add View", Q_NULLPTR));
+	actionAddTab->setText(QApplication::translate("SmuView", "Add Tab", Q_NULLPTR));
 #ifndef QT_NO_TOOLTIP
-	actionAddView->setToolTip(QApplication::translate("SmuView", "Add View", Q_NULLPTR));
+	actionAddTab->setToolTip(QApplication::translate("SmuView", "Add Tab", Q_NULLPTR));
 #endif // QT_NO_TOOLTIP
 }
 
@@ -312,15 +327,15 @@ void MainWindow::on_capture_state_changed(int)
 		tr("Run") : tr("Stop"));
 }
 
-void MainWindow::on_actionAddView_triggered()
+void MainWindow::on_actionAddTab_triggered()
 {
 	// Stop any currently running capture session
-	session_->stop_capture();
+	//session_->stop_capture();
 
 	dialogs::Connect dlg(this, device_manager_);
 
 	if (dlg.exec())
-		add_view(dlg.get_selected_device());
+		add_tab(dlg.get_selected_device());
 }
 
 void MainWindow::on_actionRun_triggered()
@@ -332,10 +347,10 @@ void MainWindow::on_actionRun_triggered()
 		break;
 	case Session::AwaitingTrigger:
 	case Session::Running:
+		qWarning() << "on_actionRun_triggered(): stop_capture";
 		session_->stop_capture();
 		break;
 	}
 }
 
 } // namespace sv
-

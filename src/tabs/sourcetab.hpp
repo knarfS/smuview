@@ -17,52 +17,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VIEWS_SINKVIEW_HPP
-#define VIEWS_SINKVIEW_HPP
+#ifndef TABS_SOURCETAB_HPP
+#define TABS_SOURCETAB_HPP
 
 #include <memory>
 
-#include <QWidget>
+#include <QMainWindow>
 
 #include "src/devices/hardwaredevice.hpp"
+#include "src/tabs/devicetab.hpp"
 
 using std::shared_ptr;
 
 namespace sv {
 
-namespace widgets {
-class ControlButton;
-class Plot;
-class PowerPanel;
-class ValueControl;
-}
+namespace tabs {
 
-namespace views {
-
-class SinkView : public QWidget
+class SourceTab : public DeviceTab
 {
     Q_OBJECT
 
 public:
-	SinkView(shared_ptr<devices::HardwareDevice> device, QWidget *parent);
+	SourceTab(Session &session,
+ 		shared_ptr<devices::HardwareDevice> device, QMainWindow *parent);
 
 private:
-	shared_ptr<devices::HardwareDevice> device_;
-
-	widgets::ControlButton *setEnableButton;
-	widgets::ValueControl *setValueControl;
-	widgets::PowerPanel *powerPanel;
-	widgets::Plot *plot;
-
-	void init_values();
 	void setup_ui();
 
 public Q_SLOTS:
-	void on_value_changed(const double value);
-	void on_enabled_changed(const bool enabled);
+
 };
 
-} // namespace views
+} // namespace tabs
 } // namespace sv
 
-#endif // VIEWS_SINKVIEW_HPP
+#endif // TABS_SOURCETAB_HPP

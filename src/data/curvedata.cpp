@@ -31,18 +31,6 @@ CurveData::CurveData(shared_ptr<Analog> x_signal_data,
 {
 }
 
-/*
-const shared_ptr<Analog> CurveData::values() const
-{
-	return signal_data_;
-}
-
-shared_ptr<Analog> CurveData::values()
-{
-	return signal_data_;
-}
-*/
-
 QPointF CurveData::sample(size_t i) const
 {
 	//signal_data_->lock();
@@ -58,7 +46,13 @@ QPointF CurveData::sample(size_t i) const
 
 size_t CurveData::size() const
 {
-	return x_signal_data_->get_sample_count();
+	// TODO: Synchronize x/y sample data, so no compare is needed
+	size_t x_size = x_signal_data_->get_sample_count();
+	size_t y_size = y_signal_data_->get_sample_count();
+	if (x_size < y_size)
+		return x_size;
+	else
+		return y_size;
 }
 
 QRectF CurveData::boundingRect() const

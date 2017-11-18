@@ -17,50 +17,48 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WIDGETS_CONTROLBUTTON_HPP
-#define WIDGETS_CONTROLBUTTON_HPP
+#ifndef TABS_MEASUREMENTTAB_HPP
+#define TABS_MEASUREMENTTAB_HPP
 
-#include <QPushButton>
+#include <memory>
+
+#include <QMainWindow>
+
+#include "src/devices/hardwaredevice.hpp"
+#include "src/tabs/devicetab.hpp"
+
+using std::shared_ptr;
 
 namespace sv {
-namespace widgets {
 
-class ControlButton : public QPushButton
+namespace widgets {
+class SingleValuePanel;
+class Plot;
+}
+
+namespace tabs {
+
+class MeasurementTab : public DeviceTab
 {
     Q_OBJECT
 
 public:
-	ControlButton(bool readable, bool setable, QWidget *parent);
-
-	/*
-	enum State {
-		On,
-		Off,
-		Unknown
-	};
-	*/
+	MeasurementTab(Session &session,
+ 		shared_ptr<devices::HardwareDevice> device, QMainWindow *parent);
 
 private:
-	bool is_readable_;
-	bool is_setable_;
-	bool state_;
+	uint digits_;
+	QString unit_;
 
-	QIcon icon_red_;
-	QIcon icon_green_;
-	QIcon icon_grey_;
+	widgets::SingleValuePanel *singleValuePanel;
+	widgets::Plot *plot;
 
-	void setupUi();
+	void init_values();
+	void setup_ui();
 
-public Q_SLOTS:
-	void on_clicked();
-	void on_state_changed(const bool enabled);
-
-Q_SIGNALS:
-	void state_changed(const bool enabled);
 };
 
-} // namespace widgets
+} // namespace tabs
 } // namespace sv
 
-#endif // WIDGETS_CONTROLBUTTON_HPP
-
+#endif // TABS_MEASUREMENTTAB_HPP

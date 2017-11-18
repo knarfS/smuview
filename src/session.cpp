@@ -74,7 +74,7 @@ void Session::add_device(shared_ptr<devices::HardwareDevice> device)
 	assert(device);
 
 	// Ensure we are not capturing before setting the device
-	stop_capture();
+	//stop_capture();
 
 	// Remove all stored data
 	/*
@@ -94,17 +94,14 @@ void Session::add_device(shared_ptr<devices::HardwareDevice> device)
 	signals_changed();
 	*/
 
-	sr_session_->add_device(device->sr_device());
-
-	devices_.push_back(device);
-	//device_ = move(device);
-
 	try {
 		device->open();
 	} catch (const QString &e) {
 		qWarning() << e;
 		device.reset();
 	}
+
+	sr_session_->add_device(device->sr_device());
 
 	if (device->sr_device()) {
 		sr_session_->add_datafeed_callback([=]
@@ -114,6 +111,10 @@ void Session::add_device(shared_ptr<devices::HardwareDevice> device)
 
 		device->update_signals();
 	}
+
+	devices_.push_back(device);
+	//device_ = move(device);
+
 
 	//device_changed();
 }

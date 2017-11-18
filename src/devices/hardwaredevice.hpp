@@ -104,20 +104,22 @@ public:
 	shared_ptr<data::SignalBase> measurement_signal() const;
 	shared_ptr<data::Analog> time_data() const;
 
-	bool is_enable_getable();
-	bool is_enable_setable();
-	bool get_enabled();
+	void get_all_config_check();
+
+	bool is_enable_getable() const;
+	bool is_enable_setable() const;
+	bool get_enabled() const;
 	void set_enable(const bool enable);
 
-	bool is_voltage_target_getable();
-	bool is_voltage_target_setable();
-	double get_voltage_target();
+	bool is_voltage_target_getable() const;
+	bool is_voltage_target_setable() const;
+	double get_voltage_target() const;
 	void set_voltage_target(const double value);
 	void list_voltage_target(double &min, double &max, double &step);
 
-	bool is_current_limit_getable();
-	bool is_current_limit_setable();
-	double get_current_limit();
+	bool is_current_limit_getable() const;
+	bool is_current_limit_setable() const;
+	double get_current_limit() const;
 	void set_current_limit(const double value);
 	void list_current_limit(double &min, double &max, double &step);
 

@@ -70,9 +70,15 @@ HardwareDevice::HardwareDevice(const shared_ptr<sigrok::Context> &sr_context,
 
 	vector<shared_ptr<sigrok::Channel>> sr_channels;
 	if (type_ == POWER_SUPPLY) {
-		// TODO: Multi channel PSU
-		sr_configurable_ = sr_device_;
-		sr_channels = sr_device_->channels();
+		// TODO: Handle all channel groups of a multi channel PSU
+		if (sr_device_->channel_groups().size() > 0) {
+			sr_configurable_ = sr_device_->channel_groups()["1"];
+			sr_channels = sr_device_->channel_groups()["1"]->channels();
+		}
+		else {
+			sr_configurable_ = sr_device_;
+			sr_channels = sr_device_->channels();
+		}
 	}
 	else if (type_ == ELECTRONIC_LOAD) {
 		sr_configurable_ = sr_device_->channel_groups()["1"];
@@ -192,19 +198,23 @@ shared_ptr<data::Analog> HardwareDevice::time_data() const
 	return time_data_;
 }
 
-bool HardwareDevice::is_enable_getable()
+void HardwareDevice::get_all_config_check()
+{
+}
+
+bool HardwareDevice::is_enable_getable() const
 {
 	return sr_configurable_->config_check(
 		sigrok::ConfigKey::ENABLED, sigrok::Capability::GET);
 }
 
-bool HardwareDevice::is_enable_setable()
+bool HardwareDevice::is_enable_setable() const
 {
 	return sr_configurable_->config_check(
 		sigrok::ConfigKey::ENABLED, sigrok::Capability::SET);
 }
 
-bool HardwareDevice::get_enabled()
+bool HardwareDevice::get_enabled() const
 {
 	// TODO: check if getable
 
@@ -234,19 +244,19 @@ void HardwareDevice::set_enable(const bool enable)
 }
 
 
-bool HardwareDevice::is_voltage_target_getable()
+bool HardwareDevice::is_voltage_target_getable() const
 {
 	return sr_configurable_->config_check(
 		sigrok::ConfigKey::VOLTAGE_TARGET, sigrok::Capability::GET);
 }
 
-bool HardwareDevice::is_voltage_target_setable()
+bool HardwareDevice::is_voltage_target_setable() const
 {
 	return sr_configurable_->config_check(
 		sigrok::ConfigKey::VOLTAGE_TARGET, sigrok::Capability::SET);
 }
 
-double HardwareDevice::get_voltage_target()
+double HardwareDevice::get_voltage_target() const
 {
 	// TODO: check if getable
 
@@ -288,19 +298,19 @@ void HardwareDevice::list_voltage_target(double &min, double &max, double &step)
 }
 
 
-bool HardwareDevice::is_current_limit_getable()
+bool HardwareDevice::is_current_limit_getable() const
 {
 	return sr_configurable_->config_check(
 		sigrok::ConfigKey::CURRENT_LIMIT, sigrok::Capability::GET);
 }
 
-bool HardwareDevice::is_current_limit_setable()
+bool HardwareDevice::is_current_limit_setable() const
 {
 	return sr_configurable_->config_check(
 		sigrok::ConfigKey::CURRENT_LIMIT, sigrok::Capability::SET);
 }
 
-double HardwareDevice::get_current_limit()
+double HardwareDevice::get_current_limit() const
 {
 	// TODO: check if getable
 

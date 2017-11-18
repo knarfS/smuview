@@ -32,8 +32,8 @@ namespace data {
 
 Analog::Analog() : SignalData(),
 	sample_count_(0),
-	min_value_(std::numeric_limits<short>::min()),
-	max_value_(std::numeric_limits<short>::max())
+	min_value_(std::numeric_limits<short>::max()),
+	max_value_(std::numeric_limits<short>::min())
 {
 	data_ = make_shared<vector<double>>();
 }
@@ -48,7 +48,9 @@ void Analog::clear()
 
 size_t Analog::get_sample_count() const
 {
-	return sample_count_;
+	size_t sample_count = sample_count_;
+	//qWarning() << "Analog::get_sample_count(): sample_count_ = " << sample_count;
+	return sample_count;
 }
 
 vector<double> Analog::get_samples(size_t start_sample, size_t end_sample) const
@@ -72,9 +74,15 @@ double Analog::get_sample(size_t pos) const
 {
 	//assert(pos <= sample_count_);
 
-	if (pos < sample_count_)
-		return data_->at(pos);
+ 	// TODO: retrun reference (&double)?
 
+	if (pos < sample_count_) {
+		double sample = data_->at(pos);
+		//qWarning() << "Analog::get_sample(" << pos << "): sample = " << sample;
+		return sample;
+	}
+
+	qWarning() << "Analog::get_sample(" << pos << "): sample_count_ = " << sample_count_;
 	return 0.;
 }
 
@@ -82,14 +90,27 @@ void Analog::push_sample(void *sample)
 {
  	double dsample = (double) *(float*)sample;
 
+	/*
+	qWarning() << "Analog::push_sample(): sample = " << dsample;
+	qWarning() << "Analog::push_sample(): sample_count_ = " << sample_count_;
+	*/
+
 	last_value_ = dsample;
 	if (min_value_ > dsample)
 		min_value_ = dsample;
 	if (max_value_ < dsample)
 		max_value_ = dsample;
 
+	/*
+	qWarning() << "Analog::push_sample(): last_value_ = " << last_value_;
+	qWarning() << "Analog::push_sample(): min_value_ = " << min_value_;
+	qWarning() << "Analog::push_sample(): max_value_ = " << max_value_;
+	*/
+
 	data_->push_back(dsample);
 	sample_count_++;
+
+	//qWarning() << "Analog::push_sample(): sample_count_ = " << sample_count_;
 }
 
 double Analog::last_value() const

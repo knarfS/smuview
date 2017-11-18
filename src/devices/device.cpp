@@ -136,18 +136,19 @@ void Device::feed_in_trigger()
 void Device::feed_in_frame_begin()
 {
 	frame_began_ = true;
-
-	// TODO: use std::chrono / std::time and double
-	qint64 time_span = (QDateTime::currentMSecsSinceEpoch() - time_start_);
-	float dtime_span = time_span / (float)1000;
-	// TODO: SignalBase / Analog class with long data?
-	time_data_->push_sample(&dtime_span);
 }
 
 void Device::feed_in_frame_end()
 {
-	if (frame_began_)
+	if (frame_began_) {
+		// TODO: use std::chrono / std::time and double
+		qint64 time_span = (QDateTime::currentMSecsSinceEpoch() - time_start_);
+		float dtime_span = time_span / (float)1000;
+		// TODO: SignalBase / Analog class with long data?
+		time_data_->push_sample(&dtime_span);
+
 		frame_began_ = false;
+	}
 }
 
 void Device::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
@@ -165,14 +166,18 @@ void Device::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
 		update_signals();
 
 	float *channel_data = data.get();
-	qWarning("feed_in_analog(): data = %f", *channel_data);
 	for (auto sr_channel : sr_channels) {
-		qWarning() << "feed_in_analog(): Channel.Id = " << QString::fromStdString(sr_channel->name());
+		/*
+		qWarning() << "feed_in_analog(): Channel.Id = " <<
+			QString::fromStdString(sr_channel->name()) <<
+			" channel_data = " << *channel_data;
+		*/
 
 		channel_data_[sr_channel]->data()->push_sample(channel_data);
 		channel_data++;
 
 		// Timestamp for values not in a FRAME
+		// TODO: Find a better way to add the timestamp when not in a frame
 		if (!frame_began_ &&
 			!channel_data_[sr_channel]->internal_name().startsWith("V")) {
 			// TODO: use std::chrono / std::time and double
@@ -195,7 +200,12 @@ void Device::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
 void Device::data_feed_in(shared_ptr<sigrok::Device> sr_device,
 	shared_ptr<sigrok::Packet> sr_packet)
 {
-	(void)sr_device;
+	//(void)sr_device;
+
+	qWarning() << "data_feed_in(): sr_packet->type()->id() = " << sr_packet->type()->id();
+	qWarning() << "data_feed_in(): sr_device->model() = "
+		<< QString::fromStdString(sr_device->model())
+		<< ", this->model() = " << QString::fromStdString(sr_device_->model());
 
 	assert(sr_device);
 	assert(sr_packet);
@@ -225,6 +235,7 @@ void Device::data_feed_in(shared_ptr<sigrok::Device> sr_device,
 		break;
 
 	case SR_DF_ANALOG:
+		qWarning() << "data_feed_in(): SR_DF_ANALOG";
 		try {
 			feed_in_analog(
 				dynamic_pointer_cast<sigrok::Analog>(sr_packet->payload()));

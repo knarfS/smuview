@@ -59,18 +59,18 @@ void ControlButton::setupUi()
 
 void ControlButton::on_clicked()
 {
-	on_state_changed(state_);
+	on_state_changed(!state_);
 	Q_EMIT state_changed(state_);
 }
 
-void ControlButton::on_state_changed(bool enabled)
+void ControlButton::on_state_changed(const bool enabled)
 {
-	if (!enabled) {
+	if (enabled) {
 		this->setIcon(icon_green_);
 		this->setText(QApplication::translate("SmuView", "On", Q_NULLPTR));
 		this->setChecked(true);
 		state_ = true;
-	} else if (enabled) {
+	} else {
 		this->setIcon(icon_red_);
 		this->setText(QApplication::translate("SmuView", "Off", Q_NULLPTR));
 		this->setChecked(false);

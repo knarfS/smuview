@@ -1,8 +1,6 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2012 Joel Holdsworth <joel@airwebreathe.org.uk>
- * Copyright (C) 2016 Soeren Apel <soeren@apelpie.net>
  * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -19,19 +17,19 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VIEWS_VIEWBASE_HPP
-#define VIEWS_VIEWBASE_HPP
+#ifndef TABS_DEVICETAB_HPP
+#define TABS_DEVICETAB_HPP
 
-#include <cstdint>
 #include <memory>
 #include <unordered_set>
 #include <vector>
 
-#include <QTimer>
-#include <QWidget>
+#include <QMainWindow>
 
 #include "src/util.hpp"
 #include "src/data/signalbase.hpp"
+#include "src/devices/hardwaredevice.hpp"
+#include "src/tabs/basetab.hpp"
 
 using std::shared_ptr;
 using std::unordered_set;
@@ -40,32 +38,22 @@ namespace sv {
 
 class Session;
 
-namespace views {
+namespace tabs {
 
-enum ViewType {
-	ViewTypeSource,
-	ViewTypeSink,
-	ViewTypeMeasurement,
-	ViewTypeGraph
-};
-
-class ViewBase : public QWidget
+class DeviceTab : public BaseTab
 {
 	Q_OBJECT
 
 private:
-	static const int MaxViewAutoUpdateRate;
 
 public:
-	explicit ViewBase(Session &session, QWidget *parent = nullptr);
-
-	Session& session();
-	const Session& session() const;
+	DeviceTab(Session &session,
+		shared_ptr<devices::HardwareDevice> device, QMainWindow *parent);
 
 	virtual void clear_signals();
 
 	/**
-	 * Returns the signal bases contained in this view.
+	 * Returns the signal bases contained in this tab.
 	 */
 	unordered_set< shared_ptr<data::SignalBase> > signalbases() const;
 
@@ -73,30 +61,18 @@ public:
 
 	virtual void add_signalbase(const shared_ptr<data::SignalBase> signalbase);
 
-	virtual void save_settings(QSettings &settings) const;
-
-	virtual void restore_settings(QSettings &settings);
-
-public Q_SLOTS:
-	virtual void trigger_event(util::Timestamp location);
-	virtual void signals_changed();
-	virtual void capture_state_updated(int state);
-	virtual void perform_delayed_view_update();
-
-private Q_SLOTS:
-	void on_data_updated();
-
 protected:
-	Session &session_;
-
+	shared_ptr<devices::HardwareDevice> device_;
 	util::TimeUnit time_unit_;
-
 	unordered_set< shared_ptr<data::SignalBase> > signalbases_;
 
-	QTimer delayed_view_updater_;
+public Q_SLOTS:
+
+private Q_SLOTS:
+
 };
 
-} // namespace views
+} // namespace tabs
 } // namespace sv
 
-#endif // VIEWS_SOURCEVIEW_HPP
+#endif // TABS_DEVICETAB_HPP

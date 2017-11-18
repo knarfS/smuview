@@ -1,8 +1,6 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2012 Joel Holdsworth <joel@airwebreathe.org.uk>
- * Copyright (C) 2016 Soeren Apel <soeren@apelpie.net>
  * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -21,53 +19,35 @@
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
-#include "viewbase.hpp"
+#include "devicetab.hpp"
 #include "src/session.hpp"
-#include "src/util.hpp"
 
 using std::shared_ptr;
 
 namespace sv {
-namespace views {
+namespace tabs {
 
-const int ViewBase::MaxViewAutoUpdateRate = 25; // No more than 25 Hz
-
-ViewBase::ViewBase(Session &session, QWidget *parent) :
-	session_(session)
+DeviceTab::DeviceTab(Session &session,
+		shared_ptr<devices::HardwareDevice> device, QMainWindow *parent) :
+		BaseTab(session, parent),
+	device_(device)
 {
-	(void)parent;
-
 	connect(&session_, SIGNAL(signals_changed()),
 		this, SLOT(signals_changed()));
 	connect(&session_, SIGNAL(capture_state_changed(int)),
 		this, SLOT(capture_state_updated(int)));
-
-	connect(&delayed_view_updater_, SIGNAL(timeout()),
-		this, SLOT(perform_delayed_view_update()));
-	delayed_view_updater_.setSingleShot(true);
-	delayed_view_updater_.setInterval(1000 / MaxViewAutoUpdateRate);
 }
 
-Session& ViewBase::session()
-{
-	return session_;
-}
-
-const Session& ViewBase::session() const
-{
-	return session_;
-}
-
-void ViewBase::clear_signals()
+void DeviceTab::clear_signals()
 {
 }
 
-unordered_set< shared_ptr<data::SignalBase> > ViewBase::signalbases() const
+unordered_set< shared_ptr<data::SignalBase> > DeviceTab::signalbases() const
 {
 	return signalbases_;
 }
 
-void ViewBase::clear_signalbases()
+void DeviceTab::clear_signalbases()
 {
 	for (shared_ptr<data::SignalBase> signalbase : signalbases_) {
 		disconnect(signalbase.get(), SIGNAL(samples_cleared()),
@@ -79,7 +59,7 @@ void ViewBase::clear_signalbases()
 	signalbases_.clear();
 }
 
-void ViewBase::add_signalbase(const shared_ptr<data::SignalBase> signalbase)
+void DeviceTab::add_signalbase(const shared_ptr<data::SignalBase> signalbase)
 {
 	signalbases_.insert(signalbase);
 
@@ -89,39 +69,5 @@ void ViewBase::add_signalbase(const shared_ptr<data::SignalBase> signalbase)
 		this, SLOT(on_data_updated()));
 }
 
-void ViewBase::save_settings(QSettings &settings) const
-{
-	(void)settings;
-}
-
-void ViewBase::restore_settings(QSettings &settings)
-{
-	(void)settings;
-}
-
-void ViewBase::trigger_event(util::Timestamp location)
-{
-	(void)location;
-}
-
-void ViewBase::signals_changed()
-{
-}
-
-void ViewBase::capture_state_updated(int state)
-{
-	(void)state;
-}
-
-void ViewBase::perform_delayed_view_update()
-{
-}
-
-void ViewBase::on_data_updated()
-{
-	if (!delayed_view_updater_.isActive())
-		delayed_view_updater_.start();
-}
-
-} // namespace views
+} // namespace tabs
 } // namespace sv

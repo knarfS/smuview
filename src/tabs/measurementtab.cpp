@@ -20,20 +20,18 @@
 #include <QHBoxLayout>
 #include <QGroupBox>
 
-#include "measureview.hpp"
+#include "measurementtab.hpp"
 #include "src/data/analog.hpp"
 #include "src/data/curvedata.hpp"
-#include "src/data/signalbase.hpp"
 #include "src/widgets/singlevaluepanel.hpp"
 #include "src/widgets/plot.hpp"
 
 namespace sv {
-namespace views {
+namespace tabs {
 
-MeasureView::MeasureView(shared_ptr<devices::HardwareDevice> device,
-		QWidget *parent) :
-	QWidget(parent),
-	device_(device)
+MeasurementTab::MeasurementTab(Session &session,
+		shared_ptr<devices::HardwareDevice> device, QMainWindow *parent) :
+	DeviceTab(session, device, parent)
 {
 	digits_ = 5;
 	unit_ = QString("V");
@@ -46,11 +44,11 @@ MeasureView::MeasureView(shared_ptr<devices::HardwareDevice> device,
 }
 
 
-void MeasureView::init_values()
+void MeasurementTab::init_values()
 {
 }
 
-void MeasureView::setup_ui()
+void MeasurementTab::setup_ui()
 {
 	QVBoxLayout *mainLayout = new QVBoxLayout(this);
 
@@ -98,6 +96,6 @@ void MeasureView::setup_ui()
 	mainLayout->addStretch(10);
 }
 
-} // namespace views
+} // namespace tabs
 } // namespace sv
 

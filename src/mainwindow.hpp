@@ -23,17 +23,17 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <string>
 
 #include <QAction>
 #include <QToolBar>
 #include <QStatusBar>
 #include <QMainWindow>
 
-#include "views/viewbase.hpp"
-
 using std::list;
 using std::map;
 using std::shared_ptr;
+using std::string;
 
 namespace sv {
 
@@ -62,9 +62,9 @@ public:
 	void restore_session();
 	void remove_session();
 
-	shared_ptr<devices::Device> add_view(
+	shared_ptr<devices::Device> add_tab(
 		shared_ptr<devices::HardwareDevice> device);
-	void remove_view(shared_ptr<devices::HardwareDevice> device);
+	void remove_tab(shared_ptr<devices::HardwareDevice> device);
 
 private:
 	DeviceManager &device_manager_;
@@ -81,7 +81,7 @@ private:
     QAction *actionExit;
     QAction *actionAbout;
     QAction *actionRun;
-    QAction *actionAddView;
+    QAction *actionAddTab;
     QWidget *centralWidget;
     QTabWidget *tabWidget;
     QToolBar *mainToolBar;
@@ -94,7 +94,7 @@ private:
 private Q_SLOTS:
 	void show_session_error(const QString text, const QString info_text);
 	void on_capture_state_changed(int);
-	void on_actionAddView_triggered();
+	void on_actionAddTab_triggered();
 	void on_actionRun_triggered();
 };
 

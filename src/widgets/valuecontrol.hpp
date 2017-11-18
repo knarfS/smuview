@@ -56,7 +56,7 @@ public Q_SLOTS:
 	void on_value_changed(const double value);
 
 Q_SIGNALS:
-	void value_changed(double value);
+	void value_changed(const double value);
 };
 
 } // namespace widgets
