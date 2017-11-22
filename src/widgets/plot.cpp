@@ -20,6 +20,7 @@
 
 #include <QDebug>
 #include <QEvent>
+#include <QRectF>
 #include <qwt_plot_grid.h>
 #include <qwt_plot_layout.h>
 #include <qwt_plot_canvas.h>
@@ -66,7 +67,7 @@ public:
 			// the canvas is disabled. So in this application
 			// we better don't disable both backing stores.
 
-			if (testPaintAttribute(QwtPlotCanvas::BackingStore )) {
+			if (testPaintAttribute(QwtPlotCanvas::BackingStore)) {
 				setAttribute(Qt::WA_PaintOnScreen, true);
 				setAttribute(Qt::WA_NoSystemBackground, true);
 			}
@@ -98,12 +99,14 @@ private:
 	}
 };
 
-Plot::Plot(data::CurveData *curve_data, QWidget *parent ):
-	QwtPlot( parent ),
+Plot::Plot(data::CurveData *curve_data, QWidget *parent):
+	QwtPlot(parent),
 	curve_data_(curve_data),
-	painted_points_( 0 ),
-	interval_( 0.0, 30.0 ),
-	timer_id_( -1 )
+	painted_points_(0),
+	x_interval_(0.0, 30.0),
+	y_interval_(0.0, 0.5),
+	plot_interval_(200),
+	timer_id_(-1)
 {
 	valueDirectPainter_ = new QwtPlotDirectPainter();
 
@@ -117,18 +120,20 @@ Plot::Plot(data::CurveData *curve_data, QWidget *parent ):
 	insertLegend(legend, QwtPlot::BottomLegend);
 
 	// Time axis
-	//setAxisTitle( QwtPlot::xBottom, "Time [s]" );
-	setAxisTitle(QwtPlot::xBottom, "Voltage [V]");
+	setAxisTitle(QwtPlot::xBottom, "Time [s]");
+	//setAxisTitle(QwtPlot::xBottom, "Voltage [V]");
 	//setAxisScale( QwtAxisId( QwtAxis::xBottom, 0 ), m_interval.minValue(), m_interval.maxValue() ); // TODO: Multiaxis
-	setAxisScale(0, interval_.minValue(), interval_.maxValue());
+	setAxisScale(0, x_interval_.minValue(), x_interval_.maxValue());
+	//setAxisAutoScale(0, true); // Not working!?
 
 	//setAxesCount( QwtPlot::yLeft, 2 ); // TODO: Multiaxis
 	// Current axis
 	//QwtAxisId currentAxisId = QwtAxisId( QwtAxis::yLeft, 0 ); // TODO: Multiaxis
-	int currentAxisId = 0;
+	int currentAxisId = QwtPlot::yLeft;
 	//setAxisVisible( currentAxisId, true ); // TODO: Multiaxis
 	setAxisTitle(currentAxisId, "Current [A]");
-	setAxisScale(currentAxisId, 0.0, 0.25);
+	setAxisScale(currentAxisId, y_interval_.minValue(), y_interval_.maxValue());
+	//setAxisAutoScale(currentAxisId, false); // Not working!?
 
 	// Voltage axis
 	/*
@@ -195,13 +200,11 @@ Plot::~Plot()
 
 void Plot::start()
 {
-	clock_.start();
 	timer_id_ = startTimer(plot_interval_);
 }
 
 void Plot::stop()
 {
-	//clock_.stop();
 	killTimer(timer_id_);
 }
 
@@ -215,30 +218,37 @@ void Plot::replot()
 	//ReLoadProData::instance().unlock();
 }
 
-void Plot::setIntervalLength(double interval)
+void Plot::set_x_interval(double x_start, double x_end)
 {
-	interval_length_ = interval;
-
-	if (interval > 0.0 && interval != interval_.width()) {
-		interval_.setMaxValue(interval_.minValue() + interval);
+	if (x_start != x_interval_.minValue() && x_end != x_interval_.maxValue()) {
+		x_interval_.setInterval(x_start, x_end);
 		setAxisScale(QwtPlot::xBottom,
-			interval_.minValue(), interval_.maxValue());
+			x_interval_.minValue(), x_interval_.maxValue());
 
 		replot();
 	}
 }
 
-void Plot::updateCurve()
+void Plot::set_y_interval(double y_start, double y_end)
+{
+	if (y_start != y_interval_.minValue() && y_end != y_interval_.maxValue()) {
+		y_interval_.setInterval(y_start, y_end);
+		setAxisScale(QwtPlot::yLeft,
+			y_interval_.minValue(), y_interval_.maxValue());
+
+		replot();
+	}
+}
+
+void Plot::update_curve()
 {
 	//ReLoadProData::instance().lock(); // TODO
-	//qDebug() << QString( "Plot::updateCurve(): ReLoadProData::instance().lock()" );
 
 	const int numPoints = curve_data_->size();
 	if (numPoints > painted_points_) {
-		//qWarning() << QString("Plot::updateCurve(): numPoints = %1, painted_points_ = %2").arg(numPoints).arg(painted_points_);
+		qWarning() << QString("Plot::updateCurve(): numPoints = %1, painted_points_ = %2").arg(numPoints).arg(painted_points_);
 		const bool clip = !canvas()->testAttribute(Qt::WA_PaintOnScreen);
 		if (clip) {
-			//qWarning() << QString("Plot::updateCurve(): clip = %1").arg(clip);
 			/*
 				Depending on the platform setting a clip might be an important
 				performance issue. F.e. for Qt Embedded this reduces the
@@ -246,8 +256,6 @@ void Plot::updateCurve()
 				to an unaccelerated frame buffer device.
 			*/
 
-			//const QwtScaleMap xMap = canvasMap( m_setValueCurve->xAxis() );
-			//const QwtScaleMap yMap = canvasMap( m_setValueCurve->yAxis() );
 			const QwtScaleMap xMap = canvasMap(value_curve_->xAxis());
 			const QwtScaleMap yMap = canvasMap(value_curve_->yAxis());
 
@@ -255,20 +263,8 @@ void Plot::updateCurve()
 				painted_points_ - 1, numPoints - 1);
 
 			const QRect clipRect = QwtScaleMap::transform(xMap, yMap, br).toRect();
-			//m_setValueDirectPainter->setClipRegion( clipRect );
-			//m_currentDirectPainter->setClipRegion( clipRect );
 			valueDirectPainter_->setClipRegion(clipRect);
 		}
-
-		/*
-		m_setValueDirectPainter->drawSeries( m_setValueCurve,
-			painted_points_ - 1, numPoints - 1 );
-		*/
-
-		/*
-		m_currentDirectPainter->drawSeries( m_currentCurve,
-			painted_points_ - 1, numPoints - 1 );
-		*/
 
 		valueDirectPainter_->drawSeries(value_curve_,
 			painted_points_ - 1, numPoints - 1);
@@ -276,42 +272,46 @@ void Plot::updateCurve()
 		painted_points_ = numPoints;
 	}
 
-	//qDebug() << QString( "Plot::updateCurve(): ReLoadProData::instance().unlock()" );
 	//ReLoadProData::instance().unlock(); // TODO
 
-	replot();
+	//replot();
 }
 
-void Plot::incrementInterval()
+void Plot::increment_x_interval()
 {
+	qWarning() << QString("Plot::increment_x_interval(): old min = %1, old max = %2").arg(x_interval_.minValue()).arg(x_interval_.maxValue());
+
 	if (plot_mode_ == Plot::Additive) {
-		interval_ = QwtInterval( interval_.minValue(),
-			interval_.maxValue() + interval_length_);
+		// TODO: Calculate proper interval_length
+		int interval_length = 30;
+		x_interval_ = QwtInterval(x_interval_.minValue(),
+			x_interval_.maxValue() + interval_length);
+
+		qWarning() << QString("Plot::increment_x_interval(): new min = %1, new max = %2").arg(x_interval_.minValue()).arg(x_interval_.maxValue());
 	}
 	else if (plot_mode_ == Plot::Oscilloscope) {
-		interval_ = QwtInterval( interval_.maxValue(),
-			interval_.maxValue() + interval_.width());
+		x_interval_ = QwtInterval(x_interval_.maxValue(),
+			x_interval_.maxValue() + x_interval_.width());
 	}
 
-	qWarning() << QString("Plot::incrementInterval(): -1-");
-
-	//curve_data_->clearStaleValues( interval_.minValue() ); // TODO
+	//curve_data_->clearStaleValues(interval_.minValue()); // TODO
 
 	if (plot_mode_ == Plot::Additive) {
-		setAxisScale( QwtPlot::xBottom, interval_.minValue(), interval_.maxValue() );
+		setAxisScale(QwtPlot::xBottom,
+			x_interval_.minValue(), x_interval_.maxValue());
 	}
 	else if (plot_mode_ == Plot::Oscilloscope) {
 		// To avoid, that the grid is jumping, we disable
 		// the autocalculation of the ticks and shift them
 		// manually instead.
 
-		QwtScaleDiv scaleDiv = axisScaleDiv( QwtPlot::xBottom );
-		scaleDiv.setInterval( interval_ );
+		QwtScaleDiv scaleDiv = axisScaleDiv(QwtPlot::xBottom);
+		scaleDiv.setInterval(x_interval_);
 
 		for (int i = 0; i < QwtScaleDiv::NTickTypes; i++) {
 			QList<double> ticks = scaleDiv.ticks(i);
 			for (int j = 0; j < ticks.size(); j++) {
-				ticks[j] += interval_.width();
+				ticks[j] += x_interval_.width();
 			}
 			scaleDiv.setTicks(i, ticks);
 		}
@@ -321,18 +321,48 @@ void Plot::incrementInterval()
 	}
 	else if (plot_mode_ == Plot::Rolling) {
 	}
+}
 
-	replot();
+void Plot::increment_y_interval(QRectF boundaries)
+{
+	// TODO: Calculate proper interval_length
+	double interval_length = 0.5;
+
+	if (boundaries.bottom() < y_interval_.minValue())
+		y_interval_.setMinValue(y_interval_.minValue() - interval_length);
+
+	if (boundaries.top() > y_interval_.maxValue())
+		y_interval_.setMaxValue(y_interval_.maxValue() + interval_length);
+
+	setAxisScale(QwtPlot::yLeft,
+		y_interval_.minValue(), y_interval_.maxValue());
 }
 
 void Plot::timerEvent(QTimerEvent *event)
 {
 	if (event->timerId() == timer_id_) {
-		updateCurve();
 
-		const double elapsed = clock_.elapsed() / 1000.0;
-		if (elapsed > interval_.maxValue())
-			incrementInterval();
+		bool intervals_changed = false;
+		QRectF boundaries = curve_data_->boundingRect();
+
+		// Check for x axis resize
+		// TODO: this is for time only! Implement like y axis!
+		if (boundaries.right() > x_interval_.maxValue()) {
+			increment_x_interval();
+			intervals_changed = true;
+		}
+
+		// Check for y axis resize
+		if (boundaries.bottom() > y_interval_.minValue() ||
+			boundaries.top() > y_interval_.maxValue()) {
+			increment_y_interval(boundaries);
+			intervals_changed = true;
+		}
+
+		if (intervals_changed)
+			replot();
+
+		update_curve();
 
 		return;
 	}

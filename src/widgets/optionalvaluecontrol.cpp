@@ -19,16 +19,22 @@
 
 #include <QVBoxLayout>
 
-#include "valuecontrol.hpp"
+#include "optionalvaluecontrol.hpp"
+#include "src/widgets/controlbutton.hpp"
 
 namespace sv {
 namespace widgets {
 
-ValueControl::ValueControl(const uint digits, const QString unit,
+OptionalValueControl::OptionalValueControl(
+		const bool is_readable, const bool is_setable,
+		const uint digits, const QString unit,
 		const double min, const double max, const double steps,
 		QWidget *parent) :
 	QWidget(parent),
+	state_(false),
 	value_(0),
+	is_readable_(is_readable),
+	is_setable_(is_setable),
 	digits_(digits),
 	unit_(unit),
 	min_(min),
@@ -37,21 +43,17 @@ ValueControl::ValueControl(const uint digits, const QString unit,
 {
 	setup_ui();
 
-	connect(knob, SIGNAL(valueChanged(double)),
-		this, SLOT(on_value_changed(const double)));
 	connect(doubleSpinBox, SIGNAL(valueChanged(double)),
 		this, SLOT(on_value_changed(const double)));
 }
 
-void ValueControl::setup_ui()
+void OptionalValueControl::setup_ui()
 {
 	QVBoxLayout *getValuesVLayout = new QVBoxLayout(this);
 
-	lcdDisplay = new widgets::LcdDisplay(digits_, unit_, this);
-	lcdDisplay->set_value(0);
-	getValuesVLayout->addWidget(lcdDisplay);
-
-	QHBoxLayout *getValuesHLayout = new QHBoxLayout(this);
+	controlButton = new widgets::ControlButton(is_readable_, is_setable_, this);
+	controlButton->on_state_changed(state_);
+	getValuesVLayout->addWidget(controlButton);
 
 	doubleSpinBox = new QDoubleSpinBox(this);
 	doubleSpinBox->setSuffix(QString(" %1").arg(unit_));
@@ -59,62 +61,49 @@ void ValueControl::setup_ui()
 	doubleSpinBox->setMinimum(min_);
 	doubleSpinBox->setMaximum(max_);
 	doubleSpinBox->setSingleStep(steps_);
-
-	knob = new QwtKnob(this);
-	knob->setNumTurns(1);
-	knob->setLowerBound(min_);
-	knob->setUpperBound(max_);
-	// setSingleSteps(uint), setPageSteps(uint)
-	knob->setTotalSteps((max_ - min_) / steps_);
-	//setScaleStepSize(double), setScaleMaxMajor(int), setScaleMaxMinor(int)
-
-	getValuesHLayout->addWidget(doubleSpinBox);
-	getValuesHLayout->addWidget(knob);
-	getValuesVLayout->addItem(getValuesHLayout);
+	getValuesVLayout->addWidget(doubleSpinBox);
 }
 
-void ValueControl::change_value(const double value)
+void OptionalValueControl::on_clicked()
+{
+	controlButton->on_clicked();
+}
+
+void OptionalValueControl::on_state_changed(const bool enabled)
+{
+	controlButton->on_state_changed(enabled);
+}
+
+void OptionalValueControl::change_value(const double value)
 {
 	if (value == value_)
 		return;
 
-	disconnect(knob, SIGNAL(valueChanged(double)),
-		this, SLOT(on_value_changed(const double)));
 	disconnect(doubleSpinBox, SIGNAL(valueChanged(double)),
 		this, SLOT(on_value_changed(const double)));
 
 	value_ = value;
 
-	lcdDisplay->set_value(value);
 	doubleSpinBox->setValue(value);
-	knob->setValue(value);
 
-	connect(knob, SIGNAL(valueChanged(double)),
-		this, SLOT(on_value_changed(const double)));
 	connect(doubleSpinBox, SIGNAL(valueChanged(double)),
 		this, SLOT(on_value_changed(const double)));
 }
 
-void ValueControl::on_value_changed(const double value)
+void OptionalValueControl::on_value_changed(const double value)
 {
 	if (value == value_)
 		return;
 
-	disconnect(knob, SIGNAL(valueChanged(double)),
-		this, SLOT(on_value_changed(const double)));
 	disconnect(doubleSpinBox, SIGNAL(valueChanged(double)),
 		this, SLOT(on_value_changed(const double)));
 
 	value_ = value;
 
-	lcdDisplay->set_value(value);
 	doubleSpinBox->setValue(value);
-	knob->setValue(value);
 
 	Q_EMIT value_changed(value);
 
-	connect(knob, SIGNAL(valueChanged(double)),
-		this, SLOT(on_value_changed(const double)));
 	connect(doubleSpinBox, SIGNAL(valueChanged(double)),
 		this, SLOT(on_value_changed(const double)));
 }

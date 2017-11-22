@@ -116,6 +116,10 @@ void Device::feed_in_meta(shared_ptr<sigrok::Meta> meta)
 			Q_EMIT under_voltage_condition_active_changed(
 				g_variant_get_boolean(entry.second.gobj()));
 			break;
+		case SR_CONF_UNDER_VOLTAGE_CONDITION_THRESHOLD:
+			Q_EMIT under_voltage_condition_threshold_changed(
+				g_variant_get_double(entry.second.gobj()));
+			break;
 		case SR_CONF_OVER_TEMPERATURE_PROTECTION_ACTIVE:
 			Q_EMIT over_temperature_protection_active_changed(
 				g_variant_get_boolean(entry.second.gobj()));
@@ -202,10 +206,12 @@ void Device::data_feed_in(shared_ptr<sigrok::Device> sr_device,
 {
 	//(void)sr_device;
 
+	/*
 	qWarning() << "data_feed_in(): sr_packet->type()->id() = " << sr_packet->type()->id();
 	qWarning() << "data_feed_in(): sr_device->model() = "
 		<< QString::fromStdString(sr_device->model())
 		<< ", this->model() = " << QString::fromStdString(sr_device_->model());
+	*/
 
 	assert(sr_device);
 	assert(sr_packet);
@@ -235,7 +241,7 @@ void Device::data_feed_in(shared_ptr<sigrok::Device> sr_device,
 		break;
 
 	case SR_DF_ANALOG:
-		qWarning() << "data_feed_in(): SR_DF_ANALOG";
+		//qWarning() << "data_feed_in(): SR_DF_ANALOG";
 		try {
 			feed_in_analog(
 				dynamic_pointer_cast<sigrok::Analog>(sr_packet->payload()));

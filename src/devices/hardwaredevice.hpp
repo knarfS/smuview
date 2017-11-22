@@ -123,6 +123,28 @@ public:
 	void set_current_limit(const double value);
 	void list_current_limit(double &min, double &max, double &step);
 
+	bool is_over_voltage_active_getable() const;
+	double get_over_voltage_active() const;
+
+	bool is_over_current_active_getable() const;
+	double get_over_current_active() const;
+
+	bool is_over_temperature_active_getable() const;
+	double get_over_temperature_active() const;
+
+	bool is_under_voltage_enable_getable() const;
+	bool is_under_voltage_enable_setable() const;
+	double get_under_voltage_enable() const;
+
+	bool is_under_voltage_active_getable() const;
+	double get_under_voltage_active() const;
+
+	bool is_under_voltage_threshold_getable() const;
+	bool is_under_voltage_threshold_setable() const;
+	double get_under_voltage_threshold() const;
+	void set_under_voltage_threshold(const double value);
+	void list_under_voltage_threshold(double &min, double &max, double &step);
+
 	/*
 	void data_feed_in(shared_ptr<sigrok::Device> sr_device,
 		shared_ptr<sigrok::Packet> sr_packet);
@@ -134,35 +156,6 @@ private:
 	Type type_;
 	bool device_open_;
 
-	/*
-	unordered_set< shared_ptr<data::SignalBase> > signalbases_;
-	unordered_set< shared_ptr<data::SignalData> > all_signal_data_;
-
-	mutable recursive_mutex data_mutex_;
-	uint64_t cur_samplerate_;
-	map< shared_ptr<sigrok::Channel>, shared_ptr<data::AnalogSegment> >
-		cur_analog_segments_;
-
-	bool out_of_memory_;
-	bool frame_began_;
-
-	shared_ptr<data::SignalBase> signalbase_from_channel(
-		shared_ptr<sigrok::Channel> channel) const;
-	void feed_in_header();
-	void feed_in_meta(shared_ptr<sigrok::Meta> meta);
-	void feed_in_trigger();
-	void feed_in_frame_begin();
-	void feed_in_frame_end();
-	void feed_in_analog(shared_ptr<sigrok::Analog> sr_analog);
-	*/
-
-/*
-Q_SIGNALS:
-	void signals_changed();
-	void data_received();
-	void frame_began();
-	void frame_ended();
-*/
 /*
 Q_SIGNALS:
 	void enabled_changed(bool);

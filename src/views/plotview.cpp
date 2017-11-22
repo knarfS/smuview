@@ -52,9 +52,8 @@ void PlotView::setup_ui()
 		x_signal_data_, y_signal_data_);
 
 	plot = new widgets::Plot(curve_data, this);
-	plot->setIntervalLength(10);
-	plot->setPlotMode(widgets::Plot::PlotModes::Additive);
-	plot->setPlotInterval(1);
+	plot->set_plot_mode(widgets::Plot::PlotModes::Additive);
+	plot->set_plot_interval(200); // 200ms
 
 	layout->addWidget(plot);
 }

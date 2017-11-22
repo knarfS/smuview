@@ -17,22 +17,23 @@ Requirements
  - glibmm-2.4 (>= 2.28.0)
  - Qt5 (including the following components):
     - Qt5Core, Qt5Gui, Qt5Widgets, Qt5Svg
+ - Qwt (>= 6.1.2)
  - libsigrokcxx >= 0.6.0 (libsigrok C++ bindings)
 
 
 Building and installing
 -----------------------
 
-In order to get the PulseView source code and build it, run:
+In order to get the SmuView source code and build it, run:
 
  $ git clone https://github.com/knarfS/smuview.git
- $ cd pulseview
+ $ cd smuview
  $ mkdir build
  $ cd build
  $ cmake ../
  $ make
 
-For installing PulseView:
+For installing SmuView:
 
  $ sudo make install
 
@@ -42,7 +43,7 @@ Creating a source distribution package
 
 In order to build a source package begin with an unconfigured source tree.
 
- $ cd pulseview
+ $ cd smuview
  $ mkdir dist
  $ cd dist
  $ cmake ../

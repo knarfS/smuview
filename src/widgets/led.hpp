@@ -17,49 +17,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WIDGETS_VALUECONTROL_HPP
-#define WIDGETS_VALUECONTROL_HPP
+#ifndef WIDGETS_LED_HPP
+#define WIDGETS_LED_HPP
 
-#include <QDoubleSpinBox>
+#include <QIcon>
+#include <QLabel>
 #include <QWidget>
-#include <qwt_knob.h>
-
-#include "lcddisplay.hpp"
 
 namespace sv {
 namespace widgets {
 
-class ValueControl : public QWidget
+class Led : public QWidget
 {
     Q_OBJECT
 
 public:
-	ValueControl(const uint digits, const QString unit,
-		const double min, const double max, const double steps, QWidget *parent);
+	Led(QString text, QWidget *parent);
 
 private:
-	double value_;
-	uint digits_;
-	QString unit_;
-	double min_;
-	double max_;
-	double steps_;
+	bool state_;
+	QString text_;
 
-	QDoubleSpinBox *doubleSpinBox;
-	QwtKnob *knob;
-	LcdDisplay *lcdDisplay;
+	QLabel *ledLabel_;
+	QLabel *textLabel_;
+
+	QIcon icon_red_;
+	QIcon icon_green_;
+	QIcon icon_grey_;
 
 	void setup_ui();
 
 public Q_SLOTS:
-	void change_value(const double value);
-	void on_value_changed(const double value);
+	void on_state_changed(const bool enabled);
 
-Q_SIGNALS:
-	void value_changed(const double value);
 };
 
 } // namespace widgets
 } // namespace sv
 
-#endif // WIDGETS_VALUECONTROL_HPP
+#endif // WIDGETS_LED_HPP
+

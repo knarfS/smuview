@@ -1,5 +1,5 @@
 /*
- * This file is part of the PulseView project.
+ * This file is part of the SmuView project.
  *
  * Copyright (C) 2012 Joel Holdsworth <joel@airwebreathe.org.uk>
  *

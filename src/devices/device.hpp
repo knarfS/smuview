@@ -120,6 +120,7 @@ Q_SIGNALS:
 	void over_voltage_protection_active_changed(const bool);
 	void over_current_protection_active_changed(const bool);
 	void under_voltage_condition_active_changed(const bool);
+	void under_voltage_condition_threshold_changed(const double);
 	void over_temperature_protection_active_changed(const bool);
 };
 

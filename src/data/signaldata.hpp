@@ -43,11 +43,13 @@ public:
 	SignalData() = default;
 	virtual ~SignalData() = default;
 
-public:
 	virtual void clear() = 0;
-
 	virtual size_t get_sample_count() const = 0;
 	virtual void push_sample(void *sample) = 0;
+
+private:
+	shared_ptr<vector<double>> time_data_;
+
 };
 
 } // namespace data

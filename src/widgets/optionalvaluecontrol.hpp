@@ -17,10 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WIDGETS_VALUECONTROL_HPP
-#define WIDGETS_VALUECONTROL_HPP
+#ifndef WIDGETS_OPTIONALVALUECONTROL_HPP
+#define WIDGETS_OPTIONALVALUECONTROL_HPP
 
 #include <QDoubleSpinBox>
+#include <QIcon>
 #include <QWidget>
 #include <qwt_knob.h>
 
@@ -29,37 +30,48 @@
 namespace sv {
 namespace widgets {
 
-class ValueControl : public QWidget
+class ControlButton;
+
+class OptionalValueControl : public QWidget
 {
     Q_OBJECT
 
 public:
-	ValueControl(const uint digits, const QString unit,
-		const double min, const double max, const double steps, QWidget *parent);
+	OptionalValueControl(const bool is_readable, const bool is_setable,
+		const uint digits, const QString unit,
+		const double min, const double max, const double steps,
+		QWidget *parent);
 
 private:
+	bool state_;
 	double value_;
+
+	bool is_readable_;
+	bool is_setable_;
 	uint digits_;
 	QString unit_;
 	double min_;
 	double max_;
 	double steps_;
 
+	widgets::ControlButton *controlButton;
 	QDoubleSpinBox *doubleSpinBox;
-	QwtKnob *knob;
-	LcdDisplay *lcdDisplay;
 
 	void setup_ui();
 
 public Q_SLOTS:
+	void on_clicked();
+	void on_state_changed(const bool enabled);
 	void change_value(const double value);
 	void on_value_changed(const double value);
 
 Q_SIGNALS:
+	void state_changed(const bool enabled);
 	void value_changed(const double value);
+
 };
 
 } // namespace widgets
 } // namespace sv
 
-#endif // WIDGETS_VALUECONTROL_HPP
+#endif // WIDGETS_OPTIONALVALUECONTROL_HPP

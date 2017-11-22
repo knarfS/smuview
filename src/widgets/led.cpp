@@ -17,63 +17,47 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QApplication>
+#include <QHBoxLayout>
+#include <QDebug>
 
-#include "controlbutton.hpp"
+#include "led.hpp"
 
 namespace sv {
 namespace widgets {
 
-ControlButton::ControlButton(const bool is_readable, const bool is_setable,
-		QWidget *parent) :
-	QPushButton(parent),
+Led::Led(QString text, QWidget *parent) :
+	QWidget(parent),
 	state_(false),
-	is_readable_(is_readable),
-	is_setable_(is_setable),
+	text_(text),
 	icon_red_(":/icons/status-red.svg"),
 	icon_green_(":/icons/status-green.svg"),
 	icon_grey_(":/icons/status-grey.svg")
 {
 	setup_ui();
-
-	connect(this, SIGNAL(clicked(bool)), this, SLOT(on_clicked()));
 }
 
-void ControlButton::setup_ui()
+void Led::setup_ui()
 {
-	this->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-	this->setMaximumSize(80, 50);
+	QHBoxLayout *hLayout = new QHBoxLayout(this);
 
-	this->setIconSize(QSize(8, 8));
+	ledLabel_ = new QLabel(this);
+	ledLabel_->setPixmap(icon_grey_.pixmap(16, 16, QIcon::Mode::Disabled, QIcon::State::Off));
+	hLayout->addWidget(ledLabel_);
 
-	if (!is_setable_) {
-		this->setDisabled(true);
-	}
-
-	if (!is_readable_) {
-		this->setIcon(icon_grey_);
-		this->setText(QApplication::translate("SmuView", "On/Off", Q_NULLPTR));
-		this->setChecked(false);
-	}
+	textLabel_ = new QLabel(text_, this);
+	hLayout->addWidget(textLabel_);
 }
 
-void ControlButton::on_clicked()
+void Led::on_state_changed(const bool enabled)
 {
-	on_state_changed(!state_);
-	Q_EMIT state_changed(state_);
-}
-
-void ControlButton::on_state_changed(const bool enabled)
-{
+	qWarning() << "Led::on_state_changed(): enabled = " << enabled;
 	if (enabled) {
-		this->setIcon(icon_green_);
-		this->setText(QApplication::translate("SmuView", "On", Q_NULLPTR));
-		this->setChecked(true);
+		qWarning() << "Led::on_state_changed(): led = green";
+		ledLabel_->setPixmap(icon_green_.pixmap(16, 16, QIcon::Mode::Active, QIcon::State::On));
 		state_ = true;
 	} else {
-		this->setIcon(icon_red_);
-		this->setText(QApplication::translate("SmuView", "Off", Q_NULLPTR));
-		this->setChecked(false);
+		qWarning() << "Led::on_state_changed(): led = red";
+		ledLabel_->setPixmap(icon_red_.pixmap(16, 16, QIcon::Mode::Active, QIcon::State::Off));
 		state_ = false;
 	}
 }

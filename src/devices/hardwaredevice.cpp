@@ -262,8 +262,8 @@ double HardwareDevice::get_voltage_target() const
 
 	double value;
 	try {
-		auto gvar =
-			sr_configurable_->config_get(sigrok::ConfigKey::VOLTAGE_TARGET);
+		auto gvar = sr_configurable_->config_get(
+			sigrok::ConfigKey::VOLTAGE_TARGET);
 		value =
 			Glib::VariantBase::cast_dynamic<Glib::Variant<double>>(gvar).get();
 	} catch (sigrok::Error error) {
@@ -285,8 +285,8 @@ void HardwareDevice::set_voltage_target(const double value)
 
 void HardwareDevice::list_voltage_target(double &min, double &max, double &step)
 {
-	Glib::VariantContainerBase gvar =
-		sr_configurable_->config_list(sigrok::ConfigKey::VOLTAGE_TARGET);
+	Glib::VariantContainerBase gvar = sr_configurable_->config_list(
+		sigrok::ConfigKey::VOLTAGE_TARGET);
 
 	Glib::VariantIter iter(gvar);
 	iter.next_value(gvar);
@@ -316,8 +316,8 @@ double HardwareDevice::get_current_limit() const
 
 	double value;
 	try {
-		auto gvar =
-			sr_configurable_->config_get(sigrok::ConfigKey::CURRENT_LIMIT);
+		auto gvar = sr_configurable_->config_get(
+			sigrok::ConfigKey::CURRENT_LIMIT);
 		value =
 			Glib::VariantBase::cast_dynamic<Glib::Variant<double>>(gvar).get();
 	} catch (sigrok::Error error) {
@@ -339,8 +339,8 @@ void HardwareDevice::set_current_limit(const double value)
 
 void HardwareDevice::list_current_limit(double &min, double &max, double &step)
 {
-	Glib::VariantContainerBase gvar =
-		sr_configurable_->config_list(sigrok::ConfigKey::CURRENT_LIMIT);
+	Glib::VariantContainerBase gvar = sr_configurable_->config_list(
+		sigrok::ConfigKey::CURRENT_LIMIT);
 
 	// TODO: do a better way and check!
 	Glib::VariantIter iter(gvar);
@@ -352,200 +352,202 @@ void HardwareDevice::list_current_limit(double &min, double &max, double &step)
 	step = Glib::VariantBase::cast_dynamic<Glib::Variant<double>>(gvar).get();
 }
 
-/*
-shared_ptr<data::SignalBase> HardwareDevice::signalbase_from_channel(
-	shared_ptr<sigrok::Channel> sr_channel) const
+
+bool HardwareDevice::is_over_voltage_active_getable() const
 {
-	for (shared_ptr<data::SignalBase> sig : signalbases_) {
-		assert(sig);
-		if (sig->channel() == sr_channel)
-			return sig;
-	}
-	return shared_ptr<data::SignalBase>();
+	return sr_configurable_->config_check(
+		sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_ACTIVE,
+		sigrok::Capability::GET);
 }
 
-void HardwareDevice::feed_in_header()
+double HardwareDevice::get_over_voltage_active() const
 {
-}
+	// TODO: check if getable
 
-void HardwareDevice::feed_in_meta(shared_ptr<sigrok::Meta> meta)
-{
-	for (auto entry : meta->config()) {
-		switch (entry.first->id()) {
-			break;
-		default:
-			// Unknown metadata is not an error.
-			break;
-		}
+	bool active;
+	try {
+		auto gvar = sr_configurable_->config_get(
+			sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_ACTIVE);
+		active =
+			Glib::VariantBase::cast_dynamic<Glib::Variant<bool>>(gvar).get();
+	} catch (sigrok::Error error) {
+		qDebug() << "Failed to get OVER_VOLTAGE_PROTECTION_ACTIVE.";
+		return false;
 	}
 
-	//Q_EMIT signals_changed();
+	return active;
 }
 
-void HardwareDevice::feed_in_trigger()
+
+bool HardwareDevice::is_over_current_active_getable() const
 {
-	// The channel containing most samples should be most accurate
-	uint64_t sample_count = 0;
-
-	{
-		for (const shared_ptr<data::SignalData> d : all_signal_data_) {
-			assert(d);
-			uint64_t temp_count = 0;
-
-			const vector< shared_ptr<data::Segment> > segments =
-				d->segments();
-			for (const shared_ptr<data::Segment> &s : segments)
-				temp_count += s->get_sample_count();
-
-			if (temp_count > sample_count)
-				sample_count = temp_count;
-		}
-	}
-
-	//trigger_event(sample_count / get_samplerate());
+	return sr_configurable_->config_check(
+		sigrok::ConfigKey::OVER_CURRENT_PROTECTION_ACTIVE,
+		sigrok::Capability::GET);
 }
 
-void HardwareDevice::feed_in_frame_begin()
+double HardwareDevice::get_over_current_active() const
 {
-	frame_began_ = true;
+	// TODO: check if getable
 
-	//if (!cur_analog_segments_.empty())
-		//Q_EMIT frame_began();
+	bool active;
+	try {
+		auto gvar = sr_configurable_->config_get(
+			sigrok::ConfigKey::OVER_CURRENT_PROTECTION_ACTIVE);
+		active =
+			Glib::VariantBase::cast_dynamic<Glib::Variant<bool>>(gvar).get();
+	} catch (sigrok::Error error) {
+		qDebug() << "Failed to get OVER_CURRENT_PROTECTION_ACTIVE.";
+		return false;
+	}
+
+	return active;
 }
 
-void HardwareDevice::feed_in_frame_end()
+
+bool HardwareDevice::is_over_temperature_active_getable() const
 {
-	{
-		lock_guard<recursive_mutex> lock(data_mutex_);
-		cur_analog_segments_.clear();
-	}
-
-	if (frame_began_) {
-		frame_began_ = false;
-		//Q_EMIT frame_ended();
-	}
+	return sr_configurable_->config_check(
+		sigrok::ConfigKey::OVER_TEMPERATURE_PROTECTION_ACTIVE,
+		sigrok::Capability::GET);
 }
 
-void HardwareDevice::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
+double HardwareDevice::get_over_temperature_active() const
 {
-	lock_guard<recursive_mutex> lock(data_mutex_);
+	// TODO: check if getable
 
-	const vector<shared_ptr<sigrok::Channel>> sr_channels = sr_analog->channels();
-	const unsigned int channel_count = sr_channels.size();
-	const size_t sample_count = sr_analog->num_samples() / channel_count;
-	bool sweep_beginning = false;
-
-	unique_ptr<float> data(new float[sr_analog->num_samples()]);
-	sr_analog->get_data_as_float(data.get());
-
-	//if (signalbases_.empty())
-	//	update_signals();
-
-	float *channel_data = data.get();
-	for (auto sr_channel : sr_channels) {
-		shared_ptr<data::AnalogSegment> segment;
-
-		// Try to get the segment of the channel
-		const map< shared_ptr<sigrok::Channel>, shared_ptr<data::AnalogSegment> >::
-			iterator iter = cur_analog_segments_.find(sr_channel);
-		if (iter != cur_analog_segments_.end())
-			segment = (*iter).second;
-		else {
-			// If no segment was found, this means we haven't
-			// created one yet. i.e. this is the first packet
-			// in the sweep containing this segment.
-			sweep_beginning = true;
-
-			// Find the analog data associated with the channel
-			shared_ptr<data::SignalBase> base = signalbase_from_channel(sr_channel);
-			assert(base);
-
-			shared_ptr<data::Analog> data(base->analog_data());
-			assert(data);
-
-			// Create a segment, keep it in the maps of channels
-			segment = make_shared<data::AnalogSegment>(
-				*data, cur_samplerate_);
-			cur_analog_segments_[sr_channel] = segment;
-
-			// Push the segment into the analog data.
-			data->push_segment(segment);
-		}
-
-		assert(segment);
-
-		// Append the samples in the segment
-		segment->append_interleaved_samples(channel_data++, sample_count,
-			channel_count);
+	bool active;
+	try {
+		auto gvar = sr_configurable_->config_get(
+			sigrok::ConfigKey::OVER_TEMPERATURE_PROTECTION_ACTIVE);
+		active =
+			Glib::VariantBase::cast_dynamic<Glib::Variant<bool>>(gvar).get();
+	} catch (sigrok::Error error) {
+		qDebug() << "Failed to get OVER_TEMPERATURE_PROTECTION_ACTIVE.";
+		return false;
 	}
 
-	if (sweep_beginning) {
-		// This could be the first packet after a trigger
-		//set_capture_state(Session::Running);
-	}
-
-	//Q_EMIT data_received();
+	return active;
 }
 
-void HardwareDevice::data_feed_in(shared_ptr<sigrok::Device> sr_device,
-	shared_ptr<sigrok::Packet> sr_packet)
+
+bool HardwareDevice::is_under_voltage_enable_getable() const
 {
-	(void)sr_device;
-
-	assert(sr_device);
-	assert(sr_device == sr_device_);
-	assert(sr_packet);
-
-	switch (sr_packet->type()->id()) {
-	case SR_DF_HEADER:
-		feed_in_header();
-		break;
-
-	case SR_DF_META:
-		feed_in_meta(
-			dynamic_pointer_cast<sigrok::Meta>(sr_packet->payload()));
-		break;
-
-	case SR_DF_TRIGGER:
-		feed_in_trigger();
-		break;
-
-	case SR_DF_LOGIC:
-		break;
-
-	case SR_DF_ANALOG:
-		try {
-			feed_in_analog(
-				dynamic_pointer_cast<sigrok::Analog>(sr_packet->payload()));
-		} catch (bad_alloc) {
-			out_of_memory_ = true;
-			stop();
-		}
-		break;
-
-	case SR_DF_FRAME_BEGIN:
-		feed_in_frame_begin();
-		break;
-
-	case SR_DF_FRAME_END:
-		feed_in_frame_end();
-		break;
-
-	case SR_DF_END:
-		// Strictly speaking, this is performed when a frame end marker was
-		// received, so there's no point doing this again. However, not all
-		// devices use frames, and for those devices, we need to do it here.
-		{
-			lock_guard<recursive_mutex> lock(data_mutex_);
-			cur_analog_segments_.clear();
-		}
-		break;
-
-	default:
-		break;
-	}
+	return sr_configurable_->config_check(
+		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION,
+		sigrok::Capability::GET);
 }
-*/
+
+bool HardwareDevice::is_under_voltage_enable_setable() const
+{
+	return sr_configurable_->config_check(
+		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION,
+		sigrok::Capability::SET);
+}
+
+double HardwareDevice::get_under_voltage_enable() const
+{
+	// TODO: check if getable
+
+	bool enable;
+	try {
+		auto gvar = sr_configurable_->config_get(
+			sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION);
+		enable =
+			Glib::VariantBase::cast_dynamic<Glib::Variant<bool>>(gvar).get();
+	} catch (sigrok::Error error) {
+		qDebug() << "Failed to get UNDER_VOLTAGE_CONDITION.";
+		return false;
+	}
+
+	return enable;
+}
+
+
+bool HardwareDevice::is_under_voltage_active_getable() const
+{
+	return sr_configurable_->config_check(
+		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_ACTIVE,
+		sigrok::Capability::GET);
+}
+
+double HardwareDevice::get_under_voltage_active() const
+{
+	// TODO: check if getable
+
+	bool active;
+	try {
+		auto gvar = sr_configurable_->config_get(
+			sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_ACTIVE);
+		active =
+			Glib::VariantBase::cast_dynamic<Glib::Variant<bool>>(gvar).get();
+	} catch (sigrok::Error error) {
+		qDebug() << "Failed to get UNDER_VOLTAGE_CONDITION_ACTIVE.";
+		return false;
+	}
+
+	return active;
+}
+
+
+bool HardwareDevice::is_under_voltage_threshold_getable() const
+{
+	return sr_configurable_->config_check(
+		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD,
+		sigrok::Capability::GET);
+}
+
+bool HardwareDevice::is_under_voltage_threshold_setable() const
+{
+	return sr_configurable_->config_check(
+		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD,
+		sigrok::Capability::SET);
+}
+
+double HardwareDevice::get_under_voltage_threshold() const
+{
+	// TODO: check if getable
+
+	double value;
+	try {
+		auto gvar = sr_configurable_->config_get(
+			sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD);
+		value =
+			Glib::VariantBase::cast_dynamic<Glib::Variant<double>>(gvar).get();
+	} catch (sigrok::Error error) {
+		qDebug() << "Failed to get UNDER_VOLTAGE_CONDITION_THRESHOLD.";
+		return false;
+	}
+
+	return value;
+}
+
+void HardwareDevice::set_under_voltage_threshold(const double value)
+{
+	if (!device_open_)
+		return;
+
+	sr_configurable_->config_set(
+		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD,
+		Glib::Variant<double>::create(value));
+}
+
+void HardwareDevice::list_under_voltage_threshold(
+	double &min, double &max, double &step)
+{
+	Glib::VariantContainerBase gvar = sr_configurable_->config_list(
+		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD);
+
+	// TODO: do a better way and check!
+	Glib::VariantIter iter(gvar);
+	iter.next_value(gvar);
+	min = Glib::VariantBase::cast_dynamic<Glib::Variant<double>>(gvar).get();
+	iter.next_value(gvar);
+	max = Glib::VariantBase::cast_dynamic<Glib::Variant<double>>(gvar).get();
+	iter.next_value(gvar);
+	step = Glib::VariantBase::cast_dynamic<Glib::Variant<double>>(gvar).get();
+}
+
 
 } // namespace devices
 } // namespace sv

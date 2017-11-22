@@ -30,26 +30,19 @@ class ControlButton : public QPushButton
     Q_OBJECT
 
 public:
-	ControlButton(bool readable, bool setable, QWidget *parent);
-
-	/*
-	enum State {
-		On,
-		Off,
-		Unknown
-	};
-	*/
+	ControlButton(const bool is_readable, const bool is_setable,
+		QWidget *parent);
 
 private:
+	bool state_;
 	bool is_readable_;
 	bool is_setable_;
-	bool state_;
 
 	QIcon icon_red_;
 	QIcon icon_green_;
 	QIcon icon_grey_;
 
-	void setupUi();
+	void setup_ui();
 
 public Q_SLOTS:
 	void on_clicked();

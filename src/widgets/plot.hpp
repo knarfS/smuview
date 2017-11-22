@@ -1,5 +1,6 @@
 /*
  * This file is part of the SmuView project.
+ * This file is based on the QWT Oscilloscope Example.
  *
  * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
  *
@@ -51,13 +52,14 @@ public:
 
 	virtual void replot();
 	virtual bool eventFilter(QObject *, QEvent *);
-	void setPlotInterval(int interval) { plot_interval_ = interval; }
-	void setPlotMode(Plot::PlotModes mode) { plot_mode_ = mode; }
+	void set_plot_interval(int plot_interval) { plot_interval_ = plot_interval; }
+	void set_plot_mode(Plot::PlotModes plot_mode) { plot_mode_ = plot_mode; }
 
 public Q_SLOTS:
 	void start();
 	void stop();
-	void setIntervalLength(double interval);
+	void set_x_interval(double x_start, double x_end);
+	void set_y_interval(double y_start, double y_end);
 
 protected:
 	virtual void showEvent(QShowEvent *);
@@ -65,21 +67,21 @@ protected:
 	virtual void timerEvent(QTimerEvent *);
 
 private:
-	void updateCurve();
-	void incrementInterval();
+	void update_curve();
+	void increment_x_interval();
+	void increment_y_interval(QRectF boundaries);
 
 	data::CurveData *curve_data_;
 	QwtPlotDirectPainter *valueDirectPainter_;
 	QwtPlotCurve *value_curve_;
 	int painted_points_;
 
-	QwtInterval interval_;
-	double interval_length_;
-	int timer_id_;
+	QwtInterval x_interval_;
+	QwtInterval y_interval_;
 	int plot_interval_;
+	int timer_id_;
 	PlotModes plot_mode_;
 
-	QwtSystemClock clock_;
 };
 
 } // namespace widgets

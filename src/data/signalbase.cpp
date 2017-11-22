@@ -21,10 +21,10 @@
 
 #include <assert.h>
 
-#include "analog.hpp"
 #include "signalbase.hpp"
-#include "signaldata.hpp"
 #include "src/session.hpp"
+#include "src/data/analog.hpp"
+#include "src/data/signaldata.hpp"
 
 using std::dynamic_pointer_cast;
 using std::make_shared;
@@ -35,7 +35,8 @@ using std::unique_lock;
 namespace sv {
 namespace data {
 
-SignalBase::SignalBase(shared_ptr<sigrok::Channel> sr_channel, ChannelType channel_type) :
+SignalBase::SignalBase(shared_ptr<sigrok::Channel> sr_channel,
+		ChannelType channel_type) :
 	sr_channel_(sr_channel),
 	channel_type_(channel_type)
 {

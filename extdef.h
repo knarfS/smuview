@@ -1,5 +1,5 @@
 /*
- * This file is part of the PulseView project.
+ * This file is part of the SmuView project.
  *
  * Copyright (C) 2012 Joel Holdsworth <joel@airwebreathe.org.uk>
  *
@@ -17,12 +17,12 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PULSEVIEW_EXTDEF_H
-#define PULSEVIEW_EXTDEF_H
+#ifndef SMUVIEW_EXTDEF_H
+#define SMUVIEW_EXTDEF_H
 
 #define countof(x) (sizeof(x) / sizeof(x[0]))
 
 #define begin_element(x) (&x[0])
 #define end_element(x) (&x[countof(x)])
 
-#endif // PULSEVIEW_EXTDEF_H
+#endif // SMUVIEW_EXTDEF_H
