@@ -32,41 +32,10 @@ DeviceTab::DeviceTab(Session &session,
 		BaseTab(session, parent),
 	device_(device)
 {
-	connect(&session_, SIGNAL(signals_changed()),
-		this, SLOT(signals_changed()));
-	connect(&session_, SIGNAL(capture_state_changed(int)),
-		this, SLOT(capture_state_updated(int)));
 }
 
 void DeviceTab::clear_signals()
 {
-}
-
-unordered_set< shared_ptr<data::SignalBase> > DeviceTab::signalbases() const
-{
-	return signalbases_;
-}
-
-void DeviceTab::clear_signalbases()
-{
-	for (shared_ptr<data::SignalBase> signalbase : signalbases_) {
-		disconnect(signalbase.get(), SIGNAL(samples_cleared()),
-			this, SLOT(on_data_updated()));
-		disconnect(signalbase.get(), SIGNAL(samples_added(QObject*, uint64_t, uint64_t)),
-			this, SLOT(on_data_updated()));
-	}
-
-	signalbases_.clear();
-}
-
-void DeviceTab::add_signalbase(const shared_ptr<data::SignalBase> signalbase)
-{
-	signalbases_.insert(signalbase);
-
-	connect(signalbase.get(), SIGNAL(samples_cleared()),
-		this, SLOT(on_data_updated()));
-	connect(signalbase.get(), SIGNAL(samples_added(QObject*, uint64_t, uint64_t)),
-		this, SLOT(on_data_updated()));
 }
 
 } // namespace tabs

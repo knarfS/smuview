@@ -41,10 +41,12 @@ SourceTab::SourceTab(Session &session,
 void SourceTab::setup_ui()
 {
 	// Device controls
-	shared_ptr<views::BaseView> control_view =
-		make_shared<views::SourceControlView>(session_, device_, parent_);
-	add_view(QString("Device control"), control_view,
-		Qt::TopDockWidgetArea, session_);
+	if (device_->is_controllable()) {
+		shared_ptr<views::BaseView> control_view =
+			make_shared<views::SourceControlView>(session_, device_, parent_);
+		add_view(QString("Device control"), control_view,
+			Qt::TopDockWidgetArea, session_);
+	}
 
 	// Power panel
 	if (device_->voltage_signal() && device_->current_signal()) {
@@ -59,7 +61,7 @@ void SourceTab::setup_ui()
 	if (device_->current_signal()) {
 		shared_ptr<views::BaseView> plot_view =
 			make_shared<views::PlotView>(session_,
-				device_->time_data(),
+				device_->current_signal()->time_data(),
 				device_->current_signal()->analog_data(), parent_);
 		add_view(QString("Current Graph"), plot_view,
 			Qt::BottomDockWidgetArea, session_);

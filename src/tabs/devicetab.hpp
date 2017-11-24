@@ -52,19 +52,9 @@ public:
 
 	virtual void clear_signals();
 
-	/**
-	 * Returns the signal bases contained in this tab.
-	 */
-	unordered_set< shared_ptr<data::SignalBase> > signalbases() const;
-
-	virtual void clear_signalbases();
-
-	virtual void add_signalbase(const shared_ptr<data::SignalBase> signalbase);
-
 protected:
 	shared_ptr<devices::HardwareDevice> device_;
 	util::TimeUnit time_unit_;
-	unordered_set< shared_ptr<data::SignalBase> > signalbases_;
 
 public Q_SLOTS:
 
