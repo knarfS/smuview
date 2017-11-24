@@ -30,7 +30,7 @@
 namespace sv {
 
 namespace data {
-class CurveData;
+class BaseCurve;
 }
 
 namespace widgets {
@@ -40,7 +40,7 @@ class Plot : public QwtPlot
 	Q_OBJECT
 
 public:
-	Plot(data::CurveData *curve_data, QWidget * = NULL);
+	Plot(data::BaseCurve *curve_data, QWidget * = NULL);
 	virtual ~Plot();
 
 	enum PlotModes {
@@ -71,7 +71,7 @@ private:
 	void increment_x_interval();
 	void increment_y_interval(QRectF boundaries);
 
-	data::CurveData *curve_data_;
+	data::BaseCurve *curve_data_;
 	QwtPlotDirectPainter *valueDirectPainter_;
 	QwtPlotCurve *value_curve_;
 	int painted_points_;

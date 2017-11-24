@@ -31,8 +31,8 @@
 #include <qwt_legend.h>
 
 #include "plot.hpp"
+#include "src/data/basecurve.hpp"
 #include "src/data/basedata.hpp"
-#include "src/data/curvedata.hpp"
 
 namespace sv {
 namespace widgets {
@@ -99,7 +99,7 @@ private:
 	}
 };
 
-Plot::Plot(data::CurveData *curve_data, QWidget *parent):
+Plot::Plot(data::BaseCurve *curve_data, QWidget *parent):
 	QwtPlot(parent),
 	curve_data_(curve_data),
 	painted_points_(0),

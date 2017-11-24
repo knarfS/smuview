@@ -22,9 +22,7 @@
 
 #include "measurementtab.hpp"
 #include "src/data/analogdata.hpp"
-#include "src/data/curvedata.hpp"
 #include "src/widgets/singlevaluepanel.hpp"
-#include "src/widgets/plot.hpp"
 
 namespace sv {
 namespace tabs {
@@ -77,20 +75,6 @@ void MeasurementTab::setup_ui()
 	valueLayout->addWidget(getValuesGroupBox);
 
 	mainLayout->addItem(valueLayout);
-
-	// Graph
-	/*
-	data::CurveData *curve_data = new data::CurveData(
-		device_->time_data(),
-		device_->measurement_signal()->analog_data());
-	plot = new widgets::Plot(curve_data, this);
-	plot->setIntervalLength(60);
-	plot->setPlotMode(widgets::Plot::PlotModes::Additive);
-	plot->setPlotInterval(1);
-	//connect( ui->actionConnect, SIGNAL(triggered()), ui->mainPlot, SLOT(start()) );
-	//connect( ui->actionDisconnect, SIGNAL(triggered()), ui->mainPlot, SLOT(stop()) );
-	mainLayout->addWidget(plot);
-	*/
 
 	// Spacer
 	mainLayout->addStretch(10);

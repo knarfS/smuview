@@ -23,7 +23,7 @@
 #include "plotview.hpp"
 #include "src/session.hpp"
 #include "src/data/analogdata.hpp"
-#include "src/data/curvedata.hpp"
+#include "src/data/basecurve.hpp"
 #include "src/widgets/plot.hpp"
 
 namespace sv {
@@ -48,10 +48,10 @@ void PlotView::setup_ui()
 {
 	QVBoxLayout *layout = new QVBoxLayout(this);
 
-	data::CurveData *curve_data = new data::CurveData(
+	data::BaseCurve *curve = new data::BaseCurve(
 		x_signal_data_, y_signal_data_);
 
-	plot = new widgets::Plot(curve_data, this);
+	plot = new widgets::Plot(curve, this);
 	plot->set_plot_mode(widgets::Plot::PlotModes::Additive);
 	plot->set_plot_interval(200); // 200ms
 

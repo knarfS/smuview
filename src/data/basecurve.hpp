@@ -17,8 +17,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DATA_CURVEDATA_HPP
-#define DATA_CURVEDATA_HPP
+#ifndef DATA_BASECURVE_HPP
+#define DATA_BASECURVE_HPP
 
 #include <memory>
 
@@ -32,11 +32,11 @@ namespace data {
 
 class AnalogData;
 
-class CurveData : public QwtSeriesData<QPointF>
+class BaseCurve : public QwtSeriesData<QPointF>
 {
 
 public:
-	CurveData(shared_ptr<AnalogData> x_signal_data,
+	BaseCurve(shared_ptr<AnalogData> x_signal_data,
 		shared_ptr<AnalogData> y_signal_data);
 
 	virtual QPointF sample( size_t i ) const;
@@ -52,4 +52,4 @@ private:
 } // namespace data
 } // namespace sv
 
-#endif // DATA_CURVEDATA_HPP
+#endif // DATA_BASECURVE_HPP

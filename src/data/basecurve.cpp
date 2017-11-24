@@ -17,13 +17,13 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "curvedata.hpp"
+#include "basecurve.hpp"
 #include "src/data/analogdata.hpp"
 
 namespace sv {
 namespace data {
 
-CurveData::CurveData(shared_ptr<AnalogData> x_signal_data,
+BaseCurve::BaseCurve(shared_ptr<AnalogData> x_signal_data,
 		shared_ptr<AnalogData> y_signal_data) :
 	QwtSeriesData<QPointF>(),
 	x_signal_data_(x_signal_data),
@@ -31,7 +31,7 @@ CurveData::CurveData(shared_ptr<AnalogData> x_signal_data,
 {
 }
 
-QPointF CurveData::sample(size_t i) const
+QPointF BaseCurve::sample(size_t i) const
 {
 	//signal_data_->lock();
 
@@ -44,7 +44,7 @@ QPointF CurveData::sample(size_t i) const
 	return sample;
 }
 
-size_t CurveData::size() const
+size_t BaseCurve::size() const
 {
 	// TODO: Synchronize x/y sample data, so no compare is needed
 	size_t x_size = x_signal_data_->get_sample_count();
@@ -55,7 +55,7 @@ size_t CurveData::size() const
 		return y_size;
 }
 
-QRectF CurveData::boundingRect() const
+QRectF BaseCurve::boundingRect() const
 {
 	// top left (x, y), width, height
 	return QRectF(
