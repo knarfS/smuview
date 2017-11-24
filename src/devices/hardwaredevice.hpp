@@ -58,7 +58,7 @@ namespace sv {
 
 namespace data {
 class AnalogSegment;
-class SignalBase;
+class BaseSignal;
 class SignalData;
 }
 
@@ -99,9 +99,9 @@ public:
 	void close();
 
 	// TODO: Generic!
-	shared_ptr<data::SignalBase> voltage_signal() const;
-	shared_ptr<data::SignalBase> current_signal() const;
-	shared_ptr<data::SignalBase> measurement_signal() const;
+	shared_ptr<data::BaseSignal> voltage_signal() const;
+	shared_ptr<data::BaseSignal> current_signal() const;
+	shared_ptr<data::BaseSignal> measurement_signal() const;
 
 	bool is_controllable() const;
 
@@ -152,11 +152,11 @@ private:
 
 	shared_ptr<data::Analog> common_time_data_;
 	// TODO: Generic!
-	shared_ptr<data::SignalBase> voltage_signal_;
-	shared_ptr<data::SignalBase> current_signal_;
-	shared_ptr<data::SignalBase> measurement_signal_;
+	shared_ptr<data::BaseSignal> voltage_signal_;
+	shared_ptr<data::BaseSignal> current_signal_;
+	shared_ptr<data::BaseSignal> measurement_signal_;
 
-	shared_ptr<data::SignalBase> init_signal(
+	shared_ptr<data::BaseSignal> init_signal(
 		shared_ptr<sigrok::Channel> sr_channel);
 
 /*

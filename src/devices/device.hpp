@@ -45,7 +45,7 @@ class DeviceManager;
 
 namespace data {
 class Analog;
-class SignalBase;
+class BaseSignal;
 class SignalData;
 }
 
@@ -87,11 +87,11 @@ public:
 
 private:
 	mutable recursive_mutex data_mutex_;
-	unordered_set< shared_ptr<data::SignalData> > all_signal_data_;
+	unordered_set< shared_ptr<data::SignalData> > all_signal_data_; // TODO: needed?
 
 	bool out_of_memory_;
 	bool frame_began_;
-	shared_ptr<data::SignalBase> signalbase_frame_;
+	shared_ptr<data::BaseSignal> signalbase_frame_; // TODO: Rename or change to data. per cg?
 
 	void feed_in_header();
 	void feed_in_meta(shared_ptr<sigrok::Meta> sr_meta);
@@ -102,9 +102,9 @@ private:
 
 protected:
 	shared_ptr<sigrok::Device> sr_device_;
-	map<shared_ptr<sigrok::Channel>, shared_ptr<data::SignalBase>> channel_data_; // TODO: Rename
+	map<shared_ptr<sigrok::Channel>, shared_ptr<data::BaseSignal>> channel_data_; // TODO: Rename
 
-	virtual shared_ptr<data::SignalBase> init_signal(
+	virtual shared_ptr<data::BaseSignal> init_signal(
 		shared_ptr<sigrok::Channel> sr_channel) = 0;
 
 // TODO: move to hardwaredevice

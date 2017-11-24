@@ -23,7 +23,7 @@
 #include <QDebug>
 
 #include "session.hpp"
-#include "data/signalbase.hpp"
+#include "data/basesignal.hpp"
 #include "devices/device.hpp"
 #include "devices/hardwaredevice.hpp"
 
@@ -201,9 +201,9 @@ void Session::stop_capture()
 }
 
 // TODO: signal/slot??
-void Session::add_signal(shared_ptr<data::SignalBase> signalbase)
+void Session::add_signal(shared_ptr<data::SignalBase> signal)
 {
-	all_signals_.insert(signalbase);
+	all_signals_.insert(signal);
 }
 
 void Session::sample_thread_proc(function<void (const QString)> error_handler)

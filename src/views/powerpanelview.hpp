@@ -34,7 +34,7 @@ namespace sv {
 class Session;
 
 namespace data {
-class SignalBase;
+class BaseSignal;
 }
 
 namespace widgets {
@@ -49,14 +49,14 @@ class PowerPanelView : public BaseView
 
 public:
 	PowerPanelView(Session& session,
-		shared_ptr<data::SignalBase> voltage_signal,
-		shared_ptr<data::SignalBase> current_signal,
+		shared_ptr<data::BaseSignal> voltage_signal,
+		shared_ptr<data::BaseSignal> current_signal,
 		QWidget* parent);
 	~PowerPanelView();
 
 private:
-	shared_ptr<data::SignalBase> voltage_signal_;
-	shared_ptr<data::SignalBase> current_signal_;
+	shared_ptr<data::BaseSignal> voltage_signal_;
+	shared_ptr<data::BaseSignal> current_signal_;
 
 	QTimer *timer_;
 	qint64 start_time_;

@@ -19,8 +19,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DATA_SIGNALBASE_HPP
-#define DATA_SIGNALBASE_HPP
+#ifndef DATA_BASESIGNAL_HPP
+#define DATA_BASESIGNAL_HPP
 
 #include <atomic>
 #include <condition_variable>
@@ -54,7 +54,7 @@ namespace data {
 class Analog;
 class SignalData;
 
-class SignalBase : public QObject
+class BaseSignal : public QObject
 {
 	Q_OBJECT
 
@@ -65,8 +65,8 @@ public:
 	};
 
 public:
-	SignalBase(shared_ptr<sigrok::Channel> sr_channel, ChannelType channel_type);
-	virtual ~SignalBase();
+	BaseSignal(shared_ptr<sigrok::Channel> sr_channel, ChannelType channel_type);
+	virtual ~BaseSignal();
 
 public:
 	/**
@@ -184,4 +184,4 @@ protected:
 } // namespace data
 } // namespace sv
 
-#endif // DATA_SEGMENT_HPP
+#endif // DATA_BASESIGNAL_HPP

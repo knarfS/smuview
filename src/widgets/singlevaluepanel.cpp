@@ -23,13 +23,13 @@
 #include <QVBoxLayout>
 
 #include "singlevaluepanel.hpp"
-#include "src/data/signalbase.hpp"
+#include "src/data/basesignal.hpp"
 #include "src/data/analog.hpp"
 
 namespace sv {
 namespace widgets {
 
-SingleValuePanel::SingleValuePanel(shared_ptr<data::SignalBase> value_signal,
+SingleValuePanel::SingleValuePanel(shared_ptr<data::BaseSignal> value_signal,
 		QWidget *parent) :
 	QWidget(parent),
 	value_signal_(value_signal)

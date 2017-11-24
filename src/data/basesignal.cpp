@@ -23,7 +23,7 @@
 
 #include <QDateTime>
 
-#include "signalbase.hpp"
+#include "basesignal.hpp"
 #include "src/session.hpp"
 #include "src/data/analog.hpp"
 #include "src/data/signaldata.hpp"
@@ -37,7 +37,7 @@ using std::unique_lock;
 namespace sv {
 namespace data {
 
-SignalBase::SignalBase(shared_ptr<sigrok::Channel> sr_channel,
+BaseSignal::BaseSignal(shared_ptr<sigrok::Channel> sr_channel,
 		ChannelType channel_type) :
 	sr_channel_(sr_channel),
 	channel_type_(channel_type)
@@ -46,26 +46,26 @@ SignalBase::SignalBase(shared_ptr<sigrok::Channel> sr_channel,
 		internal_name_ = QString::fromStdString(sr_channel_->name());
 }
 
-SignalBase::~SignalBase()
+BaseSignal::~BaseSignal()
 {
 }
 
-shared_ptr<sigrok::Channel> SignalBase::sr_channel() const
+shared_ptr<sigrok::Channel> BaseSignal::sr_channel() const
 {
 	return sr_channel_;
 }
 
-QString SignalBase::name() const
+QString BaseSignal::name() const
 {
 	return (sr_channel_) ? QString::fromStdString(sr_channel_->name()) : name_;
 }
 
-QString SignalBase::internal_name() const
+QString BaseSignal::internal_name() const
 {
 	return internal_name_;
 }
 
-void SignalBase::set_name(QString name)
+void BaseSignal::set_name(QString name)
 {
 	if (sr_channel_)
 		sr_channel_->set_name(name.toUtf8().constData());
@@ -75,12 +75,12 @@ void SignalBase::set_name(QString name)
 	name_changed(name);
 }
 
-bool SignalBase::enabled() const
+bool BaseSignal::enabled() const
 {
 	return (sr_channel_) ? sr_channel_->enabled() : true;
 }
 
-void SignalBase::set_enabled(bool value)
+void BaseSignal::set_enabled(bool value)
 {
 	if (sr_channel_) {
 		sr_channel_->set_enabled(value);
@@ -88,33 +88,33 @@ void SignalBase::set_enabled(bool value)
 	}
 }
 
-SignalBase::ChannelType SignalBase::type() const
+BaseSignal::ChannelType BaseSignal::type() const
 {
 	return channel_type_;
 }
 
-unsigned int SignalBase::index() const
+unsigned int BaseSignal::index() const
 {
 	return (sr_channel_) ? sr_channel_->index() : 0;
 }
 
-QColor SignalBase::colour() const
+QColor BaseSignal::colour() const
 {
 	return colour_;
 }
 
-void SignalBase::set_colour(QColor colour)
+void BaseSignal::set_colour(QColor colour)
 {
 	colour_ = colour;
 	colour_changed(colour);
 }
 
-void SignalBase::set_time_start(qint64 time_start)
+void BaseSignal::set_time_start(qint64 time_start)
 {
 	time_start_ = time_start;
 }
 
-void SignalBase::set_data(shared_ptr<sv::data::SignalData> data)
+void BaseSignal::set_data(shared_ptr<sv::data::SignalData> data)
 {
 	/*
 	if (data_) {
@@ -137,12 +137,12 @@ void SignalBase::set_data(shared_ptr<sv::data::SignalData> data)
 	*/
 }
 
-void SignalBase::set_time_data(shared_ptr<sv::data::Analog> time_data)
+void BaseSignal::set_time_data(shared_ptr<sv::data::Analog> time_data)
 {
 	time_data_ = time_data;
 }
 
-void SignalBase::add_timestamp()
+void BaseSignal::add_timestamp()
 {
 	// TODO: use std::chrono / std::time and double
 	qint64 time_span = QDateTime::currentMSecsSinceEpoch() - time_start_;
@@ -150,12 +150,12 @@ void SignalBase::add_timestamp()
 	time_data_->push_sample(&dtime_span);
 }
 
-shared_ptr<sv::data::SignalData> SignalBase::data()
+shared_ptr<sv::data::SignalData> BaseSignal::data()
 {
 	return data_;
 }
 
-shared_ptr<data::Analog> SignalBase::analog_data() const
+shared_ptr<data::Analog> BaseSignal::analog_data() const
 {
 	shared_ptr<Analog> result = nullptr;
 
@@ -165,26 +165,26 @@ shared_ptr<data::Analog> SignalBase::analog_data() const
 	return result;
 }
 
-shared_ptr<data::Analog> SignalBase::time_data() const
+shared_ptr<data::Analog> BaseSignal::time_data() const
 {
 	return time_data_;
 }
 
-void SignalBase::save_settings(QSettings &settings) const
+void BaseSignal::save_settings(QSettings &settings) const
 {
 	settings.setValue("name", name());
 	settings.setValue("enabled", enabled());
 	settings.setValue("colour", colour());
 }
 
-void SignalBase::restore_settings(QSettings &settings)
+void BaseSignal::restore_settings(QSettings &settings)
 {
 	set_name(settings.value("name").toString());
 	set_enabled(settings.value("enabled").toBool());
 	set_colour(settings.value("colour").value<QColor>());
 }
 
-void SignalBase::on_samples_cleared()
+void BaseSignal::on_samples_cleared()
 {
 	samples_cleared();
 }

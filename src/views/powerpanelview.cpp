@@ -25,15 +25,15 @@
 #include "powerpanelview.hpp"
 #include "src/session.hpp"
 #include "src/data/analog.hpp"
-#include "src/data/signalbase.hpp"
+#include "src/data/basesignal.hpp"
 #include "src/widgets/lcddisplay.hpp"
 
 namespace sv {
 namespace views {
 
 PowerPanelView::PowerPanelView(Session &session,
-	shared_ptr<data::SignalBase> voltage_signal,
-	shared_ptr<data::SignalBase> current_signal,
+	shared_ptr<data::BaseSignal> voltage_signal,
+	shared_ptr<data::BaseSignal> current_signal,
 	QWidget *parent) :
 		BaseView(session, parent),
 	voltage_signal_(voltage_signal),

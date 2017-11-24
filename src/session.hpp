@@ -84,7 +84,7 @@ public:
 	void add_device(shared_ptr<devices::HardwareDevice> device);
 	void remove_device(shared_ptr<devices::HardwareDevice> device);
 
-	void add_signal(shared_ptr<data::SignalBase> signalbase);
+	void add_signal(shared_ptr<data::SignalBase> signal);
 
 	void load_init_file(const string &file_name, const string &format);
 

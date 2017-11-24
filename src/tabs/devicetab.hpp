@@ -27,7 +27,6 @@
 #include <QMainWindow>
 
 #include "src/util.hpp"
-#include "src/data/signalbase.hpp"
 #include "src/devices/hardwaredevice.hpp"
 #include "src/tabs/basetab.hpp"
 

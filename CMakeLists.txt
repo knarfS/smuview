@@ -143,8 +143,8 @@ set(smuview_SOURCES
   src/session.cpp
   src/util.cpp
   src/data/analog.cpp
+  src/data/basesignal.cpp
   src/data/curvedata.cpp
-  src/data/signalbase.cpp
   src/data/signaldata.cpp
   src/devices/device.cpp
   src/devices/hardwaredevice.cpp

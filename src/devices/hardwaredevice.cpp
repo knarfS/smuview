@@ -31,7 +31,7 @@
 #include "src/devicemanager.hpp"
 #include "src/session.hpp"
 #include "src/data/analog.hpp"
-#include "src/data/signalbase.hpp"
+#include "src/data/basesignal.hpp"
 #include "src/data/signaldata.hpp"
 
 using std::bad_alloc;
@@ -179,11 +179,11 @@ void HardwareDevice::close()
 	device_open_ = false;
 }
 
-shared_ptr<data::SignalBase> HardwareDevice::init_signal(
+shared_ptr<data::BaseSignal> HardwareDevice::init_signal(
 	shared_ptr<sigrok::Channel> sr_channel)
 {
 	qWarning() << "init_signal() -1-";
-	shared_ptr<data::SignalBase> signalbase;
+	shared_ptr<data::BaseSignal> signal;
 	//lock_guard<recursive_mutex> lock(data_mutex_);
 
 	switch(sr_channel->type()->id()) {
@@ -193,32 +193,32 @@ shared_ptr<data::SignalBase> HardwareDevice::init_signal(
 
 	case SR_CHANNEL_ANALOG:
 	{
-		signalbase = make_shared<data::SignalBase>(
-			sr_channel, data::SignalBase::AnalogChannel);
+		signal = make_shared<data::BaseSignal>(
+			sr_channel, data::BaseSignal::AnalogChannel);
 
-		signalbase->set_time_start(QDateTime::currentMSecsSinceEpoch());
+		signal->set_time_start(QDateTime::currentMSecsSinceEpoch());
 
 		if (common_time_data_)
-			signalbase->set_time_data(common_time_data_);
+			signal->set_time_data(common_time_data_);
 		else {
 			shared_ptr<data::Analog> time_data = make_shared<data::Analog>();
-			signalbase->set_time_data(time_data);
+			signal->set_time_data(time_data);
 		}
 
 		shared_ptr<data::Analog> data = make_shared<data::Analog>();
-		signalbase->set_data(data);
+		signal->set_data(data);
 
 		channel_data_.insert(pair<
 			shared_ptr<sigrok::Channel>,
-			shared_ptr<data::SignalBase>>
-				(sr_channel, signalbase));
+			shared_ptr<data::BaseSignal>>
+				(sr_channel, signal));
 
-		if (signalbase->internal_name().startsWith("V"))
-			voltage_signal_ = signalbase;
-		else if (signalbase->internal_name().startsWith("I"))
-			current_signal_ = signalbase;
-		else if (signalbase->internal_name() == "P1")
-			measurement_signal_ = signalbase;
+		if (signal->internal_name().startsWith("V"))
+			voltage_signal_ = signal;
+		else if (signal->internal_name().startsWith("I"))
+			current_signal_ = signal;
+		else if (signal->internal_name() == "P1")
+			measurement_signal_ = signal;
 
 		break;
 	}
@@ -230,20 +230,20 @@ shared_ptr<data::SignalBase> HardwareDevice::init_signal(
 
 	//signals_changed();
 
-	return signalbase;
+	return signal;
 }
 
-shared_ptr<data::SignalBase> HardwareDevice::voltage_signal() const
+shared_ptr<data::BaseSignal> HardwareDevice::voltage_signal() const
 {
 	return voltage_signal_;
 }
 
-shared_ptr<data::SignalBase> HardwareDevice::current_signal() const
+shared_ptr<data::BaseSignal> HardwareDevice::current_signal() const
 {
 	return current_signal_;
 }
 
-shared_ptr<data::SignalBase> HardwareDevice::measurement_signal() const
+shared_ptr<data::BaseSignal> HardwareDevice::measurement_signal() const
 {
 	return measurement_signal_;
 }

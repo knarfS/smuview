@@ -25,7 +25,7 @@
 #include "sinktab.hpp"
 #include "src/tabs/devicetab.hpp"
 #include "src/data/analog.hpp"
-#include "src/data/signalbase.hpp"
+#include "src/data/basesignal.hpp"
 #include "src/views/sinkcontrolview.hpp"
 #include "src/views/plotview.hpp"
 #include "src/views/powerpanelview.hpp"

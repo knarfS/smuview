@@ -27,7 +27,7 @@
 
 #include "device.hpp"
 #include "src/data/analog.hpp"
-#include "src/data/signalbase.hpp"
+#include "src/data/basesignal.hpp"
 #include "src/data/signaldata.hpp"
 
 using std::bad_alloc;
@@ -184,20 +184,20 @@ void Device::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
 			continue;
 		}
 
-		shared_ptr<data::SignalBase> signalbase = channel_data_[sr_channel];
-		signalbase->data()->push_sample(channel_data);
+		shared_ptr<data::BaseSignal> signal = channel_data_[sr_channel];
+		signal->data()->push_sample(channel_data);
 		channel_data++;
 
 		// Timestamp for values not in a FRAME
 		// TODO: Find a better way to add the timestamp when not in a frame
 		if (frame_began_ && !signalbase_frame_) {
-			signalbase_frame_ = signalbase;
+			signalbase_frame_ = signal;
 		} else if (frame_began_ && signalbase_frame_) {
-			signalbase->set_time_data(signalbase_frame_->time_data());
+			signal->set_time_data(signalbase_frame_->time_data());
 		} else {
-			signalbase->add_timestamp();
+			signal->add_timestamp();
 		}
-		signalbase->add_timestamp();
+		signal->add_timestamp();
 
 		/*
 		Q_EMIT data_received(segment);

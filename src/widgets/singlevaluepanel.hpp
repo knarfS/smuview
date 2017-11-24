@@ -33,7 +33,7 @@ using std::shared_ptr;
 namespace sv {
 
 namespace data {
-class SignalBase;
+class BaseSignal;
 }
 
 namespace widgets {
@@ -43,12 +43,12 @@ class SingleValuePanel : public QWidget
     Q_OBJECT
 
 public:
-	SingleValuePanel(shared_ptr<data::SignalBase> value_signal,
+	SingleValuePanel(shared_ptr<data::BaseSignal> value_signal,
 		QWidget *parent);
 	~SingleValuePanel();
 
 private:
-	shared_ptr<data::SignalBase> value_signal_;
+	shared_ptr<data::BaseSignal> value_signal_;
 
 	QTimer *timer_;
 	qint64 start_time_;
