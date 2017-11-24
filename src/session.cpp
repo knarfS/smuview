@@ -23,8 +23,9 @@
 #include <QDebug>
 
 #include "session.hpp"
-#include "data/signaldata.hpp"
+#include "data/signalbase.hpp"
 #include "devices/device.hpp"
+#include "devices/hardwaredevice.hpp"
 
 using std::lock_guard;
 using std::mutex;
@@ -69,30 +70,23 @@ shared_ptr<sigrok::Session> Session::session() const
 }
 */
 
+void Session::save_settings(QSettings &settings) const
+{
+	(QSettings)&settings;
+
+	// TODO: Remove all signal data from settings?
+}
+
+void Session::restore_settings(QSettings &settings)
+{
+	(QSettings)&settings;
+
+	// TODO: Restore all signal data from settings?
+}
+
 void Session::add_device(shared_ptr<devices::HardwareDevice> device)
 {
 	assert(device);
-
-	// Ensure we are not capturing before setting the device
-	//stop_capture();
-
-	// Remove all stored data
-	/*
-	for (shared_ptr<views::ViewBase> view : views_) {
-		view->clear_signals();
-	}
-	for (const shared_ptr<data::SignalData> d : all_signal_data_)
-		d->clear();
-	all_signal_data_.clear();
-	signalbases_.clear();
-
-	for (auto entry : cur_analog_segments_) {
-		shared_ptr<sigrok::Channel>(entry.first).reset();
-		shared_ptr<data::AnalogSegment>(entry.second).reset();
-	}
-
-	signals_changed();
-	*/
 
 	try {
 		device->open();
@@ -108,15 +102,14 @@ void Session::add_device(shared_ptr<devices::HardwareDevice> device)
 			(shared_ptr<sigrok::Device> sr_device, shared_ptr<sigrok::Packet> sr_packet) {
 				device->data_feed_in(sr_device, sr_packet);
 			});
-
-		device->update_signals();
 	}
 
 	devices_.push_back(device);
-	//device_ = move(device);
 
-
-	//device_changed();
+	/*
+	signals_changed();
+	device_changed();
+	*/
 }
 
 void Session::remove_device(shared_ptr<devices::HardwareDevice> device)
@@ -207,6 +200,12 @@ void Session::stop_capture()
 		sampling_thread_.join();
 }
 
+// TODO: signal/slot??
+void Session::add_signal(shared_ptr<data::SignalBase> signalbase)
+{
+	all_signals_.insert(signalbase);
+}
+
 void Session::sample_thread_proc(function<void (const QString)> error_handler)
 {
 	assert(error_handler);
@@ -231,14 +230,6 @@ void Session::sample_thread_proc(function<void (const QString)> error_handler)
 	}
 
 	set_capture_state(Stopped);
-
-	/*
-	// Confirm that SR_DF_END was received
-	if (cur_logic_segment_) {
-		qDebug("SR_DF_END was not received.");
-		assert(false);
-	}
-	*/
 
 	// Optimize memory usage
 	free_unused_memory();

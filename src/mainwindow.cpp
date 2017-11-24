@@ -67,13 +67,6 @@ void MainWindow::init_session()
 {
 	shared_ptr<Session> session = make_shared<Session>(device_manager_);
 
-	/*
-	connect(session.get(), SIGNAL(add_view(const QString&, views::ViewType, Session*)),
-		this, SLOT(on_add_view(const QString&, views::ViewType, Session*)));
-	connect(session.get(), SIGNAL(name_changed()),
-		this, SLOT(on_session_name_changed()));
-	*/
-
 	connect(session.get(), SIGNAL(capture_state_changed(int)),
 		this, SLOT(on_capture_state_changed(int)));
 
@@ -100,45 +93,21 @@ void MainWindow::init_session_with_file(
 
 void MainWindow::save_session()
 {
-	/*
 	QSettings settings;
-	int id = 0;
 
-	// Ignore sessions using the demo device or no device at all
-	if (session_->device()) {
-		shared_ptr<devices::HardwareDevice> device =
-			dynamic_pointer_cast< devices::HardwareDevice >
-			(session->device());
-
-		if (device &&
-			device->hardware_device()->driver()->name() == "demo")
-			continue;
-
-		settings.beginGroup("Session" + QString::number(id++));
-		settings.remove("");  // Remove all keys in this group
-		session_->save_settings(settings);
-		settings.endGroup();
-	}
-
-	settings.setValue("sessions", id);
-	*/
+	settings.beginGroup("Session");
+	settings.remove("");  // Remove all keys in this group
+	session_->save_settings(settings);
+	settings.endGroup();
 }
 
 void MainWindow::restore_session()
 {
-	/*
 	QSettings settings;
-	int i, session_count;
 
-	session_count = settings.value("sessions", 0).toInt();
-
-	for (i = 0; i < session_count; i++) {
-		settings.beginGroup("Session" + QString::number(i));
-		shared_ptr<Session> session = add_session();
-		session->restore_settings(settings);
-		settings.endGroup();
-	}
-	*/
+	settings.beginGroup("Session");
+	session_->restore_settings(settings);
+	settings.endGroup();
 }
 
 void MainWindow::remove_session()
@@ -203,6 +172,12 @@ shared_ptr<devices::Device> MainWindow::add_tab(
 			new tabs::MeasurementTab(*session_, device, window);
 		window->setCentralWidget(measurementTab);
 	} else if (type == tabs::TabTypeViews) {
+	}
+
+	// Start session
+	if (session_->get_capture_state() == Session::Stopped) {
+		session_->start_capture([&](QString message) {
+			session_error("Capture failed", message); });
 	}
 
 	return device;
