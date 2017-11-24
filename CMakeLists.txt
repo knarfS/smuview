@@ -160,12 +160,12 @@ set(smuview_SOURCES
   src/views/powerpanelview.cpp
   src/views/sinkcontrolview.cpp
   src/views/sourcecontrolview.cpp
+  src/views/valuepanelview.cpp
   src/widgets/controlbutton.cpp
   src/widgets/lcddisplay.cpp
   src/widgets/led.cpp
   src/widgets/optionalvaluecontrol.cpp
   src/widgets/plot.cpp
-  src/widgets/singlevaluepanel.cpp
   src/widgets/valuecontrol.cpp
 )
 

@@ -3,9 +3,9 @@
  *
  * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
  *
- * This program is free software: you can redistribute it and/or modify
+ * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -14,61 +14,73 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WIDGETS_SINGLEVALUEPANEL_HPP
-#define WIDGETS_SINGLEVALUEPANEL_HPP
+#ifndef VIEWS_VALUEPANELVIEW_HPP
+#define VIEWS_VALUEPANELVIEW_HPP
 
 #include <memory>
 
 #include <QPushButton>
 #include <QTimer>
-#include <QWidget>
 
-#include "lcddisplay.hpp"
+#include "src/views/baseview.hpp"
 
 using std::shared_ptr;
 
 namespace sv {
+
+class Session;
 
 namespace data {
 class BaseSignal;
 }
 
 namespace widgets {
+class LcdDisplay;
+}
 
-class SingleValuePanel : public QWidget
+namespace views {
+
+class ValuePanelView : public BaseView
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-	SingleValuePanel(shared_ptr<data::BaseSignal> value_signal,
-		QWidget *parent);
-	~SingleValuePanel();
+	ValuePanelView(Session& session,
+		shared_ptr<data::BaseSignal> value_signal,
+		QWidget* parent);
+	~ValuePanelView();
 
 private:
+	uint digits_;
+	QString unit_;
 	shared_ptr<data::BaseSignal> value_signal_;
 
 	QTimer *timer_;
-	qint64 start_time_;
-	qint64 last_time_;
 
 	widgets::LcdDisplay *valueDisplay;
 	QPushButton *resetButton;
 
 	void setup_ui();
+	void connect_signals();
 	void reset_display();
 	void init_timer();
 	void stop_timer();
 
+protected:
+
 public Q_SLOTS:
+
+private Q_SLOTS:
 	void on_reset();
 	void on_update();
+
 };
 
-} // namespace widgets
+} // namespace views
 } // namespace sv
 
-#endif // WIDGETS_SINGLEVALUEPANEL_HPP
+#endif // VIEWS_VALUEPANELVIEW_HPP
 

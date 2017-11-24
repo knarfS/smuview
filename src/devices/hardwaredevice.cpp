@@ -96,6 +96,11 @@ HardwareDevice::HardwareDevice(
 		// Loads have common time data
 		common_time_data_ = make_shared<data::AnalogData>();
 	}
+	else if (type_ == MULTIMETER) {
+		sr_configurable_ = sr_device_;
+		sr_channels = sr_device_->channels();
+		common_time_data_ = nullptr;
+	}
 
 	for (auto sr_channel : sr_channels) {
 		init_signal(sr_channel);
@@ -182,7 +187,6 @@ void HardwareDevice::close()
 shared_ptr<data::BaseSignal> HardwareDevice::init_signal(
 	shared_ptr<sigrok::Channel> sr_channel)
 {
-	qWarning() << "init_signal() -1-";
 	shared_ptr<data::BaseSignal> signal;
 	//lock_guard<recursive_mutex> lock(data_mutex_);
 
@@ -195,6 +199,8 @@ shared_ptr<data::BaseSignal> HardwareDevice::init_signal(
 	{
 		signal = make_shared<data::BaseSignal>(
 			sr_channel, data::BaseSignal::AnalogChannel);
+
+		qWarning() << "init_signal(): Init signal " << signal->internal_name();
 
 		signal->set_time_start(QDateTime::currentMSecsSinceEpoch());
 

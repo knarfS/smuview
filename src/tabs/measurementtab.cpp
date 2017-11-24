@@ -21,8 +21,11 @@
 #include <QGroupBox>
 
 #include "measurementtab.hpp"
+
 #include "src/data/analogdata.hpp"
-#include "src/widgets/singlevaluepanel.hpp"
+#include "src/data/basesignal.hpp"
+#include "src/views/plotview.hpp"
+#include "src/views/valuepanelview.hpp"
 
 namespace sv {
 namespace tabs {
@@ -35,49 +38,32 @@ MeasurementTab::MeasurementTab(Session &session,
 	unit_ = QString("V");
 
 	setup_ui();
-	init_values();
-
-	// TODO
-	//plot->start();
-}
-
-
-void MeasurementTab::init_values()
-{
 }
 
 void MeasurementTab::setup_ui()
 {
-	QVBoxLayout *mainLayout = new QVBoxLayout(this);
-
-	// Group Box for Setting
-	QGroupBox *setValuesGroupBox = new QGroupBox(this);
-	setValuesGroupBox->setTitle("Set Values");
-	QVBoxLayout *setValuesLayout = new QVBoxLayout(this);
-	setValuesLayout->addStretch(10);
-	setValuesGroupBox->setLayout(setValuesLayout);
-
-	// Group Box for Values
-	QGroupBox *getValuesGroupBox = new QGroupBox(this);
-	getValuesGroupBox->setTitle("Actual Values");
-	QVBoxLayout *getValuesVLayout = new QVBoxLayout(this);
+	// Device controls
+	if (device_->is_controllable()) {
+	}
 
 	// Value panel
-	singleValuePanel = new widgets::SingleValuePanel(
-		device_->measurement_signal(), this);
-	getValuesVLayout->addWidget(singleValuePanel);
-	getValuesVLayout->addStretch(5);
+	if (device_->measurement_signal()) {
+		shared_ptr<views::BaseView> value_panel_view =
+			make_shared<views::ValuePanelView>(session_,
+				device_->measurement_signal(), parent_);
+		add_view(QString("Value Panel"), value_panel_view,
+			Qt::TopDockWidgetArea, session_);
+	}
 
-	getValuesGroupBox->setLayout(getValuesVLayout);
-
-	QHBoxLayout *valueLayout = new QHBoxLayout(this);
-	valueLayout->addWidget(setValuesGroupBox);
-	valueLayout->addWidget(getValuesGroupBox);
-
-	mainLayout->addItem(valueLayout);
-
-	// Spacer
-	mainLayout->addStretch(10);
+	// Value plot
+	if (device_->measurement_signal()) {
+		shared_ptr<views::BaseView> value_plot_view =
+			make_shared<views::PlotView>(session_,
+				device_->measurement_signal()->time_data(),
+				device_->measurement_signal()->analog_data(), parent_);
+		add_view(QString("Value Graph"), value_plot_view,
+			Qt::BottomDockWidgetArea, session_);
+	}
 }
 
 } // namespace tabs

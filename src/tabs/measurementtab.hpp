@@ -31,11 +31,6 @@ using std::shared_ptr;
 
 namespace sv {
 
-namespace widgets {
-class SingleValuePanel;
-class Plot;
-}
-
 namespace tabs {
 
 class MeasurementTab : public DeviceTab
@@ -50,10 +45,6 @@ private:
 	uint digits_;
 	QString unit_;
 
-	widgets::SingleValuePanel *singleValuePanel;
-	widgets::Plot *plot;
-
-	void init_values();
 	void setup_ui();
 
 };
