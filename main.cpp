@@ -165,10 +165,8 @@ int main(int argc, char *argv[])
 			sv::MainWindow w(device_manager);
 			w.show();
 
-			// TODO: restore session
-			if (restore_session) {
+			if (restore_session)
 				w.restore_session();
-			}
 
 			if (!open_file.empty())
 				w.init_session_with_file(open_file, open_file_format);

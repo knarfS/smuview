@@ -33,7 +33,6 @@
 #include <QProgressDialog>
 
 #include "devicemanager.hpp"
-#include "session.hpp"
 #include "util.hpp"
 #include "devices/hardwaredevice.hpp"
 
