@@ -31,7 +31,7 @@
 #include <qwt_legend.h>
 
 #include "plot.hpp"
-#include "src/data/signaldata.hpp"
+#include "src/data/basedata.hpp"
 #include "src/data/curvedata.hpp"
 
 namespace sv {

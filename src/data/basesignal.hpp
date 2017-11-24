@@ -52,7 +52,7 @@ namespace sv {
 namespace data {
 
 class Analog;
-class SignalData;
+class BaseData;
 
 class BaseSignal : public QObject
 {
@@ -130,7 +130,7 @@ public:
 	/**
 	 * Sets the internal data object.
 	 */
-	void set_data(shared_ptr<sv::data::SignalData> data);
+	void set_data(shared_ptr<sv::data::BaseData> data);
 
 	/**
 	 * Sets the internal time data object.
@@ -145,7 +145,7 @@ public:
 	/**
 	 * Get the internal data
 	 */
-	shared_ptr<sv::data::SignalData> data();
+	shared_ptr<sv::data::BaseData> data();
 
 	/**
 	 * Get the internal data as analog data object in case of analog type.
@@ -173,7 +173,7 @@ protected:
 	shared_ptr<sigrok::Channel> sr_channel_;
 	ChannelType channel_type_;
 	qint64 time_start_;
-	shared_ptr<sv::data::SignalData> data_;
+	shared_ptr<sv::data::BaseData> data_;
 	shared_ptr<sv::data::Analog> time_data_;
 
 	QString internal_name_;

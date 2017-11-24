@@ -18,8 +18,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DATA_SIGNALDATA_HPP
-#define DATA_SIGNALDATA_HPP
+#ifndef DATA_BASEDATA_HPP
+#define DATA_BASEDATA_HPP
 
 #include <cstdint>
 #include <memory>
@@ -33,26 +33,23 @@ using std::vector;
 namespace sv {
 namespace data {
 
-class Segment;
-
-class SignalData : public QObject
+class BaseData : public QObject
 {
 	Q_OBJECT
 
 public:
-	SignalData() = default;
-	virtual ~SignalData() = default;
+	BaseData() = default;
+	virtual ~BaseData() = default;
 
 	virtual void clear() = 0;
 	virtual size_t get_sample_count() const = 0;
 	virtual void push_sample(void *sample) = 0;
 
 private:
-	shared_ptr<vector<double>> time_data_;
 
 };
 
 } // namespace data
 } // namespace sv
 
-#endif // DATA_SIGNALDATA_HPP
+#endif // DATA_BASEDATA_HPP

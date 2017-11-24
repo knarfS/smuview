@@ -27,8 +27,8 @@
 
 #include "device.hpp"
 #include "src/data/analog.hpp"
+#include "src/data/basedata.hpp"
 #include "src/data/basesignal.hpp"
-#include "src/data/signaldata.hpp"
 
 using std::bad_alloc;
 using std::dynamic_pointer_cast;

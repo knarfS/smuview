@@ -30,7 +30,7 @@ using std::vector;
 namespace sv {
 namespace data {
 
-Analog::Analog() : SignalData(),
+Analog::Analog() : BaseData(),
 	sample_count_(0),
 	min_value_(std::numeric_limits<short>::max()),
 	max_value_(std::numeric_limits<short>::min())

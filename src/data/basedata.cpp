@@ -18,7 +18,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "signaldata.hpp"
+#include "basedata.hpp"
 
 namespace sv {
 namespace data {

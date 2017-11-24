@@ -26,7 +26,7 @@
 #include "basesignal.hpp"
 #include "src/session.hpp"
 #include "src/data/analog.hpp"
-#include "src/data/signaldata.hpp"
+#include "src/data/basedata.hpp"
 
 using std::dynamic_pointer_cast;
 using std::make_shared;
@@ -114,7 +114,7 @@ void BaseSignal::set_time_start(qint64 time_start)
 	time_start_ = time_start;
 }
 
-void BaseSignal::set_data(shared_ptr<sv::data::SignalData> data)
+void BaseSignal::set_data(shared_ptr<sv::data::BaseData> data)
 {
 	/*
 	if (data_) {
@@ -150,7 +150,7 @@ void BaseSignal::add_timestamp()
 	time_data_->push_sample(&dtime_span);
 }
 
-shared_ptr<sv::data::SignalData> BaseSignal::data()
+shared_ptr<sv::data::BaseData> BaseSignal::data()
 {
 	return data_;
 }

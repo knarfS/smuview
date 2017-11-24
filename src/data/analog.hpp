@@ -24,7 +24,7 @@
 
 #include <QObject>
 
-#include "signaldata.hpp"
+#include "basedata.hpp"
 
 using std::shared_ptr;
 using std::vector;
@@ -34,7 +34,7 @@ namespace data {
 
 class AnalogSegment;
 
-class Analog : public SignalData
+class Analog : public BaseData
 {
 	Q_OBJECT
 

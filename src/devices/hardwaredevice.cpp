@@ -32,7 +32,7 @@
 #include "src/session.hpp"
 #include "src/data/analog.hpp"
 #include "src/data/basesignal.hpp"
-#include "src/data/signaldata.hpp"
+#include "src/data/basedata.hpp"
 
 using std::bad_alloc;
 using std::dynamic_pointer_cast;
