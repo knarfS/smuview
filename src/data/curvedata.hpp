@@ -30,22 +30,22 @@ using std::shared_ptr;
 namespace sv {
 namespace data {
 
-class Analog;
+class AnalogData;
 
 class CurveData : public QwtSeriesData<QPointF>
 {
 
 public:
-	CurveData(shared_ptr<Analog> x_signal_data,
-		shared_ptr<Analog> y_signal_data);
+	CurveData(shared_ptr<AnalogData> x_signal_data,
+		shared_ptr<AnalogData> y_signal_data);
 
 	virtual QPointF sample( size_t i ) const;
 	virtual size_t size() const;
 	virtual QRectF boundingRect() const;
 
 private:
-	shared_ptr<Analog> x_signal_data_;
-	shared_ptr<Analog> y_signal_data_;
+	shared_ptr<AnalogData> x_signal_data_;
+	shared_ptr<AnalogData> y_signal_data_;
 
 };
 

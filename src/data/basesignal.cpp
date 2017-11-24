@@ -25,7 +25,7 @@
 
 #include "basesignal.hpp"
 #include "src/session.hpp"
-#include "src/data/analog.hpp"
+#include "src/data/analogdata.hpp"
 #include "src/data/basedata.hpp"
 
 using std::dynamic_pointer_cast;
@@ -137,7 +137,7 @@ void BaseSignal::set_data(shared_ptr<sv::data::BaseData> data)
 	*/
 }
 
-void BaseSignal::set_time_data(shared_ptr<sv::data::Analog> time_data)
+void BaseSignal::set_time_data(shared_ptr<sv::data::AnalogData> time_data)
 {
 	time_data_ = time_data;
 }
@@ -155,17 +155,17 @@ shared_ptr<sv::data::BaseData> BaseSignal::data()
 	return data_;
 }
 
-shared_ptr<data::Analog> BaseSignal::analog_data() const
+shared_ptr<data::AnalogData> BaseSignal::analog_data() const
 {
-	shared_ptr<Analog> result = nullptr;
+	shared_ptr<AnalogData> result = nullptr;
 
 	if (channel_type_ == AnalogChannel)
-		result = dynamic_pointer_cast<Analog>(data_);
+		result = dynamic_pointer_cast<AnalogData>(data_);
 
 	return result;
 }
 
-shared_ptr<data::Analog> BaseSignal::time_data() const
+shared_ptr<data::AnalogData> BaseSignal::time_data() const
 {
 	return time_data_;
 }

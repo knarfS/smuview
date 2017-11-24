@@ -21,7 +21,7 @@
 #include <QGroupBox>
 
 #include "measurementtab.hpp"
-#include "src/data/analog.hpp"
+#include "src/data/analogdata.hpp"
 #include "src/data/curvedata.hpp"
 #include "src/widgets/singlevaluepanel.hpp"
 #include "src/widgets/plot.hpp"

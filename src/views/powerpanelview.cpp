@@ -24,7 +24,7 @@
 
 #include "powerpanelview.hpp"
 #include "src/session.hpp"
-#include "src/data/analog.hpp"
+#include "src/data/analogdata.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/widgets/lcddisplay.hpp"
 

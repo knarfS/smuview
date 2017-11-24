@@ -18,13 +18,13 @@
  */
 
 #include "curvedata.hpp"
-#include "analog.hpp"
+#include "src/data/analogdata.hpp"
 
 namespace sv {
 namespace data {
 
-CurveData::CurveData(shared_ptr<Analog> x_signal_data,
-		shared_ptr<Analog> y_signal_data) :
+CurveData::CurveData(shared_ptr<AnalogData> x_signal_data,
+		shared_ptr<AnalogData> y_signal_data) :
 	QwtSeriesData<QPointF>(),
 	x_signal_data_(x_signal_data),
 	y_signal_data_(y_signal_data)

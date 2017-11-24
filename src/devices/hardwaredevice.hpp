@@ -57,9 +57,9 @@ class HardwareDevice;
 namespace sv {
 
 namespace data {
-class AnalogSegment;
+class AnalogData;
 class BaseSignal;
-class SignalData;
+class BaseData;
 }
 
 namespace devices {
@@ -150,7 +150,7 @@ private:
 	Type type_;
 	bool device_open_;
 
-	shared_ptr<data::Analog> common_time_data_;
+	shared_ptr<data::AnalogData> common_time_data_;
 	// TODO: Generic!
 	shared_ptr<data::BaseSignal> voltage_signal_;
 	shared_ptr<data::BaseSignal> current_signal_;

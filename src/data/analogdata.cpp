@@ -21,7 +21,7 @@
 
 #include <QDebug>
 
-#include "analog.hpp"
+#include "analogdata.hpp"
 
 using std::make_shared;
 using std::shared_ptr;
@@ -30,7 +30,7 @@ using std::vector;
 namespace sv {
 namespace data {
 
-Analog::Analog() : BaseData(),
+AnalogData::AnalogData() : BaseData(),
 	sample_count_(0),
 	min_value_(std::numeric_limits<short>::max()),
 	max_value_(std::numeric_limits<short>::min())
@@ -38,7 +38,7 @@ Analog::Analog() : BaseData(),
 	data_ = make_shared<vector<double>>();
 }
 
-void Analog::clear()
+void AnalogData::clear()
 {
 	data_->clear();
 	sample_count_ = 0;
@@ -46,14 +46,14 @@ void Analog::clear()
 	samples_cleared();
 }
 
-size_t Analog::get_sample_count() const
+size_t AnalogData::get_sample_count() const
 {
 	size_t sample_count = sample_count_;
-	//qWarning() << "Analog::get_sample_count(): sample_count_ = " << sample_count;
+	//qWarning() << "AnalogData::get_sample_count(): sample_count_ = " << sample_count;
 	return sample_count;
 }
 
-vector<double> Analog::get_samples(size_t start_sample, size_t end_sample) const
+vector<double> AnalogData::get_samples(size_t start_sample, size_t end_sample) const
 {
 	assert(start_sample = 0);
 	assert(start_sample < sample_count_);
@@ -70,7 +70,7 @@ vector<double> Analog::get_samples(size_t start_sample, size_t end_sample) const
 	return newVec;
 }
 
-double Analog::get_sample(size_t pos) const
+double AnalogData::get_sample(size_t pos) const
 {
 	//assert(pos <= sample_count_);
 
@@ -78,21 +78,21 @@ double Analog::get_sample(size_t pos) const
 
 	if (pos < sample_count_) {
 		double sample = data_->at(pos);
-		//qWarning() << "Analog::get_sample(" << pos << "): sample = " << sample;
+		//qWarning() << "AnalogData::get_sample(" << pos << "): sample = " << sample;
 		return sample;
 	}
 
-	qWarning() << "Analog::get_sample(" << pos << "): sample_count_ = " << sample_count_;
+	qWarning() << "AnalogData::get_sample(" << pos << "): sample_count_ = " << sample_count_;
 	return 0.;
 }
 
-void Analog::push_sample(void *sample)
+void AnalogData::push_sample(void *sample)
 {
  	double dsample = (double) *(float*)sample;
 
 	/*
-	qWarning() << "Analog::push_sample(): sample = " << dsample;
-	qWarning() << "Analog::push_sample(): sample_count_ = " << sample_count_;
+	qWarning() << "AnalogData::push_sample(): sample = " << dsample;
+	qWarning() << "AnalogData::push_sample(): sample_count_ = " << sample_count_;
 	*/
 
 	last_value_ = dsample;
@@ -102,28 +102,28 @@ void Analog::push_sample(void *sample)
 		max_value_ = dsample;
 
 	/*
-	qWarning() << "Analog::push_sample(): last_value_ = " << last_value_;
-	qWarning() << "Analog::push_sample(): min_value_ = " << min_value_;
-	qWarning() << "Analog::push_sample(): max_value_ = " << max_value_;
+	qWarning() << "AnalogData::push_sample(): last_value_ = " << last_value_;
+	qWarning() << "AnalogData::push_sample(): min_value_ = " << min_value_;
+	qWarning() << "AnalogData::push_sample(): max_value_ = " << max_value_;
 	*/
 
 	data_->push_back(dsample);
 	sample_count_++;
 
-	//qWarning() << "Analog::push_sample(): sample_count_ = " << sample_count_;
+	//qWarning() << "AnalogData::push_sample(): sample_count_ = " << sample_count_;
 }
 
-double Analog::last_value() const
+double AnalogData::last_value() const
 {
 	return last_value_;
 }
 
-double Analog::min_value() const
+double AnalogData::min_value() const
 {
 	return min_value_;
 }
 
-double Analog::max_value() const
+double AnalogData::max_value() const
 {
 	return max_value_;
 }

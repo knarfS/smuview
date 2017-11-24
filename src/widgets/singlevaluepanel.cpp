@@ -23,8 +23,8 @@
 #include <QVBoxLayout>
 
 #include "singlevaluepanel.hpp"
+#include "src/data/analogdata.hpp"
 #include "src/data/basesignal.hpp"
-#include "src/data/analog.hpp"
 
 namespace sv {
 namespace widgets {

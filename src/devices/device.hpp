@@ -36,6 +36,7 @@ using std::vector;
 namespace sigrok {
 class ConfigKey;
 class Device;
+class Packet;
 class Session;
 }
 
@@ -44,9 +45,8 @@ namespace sv {
 class DeviceManager;
 
 namespace data {
-class Analog;
 class BaseSignal;
-class SignalData;
+class BaseData;
 }
 
 namespace devices {
@@ -87,11 +87,11 @@ public:
 
 private:
 	mutable recursive_mutex data_mutex_;
-	unordered_set< shared_ptr<data::SignalData> > all_signal_data_; // TODO: needed?
+	unordered_set< shared_ptr<data::BaseData> > all_signal_data_; // TODO: needed?
 
 	bool out_of_memory_;
 	bool frame_began_;
-	shared_ptr<data::BaseSignal> signalbase_frame_; // TODO: Rename or change to data. per cg?
+	shared_ptr<data::BaseSignal> signalbase_frame_; // TODO: Rename or change to data. per cg? use common_time_data_ in hw device?
 
 	void feed_in_header();
 	void feed_in_meta(shared_ptr<sigrok::Meta> sr_meta);

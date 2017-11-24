@@ -31,7 +31,7 @@ namespace sv {
 class Session;
 
 namespace data {
-class Analog;
+class AnalogData;
 }
 
 namespace widgets {
@@ -46,13 +46,13 @@ class PlotView : public BaseView
 
 public:
 	PlotView(Session& session,
-		shared_ptr<data::Analog> x_signal_data,
-		shared_ptr<data::Analog> y_signal_data,
+		shared_ptr<data::AnalogData> x_signal_data,
+		shared_ptr<data::AnalogData> y_signal_data,
 		QWidget* parent);
 
 private:
-	shared_ptr<data::Analog> x_signal_data_;
-	shared_ptr<data::Analog> y_signal_data_;
+	shared_ptr<data::AnalogData> x_signal_data_;
+	shared_ptr<data::AnalogData> y_signal_data_;
 
 	widgets::Plot *plot;
 

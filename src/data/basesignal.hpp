@@ -51,7 +51,7 @@ class Channel;
 namespace sv {
 namespace data {
 
-class Analog;
+class AnalogData;
 class BaseData;
 
 class BaseSignal : public QObject
@@ -135,7 +135,7 @@ public:
 	/**
 	 * Sets the internal time data object.
 	 */
-	void set_time_data(shared_ptr<sv::data::Analog> time_data);
+	void set_time_data(shared_ptr<sv::data::AnalogData> time_data);
 
 	/**
 	 * Add a timestamp to time_data
@@ -150,12 +150,12 @@ public:
 	/**
 	 * Get the internal data as analog data object in case of analog type.
 	 */
-	shared_ptr<sv::data::Analog> analog_data() const;
+	shared_ptr<sv::data::AnalogData> analog_data() const;
 
 	/**
 	 * Get the time data as analog data object.
 	 */
-	shared_ptr<sv::data::Analog> time_data() const;
+	shared_ptr<sv::data::AnalogData> time_data() const;
 
 	virtual void save_settings(QSettings &settings) const;
 	virtual void restore_settings(QSettings &settings);
@@ -174,7 +174,7 @@ protected:
 	ChannelType channel_type_;
 	qint64 time_start_;
 	shared_ptr<sv::data::BaseData> data_;
-	shared_ptr<sv::data::Analog> time_data_;
+	shared_ptr<sv::data::AnalogData> time_data_;
 
 	QString internal_name_;
 	QString name_;

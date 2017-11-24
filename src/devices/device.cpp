@@ -26,7 +26,7 @@
 #include <QDebug>
 
 #include "device.hpp"
-#include "src/data/analog.hpp"
+#include "src/data/analogdata.hpp"
 #include "src/data/basedata.hpp"
 #include "src/data/basesignal.hpp"
 

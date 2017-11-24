@@ -17,8 +17,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DATA_ANALOG_HPP
-#define DATA_ANALOG_HPP
+#ifndef DATA_ANALOGDATA_HPP
+#define DATA_ANALOGDATA_HPP
 
 #include <memory>
 
@@ -32,14 +32,12 @@ using std::vector;
 namespace sv {
 namespace data {
 
-class AnalogSegment;
-
-class Analog : public BaseData
+class AnalogData : public BaseData
 {
 	Q_OBJECT
 
 public:
-	Analog();
+	AnalogData();
 
 	void clear();
 
@@ -68,4 +66,4 @@ private:
 } // namespace data
 } // namespace sv
 
-#endif // DATA_ANALOG_HPP
+#endif // DATA_ANALOGDATA_HPP

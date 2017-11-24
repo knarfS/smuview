@@ -30,7 +30,7 @@
 #include "hardwaredevice.hpp"
 #include "src/devicemanager.hpp"
 #include "src/session.hpp"
-#include "src/data/analog.hpp"
+#include "src/data/analogdata.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/data/basedata.hpp"
 
@@ -85,7 +85,7 @@ HardwareDevice::HardwareDevice(
 		// TODO: solve this somehow with the detection of frames....
 		// TODO: What if the device has multi channels with a frame around each cg data
 		// PPUs have common time data
-		common_time_data_ = make_shared<data::Analog>();
+		common_time_data_ = make_shared<data::AnalogData>();
 	}
 	else if (type_ == ELECTRONIC_LOAD) {
 		sr_configurable_ = sr_device_->channel_groups()["1"];
@@ -94,7 +94,7 @@ HardwareDevice::HardwareDevice(
 		// TODO: solve this somehow with the detection of frames....
 		// TODO: What if the device has multi channels with a frame around each cg data
 		// Loads have common time data
-		common_time_data_ = make_shared<data::Analog>();
+		common_time_data_ = make_shared<data::AnalogData>();
 	}
 
 	for (auto sr_channel : sr_channels) {
@@ -201,11 +201,11 @@ shared_ptr<data::BaseSignal> HardwareDevice::init_signal(
 		if (common_time_data_)
 			signal->set_time_data(common_time_data_);
 		else {
-			shared_ptr<data::Analog> time_data = make_shared<data::Analog>();
+			auto time_data = make_shared<data::AnalogData>();
 			signal->set_time_data(time_data);
 		}
 
-		shared_ptr<data::Analog> data = make_shared<data::Analog>();
+		auto data = make_shared<data::AnalogData>();
 		signal->set_data(data);
 
 		channel_data_.insert(pair<

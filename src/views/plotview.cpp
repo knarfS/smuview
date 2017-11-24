@@ -22,7 +22,7 @@
 
 #include "plotview.hpp"
 #include "src/session.hpp"
-#include "src/data/analog.hpp"
+#include "src/data/analogdata.hpp"
 #include "src/data/curvedata.hpp"
 #include "src/widgets/plot.hpp"
 
@@ -30,8 +30,8 @@ namespace sv {
 namespace views {
 
 PlotView::PlotView(Session &session,
-	shared_ptr<data::Analog> x_signal_data,
-	shared_ptr<data::Analog> y_signal_data,
+	shared_ptr<data::AnalogData> x_signal_data,
+	shared_ptr<data::AnalogData> y_signal_data,
 	QWidget *parent) :
 		BaseView(session, parent),
 	x_signal_data_(x_signal_data),

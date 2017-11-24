@@ -167,7 +167,7 @@ void Session::start_capture(function<void (const QString)> error_handler)
 
 	// Clear signal data
 	/*
-	for (const shared_ptr<data::SignalData> d : all_signal_data_)
+	for (const shared_ptr<data::BaseData> d : all_signal_data_)
 		d->clear();
 	*/
 
@@ -250,7 +250,7 @@ void Session::sample_thread_proc(function<void (const QString)> error_handler)
 void Session::free_unused_memory()
 {
 	/* TODO: to device
-	for (shared_ptr<data::SignalData> data : all_signal_data_) {
+	for (shared_ptr<data::BaseData> data : all_signal_data_) {
 		const vector< shared_ptr<data::Segment> > segments = data->segments();
 
 		for (shared_ptr<data::Segment> segment : segments) {
