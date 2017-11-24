@@ -121,10 +121,26 @@ public:
 	 */
 	void set_colour(QColor colour);
 
+
+	/**
+	 * Set the start time of the signal.
+	 */
+	void set_time_start(qint64 time_start);
+
 	/**
 	 * Sets the internal data object.
 	 */
 	void set_data(shared_ptr<sv::data::SignalData> data);
+
+	/**
+	 * Sets the internal time data object.
+	 */
+	void set_time_data(shared_ptr<sv::data::Analog> time_data);
+
+	/**
+	 * Add a timestamp to time_data
+	 */
+	void add_timestamp();
 
 	/**
 	 * Get the internal data
@@ -135,6 +151,11 @@ public:
 	 * Get the internal data as analog data object in case of analog type.
 	 */
 	shared_ptr<sv::data::Analog> analog_data() const;
+
+	/**
+	 * Get the time data as analog data object.
+	 */
+	shared_ptr<sv::data::Analog> time_data() const;
 
 	virtual void save_settings(QSettings &settings) const;
 	virtual void restore_settings(QSettings &settings);
@@ -147,12 +168,13 @@ Q_SIGNALS:
 
 private Q_SLOTS:
 	void on_samples_cleared();
-	void on_capture_state_changed(int state);
 
 protected:
 	shared_ptr<sigrok::Channel> sr_channel_;
 	ChannelType channel_type_;
+	qint64 time_start_;
 	shared_ptr<sv::data::SignalData> data_;
+	shared_ptr<sv::data::Analog> time_data_;
 
 	QString internal_name_;
 	QString name_;

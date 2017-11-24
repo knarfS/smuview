@@ -65,12 +65,11 @@ shared_ptr<sigrok::Device> Device::sr_device() const
 	return sr_device_;
 }
 
-template
-uint64_t Device::read_config(const sigrok::ConfigKey*,
-	const uint64_t);
+template uint64_t Device::read_config(
+	const sigrok::ConfigKey*, const uint64_t);
 
-template<typename T>
-T Device::read_config(const ConfigKey *key, const T default_value)
+template<typename T> T Device::read_config(
+	const ConfigKey *key, const T default_value)
 {
 	assert(key);
 
@@ -84,13 +83,14 @@ T Device::read_config(const ConfigKey *key, const T default_value)
 		sr_device_->config_get(ConfigKey::SAMPLERATE)).get();
 }
 
+
 void Device::feed_in_header()
 {
 }
 
-void Device::feed_in_meta(shared_ptr<sigrok::Meta> meta)
+void Device::feed_in_meta(shared_ptr<sigrok::Meta> sr_meta)
 {
-	for (auto entry : meta->config()) {
+	for (auto entry : sr_meta->config()) {
 		switch (entry.first->id()) {
 		case SR_CONF_ENABLED:
 			Q_EMIT enabled_changed(
@@ -144,15 +144,14 @@ void Device::feed_in_frame_begin()
 
 void Device::feed_in_frame_end()
 {
-	if (frame_began_) {
-		// TODO: use std::chrono / std::time and double
-		qint64 time_span = (QDateTime::currentMSecsSinceEpoch() - time_start_);
-		float dtime_span = time_span / (float)1000;
-		// TODO: SignalBase / Analog class with long data?
-		time_data_->push_sample(&dtime_span);
+	if (frame_began_ && signalbase_frame_) {
+		qWarning() << "feed_in_frame_end(): Set timestamp to '" <<
+			signalbase_frame_->name() << "'";
+		signalbase_frame_->add_timestamp();
+		signalbase_frame_ = nullptr;
 
-		frame_began_ = false;
 	}
+	frame_began_ = false;
 }
 
 void Device::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
@@ -166,36 +165,41 @@ void Device::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
 	unique_ptr<float> data(new float[sr_analog->num_samples()]);
 	sr_analog->get_data_as_float(data.get());
 
-	if (channel_data_.empty())
-		update_signals();
-
 	float *channel_data = data.get();
 	for (auto sr_channel : sr_channels) {
 		/*
-		qWarning() << "feed_in_analog(): Channel.Id = " <<
+		qWarning() << "feed_in_analog(): Device = " <<
+			QString::fromStdString(sr_device->model()) <<
+			", Channel.Id = " <<
 			QString::fromStdString(sr_channel->name()) <<
 			" channel_data = " << *channel_data;
 		*/
 
-		channel_data_[sr_channel]->data()->push_sample(channel_data);
+		if (!channel_data_.count(sr_channel)) {
+			qWarning() << "feed_in_analog(): Channel " <<
+				QString::fromStdString(sr_channel->name()) <<
+				" not found, adding";
+
+			init_signal(sr_channel);
+			continue;
+		}
+
+		shared_ptr<data::SignalBase> signalbase = channel_data_[sr_channel];
+		signalbase->data()->push_sample(channel_data);
 		channel_data++;
 
 		// Timestamp for values not in a FRAME
 		// TODO: Find a better way to add the timestamp when not in a frame
-		if (!frame_began_ &&
-			!channel_data_[sr_channel]->internal_name().startsWith("V")) {
-			// TODO: use std::chrono / std::time and double
-			qint64 time_span = QDateTime::currentMSecsSinceEpoch() - time_start_;
-			float dtime_span = time_span / (float)1000;
-			// TODO: SignalBase / Analog class with long data?
-			time_data_->push_sample(&dtime_span);
+		if (frame_began_ && !signalbase_frame_) {
+			signalbase_frame_ = signalbase;
+		} else if (frame_began_ && signalbase_frame_) {
+			signalbase->set_time_data(signalbase_frame_->time_data());
+		} else {
+			signalbase->add_timestamp();
 		}
+		signalbase->add_timestamp();
 
 		/*
-		// Append the samples in the segment
-		segment->append_interleaved_samples(channel_data++, sample_count,
-			channel_count);
-
 		Q_EMIT data_received(segment);
 		*/
 	}
@@ -221,23 +225,23 @@ void Device::data_feed_in(shared_ptr<sigrok::Device> sr_device,
 
 	switch (sr_packet->type()->id()) {
 	case SR_DF_HEADER:
-		qWarning() << "data_feed_in(): SR_DF_HEADER";
+		//qWarning() << "data_feed_in(): SR_DF_HEADER";
 		feed_in_header();
 		break;
 
 	case SR_DF_META:
-		qWarning() << "data_feed_in(): SR_DF_META";
+		//qWarning() << "data_feed_in(): SR_DF_META";
 		feed_in_meta(
 			dynamic_pointer_cast<sigrok::Meta>(sr_packet->payload()));
 		break;
 
 	case SR_DF_TRIGGER:
-		qWarning() << "data_feed_in(): SR_DF_TRIGGER";
+		//qWarning() << "data_feed_in(): SR_DF_TRIGGER";
 		feed_in_trigger();
 		break;
 
 	case SR_DF_LOGIC:
-		qWarning() << "data_feed_in(): SR_DF_LOGIC";
+		//qWarning() << "data_feed_in(): SR_DF_LOGIC";
 		break;
 
 	case SR_DF_ANALOG:
@@ -252,17 +256,17 @@ void Device::data_feed_in(shared_ptr<sigrok::Device> sr_device,
 		break;
 
 	case SR_DF_FRAME_BEGIN:
-		qWarning() << "data_feed_in(): SR_DF_FRAME_BEGIN";
+		//qWarning() << "data_feed_in(): SR_DF_FRAME_BEGIN";
 		feed_in_frame_begin();
 		break;
 
 	case SR_DF_FRAME_END:
-		qWarning() << "data_feed_in(): SR_DF_FRAME_END";
+		//qWarning() << "data_feed_in(): SR_DF_FRAME_END";
 		feed_in_frame_end();
 		break;
 
 	case SR_DF_END:
-		qWarning() << "data_feed_in(): SR_DF_END";
+		//qWarning() << "data_feed_in(): SR_DF_END";
 		// Strictly speaking, this is performed when a frame end marker was
 		// received, so there's no point doing this again. However, not all
 		// devices use frames, and for those devices, we need to do it here.
@@ -274,64 +278,6 @@ void Device::data_feed_in(shared_ptr<sigrok::Device> sr_device,
 	default:
 		break;
 	}
-}
-
-void Device::update_signals()
-{
-	qWarning() << "update_signals() -1-";
-	lock_guard<recursive_mutex> lock(data_mutex_);
-	qWarning() << "update_signals() -2-";
-
-	if (!sr_device_) {
-		channel_data_.clear();
-
-		/* TODO: Clear QwtPlot
-		for (shared_ptr<views::ViewBase> view : views_) {
-			view->clear_signals();
-		}
-		*/
-		return;
-	}
-
-	// time signal
-	time_start_ = QDateTime::currentMSecsSinceEpoch();
-	time_data_ = make_shared<data::Analog>();
-
-	// signals for sigrok channels
-	auto sr_channels = sr_device_->channels();
-	for (auto sr_channel : sr_device_->channels()) {
-
-		switch(sr_channel->type()->id()) {
-		case SR_CHANNEL_LOGIC:
-			break;
-
-		case SR_CHANNEL_ANALOG:
-		{
-			shared_ptr<data::SignalBase> signalbase =
-				make_shared<data::SignalBase>(
-					sr_channel, data::SignalBase::AnalogChannel);
-
-			shared_ptr<data::Analog> data(new data::Analog());
-			signalbase->set_data(data);
-
-			channel_data_.insert(
-				pair<shared_ptr<sigrok::Channel>,
-				shared_ptr<data::SignalBase>>
-					(sr_channel, signalbase));
-
-			connect(this, SIGNAL(capture_state_changed(int)),
-				signalbase.get(), SLOT(on_capture_state_changed(int)));
-
-			break;
-		}
-
-		default:
-			assert(false);
-			break;
-		}
-	}
-
-	//signals_changed();
 }
 
 } // namespace devices

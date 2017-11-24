@@ -98,13 +98,12 @@ public:
 	void open();
 	void close();
 
-	// TODO: Generic and from the same typ!
+	// TODO: Generic!
 	shared_ptr<data::SignalBase> voltage_signal() const;
 	shared_ptr<data::SignalBase> current_signal() const;
 	shared_ptr<data::SignalBase> measurement_signal() const;
-	shared_ptr<data::Analog> time_data() const;
 
-	void get_all_config_check();
+	bool is_controllable() const;
 
 	bool is_enable_getable() const;
 	bool is_enable_setable() const;
@@ -145,16 +144,20 @@ public:
 	void set_under_voltage_threshold(const double value);
 	void list_under_voltage_threshold(double &min, double &max, double &step);
 
-	/*
-	void data_feed_in(shared_ptr<sigrok::Device> sr_device,
-		shared_ptr<sigrok::Packet> sr_packet);
-	*/
-
 private:
 	const shared_ptr<sigrok::Context> sr_context_;
 	shared_ptr<sigrok::Configurable> sr_configurable_;
 	Type type_;
 	bool device_open_;
+
+	shared_ptr<data::Analog> common_time_data_;
+	// TODO: Generic!
+	shared_ptr<data::SignalBase> voltage_signal_;
+	shared_ptr<data::SignalBase> current_signal_;
+	shared_ptr<data::SignalBase> measurement_signal_;
+
+	shared_ptr<data::SignalBase> init_signal(
+		shared_ptr<sigrok::Channel> sr_channel);
 
 /*
 Q_SIGNALS:

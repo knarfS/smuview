@@ -21,6 +21,7 @@
 #include <glib.h>
 #include <boost/algorithm/string/join.hpp>
 
+#include <QDateTime>
 #include <QDebug>
 #include <QString>
 
@@ -50,8 +51,9 @@ using boost::algorithm::join;
 namespace sv {
 namespace devices {
 
-HardwareDevice::HardwareDevice(const shared_ptr<sigrok::Context> &sr_context,
-	shared_ptr<sigrok::HardwareDevice> sr_device) :
+HardwareDevice::HardwareDevice(
+		const shared_ptr<sigrok::Context> &sr_context,
+		shared_ptr<sigrok::HardwareDevice> sr_device) :
 	sr_context_(sr_context),
 	device_open_(false)
 {
@@ -79,10 +81,24 @@ HardwareDevice::HardwareDevice(const shared_ptr<sigrok::Context> &sr_context,
 			sr_configurable_ = sr_device_;
 			sr_channels = sr_device_->channels();
 		}
+
+		// TODO: solve this somehow with the detection of frames....
+		// TODO: What if the device has multi channels with a frame around each cg data
+		// PPUs have common time data
+		common_time_data_ = make_shared<data::Analog>();
 	}
 	else if (type_ == ELECTRONIC_LOAD) {
 		sr_configurable_ = sr_device_->channel_groups()["1"];
 		sr_channels = sr_device_->channel_groups()["1"]->channels();
+
+		// TODO: solve this somehow with the detection of frames....
+		// TODO: What if the device has multi channels with a frame around each cg data
+		// Loads have common time data
+		common_time_data_ = make_shared<data::Analog>();
+	}
+
+	for (auto sr_channel : sr_channels) {
+		init_signal(sr_channel);
 	}
 }
 
@@ -163,43 +179,79 @@ void HardwareDevice::close()
 	device_open_ = false;
 }
 
-shared_ptr<data::SignalBase> HardwareDevice::voltage_signal() const
+shared_ptr<data::SignalBase> HardwareDevice::init_signal(
+	shared_ptr<sigrok::Channel> sr_channel)
 {
-	for (auto const &iter : channel_data_) {
-		if (iter.second->internal_name().startsWith("V"))
-			return iter.second;
+	qWarning() << "init_signal() -1-";
+	shared_ptr<data::SignalBase> signalbase;
+	//lock_guard<recursive_mutex> lock(data_mutex_);
+
+	switch(sr_channel->type()->id()) {
+	case SR_CHANNEL_LOGIC:
+		// Not supported at the moment
+		break;
+
+	case SR_CHANNEL_ANALOG:
+	{
+		signalbase = make_shared<data::SignalBase>(
+			sr_channel, data::SignalBase::AnalogChannel);
+
+		signalbase->set_time_start(QDateTime::currentMSecsSinceEpoch());
+
+		if (common_time_data_)
+			signalbase->set_time_data(common_time_data_);
+		else {
+			shared_ptr<data::Analog> time_data = make_shared<data::Analog>();
+			signalbase->set_time_data(time_data);
+		}
+
+		shared_ptr<data::Analog> data = make_shared<data::Analog>();
+		signalbase->set_data(data);
+
+		channel_data_.insert(pair<
+			shared_ptr<sigrok::Channel>,
+			shared_ptr<data::SignalBase>>
+				(sr_channel, signalbase));
+
+		if (signalbase->internal_name().startsWith("V"))
+			voltage_signal_ = signalbase;
+		else if (signalbase->internal_name().startsWith("I"))
+			current_signal_ = signalbase;
+		else if (signalbase->internal_name() == "P1")
+			measurement_signal_ = signalbase;
+
+		break;
 	}
 
-	return Q_NULLPTR;
+	default:
+		assert(false);
+		break;
+	}
+
+	//signals_changed();
+
+	return signalbase;
+}
+
+shared_ptr<data::SignalBase> HardwareDevice::voltage_signal() const
+{
+	return voltage_signal_;
 }
 
 shared_ptr<data::SignalBase> HardwareDevice::current_signal() const
 {
-	for (auto const &iter : channel_data_) {
-		if (iter.second->internal_name().startsWith("I"))
-			return iter.second;
-	}
-
-	return Q_NULLPTR;
+	return current_signal_;
 }
 
 shared_ptr<data::SignalBase> HardwareDevice::measurement_signal() const
 {
-	for (auto const &iter : channel_data_) {
-		if (iter.second->internal_name() == "P1")
-			return iter.second;
-	}
-
-	return Q_NULLPTR;
+	return measurement_signal_;
 }
 
-shared_ptr<data::Analog> HardwareDevice::time_data() const
-{
-	return time_data_;
-}
 
-void HardwareDevice::get_all_config_check()
+bool HardwareDevice::is_controllable() const
 {
+	return true;
 }
 
 bool HardwareDevice::is_enable_getable() const

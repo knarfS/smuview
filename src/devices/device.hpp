@@ -45,7 +45,6 @@ class DeviceManager;
 
 namespace data {
 class Analog;
-class AnalogSegment;
 class SignalBase;
 class SignalData;
 }
@@ -64,8 +63,8 @@ public:
 
 	shared_ptr<sigrok::Device> sr_device() const;
 
-	template<typename T>
-	T read_config(const sigrok::ConfigKey *key, const T default_value = 0);
+	template<typename T> T read_config(
+		const sigrok::ConfigKey *key, const T default_value = 0);
 
 	/**
 	 * Builds the full name. It only contains all the fields.
@@ -83,20 +82,19 @@ public:
 	virtual void open() = 0;
 	virtual void close() = 0;
 
-	void update_signals();
 	void data_feed_in(shared_ptr<sigrok::Device> sr_device,
 		shared_ptr<sigrok::Packet> sr_packet);
 
 private:
 	mutable recursive_mutex data_mutex_;
 	unordered_set< shared_ptr<data::SignalData> > all_signal_data_;
-	uint64_t cur_samplerate_;
 
 	bool out_of_memory_;
 	bool frame_began_;
+	shared_ptr<data::SignalBase> signalbase_frame_;
 
 	void feed_in_header();
-	void feed_in_meta(shared_ptr<sigrok::Meta> meta);
+	void feed_in_meta(shared_ptr<sigrok::Meta> sr_meta);
 	void feed_in_trigger();
 	void feed_in_frame_begin();
 	void feed_in_frame_end();
@@ -104,16 +102,14 @@ private:
 
 protected:
 	shared_ptr<sigrok::Device> sr_device_;
+	map<shared_ptr<sigrok::Channel>, shared_ptr<data::SignalBase>> channel_data_; // TODO: Rename
 
-	// TODO: channel_data_ + time_data_ from the same typ!
-	map<shared_ptr<sigrok::Channel>, shared_ptr<data::SignalBase>> channel_data_;
-	shared_ptr<data::Analog> time_data_;
-	qint64 time_start_; // TODO: Move to time_data_?
+	virtual shared_ptr<data::SignalBase> init_signal(
+		shared_ptr<sigrok::Channel> sr_channel) = 0;
 
 // TODO: move to hardwaredevice
 Q_SIGNALS:
 	void capture_state_changed(int);
-	void data_received(const shared_ptr<sv::data::AnalogSegment>);
 	void enabled_changed(const bool);
 	void voltage_target_changed(const double);
 	void current_limit_changed(const double);
