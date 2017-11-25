@@ -156,6 +156,7 @@ private:
 	shared_ptr<data::BaseSignal> current_signal_;
 	shared_ptr<data::BaseSignal> measurement_signal_;
 
+	shared_ptr<data::AnalogData> init_time_data();
 	shared_ptr<data::BaseSignal> init_signal(
 		shared_ptr<sigrok::Channel> sr_channel);
 

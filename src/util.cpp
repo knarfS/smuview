@@ -21,6 +21,8 @@
 #include <cassert>
 #include <sstream>
 
+#include <libsigrokcxx/libsigrokcxx.hpp>
+
 #include <QDebug>
 #include <QTextStream>
 
@@ -39,6 +41,86 @@ using namespace Qt;
 
 namespace sv {
 namespace util {
+
+quantitymap_t quantitymap = {
+	{ sigrok::Quantity::VOLTAGE, QString("Voltage") },
+	{ sigrok::Quantity::CURRENT, QString("Current") },
+	{ sigrok::Quantity::RESISTANCE, QString("Resistance") },
+	{ sigrok::Quantity::CAPACITANCE, QString("Capacitance") },
+	{ sigrok::Quantity::TEMPERATURE, QString("Temperature") },
+	{ sigrok::Quantity::FREQUENCY, QString("Frequency") },
+	{ sigrok::Quantity::DUTY_CYCLE, QString("Duty Cycle") },
+	{ sigrok::Quantity::CONTINUITY, QString("Continuity") },
+	{ sigrok::Quantity::PULSE_WIDTH, QString("Pulse Width") },
+	{ sigrok::Quantity::CONDUCTANCE, QString("Conductance") },
+	// Electrical power, usually in W, or dBm.
+	{ sigrok::Quantity::POWER, QString("Power") },
+	// Gain (a transistor's gain, or hFE, for example).
+	{ sigrok::Quantity::GAIN, QString("Gain") },
+	// Logarithmic representation of sound pressure relative to a reference value.
+	{ sigrok::Quantity::SOUND_PRESSURE_LEVEL, QString("Sound Pressure Level") },
+	{ sigrok::Quantity::CARBON_MONOXIDE, QString("Carbon Monoxide") },
+	{ sigrok::Quantity::RELATIVE_HUMIDITY, QString("Relative Humidity") },
+	{ sigrok::Quantity::TIME, QString("Time") },
+	{ sigrok::Quantity::WIND_SPEED, QString("Wind Speed") },
+	{ sigrok::Quantity::PRESSURE, QString("Pressure") },
+	{ sigrok::Quantity::PARALLEL_INDUCTANCE, QString("Parallel Inductance") },
+	{ sigrok::Quantity::PARALLEL_CAPACITANCE, QString("Parallel Capacitance") },
+	{ sigrok::Quantity::PARALLEL_RESISTANCE, QString("Parallel Resistance") },
+	{ sigrok::Quantity::SERIES_INDUCTANCE, QString("Series Inductance") },
+	{ sigrok::Quantity::SERIES_CAPACITANCE, QString("Series Capacitance") },
+	{ sigrok::Quantity::SERIES_RESISTANCE, QString("Series Resistance") },
+	{ sigrok::Quantity::DISSIPATION_FACTOR, QString("Dissipation Factor") },
+	{ sigrok::Quantity::QUALITY_FACTOR, QString("Quality Factor") },
+	{ sigrok::Quantity::PHASE_ANGLE, QString("Phase Angle") },
+	// Difference from reference value.
+	{ sigrok::Quantity::DIFFERENCE, QString("Difference") },
+	{ sigrok::Quantity::COUNT, QString("Count") },
+	{ sigrok::Quantity::POWER_FACTOR, QString("Power Factor") },
+	{ sigrok::Quantity::APPARENT_POWER, QString("Apparent Power") },
+	{ sigrok::Quantity::MASS, QString("Mass") },
+	{ sigrok::Quantity::HARMONIC_RATIO, QString("Harmonic Ratio") },
+};
+
+unitmap_t unitmap = {
+	{ sigrok::Unit::VOLT, QString("V") },
+	{ sigrok::Unit::AMPERE, QString("A") },
+	{ sigrok::Unit::OHM, QString::fromUtf8("\u2126") },
+	{ sigrok::Unit::FARAD, QString("F") },
+	{ sigrok::Unit::KELVIN, QString("K") },
+	{ sigrok::Unit::CELSIUS, QString("°C") },
+	{ sigrok::Unit::FAHRENHEIT, QString("°F") },
+	{ sigrok::Unit::HERTZ, QString("Hz") },
+	{ sigrok::Unit::PERCENTAGE, QString("%") },
+	{ sigrok::Unit::BOOLEAN, QString("bool") },
+	{ sigrok::Unit::SECOND, QString("s") },
+	{ sigrok::Unit::SIEMENS, QString("S") },
+	{ sigrok::Unit::DECIBEL_MW, QString("dBm") },
+	{ sigrok::Unit::DECIBEL_VOLT, QString("dBV") },
+	{ sigrok::Unit::UNITLESS, QString("") },
+	{ sigrok::Unit::DECIBEL_SPL, QString("dB") },
+	{ sigrok::Unit::CONCENTRATION, QString("ppx") },
+	{ sigrok::Unit::REVOLUTIONS_PER_MINUTE, QString("RPM") },
+	{ sigrok::Unit::VOLT_AMPERE, QString("VA") },
+	{ sigrok::Unit::WATT, QString("W") },
+	{ sigrok::Unit::WATT_HOUR, QString("Wh") },
+	{ sigrok::Unit::METER_SECOND, QString("m/s") },
+	{ sigrok::Unit::HECTOPASCAL, QString("hPa") },
+	{ sigrok::Unit::HUMIDITY_293K, QString("%") },
+	{ sigrok::Unit::DEGREE, QString("°") },
+	{ sigrok::Unit::HENRY, QString("H") },
+	{ sigrok::Unit::GRAM, QString("g") },
+	{ sigrok::Unit::CARAT,QString("ct") },
+	{ sigrok::Unit::OUNCE, QString("oz.") },
+	{ sigrok::Unit::TROY_OUNCE, QString("oz.tr.") },
+	{ sigrok::Unit::POUND, QString("lb") }, // TODO: Pound (lb) or Metric Pound (lbm)?
+	{ sigrok::Unit::PENNYWEIGHT, QString("dwt.") },
+	{ sigrok::Unit::GRAIN, QString("gr.") },
+	{ sigrok::Unit::TAEL, QString::fromUtf8("\u4E24") },
+	{ sigrok::Unit::MOMME, QString::fromUtf8("\u5301") },
+	{ sigrok::Unit::TOLA, QString("tola") },
+	{ sigrok::Unit::PIECE, QString("pc.") }
+};
 
 static QTextStream& operator<<(QTextStream& stream, SIPrefix prefix)
 {
@@ -107,6 +189,24 @@ static QTextStream& operator<<(QTextStream& stream, const Timestamp& t)
 	}
 
 	return stream << QString::fromStdString(str);
+}
+
+QString format_quantity(const sigrok::Quantity *sr_quantity)
+{
+	if (quantitymap.count(sr_quantity) > 0)
+		return quantitymap[sr_quantity];
+
+	// TODO: error
+	return QString("");
+}
+
+QString format_unit(const sigrok::Unit *sr_unit)
+{
+	if (unitmap.count(sr_unit) > 0)
+		return unitmap[sr_unit];
+
+	// TODO: error
+	return QString("");
 }
 
 QString format_time_si(const Timestamp& v, SIPrefix prefix,

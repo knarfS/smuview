@@ -30,14 +30,7 @@ LcdDisplay::LcdDisplay(const uint digits, const QString unit, QWidget *parent) :
 	unit_(unit)
 {
 	setup_ui();
-
-	lcdValue->setDigitCount(digits_);
-	lcdUnit->setText(unit_);
-
-	QString init_value("");
-	for (uint i=0; i<digits_; i++)
-		init_value.append("_");
-	lcdValue->display(init_value);
+	reset_value();
 }
 
 void LcdDisplay::setup_ui()
@@ -46,22 +39,18 @@ void LcdDisplay::setup_ui()
 	this->setFrameShape(QFrame::Box);
 
 	QHBoxLayout *hLayout = new QHBoxLayout(this);
-	QSpacerItem *horizontalSpacer = new QSpacerItem(
-		40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
-	hLayout->addItem(horizontalSpacer);
+	hLayout->addStretch(5);
 
 	lcdValue = new QLCDNumber(this);
+	lcdValue->setDigitCount(digits_);
 	QSizePolicy sizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	sizePolicy.setHorizontalStretch(0);
 	sizePolicy.setVerticalStretch(0);
-	sizePolicy.setHeightForWidth(lcdValue->sizePolicy().hasHeightForWidth());
+	//sizePolicy.setHeightForWidth(lcdValue->sizePolicy().hasHeightForWidth());
 	lcdValue->setSizePolicy(sizePolicy);
 	lcdValue->setMinimumSize(QSize(151, 50));
-	QFont valueFont;
-	valueFont.setPointSize(8);
-	lcdValue->setFont(valueFont);
 	lcdValue->setFrameShape(QFrame::NoFrame);
+	//lcdValue->setFrameShape(QFrame::Box);
 	lcdValue->setSmallDecimalPoint(true);
 	lcdValue->setSegmentStyle(QLCDNumber::Flat);
 
@@ -69,10 +58,11 @@ void LcdDisplay::setup_ui()
 
 	lcdUnit = new QLabel(this);
 	QFont unitFont;
-	unitFont.setPointSize(20);
+	unitFont.setPointSize(18);
 	unitFont.setBold(true);
 	unitFont.setWeight(75);
 	lcdUnit->setFont(unitFont);
+	lcdUnit->setText(unit_);
 	lcdUnit->setAlignment(Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft);
 
 	hLayout->addWidget(lcdUnit);
@@ -89,9 +79,19 @@ void LcdDisplay::set_value(const double value)
 	lcdValue->display(str_value);
 }
 
+
+void LcdDisplay::set_unit(const QString unit)
+{
+	unit_ = unit;
+	lcdUnit->setText(unit_);
+}
+
 void LcdDisplay::reset_value()
 {
-	QString init_value("-----");
+	QString init_value("");
+	for (uint i=0; i<digits_; i++)
+		init_value.append("-");
+
 	lcdValue->display(init_value);
 }
 

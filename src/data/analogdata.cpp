@@ -19,9 +19,12 @@
 
 #include <cassert>
 
+#include <libsigrokcxx/libsigrokcxx.hpp>
+
 #include <QDebug>
 
 #include "analogdata.hpp"
+#include "src/util.hpp"
 
 using std::make_shared;
 using std::shared_ptr;
@@ -32,6 +35,7 @@ namespace data {
 
 AnalogData::AnalogData() : BaseData(),
 	sample_count_(0),
+	quantity_fixed_(true),
 	min_value_(std::numeric_limits<short>::max()),
 	max_value_(std::numeric_limits<short>::min())
 {
@@ -111,6 +115,49 @@ void AnalogData::push_sample(void *sample)
 	sample_count_++;
 
 	//qWarning() << "AnalogData::push_sample(): sample_count_ = " << sample_count_;
+}
+
+void AnalogData::push_sample(void *sample,
+	const sigrok::Quantity *sr_quantity, const sigrok::Unit *sr_unit)
+{
+	push_sample(sample);
+
+	if (sr_quantity != sr_quantity_) {
+		set_quantity(sr_quantity);
+		Q_EMIT quantity_changed(quantity_);
+	}
+
+	if (sr_unit != sr_unit_) {
+		set_unit(sr_unit);
+		Q_EMIT unit_changed(unit_);
+	}
+}
+
+void AnalogData::set_fixed_quantity(bool fixed)
+{
+	quantity_fixed_ = fixed;
+}
+
+void AnalogData::set_quantity(const sigrok::Quantity *sr_quantity)
+{
+	sr_quantity_ = sr_quantity;
+	quantity_ = util::format_quantity(sr_quantity_);
+}
+
+void AnalogData::set_unit(const sigrok::Unit *sr_unit)
+{
+	sr_unit_ = sr_unit;
+	unit_ = util::format_unit(sr_unit_);
+}
+
+const QString AnalogData::quantity() const
+{
+	return quantity_;
+}
+
+const QString AnalogData::unit() const
+{
+	return unit_;
 }
 
 double AnalogData::last_value() const

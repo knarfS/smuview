@@ -43,7 +43,6 @@ public:
 
 private:
 	uint digits_;
-	QString unit_;
 
 	void setup_ui();
 

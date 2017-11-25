@@ -35,7 +35,6 @@ MeasurementTab::MeasurementTab(Session &session,
 	DeviceTab(session, device, parent)
 {
 	digits_ = 5;
-	unit_ = QString("V");
 
 	setup_ui();
 }

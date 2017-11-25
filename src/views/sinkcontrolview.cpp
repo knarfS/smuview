@@ -56,7 +56,7 @@ void SinkControlView::setup_ui()
 	setVLayout->addWidget(setEnableButton);
 
 	// Leds
-	QGridLayout *ledLayout = new QGridLayout();
+	QGridLayout *ledLayout = new QGridLayout(this);
 	// Regulation Leds
 	ccLed = new widgets::Led("CC", this);
 	ledLayout->addWidget(ccLed, 0, 0);

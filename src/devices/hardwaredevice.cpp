@@ -85,7 +85,7 @@ HardwareDevice::HardwareDevice(
 		// TODO: solve this somehow with the detection of frames....
 		// TODO: What if the device has multi channels with a frame around each cg data
 		// PPUs have common time data
-		common_time_data_ = make_shared<data::AnalogData>();
+		common_time_data_ = init_time_data();
 	}
 	else if (type_ == ELECTRONIC_LOAD) {
 		sr_configurable_ = sr_device_->channel_groups()["1"];
@@ -94,7 +94,7 @@ HardwareDevice::HardwareDevice(
 		// TODO: solve this somehow with the detection of frames....
 		// TODO: What if the device has multi channels with a frame around each cg data
 		// Loads have common time data
-		common_time_data_ = make_shared<data::AnalogData>();
+		common_time_data_ = init_time_data();
 	}
 	else if (type_ == MULTIMETER) {
 		sr_configurable_ = sr_device_;
@@ -184,6 +184,16 @@ void HardwareDevice::close()
 	device_open_ = false;
 }
 
+shared_ptr<data::AnalogData> HardwareDevice::init_time_data()
+{
+	shared_ptr<data::AnalogData> time_data = make_shared<data::AnalogData>();
+	time_data->set_fixed_quantity(true);
+	time_data->set_quantity(sigrok::Quantity::TIME);
+	time_data->set_unit(sigrok::Unit::SECOND);
+
+	return time_data;
+}
+
 shared_ptr<data::BaseSignal> HardwareDevice::init_signal(
 	shared_ptr<sigrok::Channel> sr_channel)
 {
@@ -207,11 +217,31 @@ shared_ptr<data::BaseSignal> HardwareDevice::init_signal(
 		if (common_time_data_)
 			signal->set_time_data(common_time_data_);
 		else {
-			auto time_data = make_shared<data::AnalogData>();
-			signal->set_time_data(time_data);
+			signal->set_time_data(init_time_data());
 		}
 
 		auto data = make_shared<data::AnalogData>();
+
+		if (signal->internal_name().startsWith("V")) {
+			data->set_fixed_quantity(true);
+			data->set_quantity(sigrok::Quantity::VOLTAGE);
+			data->set_unit(sigrok::Unit::VOLT);
+		}
+		else if (signal->internal_name().startsWith("I")) {
+			data->set_fixed_quantity(true);
+			data->set_quantity(sigrok::Quantity::CURRENT);
+			data->set_unit(sigrok::Unit::AMPERE);
+		}
+		// TODO: Power
+		else if (signal->internal_name().startsWith("F")) {
+			data->set_fixed_quantity(true);
+			data->set_quantity(sigrok::Quantity::FREQUENCY);
+			data->set_unit(sigrok::Unit::HERTZ);
+		}
+		else if (signal->internal_name() == "P1") {
+			data->set_fixed_quantity(false);
+		}
+
 		signal->set_data(data);
 
 		channel_data_.insert(pair<

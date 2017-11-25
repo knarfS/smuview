@@ -64,5 +64,37 @@ QRectF BaseCurve::boundingRect() const
 		y_signal_data_->max_value() - y_signal_data_->min_value());
 }
 
+QString BaseCurve::x_signal_quantity() const
+{
+	return x_signal_data_->quantity();
+}
+
+QString BaseCurve::x_signal_unit() const
+{
+	return x_signal_data_->unit();
+}
+
+QString BaseCurve::x_signal_title() const
+{
+	return QString("%1 [%2]").
+		arg(x_signal_data_->quantity()).arg(x_signal_data_->unit());
+}
+
+QString BaseCurve::y_signal_quantity() const
+{
+	return y_signal_data_->quantity();
+}
+
+QString BaseCurve::y_signal_unit() const
+{
+	return y_signal_data_->unit();
+}
+
+QString BaseCurve::y_signal_title() const
+{
+	return QString("%1 [%2]").
+		arg(y_signal_data_->quantity()).arg(y_signal_data_->unit());
+}
+
 } // namespace data
 } // namespace sv

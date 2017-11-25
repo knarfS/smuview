@@ -71,11 +71,11 @@ private:
 
 protected:
 
-public Q_SLOTS:
-
 private Q_SLOTS:
 	void on_reset();
 	void on_update();
+	void on_quantity_changed(QString);
+	void on_unit_changed(QString);
 
 };
 

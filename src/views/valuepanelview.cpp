@@ -68,7 +68,18 @@ void ValuePanelView::setup_ui()
 
 void ValuePanelView::connect_signals()
 {
+	// Reset button
 	connect(resetButton, SIGNAL(clicked(bool)), this, SLOT(on_reset()));
+
+	// Signal stuff
+	if (value_signal_->analog_data()) {
+		connect(value_signal_->analog_data().get(),
+			SIGNAL(quantity_changed(QString)),
+			this, SLOT(on_quantity_changed(QString)));
+		connect(value_signal_->analog_data().get(),
+			SIGNAL(unit_changed(QString)),
+			this, SLOT(on_unit_changed(QString)));
+	}
 }
 
 void ValuePanelView::reset_display()
@@ -112,6 +123,17 @@ void ValuePanelView::on_update()
 		value = value_signal_->analog_data()->last_value();
 
 	valueDisplay->set_value(value);
+}
+
+void ValuePanelView::on_quantity_changed(QString quantity)
+{
+	(QString)quantity;
+	//valueDisplay->set_quantity(quantity);
+}
+
+void ValuePanelView::on_unit_changed(QString unit)
+{
+	valueDisplay->set_unit(unit);
 }
 
 } // namespace views

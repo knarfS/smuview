@@ -145,8 +145,10 @@ void Device::feed_in_frame_begin()
 void Device::feed_in_frame_end()
 {
 	if (frame_began_ && signalbase_frame_) {
+		/*
 		qWarning() << "feed_in_frame_end(): Set timestamp to '" <<
 			signalbase_frame_->name() << "'";
+		*/
 		signalbase_frame_->add_timestamp();
 		signalbase_frame_ = nullptr;
 
@@ -185,7 +187,9 @@ void Device::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
 		}
 
 		shared_ptr<data::BaseSignal> signal = channel_data_[sr_channel];
-		signal->data()->push_sample(channel_data);
+		signal->analog_data()->push_sample(channel_data,
+			sr_analog->mq(), sr_analog->unit());
+		//signal->data()->push_sample(channel_data);
 		channel_data++;
 
 		// Timestamp for values not in a FRAME

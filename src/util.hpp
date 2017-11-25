@@ -21,6 +21,7 @@
 #define UTIL_HPP
 
 #include <cmath>
+#include <map>
 #include <string>
 #include <vector>
 
@@ -28,9 +29,12 @@
 #include <boost/multiprecision/cpp_dec_float.hpp>
 #endif
 
+#include <libsigrokcxx/libsigrokcxx.hpp>
+
 #include <QMetaType>
 #include <QString>
 
+using std::map;
 using std::string;
 using std::vector;
 
@@ -53,6 +57,9 @@ enum class SIPrefix {
 	zetta, yotta
 };
 
+typedef map<const sigrok::Quantity *, QString> quantitymap_t;
+typedef map<const sigrok::Unit *, QString> unitmap_t;
+
 /// Returns the exponent that corresponds to a given prefix.
 int exponent(SIPrefix prefix);
 
@@ -60,6 +67,24 @@ int exponent(SIPrefix prefix);
 typedef boost::multiprecision::number<
 	boost::multiprecision::cpp_dec_float<24>,
 	boost::multiprecision::et_off> Timestamp;
+
+/**
+ * Formats a sigrok quantity to a string
+ *
+ * @param sr_unit The sigrok quantity (sigrok::Quantity) to format
+ * .
+ * @return The formatted quantity.
+ */
+QString format_quantity(const sigrok::Quantity *sr_quantity);
+
+/**
+ * Formats a sigrok unit to a string
+ *
+ * @param sr_unit The sigrok unit (sigrok::Unit) to format
+ * .
+ * @return The formatted unit.
+ */
+QString format_unit(const sigrok::Unit *sr_unit);
 
 /**
  * Formats a given timestamp with the specified SI prefix.

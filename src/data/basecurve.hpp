@@ -42,6 +42,12 @@ public:
 	virtual QPointF sample( size_t i ) const;
 	virtual size_t size() const;
 	virtual QRectF boundingRect() const;
+	virtual QString x_signal_quantity() const;
+	virtual QString x_signal_unit() const;
+	virtual QString x_signal_title() const;
+	virtual QString y_signal_quantity() const;
+	virtual QString y_signal_unit() const;
+	virtual QString y_signal_title() const;
 
 private:
 	shared_ptr<AnalogData> x_signal_data_;

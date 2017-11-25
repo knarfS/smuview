@@ -24,6 +24,7 @@
 
 #include "powerpanelview.hpp"
 #include "src/session.hpp"
+#include "src/util.hpp"
 #include "src/data/analogdata.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/widgets/lcddisplay.hpp"
@@ -54,39 +55,37 @@ PowerPanelView::~PowerPanelView()
 
 void PowerPanelView::setup_ui()
 {
-	QVBoxLayout *getValuesVLayout = new QVBoxLayout(this);
+	QVBoxLayout *layout = new QVBoxLayout(this);
 
-	voltageDisplay = new widgets::LcdDisplay(5, "V", this);
-	currentDisplay = new widgets::LcdDisplay(5, "A", this);
-	resistanceDisplay = new widgets::LcdDisplay(
-		5, QString::fromUtf8("\u2126"), this);
-	powerDisplay = new widgets::LcdDisplay(5, "W", this);
-	ampHourDisplay = new widgets::LcdDisplay(5, "Ah", this);
-	wattHourDisplay = new widgets::LcdDisplay(5, "Wh", this);
+	QGridLayout *panelLayout = new QGridLayout(this);
+	voltageDisplay = new widgets::LcdDisplay(5,
+		voltage_signal_->analog_data()->unit(), this);
+	currentDisplay = new widgets::LcdDisplay(5,
+		current_signal_->analog_data()->unit(), this);
+	resistanceDisplay = new widgets::LcdDisplay(5,
+		util::format_unit(sigrok::Unit::OHM), this);
+	powerDisplay = new widgets::LcdDisplay(5,
+		util::format_unit(sigrok::Unit::WATT), this);
+	ampHourDisplay = new widgets::LcdDisplay(5, "Ah", this); // TODO: sigrok::Unit::AMP_HOUR missing!
+	wattHourDisplay = new widgets::LcdDisplay(5,
+		util::format_unit(sigrok::Unit::WATT_HOUR), this);
 
-	QHBoxLayout *upperHLayout = new QHBoxLayout(this);
-	upperHLayout->addWidget(voltageDisplay);
-	upperHLayout->addWidget(powerDisplay);
-	upperHLayout->addWidget(ampHourDisplay);
-	upperHLayout->addStretch(5);
+	panelLayout->addWidget(voltageDisplay, 0, 0);
+	panelLayout->addWidget(currentDisplay, 1, 0);
+	panelLayout->addWidget(resistanceDisplay, 0, 1);
+	panelLayout->addWidget(powerDisplay, 1, 1);
+	panelLayout->addWidget(ampHourDisplay, 0, 2);
+	panelLayout->addWidget(wattHourDisplay, 1, 2);
+	layout->addLayout(panelLayout);
 
-	QHBoxLayout *lowerHLayout = new QHBoxLayout(this);
-	lowerHLayout->addWidget(currentDisplay);
-	lowerHLayout->addWidget(resistanceDisplay);
-	lowerHLayout->addWidget(wattHourDisplay);
-	lowerHLayout->addStretch(5);
-
-	QHBoxLayout *buttonHLayout = new QHBoxLayout(this);
+	QHBoxLayout *buttonLayout = new QHBoxLayout(this);
 	resetButton = new QPushButton(this);
-	resetButton->setText(
-		QApplication::translate("SmuView", "Reset", Q_NULLPTR));
-	buttonHLayout->addWidget(resetButton);
-	buttonHLayout->addStretch(5);
+	resetButton->setText(tr("Reset"));
+	buttonLayout->addWidget(resetButton);
+	buttonLayout->addStretch(5);
+	layout->addItem(buttonLayout);
 
-	getValuesVLayout->addItem(upperHLayout);
-	getValuesVLayout->addItem(lowerHLayout);
-	getValuesVLayout->addItem(buttonHLayout);
-	getValuesVLayout->addStretch(4);
+	layout->addStretch(4);
 }
 
 void PowerPanelView::connect_signals()

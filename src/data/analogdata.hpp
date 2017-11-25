@@ -22,6 +22,8 @@
 
 #include <memory>
 
+#include <libsigrokcxx/libsigrokcxx.hpp>
+
 #include <QObject>
 
 #include "basedata.hpp"
@@ -46,21 +48,38 @@ public:
 	double get_sample(size_t pos) const;
 
 	void push_sample(void *sample);
+	void push_sample(void *sample,
+		const sigrok::Quantity *sr_quantity, const sigrok::Unit *sr_unit);
 
+	void set_fixed_quantity(bool fixed);
+	void set_quantity(const sigrok::Quantity *sr_quantity);
+	void set_unit(const sigrok::Unit *sr_unit);
+
+	const QString quantity() const;
+	const QString unit() const;
 	double last_value() const;
 	double min_value() const;
 	double max_value() const;
-
-Q_SIGNALS:
-	void samples_cleared();
 
 private:
 	shared_ptr<vector<double>> data_;
 	size_t sample_count_;
 
+	bool quantity_fixed_;
+	const sigrok::Quantity *sr_quantity_;
+	const sigrok::Unit *sr_unit_;
+	QString quantity_;
+	QString unit_;
+
 	double last_value_;
 	double min_value_;
 	double max_value_;
+
+Q_SIGNALS:
+	void quantity_changed(QString);
+	void unit_changed(QString);
+	void samples_cleared();
+
 };
 
 } // namespace data
