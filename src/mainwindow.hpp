@@ -74,13 +74,8 @@ private:
 	shared_ptr<devices::Device> last_focused_device_;
 	map< shared_ptr<devices::Device>, QMainWindow*> device_windows_;
 
-	QIcon icon_red_;
-	QIcon icon_green_;
-	QIcon icon_grey_;
-
     QAction *actionExit;
     QAction *actionAbout;
-    QAction *actionRun;
     QAction *actionAddTab;
     QWidget *centralWidget;
     QTabWidget *tabWidget;
@@ -88,14 +83,14 @@ private:
     QStatusBar *statusBar;
 
 	void setup_ui();
+	void connect_signals();
 	void retranslate_ui();
 	void session_error(const QString text, const QString info_text);
 
 private Q_SLOTS:
 	void show_session_error(const QString text, const QString info_text);
-	void on_capture_state_changed(int);
 	void on_actionAddTab_triggered();
-	void on_actionRun_triggered();
+
 };
 
 } // namespace sv

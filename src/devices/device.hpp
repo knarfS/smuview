@@ -21,10 +21,13 @@
 #ifndef DEVICES_DEVICE_HPP
 #define DEVICES_DEVICE_HPP
 
+#include <functional>
 #include <memory>
 #include <string>
+#include <thread>
 #include <unordered_set>
 
+using std::function;
 using std::map;
 using std::mutex;
 using std::recursive_mutex;
@@ -56,11 +59,15 @@ class Device : public QObject
 {
 	Q_OBJECT
 
-protected:
-	Device() = default;
-
 public:
+	Device();
 	virtual ~Device();
+
+	enum aquisition_state {
+		Stopped,
+		AwaitingTrigger,
+		Running
+	};
 
 	shared_ptr<sigrok::Device> sr_device() const;
 
@@ -80,8 +87,9 @@ public:
 	virtual string display_name(
 		const DeviceManager &device_manager) const = 0;
 
-	virtual void open() = 0;
+	virtual void open(function<void (const QString)> error_handler) = 0;
 	virtual void close() = 0;
+	virtual void free_unused_memory();
 
 	void data_feed_in(shared_ptr<sigrok::Device> sr_device,
 		shared_ptr<sigrok::Packet> sr_packet);
@@ -89,9 +97,6 @@ public:
 private:
 	mutable recursive_mutex data_mutex_;
 	shared_ptr<data::BaseSignal> actual_processed_signal_;
-
-	bool out_of_memory_;
-	bool frame_began_;
 
 	void feed_in_header();
 	void feed_in_meta(shared_ptr<sigrok::Meta> sr_meta);
@@ -101,9 +106,17 @@ private:
 	void feed_in_analog(shared_ptr<sigrok::Analog> sr_analog);
 
 protected:
+	shared_ptr<sigrok::Session> sr_session_;
 	shared_ptr<sigrok::Device> sr_device_;
 	map<shared_ptr<sigrok::Channel>, shared_ptr<data::BaseSignal>> channel_data_; // TODO: Rename
 
+	std::thread aquisition_thread_;
+	mutable mutex aquisition_mutex_; //!< Protects access to capture_state_.
+	aquisition_state aquisition_state_;
+	bool out_of_memory_;
+	bool frame_began_;
+
+	virtual void init_device();
 	virtual shared_ptr<data::BaseSignal> init_signal(
 		shared_ptr<sigrok::Channel> sr_channel,
 		shared_ptr<data::AnalogData> common_time_data) = 0;
@@ -119,6 +132,11 @@ Q_SIGNALS:
 	void under_voltage_condition_active_changed(const bool);
 	void under_voltage_condition_threshold_changed(const double);
 	void over_temperature_protection_active_changed(const bool);
+
+	/* TODO?
+	void signals_changed();
+	void device_changed();
+	*/
 };
 
 } // namespace devices

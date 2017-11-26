@@ -21,6 +21,7 @@
 #ifndef DEVICES_HARDWAREDEVICE_HPP
 #define DEVICES_HARDWAREDEVICE_HPP
 
+#include <functional>
 #include <map>
 #include <mutex>
 #include <unordered_set>
@@ -31,6 +32,7 @@
 
 using std::bad_alloc;
 using std::dynamic_pointer_cast;
+using std::function;
 using std::lock_guard;
 using std::make_shared;
 using std::set;
@@ -69,7 +71,7 @@ class HardwareDevice final : public Device
 	Q_OBJECT
 
 public:
-	HardwareDevice(const shared_ptr<sigrok::Context> &sr_context,
+	explicit HardwareDevice(const shared_ptr<sigrok::Context> &sr_context,
 		shared_ptr<sigrok::HardwareDevice> sr_device);
 
 	~HardwareDevice();
@@ -95,7 +97,7 @@ public:
 	 */
 	string display_name(const DeviceManager &device_manager) const;
 
-	void open();
+	void open(function<void (const QString)> error_handler);
 	void close();
 
 	// TODO: Generic!
@@ -149,6 +151,8 @@ private:
 	shared_ptr<sigrok::Configurable> sr_configurable_;
 	Type type_;
 	bool device_open_;
+
+	void aquisition_thread_proc(function<void (const QString)> error_handler);
 
 	// TODO: Generic!
 	shared_ptr<data::BaseSignal> voltage_signal_;

@@ -26,6 +26,7 @@
 #include <QDebug>
 
 #include "device.hpp"
+#include "src/session.hpp"
 #include "src/data/analogdata.hpp"
 #include "src/data/basedata.hpp"
 #include "src/data/basesignal.hpp"
@@ -51,15 +52,20 @@ using Glib::Variant;
 namespace sv {
 namespace devices {
 
-Device::~Device()
+Device::Device()
 {
-	//if (session_)
-	//	session_->remove_datafeed_callbacks();
-
-	// TODO:
-	//remove_datafeed_callbacks();
+	init_device();
 }
 
+Device::~Device()
+{
+	if (sr_session_) {
+		sr_session_->stop();
+		sr_session_->remove_datafeed_callbacks();
+	}
+}
+
+// TODO: notwendig?
 shared_ptr<sigrok::Device> Device::sr_device() const
 {
 	return sr_device_;
@@ -83,6 +89,25 @@ template<typename T> T Device::read_config(
 		sr_device_->config_get(ConfigKey::SAMPLERATE)).get();
 }
 
+
+void Device::init_device()
+{
+	// Set up the session
+	sr_session_ = sv::Session::sr_context->create_session();
+}
+
+void Device::free_unused_memory()
+{
+	/* TODO
+	for (shared_ptr<data::BaseData> data : all_signal_data_) {
+		const vector< shared_ptr<data::Segment> > segments = data->segments();
+
+		for (shared_ptr<data::Segment> segment : segments) {
+			segment->free_unused_memory();
+		}
+	}
+	*/
+}
 
 void Device::feed_in_header()
 {
@@ -207,8 +232,6 @@ void Device::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
 void Device::data_feed_in(shared_ptr<sigrok::Device> sr_device,
 	shared_ptr<sigrok::Packet> sr_packet)
 {
-	//(void)sr_device;
-
 	/*
 	qWarning() << "data_feed_in(): sr_packet->type()->id() = " << sr_packet->type()->id();
 	qWarning() << "data_feed_in(): sr_device->model() = "

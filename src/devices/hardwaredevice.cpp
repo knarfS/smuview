@@ -19,6 +19,7 @@
  */
 
 #include <glib.h>
+#include <thread>
 #include <boost/algorithm/string/join.hpp>
 
 #include <QDateTime>
@@ -104,6 +105,7 @@ HardwareDevice::HardwareDevice(
 	}
 
 	for (auto sr_channel : sr_channels) {
+		// TODO: sr_channel is not necessarily a signal (see Digi35)....
 		init_signal(sr_channel, common_time_data_);
 	}
 }
@@ -159,7 +161,7 @@ string HardwareDevice::display_name(
 	return join(parts, " ");
 }
 
-void HardwareDevice::open()
+void HardwareDevice::open(function<void (const QString)> error_handler)
 {
 	if (device_open_)
 		close();
@@ -170,18 +172,60 @@ void HardwareDevice::open()
 		throw QString(e.what());
 	}
 
+	// Add device to session (do this in constructor??)
+	sr_session_->add_device(sr_device_);
+
+	sr_session_->add_datafeed_callback([=]
+		(shared_ptr<sigrok::Device> sr_device, shared_ptr<sigrok::Packet> sr_packet) {
+			data_feed_in(sr_device, sr_packet);
+		});
+
 	device_open_ = true;
+
+	//stop_capture();
+
+	// Check that at least one channel is enabled
+	/*
+	const auto channels = sr_device_->channels();
+	if (!any_of(channels.begin(), channels.end(),
+		[](shared_ptr<Channel> channel) {
+			return channel->enabled(); })) {
+		error_handler(tr("No channels enabled."));
+		return;
+	}
+	*/
+
+	// Clear signal data
+	/*
+	for (const shared_ptr<data::BaseData> d : all_signal_data_)
+		d->clear();
+	*/
+
+	// Start aquisition
+	aquisition_thread_ = std::thread(
+		&HardwareDevice::aquisition_thread_proc, this, error_handler);
+
+	aquisition_state_ = aquisition_state::Running;
 }
 
 void HardwareDevice::close()
 {
-	if (device_open_)
-		sr_device_->close();
+	if (!device_open_)
+		return;
 
-	// TODO
-	//if (session_)
-	//	session_->remove_devices();
+	sr_session_->remove_datafeed_callbacks();
 
+	if (aquisition_state_ != aquisition_state::Stopped) {
+		sr_session_->stop();
+		aquisition_state_ = aquisition_state::Stopped;
+	}
+
+	// Check that sampling stopped
+	if (aquisition_thread_.joinable())
+		aquisition_thread_.join();
+
+	sr_session_->remove_devices();
+	sr_device_->close();
 	device_open_ = false;
 }
 
@@ -269,6 +313,48 @@ shared_ptr<data::BaseSignal> HardwareDevice::init_signal(
 	//signals_changed();
 
 	return signal;
+}
+
+void HardwareDevice::aquisition_thread_proc(
+	function<void (const QString)> error_handler)
+{
+	assert(error_handler);
+
+	out_of_memory_ = false;
+
+	try {
+		sr_session_->start();
+	} catch (sigrok::Error e) {
+		error_handler(e.what());
+		return;
+	}
+
+	aquisition_state_ = aquisition_state::Running;
+
+	try {
+		sr_session_->run();
+	} catch (sigrok::Error e) {
+		error_handler(e.what());
+		aquisition_state_ = aquisition_state::Stopped;
+		return;
+	}
+
+	aquisition_state_ = aquisition_state::Stopped;
+
+	// Optimize memory usage
+	free_unused_memory();
+
+	/*
+	// We now have unsaved data unless we just "captured" from a file
+	shared_ptr<devices::File> file_device =
+		dynamic_pointer_cast<devices::File>(device_);
+
+	if (!file_device)
+		data_saved_ = false;
+	*/
+
+	if (out_of_memory_)
+		error_handler(tr("Out of memory, acquisition stopped."));
 }
 
 shared_ptr<data::BaseSignal> HardwareDevice::voltage_signal() const

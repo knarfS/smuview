@@ -26,10 +26,10 @@
 #include <QVBoxLayout>
 
 #include "mainwindow.hpp"
-#include "devicemanager.hpp"
-#include "session.hpp"
-#include "devices/hardwaredevice.hpp"
-#include "dialogs/connect.hpp"
+#include "src/devicemanager.hpp"
+#include "src/session.hpp"
+#include "src/devices/hardwaredevice.hpp"
+#include "src/dialogs/connect.hpp"
 #include "src/tabs/basetab.hpp"
 #include "src/tabs/measurementtab.hpp"
 #include "src/tabs/sinktab.hpp"
@@ -42,21 +42,13 @@ namespace sv
 
 MainWindow::MainWindow(DeviceManager &device_manager, QWidget *parent) :
     QMainWindow(parent),
-	device_manager_(device_manager),
-	icon_red_(":/icons/status-red.svg"),
-	icon_green_(":/icons/status-green.svg"),
-	icon_grey_(":/icons/status-grey.svg")
+	device_manager_(device_manager)
 {
 	qRegisterMetaType<util::Timestamp>("util::Timestamp");
 	qRegisterMetaType<uint64_t>("uint64_t");
 
     setup_ui();
-
-	// Actions
-	connect(actionAddTab, SIGNAL(triggered(bool)),
-		this, SLOT(on_actionAddTab_triggered()));
-	connect(actionRun, SIGNAL(triggered(bool)),
-		this, SLOT(on_actionRun_triggered()));
+	connect_signals();
 }
 
 MainWindow::~MainWindow()
@@ -65,12 +57,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::init_session()
 {
-	shared_ptr<Session> session = make_shared<Session>(device_manager_);
-
-	connect(session.get(), SIGNAL(capture_state_changed(int)),
-		this, SLOT(on_capture_state_changed(int)));
-
-	session_ = session;
+	session_ = make_shared<Session>(device_manager_);
 }
 
 void MainWindow::init_default_session()
@@ -88,6 +75,7 @@ void MainWindow::init_session_with_file(
 
 	open_file_name = open_file_name;
 	open_file_format = open_file_format;
+	// TODO
 	//session_->load_init_file(open_file_name, open_file_format);
 }
 
@@ -119,13 +107,9 @@ void MainWindow::remove_session()
 	// be dismissed since the session object will be deleted by the time we
 	// leave this method and the event loop gets a chance to run again.
 	qWarning() << "remove_session(): stop_capture";
-	session_->stop_capture();
+	// TODO: for each device?
+	//session_->stop_capture();
 	QApplication::processEvents();
-
-	/*
-	for (shared_ptr<view::ViewBase> view : session_->views())
-		remove_view(view);
-	*/
 
 	// Remove the session from our list of sessions (which also destroys it)
 	//sessions_.remove_if([&](shared_ptr<Session> s) {
@@ -155,7 +139,9 @@ shared_ptr<devices::Device> MainWindow::add_tab(
 
 	window->setDockNestingEnabled(true);
 
-	session_->add_device(device);
+	session_->add_device(device,
+		[&](QString message) { session_error("Aquisition failed", message); });
+
 	device_windows_[device] = window;
 	last_focused_device_ = device;
 
@@ -174,18 +160,12 @@ shared_ptr<devices::Device> MainWindow::add_tab(
 	} else if (type == tabs::TabTypeViews) {
 	}
 
-	// Start session
-	if (session_->get_capture_state() == Session::Stopped) {
-		session_->start_capture([&](QString message) {
-			session_error("Capture failed", message); });
-	}
-
 	return device;
 }
 
 void MainWindow::remove_tab(shared_ptr<devices::HardwareDevice> device)
 {
-	(shared_ptr<devices::HardwareDevice>)device;
+	session_->remove_device(device);
 }
 
 
@@ -198,31 +178,19 @@ void MainWindow::setup_ui()
 		QSize(), QIcon::Normal, QIcon::Off);
 	setWindowIcon(mainIcon);
 
-	actionExit = new QAction(this);
+	actionExit = new QAction();
 	QIcon exitIcon;
 	exitIcon.addFile(QStringLiteral(":/icons/application-exit.png"),
 		QSize(), QIcon::Normal, QIcon::Off);
 	actionExit->setIcon(exitIcon);
 
-	actionAbout = new QAction(this);
+	actionAbout = new QAction();
 	QIcon aboutIcon;
 	aboutIcon.addFile(QStringLiteral(":/icons/information.svg"),
 		QSize(), QIcon::Normal, QIcon::Off);
 	actionAbout->setIcon(aboutIcon);
 
-	actionRun = new QAction(this);
-	QIcon runIcon;
-	runIcon.addFile(QStringLiteral(":/icons/status-red.svg"),
-		QSize(), QIcon::Normal, QIcon::Off);
-	runIcon.addFile(QStringLiteral(":/icons/status-green.svg"),
-		QSize(), QIcon::Normal, QIcon::On);
-	runIcon.addFile(QStringLiteral(":/icons/status-grey.svg"),
-		QSize(), QIcon::Disabled, QIcon::Off);
-	runIcon.addFile(QStringLiteral(":/icons/status-grey.svg"),
-		QSize(), QIcon::Disabled, QIcon::On);
-	actionRun->setIcon(runIcon);
-
-	actionAddTab = new QAction(this);
+	actionAddTab = new QAction();
 	QIcon tabIcon;
 	tabIcon.addFile(QStringLiteral(":/icons/window-new.png"),
 		QSize(), QIcon::Normal, QIcon::Off);
@@ -245,7 +213,6 @@ void MainWindow::setup_ui()
 	this->setStatusBar(statusBar);
 
 	mainToolBar->addAction(actionAddTab);
-	mainToolBar->addAction(actionRun);
 	mainToolBar->addSeparator();
 	mainToolBar->addAction(actionAbout);
 	mainToolBar->addAction(actionExit);
@@ -253,8 +220,13 @@ void MainWindow::setup_ui()
 	retranslate_ui();
 
 	tabWidget->setCurrentIndex(1);
+}
 
-	//QMetaObject::connectSlotsByName(SmuView);
+void MainWindow::connect_signals()
+{
+	// Actions
+	connect(actionAddTab, SIGNAL(triggered(bool)),
+		this, SLOT(on_actionAddTab_triggered()));
 }
 
 void MainWindow::retranslate_ui()
@@ -264,10 +236,6 @@ void MainWindow::retranslate_ui()
 	actionAbout->setText(QApplication::translate("SmuView", "About", Q_NULLPTR));
 #ifndef QT_NO_TOOLTIP
 	actionAbout->setToolTip(QApplication::translate("SmuView", "About", Q_NULLPTR));
-#endif // QT_NO_TOOLTIP
-	actionRun->setText(QApplication::translate("SmuView", "Run", Q_NULLPTR));
-#ifndef QT_NO_TOOLTIP
-	actionRun->setToolTip(QApplication::translate("SmuView", "Run/Stop", Q_NULLPTR));
 #endif // QT_NO_TOOLTIP
 	actionAddTab->setText(QApplication::translate("SmuView", "Add Tab", Q_NULLPTR));
 #ifndef QT_NO_TOOLTIP
@@ -292,16 +260,6 @@ void MainWindow::show_session_error(const QString text, const QString info_text)
 	msg.exec();
 }
 
-void MainWindow::on_capture_state_changed(int)
-{
-	int state = session_->get_capture_state();
-
-	const QIcon *icons[] = {&icon_grey_, &icon_red_, &icon_green_};
-	actionRun->setIcon(*icons[state]);
-	actionRun->setText((state == sv::Session::Stopped) ?
-		tr("Run") : tr("Stop"));
-}
-
 void MainWindow::on_actionAddTab_triggered()
 {
 	// Stop any currently running capture session
@@ -311,21 +269,6 @@ void MainWindow::on_actionAddTab_triggered()
 
 	if (dlg.exec())
 		add_tab(dlg.get_selected_device());
-}
-
-void MainWindow::on_actionRun_triggered()
-{
-	switch (session_->get_capture_state()) {
-	case Session::Stopped:
-		session_->start_capture([&](QString message) {
-			session_error("Capture failed", message); });
-		break;
-	case Session::AwaitingTrigger:
-	case Session::Running:
-		qWarning() << "on_actionRun_triggered(): stop_capture";
-		session_->stop_capture();
-		break;
-	}
 }
 
 } // namespace sv
