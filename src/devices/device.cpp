@@ -52,7 +52,8 @@ using Glib::Variant;
 namespace sv {
 namespace devices {
 
-Device::Device()
+Device::Device(const shared_ptr<sigrok::Context> &sr_context):
+	sr_context_(sr_context)
 {
 	init_device();
 }
@@ -65,28 +66,115 @@ Device::~Device()
 	}
 }
 
-// TODO: notwendig?
 shared_ptr<sigrok::Device> Device::sr_device() const
 {
 	return sr_device_;
 }
 
-template uint64_t Device::read_config(
-	const sigrok::ConfigKey*, const uint64_t);
-
-template<typename T> T Device::read_config(
-	const ConfigKey *key, const T default_value)
+bool Device::is_read_config(const ConfigKey *key)  const
 {
 	assert(key);
+	assert(sr_configurable_);
 
-	if (!sr_device_)
-		return default_value;
+	if (!sr_configurable_->config_check(key, Capability::GET))
+		return false;
 
-	if (!sr_device_->config_check(key, Capability::GET))
-		return default_value;
+	return true;
+}
 
-	return VariantBase::cast_dynamic<Glib::Variant<guint64>>(
-		sr_device_->config_get(ConfigKey::SAMPLERATE)).get();
+template bool Device::read_config(const sigrok::ConfigKey*) const;
+template uint64_t Device::read_config(const sigrok::ConfigKey*) const;
+template double Device::read_config(const sigrok::ConfigKey*) const;
+template<typename T> T Device::read_config(const ConfigKey *key) const
+{
+	assert(key);
+	assert(sr_configurable_);
+
+	/*
+	try {
+		auto gvar = sr_configurable_->config_get(sigrok::ConfigKey::ENABLED);
+		enable =
+			Glib::VariantBase::cast_dynamic<Glib::Variant<bool>>(gvar).get();
+	} catch (sigrok::Error error) {
+		qDebug() << "Failed to get ENABLED.";
+		return false;
+	}
+	*/
+
+	if (!sr_configurable_->config_check(key, Capability::GET)) {
+		qWarning() << "Device::read_config(): No key " <<
+			QString::fromStdString(key->name());
+		assert(false);
+	}
+
+	return VariantBase::cast_dynamic<Glib::Variant<T>>(
+		sr_configurable_->config_get(key)).get();
+}
+
+bool Device::is_write_config(const sigrok::ConfigKey *key) const
+{
+	assert(key);
+	assert(sr_configurable_);
+
+	if (!sr_configurable_->config_check(key, Capability::SET))
+		return false;
+
+	return true;
+}
+
+template void Device::write_config(const sigrok::ConfigKey*, const bool);
+template void Device::write_config(const sigrok::ConfigKey*, const uint64_t);
+template void Device::write_config(const sigrok::ConfigKey*, const double);
+template<typename T> void Device::write_config(
+		const sigrok::ConfigKey *key, const T value)
+{
+	assert(key);
+	assert(sr_configurable_);
+
+	/*
+	try {
+		sr_configurable_->config_set(
+			sigrok::ConfigKey::ENABLED, Glib::Variant<bool>::create(enable));
+	} catch (sigrok::Error error) {
+		qDebug() << "Failed to set ENABLED.";
+	}
+	*/
+
+	if (!sr_configurable_->config_check(key, Capability::SET)) {
+		qWarning() << "Device::write_config(): No key " <<
+			QString::fromStdString(key->name());
+		assert(false);
+	}
+
+	sr_configurable_->config_set(key, Glib::Variant<T>::create(value));
+}
+
+bool Device::is_list_config(const sigrok::ConfigKey *key) const
+{
+	assert(key);
+	assert(sr_configurable_);
+
+	if (!sr_configurable_->config_check(key, Capability::LIST))
+		return false;
+
+	return true;
+}
+
+template<typename T> T Device::list_config(const sigrok::ConfigKey *key) const
+{
+	assert(key);
+	assert(sr_configurable_);
+
+	/*
+	Glib::VariantContainerBase gvar = sr_configurable_->config_list(key);
+	Glib::VariantIter iter(gvar);
+	iter.next_value(gvar);
+	min = Glib::VariantBase::cast_dynamic<Glib::Variant<double>>(gvar).get();
+	iter.next_value(gvar);
+	max = Glib::VariantBase::cast_dynamic<Glib::Variant<double>>(gvar).get();
+	iter.next_value(gvar);
+	step = Glib::VariantBase::cast_dynamic<Glib::Variant<double>>(gvar).get();
+	*/
 }
 
 

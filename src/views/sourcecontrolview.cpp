@@ -82,9 +82,12 @@ void SourceControlView::connect_signals()
 
 void SourceControlView::init_values()
 {
-	setVoltageControl->on_value_changed(device_->get_voltage_target());
-	setCurrentControl->on_value_changed(device_->get_current_limit());
-	setEnableButton->on_state_changed(device_->get_enabled());
+	if (device_->is_voltage_target_getable())
+		setVoltageControl->on_value_changed(device_->get_voltage_target());
+	if (device_->is_current_limit_getable())
+		setCurrentControl->on_value_changed(device_->get_current_limit());
+	if (device_->is_enable_getable())
+		setEnableButton->on_state_changed(device_->get_enabled());
 }
 
 void SourceControlView::on_voltage_changed(const double value)

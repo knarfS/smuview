@@ -125,20 +125,20 @@ public:
 	void list_current_limit(double &min, double &max, double &step);
 
 	bool is_over_voltage_active_getable() const;
-	double get_over_voltage_active() const;
+	bool get_over_voltage_active() const;
 
 	bool is_over_current_active_getable() const;
-	double get_over_current_active() const;
+	bool get_over_current_active() const;
 
 	bool is_over_temperature_active_getable() const;
-	double get_over_temperature_active() const;
+	bool get_over_temperature_active() const;
 
 	bool is_under_voltage_enable_getable() const;
 	bool is_under_voltage_enable_setable() const;
-	double get_under_voltage_enable() const;
+	bool get_under_voltage_enable() const;
 
 	bool is_under_voltage_active_getable() const;
-	double get_under_voltage_active() const;
+	bool get_under_voltage_active() const;
 
 	bool is_under_voltage_threshold_getable() const;
 	bool is_under_voltage_threshold_setable() const;
@@ -147,8 +147,6 @@ public:
 	void list_under_voltage_threshold(double &min, double &max, double &step);
 
 private:
-	const shared_ptr<sigrok::Context> sr_context_;
-	shared_ptr<sigrok::Configurable> sr_configurable_;
 	Type type_;
 	bool device_open_;
 

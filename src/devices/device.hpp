@@ -38,6 +38,7 @@ using std::vector;
 
 namespace sigrok {
 class ConfigKey;
+class Context;
 class Device;
 class Packet;
 class Session;
@@ -60,7 +61,7 @@ class Device : public QObject
 	Q_OBJECT
 
 public:
-	Device();
+	Device(const shared_ptr<sigrok::Context> &sr_context);
 	virtual ~Device();
 
 	enum aquisition_state {
@@ -71,8 +72,15 @@ public:
 
 	shared_ptr<sigrok::Device> sr_device() const;
 
-	template<typename T> T read_config(
-		const sigrok::ConfigKey *key, const T default_value = 0);
+	bool is_read_config(const sigrok::ConfigKey *key) const;
+	template<typename T> T read_config(const sigrok::ConfigKey *key) const;
+
+	bool is_write_config(const sigrok::ConfigKey *key) const;
+	template<typename T> void write_config(const sigrok::ConfigKey *key,
+		const T value);
+
+	bool is_list_config(const sigrok::ConfigKey *key) const;
+	template<typename T> T list_config(const sigrok::ConfigKey *key) const;
 
 	/**
 	 * Builds the full name. It only contains all the fields.
@@ -106,8 +114,10 @@ private:
 	void feed_in_analog(shared_ptr<sigrok::Analog> sr_analog);
 
 protected:
+	const shared_ptr<sigrok::Context> sr_context_;
 	shared_ptr<sigrok::Session> sr_session_;
 	shared_ptr<sigrok::Device> sr_device_;
+	shared_ptr<sigrok::Configurable> sr_configurable_;
 	map<shared_ptr<sigrok::Channel>, shared_ptr<data::BaseSignal>> channel_data_; // TODO: Rename
 
 	std::thread aquisition_thread_;

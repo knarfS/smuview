@@ -126,17 +126,24 @@ void SinkControlView::connect_signals()
 
 void SinkControlView::init_values()
 {
-	setEnableButton->on_state_changed(device_->get_enabled());
-	setValueControl->on_value_changed(device_->get_current_limit());
+	// TODO: move to button (or whatever...)
+	if (device_->is_enable_getable())
+		setEnableButton->on_state_changed(device_->get_enabled());
+	if (device_->is_current_limit_getable())
+		setValueControl->on_value_changed(device_->get_current_limit());
 	setUnderVoltageThreshold->on_state_changed(
 		device_->get_under_voltage_enable());
 	setUnderVoltageThreshold->on_value_changed(
 		device_->get_under_voltage_threshold());
 
-	ovpLed->on_state_changed(device_->get_over_voltage_active());
-	ocpLed->on_state_changed(device_->get_over_current_active());
-	uvcLed->on_state_changed(device_->get_under_voltage_active());
-	otpLed->on_state_changed(device_->get_over_temperature_active());
+	if (device_->is_over_voltage_active_getable())
+		ovpLed->on_state_changed(device_->get_over_voltage_active());
+	if (device_->is_over_current_active_getable())
+		ocpLed->on_state_changed(device_->get_over_current_active());
+	if (device_->is_under_voltage_active_getable())
+		uvcLed->on_state_changed(device_->get_under_voltage_active());
+	if (device_->is_over_temperature_active_getable())
+		otpLed->on_state_changed(device_->get_over_temperature_active());
 }
 
 void SinkControlView::on_enabled_changed(const bool enabled)

@@ -31,6 +31,7 @@
 #include "hardwaredevice.hpp"
 #include "src/devicemanager.hpp"
 #include "src/session.hpp"
+#include "src/devices/device.hpp"
 #include "src/data/analogdata.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/data/basedata.hpp"
@@ -55,7 +56,7 @@ namespace devices {
 HardwareDevice::HardwareDevice(
 		const shared_ptr<sigrok::Context> &sr_context,
 		shared_ptr<sigrok::HardwareDevice> sr_device) :
-	sr_context_(sr_context),
+	Device(sr_context),
 	device_open_(false)
 {
 	// TODO: sigrok::Device and not sigrok::HardwareDevice in constructor?? then cast...
@@ -380,83 +381,43 @@ bool HardwareDevice::is_controllable() const
 
 bool HardwareDevice::is_enable_getable() const
 {
-	return sr_configurable_->config_check(
-		sigrok::ConfigKey::ENABLED, sigrok::Capability::GET);
+	return is_read_config(sigrok::ConfigKey::ENABLED);
 }
 
 bool HardwareDevice::is_enable_setable() const
 {
-	return sr_configurable_->config_check(
-		sigrok::ConfigKey::ENABLED, sigrok::Capability::SET);
+	return is_write_config(sigrok::ConfigKey::ENABLED);
 }
 
 bool HardwareDevice::get_enabled() const
 {
-	// TODO: check if getable
-
-	bool enable;
-	try {
-		auto gvar = sr_configurable_->config_get(sigrok::ConfigKey::ENABLED);
-		enable =
-			Glib::VariantBase::cast_dynamic<Glib::Variant<bool>>(gvar).get();
-	} catch (sigrok::Error error) {
-		qDebug() << "Failed to get ENABLED.";
-		return false;
-	}
-
-	return enable;
+	return read_config<bool>(sigrok::ConfigKey::ENABLED);
 }
 
 void HardwareDevice::set_enable(const bool enable)
 {
-	// TODO: check if setable
-
-	try {
-		sr_configurable_->config_set(
-			sigrok::ConfigKey::ENABLED, Glib::Variant<bool>::create(enable));
-	} catch (sigrok::Error error) {
-		qDebug() << "Failed to set ENABLED.";
-	}
+	write_config(sigrok::ConfigKey::ENABLED, enable);
 }
 
 
 bool HardwareDevice::is_voltage_target_getable() const
 {
-	return sr_configurable_->config_check(
-		sigrok::ConfigKey::VOLTAGE_TARGET, sigrok::Capability::GET);
+	return is_read_config(sigrok::ConfigKey::VOLTAGE_TARGET);
 }
 
 bool HardwareDevice::is_voltage_target_setable() const
 {
-	return sr_configurable_->config_check(
-		sigrok::ConfigKey::VOLTAGE_TARGET, sigrok::Capability::SET);
+	return is_write_config(sigrok::ConfigKey::VOLTAGE_TARGET);
 }
 
 double HardwareDevice::get_voltage_target() const
 {
-	// TODO: check if getable
-
-	double value;
-	try {
-		auto gvar = sr_configurable_->config_get(
-			sigrok::ConfigKey::VOLTAGE_TARGET);
-		value =
-			Glib::VariantBase::cast_dynamic<Glib::Variant<double>>(gvar).get();
-	} catch (sigrok::Error error) {
-		qDebug() << "Failed to get VOLTAGE_TARGET.";
-		return false;
-	}
-
-	return value;
+	return read_config<double>(sigrok::ConfigKey::VOLTAGE_TARGET);
 }
 
 void HardwareDevice::set_voltage_target(const double value)
 {
-	if (!device_open_)
-		return;
-
-	sr_configurable_->config_set(sigrok::ConfigKey::VOLTAGE_TARGET,
-		Glib::Variant<double>::create(value));
+	write_config(sigrok::ConfigKey::VOLTAGE_TARGET, value);
 }
 
 void HardwareDevice::list_voltage_target(double &min, double &max, double &step)
@@ -476,41 +437,22 @@ void HardwareDevice::list_voltage_target(double &min, double &max, double &step)
 
 bool HardwareDevice::is_current_limit_getable() const
 {
-	return sr_configurable_->config_check(
-		sigrok::ConfigKey::CURRENT_LIMIT, sigrok::Capability::GET);
+	return is_read_config(sigrok::ConfigKey::CURRENT_LIMIT);
 }
 
 bool HardwareDevice::is_current_limit_setable() const
 {
-	return sr_configurable_->config_check(
-		sigrok::ConfigKey::CURRENT_LIMIT, sigrok::Capability::SET);
+	return is_write_config(sigrok::ConfigKey::CURRENT_LIMIT);
 }
 
 double HardwareDevice::get_current_limit() const
 {
-	// TODO: check if getable
-
-	double value;
-	try {
-		auto gvar = sr_configurable_->config_get(
-			sigrok::ConfigKey::CURRENT_LIMIT);
-		value =
-			Glib::VariantBase::cast_dynamic<Glib::Variant<double>>(gvar).get();
-	} catch (sigrok::Error error) {
-		qDebug() << "Failed to get CURRENT_LIMIT.";
-		return false;
-	}
-
-	return value;
+	return read_config<double>(sigrok::ConfigKey::CURRENT_LIMIT);
 }
 
 void HardwareDevice::set_current_limit(const double value)
 {
-	if (!device_open_)
-		return;
-
-	sr_configurable_->config_set(sigrok::ConfigKey::CURRENT_LIMIT,
-		Glib::Variant<double>::create(value));
+	write_config(sigrok::ConfigKey::CURRENT_LIMIT, value);
 }
 
 void HardwareDevice::list_current_limit(double &min, double &max, double &step)
@@ -531,181 +473,82 @@ void HardwareDevice::list_current_limit(double &min, double &max, double &step)
 
 bool HardwareDevice::is_over_voltage_active_getable() const
 {
-	return sr_configurable_->config_check(
-		sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_ACTIVE,
-		sigrok::Capability::GET);
+	return is_read_config(sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_ACTIVE);
 }
 
-double HardwareDevice::get_over_voltage_active() const
+bool HardwareDevice::get_over_voltage_active() const
 {
-	// TODO: check if getable
-
-	bool active;
-	try {
-		auto gvar = sr_configurable_->config_get(
-			sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_ACTIVE);
-		active =
-			Glib::VariantBase::cast_dynamic<Glib::Variant<bool>>(gvar).get();
-	} catch (sigrok::Error error) {
-		qDebug() << "Failed to get OVER_VOLTAGE_PROTECTION_ACTIVE.";
-		return false;
-	}
-
-	return active;
+	return read_config<bool>(sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_ACTIVE);
 }
 
 
 bool HardwareDevice::is_over_current_active_getable() const
 {
-	return sr_configurable_->config_check(
-		sigrok::ConfigKey::OVER_CURRENT_PROTECTION_ACTIVE,
-		sigrok::Capability::GET);
+	return is_read_config(sigrok::ConfigKey::OVER_CURRENT_PROTECTION_ACTIVE);
 }
 
-double HardwareDevice::get_over_current_active() const
+bool HardwareDevice::get_over_current_active() const
 {
-	// TODO: check if getable
-
-	bool active;
-	try {
-		auto gvar = sr_configurable_->config_get(
-			sigrok::ConfigKey::OVER_CURRENT_PROTECTION_ACTIVE);
-		active =
-			Glib::VariantBase::cast_dynamic<Glib::Variant<bool>>(gvar).get();
-	} catch (sigrok::Error error) {
-		qDebug() << "Failed to get OVER_CURRENT_PROTECTION_ACTIVE.";
-		return false;
-	}
-
-	return active;
+	return read_config<bool>(sigrok::ConfigKey::OVER_CURRENT_PROTECTION_ACTIVE);
 }
 
 
 bool HardwareDevice::is_over_temperature_active_getable() const
 {
-	return sr_configurable_->config_check(
-		sigrok::ConfigKey::OVER_TEMPERATURE_PROTECTION_ACTIVE,
-		sigrok::Capability::GET);
+	return is_read_config(sigrok::ConfigKey::OVER_TEMPERATURE_PROTECTION_ACTIVE);
 }
 
-double HardwareDevice::get_over_temperature_active() const
+bool HardwareDevice::get_over_temperature_active() const
 {
-	// TODO: check if getable
-
-	bool active;
-	try {
-		auto gvar = sr_configurable_->config_get(
-			sigrok::ConfigKey::OVER_TEMPERATURE_PROTECTION_ACTIVE);
-		active =
-			Glib::VariantBase::cast_dynamic<Glib::Variant<bool>>(gvar).get();
-	} catch (sigrok::Error error) {
-		qDebug() << "Failed to get OVER_TEMPERATURE_PROTECTION_ACTIVE.";
-		return false;
-	}
-
-	return active;
+	return read_config<bool>(sigrok::ConfigKey::OVER_TEMPERATURE_PROTECTION_ACTIVE);
 }
 
 
 bool HardwareDevice::is_under_voltage_enable_getable() const
 {
-	return sr_configurable_->config_check(
-		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION,
-		sigrok::Capability::GET);
+	return is_read_config(sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION);
 }
 
 bool HardwareDevice::is_under_voltage_enable_setable() const
 {
-	return sr_configurable_->config_check(
-		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION,
-		sigrok::Capability::SET);
+	return is_write_config(sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION);
 }
 
-double HardwareDevice::get_under_voltage_enable() const
+bool HardwareDevice::get_under_voltage_enable() const
 {
-	// TODO: check if getable
-
-	bool enable;
-	try {
-		auto gvar = sr_configurable_->config_get(
-			sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION);
-		enable =
-			Glib::VariantBase::cast_dynamic<Glib::Variant<bool>>(gvar).get();
-	} catch (sigrok::Error error) {
-		qDebug() << "Failed to get UNDER_VOLTAGE_CONDITION.";
-		return false;
-	}
-
-	return enable;
+	return read_config<bool>(sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION);
 }
 
 
 bool HardwareDevice::is_under_voltage_active_getable() const
 {
-	return sr_configurable_->config_check(
-		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_ACTIVE,
-		sigrok::Capability::GET);
+	return is_read_config(sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_ACTIVE);
 }
 
-double HardwareDevice::get_under_voltage_active() const
+bool HardwareDevice::get_under_voltage_active() const
 {
-	// TODO: check if getable
-
-	bool active;
-	try {
-		auto gvar = sr_configurable_->config_get(
-			sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_ACTIVE);
-		active =
-			Glib::VariantBase::cast_dynamic<Glib::Variant<bool>>(gvar).get();
-	} catch (sigrok::Error error) {
-		qDebug() << "Failed to get UNDER_VOLTAGE_CONDITION_ACTIVE.";
-		return false;
-	}
-
-	return active;
+	return read_config<bool>(sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_ACTIVE);
 }
 
 
 bool HardwareDevice::is_under_voltage_threshold_getable() const
 {
-	return sr_configurable_->config_check(
-		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD,
-		sigrok::Capability::GET);
+	return is_read_config(sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD);
 }
 
 bool HardwareDevice::is_under_voltage_threshold_setable() const
 {
-	return sr_configurable_->config_check(
-		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD,
-		sigrok::Capability::SET);
+	return is_write_config(sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD);
 }
 
 double HardwareDevice::get_under_voltage_threshold() const
 {
-	// TODO: check if getable
-
-	double value;
-	try {
-		auto gvar = sr_configurable_->config_get(
-			sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD);
-		value =
-			Glib::VariantBase::cast_dynamic<Glib::Variant<double>>(gvar).get();
-	} catch (sigrok::Error error) {
-		qDebug() << "Failed to get UNDER_VOLTAGE_CONDITION_THRESHOLD.";
-		return false;
-	}
-
-	return value;
+	return read_config<double>(sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD);
 }
 
 void HardwareDevice::set_under_voltage_threshold(const double value)
 {
-	if (!device_open_)
-		return;
-
-	sr_configurable_->config_set(
-		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD,
-		Glib::Variant<double>::create(value));
+	write_config(sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD, value);
 }
 
 void HardwareDevice::list_under_voltage_threshold(
