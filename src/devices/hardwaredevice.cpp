@@ -59,21 +59,15 @@ HardwareDevice::HardwareDevice(
 {
 	// TODO: sigrok::Device and not sigrok::HardwareDevice in constructor?? then cast...
 	sr_device_ = sr_device;
+	vector<shared_ptr<sigrok::Channel>> sr_channels;
+	shared_ptr<data::AnalogData> common_time_data_; // TODO: Per channel group?
 
 	const auto sr_keys = sr_device->driver()->config_keys();
-	if (sr_keys.count(sigrok::ConfigKey::POWER_SUPPLY))
+	if (sr_keys.count(sigrok::ConfigKey::POWER_SUPPLY)) {
 		type_ = HardwareDevice::POWER_SUPPLY;
-	else if (sr_keys.count(sigrok::ConfigKey::ELECTRONIC_LOAD))
-		type_ = HardwareDevice::ELECTRONIC_LOAD;
-	else if (sr_keys.count(sigrok::ConfigKey::MULTIMETER))
-		type_ = HardwareDevice::MULTIMETER;
-	else
-		type_ = HardwareDevice::UNKNOWN;
 
-	vector<shared_ptr<sigrok::Channel>> sr_channels;
-	if (type_ == POWER_SUPPLY) {
-		// TODO: Handle all channel groups of a multi channel PSU
 		if (sr_device_->channel_groups().size() > 0) {
+			// TODO: Handle all channel groups of a multi channel PSU
 			sr_configurable_ = sr_device_->channel_groups()["1"];
 			sr_channels = sr_device_->channel_groups()["1"]->channels();
 		}
@@ -84,10 +78,13 @@ HardwareDevice::HardwareDevice(
 
 		// TODO: solve this somehow with the detection of frames....
 		// TODO: What if the device has multi channels with a frame around each cg data
-		// PPUs have common time data
-		common_time_data_ = init_time_data();
+		// PPUs DON'T have common time data
+		common_time_data_ = nullptr;
 	}
-	else if (type_ == ELECTRONIC_LOAD) {
+	else if (sr_keys.count(sigrok::ConfigKey::ELECTRONIC_LOAD)) {
+		type_ = HardwareDevice::ELECTRONIC_LOAD;
+
+		// TODO: Handle all channel groups of a multi channel load
 		sr_configurable_ = sr_device_->channel_groups()["1"];
 		sr_channels = sr_device_->channel_groups()["1"]->channels();
 
@@ -96,14 +93,18 @@ HardwareDevice::HardwareDevice(
 		// Loads have common time data
 		common_time_data_ = init_time_data();
 	}
-	else if (type_ == MULTIMETER) {
+	else if (sr_keys.count(sigrok::ConfigKey::MULTIMETER)) {
+		type_ = HardwareDevice::MULTIMETER;
 		sr_configurable_ = sr_device_;
 		sr_channels = sr_device_->channels();
 		common_time_data_ = nullptr;
 	}
+	else {
+		type_ = HardwareDevice::UNKNOWN;
+	}
 
 	for (auto sr_channel : sr_channels) {
-		init_signal(sr_channel);
+		init_signal(sr_channel, common_time_data_);
 	}
 }
 
@@ -195,7 +196,8 @@ shared_ptr<data::AnalogData> HardwareDevice::init_time_data()
 }
 
 shared_ptr<data::BaseSignal> HardwareDevice::init_signal(
-	shared_ptr<sigrok::Channel> sr_channel)
+	shared_ptr<sigrok::Channel> sr_channel,
+	shared_ptr<data::AnalogData> common_time_data)
 {
 	shared_ptr<data::BaseSignal> signal;
 	//lock_guard<recursive_mutex> lock(data_mutex_);
@@ -214,8 +216,8 @@ shared_ptr<data::BaseSignal> HardwareDevice::init_signal(
 
 		signal->set_time_start(QDateTime::currentMSecsSinceEpoch());
 
-		if (common_time_data_)
-			signal->set_time_data(common_time_data_);
+		if (common_time_data)
+			signal->set_time_data(common_time_data);
 		else {
 			signal->set_time_data(init_time_data());
 		}

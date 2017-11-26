@@ -150,7 +150,6 @@ private:
 	Type type_;
 	bool device_open_;
 
-	shared_ptr<data::AnalogData> common_time_data_;
 	// TODO: Generic!
 	shared_ptr<data::BaseSignal> voltage_signal_;
 	shared_ptr<data::BaseSignal> current_signal_;
@@ -158,7 +157,8 @@ private:
 
 	shared_ptr<data::AnalogData> init_time_data();
 	shared_ptr<data::BaseSignal> init_signal(
-		shared_ptr<sigrok::Channel> sr_channel);
+		shared_ptr<sigrok::Channel> sr_channel,
+		shared_ptr<data::AnalogData> common_time_data);
 
 /*
 Q_SIGNALS:

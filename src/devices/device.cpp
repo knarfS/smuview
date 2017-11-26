@@ -144,13 +144,14 @@ void Device::feed_in_frame_begin()
 
 void Device::feed_in_frame_end()
 {
-	if (frame_began_ && signalbase_frame_) {
+	if (frame_began_ && actual_processed_signal_) {
 		/*
-		qWarning() << "feed_in_frame_end(): Set timestamp to '" <<
-			signalbase_frame_->name() << "'";
+		qWarning() << "feed_in_frame_end(): Set timestamp to " <<
+			actual_processed_signal_->name();
 		*/
-		signalbase_frame_->add_timestamp();
-		signalbase_frame_ = nullptr;
+		// TODO: This may not work reliably
+		actual_processed_signal_->add_timestamp();
+		actual_processed_signal_ = nullptr;
 
 	}
 	frame_began_ = false;
@@ -182,26 +183,20 @@ void Device::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
 				QString::fromStdString(sr_channel->name()) <<
 				" not found, adding";
 
-			init_signal(sr_channel);
+			// TODO: notwendig? Better handling for new channels? Are there new channels??
+			init_signal(sr_channel, nullptr);
 			continue;
 		}
 
-		shared_ptr<data::BaseSignal> signal = channel_data_[sr_channel];
-		signal->analog_data()->push_sample(channel_data,
+		actual_processed_signal_ = channel_data_[sr_channel];
+		actual_processed_signal_->analog_data()->push_sample(channel_data,
 			sr_analog->mq(), sr_analog->unit());
-		//signal->data()->push_sample(channel_data);
 		channel_data++;
 
 		// Timestamp for values not in a FRAME
-		// TODO: Find a better way to add the timestamp when not in a frame
-		if (frame_began_ && !signalbase_frame_) {
-			signalbase_frame_ = signal;
-		} else if (frame_began_ && signalbase_frame_) {
-			signal->set_time_data(signalbase_frame_->time_data());
-		} else {
-			signal->add_timestamp();
+		if (!frame_began_) {
+			actual_processed_signal_->add_timestamp();
 		}
-		signal->add_timestamp();
 
 		/*
 		Q_EMIT data_received(segment);

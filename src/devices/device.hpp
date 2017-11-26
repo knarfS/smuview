@@ -45,6 +45,7 @@ namespace sv {
 class DeviceManager;
 
 namespace data {
+class AnalogData;
 class BaseSignal;
 class BaseData;
 }
@@ -87,11 +88,10 @@ public:
 
 private:
 	mutable recursive_mutex data_mutex_;
-	unordered_set< shared_ptr<data::BaseData> > all_signal_data_; // TODO: needed?
+	shared_ptr<data::BaseSignal> actual_processed_signal_;
 
 	bool out_of_memory_;
 	bool frame_began_;
-	shared_ptr<data::BaseSignal> signalbase_frame_; // TODO: Rename or change to data. per cg? use common_time_data_ in hw device?
 
 	void feed_in_header();
 	void feed_in_meta(shared_ptr<sigrok::Meta> sr_meta);
@@ -105,7 +105,8 @@ protected:
 	map<shared_ptr<sigrok::Channel>, shared_ptr<data::BaseSignal>> channel_data_; // TODO: Rename
 
 	virtual shared_ptr<data::BaseSignal> init_signal(
-		shared_ptr<sigrok::Channel> sr_channel) = 0;
+		shared_ptr<sigrok::Channel> sr_channel,
+		shared_ptr<data::AnalogData> common_time_data) = 0;
 
 // TODO: move to hardwaredevice
 Q_SIGNALS:

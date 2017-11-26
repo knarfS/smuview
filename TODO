@@ -8,6 +8,21 @@ ToDo
 - last_value_, min_value_, max_value_ -> std::atomic!
 - License headers are not the same
 - Plot: Sampling
+- Everey device must have its own session:
+	1. Performance: With one sessions the aquisition functions are processed in sequence.
+		The HP 3478A f.e. takes for ever, and so the other devices to. There are NO parallel
+		requests.
+	2. Adding new device to a running session: Chicken/Egg problem! Dev->open() tries to
+		start aquisition, but device is not added to session yet (cxx binding).
+		session->add_device() tries to start aquisition, but device is not opened yet...
+	3. Propably use the multidevice API functions from linux gpib in scpi_libgpib.c
+- Better detection of common_time_data_ (when in frame). Who is this possible when in
+	init_signal() and not afterwards when in feed_in()
+- QWT Multiaxis
+- Autoscale plot
+- Math channels (for Power, resistance, Wh, Ah)
+- Correlation between time bases (common, same count+fixed diff, "random")
+- Save session, save all data (csv, gnuplot, octave, ...), save single signal, ...
 
 ------------------------
 
