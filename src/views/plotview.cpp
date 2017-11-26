@@ -46,16 +46,17 @@ PlotView::PlotView(Session &session,
 
 void PlotView::setup_ui()
 {
-	QVBoxLayout *layout = new QVBoxLayout(this);
+	QVBoxLayout *layout = new QVBoxLayout();
 
 	data::BaseCurve *curve = new data::BaseCurve(
 		x_signal_data_, y_signal_data_);
 
-	plot = new widgets::Plot(curve, this);
+	plot = new widgets::Plot(curve);
 	plot->set_plot_mode(widgets::Plot::PlotModes::Additive);
 	plot->set_plot_interval(200); // 200ms
-
 	layout->addWidget(plot);
+
+	this->setLayout(layout);
 }
 
 void PlotView::connect_signals()

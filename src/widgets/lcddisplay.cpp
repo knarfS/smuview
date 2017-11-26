@@ -38,10 +38,10 @@ void LcdDisplay::setup_ui()
 	this->resize(210, 42);
 	this->setFrameShape(QFrame::Box);
 
-	QHBoxLayout *hLayout = new QHBoxLayout(this);
-	hLayout->addStretch(5);
+	QHBoxLayout *layout = new QHBoxLayout();
+	layout->addStretch(5);
 
-	lcdValue = new QLCDNumber(this);
+	lcdValue = new QLCDNumber();
 	lcdValue->setDigitCount(digits_);
 	QSizePolicy sizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	sizePolicy.setHorizontalStretch(0);
@@ -54,9 +54,9 @@ void LcdDisplay::setup_ui()
 	lcdValue->setSmallDecimalPoint(true);
 	lcdValue->setSegmentStyle(QLCDNumber::Flat);
 
-	hLayout->addWidget(lcdValue);
+	layout->addWidget(lcdValue);
 
-	lcdUnit = new QLabel(this);
+	lcdUnit = new QLabel();
 	QFont unitFont;
 	unitFont.setPointSize(18);
 	unitFont.setBold(true);
@@ -65,7 +65,9 @@ void LcdDisplay::setup_ui()
 	lcdUnit->setText(unit_);
 	lcdUnit->setAlignment(Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft);
 
-	hLayout->addWidget(lcdUnit);
+	layout->addWidget(lcdUnit);
+
+	this->setLayout(layout);
 }
 
 void LcdDisplay::set_value(const double value)

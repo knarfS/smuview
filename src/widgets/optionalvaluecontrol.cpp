@@ -49,19 +49,21 @@ OptionalValueControl::OptionalValueControl(
 
 void OptionalValueControl::setup_ui()
 {
-	QVBoxLayout *getValuesVLayout = new QVBoxLayout(this);
+	QVBoxLayout *layout = new QVBoxLayout();
 
-	controlButton = new widgets::ControlButton(is_readable_, is_setable_, this);
+	controlButton = new widgets::ControlButton(is_readable_, is_setable_);
 	controlButton->on_state_changed(state_);
-	getValuesVLayout->addWidget(controlButton);
+	layout->addWidget(controlButton);
 
-	doubleSpinBox = new QDoubleSpinBox(this);
+	doubleSpinBox = new QDoubleSpinBox();
 	doubleSpinBox->setSuffix(QString(" %1").arg(unit_));
 	doubleSpinBox->setDecimals(3);
 	doubleSpinBox->setMinimum(min_);
 	doubleSpinBox->setMaximum(max_);
 	doubleSpinBox->setSingleStep(steps_);
-	getValuesVLayout->addWidget(doubleSpinBox);
+	layout->addWidget(doubleSpinBox);
+
+	this->setLayout(layout);
 }
 
 void OptionalValueControl::on_clicked()

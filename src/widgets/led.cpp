@@ -38,14 +38,16 @@ Led::Led(QString text, QWidget *parent) :
 
 void Led::setup_ui()
 {
-	QHBoxLayout *hLayout = new QHBoxLayout(this);
+	QHBoxLayout *layout = new QHBoxLayout();
 
-	ledLabel_ = new QLabel(this);
+	ledLabel_ = new QLabel();
 	ledLabel_->setPixmap(icon_grey_.pixmap(16, 16, QIcon::Mode::Disabled, QIcon::State::Off));
-	hLayout->addWidget(ledLabel_);
+	layout->addWidget(ledLabel_);
 
-	textLabel_ = new QLabel(text_, this);
-	hLayout->addWidget(textLabel_);
+	textLabel_ = new QLabel(text_);
+	layout->addWidget(textLabel_);
+
+	this->setLayout(layout);
 }
 
 void Led::on_state_changed(const bool enabled)

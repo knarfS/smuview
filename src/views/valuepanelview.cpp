@@ -52,18 +52,19 @@ ValuePanelView::~ValuePanelView()
 
 void ValuePanelView::setup_ui()
 {
-	QVBoxLayout *getValuesVLayout = new QVBoxLayout(this);
+	QVBoxLayout *layout = new QVBoxLayout();
 
-	//valueDisplay = new widgets::LcdDisplay(digits_, unit_, this);
-	valueDisplay = new widgets::LcdDisplay(8, "mX", this);
-	getValuesVLayout->addWidget(valueDisplay);
+	//valueDisplay = new widgets::LcdDisplay(digits_, unit_);
+	valueDisplay = new widgets::LcdDisplay(8, "mX");
+	layout->addWidget(valueDisplay);
 
-	resetButton = new QPushButton(this);
-	resetButton->setText(
-		QApplication::translate("SmuView", "Reset", Q_NULLPTR));
-	getValuesVLayout->addWidget(resetButton);
+	resetButton = new QPushButton();
+	resetButton->setText(tr("Reset"));
+	layout->addWidget(resetButton);
 
-	getValuesVLayout->addStretch(4);
+	layout->addStretch(4);
+
+	this->setLayout(layout);
 }
 
 void ValuePanelView::connect_signals()

@@ -41,22 +41,24 @@ SourceControlView::SourceControlView(Session &session,
 
 void SourceControlView::setup_ui()
 {
-	QVBoxLayout *setValuesLayout = new QVBoxLayout(this);
+	QVBoxLayout *layout = new QVBoxLayout();
 
 	setEnableButton = new widgets::ControlButton(
-		device_->is_enable_getable(), device_->is_enable_setable(), this);
-	setValuesLayout->addWidget(setEnableButton);
+		device_->is_enable_getable(), device_->is_enable_setable());
+	layout->addWidget(setEnableButton);
 
 	double min;
 	double max;
 	double step;
 	device_->list_voltage_target(min, max, step);
-	setVoltageControl = new widgets::ValueControl(3, "V", min, max, step, this);
-	setValuesLayout->addWidget(setVoltageControl);
+	setVoltageControl = new widgets::ValueControl(3, "V", min, max, step);
+	layout->addWidget(setVoltageControl);
 
 	device_->list_current_limit(min, max, step);
-	setCurrentControl = new widgets::ValueControl(3, "A", min, max, step, this);
-	setValuesLayout->addWidget(setCurrentControl);
+	setCurrentControl = new widgets::ValueControl(3, "A", min, max, step);
+	layout->addWidget(setCurrentControl);
+
+	this->setLayout(layout);
 }
 
 void SourceControlView::connect_signals()

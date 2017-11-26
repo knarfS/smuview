@@ -48,45 +48,47 @@ void SinkControlView::setup_ui()
 	double max;
 	double step;
 
-	QVBoxLayout *setVLayout = new QVBoxLayout(this);
+	QVBoxLayout *layout = new QVBoxLayout();
 
 	// Enable button
 	setEnableButton = new widgets::ControlButton(
-		device_->is_enable_getable(), device_->is_enable_setable(), this);
-	setVLayout->addWidget(setEnableButton);
+		device_->is_enable_getable(), device_->is_enable_setable());
+	layout->addWidget(setEnableButton);
 
 	// Leds
-	QGridLayout *ledLayout = new QGridLayout(this);
+	QGridLayout *ledLayout = new QGridLayout();
 	// Regulation Leds
-	ccLed = new widgets::Led("CC", this);
+	ccLed = new widgets::Led("CC");
 	ledLayout->addWidget(ccLed, 0, 0);
-	cvLed = new widgets::Led("CV", this);
+	cvLed = new widgets::Led("CV");
 	ledLayout->addWidget(cvLed, 1, 0);
 	// Protection Leds
-	ovpLed = new widgets::Led("OVP", this);
+	ovpLed = new widgets::Led("OVP");
 	ledLayout->addWidget(ovpLed, 0, 1);
-	ocpLed = new widgets::Led("OCP", this);
+	ocpLed = new widgets::Led("OCP");
 	ledLayout->addWidget(ocpLed, 0, 2);
-	uvcLed = new widgets::Led("UVC", this);
+	uvcLed = new widgets::Led("UVC");
 	ledLayout->addWidget(uvcLed, 1, 1);
-	otpLed = new widgets::Led("OTP", this);
+	otpLed = new widgets::Led("OTP");
 	ledLayout->addWidget(otpLed, 1, 2);
-	setVLayout->addLayout(ledLayout, 0);
+	layout->addLayout(ledLayout, 0);
 
 	// Curent limit
 	device_->list_current_limit(min, max, step);
-	setValueControl = new widgets::ValueControl(5, "A", min, max, step, this);
-	setVLayout->addWidget(setValueControl);
+	setValueControl = new widgets::ValueControl(5, "A", min, max, step);
+	layout->addWidget(setValueControl);
 
 	// Under voltage threshold
 	device_->list_under_voltage_threshold(min, max, step);
 	setUnderVoltageThreshold = new widgets::OptionalValueControl(
 		device_->is_under_voltage_threshold_getable(),
 		device_->is_under_voltage_threshold_setable(),
-		5, "V", min, max, step, this);
-	setVLayout->addWidget(setUnderVoltageThreshold);
+		5, "V", min, max, step);
+	layout->addWidget(setUnderVoltageThreshold);
 
-	setVLayout->addStretch(5);
+	layout->addStretch(5);
+
+	this->setLayout(layout);
 }
 
 void SinkControlView::connect_signals()

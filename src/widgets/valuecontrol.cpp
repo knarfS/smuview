@@ -45,22 +45,22 @@ ValueControl::ValueControl(const uint digits, const QString unit,
 
 void ValueControl::setup_ui()
 {
-	QVBoxLayout *getValuesVLayout = new QVBoxLayout(this);
+	QVBoxLayout *layout = new QVBoxLayout();
 
-	lcdDisplay = new widgets::LcdDisplay(digits_, unit_, this);
+	lcdDisplay = new widgets::LcdDisplay(digits_, unit_);
 	lcdDisplay->set_value(0);
-	getValuesVLayout->addWidget(lcdDisplay);
+	layout->addWidget(lcdDisplay);
 
-	QHBoxLayout *getValuesHLayout = new QHBoxLayout(this);
+	QHBoxLayout *getValuesHLayout = new QHBoxLayout();
 
-	doubleSpinBox = new QDoubleSpinBox(this);
+	doubleSpinBox = new QDoubleSpinBox();
 	doubleSpinBox->setSuffix(QString(" %1").arg(unit_));
 	doubleSpinBox->setDecimals(3);
 	doubleSpinBox->setMinimum(min_);
 	doubleSpinBox->setMaximum(max_);
 	doubleSpinBox->setSingleStep(steps_);
 
-	knob = new QwtKnob(this);
+	knob = new QwtKnob();
 	knob->setNumTurns(1);
 	knob->setLowerBound(min_);
 	knob->setUpperBound(max_);
@@ -70,7 +70,9 @@ void ValueControl::setup_ui()
 
 	getValuesHLayout->addWidget(doubleSpinBox);
 	getValuesHLayout->addWidget(knob);
-	getValuesVLayout->addItem(getValuesHLayout);
+	layout->addItem(getValuesHLayout);
+
+	this->setLayout(layout);
 }
 
 void ValueControl::change_value(const double value)

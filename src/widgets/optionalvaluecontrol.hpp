@@ -40,7 +40,7 @@ public:
 	OptionalValueControl(const bool is_readable, const bool is_setable,
 		const uint digits, const QString unit,
 		const double min, const double max, const double steps,
-		QWidget *parent);
+		QWidget *parent = 0);
 
 private:
 	bool state_;

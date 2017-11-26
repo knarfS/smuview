@@ -42,7 +42,7 @@ private:
 	void setup_ui();
 
 public:
-	LcdDisplay(const uint digits, const QString unit, QWidget *parent);
+	LcdDisplay(const uint digits, const QString unit, QWidget *parent = 0);
 
 	void set_value(const double value);
 	void set_unit(const QString unit);

@@ -32,7 +32,7 @@ class Led : public QWidget
     Q_OBJECT
 
 public:
-	Led(QString text, QWidget *parent);
+	Led(QString text, QWidget *parent = 0);
 
 private:
 	bool state_;

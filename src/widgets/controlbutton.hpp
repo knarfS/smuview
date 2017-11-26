@@ -31,7 +31,7 @@ class ControlButton : public QPushButton
 
 public:
 	ControlButton(const bool is_readable, const bool is_setable,
-		QWidget *parent);
+		QWidget *parent = 0);
 
 private:
 	bool state_;

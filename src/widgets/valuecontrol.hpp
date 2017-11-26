@@ -35,7 +35,8 @@ class ValueControl : public QWidget
 
 public:
 	ValueControl(const uint digits, const QString unit,
-		const double min, const double max, const double steps, QWidget *parent);
+		const double min, const double max, const double steps,
+		QWidget *parent = 0);
 
 private:
 	double value_;
