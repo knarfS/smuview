@@ -381,43 +381,43 @@ bool HardwareDevice::is_controllable() const
 
 bool HardwareDevice::is_enable_getable() const
 {
-	return is_read_config(sigrok::ConfigKey::ENABLED);
+	return has_get_config(sigrok::ConfigKey::ENABLED);
 }
 
 bool HardwareDevice::is_enable_setable() const
 {
-	return is_write_config(sigrok::ConfigKey::ENABLED);
+	return has_set_config(sigrok::ConfigKey::ENABLED);
 }
 
 bool HardwareDevice::get_enabled() const
 {
-	return read_config<bool>(sigrok::ConfigKey::ENABLED);
+	return get_config<bool>(sigrok::ConfigKey::ENABLED);
 }
 
 void HardwareDevice::set_enable(const bool enable)
 {
-	write_config(sigrok::ConfigKey::ENABLED, enable);
+	set_config(sigrok::ConfigKey::ENABLED, enable);
 }
 
 
 bool HardwareDevice::is_voltage_target_getable() const
 {
-	return is_read_config(sigrok::ConfigKey::VOLTAGE_TARGET);
+	return has_get_config(sigrok::ConfigKey::VOLTAGE_TARGET);
 }
 
 bool HardwareDevice::is_voltage_target_setable() const
 {
-	return is_write_config(sigrok::ConfigKey::VOLTAGE_TARGET);
+	return has_set_config(sigrok::ConfigKey::VOLTAGE_TARGET);
 }
 
 double HardwareDevice::get_voltage_target() const
 {
-	return read_config<double>(sigrok::ConfigKey::VOLTAGE_TARGET);
+	return get_config<double>(sigrok::ConfigKey::VOLTAGE_TARGET);
 }
 
 void HardwareDevice::set_voltage_target(const double value)
 {
-	write_config(sigrok::ConfigKey::VOLTAGE_TARGET, value);
+	set_config(sigrok::ConfigKey::VOLTAGE_TARGET, value);
 }
 
 void HardwareDevice::list_voltage_target(double &min, double &max, double &step)
@@ -437,22 +437,22 @@ void HardwareDevice::list_voltage_target(double &min, double &max, double &step)
 
 bool HardwareDevice::is_current_limit_getable() const
 {
-	return is_read_config(sigrok::ConfigKey::CURRENT_LIMIT);
+	return has_get_config(sigrok::ConfigKey::CURRENT_LIMIT);
 }
 
 bool HardwareDevice::is_current_limit_setable() const
 {
-	return is_write_config(sigrok::ConfigKey::CURRENT_LIMIT);
+	return has_set_config(sigrok::ConfigKey::CURRENT_LIMIT);
 }
 
 double HardwareDevice::get_current_limit() const
 {
-	return read_config<double>(sigrok::ConfigKey::CURRENT_LIMIT);
+	return get_config<double>(sigrok::ConfigKey::CURRENT_LIMIT);
 }
 
 void HardwareDevice::set_current_limit(const double value)
 {
-	write_config(sigrok::ConfigKey::CURRENT_LIMIT, value);
+	set_config(sigrok::ConfigKey::CURRENT_LIMIT, value);
 }
 
 void HardwareDevice::list_current_limit(double &min, double &max, double &step)
@@ -471,84 +471,64 @@ void HardwareDevice::list_current_limit(double &min, double &max, double &step)
 }
 
 
-bool HardwareDevice::is_over_voltage_active_getable() const
+bool HardwareDevice::has_ovp() const
 {
-	return is_read_config(sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_ACTIVE);
+	return has_get_config(sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_ENABLED) &&
+		get_config<bool>(sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_ENABLED);
 }
 
-bool HardwareDevice::get_over_voltage_active() const
+bool HardwareDevice::is_ovp_active() const
 {
-	return read_config<bool>(sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_ACTIVE);
+	return has_get_config(sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_ACTIVE) &&
+		get_config<bool>(sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_ACTIVE);
 }
 
-
-bool HardwareDevice::is_over_current_active_getable() const
+bool HardwareDevice::has_ocp() const
 {
-	return is_read_config(sigrok::ConfigKey::OVER_CURRENT_PROTECTION_ACTIVE);
+	return has_get_config(sigrok::ConfigKey::OVER_CURRENT_PROTECTION_ENABLED) &&
+		get_config<bool>(sigrok::ConfigKey::OVER_CURRENT_PROTECTION_ENABLED);
 }
 
-bool HardwareDevice::get_over_current_active() const
+bool HardwareDevice::is_ocp_active() const
 {
-	return read_config<bool>(sigrok::ConfigKey::OVER_CURRENT_PROTECTION_ACTIVE);
+	return has_get_config(sigrok::ConfigKey::OVER_CURRENT_PROTECTION_ACTIVE) &&
+		get_config<bool>(sigrok::ConfigKey::OVER_CURRENT_PROTECTION_ACTIVE);
 }
 
-
-bool HardwareDevice::is_over_temperature_active_getable() const
+bool HardwareDevice::has_otp() const
 {
-	return is_read_config(sigrok::ConfigKey::OVER_TEMPERATURE_PROTECTION_ACTIVE);
+	return has_get_config(sigrok::ConfigKey::OVER_TEMPERATURE_PROTECTION) &&
+		get_config<bool>(sigrok::ConfigKey::OVER_TEMPERATURE_PROTECTION);
 }
 
-bool HardwareDevice::get_over_temperature_active() const
+bool HardwareDevice::is_otp_active() const
 {
-	return read_config<bool>(sigrok::ConfigKey::OVER_TEMPERATURE_PROTECTION_ACTIVE);
+	return has_get_config(sigrok::ConfigKey::OVER_TEMPERATURE_PROTECTION_ACTIVE) &&
+		get_config<bool>(sigrok::ConfigKey::OVER_TEMPERATURE_PROTECTION_ACTIVE);
 }
 
-
-bool HardwareDevice::is_under_voltage_enable_getable() const
+bool HardwareDevice::has_uvc() const
 {
-	return is_read_config(sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION);
+	return has_get_config(sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION) &&
+		get_config<bool>(sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION);
 }
 
-bool HardwareDevice::is_under_voltage_enable_setable() const
+bool HardwareDevice::is_uvc_active() const
 {
-	return is_write_config(sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION);
+	return has_get_config(sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_ACTIVE) &&
+		get_config<bool>(sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_ACTIVE);
 }
 
-bool HardwareDevice::get_under_voltage_enable() const
+double HardwareDevice::get_uvc_threshold() const
 {
-	return read_config<bool>(sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION);
+	return get_config<bool>(
+		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD);
 }
 
-
-bool HardwareDevice::is_under_voltage_active_getable() const
+void HardwareDevice::set_uvc_threshold(const double threshold)
 {
-	return is_read_config(sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_ACTIVE);
-}
-
-bool HardwareDevice::get_under_voltage_active() const
-{
-	return read_config<bool>(sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_ACTIVE);
-}
-
-
-bool HardwareDevice::is_under_voltage_threshold_getable() const
-{
-	return is_read_config(sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD);
-}
-
-bool HardwareDevice::is_under_voltage_threshold_setable() const
-{
-	return is_write_config(sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD);
-}
-
-double HardwareDevice::get_under_voltage_threshold() const
-{
-	return read_config<double>(sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD);
-}
-
-void HardwareDevice::set_under_voltage_threshold(const double value)
-{
-	write_config(sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD, value);
+	return set_config(
+		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD, threshold);
 }
 
 void HardwareDevice::list_under_voltage_threshold(

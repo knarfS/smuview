@@ -72,14 +72,14 @@ public:
 
 	shared_ptr<sigrok::Device> sr_device() const;
 
-	bool is_read_config(const sigrok::ConfigKey *key) const;
-	template<typename T> T read_config(const sigrok::ConfigKey *key) const;
+	bool has_get_config(const sigrok::ConfigKey *key) const;
+	template<typename T> T get_config(const sigrok::ConfigKey *key) const;
 
-	bool is_write_config(const sigrok::ConfigKey *key) const;
-	template<typename T> void write_config(const sigrok::ConfigKey *key,
+	bool has_set_config(const sigrok::ConfigKey *key) const;
+	template<typename T> void set_config(const sigrok::ConfigKey *key,
 		const T value);
 
-	bool is_list_config(const sigrok::ConfigKey *key) const;
+	bool has_list_config(const sigrok::ConfigKey *key) const;
 	template<typename T> T list_config(const sigrok::ConfigKey *key) const;
 
 	/**

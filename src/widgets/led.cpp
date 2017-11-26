@@ -25,9 +25,11 @@
 namespace sv {
 namespace widgets {
 
-Led::Led(QString text, QWidget *parent) :
-	QWidget(parent),
+Led::Led(const bool state, const bool is_getable, QString text,
+		QWidget *parent) :
+	QWidget(state),
 	state_(false),
+	is_getable_(is_getable),
 	text_(text),
 	icon_red_(":/icons/status-red.svg"),
 	icon_green_(":/icons/status-green.svg"),

@@ -71,7 +71,7 @@ shared_ptr<sigrok::Device> Device::sr_device() const
 	return sr_device_;
 }
 
-bool Device::is_read_config(const ConfigKey *key)  const
+bool Device::has_get_config(const ConfigKey *key)  const
 {
 	assert(key);
 	assert(sr_configurable_);
@@ -82,10 +82,10 @@ bool Device::is_read_config(const ConfigKey *key)  const
 	return true;
 }
 
-template bool Device::read_config(const sigrok::ConfigKey*) const;
-template uint64_t Device::read_config(const sigrok::ConfigKey*) const;
-template double Device::read_config(const sigrok::ConfigKey*) const;
-template<typename T> T Device::read_config(const ConfigKey *key) const
+template bool Device::get_config(const sigrok::ConfigKey*) const;
+template uint64_t Device::get_config(const sigrok::ConfigKey*) const;
+template double Device::get_config(const sigrok::ConfigKey*) const;
+template<typename T> T Device::get_config(const ConfigKey *key) const
 {
 	assert(key);
 	assert(sr_configurable_);
@@ -111,7 +111,7 @@ template<typename T> T Device::read_config(const ConfigKey *key) const
 		sr_configurable_->config_get(key)).get();
 }
 
-bool Device::is_write_config(const sigrok::ConfigKey *key) const
+bool Device::has_set_config(const sigrok::ConfigKey *key) const
 {
 	assert(key);
 	assert(sr_configurable_);
@@ -122,10 +122,10 @@ bool Device::is_write_config(const sigrok::ConfigKey *key) const
 	return true;
 }
 
-template void Device::write_config(const sigrok::ConfigKey*, const bool);
-template void Device::write_config(const sigrok::ConfigKey*, const uint64_t);
-template void Device::write_config(const sigrok::ConfigKey*, const double);
-template<typename T> void Device::write_config(
+template void Device::set_config(const sigrok::ConfigKey*, const bool);
+template void Device::set_config(const sigrok::ConfigKey*, const uint64_t);
+template void Device::set_config(const sigrok::ConfigKey*, const double);
+template<typename T> void Device::set_config(
 		const sigrok::ConfigKey *key, const T value)
 {
 	assert(key);
@@ -149,7 +149,7 @@ template<typename T> void Device::write_config(
 	sr_configurable_->config_set(key, Glib::Variant<T>::create(value));
 }
 
-bool Device::is_list_config(const sigrok::ConfigKey *key) const
+bool Device::has_list_config(const sigrok::ConfigKey *key) const
 {
 	assert(key);
 	assert(sr_configurable_);

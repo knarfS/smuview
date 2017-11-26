@@ -32,10 +32,12 @@ class Led : public QWidget
     Q_OBJECT
 
 public:
-	Led(QString text, QWidget *parent = 0);
+	Led(const bool state, const bool is_getable, QString text,
+		QWidget *parent = 0);
 
 private:
 	bool state_;
+	bool is_getable_;
 	QString text_;
 
 	QLabel *ledLabel_;

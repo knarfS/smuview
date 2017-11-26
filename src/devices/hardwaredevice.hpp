@@ -124,14 +124,17 @@ public:
 	void set_current_limit(const double value);
 	void list_current_limit(double &min, double &max, double &step);
 
-	bool is_over_voltage_active_getable() const;
-	bool get_over_voltage_active() const;
+	bool has_ovp() const;
+	bool is_ovp_active() const;
+	bool has_ocp() const;
+	bool is_ocp_active() const;
+	bool has_otp() const;
+	bool is_otp_active() const;
 
-	bool is_over_current_active_getable() const;
-	bool get_over_current_active() const;
-
-	bool is_over_temperature_active_getable() const;
-	bool get_over_temperature_active() const;
+	bool has_uvc() const;
+	bool is_uvc_active() const;
+	double get_uvc_threshold() const;
+	void set_uvc_threshold(const double threshold);
 
 	bool is_under_voltage_enable_getable() const;
 	bool is_under_voltage_enable_setable() const;

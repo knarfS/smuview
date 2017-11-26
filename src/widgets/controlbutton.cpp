@@ -25,9 +25,9 @@ namespace sv {
 namespace widgets {
 
 ControlButton::ControlButton(const bool is_readable, const bool is_setable,
-		QWidget *parent) :
+		const bool active, QWidget *parent) :
 	QPushButton(parent),
-	state_(false),
+	active_(active),
 	is_readable_(is_readable),
 	is_setable_(is_setable),
 	icon_red_(":/icons/status-red.svg"),
@@ -52,7 +52,7 @@ void ControlButton::setup_ui()
 
 	if (!is_readable_) {
 		this->setIcon(icon_grey_);
-		this->setText(QApplication::translate("SmuView", "On/Off", Q_NULLPTR));
+		this->setText(tr("On/Off"));
 		this->setChecked(false);
 	}
 }
