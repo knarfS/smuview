@@ -55,19 +55,38 @@ public:
 	~PowerPanelView();
 
 private:
+	uint digits_;
 	shared_ptr<data::BaseSignal> voltage_signal_;
 	shared_ptr<data::BaseSignal> current_signal_;
 
 	QTimer *timer_;
 	qint64 start_time_;
 	qint64 last_time_;
+
+	// Min/max/actual values are stored here, so they can be reseted
+	double voltage_min_;
+	double voltage_max_;
+	double current_min_;
+	double current_max_;
+	double resistance_min_;
+	double resistance_max_;
+	double power_min_;
+	double power_max_;
 	double actual_amp_hours_;
 	double actual_watt_hours_;
 
 	widgets::LcdDisplay *voltageDisplay;
+	widgets::LcdDisplay *voltageMinDisplay;
+	widgets::LcdDisplay *voltageMaxDisplay;
 	widgets::LcdDisplay *currentDisplay;
+	widgets::LcdDisplay *currentMinDisplay;
+	widgets::LcdDisplay *currentMaxDisplay;
 	widgets::LcdDisplay *resistanceDisplay;
+	widgets::LcdDisplay *resistanceMinDisplay;
+	widgets::LcdDisplay *resistanceMaxDisplay;
 	widgets::LcdDisplay *powerDisplay;
+	widgets::LcdDisplay *powerMinDisplay;
+	widgets::LcdDisplay *powerMaxDisplay;
 	widgets::LcdDisplay *ampHourDisplay;
 	widgets::LcdDisplay *wattHourDisplay;
 	QPushButton *resetButton;

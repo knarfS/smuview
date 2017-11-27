@@ -47,7 +47,7 @@ void ValueControl::setup_ui()
 {
 	QVBoxLayout *layout = new QVBoxLayout();
 
-	lcdDisplay = new widgets::LcdDisplay(digits_, unit_);
+	lcdDisplay = new widgets::LcdDisplay(digits_, unit_, "", false);
 	lcdDisplay->set_value(0);
 	layout->addWidget(lcdDisplay);
 

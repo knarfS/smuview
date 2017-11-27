@@ -51,11 +51,13 @@ void SinkControlView::setup_ui()
 	QVBoxLayout *layout = new QVBoxLayout();
 
 	// Enable button
-	/*
 	setEnableButton = new widgets::ControlButton(
-		device_->is_enable_getable(), device_->is_enable_setable());
+		&devices::HardwareDevice::get_enable,
+		&devices::HardwareDevice::set_enable,
+		&devices::HardwareDevice::is_enable_getable,
+		&devices::HardwareDevice::is_enable_setable,
+		device_);
 	layout->addWidget(setEnableButton);
-	*/
 
 	// Leds
 	QGridLayout *ledLayout = new QGridLayout();
@@ -92,12 +94,14 @@ void SinkControlView::setup_ui()
 	layout->addWidget(setValueControl);
 
 	// Under voltage threshold
+	/*
 	device_->list_under_voltage_threshold(min, max, step);
 	setUnderVoltageThreshold = new widgets::OptionalValueControl(
 		device_->is_under_voltage_threshold_getable(),
 		device_->is_under_voltage_threshold_setable(),
 		5, "V", min, max, step);
 	layout->addWidget(setUnderVoltageThreshold);
+	*/
 
 	layout->addStretch(5);
 
@@ -111,17 +115,17 @@ void SinkControlView::connect_signals()
 		this, SLOT(on_enabled_changed(const bool)));
 	connect(setValueControl, SIGNAL(value_changed(const double)),
 		this, SLOT(on_value_changed(const double)));
-	connect(setUnderVoltageThreshold, SIGNAL(value_changed(const double)),
-		this, SLOT(on_under_voltage_threshold_changed(const double)));
+	//connect(setUnderVoltageThreshold, SIGNAL(value_changed(const double)),
+	//	this, SLOT(on_under_voltage_threshold_changed(const double)));
 
 	// Device -> Control elements
 	connect(device_.get(), SIGNAL(enabled_changed(const bool)),
 		setEnableButton, SLOT(on_state_changed(const bool)));
 	connect(device_.get(), SIGNAL(current_limit_changed(const double)),
 		setValueControl, SLOT(change_value(const double)));
-	connect(device_.get(),
-		SIGNAL(under_voltage_condition_threshold_changed(const double)),
-		setUnderVoltageThreshold, SLOT(change_value(const double)));
+	//connect(device_.get(),
+	//	SIGNAL(under_voltage_condition_threshold_changed(const double)),
+	//	setUnderVoltageThreshold, SLOT(change_value(const double)));
 
 	connect(device_.get(),
 		SIGNAL(over_voltage_protection_active_changed(const bool)),
@@ -141,13 +145,11 @@ void SinkControlView::init_values()
 {
 	// TODO: move to button (or whatever...)
 	if (device_->is_enable_getable())
-		setEnableButton->on_state_changed(device_->get_enabled());
+		setEnableButton->on_state_changed(device_->get_enable());
 	if (device_->is_current_limit_getable())
 		setValueControl->on_value_changed(device_->get_current_limit());
-	setUnderVoltageThreshold->on_state_changed(
-		device_->get_under_voltage_enable());
-	setUnderVoltageThreshold->on_value_changed(
-		device_->get_under_voltage_threshold());
+	//setUnderVoltageThreshold->on_state_changed(device_->is_uvc_active());
+	//setUnderVoltageThreshold->on_value_changed(device_->get_uvc_threshold());
 
 	if (device_->has_ovp())
 		ovpLed->on_state_changed(device_->is_ovp_active());
@@ -171,7 +173,7 @@ void SinkControlView::on_value_changed(const double value)
 
 void SinkControlView::on_under_voltage_threshold_changed(const double value)
 {
-	device_->set_under_voltage_threshold(value);
+	device_->set_uvc_threshold(value);
 }
 
 } // namespace views

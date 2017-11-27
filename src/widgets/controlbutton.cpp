@@ -29,7 +29,7 @@ namespace widgets {
 
 	ControlButton::ControlButton(
 		bool (devices::HardwareDevice::*get_state_caller)() const,
-		void (devices::HardwareDevice::*set_state_caller)(double),
+		void (devices::HardwareDevice::*set_state_caller)(const bool),
 		bool (devices::HardwareDevice::*is_getable_caller)() const,
 		bool (devices::HardwareDevice::*is_setable_caller)() const,
 		shared_ptr<devices::HardwareDevice> device, QWidget *parent) :
@@ -43,10 +43,16 @@ namespace widgets {
 	icon_green_(":/icons/status-green.svg"),
 	icon_grey_(":/icons/status-grey.svg")
 {
-	setup_ui();
+	is_getable_ = (device_.get()->*is_getable_caller_)();
+	is_setable_ = (device_.get()->*is_setable_caller_)();
+	is_enabled_ = is_getable_ || is_setable_;
+	if (is_getable_)
+		state_ = (device_.get()->*get_state_caller_)();
+	else
+		state_ = false;
 
-	if ((device_.get()->*is_setable_caller_)())
-		connect(this, SIGNAL(clicked(bool)), this, SLOT(on_clicked()));
+	setup_ui();
+	connect_signals();
 }
 
 void ControlButton::setup_ui()
@@ -56,15 +62,33 @@ void ControlButton::setup_ui()
 
 	this->setIconSize(QSize(8, 8));
 
+	this->setDisabled(!is_enabled_);
 	if (!is_setable_) {
 		this->setDisabled(true);
 	}
-
-	if (!is_readable_) {
+	if (!is_getable_) {
 		this->setIcon(icon_grey_);
 		this->setText(tr("On/Off"));
 		this->setChecked(false);
 	}
+	else {
+		if (state_) {
+			this->setIcon(icon_green_);
+			this->setText(tr("On"));
+			this->setChecked(true);
+		}
+		else {
+			this->setIcon(icon_red_);
+			this->setText(tr("Off"));
+			this->setChecked(false);
+		}
+	}
+}
+
+void ControlButton::connect_signals()
+{
+	if (is_setable_)
+		connect(this, SIGNAL(clicked(bool)), this, SLOT(on_clicked()));
 }
 
 void ControlButton::on_clicked()
@@ -77,12 +101,12 @@ void ControlButton::on_state_changed(const bool enabled)
 {
 	if (enabled) {
 		this->setIcon(icon_green_);
-		this->setText(QApplication::translate("SmuView", "On", Q_NULLPTR));
+		this->setText(tr("On"));
 		this->setChecked(true);
 		state_ = true;
 	} else {
 		this->setIcon(icon_red_);
-		this->setText(QApplication::translate("SmuView", "Off", Q_NULLPTR));
+		this->setText(tr("Off"));
 		this->setChecked(false);
 		state_ = false;
 	}

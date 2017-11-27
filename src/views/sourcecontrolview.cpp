@@ -43,11 +43,14 @@ void SourceControlView::setup_ui()
 {
 	QVBoxLayout *layout = new QVBoxLayout();
 
-	/*
-	setEnableButton = new widgets::ControlButton(device_->
-		device_->is_enable_getable(), device_->is_enable_setable());
+	// Enable button
+	setEnableButton = new widgets::ControlButton(
+		&devices::HardwareDevice::get_enable,
+		&devices::HardwareDevice::set_enable,
+		&devices::HardwareDevice::is_enable_getable,
+		&devices::HardwareDevice::is_enable_setable,
+		device_);
 	layout->addWidget(setEnableButton);
-	*/
 
 	double min;
 	double max;
@@ -66,30 +69,30 @@ void SourceControlView::setup_ui()
 void SourceControlView::connect_signals()
 {
 	// Control elements -> Device
+	connect(setEnableButton, SIGNAL(state_changed(const bool)),
+		this, SLOT(on_enabled_changed(const bool)));
 	connect(setVoltageControl, SIGNAL(value_changed(const double)),
 		this, SLOT(on_voltage_changed(const double)));
 	connect(setCurrentControl, SIGNAL(value_changed(const double)),
 		this, SLOT(on_current_changed(const double)));
-	connect(setEnableButton, SIGNAL(state_changed(const bool)),
-		this, SLOT(on_enabled_changed(const bool)));
 
 	// Device -> Control elements
+	connect(device_.get(), SIGNAL(enabled_changed(const bool)),
+		setEnableButton, SLOT(on_state_changed(const bool)));
 	connect(device_.get(), SIGNAL(voltage_target_changed(const double)),
 		setVoltageControl, SLOT(change_value(const double)));
 	connect(device_.get(), SIGNAL(current_limit_changed(const double)),
 		setCurrentControl, SLOT(change_value(const double)));
-	connect(device_.get(), SIGNAL(enabled_changed(const bool)),
-		setEnableButton, SLOT(on_state_changed(const bool)));
 }
 
 void SourceControlView::init_values()
 {
+	if (device_->is_enable_getable())
+		setEnableButton->on_state_changed(device_->get_enable());
 	if (device_->is_voltage_target_getable())
 		setVoltageControl->on_value_changed(device_->get_voltage_target());
 	if (device_->is_current_limit_getable())
 		setCurrentControl->on_value_changed(device_->get_current_limit());
-	if (device_->is_enable_getable())
-		setEnableButton->on_state_changed(device_->get_enabled());
 }
 
 void SourceControlView::on_voltage_changed(const double value)

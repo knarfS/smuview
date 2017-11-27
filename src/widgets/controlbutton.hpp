@@ -41,20 +41,21 @@ class ControlButton : public QPushButton
 public:
 	ControlButton(
 		bool (devices::HardwareDevice::*get_state_caller)() const,
-		void (devices::HardwareDevice::*set_state_caller)(double),
+		void (devices::HardwareDevice::*set_state_caller)(const bool),
 		bool (devices::HardwareDevice::*is_getable_caller)() const,
 		bool (devices::HardwareDevice::*is_setable_caller)() const,
 		shared_ptr<devices::HardwareDevice> device, QWidget *parent = 0);
 
 private:
+	bool is_enabled_;
 	bool state_;
-	bool is_readable_;
+	bool is_getable_;
 	bool is_setable_;
 
 	bool (devices::HardwareDevice::*get_state_caller_)() const;
-	void (devices::HardwareDevice::*set_state_caller)(double);
+	void (devices::HardwareDevice::*set_state_caller_)(const bool);
 	bool (devices::HardwareDevice::*is_getable_caller_)() const;
-	bool (devices::HardwareDevice::*is_setable_caller)() const;
+	bool (devices::HardwareDevice::*is_setable_caller_)() const;
 	shared_ptr<devices::HardwareDevice> device_;
 
 	QIcon icon_red_;
@@ -62,6 +63,7 @@ private:
 	QIcon icon_grey_;
 
 	void setup_ui();
+	void connect_signals();
 
 public Q_SLOTS:
 	void on_clicked();

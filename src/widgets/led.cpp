@@ -42,13 +42,13 @@ namespace widgets {
 	icon_green_(":/icons/status-green.svg"),
 	icon_grey_(":/icons/status-grey.svg")
 {
-	setup_ui();
-
 	is_enabled_ = (device_.get()->*is_getable_caller_)();
 	if (is_enabled_)
 		state_ = (device_.get()->*get_state_caller_)();
 	else
 		state_ = false;
+
+	setup_ui();
 }
 
 void Led::setup_ui()
@@ -62,6 +62,7 @@ void Led::setup_ui()
 	layout->addWidget(ledLabel_);
 
 	textLabel_ = new QLabel(text_);
+	textLabel_->setDisabled(!is_enabled_);
 	layout->addWidget(textLabel_);
 
 	this->setLayout(layout);

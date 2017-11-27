@@ -55,12 +55,17 @@ public:
 
 private:
 	uint digits_;
-	QString unit_;
 	shared_ptr<data::BaseSignal> value_signal_;
 
 	QTimer *timer_;
 
+	// Min/max/actual values are stored here, so they can be reseted
+	double value_min_;
+	double value_max_;
+
 	widgets::LcdDisplay *valueDisplay;
+	widgets::LcdDisplay *valueMinDisplay;
+	widgets::LcdDisplay *valueMaxDisplay;
 	QPushButton *resetButton;
 
 	void setup_ui();

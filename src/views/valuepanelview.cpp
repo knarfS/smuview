@@ -52,11 +52,25 @@ ValuePanelView::~ValuePanelView()
 
 void ValuePanelView::setup_ui()
 {
+	// TODO: This is good enough for 7.5 digit multimeters, but should really
+	// depend on the digits submitted by the analog packet.
+	digits_ = 8;
+
 	QVBoxLayout *layout = new QVBoxLayout();
 
-	//valueDisplay = new widgets::LcdDisplay(digits_, unit_);
-	valueDisplay = new widgets::LcdDisplay(8, "mX");
-	layout->addWidget(valueDisplay);
+	QGridLayout *panelLayout = new QGridLayout();
+
+	valueDisplay = new widgets::LcdDisplay(digits_,
+		value_signal_->analog_data()->unit(), "", false);
+	valueMinDisplay = new widgets::LcdDisplay(digits_,
+		value_signal_->analog_data()->unit(), "min", true);
+	valueMaxDisplay = new widgets::LcdDisplay(digits_,
+		value_signal_->analog_data()->unit(), "max", true);
+
+	panelLayout->addWidget(valueDisplay, 0, 0, 1, 2, Qt::AlignHCenter);
+	panelLayout->addWidget(valueMinDisplay, 1, 0, 1, 1, Qt::AlignHCenter);
+	panelLayout->addWidget(valueMaxDisplay, 1, 1, 1, 1, Qt::AlignHCenter);
+	layout->addLayout(panelLayout);
 
 	resetButton = new QPushButton();
 	resetButton->setText(tr("Reset"));
@@ -93,6 +107,9 @@ void ValuePanelView::init_timer()
 	if (!value_signal_)
 		return;
 
+	value_min_ = std::numeric_limits<double>::max();
+	value_max_ = std::numeric_limits<double>::min();
+
 	connect(timer_, SIGNAL(timeout()), this, SLOT(on_update()));
 	timer_->start(250);
 }
@@ -120,10 +137,17 @@ void ValuePanelView::on_update()
 		return;
 
 	double value = 0;
-	if (value_signal_ && value_signal_->analog_data())
+	if (value_signal_ && value_signal_->analog_data()) {
 		value = value_signal_->analog_data()->last_value();
+		if (value_min_ > value)
+			value_min_ = value;
+		if (value_max_ < value)
+			value_max_ = value;
+	}
 
 	valueDisplay->set_value(value);
+	valueMinDisplay->set_value(value_min_);
+	valueMaxDisplay->set_value(value_max_);
 }
 
 void ValuePanelView::on_quantity_changed(QString quantity)
@@ -135,6 +159,8 @@ void ValuePanelView::on_quantity_changed(QString quantity)
 void ValuePanelView::on_unit_changed(QString unit)
 {
 	valueDisplay->set_unit(unit);
+	valueMinDisplay->set_unit(unit);
+	valueMaxDisplay->set_unit(unit);
 }
 
 } // namespace views

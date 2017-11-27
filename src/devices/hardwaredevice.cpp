@@ -389,7 +389,7 @@ bool HardwareDevice::is_enable_setable() const
 	return has_set_config(sigrok::ConfigKey::ENABLED);
 }
 
-bool HardwareDevice::get_enabled() const
+bool HardwareDevice::get_enable() const
 {
 	return get_config<bool>(sigrok::ConfigKey::ENABLED);
 }

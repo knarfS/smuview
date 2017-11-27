@@ -109,7 +109,7 @@ public:
 
 	bool is_enable_getable() const;
 	bool is_enable_setable() const;
-	bool get_enabled() const;
+	bool get_enable() const;
 	void set_enable(const bool enable);
 
 	bool is_voltage_target_getable() const;

@@ -34,15 +34,23 @@ class LcdDisplay : public QFrame
 private:
 	uint digits_;
 	QString unit_;
+	QString extra_text_;
 	float value_;
 
+	uint height;
+	uint width_scale_factor_;
+	uint font_size_unit_;
+	uint font_size_extra_;
+
 	QLCDNumber *lcdValue;
+	QLabel *lcdExtra;
 	QLabel *lcdUnit;
 
 	void setup_ui();
 
 public:
-	LcdDisplay(const uint digits, const QString unit, QWidget *parent = 0);
+	LcdDisplay(const uint digits, const QString unit,
+		const QString extra_text, const bool small, QWidget *parent = 0);
 
 	void set_value(const double value);
 	void set_unit(const QString unit);

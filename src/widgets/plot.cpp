@@ -223,7 +223,7 @@ void Plot::update_curve()
 
 	const int numPoints = curve_data_->size();
 	if (numPoints > painted_points_) {
-		qWarning() << QString("Plot::updateCurve(): numPoints = %1, painted_points_ = %2").arg(numPoints).arg(painted_points_);
+		//qWarning() << QString("Plot::updateCurve(): numPoints = %1, painted_points_ = %2").arg(numPoints).arg(painted_points_);
 		const bool clip = !canvas()->testAttribute(Qt::WA_PaintOnScreen);
 		if (clip) {
 			/*

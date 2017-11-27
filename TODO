@@ -15,7 +15,8 @@ ToDo
 	2. Adding new device to a running session: Chicken/Egg problem! Dev->open() tries to
 		start aquisition, but device is not added to session yet (cxx binding).
 		session->add_device() tries to start aquisition, but device is not opened yet...
-	3. Propably use the multidevice API functions from linux gpib in scpi_libgpib.c
+	3. Solves the sr_session_source_add_internal() dublicate key problem.
+	4. Propably use the multidevice API functions from linux gpib in scpi_libgpib.c
 - Better detection of common_time_data_ (when in frame). Who is this possible when in
 	init_signal() and not afterwards when in feed_in()
 - Mutex for aquisition_state_?

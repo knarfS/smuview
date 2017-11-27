@@ -51,9 +51,11 @@ void OptionalValueControl::setup_ui()
 {
 	QVBoxLayout *layout = new QVBoxLayout();
 
+	/*
 	controlButton = new widgets::ControlButton(
 		state_, is_readable_, is_setable_);
 	layout->addWidget(controlButton);
+	*/
 
 	doubleSpinBox = new QDoubleSpinBox();
 	doubleSpinBox->setSuffix(QString(" %1").arg(unit_));

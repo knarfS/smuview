@@ -24,48 +24,83 @@
 namespace sv {
 namespace widgets {
 
-LcdDisplay::LcdDisplay(const uint digits, const QString unit, QWidget *parent) :
+LcdDisplay::LcdDisplay(const uint digits, const QString unit,
+		const QString extra_text, const bool small, QWidget *parent) :
 	QFrame(parent),
 	digits_(digits),
-	unit_(unit)
+	unit_(unit),
+	extra_text_(extra_text)
 {
+	if (!small) {
+		height = 50;
+		width_scale_factor_ = 30;
+		font_size_unit_ = 18;;
+		font_size_extra_ = 10;
+	}
+	else {
+		height = 25;
+		width_scale_factor_ = 15;
+		font_size_unit_ = 10;
+		font_size_extra_ = 7;
+	}
+
 	setup_ui();
 	reset_value();
 }
 
 void LcdDisplay::setup_ui()
 {
-	this->resize(210, 42);
-	this->setFrameShape(QFrame::Box);
+	// TODO: Are ne number of digits displayed correctly?
+	// TODO: Maybe there is a better way to draw the width proportional to the
+	// height? This is maybe even dpi dependent?
+	uint width = width_scale_factor_ * digits_;
+
+	//this->setFrameShape(QFrame::Box);
+	QSizePolicy layoutSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	layoutSizePolicy.setHorizontalStretch(0);
+	layoutSizePolicy.setVerticalStretch(0);
+	//lcdSizePolicy.setWidthForHeight(true); // TODO: maybe this could work somehow?
+	this->setSizePolicy(layoutSizePolicy);
 
 	QHBoxLayout *layout = new QHBoxLayout();
-	layout->addStretch(5);
 
 	lcdValue = new QLCDNumber();
 	lcdValue->setDigitCount(digits_);
-	QSizePolicy sizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-	sizePolicy.setHorizontalStretch(0);
-	sizePolicy.setVerticalStretch(0);
-	//sizePolicy.setHeightForWidth(lcdValue->sizePolicy().hasHeightForWidth());
-	lcdValue->setSizePolicy(sizePolicy);
-	lcdValue->setMinimumSize(QSize(151, 50));
+	//lcdValue->setMinimumSize(QSize(width, height));
+	lcdValue->setFixedSize(QSize(width, height));
+
 	lcdValue->setFrameShape(QFrame::NoFrame);
 	//lcdValue->setFrameShape(QFrame::Box);
 	lcdValue->setSmallDecimalPoint(true);
 	lcdValue->setSegmentStyle(QLCDNumber::Flat);
-
 	layout->addWidget(lcdValue);
 
+	QVBoxLayout *textLayout = new QVBoxLayout();
+	textLayout->addStretch(5);
+
+	// Extra text
+	lcdExtra = new QLabel();
+	QFont extraFont;
+	extraFont.setPointSize(font_size_extra_);
+	//extraFont.setBold(true);
+	//extraFont.setWeight(QFont::Bold);
+	lcdExtra->setFont(extraFont);
+	lcdExtra->setText(extra_text_);
+	lcdExtra->setAlignment(Qt::AlignBottom|Qt::AlignHCenter);
+	textLayout->addWidget(lcdExtra);
+
+	// Unit
 	lcdUnit = new QLabel();
 	QFont unitFont;
-	unitFont.setPointSize(18);
+	unitFont.setPointSize(font_size_unit_);
 	unitFont.setBold(true);
-	unitFont.setWeight(75);
+	unitFont.setWeight(QFont::Bold);
 	lcdUnit->setFont(unitFont);
 	lcdUnit->setText(unit_);
-	lcdUnit->setAlignment(Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft);
+	lcdUnit->setAlignment(Qt::AlignBottom|Qt::AlignHCenter);
+	textLayout->addWidget(lcdUnit);
 
-	layout->addWidget(lcdUnit);
+	layout->addLayout(textLayout);
 
 	this->setLayout(layout);
 }
