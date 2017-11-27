@@ -110,8 +110,11 @@ void LcdDisplay::set_value(const double value)
 	QString str_value;
 	if (value == std::numeric_limits<double>::max())
 		str_value = QString("OL");
+	else if (value == std::numeric_limits<double>::min())
+		str_value = QString("UL");
 	else
-		str_value = QString("%1").arg(value, 0, 'f', 3);
+		// TODO: set precision
+		str_value = QString("%1").arg(value, digits_, 'f', 3, QChar('0'));
 
 	lcdValue->display(str_value);
 }

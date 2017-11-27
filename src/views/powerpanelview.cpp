@@ -33,12 +33,22 @@ namespace sv {
 namespace views {
 
 PowerPanelView::PowerPanelView(Session &session,
-	shared_ptr<data::BaseSignal> voltage_signal,
-	shared_ptr<data::BaseSignal> current_signal,
-	QWidget *parent) :
-		BaseView(session, parent),
+		shared_ptr<data::BaseSignal> voltage_signal,
+		shared_ptr<data::BaseSignal> current_signal,
+		QWidget *parent) :
+	BaseView(session, parent),
 	voltage_signal_(voltage_signal),
-	current_signal_(current_signal)
+	current_signal_(current_signal),
+	voltage_min_(std::numeric_limits<double>::max()),
+	voltage_max_(std::numeric_limits<double>::lowest()),
+	current_min_(std::numeric_limits<double>::max()),
+	current_max_(std::numeric_limits<double>::lowest()),
+	resistance_min_(std::numeric_limits<double>::max()),
+	resistance_max_(std::numeric_limits<double>::lowest()),
+	power_min_(std::numeric_limits<double>::max()),
+	power_max_(std::numeric_limits<double>::lowest()),
+	actual_amp_hours_(0),
+	actual_watt_hours_(0)
 {
 	setup_ui();
 	connect_signals();
@@ -112,8 +122,8 @@ void PowerPanelView::setup_ui()
 	panelLayout->addWidget(powerMinDisplay, 3, 2, 1, 1, Qt::AlignHCenter);
 	panelLayout->addWidget(powerMaxDisplay, 3, 3, 1, 1, Qt::AlignHCenter);
 
-	panelLayout->addWidget(ampHourDisplay, 0, 4, Qt::AlignHCenter);
-	panelLayout->addWidget(wattHourDisplay, 2, 4, Qt::AlignHCenter);
+	panelLayout->addWidget(ampHourDisplay, 0, 4, 2, 1, Qt::AlignCenter);
+	panelLayout->addWidget(wattHourDisplay, 2, 4, 2, 1, Qt::AlignCenter);
 
 	layout->addLayout(panelLayout);
 
@@ -163,13 +173,13 @@ void PowerPanelView::init_timer()
 	last_time_ = start_time_;
 
 	voltage_min_ = std::numeric_limits<double>::max();
-	voltage_max_ = std::numeric_limits<double>::min();
+	voltage_max_ = std::numeric_limits<double>::lowest();
 	current_min_ = std::numeric_limits<double>::max();
-	current_max_ = std::numeric_limits<double>::min();
+	current_max_ = std::numeric_limits<double>::lowest();
 	resistance_min_ = std::numeric_limits<double>::max();
-	resistance_max_ = std::numeric_limits<double>::min();
+	resistance_max_ = std::numeric_limits<double>::lowest();
 	power_min_ = std::numeric_limits<double>::max();
-	power_max_ = std::numeric_limits<double>::min();
+	power_max_ = std::numeric_limits<double>::lowest();
 	actual_amp_hours_ = 0;
 	actual_watt_hours_ = 0;
 
@@ -203,7 +213,7 @@ void PowerPanelView::on_update()
 	double elapsed_time = (now - last_time_) / (double)3600000; // 1000 * 60 * 60 = 1h
 	last_time_ = now;
 
-	double voltage = 0;
+	double voltage = 0.;
 	if (voltage_signal_ && voltage_signal_->analog_data()) {
 		voltage = voltage_signal_->analog_data()->last_value();
 		if (voltage_min_ > voltage)
@@ -212,7 +222,7 @@ void PowerPanelView::on_update()
 			voltage_max_ = voltage;
 	}
 
-	double current = 0;
+	double current = 0.;
 	if (current_signal_ && current_signal_->analog_data()) {
 		current = current_signal_->analog_data()->last_value();
 		if (current_min_ > current)
@@ -221,7 +231,7 @@ void PowerPanelView::on_update()
 			current_max_ = current;
 	}
 
-	double resistance = current == 0 ?
+	double resistance = current == 0. ?
 		std::numeric_limits<double>::max() : voltage / current;
 	if (resistance_min_ > resistance)
 		resistance_min_ = resistance;

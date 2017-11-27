@@ -35,7 +35,9 @@ ValuePanelView::ValuePanelView(Session &session,
 	shared_ptr<data::BaseSignal> value_signal,
 	QWidget *parent) :
 		BaseView(session, parent),
-	value_signal_(value_signal)
+	value_signal_(value_signal),
+	value_min_(std::numeric_limits<double>::max()),
+	value_max_(std::numeric_limits<double>::lowest())
 {
 	setup_ui();
 	connect_signals();
@@ -108,7 +110,7 @@ void ValuePanelView::init_timer()
 		return;
 
 	value_min_ = std::numeric_limits<double>::max();
-	value_max_ = std::numeric_limits<double>::min();
+	value_max_ = std::numeric_limits<double>::lowest();
 
 	connect(timer_, SIGNAL(timeout()), this, SLOT(on_update()));
 	timer_->start(250);
