@@ -37,7 +37,8 @@ class OptionalValueControl : public QWidget
     Q_OBJECT
 
 public:
-	OptionalValueControl(const bool is_readable, const bool is_setable,
+	OptionalValueControl(const bool active,
+		const bool is_readable, const bool is_setable,
 		const uint digits, const QString unit,
 		const double min, const double max, const double steps,
 		QWidget *parent = 0);

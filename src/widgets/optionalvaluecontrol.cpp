@@ -25,13 +25,13 @@
 namespace sv {
 namespace widgets {
 
-OptionalValueControl::OptionalValueControl(
+OptionalValueControl::OptionalValueControl(const bool active,
 		const bool is_readable, const bool is_setable,
 		const uint digits, const QString unit,
 		const double min, const double max, const double steps,
 		QWidget *parent) :
 	QWidget(parent),
-	state_(false),
+	state_(active),
 	value_(0),
 	is_readable_(is_readable),
 	is_setable_(is_setable),
@@ -51,8 +51,8 @@ void OptionalValueControl::setup_ui()
 {
 	QVBoxLayout *layout = new QVBoxLayout();
 
-	controlButton = new widgets::ControlButton(is_readable_, is_setable_);
-	controlButton->on_state_changed(state_);
+	controlButton = new widgets::ControlButton(
+		state_, is_readable_, is_setable_);
 	layout->addWidget(controlButton);
 
 	doubleSpinBox = new QDoubleSpinBox();

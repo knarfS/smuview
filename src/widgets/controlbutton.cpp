@@ -20,23 +20,33 @@
 #include <QApplication>
 
 #include "controlbutton.hpp"
+#include "src/devices/hardwaredevice.hpp"
+
+using std::shared_ptr;
 
 namespace sv {
 namespace widgets {
 
-ControlButton::ControlButton(const bool is_readable, const bool is_setable,
-		const bool active, QWidget *parent) :
+	ControlButton::ControlButton(
+		bool (devices::HardwareDevice::*get_state_caller)() const,
+		void (devices::HardwareDevice::*set_state_caller)(double),
+		bool (devices::HardwareDevice::*is_getable_caller)() const,
+		bool (devices::HardwareDevice::*is_setable_caller)() const,
+		shared_ptr<devices::HardwareDevice> device, QWidget *parent) :
 	QPushButton(parent),
-	active_(active),
-	is_readable_(is_readable),
-	is_setable_(is_setable),
+	get_state_caller_(get_state_caller),
+	set_state_caller_(set_state_caller),
+	is_getable_caller_(is_getable_caller),
+	is_setable_caller_(is_setable_caller),
+	device_(device),
 	icon_red_(":/icons/status-red.svg"),
 	icon_green_(":/icons/status-green.svg"),
 	icon_grey_(":/icons/status-grey.svg")
 {
 	setup_ui();
 
-	connect(this, SIGNAL(clicked(bool)), this, SLOT(on_clicked()));
+	if ((device_.get()->*is_setable_caller_)())
+		connect(this, SIGNAL(clicked(bool)), this, SLOT(on_clicked()));
 }
 
 void ControlButton::setup_ui()

@@ -21,21 +21,34 @@
 #include <QDebug>
 
 #include "led.hpp"
+#include "src/devices/hardwaredevice.hpp"
+
+using std::shared_ptr;
 
 namespace sv {
 namespace widgets {
 
-Led::Led(const bool state, const bool is_getable, QString text,
-		QWidget *parent) :
-	QWidget(state),
-	state_(false),
-	is_getable_(is_getable),
+	Led::Led(
+		bool (devices::HardwareDevice::*get_state_caller)() const,
+		bool (devices::HardwareDevice::*is_getable_caller)() const,
+		shared_ptr<devices::HardwareDevice> device,
+		QString text, QWidget *parent) :
+	QWidget(parent),
+	get_state_caller_(get_state_caller),
+	is_getable_caller_(is_getable_caller),
+	device_(device),
 	text_(text),
 	icon_red_(":/icons/status-red.svg"),
 	icon_green_(":/icons/status-green.svg"),
 	icon_grey_(":/icons/status-grey.svg")
 {
 	setup_ui();
+
+	is_enabled_ = (device_.get()->*is_getable_caller_)();
+	if (is_enabled_)
+		state_ = (device_.get()->*get_state_caller_)();
+	else
+		state_ = false;
 }
 
 void Led::setup_ui()
@@ -43,7 +56,9 @@ void Led::setup_ui()
 	QHBoxLayout *layout = new QHBoxLayout();
 
 	ledLabel_ = new QLabel();
-	ledLabel_->setPixmap(icon_grey_.pixmap(16, 16, QIcon::Mode::Disabled, QIcon::State::Off));
+	// TODO: get_state
+	ledLabel_->setPixmap(
+		icon_grey_.pixmap(16, 16, QIcon::Mode::Disabled, QIcon::State::Off));
 	layout->addWidget(ledLabel_);
 
 	textLabel_ = new QLabel(text_);

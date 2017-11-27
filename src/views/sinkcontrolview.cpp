@@ -51,25 +51,38 @@ void SinkControlView::setup_ui()
 	QVBoxLayout *layout = new QVBoxLayout();
 
 	// Enable button
+	/*
 	setEnableButton = new widgets::ControlButton(
 		device_->is_enable_getable(), device_->is_enable_setable());
 	layout->addWidget(setEnableButton);
+	*/
 
 	// Leds
 	QGridLayout *ledLayout = new QGridLayout();
+
 	// Regulation Leds
-	ccLed = new widgets::Led("CC");
+	/*
+	ccLed = new widgets::Led(true, false, tr("CC"));
 	ledLayout->addWidget(ccLed, 0, 0);
-	cvLed = new widgets::Led("CV");
+	cvLed = new widgets::Led(false, false, tr("CV"));
 	ledLayout->addWidget(cvLed, 1, 0);
-	// Protection Leds
-	ovpLed = new widgets::Led("OVP");
+	*/
+
+	ovpLed = new widgets::Led(
+		&devices::HardwareDevice::is_ovp_active,
+		&devices::HardwareDevice::has_ovp, device_, tr("OVP"));
 	ledLayout->addWidget(ovpLed, 0, 1);
-	ocpLed = new widgets::Led("OCP");
+	ocpLed = new widgets::Led(
+		&devices::HardwareDevice::is_ocp_active,
+		&devices::HardwareDevice::has_ocp, device_, tr("OCP"));
 	ledLayout->addWidget(ocpLed, 0, 2);
-	uvcLed = new widgets::Led("UVC");
+	uvcLed = new widgets::Led(
+		&devices::HardwareDevice::is_uvc_active,
+		&devices::HardwareDevice::has_uvc, device_, tr("UVC"));
 	ledLayout->addWidget(uvcLed, 1, 1);
-	otpLed = new widgets::Led("OTP");
+	otpLed = new widgets::Led(
+		&devices::HardwareDevice::is_otp_active,
+		&devices::HardwareDevice::has_otp, device_, tr("OTP"));
 	ledLayout->addWidget(otpLed, 1, 2);
 	layout->addLayout(ledLayout, 0);
 
@@ -136,14 +149,14 @@ void SinkControlView::init_values()
 	setUnderVoltageThreshold->on_value_changed(
 		device_->get_under_voltage_threshold());
 
-	if (device_->is_over_voltage_active_getable())
-		ovpLed->on_state_changed(device_->get_over_voltage_active());
-	if (device_->is_over_current_active_getable())
-		ocpLed->on_state_changed(device_->get_over_current_active());
-	if (device_->is_under_voltage_active_getable())
-		uvcLed->on_state_changed(device_->get_under_voltage_active());
-	if (device_->is_over_temperature_active_getable())
-		otpLed->on_state_changed(device_->get_over_temperature_active());
+	if (device_->has_ovp())
+		ovpLed->on_state_changed(device_->is_ovp_active());
+	if (device_->has_ocp())
+		ocpLed->on_state_changed(device_->is_ocp_active());
+	if (device_->has_uvc())
+		uvcLed->on_state_changed(device_->is_uvc_active());
+	if (device_->has_otp())
+		otpLed->on_state_changed(device_->is_otp_active());
 }
 
 void SinkControlView::on_enabled_changed(const bool enabled)

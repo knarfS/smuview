@@ -43,9 +43,11 @@ void SourceControlView::setup_ui()
 {
 	QVBoxLayout *layout = new QVBoxLayout();
 
-	setEnableButton = new widgets::ControlButton(
+	/*
+	setEnableButton = new widgets::ControlButton(device_->
 		device_->is_enable_getable(), device_->is_enable_setable());
 	layout->addWidget(setEnableButton);
+	*/
 
 	double min;
 	double max;

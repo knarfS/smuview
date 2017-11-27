@@ -57,6 +57,13 @@ public:
 protected:
 	Session &session_;
 
+	typedef std::function<bool()> is_getable_caller;
+	typedef std::function<bool()> is_setable_caller;
+	typedef std::function<bool()> is_listable_caller;
+	template<typename T> using get_caller = T();
+	template<typename T> using set_caller = void(T);
+	template<typename T> using list_caller = T();
+
 public Q_SLOTS:
 
 private Q_SLOTS:

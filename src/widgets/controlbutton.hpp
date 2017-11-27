@@ -20,9 +20,18 @@
 #ifndef WIDGETS_CONTROLBUTTON_HPP
 #define WIDGETS_CONTROLBUTTON_HPP
 
+#include <memory>
+
 #include <QPushButton>
 
+using std::shared_ptr;
+
 namespace sv {
+
+namespace devices {
+class HardwareDevice;
+}
+
 namespace widgets {
 
 class ControlButton : public QPushButton
@@ -30,13 +39,23 @@ class ControlButton : public QPushButton
     Q_OBJECT
 
 public:
-	ControlButton(const bool is_readable, const bool is_setable,
-		const bool active, QWidget *parent = 0);
+	ControlButton(
+		bool (devices::HardwareDevice::*get_state_caller)() const,
+		void (devices::HardwareDevice::*set_state_caller)(double),
+		bool (devices::HardwareDevice::*is_getable_caller)() const,
+		bool (devices::HardwareDevice::*is_setable_caller)() const,
+		shared_ptr<devices::HardwareDevice> device, QWidget *parent = 0);
 
 private:
-	bool active_;
+	bool state_;
 	bool is_readable_;
 	bool is_setable_;
+
+	bool (devices::HardwareDevice::*get_state_caller_)() const;
+	void (devices::HardwareDevice::*set_state_caller)(double);
+	bool (devices::HardwareDevice::*is_getable_caller_)() const;
+	bool (devices::HardwareDevice::*is_setable_caller)() const;
+	shared_ptr<devices::HardwareDevice> device_;
 
 	QIcon icon_red_;
 	QIcon icon_green_;
