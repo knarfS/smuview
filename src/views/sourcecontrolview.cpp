@@ -24,6 +24,7 @@
 #include "src/session.hpp"
 #include "src/devices/hardwaredevice.hpp"
 #include "src/widgets/controlbutton.hpp"
+#include "src/widgets/led.hpp"
 #include "src/widgets/valuecontrol.hpp"
 
 namespace sv {
@@ -43,6 +44,8 @@ void SourceControlView::setup_ui()
 {
 	QVBoxLayout *layout = new QVBoxLayout();
 
+	QGridLayout *infoLayout = new QGridLayout();
+
 	// Enable button
 	setEnableButton = new widgets::ControlButton(
 		&devices::HardwareDevice::get_enable,
@@ -50,18 +53,44 @@ void SourceControlView::setup_ui()
 		&devices::HardwareDevice::is_enable_getable,
 		&devices::HardwareDevice::is_enable_setable,
 		device_);
-	layout->addWidget(setEnableButton);
+	infoLayout->addWidget(setEnableButton, 0, 0, 2, 1,  Qt::AlignCenter);
+
+	// Leds
+	// CC
+	infoLayout->addWidget(ovpLed, 0, 1);
+	// CV
+	infoLayout->addWidget(ovpLed, 1, 1);
+
+	ocpLed = new widgets::Led(
+		&devices::HardwareDevice::is_ocp_active,
+		&devices::HardwareDevice::has_ocp, device_, tr("OCP"));
+	infoLayout->addWidget(ocpLed, 0, 2);
+	ovpLed = new widgets::Led(
+		&devices::HardwareDevice::is_ovp_active,
+		&devices::HardwareDevice::has_ovp, device_, tr("OVP"));
+	infoLayout->addWidget(ovpLed, 1, 2);
+	otpLed = new widgets::Led(
+		&devices::HardwareDevice::is_otp_active,
+		&devices::HardwareDevice::has_otp, device_, tr("OTP"));
+	infoLayout->addWidget(otpLed, 0, 3);
+	layout->addLayout(infoLayout, 0);
+
+	QHBoxLayout *ctrlLayout = new QHBoxLayout();
 
 	double min;
 	double max;
 	double step;
 	device_->list_voltage_target(min, max, step);
-	setVoltageControl = new widgets::ValueControl(3, "V", min, max, step);
-	layout->addWidget(setVoltageControl);
+	setVoltageControl = new widgets::ValueControl(
+		tr("Voltage"), 3, tr("V"), min, max, step);
+	ctrlLayout->addWidget(setVoltageControl);
 
 	device_->list_current_limit(min, max, step);
-	setCurrentControl = new widgets::ValueControl(3, "A", min, max, step);
-	layout->addWidget(setCurrentControl);
+	setCurrentControl = new widgets::ValueControl(
+		tr("Current"), 3, tr("A"), min, max, step);
+	ctrlLayout->addWidget(setCurrentControl);
+
+	layout->addLayout(ctrlLayout);
 
 	this->setLayout(layout);
 }
@@ -83,6 +112,17 @@ void SourceControlView::connect_signals()
 		setVoltageControl, SLOT(change_value(const double)));
 	connect(device_.get(), SIGNAL(current_limit_changed(const double)),
 		setCurrentControl, SLOT(change_value(const double)));
+
+	// Device -> LEDs
+	connect(device_.get(),
+		SIGNAL(over_voltage_protection_active_changed(const bool)),
+		ovpLed, SLOT(on_state_changed(const bool)));
+	connect(device_.get(),
+		SIGNAL(over_current_protection_active_changed(const bool)),
+		ocpLed, SLOT(on_state_changed(const bool)));
+	connect(device_.get(),
+		SIGNAL(over_temperature_protection_active_changed(const bool)),
+		otpLed, SLOT(on_state_changed(const bool)));
 }
 
 void SourceControlView::init_values()
@@ -93,6 +133,14 @@ void SourceControlView::init_values()
 		setVoltageControl->on_value_changed(device_->get_voltage_target());
 	if (device_->is_current_limit_getable())
 		setCurrentControl->on_value_changed(device_->get_current_limit());
+
+	// LEDs
+	if (device_->has_ovp())
+		ovpLed->on_state_changed(device_->is_ovp_active());
+	if (device_->has_ocp())
+		ocpLed->on_state_changed(device_->is_ocp_active());
+	if (device_->has_otp())
+		otpLed->on_state_changed(device_->is_otp_active());
 }
 
 void SourceControlView::on_voltage_changed(const double value)

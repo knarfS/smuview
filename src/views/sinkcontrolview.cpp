@@ -63,12 +63,10 @@ void SinkControlView::setup_ui()
 	QGridLayout *ledLayout = new QGridLayout();
 
 	// Regulation Leds
-	/*
-	ccLed = new widgets::Led(true, false, tr("CC"));
-	ledLayout->addWidget(ccLed, 0, 0);
-	cvLed = new widgets::Led(false, false, tr("CV"));
-	ledLayout->addWidget(cvLed, 1, 0);
-	*/
+	//cvLed = new widgets::Led(false, false, tr("CV"));
+	ledLayout->addWidget(cvLed, 0, 0);
+	//ccLed = new widgets::Led(true, false, tr("CC"));
+	ledLayout->addWidget(ccLed, 1, 0);
 
 	ovpLed = new widgets::Led(
 		&devices::HardwareDevice::is_ovp_active,
@@ -77,20 +75,21 @@ void SinkControlView::setup_ui()
 	ocpLed = new widgets::Led(
 		&devices::HardwareDevice::is_ocp_active,
 		&devices::HardwareDevice::has_ocp, device_, tr("OCP"));
-	ledLayout->addWidget(ocpLed, 0, 2);
-	uvcLed = new widgets::Led(
-		&devices::HardwareDevice::is_uvc_active,
-		&devices::HardwareDevice::has_uvc, device_, tr("UVC"));
-	ledLayout->addWidget(uvcLed, 1, 1);
+	ledLayout->addWidget(ocpLed, 1, 1);
 	otpLed = new widgets::Led(
 		&devices::HardwareDevice::is_otp_active,
 		&devices::HardwareDevice::has_otp, device_, tr("OTP"));
-	ledLayout->addWidget(otpLed, 1, 2);
+	ledLayout->addWidget(otpLed, 0, 2);
+	uvcLed = new widgets::Led(
+		&devices::HardwareDevice::is_uvc_active,
+		&devices::HardwareDevice::has_uvc, device_, tr("UVC"));
+	ledLayout->addWidget(uvcLed, 1, 2);
 	layout->addLayout(ledLayout, 0);
 
 	// Curent limit
 	device_->list_current_limit(min, max, step);
-	setValueControl = new widgets::ValueControl(5, "A", min, max, step);
+	setValueControl = new widgets::ValueControl(
+		tr("Current"), 5, tr("A"), min, max, step);
 	layout->addWidget(setValueControl);
 
 	// Under voltage threshold
@@ -127,6 +126,7 @@ void SinkControlView::connect_signals()
 	//	SIGNAL(under_voltage_condition_threshold_changed(const double)),
 	//	setUnderVoltageThreshold, SLOT(change_value(const double)));
 
+	// Device -> LEDs
 	connect(device_.get(),
 		SIGNAL(over_voltage_protection_active_changed(const bool)),
 		ovpLed, SLOT(on_state_changed(const bool)));
@@ -151,6 +151,7 @@ void SinkControlView::init_values()
 	//setUnderVoltageThreshold->on_state_changed(device_->is_uvc_active());
 	//setUnderVoltageThreshold->on_value_changed(device_->get_uvc_threshold());
 
+	// LEDs
 	if (device_->has_ovp())
 		ovpLed->on_state_changed(device_->is_ovp_active());
 	if (device_->has_ocp())

@@ -20,6 +20,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <math.h>
 #include <sstream>
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
@@ -336,6 +337,18 @@ vector<string> split_string(string text, string separator)
 	result.push_back(text);
 
 	return result;
+}
+
+uint count_int_digits(int number)
+{
+	uint n = abs(number);
+	int digits = 1;
+	while (n >= 10) {
+		n /= 10;
+		digits++;
+	}
+
+	return digits;
 }
 
 } // namespace util

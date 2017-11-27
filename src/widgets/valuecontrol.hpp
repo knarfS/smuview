@@ -21,7 +21,7 @@
 #define WIDGETS_VALUECONTROL_HPP
 
 #include <QDoubleSpinBox>
-#include <QWidget>
+#include <QGroupBox>
 #include <qwt_knob.h>
 
 #include "lcddisplay.hpp"
@@ -29,16 +29,18 @@
 namespace sv {
 namespace widgets {
 
-class ValueControl : public QWidget
+class ValueControl : public QGroupBox
 {
     Q_OBJECT
 
 public:
-	ValueControl(const uint digits, const QString unit,
+	ValueControl(
+		const QString title, const uint digits, const QString unit,
 		const double min, const double max, const double steps,
 		QWidget *parent = 0);
 
 private:
+	QString title_;
 	double value_;
 	uint digits_;
 	QString unit_;
@@ -51,6 +53,8 @@ private:
 	LcdDisplay *lcdDisplay;
 
 	void setup_ui();
+	uint get_digits();
+	uint get_decimals();
 
 public Q_SLOTS:
 	void change_value(const double value);

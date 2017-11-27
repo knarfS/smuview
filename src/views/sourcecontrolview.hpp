@@ -36,6 +36,7 @@ class HardwareDevice;
 
 namespace widgets {
 class ControlButton;
+class Led;
 class ValueControl;
 }
 
@@ -53,6 +54,11 @@ public:
 private:
 	shared_ptr<devices::HardwareDevice> device_;
 
+	widgets::Led *ccLed;
+	widgets::Led *cvLed;
+	widgets::Led *ovpLed;
+	widgets::Led *ocpLed;
+	widgets::Led *otpLed;
 	widgets::ControlButton *setEnableButton;
 	widgets::ValueControl *setVoltageControl;
 	widgets::ValueControl *setCurrentControl;

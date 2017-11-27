@@ -153,6 +153,16 @@ QString format_time_minutes(const Timestamp& t, signed precision = 0,
  */
 vector<string> split_string(string text, string separator);
 
+
+/**
+ * Counts the number of digits for the given integer.
+ *
+ * @param[in] int The integers digits to count.
+ *
+ * @return Number of digits.
+ */
+uint count_int_digits(int number);
+
 } // namespace util
 } // namespace sv
 

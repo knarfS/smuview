@@ -17,17 +17,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QDebug>
 #include <QVBoxLayout>
 
 #include "valuecontrol.hpp"
+#include "src/util.hpp"
 
 namespace sv {
 namespace widgets {
 
-ValueControl::ValueControl(const uint digits, const QString unit,
+ValueControl::ValueControl(
+		const QString title, const uint digits, const QString unit,
 		const double min, const double max, const double steps,
 		QWidget *parent) :
-	QWidget(parent),
+	QGroupBox(parent),
+	title_(title),
 	value_(0),
 	digits_(digits),
 	unit_(unit),
@@ -45,22 +49,30 @@ ValueControl::ValueControl(const uint digits, const QString unit,
 
 void ValueControl::setup_ui()
 {
+	this->setTitle(title_);
+
+	QSizePolicy sizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	sizePolicy.setHorizontalStretch(0);
+	sizePolicy.setVerticalStretch(0);
+	this->setSizePolicy(sizePolicy);
+
 	QVBoxLayout *layout = new QVBoxLayout();
 
-	lcdDisplay = new widgets::LcdDisplay(digits_, unit_, "", false);
+	lcdDisplay = new widgets::LcdDisplay(get_digits(), unit_, "", false);
 	lcdDisplay->set_value(0);
-	layout->addWidget(lcdDisplay);
+	layout->addWidget(lcdDisplay, 0, Qt::AlignRight);
 
 	QHBoxLayout *getValuesHLayout = new QHBoxLayout();
 
 	doubleSpinBox = new QDoubleSpinBox();
 	doubleSpinBox->setSuffix(QString(" %1").arg(unit_));
-	doubleSpinBox->setDecimals(3);
+	doubleSpinBox->setDecimals(get_decimals());
 	doubleSpinBox->setMinimum(min_);
 	doubleSpinBox->setMaximum(max_);
 	doubleSpinBox->setSingleStep(steps_);
 
 	knob = new QwtKnob();
+	knob->knobRect().setSize(QSize(100, 100));
 	knob->setNumTurns(1);
 	knob->setLowerBound(min_);
 	knob->setUpperBound(max_);
@@ -73,6 +85,18 @@ void ValueControl::setup_ui()
 	layout->addItem(getValuesHLayout);
 
 	this->setLayout(layout);
+}
+
+uint ValueControl::get_digits()
+{
+	int i = (int)floor(max_);
+	return util::count_int_digits(i) + get_decimals();
+}
+
+uint ValueControl::get_decimals()
+{
+	int d = (int)ceil(1/steps_);
+	return util::count_int_digits(d) - 1;
 }
 
 void ValueControl::change_value(const double value)

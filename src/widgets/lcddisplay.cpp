@@ -27,10 +27,14 @@ namespace widgets {
 LcdDisplay::LcdDisplay(const uint digits, const QString unit,
 		const QString extra_text, const bool small, QWidget *parent) :
 	QFrame(parent),
-	digits_(digits),
 	unit_(unit),
 	extra_text_(extra_text)
 {
+	digits_ = digits;
+	if (digits > 3)
+		// LCDNumber show one digit less with smallDecimalPoint && digits > 3
+		digits_++;
+
 	if (!small) {
 		height = 50;
 		width_scale_factor_ = 30;
