@@ -137,11 +137,17 @@ Q_SIGNALS:
 	void enabled_changed(const bool);
 	void voltage_target_changed(const double);
 	void current_limit_changed(const double);
-	void over_voltage_protection_active_changed(const bool);
-	void over_current_protection_active_changed(const bool);
-	void under_voltage_condition_active_changed(const bool);
-	void under_voltage_condition_threshold_changed(const double);
-	void over_temperature_protection_active_changed(const bool);
+	void otp_enable_changed(const bool);
+	void otp_active_changed(const bool);
+	void ovp_enable_changed(const bool);
+	void ovp_active_changed(const bool);
+	void ovp_threshold_changed(const double);
+	void ocp_enable_changed(const bool);
+	void ocp_active_changed(const bool);
+	void ocp_threshold_changed(const double);
+	void uvc_enable_changed(const bool);
+	void uvc_active_changed(const bool);
+	void uvc_threshold_changed(const double);
 
 	/* TODO?
 	void signals_changed();

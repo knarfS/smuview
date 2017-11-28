@@ -44,7 +44,7 @@ public:
 	Led(bool (devices::HardwareDevice::*get_state_caller)() const,
 		bool (devices::HardwareDevice::*is_getable_caller)() const,
 		shared_ptr<devices::HardwareDevice> device,
-		QString text,
+		QString text, QIcon on_icon, QIcon off_icon, QIcon dis_icon,
 		QWidget *parent = 0);
 
 private:
@@ -57,12 +57,12 @@ private:
 
 	QString text_;
 
-	QLabel *ledLabel_;
-	QLabel *textLabel_;
+	QLabel *led_label_;
+	QLabel *text_label_;
 
-	QIcon icon_red_;
-	QIcon icon_green_;
-	QIcon icon_grey_;
+	QIcon on_icon_;
+	QIcon off_icon_;
+	QIcon dis_icon_;
 
 	void setup_ui();
 

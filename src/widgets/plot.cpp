@@ -126,13 +126,13 @@ Plot::Plot(data::BaseCurve *curve_data, QWidget *parent):
 	//setAxisAutoScale(x_axis_id, true); // TODO: Not working!?
 
 	// Value (y) axis
-	//setAxesCount(QwtPlot::yLeft, 2 ); // TODO: Multiaxis
+	//setAxesCount(QwtPlot::yLeft, 2); // TODO: Multiaxis
 	//QwtAxisId y_axis_id = QwtAxisId(QwtAxis::yLeft, 0); // TODO: Multiaxis
 	int y_axis_id = QwtPlot::yLeft;
 	//setAxisVisible(y_axis_id, true); // TODO: Multiaxis
 	setAxisTitle(y_axis_id, curve_data_->y_signal_title());
 	setAxisScale(y_axis_id, y_interval_.minValue(), y_interval_.maxValue());
-	//setAxisAutoScale(y_axis_id, false); // TODO: Not working!?
+	setAxisAutoScale(y_axis_id, false); // TODO: Not working!?
 
 	QwtPlotGrid *grid = new QwtPlotGrid();
 	grid->setPen(Qt::gray, 0.0, Qt::DotLine);
@@ -141,20 +141,6 @@ Plot::Plot(data::BaseCurve *curve_data, QWidget *parent):
 	grid->enableY(true);
 	grid->enableYMin(false);
 	grid->attach(this);
-
-	// Voltage
-	/*
-	m_currentCurve = new QwtPlotCurve( "Voltage" );
-	m_currentCurve->setYAxis( voltageAxisId );
-	//m_currentCurve->setXAxis( QwtAxisId( QwtAxis::xBottom, 0 ) ); // TODO: Multiaxis
-	m_currentCurve->setXAxis( 0 );
-	m_currentCurve->setStyle( QwtPlotCurve::Lines );
-	m_currentCurve->setPen( Qt::green, 2.0, Qt::SolidLine );
-	m_currentCurve->setRenderHint( QwtPlotItem::RenderAntialiased, true );
-	m_currentCurve->setPaintAttribute( QwtPlotCurve::ClipPolygons, false );
-	m_currentCurve->setData( new VoltageCurveData() );
-	m_currentCurve->attach( this );
-	*/
 
 	// Value curve
 	value_curve_ = new QwtPlotCurve(curve_data_->y_signal_quantity());
@@ -202,7 +188,7 @@ void Plot::set_x_interval(double x_start, double x_end)
 		setAxisScale(QwtPlot::xBottom,
 			x_interval_.minValue(), x_interval_.maxValue());
 
-		replot();
+		//replot();
 	}
 }
 
@@ -213,7 +199,7 @@ void Plot::set_y_interval(double y_start, double y_end)
 		setAxisScale(QwtPlot::yLeft,
 			y_interval_.minValue(), y_interval_.maxValue());
 
-		replot();
+		//replot();
 	}
 }
 

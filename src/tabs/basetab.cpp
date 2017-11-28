@@ -67,6 +67,7 @@ shared_ptr<views::BaseView> BaseTab::add_view(const QString &title,
 
 	QDockWidget* dock = new QDockWidget(title, parent_);
 	dock->setObjectName(title);
+	dock->setAllowedAreas(Qt::AllDockWidgetAreas);
 	parent_->addDockWidget(area, dock);
 
 	// Insert a QMainWindow into the dock widget to allow for a tool bar

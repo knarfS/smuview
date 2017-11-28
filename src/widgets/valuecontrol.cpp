@@ -51,7 +51,7 @@ void ValueControl::setup_ui()
 {
 	this->setTitle(title_);
 
-	QSizePolicy sizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	QSizePolicy sizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	sizePolicy.setHorizontalStretch(0);
 	sizePolicy.setVerticalStretch(0);
 	this->setSizePolicy(sizePolicy);
@@ -95,8 +95,11 @@ uint ValueControl::get_digits()
 
 uint ValueControl::get_decimals()
 {
-	int d = (int)ceil(1/steps_);
-	return util::count_int_digits(d) - 1;
+	int d = (int)ceil(1/steps_) - 1;
+	qWarning() << "ValueControl::get_decimals(): steps = " << steps_ << " d = " << d;
+	uint cnt = util::count_int_digits(d);
+	qWarning() << "ValueControl::get_decimals(): cnt = " << cnt;
+	return cnt;
 }
 
 void ValueControl::change_value(const double value)

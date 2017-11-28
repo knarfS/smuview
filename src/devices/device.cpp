@@ -217,26 +217,55 @@ void Device::feed_in_meta(shared_ptr<sigrok::Meta> sr_meta)
 			Q_EMIT current_limit_changed(
 				g_variant_get_double(entry.second.gobj()));
 			break;
+
+		case SR_CONF_OVER_TEMPERATURE_PROTECTION:
+			Q_EMIT otp_enable_changed(
+				g_variant_get_boolean(entry.second.gobj()));
+			break;
+		case SR_CONF_OVER_TEMPERATURE_PROTECTION_ACTIVE:
+			Q_EMIT otp_active_changed(
+				g_variant_get_boolean(entry.second.gobj()));
+			break;
+
+		case SR_CONF_OVER_VOLTAGE_PROTECTION_ENABLED:
+			Q_EMIT ovp_enable_changed(
+				g_variant_get_boolean(entry.second.gobj()));
+			break;
 		case SR_CONF_OVER_VOLTAGE_PROTECTION_ACTIVE:
-			Q_EMIT over_voltage_protection_active_changed(
+			Q_EMIT ovp_active_changed(
+				g_variant_get_boolean(entry.second.gobj()));
+			break;
+		case SR_CONF_OVER_VOLTAGE_PROTECTION_THRESHOLD:
+			Q_EMIT ovp_threshold_changed(
+				g_variant_get_double(entry.second.gobj()));
+			break;
+
+		case SR_CONF_OVER_CURRENT_PROTECTION_ENABLED:
+			Q_EMIT ocp_enable_changed(
 				g_variant_get_boolean(entry.second.gobj()));
 			break;
 		case SR_CONF_OVER_CURRENT_PROTECTION_ACTIVE:
-			Q_EMIT over_current_protection_active_changed(
+			Q_EMIT ocp_active_changed(
+				g_variant_get_boolean(entry.second.gobj()));
+			break;
+		case SR_CONF_OVER_CURRENT_PROTECTION_THRESHOLD:
+			Q_EMIT ocp_threshold_changed(
+				g_variant_get_double(entry.second.gobj()));
+			break;
+
+		case SR_CONF_UNDER_VOLTAGE_CONDITION:
+			Q_EMIT uvc_enable_changed(
 				g_variant_get_boolean(entry.second.gobj()));
 			break;
 		case SR_CONF_UNDER_VOLTAGE_CONDITION_ACTIVE:
-			Q_EMIT under_voltage_condition_active_changed(
+			Q_EMIT uvc_active_changed(
 				g_variant_get_boolean(entry.second.gobj()));
 			break;
 		case SR_CONF_UNDER_VOLTAGE_CONDITION_THRESHOLD:
-			Q_EMIT under_voltage_condition_threshold_changed(
+			Q_EMIT uvc_threshold_changed(
 				g_variant_get_double(entry.second.gobj()));
 			break;
-		case SR_CONF_OVER_TEMPERATURE_PROTECTION_ACTIVE:
-			Q_EMIT over_temperature_protection_active_changed(
-				g_variant_get_boolean(entry.second.gobj()));
-			break;
+
 		default:
 			// Unknown metadata is not an error.
 			break;
@@ -285,7 +314,7 @@ void Device::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
 	for (auto sr_channel : sr_channels) {
 		/*
 		qWarning() << "feed_in_analog(): Device = " <<
-			QString::fromStdString(sr_device->model()) <<
+			QString::fromStdString(sr_device_->model()) <<
 			", Channel.Id = " <<
 			QString::fromStdString(sr_channel->name()) <<
 			" channel_data = " << *channel_data;

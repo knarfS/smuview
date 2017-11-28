@@ -57,13 +57,33 @@ void SourceTab::setup_ui()
 			Qt::TopDockWidgetArea, session_);
 	}
 
+	// Voltage plot
+	if (device_->voltage_signal()) {
+		shared_ptr<views::BaseView> voltage_plot_view =
+			make_shared<views::PlotView>(session_,
+				device_->voltage_signal()->time_data(),
+				device_->voltage_signal()->analog_data(), parent_);
+		add_view(QString("Voltage Graph"), voltage_plot_view,
+			Qt::BottomDockWidgetArea, session_);
+	}
+
 	// Current plot
 	if (device_->current_signal()) {
-		shared_ptr<views::BaseView> plot_view =
+		shared_ptr<views::BaseView> current_plot_view =
 			make_shared<views::PlotView>(session_,
 				device_->current_signal()->time_data(),
 				device_->current_signal()->analog_data(), parent_);
-		add_view(QString("Current Graph"), plot_view,
+		add_view(QString("Current Graph"), current_plot_view,
+			Qt::BottomDockWidgetArea, session_);
+	}
+
+	// UI plot
+	if (device_->current_signal()) {
+		shared_ptr<views::BaseView> ui_plot_view =
+			make_shared<views::PlotView>(session_,
+				device_->voltage_signal()->analog_data(),
+				device_->current_signal()->analog_data(), parent_);
+		add_view(QString("UI Graph"), ui_plot_view,
 			Qt::BottomDockWidgetArea, session_);
 	}
 }

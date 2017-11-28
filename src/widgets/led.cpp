@@ -32,15 +32,16 @@ namespace widgets {
 		bool (devices::HardwareDevice::*get_state_caller)() const,
 		bool (devices::HardwareDevice::*is_getable_caller)() const,
 		shared_ptr<devices::HardwareDevice> device,
-		QString text, QWidget *parent) :
+		QString text, QIcon on_icon, QIcon off_icon, QIcon dis_icon,
+		QWidget *parent) :
 	QWidget(parent),
 	get_state_caller_(get_state_caller),
 	is_getable_caller_(is_getable_caller),
 	device_(device),
 	text_(text),
-	icon_red_(":/icons/status-red.svg"),
-	icon_green_(":/icons/status-green.svg"),
-	icon_grey_(":/icons/status-grey.svg")
+	on_icon_(on_icon),
+	off_icon_(off_icon),
+	dis_icon_(dis_icon)
 {
 	is_enabled_ = (device_.get()->*is_getable_caller_)();
 	if (is_enabled_)
@@ -55,29 +56,29 @@ void Led::setup_ui()
 {
 	QHBoxLayout *layout = new QHBoxLayout();
 
-	ledLabel_ = new QLabel();
+	led_label_ = new QLabel();
 	// TODO: get_state
-	ledLabel_->setPixmap(
-		icon_grey_.pixmap(16, 16, QIcon::Mode::Disabled, QIcon::State::Off));
-	layout->addWidget(ledLabel_);
+	led_label_->setPixmap(
+		dis_icon_.pixmap(16, 16, QIcon::Mode::Disabled, QIcon::State::Off));
+	layout->addWidget(led_label_);
 
-	textLabel_ = new QLabel(text_);
-	textLabel_->setDisabled(!is_enabled_);
-	layout->addWidget(textLabel_);
+	text_label_ = new QLabel(text_);
+	text_label_->setDisabled(!is_enabled_);
+	layout->addWidget(text_label_);
 
 	this->setLayout(layout);
 }
 
 void Led::on_state_changed(const bool enabled)
 {
-	qWarning() << "Led::on_state_changed(): enabled = " << enabled;
 	if (enabled) {
-		qWarning() << "Led::on_state_changed(): led = green";
-		ledLabel_->setPixmap(icon_green_.pixmap(16, 16, QIcon::Mode::Active, QIcon::State::On));
+		led_label_->setPixmap(
+			on_icon_.pixmap(16, 16, QIcon::Mode::Active, QIcon::State::On));
 		state_ = true;
-	} else {
-		qWarning() << "Led::on_state_changed(): led = red";
-		ledLabel_->setPixmap(icon_red_.pixmap(16, 16, QIcon::Mode::Active, QIcon::State::Off));
+	}
+	else {
+		led_label_->setPixmap(
+			off_icon_.pixmap(16, 16, QIcon::Mode::Active, QIcon::State::Off));
 		state_ = false;
 	}
 }

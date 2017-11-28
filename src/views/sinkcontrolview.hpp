@@ -59,11 +59,13 @@ private:
 	widgets::Led *cvLed;
 	widgets::Led *ovpLed;
 	widgets::Led *ocpLed;
-	widgets::Led *uvcLed;
 	widgets::Led *otpLed;
+	widgets::Led *uvcLed;
 	widgets::ControlButton *setEnableButton;
 	widgets::ValueControl *setValueControl;
-	widgets::OptionalValueControl *setUnderVoltageThreshold;
+	widgets::OptionalValueControl *ovpControl;
+	widgets::OptionalValueControl *ocpControl;
+	widgets::OptionalValueControl *uvcControl;
 
 	void setup_ui();
 	void connect_signals();
@@ -74,9 +76,14 @@ protected:
 public Q_SLOTS:
 
 private Q_SLOTS:
-	void on_enabled_changed(const bool enabled);
+	void on_enable_changed(const bool enable);
 	void on_value_changed(const double value);
-	void on_under_voltage_threshold_changed(const double value);
+	void on_ovp_enable_changed(const bool enable);
+	void on_ovp_threshold_changed(const double enable);
+	void on_ocp_enable_changed(const bool value);
+	void on_ocp_threshold_changed(const double enable);
+	void on_uvc_enable_changed(const bool value);
+	void on_uvc_threshold_changed(const double enable);
 
 };
 

@@ -42,25 +42,25 @@ public:
 	ControlButton(
 		bool (devices::HardwareDevice::*get_state_caller)() const,
 		void (devices::HardwareDevice::*set_state_caller)(const bool),
-		bool (devices::HardwareDevice::*is_getable_caller)() const,
-		bool (devices::HardwareDevice::*is_setable_caller)() const,
+		bool (devices::HardwareDevice::*is_state_getable_caller)() const,
+		bool (devices::HardwareDevice::*is_state_setable_caller)() const,
 		shared_ptr<devices::HardwareDevice> device, QWidget *parent = 0);
 
 private:
-	bool is_enabled_;
 	bool state_;
-	bool is_getable_;
-	bool is_setable_;
+	bool is_state_enabled_;
+	bool is_state_getable_;
+	bool is_state_setable_;
 
 	bool (devices::HardwareDevice::*get_state_caller_)() const;
 	void (devices::HardwareDevice::*set_state_caller_)(const bool);
-	bool (devices::HardwareDevice::*is_getable_caller_)() const;
-	bool (devices::HardwareDevice::*is_setable_caller_)() const;
+	bool (devices::HardwareDevice::*is_state_getable_caller_)() const;
+	bool (devices::HardwareDevice::*is_state_setable_caller_)() const;
 	shared_ptr<devices::HardwareDevice> device_;
 
-	QIcon icon_red_;
-	QIcon icon_green_;
-	QIcon icon_grey_;
+	QIcon on_icon_;
+	QIcon off_icon_;
+	QIcon dis_icon_;
 
 	void setup_ui();
 	void connect_signals();

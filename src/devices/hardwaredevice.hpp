@@ -125,17 +125,48 @@ public:
 	void list_current_limit(double &min, double &max, double &step);
 
 	bool has_ovp() const;
+	bool is_ovp_enable_getable() const;
+	bool is_ovp_enable_setable() const;
+	bool get_ovp_enable() const;
+	void set_ovp_enable(const bool enable);
 	bool is_ovp_active() const;
+	bool is_ovp_threshold_getable() const;
+	bool is_ovp_threshold_setable() const;
+	double get_ovp_threshold() const;
+	void set_ovp_threshold(const double threshold);
+	bool is_ovp_threshold_listable() const;
+	void list_ovp_threshold(double &min, double &max, double &step);
+
 	bool has_ocp() const;
+	bool is_ocp_enable_getable() const;
+	bool is_ocp_enable_setable() const;
+	bool get_ocp_enable() const;
+	void set_ocp_enable(const bool enable);
 	bool is_ocp_active() const;
+	bool is_ocp_threshold_getable() const;
+	bool is_ocp_threshold_setable() const;
+	double get_ocp_threshold() const;
+	void set_ocp_threshold(const double threshold);
+	bool is_ocp_threshold_listable() const;
+	void list_ocp_threshold(double &min, double &max, double &step);
+
 	bool has_otp() const;
 	bool is_otp_active() const;
 
 	bool has_uvc() const;
+	bool is_uvc_enable_getable() const;
+	bool is_uvc_enable_setable() const;
+	bool get_uvc_enable() const;
+	void set_uvc_enable(const bool enable);
 	bool is_uvc_active() const;
+	bool is_uvc_threshold_getable() const;
+	bool is_uvc_threshold_setable() const;
 	double get_uvc_threshold() const;
 	void set_uvc_threshold(const double threshold);
+	bool is_uvc_threshold_listable() const;
+	void list_uvc_threshold(double &min, double &max, double &step);
 
+	/*
 	bool is_under_voltage_enable_getable() const;
 	bool is_under_voltage_enable_setable() const;
 	bool get_under_voltage_enable() const;
@@ -148,6 +179,7 @@ public:
 	double get_under_voltage_threshold() const;
 	void set_under_voltage_threshold(const double value);
 	void list_under_voltage_threshold(double &min, double &max, double &step);
+	*/
 
 private:
 	Type type_;

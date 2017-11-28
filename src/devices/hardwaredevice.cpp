@@ -473,66 +473,264 @@ void HardwareDevice::list_current_limit(double &min, double &max, double &step)
 
 bool HardwareDevice::has_ovp() const
 {
-	return has_get_config(sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_ENABLED) &&
-		get_config<bool>(sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_ENABLED);
+	bool ovp =
+		has_get_config(sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_ENABLED) ||
+		has_set_config(sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_ENABLED) ||
+		has_get_config(sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_ACTIVE) ||
+		has_get_config(sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_THRESHOLD) ||
+		has_set_config(sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_THRESHOLD);
+
+	return ovp;
+}
+
+bool HardwareDevice::is_ovp_enable_getable() const
+{
+	return has_get_config(sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_ENABLED);
+}
+
+bool HardwareDevice::is_ovp_enable_setable() const
+{
+	return has_set_config(sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_ENABLED);
+}
+
+bool HardwareDevice::get_ovp_enable() const
+{
+	return get_config<bool>(sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_ENABLED);
+}
+
+void HardwareDevice::set_ovp_enable(const bool enable)
+{
+	set_config(sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_ENABLED, enable);
 }
 
 bool HardwareDevice::is_ovp_active() const
 {
-	return has_get_config(sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_ACTIVE) &&
-		get_config<bool>(sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_ACTIVE);
+	if (has_get_config(sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_ACTIVE))
+		return get_config<bool>(
+			sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_ACTIVE);
+	else
+		return false;
 }
+
+bool HardwareDevice::is_ovp_threshold_getable() const
+{
+	return has_get_config(sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_THRESHOLD);
+}
+
+bool HardwareDevice::is_ovp_threshold_setable() const
+{
+	return has_set_config(sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_THRESHOLD);
+}
+
+double HardwareDevice::get_ovp_threshold() const
+{
+	return get_config<double>(
+		sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_THRESHOLD);
+}
+
+void HardwareDevice::set_ovp_threshold(const double threshold)
+{
+	set_config(
+		sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_THRESHOLD, threshold);
+}
+
+bool HardwareDevice::is_ovp_threshold_listable() const
+{
+	return has_list_config(
+		sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_THRESHOLD);
+}
+
+void HardwareDevice::list_ovp_threshold(double &min, double &max, double &step)
+{
+	Glib::VariantContainerBase gvar = sr_configurable_->config_list(
+		sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_THRESHOLD);
+
+	// TODO: do a better way and check!
+	Glib::VariantIter iter(gvar);
+	iter.next_value(gvar);
+	min = Glib::VariantBase::cast_dynamic<Glib::Variant<double>>(gvar).get();
+	iter.next_value(gvar);
+	max = Glib::VariantBase::cast_dynamic<Glib::Variant<double>>(gvar).get();
+	iter.next_value(gvar);
+	step = Glib::VariantBase::cast_dynamic<Glib::Variant<double>>(gvar).get();
+}
+
 
 bool HardwareDevice::has_ocp() const
 {
-	return has_get_config(sigrok::ConfigKey::OVER_CURRENT_PROTECTION_ENABLED) &&
-		get_config<bool>(sigrok::ConfigKey::OVER_CURRENT_PROTECTION_ENABLED);
+	bool ocp =
+		has_get_config(sigrok::ConfigKey::OVER_CURRENT_PROTECTION_ENABLED) ||
+		has_set_config(sigrok::ConfigKey::OVER_CURRENT_PROTECTION_ENABLED) ||
+		has_get_config(sigrok::ConfigKey::OVER_CURRENT_PROTECTION_ACTIVE) ||
+		has_get_config(sigrok::ConfigKey::OVER_CURRENT_PROTECTION_THRESHOLD) ||
+		has_set_config(sigrok::ConfigKey::OVER_CURRENT_PROTECTION_THRESHOLD);
+
+	return ocp;
+}
+
+bool HardwareDevice::is_ocp_enable_getable() const
+{
+	return has_get_config(sigrok::ConfigKey::OVER_CURRENT_PROTECTION_ENABLED);
+}
+
+bool HardwareDevice::is_ocp_enable_setable() const
+{
+	return has_set_config(sigrok::ConfigKey::OVER_CURRENT_PROTECTION_ENABLED);
+}
+
+bool HardwareDevice::get_ocp_enable() const
+{
+	return get_config<bool>(sigrok::ConfigKey::OVER_CURRENT_PROTECTION_ENABLED);
+}
+
+void HardwareDevice::set_ocp_enable(const bool enable)
+{
+	set_config(sigrok::ConfigKey::OVER_CURRENT_PROTECTION_ENABLED, enable);
 }
 
 bool HardwareDevice::is_ocp_active() const
 {
-	return has_get_config(sigrok::ConfigKey::OVER_CURRENT_PROTECTION_ACTIVE) &&
-		get_config<bool>(sigrok::ConfigKey::OVER_CURRENT_PROTECTION_ACTIVE);
+	if (has_get_config(sigrok::ConfigKey::OVER_CURRENT_PROTECTION_ACTIVE))
+		return get_config<bool>(
+			sigrok::ConfigKey::OVER_CURRENT_PROTECTION_ACTIVE);
+	else
+		return false;
 }
+
+bool HardwareDevice::is_ocp_threshold_getable() const
+{
+	return has_get_config(sigrok::ConfigKey::OVER_CURRENT_PROTECTION_THRESHOLD);
+}
+
+bool HardwareDevice::is_ocp_threshold_setable() const
+{
+	return has_set_config(sigrok::ConfigKey::OVER_CURRENT_PROTECTION_THRESHOLD);
+}
+
+double HardwareDevice::get_ocp_threshold() const
+{
+	return get_config<double>(
+		sigrok::ConfigKey::OVER_CURRENT_PROTECTION_THRESHOLD);
+}
+
+void HardwareDevice::set_ocp_threshold(const double threshold)
+{
+	set_config(
+		sigrok::ConfigKey::OVER_CURRENT_PROTECTION_THRESHOLD, threshold);
+}
+
+bool HardwareDevice::is_ocp_threshold_listable() const
+{
+	return has_list_config(
+		sigrok::ConfigKey::OVER_CURRENT_PROTECTION_THRESHOLD);
+}
+
+void HardwareDevice::list_ocp_threshold(double &min, double &max, double &step)
+{
+	Glib::VariantContainerBase gvar = sr_configurable_->config_list(
+		sigrok::ConfigKey::OVER_CURRENT_PROTECTION_THRESHOLD);
+
+	// TODO: do a better way and check!
+	Glib::VariantIter iter(gvar);
+	iter.next_value(gvar);
+	min = Glib::VariantBase::cast_dynamic<Glib::Variant<double>>(gvar).get();
+	iter.next_value(gvar);
+	max = Glib::VariantBase::cast_dynamic<Glib::Variant<double>>(gvar).get();
+	iter.next_value(gvar);
+	step = Glib::VariantBase::cast_dynamic<Glib::Variant<double>>(gvar).get();
+}
+
 
 bool HardwareDevice::has_otp() const
 {
-	return has_get_config(sigrok::ConfigKey::OVER_TEMPERATURE_PROTECTION) &&
-		get_config<bool>(sigrok::ConfigKey::OVER_TEMPERATURE_PROTECTION);
+	bool otp =
+		has_get_config(sigrok::ConfigKey::OVER_TEMPERATURE_PROTECTION) ||
+		has_set_config(sigrok::ConfigKey::OVER_TEMPERATURE_PROTECTION) ||
+		has_get_config(sigrok::ConfigKey::OVER_TEMPERATURE_PROTECTION_ACTIVE);
+
+	return otp;
 }
 
 bool HardwareDevice::is_otp_active() const
 {
-	return has_get_config(sigrok::ConfigKey::OVER_TEMPERATURE_PROTECTION_ACTIVE) &&
-		get_config<bool>(sigrok::ConfigKey::OVER_TEMPERATURE_PROTECTION_ACTIVE);
+	if (has_get_config(sigrok::ConfigKey::OVER_TEMPERATURE_PROTECTION_ACTIVE))
+		return get_config<bool>(
+			sigrok::ConfigKey::OVER_TEMPERATURE_PROTECTION_ACTIVE);
+	else
+		return false;
 }
+
 
 bool HardwareDevice::has_uvc() const
 {
-	return has_get_config(sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION) &&
-		get_config<bool>(sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION);
+	bool uvc =
+		has_get_config(sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION) ||
+		has_set_config(sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION) ||
+		has_get_config(sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_ACTIVE) ||
+		has_get_config(sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD) ||
+		has_set_config(sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD);
+
+	return uvc;
+}
+
+bool HardwareDevice::is_uvc_enable_getable() const
+{
+	return has_get_config(sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION);
+}
+
+bool HardwareDevice::is_uvc_enable_setable() const
+{
+	return has_set_config(sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION);
+}
+
+bool HardwareDevice::get_uvc_enable() const
+{
+	return get_config<bool>(sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION);
+}
+
+void HardwareDevice::set_uvc_enable(const bool enable)
+{
+	set_config(sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION, enable);
 }
 
 bool HardwareDevice::is_uvc_active() const
 {
-	return has_get_config(sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_ACTIVE) &&
-		get_config<bool>(sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_ACTIVE);
+	if (has_get_config(sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_ACTIVE))
+		return get_config<bool>(
+			sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_ACTIVE);
+	else
+		return false;
+}
+
+bool HardwareDevice::is_uvc_threshold_getable() const
+{
+	return has_get_config(sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD);
+}
+
+bool HardwareDevice::is_uvc_threshold_setable() const
+{
+	return has_set_config(sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD);
 }
 
 double HardwareDevice::get_uvc_threshold() const
 {
-	return get_config<bool>(
+	return get_config<double>(
 		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD);
 }
 
 void HardwareDevice::set_uvc_threshold(const double threshold)
 {
-	return set_config(
+	set_config(
 		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD, threshold);
 }
 
-void HardwareDevice::list_under_voltage_threshold(
-	double &min, double &max, double &step)
+bool HardwareDevice::is_uvc_threshold_listable() const
+{
+	return has_list_config(
+		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD);
+}
+
+void HardwareDevice::list_uvc_threshold(double &min, double &max, double &step)
 {
 	Glib::VariantContainerBase gvar = sr_configurable_->config_list(
 		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD);

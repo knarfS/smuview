@@ -37,6 +37,7 @@ class HardwareDevice;
 namespace widgets {
 class ControlButton;
 class Led;
+class OptionalValueControl;
 class ValueControl;
 }
 
@@ -59,9 +60,13 @@ private:
 	widgets::Led *ovpLed;
 	widgets::Led *ocpLed;
 	widgets::Led *otpLed;
+	widgets::Led *uvcLed;
 	widgets::ControlButton *setEnableButton;
 	widgets::ValueControl *setVoltageControl;
 	widgets::ValueControl *setCurrentControl;
+	widgets::OptionalValueControl *ovpControl;
+	widgets::OptionalValueControl *ocpControl;
+	widgets::OptionalValueControl *uvcControl;
 
 	void setup_ui();
 	void connect_signals();
@@ -72,9 +77,15 @@ protected:
 public Q_SLOTS:
 
 private Q_SLOTS:
+	void on_enable_changed(const bool enable);
 	void on_voltage_changed(const double value);
 	void on_current_changed(const double value);
-	void on_enabled_changed(const bool enabled);
+	void on_ovp_enable_changed(const bool enable);
+	void on_ovp_threshold_changed(const double enable);
+	void on_ocp_enable_changed(const bool value);
+	void on_ocp_threshold_changed(const double enable);
+	void on_uvc_enable_changed(const bool value);
+	void on_uvc_threshold_changed(const double enable);
 
 };
 
