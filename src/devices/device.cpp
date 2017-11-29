@@ -19,6 +19,7 @@
  */
 
 #include <cassert>
+#include <glib.h>
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
@@ -160,12 +161,38 @@ bool Device::has_list_config(const sigrok::ConfigKey *key) const
 	return true;
 }
 
-template<typename T> T Device::list_config(const sigrok::ConfigKey *key) const
+void Device::list_config_string_array(const sigrok::ConfigKey *key,
+	QStringList &string_list)
 {
 	assert(key);
 	assert(sr_configurable_);
 
-	/*
+	if (!sr_configurable_->config_check(key, Capability::LIST)) {
+		qWarning() << "Device::list_config_string_array(): No key " <<
+			QString::fromStdString(key->name());
+		assert(false);
+	}
+
+	Glib::VariantContainerBase gvar = sr_configurable_->config_list(key);
+	Glib::VariantIter iter(gvar);
+	while (iter.next_value (gvar)) {
+		string_list.append(QString::fromStdString(
+			Glib::VariantBase::cast_dynamic<Glib::Variant<string>>(gvar).get()));
+	}
+}
+
+void Device::list_config_min_max_steps(const sigrok::ConfigKey *key,
+	double &min, double &max, double &step)
+{
+	assert(key);
+	assert(sr_configurable_);
+
+	if (!sr_configurable_->config_check(key, Capability::LIST)) {
+		qWarning() << "Device::list_config_min_max_steps(): No key " <<
+			QString::fromStdString(key->name());
+		assert(false);
+	}
+
 	Glib::VariantContainerBase gvar = sr_configurable_->config_list(key);
 	Glib::VariantIter iter(gvar);
 	iter.next_value(gvar);
@@ -174,9 +201,7 @@ template<typename T> T Device::list_config(const sigrok::ConfigKey *key) const
 	max = Glib::VariantBase::cast_dynamic<Glib::Variant<double>>(gvar).get();
 	iter.next_value(gvar);
 	step = Glib::VariantBase::cast_dynamic<Glib::Variant<double>>(gvar).get();
-	*/
 }
-
 
 void Device::init_device()
 {
@@ -219,7 +244,7 @@ void Device::feed_in_meta(shared_ptr<sigrok::Meta> sr_meta)
 			break;
 
 		case SR_CONF_OVER_TEMPERATURE_PROTECTION:
-			Q_EMIT otp_enable_changed(
+			Q_EMIT otp_enabled_changed(
 				g_variant_get_boolean(entry.second.gobj()));
 			break;
 		case SR_CONF_OVER_TEMPERATURE_PROTECTION_ACTIVE:
@@ -228,7 +253,7 @@ void Device::feed_in_meta(shared_ptr<sigrok::Meta> sr_meta)
 			break;
 
 		case SR_CONF_OVER_VOLTAGE_PROTECTION_ENABLED:
-			Q_EMIT ovp_enable_changed(
+			Q_EMIT ovp_enabled_changed(
 				g_variant_get_boolean(entry.second.gobj()));
 			break;
 		case SR_CONF_OVER_VOLTAGE_PROTECTION_ACTIVE:
@@ -241,7 +266,7 @@ void Device::feed_in_meta(shared_ptr<sigrok::Meta> sr_meta)
 			break;
 
 		case SR_CONF_OVER_CURRENT_PROTECTION_ENABLED:
-			Q_EMIT ocp_enable_changed(
+			Q_EMIT ocp_enabled_changed(
 				g_variant_get_boolean(entry.second.gobj()));
 			break;
 		case SR_CONF_OVER_CURRENT_PROTECTION_ACTIVE:
@@ -254,7 +279,7 @@ void Device::feed_in_meta(shared_ptr<sigrok::Meta> sr_meta)
 			break;
 
 		case SR_CONF_UNDER_VOLTAGE_CONDITION:
-			Q_EMIT uvc_enable_changed(
+			Q_EMIT uvc_enabled_changed(
 				g_variant_get_boolean(entry.second.gobj()));
 			break;
 		case SR_CONF_UNDER_VOLTAGE_CONDITION_ACTIVE:

@@ -45,43 +45,25 @@ class OptionalValueControl : public QGroupBox
 
 public:
 	OptionalValueControl(
-		bool (devices::HardwareDevice::*get_state_caller)() const,
-		void (devices::HardwareDevice::*set_state_caller)(const bool),
-		bool (devices::HardwareDevice::*is_state_getable_caller)() const,
-		bool (devices::HardwareDevice::*is_state_setable_caller)() const,
-		double (devices::HardwareDevice::*get_value_caller)() const,
-		void (devices::HardwareDevice::*set_value_caller)(const double),
-		bool (devices::HardwareDevice::*is_value_getable_caller)() const,
-		bool (devices::HardwareDevice::*is_value_setable_caller)() const,
-		shared_ptr<devices::HardwareDevice> device,
+		const bool is_state_getable, const bool is_state_setable,
+		const bool is_value_getable, const bool is_value_setable,
 		const QString title, const QString unit,
 		const double min, const double max, const double steps,
 		QWidget *parent = 0);
 
 private:
-	bool (devices::HardwareDevice::*get_state_caller_)() const;
-	void (devices::HardwareDevice::*set_state_caller_)(const bool);
-	bool (devices::HardwareDevice::*is_state_getable_caller_)() const;
-	bool (devices::HardwareDevice::*is_state_setable_caller_)() const;
-	double (devices::HardwareDevice::*get_value_caller_)() const;
-	void (devices::HardwareDevice::*set_value_caller_)(const double);
-	bool (devices::HardwareDevice::*is_value_getable_caller_)() const;
-	bool (devices::HardwareDevice::*is_value_setable_caller_)() const;
-	shared_ptr<devices::HardwareDevice> device_;
-
-	QString title_;
 	bool state_;
 	double value_;
-	QString unit_;
-	double min_;
-	double max_;
-	double steps_;
-
 	bool is_state_enabled_;
 	bool is_state_getable_;
 	bool is_state_setable_;
 	bool is_value_getable_;
 	bool is_value_setable_;
+	QString title_;
+	QString unit_;
+	double min_;
+	double max_;
+	double steps_;
 
 	widgets::ControlButton *controlButton;
 	QDoubleSpinBox *doubleSpinBox;
@@ -90,10 +72,11 @@ private:
 	void connect_signals();
 
 public Q_SLOTS:
-	void on_clicked();
 	void change_state(const bool state);
-	void on_state_changed(const bool state);
 	void change_value(const double value);
+
+private Q_SLOTS:
+	void on_state_changed(const bool state);
 	void on_value_changed(const double value);
 
 Q_SIGNALS:

@@ -20,13 +20,9 @@
 #ifndef WIDGETS_LED_HPP
 #define WIDGETS_LED_HPP
 
-#include <memory>
-
 #include <QIcon>
 #include <QLabel>
 #include <QWidget>
-
-using std::shared_ptr;
 
 namespace sv {
 
@@ -41,33 +37,24 @@ class Led : public QWidget
     Q_OBJECT
 
 public:
-	Led(bool (devices::HardwareDevice::*get_state_caller)() const,
-		bool (devices::HardwareDevice::*is_getable_caller)() const,
-		shared_ptr<devices::HardwareDevice> device,
+	Led(const bool is_state_getable,
 		QString text, QIcon on_icon, QIcon off_icon, QIcon dis_icon,
 		QWidget *parent = 0);
 
 private:
-	bool is_enabled_;
-	bool state_;
-
-	bool (devices::HardwareDevice::*get_state_caller_)() const;
-	bool (devices::HardwareDevice::*is_getable_caller_)() const;
-	shared_ptr<devices::HardwareDevice> device_;
-
-	QString text_;
+	const bool is_state_getable_;
+	const QString text_;
+	const QIcon on_icon_;
+	const QIcon off_icon_;
+	const QIcon dis_icon_;
 
 	QLabel *led_label_;
 	QLabel *text_label_;
 
-	QIcon on_icon_;
-	QIcon off_icon_;
-	QIcon dis_icon_;
-
 	void setup_ui();
 
 public Q_SLOTS:
-	void on_state_changed(const bool enabled);
+	void change_state(const bool state);
 
 };
 

@@ -28,6 +28,8 @@
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
+#include <QStringList>
+
 #include "device.hpp"
 
 using std::bad_alloc;
@@ -107,84 +109,80 @@ public:
 
 	bool is_controllable() const;
 
-	bool is_enable_getable() const;
-	bool is_enable_setable() const;
-	bool get_enable() const;
-	void set_enable(const bool enable);
+	bool is_enabled_getable() const;
+	bool is_enabled_setable() const;
+	bool get_enabled() const;
+	void set_enabled(const bool enabled);
+
+	bool is_regulation_getable() const;
+	bool is_regulation_setable() const;
+	bool get_regulation() const;
+	void set_regulation(const bool regulation);
 
 	bool is_voltage_target_getable() const;
 	bool is_voltage_target_setable() const;
+	bool is_voltage_target_listable() const;
 	double get_voltage_target() const;
 	void set_voltage_target(const double value);
-	void list_voltage_target(double &min, double &max, double &step);
 
 	bool is_current_limit_getable() const;
 	bool is_current_limit_setable() const;
+	bool is_current_limit_listable() const;
 	double get_current_limit() const;
 	void set_current_limit(const double value);
-	void list_current_limit(double &min, double &max, double &step);
 
-	bool has_ovp() const;
-	bool is_ovp_enable_getable() const;
-	bool is_ovp_enable_setable() const;
-	bool get_ovp_enable() const;
-	void set_ovp_enable(const bool enable);
-	bool is_ovp_active() const;
+	bool is_ovp_enabled_getable() const;
+	bool is_ovp_enabled_setable() const;
+	bool get_ovp_enabled() const;
+	void set_ovp_enabled(const bool enabled);
+	bool is_ovp_active_getable() const;
+	bool get_ovp_active() const;
 	bool is_ovp_threshold_getable() const;
 	bool is_ovp_threshold_setable() const;
 	double get_ovp_threshold() const;
 	void set_ovp_threshold(const double threshold);
 	bool is_ovp_threshold_listable() const;
-	void list_ovp_threshold(double &min, double &max, double &step);
 
-	bool has_ocp() const;
-	bool is_ocp_enable_getable() const;
-	bool is_ocp_enable_setable() const;
-	bool get_ocp_enable() const;
-	void set_ocp_enable(const bool enable);
-	bool is_ocp_active() const;
+	bool is_ocp_enabled_getable() const;
+	bool is_ocp_enabled_setable() const;
+	bool get_ocp_enabled() const;
+	void set_ocp_enabled(const bool enabled);
+	bool is_ocp_active_getable() const;
+	bool get_ocp_active() const;
 	bool is_ocp_threshold_getable() const;
 	bool is_ocp_threshold_setable() const;
 	double get_ocp_threshold() const;
 	void set_ocp_threshold(const double threshold);
 	bool is_ocp_threshold_listable() const;
-	void list_ocp_threshold(double &min, double &max, double &step);
 
-	bool has_otp() const;
-	bool is_otp_active() const;
+	bool is_otp_active_getable() const;
+	bool get_otp_active() const;
 
-	bool has_uvc() const;
-	bool is_uvc_enable_getable() const;
-	bool is_uvc_enable_setable() const;
-	bool get_uvc_enable() const;
-	void set_uvc_enable(const bool enable);
-	bool is_uvc_active() const;
+	bool is_uvc_enabled_getable() const;
+	bool is_uvc_enabled_setable() const;
+	bool get_uvc_enabled() const;
+	void set_uvc_enabled(const bool enabled);
+	bool is_uvc_active_getable() const;
+	bool get_uvc_active() const;
 	bool is_uvc_threshold_getable() const;
 	bool is_uvc_threshold_setable() const;
 	double get_uvc_threshold() const;
 	void set_uvc_threshold(const double threshold);
 	bool is_uvc_threshold_listable() const;
-	void list_uvc_threshold(double &min, double &max, double &step);
 
-	/*
-	bool is_under_voltage_enable_getable() const;
-	bool is_under_voltage_enable_setable() const;
-	bool get_under_voltage_enable() const;
-
-	bool is_under_voltage_active_getable() const;
-	bool get_under_voltage_active() const;
-
-	bool is_under_voltage_threshold_getable() const;
-	bool is_under_voltage_threshold_setable() const;
-	double get_under_voltage_threshold() const;
-	void set_under_voltage_threshold(const double value);
-	void list_under_voltage_threshold(double &min, double &max, double &step);
-	*/
+	bool list_regulation(QStringList &regulation_list);
+	bool list_voltage_target(double &min, double &max, double &step);
+	bool list_current_limit(double &min, double &max, double &step);
+	bool list_ovp_threshold(double &min, double &max, double &step);
+	bool list_ocp_threshold(double &min, double &max, double &step);
+	bool list_uvc_threshold(double &min, double &max, double &step);
 
 private:
 	Type type_;
 	bool device_open_;
 
+	void init_device_properties();
+	void init_device_values();
 	void aquisition_thread_proc(function<void (const QString)> error_handler);
 
 	// TODO: Generic!
@@ -197,16 +195,94 @@ private:
 		shared_ptr<sigrok::Channel> sr_channel,
 		shared_ptr<data::AnalogData> common_time_data);
 
-/*
+	/*
+	bool enabled_;
+	QString regulation_;
+	double voltage_target_;
+	double current_limit_;
+	bool otp_enabled_;
+	bool otp_active_;
+	bool ovp_enabled_;
+	bool ovp_active_;
+	double ovp_threshold_;
+	bool ocp_enabled_;
+	bool ocp_active_;
+	double ocp_threshold_;
+	bool uvc_enabled_;
+	bool uvc_active_;
+	double uvc_threshold_;
+	*/
+
+	QStringList regulation_list_;
+	double voltage_target_min_;
+	double voltage_target_max_;
+	double voltage_target_step_;
+	double current_limit_min_;
+	double current_limit_max_;
+	double current_limit_step_;
+	double ovp_threshold_min_;
+	double ovp_threshold_max_;
+	double ovp_threshold_step_;
+	double ocp_threshold_min_;
+	double ocp_threshold_max_;
+	double ocp_threshold_step_;
+	double uvc_threshold_min_;
+	double uvc_threshold_max_;
+	double uvc_threshold_step_;
+
+	bool is_enabled_getable_;
+	bool is_enabled_setable_;
+	bool is_regulation_getable_;
+	bool is_regulation_setable_;
+	bool is_regulation_listable_;
+	bool is_voltage_target_getable_;
+	bool is_voltage_target_setable_;
+	bool is_voltage_target_listable_;
+	bool is_current_limit_getable_;
+	bool is_current_limit_setable_;
+	bool is_current_limit_listable_;
+	bool is_otp_enabled_getable_;
+	bool is_otp_enabled_setable_;
+	bool is_otp_active_getable_;
+	bool is_otp_active_setable_;
+	bool is_ovp_enabled_getable_;
+	bool is_ovp_enabled_setable_;
+	bool is_ovp_active_getable_;
+	bool is_ovp_active_setable_;
+	bool is_ovp_threshold_getable_;
+	bool is_ovp_threshold_setable_;
+	bool is_ovp_threshold_listable_;
+	bool is_ocp_enabled_getable_;
+	bool is_ocp_enabled_setable_;
+	bool is_ocp_active_getable_;
+	bool is_ocp_active_setable_;
+	bool is_ocp_threshold_getable_;
+	bool is_ocp_threshold_setable_;
+	bool is_ocp_threshold_listable_;
+	bool is_uvc_enabled_getable_;
+	bool is_uvc_enabled_setable_;
+	bool is_uvc_active_getable_;
+	bool is_uvc_active_setable_;
+	bool is_uvc_threshold_getable_;
+	bool is_uvc_threshold_setable_;
+	bool is_uvc_threshold_listable_;
+
 Q_SIGNALS:
-	void enabled_changed(bool);
-	void voltage_target_changed(double);
-	void current_limit_changed(double);
-	void over_voltage_protection_active_changed(bool);
-	void over_current_protection_active_changed(bool);
-	void under_voltage_condition_active_changed(bool);
-	void over_temperature_protection_active_changed(bool);
-*/
+	void enabled_changed(const bool);
+	void voltage_target_changed(const double);
+	void current_limit_changed(const double);
+	void otp_enabled_changed(const bool);
+	void otp_active_changed(const bool);
+	void ovp_enabled_changed(const bool);
+	void ovp_active_changed(const bool);
+	void ovp_threshold_changed(const double);
+	void ocp_enabled_changed(const bool);
+	void ocp_active_changed(const bool);
+	void ocp_threshold_changed(const double);
+	void uvc_enabled_changed(const bool);
+	void uvc_active_changed(const bool);
+	void uvc_threshold_changed(const double);
+
 };
 
 } // namespace devices

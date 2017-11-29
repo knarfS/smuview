@@ -20,36 +20,22 @@
 #include <QApplication>
 
 #include "controlbutton.hpp"
-#include "src/devices/hardwaredevice.hpp"
-
-using std::shared_ptr;
 
 namespace sv {
 namespace widgets {
 
 	ControlButton::ControlButton(
-		bool (devices::HardwareDevice::*get_state_caller)() const,
-		void (devices::HardwareDevice::*set_state_caller)(const bool),
-		bool (devices::HardwareDevice::*is_state_getable_caller)() const,
-		bool (devices::HardwareDevice::*is_state_setable_caller)() const,
-		shared_ptr<devices::HardwareDevice> device, QWidget *parent) :
+		const bool is_state_getable, const bool is_state_setable,
+		QWidget *parent) :
 	QPushButton(parent),
-	get_state_caller_(get_state_caller),
-	set_state_caller_(set_state_caller),
-	is_state_getable_caller_(is_state_getable_caller),
-	is_state_setable_caller_(is_state_setable_caller),
-	device_(device),
+	state_(false),
+	is_state_getable_(is_state_getable),
+	is_state_setable_(is_state_setable),
 	on_icon_(":/icons/status-green.svg"),
 	off_icon_(":/icons/status-red.svg"),
 	dis_icon_(":/icons/status-grey.svg")
 {
-	is_state_getable_ = (device_.get()->*is_state_getable_caller_)();
-	is_state_setable_ = (device_.get()->*is_state_setable_caller_)();
 	is_state_enabled_ = is_state_getable_ || is_state_setable_;
-	if (is_state_getable_)
-		state_ = (device_.get()->*get_state_caller_)();
-	else
-		state_ = false;
 
 	setup_ui();
 	connect_signals();
@@ -58,14 +44,8 @@ namespace widgets {
 void ControlButton::setup_ui()
 {
 	this->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-	this->setMaximumSize(80, 50);
-
 	this->setIconSize(QSize(8, 8));
-
-	this->setDisabled(!is_state_enabled_);
-	if (!is_state_setable_) {
-		this->setDisabled(true);
-	}
+	this->setDisabled(!is_state_setable_);
 	if (!is_state_getable_) {
 		this->setIcon(dis_icon_);
 		this->setText(tr("On/Off"));
@@ -88,18 +68,12 @@ void ControlButton::setup_ui()
 void ControlButton::connect_signals()
 {
 	if (is_state_setable_)
-		connect(this, SIGNAL(clicked(bool)), this, SLOT(on_clicked()));
+		connect(this, SIGNAL(clicked(bool)), this, SLOT(on_state_changed()));
 }
 
-void ControlButton::on_clicked()
+void ControlButton::change_state(const bool state)
 {
-	on_state_changed(!state_);
-	Q_EMIT state_changed(state_);
-}
-
-void ControlButton::on_state_changed(const bool enabled)
-{
-	if (enabled) {
+	if (state) {
 		this->setIcon(on_icon_);
 		this->setText(tr("On"));
 		this->setChecked(true);
@@ -110,6 +84,12 @@ void ControlButton::on_state_changed(const bool enabled)
 		this->setChecked(false);
 		state_ = false;
 	}
+}
+
+void ControlButton::on_state_changed()
+{
+	change_state(!state_);
+	Q_EMIT state_changed(state_);
 }
 
 } // namespace widgets

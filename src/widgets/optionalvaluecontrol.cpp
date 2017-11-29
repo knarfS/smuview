@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QDebug>
 #include <QVBoxLayout>
 
 #include "optionalvaluecontrol.hpp"
@@ -27,47 +28,26 @@ namespace sv {
 namespace widgets {
 
 OptionalValueControl::OptionalValueControl(
-		bool (devices::HardwareDevice::*get_state_caller)() const,
-		void (devices::HardwareDevice::*set_state_caller)(const bool),
-		bool (devices::HardwareDevice::*is_state_getable_caller)() const,
-		bool (devices::HardwareDevice::*is_state_setable_caller)() const,
-		double (devices::HardwareDevice::*get_value_caller)() const,
-		void (devices::HardwareDevice::*set_value_caller)(const double),
-		bool (devices::HardwareDevice::*is_value_getable_caller)() const,
-		bool (devices::HardwareDevice::*is_value_setable_caller)() const,
-		shared_ptr<devices::HardwareDevice> device,
+		const bool is_state_getable, const bool is_state_setable,
+		const bool is_value_getable, const bool is_value_setable,
 		const QString title, const QString unit,
 		const double min, const double max, const double steps,
 		QWidget *parent) :
 	QGroupBox(parent),
-	get_state_caller_(get_state_caller),
-	set_state_caller_(set_state_caller),
-	is_state_getable_caller_(is_state_getable_caller),
-	is_state_setable_caller_(is_state_setable_caller),
-	get_value_caller_(get_value_caller),
-	set_value_caller_(set_value_caller),
-	is_value_getable_caller_(is_value_getable_caller),
-	is_value_setable_caller_(is_value_setable_caller),
-	device_(device),
+	is_state_getable_(is_state_getable),
+	is_state_setable_(is_state_setable),
+	is_value_getable_(is_value_getable),
+	is_value_setable_(is_value_setable),
 	title_(title),
 	unit_(unit),
 	min_(min),
 	max_(max),
 	steps_(steps)
 {
-	is_state_getable_ = (device_.get()->*is_state_getable_caller_)();
-	is_state_setable_ = (device_.get()->*is_state_setable_caller_)();
 	is_state_enabled_ = is_state_getable_ || is_state_setable_;
-	if (is_state_getable_)
-		state_ = (device_.get()->*get_state_caller_)();
-	else
+	if (!is_state_getable_)
 		state_ = false;
-
-	is_value_getable_ = (device_.get()->*is_value_getable_caller_)();
-	is_value_setable_ = (device_.get()->*is_value_setable_caller_)();
-	if (is_value_getable_)
-		value_ = (device_.get()->*get_value_caller_)();
-	else
+	if (!is_value_getable_)
 		value_ = 0;
 
 	setup_ui();
@@ -85,13 +65,17 @@ void OptionalValueControl::setup_ui()
 
 	QVBoxLayout *layout = new QVBoxLayout();
 
+	qWarning() << "Button: '" << title_ << "' enabled = " << is_state_setable_;
+
 	controlButton = new widgets::ControlButton(
-		get_state_caller_, set_state_caller_,
-		is_state_getable_caller_, is_state_setable_caller_,
-		device_);
+		is_state_getable_, is_state_setable_);
+	controlButton->setSizePolicy(
+		QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
 	layout->addWidget(controlButton);
 
 	doubleSpinBox = new QDoubleSpinBox();
+	doubleSpinBox->setSizePolicy(
+		QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
 	doubleSpinBox->setSuffix(QString(" %1").arg(unit_));
 	doubleSpinBox->setDecimals(3);
 	doubleSpinBox->setMinimum(min_);
@@ -105,14 +89,13 @@ void OptionalValueControl::setup_ui()
 
 void OptionalValueControl::connect_signals()
 {
+	if (is_state_setable_)
+		connect(controlButton, SIGNAL(state_changed(const bool)),
+			this, SLOT(on_state_changed(const bool)));
+
 	if (is_value_setable_)
 		connect(doubleSpinBox, SIGNAL(valueChanged(double)),
 			this, SLOT(on_value_changed(const double)));
-}
-
-void OptionalValueControl::on_clicked()
-{
-	controlButton->on_clicked();
 }
 
 void OptionalValueControl::change_state(const bool state)
@@ -120,15 +103,27 @@ void OptionalValueControl::change_state(const bool state)
 	if (state == state_)
 		return;
 
+	if (is_state_setable_)
+		disconnect(controlButton, SIGNAL(state_changed(const bool)),
+			this, SLOT(on_state_changed(const bool)));
+
 	state_ = state;
-	controlButton->on_state_changed(state);
+	controlButton->change_state(state);
+
+	if (is_state_setable_)
+		connect(controlButton, SIGNAL(state_changed(const bool)),
+			this, SLOT(on_state_changed(const bool)));
 }
 
 void OptionalValueControl::on_state_changed(const bool state)
 {
-	if (is_state_setable_)
-		controlButton->on_state_changed(state);
+	if (state == state_)
+		return;
+
+	change_state(state);
+	Q_EMIT state_changed(state);
 }
+
 
 void OptionalValueControl::change_value(const double value)
 {
@@ -140,32 +135,19 @@ void OptionalValueControl::change_value(const double value)
 			this, SLOT(on_value_changed(const double)));
 
 	value_ = value;
-
 	doubleSpinBox->setValue(value);
 
 	if (is_value_setable_)
 		connect(doubleSpinBox, SIGNAL(valueChanged(double)),
 			this, SLOT(on_value_changed(const double)));
 }
-
 void OptionalValueControl::on_value_changed(const double value)
 {
 	if (value == value_)
 		return;
 
-	if (is_value_setable_)
-		disconnect(doubleSpinBox, SIGNAL(valueChanged(double)),
-			this, SLOT(on_value_changed(const double)));
-
-	value_ = value;
-
-	doubleSpinBox->setValue(value);
-
+	change_value(value);
 	Q_EMIT value_changed(value);
-
-	if (is_value_setable_)
-		connect(doubleSpinBox, SIGNAL(valueChanged(double)),
-			this, SLOT(on_value_changed(const double)));
 }
 
 } // namespace widgets

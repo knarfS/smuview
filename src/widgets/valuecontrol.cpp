@@ -96,9 +96,7 @@ uint ValueControl::get_digits()
 uint ValueControl::get_decimals()
 {
 	int d = (int)ceil(1/steps_) - 1;
-	qWarning() << "ValueControl::get_decimals(): steps = " << steps_ << " d = " << d;
 	uint cnt = util::count_int_digits(d);
-	qWarning() << "ValueControl::get_decimals(): cnt = " << cnt;
 	return cnt;
 }
 

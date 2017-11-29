@@ -80,7 +80,10 @@ public:
 		const T value);
 
 	bool has_list_config(const sigrok::ConfigKey *key) const;
-	template<typename T> T list_config(const sigrok::ConfigKey *key) const;
+	void list_config_string_array(const sigrok::ConfigKey *key,
+		QStringList &string_list);
+	void list_config_min_max_steps(const sigrok::ConfigKey *key,
+		double &min, double &max, double &step);
 
 	/**
 	 * Builds the full name. It only contains all the fields.
@@ -137,15 +140,15 @@ Q_SIGNALS:
 	void enabled_changed(const bool);
 	void voltage_target_changed(const double);
 	void current_limit_changed(const double);
-	void otp_enable_changed(const bool);
+	void otp_enabled_changed(const bool);
 	void otp_active_changed(const bool);
-	void ovp_enable_changed(const bool);
+	void ovp_enabled_changed(const bool);
 	void ovp_active_changed(const bool);
 	void ovp_threshold_changed(const double);
-	void ocp_enable_changed(const bool);
+	void ocp_enabled_changed(const bool);
 	void ocp_active_changed(const bool);
 	void ocp_threshold_changed(const double);
-	void uvc_enable_changed(const bool);
+	void uvc_enabled_changed(const bool);
 	void uvc_active_changed(const bool);
 	void uvc_threshold_changed(const double);
 

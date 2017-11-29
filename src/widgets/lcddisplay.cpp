@@ -118,7 +118,8 @@ void LcdDisplay::set_value(const double value)
 		str_value = QString("UL");
 	else
 		// TODO: set precision
-		str_value = QString("%1").arg(value, digits_, 'f', 3, QChar('0'));
+		//str_value = QString("%1").arg(value, digits_, 'f', 3, QChar('0'));
+		str_value = QString("%1").arg(value, digits_, 'f', 3);
 
 	lcdValue->display(str_value);
 }

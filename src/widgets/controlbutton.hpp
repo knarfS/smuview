@@ -20,11 +20,7 @@
 #ifndef WIDGETS_CONTROLBUTTON_HPP
 #define WIDGETS_CONTROLBUTTON_HPP
 
-#include <memory>
-
 #include <QPushButton>
-
-using std::shared_ptr;
 
 namespace sv {
 
@@ -40,37 +36,30 @@ class ControlButton : public QPushButton
 
 public:
 	ControlButton(
-		bool (devices::HardwareDevice::*get_state_caller)() const,
-		void (devices::HardwareDevice::*set_state_caller)(const bool),
-		bool (devices::HardwareDevice::*is_state_getable_caller)() const,
-		bool (devices::HardwareDevice::*is_state_setable_caller)() const,
-		shared_ptr<devices::HardwareDevice> device, QWidget *parent = 0);
+		const bool is_state_getable, const bool is_state_setable,
+		QWidget *parent = 0);
 
 private:
 	bool state_;
 	bool is_state_enabled_;
-	bool is_state_getable_;
-	bool is_state_setable_;
-
-	bool (devices::HardwareDevice::*get_state_caller_)() const;
-	void (devices::HardwareDevice::*set_state_caller_)(const bool);
-	bool (devices::HardwareDevice::*is_state_getable_caller_)() const;
-	bool (devices::HardwareDevice::*is_state_setable_caller_)() const;
-	shared_ptr<devices::HardwareDevice> device_;
-
-	QIcon on_icon_;
-	QIcon off_icon_;
-	QIcon dis_icon_;
+	const bool is_state_getable_;
+	const bool is_state_setable_;
+	const QIcon on_icon_;
+	const QIcon off_icon_;
+	const QIcon dis_icon_;
 
 	void setup_ui();
 	void connect_signals();
 
 public Q_SLOTS:
-	void on_clicked();
-	void on_state_changed(const bool enabled);
+	void change_state(const bool state);
+
+private Q_SLOTS:
+	void on_state_changed();
 
 Q_SIGNALS:
-	void state_changed(const bool enabled);
+	void state_changed(const bool);
+
 };
 
 } // namespace widgets
