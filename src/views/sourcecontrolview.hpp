@@ -49,8 +49,8 @@ class SourceControlView : public BaseView
 
 public:
 	SourceControlView(Session& session,
-		std::shared_ptr<sv::devices::HardwareDevice> device,
-		QWidget* parent);
+		std::shared_ptr<devices::HardwareDevice> device,
+		QWidget* parent = nullptr);
 
 private:
 	shared_ptr<devices::HardwareDevice> device_;

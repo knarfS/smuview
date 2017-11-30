@@ -21,6 +21,7 @@
 
 #include <QApplication>
 #include <QDebug>
+#include <QLabel>
 #include <QMessageBox>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -196,26 +197,36 @@ void MainWindow::setup_ui()
 		QSize(), QIcon::Normal, QIcon::Off);
 	actionAddTab->setIcon(tabIcon);
 
-	centralWidget = new QWidget(this);
-	QHBoxLayout *horizontalLayout = new QHBoxLayout(centralWidget);
-	horizontalLayout->setSpacing(2);
-	horizontalLayout->setContentsMargins(11, 11, 11, 11);
-	horizontalLayout->setContentsMargins(2, 2, 2, 2);
 
-	tabWidget = new QTabWidget(centralWidget);
+	QHBoxLayout *centralLayout = new QHBoxLayout();
+	centralLayout->setContentsMargins(2, 2, 2, 2);
+	centralWidget = new QWidget();
+	centralWidget->setLayout(centralLayout);
 
-	horizontalLayout->addWidget(tabWidget);
+	/*
+	infoWidget = new QToolBox();
+	QPushButton *btn = new QPushButton();
+	btn->setText("TEST");
+	infoWidget->addItem(btn, "--==TEST==--");
+	QLabel *lbl = new QLabel();
+	lbl->setText("Hallo 123");
+	infoWidget->addItem(lbl, "--==HALLO==--");
+	centralLayout->addWidget(infoWidget);
+	*/
+
+	tabWidget = new QTabWidget();
+	centralLayout->addWidget(tabWidget);
 
 	this->setCentralWidget(centralWidget);
-	mainToolBar = new QToolBar(this);
-	this->addToolBar(Qt::TopToolBarArea, mainToolBar);
-	statusBar = new QStatusBar(this);
-	this->setStatusBar(statusBar);
 
+	mainToolBar = new QToolBar();
 	mainToolBar->addAction(actionAddTab);
 	mainToolBar->addSeparator();
 	mainToolBar->addAction(actionAbout);
 	mainToolBar->addAction(actionExit);
+	this->addToolBar(Qt::TopToolBarArea, mainToolBar);
+	statusBar = new QStatusBar();
+	this->setStatusBar(statusBar);
 
 	retranslate_ui();
 
@@ -262,9 +273,6 @@ void MainWindow::show_session_error(const QString text, const QString info_text)
 
 void MainWindow::on_actionAddTab_triggered()
 {
-	// Stop any currently running capture session
-	//session_->stop_capture();
-
 	dialogs::Connect dlg(this, device_manager_);
 
 	if (dlg.exec())

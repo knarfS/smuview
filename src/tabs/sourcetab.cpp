@@ -43,8 +43,8 @@ void SourceTab::setup_ui()
 	// Device controls
 	if (device_->is_controllable()) {
 		shared_ptr<views::BaseView> control_view =
-			make_shared<views::SourceControlView>(session_, device_, parent_);
-		add_view(QString("Device control"), control_view,
+			make_shared<views::SourceControlView>(session_, device_);
+		add_view(tr("Device control"), control_view,
 			Qt::TopDockWidgetArea, session_);
 	}
 
@@ -52,8 +52,8 @@ void SourceTab::setup_ui()
 	if (device_->voltage_signal() && device_->current_signal()) {
 		shared_ptr<views::BaseView> power_panel_view =
 			make_shared<views::PowerPanelView>(session_,
-				device_->voltage_signal(), device_->current_signal(), parent_);
-		add_view(QString("Power Panel"), power_panel_view,
+				device_->voltage_signal(), device_->current_signal());
+		add_view(tr("Power Panel"), power_panel_view,
 			Qt::TopDockWidgetArea, session_);
 	}
 
@@ -62,8 +62,8 @@ void SourceTab::setup_ui()
 		shared_ptr<views::BaseView> voltage_plot_view =
 			make_shared<views::PlotView>(session_,
 				device_->voltage_signal()->time_data(),
-				device_->voltage_signal()->analog_data(), parent_);
-		add_view(QString("Voltage Graph"), voltage_plot_view,
+				device_->voltage_signal()->analog_data());
+		add_view(tr("Voltage Graph"), voltage_plot_view,
 			Qt::BottomDockWidgetArea, session_);
 	}
 
@@ -72,8 +72,8 @@ void SourceTab::setup_ui()
 		shared_ptr<views::BaseView> current_plot_view =
 			make_shared<views::PlotView>(session_,
 				device_->current_signal()->time_data(),
-				device_->current_signal()->analog_data(), parent_);
-		add_view(QString("Current Graph"), current_plot_view,
+				device_->current_signal()->analog_data());
+		add_view(tr("Current Graph"), current_plot_view,
 			Qt::BottomDockWidgetArea, session_);
 	}
 
@@ -82,8 +82,8 @@ void SourceTab::setup_ui()
 		shared_ptr<views::BaseView> ui_plot_view =
 			make_shared<views::PlotView>(session_,
 				device_->voltage_signal()->analog_data(),
-				device_->current_signal()->analog_data(), parent_);
-		add_view(QString("UI Graph"), ui_plot_view,
+				device_->current_signal()->analog_data());
+		add_view(tr("UI Graph"), ui_plot_view,
 			Qt::BottomDockWidgetArea, session_);
 	}
 }

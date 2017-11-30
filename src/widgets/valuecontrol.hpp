@@ -37,7 +37,7 @@ public:
 	ValueControl(
 		const QString title, const uint digits, const QString unit,
 		const double min, const double max, const double steps,
-		QWidget *parent = 0);
+		QWidget *parent = nullptr);
 
 private:
 	QString title_;

@@ -156,6 +156,7 @@ set(smuview_SOURCES
   src/tabs/sourcetab.cpp
   #src/toolbars/maintoolbar.cpp
   src/views/baseview.cpp
+  src/views/measurementcontrolview.cpp
   src/views/plotview.cpp
   src/views/powerpanelview.cpp
   src/views/sinkcontrolview.cpp

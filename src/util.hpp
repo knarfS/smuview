@@ -59,6 +59,7 @@ enum class SIPrefix {
 };
 
 typedef map<const sigrok::Quantity *, QString> quantitymap_t;
+typedef map<const sigrok::QuantityFlag *, QString> quantityflagmap_t;
 typedef map<const sigrok::Unit *, QString> unitmap_t;
 
 /// Returns the exponent that corresponds to a given prefix.
@@ -72,11 +73,20 @@ typedef boost::multiprecision::number<
 /**
  * Formats a sigrok quantity to a string
  *
- * @param sr_unit The sigrok quantity (sigrok::Quantity) to format
+ * @param sr_quantity The sigrok quantity (sigrok::Quantity) to format
  * .
  * @return The formatted quantity.
  */
 QString format_quantity(const sigrok::Quantity *sr_quantity);
+
+/**
+ * Formats a sigrok quantity flag to a string
+ *
+ * @param sr_quantityflag The sigrok quantity (sigrok::QuantityFlag) to format
+ * .
+ * @return The formatted quantity flag.
+ */
+QString format_quantityflag(const sigrok::QuantityFlag *sr_quantityflag);
 
 /**
  * Formats a sigrok unit to a string

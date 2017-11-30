@@ -28,6 +28,7 @@
 
 #include "device.hpp"
 #include "src/session.hpp"
+#include "src/util.hpp"
 #include "src/data/analogdata.hpp"
 #include "src/data/basedata.hpp"
 #include "src/data/basesignal.hpp"
@@ -46,9 +47,6 @@ using std::unique_ptr;
 
 using sigrok::ConfigKey;
 using sigrok::Capability;
-
-using Glib::VariantBase;
-using Glib::Variant;
 
 namespace sv {
 namespace devices {
@@ -108,7 +106,7 @@ template<typename T> T Device::get_config(const ConfigKey *key) const
 		assert(false);
 	}
 
-	return VariantBase::cast_dynamic<Glib::Variant<T>>(
+	return Glib::VariantBase::cast_dynamic<Glib::Variant<T>>(
 		sr_configurable_->config_get(key)).get();
 }
 
@@ -201,6 +199,66 @@ void Device::list_config_min_max_steps(const sigrok::ConfigKey *key,
 	max = Glib::VariantBase::cast_dynamic<Glib::Variant<double>>(gvar).get();
 	iter.next_value(gvar);
 	step = Glib::VariantBase::cast_dynamic<Glib::Variant<double>>(gvar).get();
+}
+
+void Device::list_config_mq(const sigrok::ConfigKey *key,
+	sr_mq_flags_list_t &sr_mq_flags_list, mq_flags_list_t &mq_flags_list)
+{
+	assert(key);
+	assert(sr_configurable_);
+
+	if (!sr_configurable_->config_check(key, Capability::LIST)) {
+		qWarning() << "Device::list_config_mq(): No key " <<
+			QString::fromStdString(key->name());
+		assert(false);
+	}
+
+	Glib::VariantContainerBase gvar = sr_configurable_->config_list(key);
+	Glib::VariantIter iter(gvar);
+	while (iter.next_value (gvar)) {
+		uint32_t mqbits = Glib::VariantBase::cast_dynamic
+			<Glib::Variant<uint32_t>>(gvar.get_child(0)).get();
+		const sigrok::Quantity *sr_mq = sigrok::Quantity::get(mqbits);
+		QString mq = util::format_quantity(sr_mq);
+
+		// TODO Das geht besser....
+		shared_ptr<vector<set<const sigrok::QuantityFlag *>>> sr_flag_vector;
+		shared_ptr<vector<set<QString>>> flag_vector;
+		if (!sr_mq_flags_list.count(sr_mq)) {
+			sr_flag_vector = make_shared<vector<set<const sigrok::QuantityFlag *>>>();
+			flag_vector = make_shared<vector<set<QString>>>();
+			sr_mq_flags_list.insert(
+				pair<const sigrok::Quantity *, shared_ptr<vector<set<const sigrok::QuantityFlag *>>>>
+				(sr_mq, sr_flag_vector));
+			mq_flags_list.insert(
+				pair<QString, shared_ptr<vector<set<QString>>>>
+				(mq, flag_vector));
+		}
+		else {
+			sr_flag_vector = sr_mq_flags_list[sr_mq];
+			flag_vector = mq_flags_list[mq];
+		}
+
+		uint64_t sr_mqflags = Glib::VariantBase::cast_dynamic
+			<Glib::Variant<uint64_t>>(gvar.get_child(1)).get();
+
+		set<const sigrok::QuantityFlag *> sr_flag_set;
+		set<QString> flag_set;
+		uint64_t mask = 1;
+		for (uint i = 0; i < 32; i++, mask <<= 1) {
+			if (!(sr_mqflags & mask))
+				continue;
+
+			const sigrok::QuantityFlag *sr_mqflag =
+				sigrok::QuantityFlag::get(sr_mqflags & mask);
+			QString mqflag = util::format_quantityflag(sr_mqflag);
+
+			sr_flag_set.insert(sr_mqflag);
+			flag_set.insert(mqflag);
+		}
+		sr_flag_vector->push_back(sr_flag_set);
+		flag_vector->push_back(flag_set);
+	}
 }
 
 void Device::init_device()

@@ -17,44 +17,53 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VIEWS_PLOTVIEW_HPP
-#define VIEWS_PLOTVIEW_HPP
+#ifndef VIEWS_MEASUREMENTCONTROLVIEW_HPP
+#define VIEWS_MEASUREMENTCONTROLVIEW_HPP
 
 #include <memory>
+#include <set>
 
+#include <QComboBox>
+
+#include "src/devices/device.hpp"
 #include "src/views/baseview.hpp"
 
+using std::map;
+using std::set;
 using std::shared_ptr;
+
+namespace sigrok {
+class Quantity;
+class QuantityFlag;
+}
+
 
 namespace sv {
 
 class Session;
 
-namespace data {
-class AnalogData;
-}
-
-namespace widgets {
-class Plot;
+namespace devices {
+class HardwareDevice;
 }
 
 namespace views {
 
-class PlotView : public BaseView
+class MeasurementControlView : public BaseView
 {
 	Q_OBJECT
 
 public:
-	PlotView(Session& session,
-		shared_ptr<data::AnalogData> x_signal_data,
-		shared_ptr<data::AnalogData> y_signal_data,
+	MeasurementControlView(Session& session,
+		shared_ptr<devices::HardwareDevice> device,
 		QWidget* parent = nullptr);
 
 private:
-	shared_ptr<data::AnalogData> x_signal_data_;
-	shared_ptr<data::AnalogData> y_signal_data_;
+	shared_ptr<devices::HardwareDevice> device_;
+	devices::Device::sr_mq_flags_list_t sr_mq_flags_list_;
+	devices::Device::mq_flags_list_t mq_flags_list_;
 
-	widgets::Plot *plot;
+	QComboBox *quantityBox;
+	QComboBox *quantityFlagsBox;
 
 	void setup_ui();
 	void connect_signals();
@@ -65,11 +74,13 @@ protected:
 public Q_SLOTS:
 
 private Q_SLOTS:
+	void on_quantity_changed(const QString index);
+	void on_quantity_flags_changed(/*const QString index*/);
 
 };
 
 } // namespace views
 } // namespace sv
 
-#endif // VIEWS_PLOTVIEW_HPP
+#endif // VIEWS_MEASUREMENTCONTROLVIEW_HPP
 

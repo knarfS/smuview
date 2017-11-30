@@ -49,7 +49,7 @@ public:
 		const bool is_value_getable, const bool is_value_setable,
 		const QString title, const QString unit,
 		const double min, const double max, const double steps,
-		QWidget *parent = 0);
+		QWidget *parent = nullptr);
 
 private:
 	bool state_;

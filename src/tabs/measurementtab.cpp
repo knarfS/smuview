@@ -24,6 +24,7 @@
 
 #include "src/data/analogdata.hpp"
 #include "src/data/basesignal.hpp"
+#include "src/views/measurementcontrolview.hpp"
 #include "src/views/plotview.hpp"
 #include "src/views/valuepanelview.hpp"
 
@@ -43,14 +44,18 @@ void MeasurementTab::setup_ui()
 {
 	// Device controls
 	if (device_->is_controllable()) {
+		shared_ptr<views::BaseView> control_view =
+			make_shared<views::MeasurementControlView>(session_, device_);
+		add_view(tr("Device Control"), control_view,
+			Qt::TopDockWidgetArea, session_);
 	}
 
 	// Value panel
 	if (device_->measurement_signal()) {
 		shared_ptr<views::BaseView> value_panel_view =
 			make_shared<views::ValuePanelView>(session_,
-				device_->measurement_signal(), parent_);
-		add_view(QString("Value Panel"), value_panel_view,
+				device_->measurement_signal());
+		add_view(tr("Value Panel"), value_panel_view,
 			Qt::TopDockWidgetArea, session_);
 	}
 
@@ -59,8 +64,8 @@ void MeasurementTab::setup_ui()
 		shared_ptr<views::BaseView> value_plot_view =
 			make_shared<views::PlotView>(session_,
 				device_->measurement_signal()->time_data(),
-				device_->measurement_signal()->analog_data(), parent_);
-		add_view(QString("Value Graph"), value_plot_view,
+				device_->measurement_signal()->analog_data());
+		add_view(tr("Value Graph"), value_plot_view,
 			Qt::BottomDockWidgetArea, session_);
 	}
 }

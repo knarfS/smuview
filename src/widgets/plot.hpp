@@ -40,7 +40,7 @@ class Plot : public QwtPlot
 	Q_OBJECT
 
 public:
-	Plot(data::BaseCurve *curve_data, QWidget *parent = 0);
+	Plot(data::BaseCurve *curve_data, QWidget *parent = nullptr);
 	virtual ~Plot();
 
 	enum PlotModes {

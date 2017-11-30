@@ -23,6 +23,8 @@
 
 #include <functional>
 #include <memory>
+#include <mutex>
+#include <set>
 #include <string>
 #include <thread>
 #include <unordered_set>
@@ -31,15 +33,22 @@ using std::function;
 using std::map;
 using std::mutex;
 using std::recursive_mutex;
+using std::set;
 using std::shared_ptr;
 using std::string;
 using std::unordered_set;
 using std::vector;
 
 namespace sigrok {
+class Analog;
+class Channel;
 class ConfigKey;
+class Configurable;
 class Context;
 class Device;
+class Quantity;
+class QuantityFlag;
+class Meta;
 class Packet;
 class Session;
 }
@@ -70,6 +79,12 @@ public:
 		Running
 	};
 
+	// TODO: Find a better way to store/map this + rename
+	typedef map<const sigrok::Quantity *,
+				shared_ptr<vector<set<const sigrok::QuantityFlag *>>>>
+		sr_mq_flags_list_t;
+	typedef map<QString, shared_ptr<vector<set<QString>>>> mq_flags_list_t;
+
 	shared_ptr<sigrok::Device> sr_device() const;
 
 	bool has_get_config(const sigrok::ConfigKey *key) const;
@@ -84,6 +99,8 @@ public:
 		QStringList &string_list);
 	void list_config_min_max_steps(const sigrok::ConfigKey *key,
 		double &min, double &max, double &step);
+	void list_config_mq(const sigrok::ConfigKey *key,
+		sr_mq_flags_list_t &sr_mq_flags_list, mq_flags_list_t &mq_flags_list);
 
 	/**
 	 * Builds the full name. It only contains all the fields.

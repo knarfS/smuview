@@ -27,6 +27,7 @@
 
 #include <QAction>
 #include <QToolBar>
+#include <QToolBox>
 #include <QStatusBar>
 #include <QMainWindow>
 
@@ -74,13 +75,14 @@ private:
 	shared_ptr<devices::Device> last_focused_device_;
 	map< shared_ptr<devices::Device>, QMainWindow*> device_windows_;
 
-    QAction *actionExit;
-    QAction *actionAbout;
-    QAction *actionAddTab;
-    QWidget *centralWidget;
-    QTabWidget *tabWidget;
-    QToolBar *mainToolBar;
-    QStatusBar *statusBar;
+	QAction *actionExit;
+	QAction *actionAbout;
+	QAction *actionAddTab;
+	QWidget *centralWidget;
+	QToolBox *infoWidget;
+	QTabWidget *tabWidget;
+	QToolBar *mainToolBar;
+	QStatusBar *statusBar;
 
 	void setup_ui();
 	void connect_signals();

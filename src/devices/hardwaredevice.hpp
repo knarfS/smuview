@@ -47,6 +47,7 @@ using std::unique_ptr;
 using std::map;
 using std::mutex;
 using std::recursive_mutex;
+using std::set;
 using std::shared_ptr;
 using std::string;
 using std::unordered_set;
@@ -55,6 +56,8 @@ namespace sigrok {
 class Channel;
 class Configurable;
 class Context;
+class Quantity;
+class QuantityFlag;
 class HardwareDevice;
 }
 
@@ -139,9 +142,9 @@ public:
 	bool get_ovp_active() const;
 	bool is_ovp_threshold_getable() const;
 	bool is_ovp_threshold_setable() const;
+	bool is_ovp_threshold_listable() const;
 	double get_ovp_threshold() const;
 	void set_ovp_threshold(const double threshold);
-	bool is_ovp_threshold_listable() const;
 
 	bool is_ocp_enabled_getable() const;
 	bool is_ocp_enabled_setable() const;
@@ -151,9 +154,9 @@ public:
 	bool get_ocp_active() const;
 	bool is_ocp_threshold_getable() const;
 	bool is_ocp_threshold_setable() const;
+	bool is_ocp_threshold_listable() const;
 	double get_ocp_threshold() const;
 	void set_ocp_threshold(const double threshold);
-	bool is_ocp_threshold_listable() const;
 
 	bool is_otp_active_getable() const;
 	bool get_otp_active() const;
@@ -166,9 +169,15 @@ public:
 	bool get_uvc_active() const;
 	bool is_uvc_threshold_getable() const;
 	bool is_uvc_threshold_setable() const;
+	bool is_uvc_threshold_listable() const;
 	double get_uvc_threshold() const;
 	void set_uvc_threshold(const double threshold);
-	bool is_uvc_threshold_listable() const;
+
+	bool is_measured_quantity_getable() const;
+	bool is_measured_quantity_setable() const;
+	bool is_measured_quantity_listable() const;
+	void get_measured_quantity() const;
+	void set_measured_quantity(uint mq, uint mq_flags);
 
 	bool list_regulation(QStringList &regulation_list);
 	bool list_voltage_target(double &min, double &max, double &step);
@@ -176,6 +185,8 @@ public:
 	bool list_ovp_threshold(double &min, double &max, double &step);
 	bool list_ocp_threshold(double &min, double &max, double &step);
 	bool list_uvc_threshold(double &min, double &max, double &step);
+	bool list_measured_quantity(sr_mq_flags_list_t &sr_mq_flags_list,
+		mq_flags_list_t &mq_flags_list);
 
 private:
 	Type type_;
@@ -229,6 +240,9 @@ private:
 	double uvc_threshold_min_;
 	double uvc_threshold_max_;
 	double uvc_threshold_step_;
+	// TODO: Find a better way to map MQ and MQ_FLAGS
+	sr_mq_flags_list_t sr_mq_flags_list_;
+	mq_flags_list_t mq_flags_list_;
 
 	bool is_enabled_getable_;
 	bool is_enabled_setable_;
@@ -266,6 +280,9 @@ private:
 	bool is_uvc_threshold_getable_;
 	bool is_uvc_threshold_setable_;
 	bool is_uvc_threshold_listable_;
+	bool is_measured_quantity_getable_;
+	bool is_measured_quantity_setable_;
+	bool is_measured_quantity_listable_;
 
 Q_SIGNALS:
 	void enabled_changed(const bool);

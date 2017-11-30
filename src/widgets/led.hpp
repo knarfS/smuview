@@ -39,7 +39,7 @@ class Led : public QWidget
 public:
 	Led(const bool is_state_getable,
 		QString text, QIcon on_icon, QIcon off_icon, QIcon dis_icon,
-		QWidget *parent = 0);
+		QWidget *parent = nullptr);
 
 private:
 	const bool is_state_getable_;

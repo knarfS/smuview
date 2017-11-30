@@ -65,8 +65,6 @@ void OptionalValueControl::setup_ui()
 
 	QVBoxLayout *layout = new QVBoxLayout();
 
-	qWarning() << "Button: '" << title_ << "' enabled = " << is_state_setable_;
-
 	controlButton = new widgets::ControlButton(
 		is_state_getable_, is_state_setable_);
 	controlButton->setSizePolicy(

@@ -194,6 +194,13 @@ void HardwareDevice::init_device_properties()
 		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD);
 	is_uvc_threshold_listable_ = has_list_config(
 		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD);
+
+	is_measured_quantity_getable_ = has_get_config(
+		sigrok::ConfigKey::MEASURED_QUANTITY);
+	is_measured_quantity_setable_ = has_set_config(
+		sigrok::ConfigKey::MEASURED_QUANTITY);
+	is_measured_quantity_listable_ = has_list_config(
+		sigrok::ConfigKey::MEASURED_QUANTITY);
 }
 
 void HardwareDevice::init_device_values()
@@ -224,6 +231,10 @@ void HardwareDevice::init_device_values()
 		list_config_min_max_steps(
 			sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD,
 			uvc_threshold_min_, uvc_threshold_max_, uvc_threshold_step_);
+
+	if (is_measured_quantity_listable_)
+		list_config_mq(sigrok::ConfigKey::MEASURED_QUANTITY,
+			sr_mq_flags_list_, mq_flags_list_);
 }
 
 string HardwareDevice::full_name() const
@@ -636,6 +647,21 @@ void HardwareDevice::set_uvc_threshold(const double threshold)
 		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD, threshold);
 }
 
+
+void HardwareDevice::get_measured_quantity() const
+{
+	//get_config<double>(sigrok::ConfigKey::MEASURED_QUANTITY);
+}
+
+void HardwareDevice::set_measured_quantity(uint mq, uint mq_flags)
+{
+	mq = mq;
+	mq_flags = mq_flags;
+
+	//set_config(sigrok::ConfigKey::MEASURED_QUANTITY, mq);
+}
+
+
 bool HardwareDevice::list_regulation(QStringList &regulation_list)
 {
 	if (!is_regulation_listable_)
@@ -700,11 +726,35 @@ bool HardwareDevice::list_uvc_threshold(double &min, double &max, double &step)
 	return true;
 }
 
+bool HardwareDevice::list_measured_quantity(
+	sr_mq_flags_list_t &sr_mq_flags_list, mq_flags_list_t &mq_flags_list)
+{
+	if (!is_measured_quantity_listable_)
+		return false;
+
+	sr_mq_flags_list = sr_mq_flags_list_;
+	mq_flags_list = mq_flags_list_;
+	return true;
+}
+
 
 bool HardwareDevice::is_controllable() const
 {
-	// TODO
-	return true;
+	if (type_ == Type::POWER_SUPPLY || type_ == Type::ELECTRONIC_LOAD) {
+		if (is_enabled_setable_ || is_regulation_setable_ ||
+			is_voltage_target_setable_ || is_current_limit_setable_ ||
+			is_ovp_enabled_setable_ || is_ovp_threshold_setable_ ||
+			is_ocp_enabled_setable_ || is_ocp_threshold_setable_ ||
+			is_uvc_enabled_setable_ || is_uvc_threshold_setable_)
+
+			return true;
+	}
+	else if (type_ == Type::MULTIMETER) {
+		if (is_measured_quantity_getable_ || is_measured_quantity_setable_)
+			return true;
+	}
+
+	return false;
 }
 
 
@@ -857,6 +907,22 @@ bool HardwareDevice::is_uvc_threshold_setable() const
 bool HardwareDevice::is_uvc_threshold_listable() const
 {
 	return is_uvc_threshold_listable_;
+}
+
+
+bool HardwareDevice::is_measured_quantity_getable() const
+{
+	return is_measured_quantity_getable_;
+}
+
+bool HardwareDevice::is_measured_quantity_setable() const
+{
+	return is_measured_quantity_setable_;
+}
+
+bool HardwareDevice::is_measured_quantity_listable() const
+{
+	return is_measured_quantity_listable_;
 }
 
 

@@ -50,7 +50,7 @@ private:
 
 public:
 	LcdDisplay(const uint digits, const QString unit,
-		const QString extra_text, const bool small, QWidget *parent = 0);
+		const QString extra_text, const bool small, QWidget *parent = nullptr);
 
 	void set_value(const double value);
 	void set_unit(const QString unit);

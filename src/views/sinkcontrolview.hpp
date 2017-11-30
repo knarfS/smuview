@@ -51,8 +51,8 @@ class SinkControlView : public BaseView
 
 public:
 	SinkControlView(Session& session,
-		std::shared_ptr< sv::devices::HardwareDevice > device,
-		QWidget* parent);
+		shared_ptr<devices::HardwareDevice> device,
+		QWidget* parent = nullptr);
 
 private:
 	shared_ptr<devices::HardwareDevice> device_;

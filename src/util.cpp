@@ -84,6 +84,47 @@ quantitymap_t quantitymap = {
 	{ sigrok::Quantity::HARMONIC_RATIO, QString("Harmonic Ratio") },
 };
 
+quantityflagmap_t quantityflagmap = {
+	{ sigrok::QuantityFlag::AC, QString("AC") },
+	{ sigrok::QuantityFlag::DC, QString("DC") },
+	{ sigrok::QuantityFlag::RMS, QString("RMS") },
+	// Value is voltage drop across a diode, or NAN.
+	{ sigrok::QuantityFlag::DIODE, QString("Diode") },
+	// Device is in "hold" mode (repeating the last measurement).
+	{ sigrok::QuantityFlag::HOLD, QString("Hold") },
+	// Device is in "max" mode, only updating upon a new max value.
+	{ sigrok::QuantityFlag::MAX, QString("max") },
+	// Device is in "min" mode, only updating upon a new min value.
+	{ sigrok::QuantityFlag::MIN, QString("min") },
+	{ sigrok::QuantityFlag::AUTORANGE, QString("Autorange") },
+	{ sigrok::QuantityFlag::RELATIVE, QString("Relative") },
+	// Sound pressure level is A-weighted in the frequency domain, according to IEC 61672:2003.
+	{ sigrok::QuantityFlag::SPL_FREQ_WEIGHT_A, QString("SPL A-weighted F") },
+	// Sound pressure level is C-weighted in the frequency domain, according to IEC 61672:2003.
+	{ sigrok::QuantityFlag::SPL_FREQ_WEIGHT_C, QString("SPL C-weighted F") },
+	// Sound pressure level is Z-weighted
+	{ sigrok::QuantityFlag::SPL_FREQ_WEIGHT_Z, QString("SPL Z-weighted F") },
+	// Sound pressure level is not weighted in the frequency domain, albeit without standards-defined low and high frequency limits.
+	{ sigrok::QuantityFlag::SPL_FREQ_WEIGHT_FLAT, QString("SPL flat weighted") },
+	// Sound pressure level measurement is S-weighted (1s) in the time domain.
+	{ sigrok::QuantityFlag::SPL_TIME_WEIGHT_S, QString("SPL S-weighted t") },
+	// Sound pressure level measurement is F-weighted (125ms) in the time domain.
+	{ sigrok::QuantityFlag::SPL_TIME_WEIGHT_F, QString("SPL F-weighted t") },
+	// Sound pressure level is time-averaged (LAT), also known as Equivalent Continuous A-weighted Sound Level (LEQ).
+	{ sigrok::QuantityFlag::SPL_LAT, QString("SPL LAT") },
+	// Sound pressure level represented as a percentage of measurements that were over a preset alarm level.
+	{ sigrok::QuantityFlag::SPL_PCT_OVER_ALARM, QString("SPL Over%") },
+	// Time is duration (as opposed to epoch, ...).
+	{ sigrok::QuantityFlag::DURATION, QString("Duration") },
+	// Device is in "avg" mode, averaging upon each new value.
+	{ sigrok::QuantityFlag::AVG, QString("avg") },
+	// Reference value shown.
+	{ sigrok::QuantityFlag::REFERENCE, QString("Reference") },
+	// Unstable value (hasn't settled yet).
+	{ sigrok::QuantityFlag::UNSTABLE, QString("Unstable") },
+	{ sigrok::QuantityFlag::FOUR_WIRE, QString("4W") }
+};
+
 unitmap_t unitmap = {
 	{ sigrok::Unit::VOLT, QString("V") },
 	{ sigrok::Unit::AMPERE, QString("A") },
@@ -197,6 +238,15 @@ QString format_quantity(const sigrok::Quantity *sr_quantity)
 {
 	if (quantitymap.count(sr_quantity) > 0)
 		return quantitymap[sr_quantity];
+
+	// TODO: error
+	return QString("");
+}
+
+QString format_quantityflag(const sigrok::QuantityFlag *sr_quantityflag)
+{
+	if (quantityflagmap.count(sr_quantityflag) > 0)
+		return quantityflagmap[sr_quantityflag];
 
 	// TODO: error
 	return QString("");
