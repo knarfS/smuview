@@ -110,19 +110,23 @@ Plot::Plot(data::BaseCurve *curve_data, QWidget *parent):
 {
 	valueDirectPainter_ = new QwtPlotDirectPainter();
 
-	setAutoReplot(false);
-	setCanvas(new Canvas());
+	this->setAutoReplot(false);
+	this->setCanvas(new Canvas());
 
-	plotLayout()->setAlignCanvasToScales(true);
+	// This must be done, because when the QwtPlot widget is directly or
+	// indirectly in a (Main)Window, the minimum size is way to big
+	this->setMinimumSize(250, 250);
+
+	this->plotLayout()->setAlignCanvasToScales(true);
 
 	QwtLegend *legend = new QwtLegend;
 	legend->setDefaultItemMode(QwtLegendData::Checkable);
-	insertLegend(legend, QwtPlot::BottomLegend);
+	this->insertLegend(legend, QwtPlot::BottomLegend);
 
 	// Time (x) axis
 	int x_axis_id = QwtPlot::xBottom;
-	setAxisTitle(x_axis_id, curve_data_->x_signal_title());
-	setAxisScale(x_axis_id, x_interval_.minValue(), x_interval_.maxValue());
+	this->setAxisTitle(x_axis_id, curve_data_->x_signal_title());
+	this->setAxisScale(x_axis_id, x_interval_.minValue(), x_interval_.maxValue());
 	//setAxisAutoScale(x_axis_id, true); // TODO: Not working!?
 
 	// Value (y) axis
@@ -130,9 +134,9 @@ Plot::Plot(data::BaseCurve *curve_data, QWidget *parent):
 	//QwtAxisId y_axis_id = QwtAxisId(QwtAxis::yLeft, 0); // TODO: Multiaxis
 	int y_axis_id = QwtPlot::yLeft;
 	//setAxisVisible(y_axis_id, true); // TODO: Multiaxis
-	setAxisTitle(y_axis_id, curve_data_->y_signal_title());
-	setAxisScale(y_axis_id, y_interval_.minValue(), y_interval_.maxValue());
-	setAxisAutoScale(y_axis_id, false); // TODO: Not working!?
+	this->setAxisTitle(y_axis_id, curve_data_->y_signal_title());
+	this->setAxisScale(y_axis_id, y_interval_.minValue(), y_interval_.maxValue());
+	this->setAxisAutoScale(y_axis_id, false); // TODO: Not working!?
 
 	QwtPlotGrid *grid = new QwtPlotGrid();
 	grid->setPen(Qt::gray, 0.0, Qt::DotLine);
