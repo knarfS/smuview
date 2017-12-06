@@ -21,6 +21,7 @@
 #include <fstream>
 #include <string>
 
+#include <QDir>
 #include <QFileDialog>
 #include <QFormLayout>
 
@@ -114,7 +115,7 @@ void SaveDialog::done(int result)
 	if(QDialog::Accepted == result) {
 		// Get file name
 		QString file_name = QFileDialog::getSaveFileName(this,
-			tr("Save CSV-File"), "/home/frank", tr("CSV Files (*.csv)"));
+			tr("Save CSV-File"), QDir::homePath(), tr("CSV Files (*.csv)"));
 
 		if (file_name.length() > 0) {
 			save(file_name);
