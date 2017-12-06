@@ -30,7 +30,7 @@
 #include "src/devicemanager.hpp"
 #include "src/session.hpp"
 #include "src/devices/hardwaredevice.hpp"
-#include "src/dialogs/connect.hpp"
+#include "src/dialogs/connectdialog.hpp"
 #include "src/tabs/basetab.hpp"
 #include "src/tabs/measurementtab.hpp"
 #include "src/tabs/sinktab.hpp"
@@ -273,7 +273,7 @@ void MainWindow::show_session_error(const QString text, const QString info_text)
 
 void MainWindow::on_actionAddTab_triggered()
 {
-	dialogs::Connect dlg(this, device_manager_);
+	dialogs::ConnectDialog dlg(device_manager_);
 
 	if (dlg.exec())
 		add_tab(dlg.get_selected_device());

@@ -128,7 +128,7 @@ void SourceControlView::setup_ui()
 	layout->addLayout(optCtrlLayout, 0);
 	layout->addStretch(1);
 
-	this->setLayout(layout);
+	this->centralWidget->setLayout(layout);
 }
 
 void SourceControlView::connect_signals()

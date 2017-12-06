@@ -22,6 +22,9 @@
 
 #include <memory>
 
+#include <QAction>
+#include <QToolBar>
+
 #include "src/views/baseview.hpp"
 
 using std::shared_ptr;
@@ -54,9 +57,15 @@ private:
 	shared_ptr<data::AnalogData> x_signal_data_;
 	shared_ptr<data::AnalogData> y_signal_data_;
 
+	QAction *const action_zoom_in_;
+	QAction *const action_zoom_out_;
+	QAction *const action_add_marker_;
+	QAction *const action_add_diff_marker_;
+	QToolBar *toolbar;
 	widgets::Plot *plot;
 
 	void setup_ui();
+	void setup_toolbar();
 	void connect_signals();
 	void init_values();
 

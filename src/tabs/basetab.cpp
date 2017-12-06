@@ -61,34 +61,20 @@ void BaseTab::restore_settings(QSettings &settings)
 shared_ptr<views::BaseView> BaseTab::add_view(const QString &title,
 	shared_ptr<views::BaseView> view, Qt::DockWidgetArea area, Session &session)
 {
-	//GlobalSettings settings;
+	if (!view)
+		return nullptr;
 
-	//shared_ptr<MainBar> main_bar = session.main_bar();
+	//GlobalSettings settings;
 
 	QDockWidget* dock = new QDockWidget(title, parent_);
 	dock->setObjectName(title);
 	dock->setAllowedAreas(Qt::AllDockWidgetAreas);
 	parent_->addDockWidget(area, dock);
 
-	// Insert a QMainWindow into the dock widget to allow for a tool bar
-	QMainWindow *dock_main = new QMainWindow(dock);
-	dock_main->setWindowFlags(Qt::Widget);  // Remove Qt::Window flag
-
-	/*
-	if (type == views::ViewTypeTrace)
-		// This view will be the main view if there's no main bar yet
-		view = make_shared<views::trace::View>(session,
-			(main_bar ? false : true), dock_main);
-	*/
-
-	if (!view)
-		return nullptr;
-
 	view_docks_[dock] = view;
 	//session.register_view(view);
 
-	dock_main->setCentralWidget(view.get());
-	dock->setWidget(dock_main);
+	dock->setWidget(view.get());
 
 	dock->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	dock->setContextMenuPolicy(Qt::PreventContextMenu);

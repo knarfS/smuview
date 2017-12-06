@@ -109,6 +109,7 @@ public:
 	shared_ptr<data::BaseSignal> voltage_signal() const;
 	shared_ptr<data::BaseSignal> current_signal() const;
 	shared_ptr<data::BaseSignal> measurement_signal() const;
+	vector<shared_ptr<data::BaseSignal>> all_signals() const;
 
 	bool is_controllable() const;
 

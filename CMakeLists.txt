@@ -148,7 +148,9 @@ set(smuview_SOURCES
   src/data/basesignal.cpp
   src/devices/device.cpp
   src/devices/hardwaredevice.cpp
-  src/dialogs/connect.cpp
+  src/dialogs/aboutdialog.cpp
+  src/dialogs/connectdialog.cpp
+  src/dialogs/savedialog.cpp
   src/tabs/basetab.cpp
   src/tabs/devicetab.cpp
   src/tabs/measurementtab.cpp

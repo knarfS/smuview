@@ -26,7 +26,7 @@
 #include <QLabel>
 #include <QRadioButton>
 
-#include "connect.hpp"
+#include "connectdialog.hpp"
 #include "src/devicemanager.hpp"
 
 using std::list;
@@ -46,7 +46,8 @@ using sv::devices::HardwareDevice;
 namespace sv {
 namespace dialogs {
 
-Connect::Connect(QWidget *parent, sv::DeviceManager &device_manager) :
+ConnectDialog::ConnectDialog(sv::DeviceManager &device_manager,
+		QWidget *parent) :
 	QDialog(parent),
 	device_manager_(device_manager),
 	layout_(this),
@@ -148,7 +149,7 @@ Connect::Connect(QWidget *parent, sv::DeviceManager &device_manager) :
 	layout_.addWidget(&button_box_);
 }
 
-shared_ptr<HardwareDevice> Connect::get_selected_device() const
+shared_ptr<HardwareDevice> ConnectDialog::get_selected_device() const
 {
 	const QListWidgetItem *const item = device_list_.currentItem();
 	if (!item)
@@ -157,7 +158,7 @@ shared_ptr<HardwareDevice> Connect::get_selected_device() const
 	return item->data(Qt::UserRole).value<shared_ptr<HardwareDevice>>();
 }
 
-void Connect::populate_drivers()
+void ConnectDialog::populate_drivers()
 {
 	for (auto entry : device_manager_.context()->drivers()) {
 		auto name = entry.first;
@@ -176,7 +177,7 @@ void Connect::populate_drivers()
 	}
 }
 
-void Connect::check_available_libs()
+void ConnectDialog::check_available_libs()
 {
 	gpib_avialable_ = FALSE;
 	QString libgpib("libgpib");
@@ -196,7 +197,7 @@ void Connect::check_available_libs()
 	g_slist_free(l_orig);
 }
 
-void Connect::populate_serials(shared_ptr<Driver> driver)
+void ConnectDialog::populate_serials(shared_ptr<Driver> driver)
 {
 	serial_devices_.clear();
 	for (auto serial : device_manager_.context()->serials(driver))
@@ -205,28 +206,28 @@ void Connect::populate_serials(shared_ptr<Driver> driver)
 			QString::fromStdString(serial.first));
 }
 
-void Connect::unset_connection()
+void ConnectDialog::unset_connection()
 {
 	device_list_.clear();
 	button_box_.button(QDialogButtonBox::Ok)->setDisabled(true);
 }
 
-void Connect::serial_toggled(bool checked)
+void ConnectDialog::serial_toggled(bool checked)
 {
 	serial_devices_.setEnabled(checked);
 }
 
-void Connect::tcp_toggled(bool checked)
+void ConnectDialog::tcp_toggled(bool checked)
 {
 	tcp_config_->setEnabled(checked);
 }
 
-void Connect::gpib_toggled(bool checked)
+void ConnectDialog::gpib_toggled(bool checked)
 {
 	gpib_libgpib_name_->setEnabled(checked);
 }
 
-void Connect::scan_pressed()
+void ConnectDialog::scan_pressed()
 {
 	device_list_.clear();
 
@@ -297,7 +298,7 @@ void Connect::scan_pressed()
 	button_box_.button(QDialogButtonBox::Ok)->setDisabled(device_list_.count() == 0);
 }
 
-void Connect::driver_selected(int index)
+void ConnectDialog::driver_selected(int index)
 {
 	shared_ptr<Driver> driver =
 		drivers_.itemData(index).value<shared_ptr<Driver>>();

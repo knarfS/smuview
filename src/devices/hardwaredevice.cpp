@@ -497,6 +497,21 @@ shared_ptr<data::BaseSignal> HardwareDevice::measurement_signal() const
 	return measurement_signal_;
 }
 
+vector<shared_ptr<data::BaseSignal>> HardwareDevice::all_signals() const
+{
+	// TODO: Add signal base in init_signal()
+
+	vector<shared_ptr<data::BaseSignal>> all_signals;
+
+	if (voltage_signal_)
+		all_signals.push_back(voltage_signal_);
+	if (current_signal_)
+		all_signals.push_back(current_signal_);
+	if (measurement_signal_)
+		all_signals.push_back(measurement_signal_);
+
+	return all_signals;
+}
 
 bool HardwareDevice::get_enabled() const
 {

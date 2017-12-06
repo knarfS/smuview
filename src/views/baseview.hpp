@@ -20,6 +20,7 @@
 #ifndef VIEWS_BASEVIEW_HPP
 #define VIEWS_BASEVIEW_HPP
 
+#include <QMainWindow>
 #include <QSettings>
 #include <QWidget>
 
@@ -38,12 +39,9 @@ enum ViewType {
 	ViewTypeGraph
 };
 
-class BaseView : public QWidget
+class BaseView : public QMainWindow
 {
 	Q_OBJECT
-
-private:
-	static const int MaxViewAutoUpdateRate;
 
 public:
 	explicit BaseView(Session &session, QWidget *parent = nullptr);
@@ -57,12 +55,10 @@ public:
 protected:
 	Session &session_;
 
-	typedef std::function<bool()> is_getable_caller;
-	typedef std::function<bool()> is_setable_caller;
-	typedef std::function<bool()> is_listable_caller;
-	template<typename T> using get_caller = T();
-	template<typename T> using set_caller = void(T);
-	template<typename T> using list_caller = T();
+	QWidget *centralWidget;
+
+private:
+	static const int MaxViewAutoUpdateRate;
 
 public Q_SLOTS:
 

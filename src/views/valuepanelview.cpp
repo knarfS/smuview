@@ -80,7 +80,7 @@ void ValuePanelView::setup_ui()
 
 	layout->addStretch(4);
 
-	this->setLayout(layout);
+	this->centralWidget->setLayout(layout);
 }
 
 void ValuePanelView::connect_signals()

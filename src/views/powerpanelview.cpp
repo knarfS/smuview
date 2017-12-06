@@ -134,7 +134,7 @@ void PowerPanelView::setup_ui()
 	buttonLayout->addStretch(5);
 	layout->addItem(buttonLayout);
 
-	this->setLayout(layout);
+	this->centralWidget->setLayout(layout);
 }
 
 void PowerPanelView::connect_signals()

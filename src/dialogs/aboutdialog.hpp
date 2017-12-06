@@ -1,6 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
+ * Copyright (C) 2017 Soeren Apel <soeren@apelpie.net>
  * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -17,45 +18,41 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "baseview.hpp"
-#include "src/session.hpp"
+#ifndef DIALOGS_ABOUTDIALOG_HPP
+#define DIALOGS_ABOUTDIALOG_HPP
+
+#include <QDialog>
+#include <QListWidget>
+#include <QStackedWidget>
+
+#include "src/devicemanager.hpp"
 
 namespace sv {
-namespace views {
 
-const int BaseView::MaxViewAutoUpdateRate = 25; // No more than 25 Hz
+namespace dialogs {
 
-BaseView::BaseView(Session &session, QWidget *parent) :
-		QMainWindow(parent),
-	session_(session)
+class AboutDialog : public QDialog
 {
-	// Remove Qt::Window flag
-	this->setWindowFlags(Qt::Widget);
+	Q_OBJECT
 
-	// Use a QMainWindow (in the dock widget) to allow for a tool bar
-	centralWidget = new QWidget();
-	this->setCentralWidget(centralWidget);
-}
+public:
+	AboutDialog(DeviceManager &device_manager, QWidget *parent = nullptr);
 
-Session& BaseView::session()
-{
-	return session_;
-}
+private:
+	void create_pages();
+	QWidget *get_about_page(QWidget *parent) const;
+	QWidget *get_device_page(QWidget *parent) const;
 
-const Session& BaseView::session() const
-{
-	return session_;
-}
+	DeviceManager &device_manager_;
+	QListWidget *page_list;
+	QStackedWidget *pages;
 
-void BaseView::save_settings(QSettings &settings) const
-{
-	(void)settings;
-}
+private Q_SLOTS:
+	void on_page_changed(QListWidgetItem *current, QListWidgetItem *previous);
 
-void BaseView::restore_settings(QSettings &settings)
-{
-	(void)settings;
-}
+};
 
-} // namespace views
+} // namespace dialogs
 } // namespace sv
+
+#endif // DIALOGS_ABOUTDIALOG_HPP

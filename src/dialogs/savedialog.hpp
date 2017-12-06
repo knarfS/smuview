@@ -17,45 +17,49 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "baseview.hpp"
-#include "src/session.hpp"
+#ifndef DIALOGS_SAVEDIALOG_HPP
+#define DIALOGS_SAVEDIALOG_HPP
+
+#include <memory>
+#include <vector>
+
+#include <QCloseEvent>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QString>
+
+#include "src/data/basesignal.hpp"
+
+using std::shared_ptr;
+using std::vector;
 
 namespace sv {
-namespace views {
 
-const int BaseView::MaxViewAutoUpdateRate = 25; // No more than 25 Hz
+namespace dialogs {
 
-BaseView::BaseView(Session &session, QWidget *parent) :
-		QMainWindow(parent),
-	session_(session)
+class SaveDialog : public QDialog
 {
-	// Remove Qt::Window flag
-	this->setWindowFlags(Qt::Widget);
+	Q_OBJECT
 
-	// Use a QMainWindow (in the dock widget) to allow for a tool bar
-	centralWidget = new QWidget();
-	this->setCentralWidget(centralWidget);
-}
+public:
+	SaveDialog(const vector<shared_ptr<data::BaseSignal>> selected_signals,
+		QWidget *parent = nullptr);
 
-Session& BaseView::session()
-{
-	return session_;
-}
+private:
+	void setup_ui();
+	void save(QString file_name);
+	//void closeEvent(QCloseEvent *event);
+	void done(int result);
 
-const Session& BaseView::session() const
-{
-	return session_;
-}
+	const vector<shared_ptr<data::BaseSignal>> selected_signals_;
 
-void BaseView::save_settings(QSettings &settings) const
-{
-	(void)settings;
-}
+	QDialogButtonBox *button_box_;
 
-void BaseView::restore_settings(QSettings &settings)
-{
-	(void)settings;
-}
+private Q_SLOTS:
 
-} // namespace views
+};
+
+} // namespace dialogs
 } // namespace sv
+
+#endif // DIALOGS_SAVEDIALOG_HPP

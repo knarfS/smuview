@@ -18,8 +18,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DIALOGS_CONNECT_HPP
-#define DIALOGS_CONNECT_HPP
+#ifndef DIALOGS_CONNECTDIALOG_HPP
+#define DIALOGS_CONNECTDIALOG_HPP
 
 #include <memory>
 
@@ -56,31 +56,26 @@ class HardwareDevice;
 
 namespace dialogs {
 
-class Connect : public QDialog
+class ConnectDialog : public QDialog
 {
 	Q_OBJECT
 
 public:
-	Connect(QWidget *parent, sv::DeviceManager &device_manager);
+	ConnectDialog(sv::DeviceManager &device_manager, QWidget *parent = nullptr);
 
 	shared_ptr<devices::HardwareDevice> get_selected_device() const;
 
 private:
 	void populate_drivers();
-
 	void populate_serials(shared_ptr<sigrok::Driver> driver);
-
 	void check_available_libs();
-
 	void unset_connection();
 
 private Q_SLOTS:
 	void driver_selected(int index);
-
 	void serial_toggled(bool checked);
 	void tcp_toggled(bool checked);
 	void gpib_toggled(bool checked);
-
 	void scan_pressed();
 
 private:
@@ -108,10 +103,10 @@ private:
 	QListWidget device_list_;
 
 	QDialogButtonBox button_box_;
-	
+
 };
 
 } // namespace dialogs
 } // namespace sv
 
-#endif // DIALOGS_CONNECT_HPP
+#endif // DIALOGS_CONNECTDIALOG_HPP
