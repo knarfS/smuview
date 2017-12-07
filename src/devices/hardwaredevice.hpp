@@ -286,6 +286,7 @@ private:
 	bool is_measured_quantity_listable_;
 
 Q_SIGNALS:
+	/*
 	void enabled_changed(const bool);
 	void voltage_target_changed(const double);
 	void current_limit_changed(const double);
@@ -300,7 +301,7 @@ Q_SIGNALS:
 	void uvc_enabled_changed(const bool);
 	void uvc_active_changed(const bool);
 	void uvc_threshold_changed(const double);
-
+	*/
 };
 
 } // namespace devices

@@ -167,7 +167,7 @@ void SinkControlView::connect_signals()
 	// Device -> Control elements
 	connect(device_.get(), SIGNAL(enabled_changed(const bool)),
 		enableButton, SLOT(change_state(const bool)));
-	// Regulation
+	// TODO: Regulation
 	connect(device_.get(), SIGNAL(current_limit_changed(const double)),
 		setValueControl, SLOT(change_value(const double)));
 	connect(device_.get(), SIGNAL(ovp_enabled_changed(const bool)),
@@ -203,7 +203,7 @@ void SinkControlView::init_values()
 	//	qWarning() << "SinkControlView::init_values(): Regulation = " << device_->get_regulation();
 
 	if (device_->is_current_limit_getable())
-		setValueControl->on_value_changed(device_->get_current_limit());
+		setValueControl->change_value(device_->get_current_limit());
 	if (device_->is_ovp_enabled_getable())
 		ovpControl->change_state(device_->get_ovp_enabled());
 	if (device_->is_ovp_threshold_getable())

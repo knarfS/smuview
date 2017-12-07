@@ -81,6 +81,8 @@ shared_ptr<views::BaseView> BaseTab::add_view(const QString &title,
 	dock->setFeatures(QDockWidget::DockWidgetMovable |
 		QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable);
 
+	session.device_manager();
+	/*
 	QAbstractButton *close_btn =
 		dock->findChildren<QAbstractButton*>
 			("qt_dockwidget_closebutton").front();
@@ -91,6 +93,7 @@ shared_ptr<views::BaseView> BaseTab::add_view(const QString &title,
 	connect(&session, SIGNAL(trigger_event(util::Timestamp)),
 		qobject_cast<views::BaseView*>(view.get()),
 		SLOT(trigger_event(util::Timestamp)));
+	*/
 
 	/*
 	if (type == views::ViewTypeTrace) {

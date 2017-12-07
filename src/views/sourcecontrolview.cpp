@@ -189,9 +189,9 @@ void SourceControlView::init_values()
 	if (device_->is_enabled_getable())
 		enableButton->change_state(device_->get_enabled());
 	if (device_->is_voltage_target_getable())
-		setVoltageControl->on_value_changed(device_->get_voltage_target());
+		setVoltageControl->change_value(device_->get_voltage_target());
 	if (device_->is_current_limit_getable())
-		setCurrentControl->on_value_changed(device_->get_current_limit());
+		setCurrentControl->change_value(device_->get_current_limit());
 	if (device_->is_ovp_enabled_getable())
 		ovpControl->change_state(device_->get_ovp_enabled());
 	if (device_->is_ovp_threshold_getable())
