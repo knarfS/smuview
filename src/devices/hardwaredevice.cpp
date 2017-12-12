@@ -188,12 +188,17 @@ void HardwareDevice::init_device_properties()
 		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_ACTIVE);
 	is_uvc_active_setable_ = has_set_config(
 		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_ACTIVE);
+	/*
 	is_uvc_threshold_getable_ = has_get_config(
 		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD);
 	is_uvc_threshold_setable_ = has_set_config(
 		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD);
 	is_uvc_threshold_listable_ = has_list_config(
 		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD);
+	*/
+	is_uvc_threshold_getable_ = false;
+	is_uvc_threshold_setable_ = false;
+	is_uvc_threshold_listable_ = false;
 
 	is_measured_quantity_getable_ = has_get_config(
 		sigrok::ConfigKey::MEASURED_QUANTITY);
@@ -227,10 +232,12 @@ void HardwareDevice::init_device_values()
 			sigrok::ConfigKey::OVER_CURRENT_PROTECTION_THRESHOLD,
 			ocp_threshold_min_, ocp_threshold_max_, ocp_threshold_step_);
 
+	/*
 	if (is_uvc_threshold_listable_)
 		list_config_min_max_steps(
 			sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD,
 			uvc_threshold_min_, uvc_threshold_max_, uvc_threshold_step_);
+	*/
 
 	if (is_measured_quantity_listable_)
 		list_config_mq(sigrok::ConfigKey::MEASURED_QUANTITY,
@@ -652,14 +659,21 @@ bool HardwareDevice::get_uvc_active() const
 
 double HardwareDevice::get_uvc_threshold() const
 {
+	/*
 	return get_config<double>(
 		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD);
+	*/
+	return 0;
 }
 
 void HardwareDevice::set_uvc_threshold(const double threshold)
 {
+	(void)threshold;
+
+	/*
 	set_config(
 		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD, threshold);
+	*/
 }
 
 
@@ -670,8 +684,8 @@ void HardwareDevice::get_measured_quantity() const
 
 void HardwareDevice::set_measured_quantity(uint mq, uint mq_flags)
 {
-	mq = mq;
-	mq_flags = mq_flags;
+	(void)mq;
+	(void)mq_flags;
 
 	//set_config(sigrok::ConfigKey::MEASURED_QUANTITY, mq);
 }
