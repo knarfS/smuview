@@ -426,11 +426,11 @@ shared_ptr<data::BaseSignal> HardwareDevice::init_signal(
 			shared_ptr<data::BaseSignal>>
 				(sr_channel, signal));
 
-		if (signal->internal_name().startsWith("V"))
+		if (signal->internal_name().startsWith("V") && !voltage_signal_)
 			voltage_signal_ = signal;
-		else if (signal->internal_name().startsWith("I"))
+		else if (signal->internal_name().startsWith("I") && !current_signal_)
 			current_signal_ = signal;
-		else if (signal->internal_name() == "P1")
+		else if (signal->internal_name() == "P1" && !measurement_signal_)
 			measurement_signal_ = signal;
 
 		break;
