@@ -59,8 +59,10 @@ private:
 
 	QAction *const action_zoom_in_;
 	QAction *const action_zoom_out_;
+	QAction *const action_zoom_fit_best_;
 	QAction *const action_add_marker_;
 	QAction *const action_add_diff_marker_;
+	QAction *const action_config_graph_;
 	QToolBar *toolbar;
 	widgets::Plot *plot;
 
@@ -74,6 +76,12 @@ protected:
 public Q_SLOTS:
 
 private Q_SLOTS:
+	void on_action_zoom_in_triggered();
+	void on_action_zoom_out_triggered();
+	void on_action_zoom_fit_best_triggered();
+	void on_action_add_marker_triggered();
+	void on_action_add_diff_marker_triggered();
+	void on_action_config_graph_triggered();
 
 };
 

@@ -21,10 +21,11 @@
 #ifndef WIDGETS_PLOT_HPP
 #define WIDGETS_PLOT_HPP
 
+#include <qwt_interval.h>
+#include <qwt_plot.h>
 #include <qwt_plot_curve.h>
 #include <qwt_plot_directpainter.h>
-#include <qwt_plot.h>
-#include <qwt_interval.h>
+#include <qwt_plot_marker.h>
 #include <qwt_system_clock.h>
 
 namespace sv {
@@ -60,6 +61,8 @@ public Q_SLOTS:
 	void stop();
 	void set_x_interval(double x_start, double x_end);
 	void set_y_interval(double y_start, double y_end);
+	void add_marker();
+	void on_marker_moved(QPoint p);
 
 protected:
 	virtual void showEvent(QShowEvent *);
@@ -81,6 +84,8 @@ private:
 	int plot_interval_;
 	int timer_id_;
 	PlotModes plot_mode_;
+
+	QwtPlotMarker *marker_;
 
 };
 

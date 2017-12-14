@@ -65,10 +65,18 @@ void DeviceTab::setup_toolbar()
 	connect(action_save_as_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_save_as_triggered()));
 
+	action_reset_data_->setText(tr("&Reset Data..."));
+	action_reset_data_->setIcon(
+		QIcon::fromTheme("view-refresh",
+		QIcon(":/icons/view-refresh.png")));
+	action_reset_data_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_R));
+	connect(action_reset_data_, SIGNAL(triggered(bool)),
+		this, SLOT(on_action_reset_data_triggered()));
+
 	action_add_control_view_->setText(tr("Add &Control..."));
 	action_add_control_view_->setIcon(
 		QIcon::fromTheme("modem",
-		QIcon(":/icons/document-open.png")));
+		QIcon(":/icons/modem.png")));
 	action_add_control_view_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_C));
 	connect(action_add_control_view_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_add_control_view_triggered()));
@@ -76,31 +84,23 @@ void DeviceTab::setup_toolbar()
 	action_add_panel_view_->setText(tr("Add &Panel..."));
 	action_add_panel_view_->setIcon(
 		QIcon::fromTheme("video-display",
-		QIcon(":/icons/document-open.png")));
+		QIcon(":/icons/video-display.png")));
 	action_add_panel_view_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_P));
 	connect(action_add_panel_view_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_add_panel_view_triggered()));
 
 	action_add_graph_view_->setText(tr("Add &Graph..."));
 	action_add_graph_view_->setIcon(
-		QIcon::fromTheme("document-open",
-		QIcon(":/icons/document-open.png")));
+		QIcon::fromTheme("office-chart-line",
+		QIcon(":/icons/office-chart-line.png")));
 	action_add_graph_view_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_G));
 	connect(action_add_graph_view_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_add_graph_view_triggered()));
 
-	action_reset_data_->setText(tr("&Reset Data..."));
-	action_reset_data_->setIcon(
-		QIcon::fromTheme("document-open",
-		QIcon(":/icons/document-open.png")));
-	action_reset_data_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_R));
-	connect(action_reset_data_, SIGNAL(triggered(bool)),
-		this, SLOT(on_action_reset_data_triggered()));
-
 	action_about_->setText(tr("&About..."));
 	action_about_->setIcon(
 		QIcon::fromTheme("help-about",
-		QIcon(":/icons/document-open.png")));
+		QIcon(":/icons/help-about.png")));
 	action_about_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_A));
 	connect(action_about_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_about_triggered()));
@@ -125,7 +125,7 @@ void DeviceTab::on_action_open_triggered()
 
 void DeviceTab::on_action_save_as_triggered()
 {
-	dialogs::SaveDialog dlg(device_->all_signals());
+	dialogs::SaveDialog dlg(session(), device_->all_signals());
 	dlg.exec();
 }
 

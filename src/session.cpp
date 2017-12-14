@@ -72,6 +72,11 @@ void Session::restore_settings(QSettings &settings)
 	// TODO: Restore all signal data from settings?
 }
 
+unordered_set<shared_ptr<devices::Device>> Session::devices() const
+{
+	return devices_;
+}
+
 void Session::add_device(shared_ptr<devices::HardwareDevice> device,
 	function<void (const QString)> error_handler)
 {

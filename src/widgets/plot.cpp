@@ -21,14 +21,17 @@
 #include <QDebug>
 #include <QEvent>
 #include <QRectF>
+#include <qwt_curve_fitter.h>
+#include <qwt_legend.h>
+#include <qwt_painter.h>
+#include <qwt_picker_machine.h>
+#include <qwt_plot_canvas.h>
+#include <qwt_plot_curve.h>
 #include <qwt_plot_grid.h>
 #include <qwt_plot_layout.h>
-#include <qwt_plot_canvas.h>
-#include <qwt_plot_marker.h>
-#include <qwt_plot_curve.h>
-#include <qwt_curve_fitter.h>
-#include <qwt_painter.h>
-#include <qwt_legend.h>
+#include <qwt_plot_picker.h>
+#include <qwt_scale_draw.h>
+#include <qwt_symbol.h>
 
 #include "plot.hpp"
 #include "src/data/basecurve.hpp"
@@ -40,8 +43,7 @@ namespace widgets {
 class Canvas: public QwtPlotCanvas
 {
 public:
-	Canvas(QwtPlot *plot = NULL) :
-		QwtPlotCanvas(plot)
+	Canvas(QwtPlot *plot = NULL) : QwtPlotCanvas(plot)
 	{
 		// The backing store is important, when working with widget
 		// overlays ( f.e rubberbands for zooming ).
@@ -52,13 +54,6 @@ public:
 		setBorderRadius(10);
 
 		if (QwtPainter::isX11GraphicsSystem()) {
-#if QT_VERSION < 0x050000
-			// Even if not liked by the Qt development, Qt::WA_PaintOutsidePaintEvent
-			// works on X11. This has a nice effect on the performance.
-
-			setAttribute(Qt::WA_PaintOutsidePaintEvent, true);
-#endif
-
 			// Disabling the backing store of Qt improves the performance
 			// for the direct painter even more, but the canvas becomes
 			// a native window of the window system, receiving paint events
@@ -81,16 +76,12 @@ private:
 	{
 		QPalette pal = palette();
 
-#if QT_VERSION >= 0x040400
 		QLinearGradient gradient;
 		gradient.setCoordinateMode(QGradient::StretchToDeviceMode);
 		gradient.setColorAt(0.0, QColor(0, 49, 110));
 		gradient.setColorAt(1.0, QColor(0, 87, 174));
 
 		pal.setBrush(QPalette::Window, QBrush(gradient));
-#else
-		pal.setBrush(QPalette::Window, QBrush(color));
-#endif
 
 		// QPalette::WindowText is used for the curve color
 		pal.setColor(QPalette::WindowText, Qt::green);
@@ -99,8 +90,8 @@ private:
 	}
 };
 
-Plot::Plot(data::BaseCurve *curve_data, QWidget *parent):
-	QwtPlot(parent),
+Plot::Plot(data::BaseCurve *curve_data, QWidget *parent) :
+		QwtPlot(parent),
 	curve_data_(curve_data),
 	painted_points_(0),
 	x_interval_(0.0, 30.0),
@@ -205,6 +196,44 @@ void Plot::set_y_interval(double y_start, double y_end)
 
 		//replot();
 	}
+}
+
+void Plot::add_marker()
+{
+	QwtSymbol *sym = new QwtSymbol(
+		QwtSymbol::Diamond, QBrush(Qt::red), QPen(Qt::red), QSize(5,5));
+
+	marker_ = new QwtPlotMarker(QString("Marker1"));
+	marker_->setLabel(QwtText(QString("Marker1")));
+	marker_->setLabelAlignment(Qt::AlignLeft | Qt::AlignBottom);
+	marker_->setSymbol(sym);
+	marker_->setLineStyle(QwtPlotMarker::Cross);
+	marker_->setLinePen(Qt::green, 1, Qt::DotLine);
+	marker_->setValue(2, 2);
+	marker_->attach(this);
+
+	replot();
+
+	QwtPlotPicker *picker = new QwtPlotPicker(QwtPlot::xBottom, QwtPlot::yLeft,
+		QwtPlotPicker::CrossRubberBand, QwtPicker::AlwaysOn, canvas());
+	picker->setStateMachine(new QwtPickerPolygonMachine());
+	picker->setRubberBandPen(QColor(Qt::yellow));
+	picker->setRubberBand(QwtPicker::CrossRubberBand);
+	picker->setTrackerPen(QColor(Qt::white));
+	connect(picker, SIGNAL(moved(QPoint)), this, SLOT(moved(QPoint)));
+}
+
+void Plot::on_marker_moved(QPoint p)
+{
+    double x_top = invTransform(QwtPlot::xTop, p.x());
+    double y_left = invTransform(QwtPlot::yLeft, p.y());
+    QwtText label = axisScaleDraw(QwtPlot::xBottom)->label(
+		invTransform(QwtPlot::xBottom, p.x()));
+
+    marker_->setValue(x_top, y_left);
+    marker_->setLabel(label);
+
+    replot();
 }
 
 void Plot::update_curve()
@@ -351,8 +380,6 @@ void Plot::showEvent(QShowEvent *)
 bool Plot::eventFilter(QObject *object, QEvent *event)
 {
 	if (object == canvas() && event->type() == QEvent::PaletteChange) {
-		//m_setValueCurve->setPen( Qt::green, 2.0, Qt::SolidLine );
-		//m_currentCurve->setPen( Qt::red, 2.0, Qt::SolidLine );
 		value_curve_->setPen(Qt::green, 2.0, Qt::SolidLine);
 	}
 

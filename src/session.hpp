@@ -71,6 +71,7 @@ public:
 	void save_settings(QSettings &settings) const;
 	void restore_settings(QSettings &settings);
 
+	unordered_set<shared_ptr<devices::Device>> devices() const;
 	void add_device(shared_ptr<devices::HardwareDevice> device,
 		function<void (const QString)> error_handler);
 	void remove_device(shared_ptr<devices::HardwareDevice> device);

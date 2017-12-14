@@ -23,11 +23,14 @@
 #include <memory>
 #include <vector>
 
-#include <QCloseEvent>
+#include <QCheckBox>
 #include <QDialog>
 #include <QDialogButtonBox>
+#include <QLineEdit>
 #include <QString>
+#include <QTreeWidget>
 
+#include "src/session.hpp"
 #include "src/data/basesignal.hpp"
 
 using std::shared_ptr;
@@ -42,18 +45,26 @@ class SaveDialog : public QDialog
 	Q_OBJECT
 
 public:
-	SaveDialog(const vector<shared_ptr<data::BaseSignal>> selected_signals,
+	SaveDialog(const Session &session,
+		const vector<shared_ptr<data::BaseSignal>> selected_signals,
 		QWidget *parent = nullptr);
 
 private:
 	void setup_ui();
-	void save(QString file_name);
-	//void closeEvent(QCloseEvent *event);
-	void done(int result);
+	void save(QString file_name, QString separator);
+	void save_combined(QString file_name, QString separator);
 
+	const Session &session_;
 	const vector<shared_ptr<data::BaseSignal>> selected_signals_;
 
+	QTreeWidget *signal_tree_;
+	QCheckBox *timestamps_combined_;
+	QCheckBox *time_absolut_;
+	QLineEdit *separator_edit_;
 	QDialogButtonBox *button_box_;
+
+public Q_SLOTS:
+	void accept() override;
 
 private Q_SLOTS:
 

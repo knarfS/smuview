@@ -54,8 +54,8 @@ class BaseTab : public QWidget
 public:
 	explicit BaseTab(Session &session, QMainWindow *parent = nullptr);
 
-	Session& session();
-	const Session& session() const;
+	Session &session();
+	const Session &session() const;
 
 	virtual void save_settings(QSettings &settings) const;
 

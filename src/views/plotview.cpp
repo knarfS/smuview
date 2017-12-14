@@ -39,8 +39,10 @@ PlotView::PlotView(Session &session,
 	y_signal_data_(y_signal_data),
 	action_zoom_in_(new QAction(this)),
 	action_zoom_out_(new QAction(this)),
+	action_zoom_fit_best_(new QAction(this)),
 	action_add_marker_(new QAction(this)),
-	action_add_diff_marker_(new QAction(this))
+	action_add_diff_marker_(new QAction(this)),
+	action_config_graph_(new QAction(this))
 {
 	setup_ui();
 	setup_toolbar();
@@ -69,41 +71,61 @@ void PlotView::setup_toolbar()
 {
 	action_zoom_in_->setText(tr("Zoom In..."));
 	action_zoom_in_->setIcon(
-		QIcon::fromTheme("document-open",
-		QIcon(":/icons/document-open.png")));
+		QIcon::fromTheme("zoom-in",
+		QIcon(":/icons/zoom-in.png")));
 	//action_zoom_in_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_O));
 	//connect(action_zoom_in_, SIGNAL(triggered(bool)),
 	//	this, SLOT(on_actionOpen_triggered()));
 
 	action_zoom_out_->setText(tr("Zoom Out..."));
-	action_zoom_out_->setIcon(QIcon::fromTheme("document-save-as",
-		QIcon(":/icons/document-save-as.png")));
+	action_zoom_out_->setIcon(
+		QIcon::fromTheme("zoom-out",
+		QIcon(":/icons/zoom-out.png")));
 	//action_zoom_out_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
 	//connect(action_zoom_out_, SIGNAL(triggered(bool)),
 	//	this, SLOT(on_actionSaveAs_triggered()));
 
+	action_zoom_fit_best_->setText(tr("Best fit"));
+	action_zoom_fit_best_->setIcon(
+		QIcon::fromTheme("zoom-fit-best",
+		QIcon(":/icons/zoom-fit-best.png")));
+	//action_zoom_fit_best_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_B));
+	//connect(action_zoom_fit_best_, SIGNAL(triggered(bool)),
+	//	this, SLOT(on_actionSaveAs_triggered()));
+
 	action_add_marker_->setText(tr("Add Marker..."));
 	action_add_marker_->setIcon(
-		QIcon::fromTheme("modem",
-		QIcon(":/icons/document-open.png")));
+		QIcon::fromTheme("snap-orthogonal",
+		QIcon(":/icons/orthogonal.png")));
 	//action_add_marker_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_C));
-	//connect(action_add_marker_, SIGNAL(triggered(bool)),
-	//	this, SLOT(on_actionSaveAs_triggered()));
+	connect(action_add_marker_, SIGNAL(triggered(bool)),
+		this, SLOT(on_action_add_marker_triggered()));
 
 	action_add_diff_marker_->setText(tr("Add Diff-Marker..."));
 	action_add_diff_marker_->setIcon(
-		QIcon::fromTheme("video-display",
-		QIcon(":/icons/document-open.png")));
+		QIcon::fromTheme("snap-guideline",
+		QIcon(":/icons/snap-guideline.png")));
 	//action_add_diff_marker_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_P));
 	//connect(action_add_diff_marker_, SIGNAL(triggered(bool)),
+	//	this, SLOT(on_actionSaveAs_triggered()));
+
+	action_config_graph_->setText(tr("Configure graph"));
+	action_config_graph_->setIcon(
+		QIcon::fromTheme("configure",
+		QIcon(":/icons/configure.png")));
+	//action_config_graph_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_C));
+	//connect(action_config_graph_, SIGNAL(triggered(bool)),
 	//	this, SLOT(on_actionSaveAs_triggered()));
 
 	toolbar = new QToolBar("Device Toolbar");
 	toolbar->addAction(action_zoom_in_);
 	toolbar->addAction(action_zoom_out_);
+	toolbar->addAction(action_zoom_fit_best_);
 	toolbar->addSeparator();
 	toolbar->addAction(action_add_marker_);
 	toolbar->addAction(action_add_diff_marker_);
+	toolbar->addSeparator();
+	toolbar->addAction(action_config_graph_);
 	this->addToolBar(Qt::TopToolBarArea, toolbar);
 }
 
@@ -112,6 +134,32 @@ void PlotView::connect_signals()
 }
 
 void PlotView::init_values()
+{
+}
+
+void PlotView::on_action_zoom_in_triggered()
+{
+}
+
+void PlotView::on_action_zoom_out_triggered()
+{
+}
+
+void PlotView::on_action_zoom_fit_best_triggered()
+{
+}
+
+// TODO: connect directly to plit?
+void PlotView::on_action_add_marker_triggered()
+{
+	plot->add_marker();
+}
+
+void PlotView::on_action_add_diff_marker_triggered()
+{
+}
+
+void PlotView::on_action_config_graph_triggered()
 {
 }
 
