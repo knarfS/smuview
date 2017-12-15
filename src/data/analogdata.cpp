@@ -59,19 +59,17 @@ size_t AnalogData::get_sample_count() const
 
 vector<double> AnalogData::get_samples(size_t start_sample, size_t end_sample) const
 {
-	assert(start_sample = 0);
 	assert(start_sample < sample_count_);
-	assert(end_sample = 0);
 	assert(end_sample <= sample_count_);
 	assert(start_sample <= end_sample);
 
 	//lock_guard<recursive_mutex> lock(mutex_);
 
-	vector<double>::const_iterator first = data_->begin() + 100000;
-	vector<double>::const_iterator last = data_->begin() + 101000;
+	vector<double>::const_iterator first = data_->begin() + start_sample;
+	vector<double>::const_iterator last = data_->begin() + end_sample; // + 1
+	vector<double> sub_samples(first, last);
 
-	vector<double> newVec(first, last);
-	return newVec;
+	return sub_samples;
 }
 
 double AnalogData::get_sample(size_t pos) const
