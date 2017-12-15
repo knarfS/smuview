@@ -12,7 +12,7 @@
 #
 
 
-set(QWT_LIBRARY_NAMES qwt-qt5 qwt6-qt5 qwt)
+set(QWT_LIBRARY_NAMES qwt-qt5 qwt6-qt5)
 
 find_library(QWT_LIBRARY
   NAMES ${QWT_LIBRARY_NAMES}
