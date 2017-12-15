@@ -179,23 +179,35 @@ void MainWindow::setup_ui()
 		QSize(), QIcon::Normal, QIcon::Off);
 	setWindowIcon(mainIcon);
 
-	actionExit = new QAction();
+	mainToolBar = new QToolBar();
+
+	/* QAction(QObject *parent) must have a parent for Qt < 5.7 */
+
+	actionExit = new QAction(mainToolBar);
 	QIcon exitIcon;
 	exitIcon.addFile(QStringLiteral(":/icons/application-exit.png"),
 		QSize(), QIcon::Normal, QIcon::Off);
 	actionExit->setIcon(exitIcon);
 
-	actionAbout = new QAction();
+	actionAbout = new QAction(mainToolBar);
 	QIcon aboutIcon;
 	aboutIcon.addFile(QStringLiteral(":/icons/information.svg"),
 		QSize(), QIcon::Normal, QIcon::Off);
 	actionAbout->setIcon(aboutIcon);
 
-	actionAddTab = new QAction();
+	actionAddTab = new QAction(mainToolBar);
 	QIcon tabIcon;
 	tabIcon.addFile(QStringLiteral(":/icons/window-new.png"),
 		QSize(), QIcon::Normal, QIcon::Off);
 	actionAddTab->setIcon(tabIcon);
+
+	mainToolBar->addAction(actionAddTab);
+	mainToolBar->addSeparator();
+	mainToolBar->addAction(actionAbout);
+	mainToolBar->addAction(actionExit);
+	this->addToolBar(Qt::TopToolBarArea, mainToolBar);
+	statusBar = new QStatusBar();
+	this->setStatusBar(statusBar);
 
 
 	QHBoxLayout *centralLayout = new QHBoxLayout();
@@ -218,15 +230,6 @@ void MainWindow::setup_ui()
 	centralLayout->addWidget(tabWidget);
 
 	this->setCentralWidget(centralWidget);
-
-	mainToolBar = new QToolBar();
-	mainToolBar->addAction(actionAddTab);
-	mainToolBar->addSeparator();
-	mainToolBar->addAction(actionAbout);
-	mainToolBar->addAction(actionExit);
-	this->addToolBar(Qt::TopToolBarArea, mainToolBar);
-	statusBar = new QStatusBar();
-	this->setStatusBar(statusBar);
 
 	retranslate_ui();
 
