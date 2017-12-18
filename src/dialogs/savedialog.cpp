@@ -120,8 +120,7 @@ void SaveDialog::save(QString file_name, QString separator)
 
 	// TODO: No tailing ","
 
-	for (auto signal : selected_signals_)
-	{
+	for (auto signal : selected_signals_) {
 		// TODO signal names
 		if (signal) {
 			sample_count = signal->analog_data()->get_sample_count();
@@ -134,8 +133,7 @@ void SaveDialog::save(QString file_name, QString separator)
 
 	// TODO: we asume here, that the vector size is the same for all vectors....
 
-	for (size_t i = 0; i < sample_count; i++)
-	{
+	for (size_t i = 0; i < sample_count; i++) {
 		for (size_t j = 0; j < signal_count; j++) {
 			output_file
 				<< selected_signals_.at(j)->time_data()->get_sample(i)
@@ -242,18 +240,18 @@ void SaveDialog::save_combined(QString file_name, QString separator)
 
 void SaveDialog::accept()
 {
-		// Get file name
-		QString file_name = QFileDialog::getSaveFileName(this,
-			tr("Save CSV-File"), QDir::homePath(), tr("CSV Files (*.csv)"));
+	// Get file name
+	QString file_name = QFileDialog::getSaveFileName(this,
+		tr("Save CSV-File"), QDir::homePath(), tr("CSV Files (*.csv)"));
 
-		if (file_name.length() > 0) {
-			if (timestamps_combined_->isChecked())
-				save_combined(file_name, separator_edit_->text());
-			else
-				save(file_name, separator_edit_->text());
+	if (file_name.length() > 0) {
+		if (timestamps_combined_->isChecked())
+			save_combined(file_name, separator_edit_->text());
+		else
+			save(file_name, separator_edit_->text());
 
-			QDialog::accept();
-		}
+		QDialog::accept();
+	}
 }
 
 } // namespace dialogs
