@@ -101,8 +101,15 @@ HardwareDevice::HardwareDevice(
 		sr_channels = sr_device_->channels();
 		common_time_data_ = nullptr;
 	}
+	else if (sr_keys.count(sigrok::ConfigKey::DEMO_DEV)) {
+		type_ = HardwareDevice::DEMO_DEV;
+		sr_configurable_ = sr_device_->channel_groups()["Analog"];
+		sr_channels = sr_device_->channel_groups()["Analog"]->channels();
+		common_time_data_ = nullptr;
+	}
 	else {
 		type_ = HardwareDevice::UNKNOWN;
+		assert("Unknown device");
 	}
 
 	init_device_properties();
@@ -418,6 +425,11 @@ shared_ptr<data::BaseSignal> HardwareDevice::init_signal(
 		else if (signal->internal_name() == "P1") {
 			data->set_fixed_quantity(false);
 		}
+		else if (signal->internal_name().startsWith("A")) {
+			data->set_fixed_quantity(true);
+			data->set_quantity(sigrok::Quantity::VOLTAGE);
+			data->set_unit(sigrok::Unit::VOLT);
+		}
 
 		signal->set_data(data);
 
@@ -431,6 +443,8 @@ shared_ptr<data::BaseSignal> HardwareDevice::init_signal(
 		else if (signal->internal_name().startsWith("I") && !current_signal_)
 			current_signal_ = signal;
 		else if (signal->internal_name() == "P1" && !measurement_signal_)
+			measurement_signal_ = signal;
+		else if (signal->internal_name() == "A1" && !measurement_signal_)
 			measurement_signal_ = signal;
 
 		break;
@@ -771,11 +785,10 @@ bool HardwareDevice::is_controllable() const
 {
 	if (type_ == Type::POWER_SUPPLY || type_ == Type::ELECTRONIC_LOAD) {
 		if (is_enabled_setable_ || is_regulation_setable_ ||
-			is_voltage_target_setable_ || is_current_limit_setable_ ||
-			is_ovp_enabled_setable_ || is_ovp_threshold_setable_ ||
-			is_ocp_enabled_setable_ || is_ocp_threshold_setable_ ||
-			is_uvc_enabled_setable_ || is_uvc_threshold_setable_)
-
+				is_voltage_target_setable_ || is_current_limit_setable_ ||
+				is_ovp_enabled_setable_ || is_ovp_threshold_setable_ ||
+				is_ocp_enabled_setable_ || is_ocp_threshold_setable_ ||
+				is_uvc_enabled_setable_ || is_uvc_threshold_setable_)
 			return true;
 	}
 	else if (type_ == Type::MULTIMETER) {

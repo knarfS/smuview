@@ -168,7 +168,8 @@ void ConnectDialog::populate_drivers()
 
 		bool supported_device = keys.count(ConfigKey::POWER_SUPPLY) |
 			keys.count(ConfigKey::ELECTRONIC_LOAD) |
-			keys.count(ConfigKey::MULTIMETER);
+			keys.count(ConfigKey::MULTIMETER) |
+			keys.count(ConfigKey::DEMO_DEV);
 
 		if (supported_device)
 			drivers_.addItem(QString("%1 (%2)").arg(

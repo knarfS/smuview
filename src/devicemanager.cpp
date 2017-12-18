@@ -236,7 +236,8 @@ DeviceManager::driver_scan(
 	const auto keys = sr_driver->config_keys();
 	bool supported_device = keys.count(sigrok::ConfigKey::POWER_SUPPLY) |
 		keys.count(sigrok::ConfigKey::ELECTRONIC_LOAD) |
-		keys.count(sigrok::ConfigKey::MULTIMETER);
+		keys.count(sigrok::ConfigKey::MULTIMETER) |
+		keys.count(sigrok::ConfigKey::DEMO_DEV);
 	if (!supported_device)
 		return driver_devices;
 

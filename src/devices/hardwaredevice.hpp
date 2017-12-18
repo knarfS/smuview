@@ -81,10 +81,12 @@ public:
 
 	~HardwareDevice();
 
+	// TODO: use sigrok ConfigKey?
 	enum Type {
 		POWER_SUPPLY,
 		ELECTRONIC_LOAD,
 		MULTIMETER,
+		DEMO_DEV,
 		UNKNOWN
 	};
 

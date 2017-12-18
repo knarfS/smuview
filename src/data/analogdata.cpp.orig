@@ -67,7 +67,11 @@ vector<double> AnalogData::get_samples(size_t start_sample, size_t end_sample) c
 	//lock_guard<recursive_mutex> lock(mutex_);
 
 	vector<double>::const_iterator first = data_->begin() + start_sample;
+<<<<<<< HEAD
 	vector<double>::const_iterator last = data_->begin() + end_sample; // + 1
+=======
+	vector<double>::const_iterator last = data_->begin() + end_sample;
+>>>>>>> 2d05eb5... Adding demo device
 	vector<double> sub_samples(first, last);
 
 	return sub_samples;

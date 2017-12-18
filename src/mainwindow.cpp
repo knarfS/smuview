@@ -129,7 +129,7 @@ shared_ptr<devices::Device> MainWindow::add_tab(
 		type = tabs::TabTypeSource;
 	else if (keys.count(sigrok::ConfigKey::ELECTRONIC_LOAD))
 		type = tabs::TabTypeSink;
-	else
+	else //TODO
 		type = tabs::TabTypeMeasurement;
 
 	QMainWindow *window = new QMainWindow();
