@@ -149,6 +149,7 @@ set(smuview_SOURCES
   src/devices/device.cpp
   src/devices/hardwaredevice.cpp
   src/dialogs/aboutdialog.cpp
+  src/dialogs/addviewdialog.cpp
   src/dialogs/connectdialog.cpp
   src/dialogs/savedialog.cpp
   src/tabs/basetab.cpp
