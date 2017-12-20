@@ -203,6 +203,7 @@ private:
 	shared_ptr<data::BaseSignal> voltage_signal_;
 	shared_ptr<data::BaseSignal> current_signal_;
 	shared_ptr<data::BaseSignal> measurement_signal_;
+	vector<shared_ptr<data::BaseSignal>> all_signals_;
 
 	shared_ptr<data::AnalogData> init_time_data();
 	shared_ptr<data::BaseSignal> init_signal(

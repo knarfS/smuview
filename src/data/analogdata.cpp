@@ -134,76 +134,11 @@ void AnalogData::push_sample(void *sample,
 	}
 }
 
-
-void AnalogData::push_samples(float *sample, size_t sample_count)
-{
-	double dsample = (double) *(float*)sample;
-
-	 * qWarning() << "AnalogData::push_samples(): sample = " << dsample;
-	 * qWarning() << "AnalogData::push_samples(): sample_count_ = " << sample_count_;
-
-	last_value_ = dsample;
-	if (min_value_ > dsample)
-		min_value_ = dsample;
-	if (max_value_ < dsample)
-		max_value_ = dsample;
-
-	 * qWarning() << "AnalogData::push_samples(): last_value_ = " << last_value_;
-	 * qWarning() << "AnalogData::push_samples(): min_value_ = " << min_value_;
-	 * qWarning() << "AnalogData::push_samples(): max_value_ = " << max_value_;
-
-	data_->push_back(dsample);
-	sample_count_++;
-
-	qWarning() << "AnalogData::push_samples(): sample_count_ = " << sample_count_;
-
-
-	/*
-	//lock_guard<recursive_mutex> lock(mutex_);
-
-	const uint8_t* data_byte_ptr = (uint8_t*)data;
-	uint64_t remaining_samples = samples;
-	uint64_t data_offset = 0;
-
-	do {
-		uint64_t copy_count = 0;
-
-		if (remaining_samples <= unused_samples_) {
-			// All samples fit into the current chunk
-			copy_count = remaining_samples;
-		} else {
-			// Only a part of the samples fit, fill up current chunk
-			copy_count = unused_samples_;
-		}
-
-		const uint8_t* dest = &(current_chunk_[used_samples_ * unit_size_]);
-		const uint8_t* src = &(data_byte_ptr[data_offset]);
-		memcpy((void*)dest, (void*)src, (copy_count * unit_size_));
-
-		used_samples_ += copy_count;
-		unused_samples_ -= copy_count;
-		remaining_samples -= copy_count;
-		data_offset += (copy_count * unit_size_);
-
-		if (unused_samples_ == 0) {
-			// If we're out of memory, this will throw std::bad_alloc
-			current_chunk_ = new uint8_t[chunk_size_];
-			data_chunks_.push_back(current_chunk_);
-			used_samples_ = 0;
-			unused_samples_ = chunk_size_ / unit_size_;
-		}
-	} while (remaining_samples > 0);
-
-	sample_count_ += samples;
-	*/
-}
-
-void AnalogData::push_interleaved_samples(const float *data,//void *data,
+void AnalogData::push_interleaved_samples(/*const*/ float *samples,//void *data,
 	size_t sample_count, size_t stride,
 	const sigrok::Quantity *sr_quantity, const sigrok::Unit *sr_unit)
 {
-	assert(unit_size_ == sizeof(float));
-
+	//assert(unit_size_ == sizeof(float));
 
 	if (sr_quantity != sr_quantity_) {
 		set_quantity(sr_quantity);
@@ -217,19 +152,13 @@ void AnalogData::push_interleaved_samples(const float *data,//void *data,
 
 	//lock_guard<recursive_mutex> lock(mutex_);
 
-	uint64_t prev_sample_count = sample_count_;
+	//uint64_t prev_sample_count = sample_count_;
 
 	// Deinterleave the samples and add them
-	unique_ptr<float> deint_data(new float[sample_count]);
-	float *deint_data_ptr = deint_data.get();
 	for (uint32_t i = 0; i < sample_count; i++) {
-		*deint_data_ptr = (float)(*data);
-		deint_data_ptr++;
-		data += stride;
+		push_sample(samples);
+		samples += stride;
 	}
-
-	append_samples(deint_data.get(), sample_count);
-
 }
 
 void AnalogData::set_fixed_quantity(bool fixed)

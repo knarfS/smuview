@@ -433,6 +433,7 @@ shared_ptr<data::BaseSignal> HardwareDevice::init_signal(
 
 		signal->set_data(data);
 
+		all_signals_.push_back(signal);
 		channel_data_.insert(pair<
 			shared_ptr<sigrok::Channel>,
 			shared_ptr<data::BaseSignal>>
@@ -520,18 +521,7 @@ shared_ptr<data::BaseSignal> HardwareDevice::measurement_signal() const
 
 vector<shared_ptr<data::BaseSignal>> HardwareDevice::all_signals() const
 {
-	// TODO: Add signal base in init_signal()
-
-	vector<shared_ptr<data::BaseSignal>> all_signals;
-
-	if (voltage_signal_)
-		all_signals.push_back(voltage_signal_);
-	if (current_signal_)
-		all_signals.push_back(current_signal_);
-	if (measurement_signal_)
-		all_signals.push_back(measurement_signal_);
-
-	return all_signals;
+	return all_signals_;
 }
 
 bool HardwareDevice::get_enabled() const

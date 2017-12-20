@@ -393,9 +393,7 @@ void Device::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
 	//const size_t sample_count = sr_analog->num_samples() / channel_count;
 
 	unique_ptr<float> data(new float[sr_analog->num_samples()]);
-	qWarning() << "Device::feed_in_analog(): -1-";
 	sr_analog->get_data_as_float(data.get());
-	qWarning() << "Device::feed_in_analog(): -2-";
 
 	float *channel_data = data.get();
 	for (auto sr_channel : sr_channels) {
@@ -416,23 +414,21 @@ void Device::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
 		}
 
 		actual_processed_signal_ = channel_data_[sr_channel];
-		qWarning() << "Device::feed_in_analog(): -3- channel_data = " << channel_data;
 		qWarning() << "Device::feed_in_analog(): -3- name = " << actual_processed_signal_->name();
 		qWarning() << "Device::feed_in_analog(): -3- count = " << actual_processed_signal_->analog_data()->get_sample_count();
-		//qWarning() << "Device::feed_in_analog(): -3- mq = " << sr_analog->mq();
-		//qWarning() << "Device::feed_in_analog(): -3- unit = " << sr_analog->unit();
+
+		/*
+		actual_processed_signal_->analog_data()->push_interleaved_samples(
+			channel_data, sample_count,channel_count,
+			sr_analog->mq(), sr_analog->unit());
+		*/
 		actual_processed_signal_->analog_data()->push_sample(channel_data,
 			sr_analog->mq(), sr_analog->unit());
-		qWarning() << "Device::feed_in_analog(): -4-";
 		channel_data++;
-		qWarning() << "Device::feed_in_analog(): -5-";
 
 		// Timestamp for values not in a FRAME
-		if (!frame_began_) {
-			qWarning() << "Device::feed_in_analog(): -6-";
+		if (!frame_began_)
 			actual_processed_signal_->add_timestamp();
-			qWarning() << "Device::feed_in_analog(): -7-";
-		}
 
 		/*
 		Q_EMIT data_received(segment);

@@ -50,6 +50,9 @@ public:
 	void push_sample(void *sample);
 	void push_sample(void *sample,
 		const sigrok::Quantity *sr_quantity, const sigrok::Unit *sr_unit);
+	void push_interleaved_samples(float *samples,
+		size_t sample_count, size_t stride,
+		const sigrok::Quantity *sr_quantity, const sigrok::Unit *sr_unit);
 
 	void set_fixed_quantity(bool fixed);
 	void set_quantity(const sigrok::Quantity *sr_quantity);
