@@ -30,7 +30,7 @@
 namespace sv {
 namespace views {
 
-PlotView::PlotView(Session &session,
+PlotView::PlotView(const Session &session,
 	shared_ptr<data::AnalogData> x_signal_data,
 	shared_ptr<data::AnalogData> y_signal_data,
 	QWidget *parent) :

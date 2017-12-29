@@ -28,6 +28,7 @@
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
+#include <QString>
 #include <QStringList>
 
 #include "device.hpp"
@@ -95,7 +96,12 @@ public:
 	/**
 	 * Builds the full name. It only contains all the fields.
 	 */
-	string full_name() const;
+	QString full_name() const;
+
+	/**
+	 * Builds the short name.
+	 */
+	QString short_name() const;
 
 	/**
 	 * Builds the display name. It only contains fields as required.

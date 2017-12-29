@@ -61,7 +61,7 @@ private:
 	QAction *const action_save_as_;
 	QAction *const action_add_control_view_;
 	QAction *const action_add_panel_view_;
-	QAction *const action_add_graph_view_;
+	QAction *const action_add_plot_view_;
 	QAction *const action_reset_data_;
 	QAction *const action_about_;
 	QToolBar *toolbar;
@@ -73,7 +73,7 @@ private Q_SLOTS:
 	void on_action_save_as_triggered();
 	void on_action_add_control_view_triggered();
 	void on_action_add_panel_view_triggered();
-	void on_action_add_graph_view_triggered();
+	void on_action_add_plot_view_triggered();
 	void on_action_reset_data_triggered();
 	void on_action_about_triggered();
 

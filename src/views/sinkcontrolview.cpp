@@ -33,7 +33,7 @@
 namespace sv {
 namespace views {
 
-SinkControlView::SinkControlView(Session &session,
+SinkControlView::SinkControlView(const Session &session,
 	shared_ptr<devices::HardwareDevice> device, QWidget *parent) :
 		BaseView(session, parent),
 	device_(device)

@@ -31,7 +31,7 @@
 namespace sv {
 namespace views {
 
-ValuePanelView::ValuePanelView(Session &session,
+ValuePanelView::ValuePanelView(const Session &session,
 	shared_ptr<data::BaseSignal> value_signal,
 	QWidget *parent) :
 		BaseView(session, parent),

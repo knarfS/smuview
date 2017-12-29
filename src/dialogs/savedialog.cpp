@@ -66,7 +66,7 @@ void SaveDialog::setup_ui(){
 
 		// QTreeWidgetItem(QTreeWidget * parent, int type = Type)
 		QTreeWidgetItem *device_item = new QTreeWidgetItem(signal_tree_);
-		device_item->setText(0, QString::fromStdString(device->full_name()));
+		device_item->setText(0, device->full_name());
 		device_item->setText(1, "");
 
 		auto hw_device = static_pointer_cast<devices::HardwareDevice>(device);

@@ -48,7 +48,7 @@ class PlotView : public BaseView
 	Q_OBJECT
 
 public:
-	PlotView(Session& session,
+	PlotView(const Session& session,
 		shared_ptr<data::AnalogData> x_signal_data,
 		shared_ptr<data::AnalogData> y_signal_data,
 		QWidget* parent = nullptr);

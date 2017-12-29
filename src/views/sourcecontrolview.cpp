@@ -31,7 +31,7 @@
 namespace sv {
 namespace views {
 
-SourceControlView::SourceControlView(Session &session,
+SourceControlView::SourceControlView(const Session &session,
 	shared_ptr<devices::HardwareDevice> device, QWidget *parent) :
 		BaseView(session, parent),
 	device_(device)

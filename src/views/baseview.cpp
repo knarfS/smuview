@@ -25,7 +25,7 @@ namespace views {
 
 const int BaseView::MaxViewAutoUpdateRate = 25; // No more than 25 Hz
 
-BaseView::BaseView(Session &session, QWidget *parent) :
+BaseView::BaseView(const Session &session, QWidget *parent) :
 		QMainWindow(parent),
 	session_(session)
 {
@@ -35,11 +35,6 @@ BaseView::BaseView(Session &session, QWidget *parent) :
 	// Use a QMainWindow (in the dock widget) to allow for a tool bar
 	centralWidget = new QWidget();
 	this->setCentralWidget(centralWidget);
-}
-
-Session& BaseView::session()
-{
-	return session_;
 }
 
 const Session& BaseView::session() const

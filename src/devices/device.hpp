@@ -29,6 +29,8 @@
 #include <thread>
 #include <unordered_set>
 
+#include <QString>
+
 using std::function;
 using std::map;
 using std::mutex;
@@ -42,6 +44,7 @@ using std::vector;
 namespace sigrok {
 class Analog;
 class Channel;
+class ChannelGroup;
 class ConfigKey;
 class Configurable;
 class Context;
@@ -105,7 +108,12 @@ public:
 	/**
 	 * Builds the full name. It only contains all the fields.
 	 */
-	virtual string full_name() const = 0;
+	virtual QString full_name() const = 0;
+
+	/**
+	 * Builds the short name.
+	 */
+	virtual QString short_name() const = 0;
 
 	/**
 	 * Builds the display name. It only contains fields as required.
@@ -137,7 +145,9 @@ protected:
 	const shared_ptr<sigrok::Context> sr_context_;
 	shared_ptr<sigrok::Session> sr_session_;
 	shared_ptr<sigrok::Device> sr_device_;
+	vector<shared_ptr<sigrok::ChannelGroup>> sr_channel_groups_;
 	shared_ptr<sigrok::Configurable> sr_configurable_;
+	vector<shared_ptr<sigrok::Configurable>> sr_configurables_;
 	map<shared_ptr<sigrok::Channel>, shared_ptr<data::BaseSignal>> channel_data_; // TODO: Rename
 
 	std::thread aquisition_thread_;

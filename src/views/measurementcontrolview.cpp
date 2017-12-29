@@ -29,7 +29,7 @@
 namespace sv {
 namespace views {
 
-MeasurementControlView::MeasurementControlView(Session &session,
+MeasurementControlView::MeasurementControlView(const Session &session,
 		shared_ptr<devices::HardwareDevice> device, QWidget *parent) :
 	BaseView(session, parent),
 	device_(device)

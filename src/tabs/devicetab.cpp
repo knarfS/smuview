@@ -23,6 +23,7 @@
 #include "src/session.hpp"
 #include "src/data/analogdata.hpp"
 #include "src/data/basesignal.hpp"
+#include "src/dialogs/addviewdialog.hpp"
 #include "src/dialogs/aboutdialog.hpp"
 #include "src/dialogs/savedialog.hpp"
 
@@ -37,7 +38,7 @@ DeviceTab::DeviceTab(Session &session,
 	action_save_as_(new QAction(this)),
 	action_add_control_view_(new QAction(this)),
 	action_add_panel_view_(new QAction(this)),
-	action_add_graph_view_(new QAction(this)),
+	action_add_plot_view_(new QAction(this)),
 	action_reset_data_(new QAction(this)),
 	action_about_(new QAction(this))
 {
@@ -75,8 +76,8 @@ void DeviceTab::setup_toolbar()
 
 	action_add_control_view_->setText(tr("Add &Control..."));
 	action_add_control_view_->setIcon(
-		QIcon::fromTheme("modem",
-		QIcon(":/icons/modem.png")));
+		QIcon::fromTheme("multimedia-volume-control",
+		QIcon(":/icons/multimedia-volume-control.png")));
 	action_add_control_view_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_C));
 	connect(action_add_control_view_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_add_control_view_triggered()));
@@ -89,13 +90,13 @@ void DeviceTab::setup_toolbar()
 	connect(action_add_panel_view_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_add_panel_view_triggered()));
 
-	action_add_graph_view_->setText(tr("Add &Graph..."));
-	action_add_graph_view_->setIcon(
+	action_add_plot_view_->setText(tr("Add P&lot..."));
+	action_add_plot_view_->setIcon(
 		QIcon::fromTheme("office-chart-line",
 		QIcon(":/icons/office-chart-line.png")));
-	action_add_graph_view_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_G));
-	connect(action_add_graph_view_, SIGNAL(triggered(bool)),
-		this, SLOT(on_action_add_graph_view_triggered()));
+	action_add_plot_view_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_L));
+	connect(action_add_plot_view_, SIGNAL(triggered(bool)),
+		this, SLOT(on_action_add_plot_view_triggered()));
 
 	action_about_->setText(tr("&About..."));
 	action_about_->setIcon(
@@ -113,7 +114,7 @@ void DeviceTab::setup_toolbar()
 	toolbar->addSeparator();
 	toolbar->addAction(action_add_control_view_);
 	toolbar->addAction(action_add_panel_view_);
-	toolbar->addAction(action_add_graph_view_);
+	toolbar->addAction(action_add_plot_view_);
 	toolbar->addSeparator();
 	toolbar->addAction(action_about_);
 	parent_->addToolBar(Qt::TopToolBarArea, toolbar);
@@ -131,14 +132,29 @@ void DeviceTab::on_action_save_as_triggered()
 
 void DeviceTab::on_action_add_control_view_triggered()
 {
+	dialogs::AddViewDialog dlg(session(), device_, 0);
+	dlg.exec();
+
+	add_view(dlg.view_title(), dlg.view(),
+		Qt::TopDockWidgetArea, session_);
 }
 
 void DeviceTab::on_action_add_panel_view_triggered()
 {
+	dialogs::AddViewDialog dlg(session(), device_, 1);
+	dlg.exec();
+
+	add_view(dlg.view_title(), dlg.view(),
+		Qt::TopDockWidgetArea, session_);
 }
 
-void DeviceTab::on_action_add_graph_view_triggered()
+void DeviceTab::on_action_add_plot_view_triggered()
 {
+	dialogs::AddViewDialog dlg(session(), device_, 2);
+	dlg.exec();
+
+	add_view(dlg.view_title(), dlg.view(),
+		Qt::TopDockWidgetArea, session_);
 }
 
 void DeviceTab::on_action_reset_data_triggered()

@@ -22,6 +22,7 @@
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
 #include <QDebug>
+#include <QString>
 
 #include "analogdata.hpp"
 #include "src/util.hpp"

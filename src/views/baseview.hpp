@@ -36,7 +36,7 @@ enum ViewType {
 	ViewTypeSourceControl,
 	ViewTypeValuePanel,
 	ViewTypePowerPanel,
-	ViewTypeGraph
+	ViewTypePlot
 };
 
 class BaseView : public QMainWindow
@@ -44,16 +44,15 @@ class BaseView : public QMainWindow
 	Q_OBJECT
 
 public:
-	explicit BaseView(Session &session, QWidget *parent = nullptr);
+	explicit BaseView(const Session &session, QWidget *parent = nullptr);
 
-	Session& session();
 	const Session& session() const;
 
 	virtual void save_settings(QSettings &settings) const;
 	virtual void restore_settings(QSettings &settings);
 
 protected:
-	Session &session_;
+	const Session &session_;
 
 	QWidget *centralWidget;
 

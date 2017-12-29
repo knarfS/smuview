@@ -20,12 +20,27 @@
 #ifndef DIALOGS_ADDVIEWDIALOG_HPP
 #define DIALOGS_ADDVIEWDIALOG_HPP
 
+#include <memory>
+
 #include <QDialog>
 #include <QDialogButtonBox>
+#include <QString>
+#include <QTabWidget>
+#include <QTreeWidget>
 
 #include "src/session.hpp"
 
+using std::shared_ptr;
+
 namespace sv {
+
+namespace devices {
+class HardwareDevice;
+}
+
+namespace views {
+class BaseView;
+}
 
 namespace dialogs {
 
@@ -34,13 +49,30 @@ class AddViewDialog : public QDialog
 	Q_OBJECT
 
 public:
-	AddViewDialog(const Session &session, QWidget *parent = nullptr);
+	AddViewDialog(const Session &session,
+		const shared_ptr<devices::HardwareDevice> device,
+		int selected_view_type,
+		QWidget *parent = nullptr);
+
+	QString view_title();
+	shared_ptr<views::BaseView> view();
 
 private:
 	void setup_ui();
+	void setup_ui_control_tab();
+	void setup_ui_panel_tab();
+	void setup_ui_plot_tab();
+	QTreeWidget * setup_ui_signal_tree();
 
 	const Session &session_;
+	const shared_ptr<devices::HardwareDevice> device_;
+	int selected_view_type_; // TODO
+	QString view_title_;
+	shared_ptr<views::BaseView> view_;
 
+	QTabWidget *tab_widget_;
+	QTreeWidget *panel_signal_tree_;
+	QTreeWidget *plot_signal_tree_;
 	QDialogButtonBox *button_box_;
 
 public Q_SLOTS:

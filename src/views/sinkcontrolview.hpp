@@ -50,7 +50,7 @@ class SinkControlView : public BaseView
 	Q_OBJECT
 
 public:
-	SinkControlView(Session& session,
+	SinkControlView(const Session& session,
 		shared_ptr<devices::HardwareDevice> device,
 		QWidget* parent = nullptr);
 

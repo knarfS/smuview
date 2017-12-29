@@ -53,7 +53,7 @@ class MeasurementControlView : public BaseView
 	Q_OBJECT
 
 public:
-	MeasurementControlView(Session& session,
+	MeasurementControlView(const Session& session,
 		shared_ptr<devices::HardwareDevice> device,
 		QWidget* parent = nullptr);
 

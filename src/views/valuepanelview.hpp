@@ -48,7 +48,7 @@ class ValuePanelView : public BaseView
 	Q_OBJECT
 
 public:
-	ValuePanelView(Session& session,
+	ValuePanelView(const Session& session,
 		shared_ptr<data::BaseSignal> value_signal,
 		QWidget* parent = nullptr);
 	~ValuePanelView();

@@ -40,6 +40,7 @@ using std::bad_alloc;
 using std::dynamic_pointer_cast;
 using std::lock_guard;
 using std::make_shared;
+using std::map;
 using std::pair;
 using std::set;
 using std::shared_ptr;
@@ -61,6 +62,15 @@ HardwareDevice::HardwareDevice(
 {
 	// TODO: sigrok::Device and not sigrok::HardwareDevice in constructor?? then cast...
 	sr_device_ = sr_device;
+
+	map<string, shared_ptr<sigrok::ChannelGroup>> sr_cgs =
+		sr_device_->channel_groups();
+
+	map<string, shared_ptr<sigrok::ChannelGroup>>::iterator it = sr_cgs.begin();
+	for (; it != sr_cgs.end(); ++it) {
+		sr_channel_groups_.push_back(it->second);
+	}
+
 	vector<shared_ptr<sigrok::Channel>> sr_channels;
 	shared_ptr<data::AnalogData> common_time_data_; // TODO: Per channel group?
 
@@ -251,14 +261,70 @@ void HardwareDevice::init_device_values()
 			sr_mq_flags_list_, mq_flags_list_);
 }
 
-string HardwareDevice::full_name() const
+QString HardwareDevice::full_name() const
 {
-	vector<string> parts = {
-		sr_device_->vendor(), sr_device_->model(),
-		sr_device_->version(), sr_device_->serial_number() };
-	if (sr_device_->connection_id().length() > 0)
-		parts.push_back("(" + sr_device_->connection_id() + ")");
-	return join(parts, " ");
+	QString sep("");
+	QString name("");
+
+	if (sr_device_->vendor().length() > 0) {
+		name.append(QString::fromStdString(sr_device_->vendor()));
+		name.append(sep);
+		sep = QString(" ");
+	}
+
+	if (sr_device_->model().length() > 0) {
+		name.append(QString::fromStdString(sr_device_->model()));
+		name.append(sep);
+		sep = QString(" ");
+	}
+
+	if (sr_device_->version().length() > 0) {
+		name.append(QString::fromStdString(sr_device_->version()));
+		name.append(sep);
+		sep = QString(" ");
+	}
+
+	if (sr_device_->serial_number().length() > 0) {
+		name.append(QString::fromStdString(sr_device_->serial_number()));
+		name.append(sep);
+		sep = QString(" ");
+	}
+
+	if (sr_device_->connection_id().length() > 0) {
+		name.append(sep);
+		name.append("(");
+		name.append(QString::fromStdString(sr_device_->connection_id()));
+		name.append(")");
+	}
+
+	return name;
+}
+
+QString HardwareDevice::short_name() const
+{
+	QString sep("");
+	QString name("");
+
+	if (sr_device_->vendor().length() > 0) {
+		name.append(QString::fromStdString(sr_device_->vendor()));
+		name.append(sep);
+		sep = QString(" ");
+	}
+
+	if (sr_device_->model().length() > 0) {
+		name.append(QString::fromStdString(sr_device_->model()));
+		name.append(sep);
+		sep = QString(" ");
+	}
+
+	if (sr_device_->connection_id().length() > 0) {
+		name.append(sep);
+		name.append("(");
+		name.append(QString::fromStdString(sr_device_->connection_id()));
+		name.append(")");
+	}
+
+	return name;
 }
 
 shared_ptr<sigrok::HardwareDevice> HardwareDevice::sr_hardware_device() const
