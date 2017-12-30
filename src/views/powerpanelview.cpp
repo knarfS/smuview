@@ -63,6 +63,11 @@ PowerPanelView::~PowerPanelView()
 	stop_timer();
 }
 
+QString PowerPanelView::title() const
+{
+	return tr("Power Panel"); // TODO: channel group name
+}
+
 void PowerPanelView::setup_ui()
 {
 	// TODO: This is good enough for 7.5 digit multimeters, but should really

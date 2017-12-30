@@ -52,6 +52,11 @@ PlotView::PlotView(const Session &session,
 	plot->start();
 }
 
+QString PlotView::title() const
+{
+	return tr("Plot"); // TODO: + Quantity
+}
+
 void PlotView::setup_ui()
 {
 	QVBoxLayout *layout = new QVBoxLayout();

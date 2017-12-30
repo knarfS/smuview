@@ -135,8 +135,8 @@ QTreeWidget * AddViewDialog::setup_ui_signal_tree()
 		map<string, shared_ptr<sigrok::ChannelGroup>>::iterator it = sr_cgs.begin();
 		for (; it != sr_cgs.end(); ++it) {
 			QTreeWidgetItem *cg_item = new QTreeWidgetItem();
-			cg_item->setText(0, it->first);
-			cg_item->setText(1, it->first);
+			cg_item->setText(0, QString::fromStdString(it->first));
+			cg_item->setText(1, QString::fromStdString(it->first));
 
 			//QVariant var = QVariant::fromValue(signal);
 			//signal_item->setData(0, Qt::UserRole, var);
@@ -160,11 +160,6 @@ QTreeWidget * AddViewDialog::setup_ui_signal_tree()
 	return signal_tree;
 }
 
-QString AddViewDialog::view_title()
-{
-	return view_title_;
-}
-
 shared_ptr<views::BaseView> AddViewDialog::view()
 {
 	return view_;
@@ -184,8 +179,6 @@ void AddViewDialog::accept()
 				value<shared_ptr<data::BaseSignal>>();
 			break; // SingleSelect
 		}
-		view_title_ = QString("%1 - %2").
-			arg(signal->name()).arg(device_->short_name());
 		view_ = make_shared<views::ValuePanelView>(session_, signal);
 		break;
 	case 2:
@@ -194,8 +187,6 @@ void AddViewDialog::accept()
 				value<shared_ptr<data::BaseSignal>>();
 			break; // SingleSelect
 		}
-		view_title_ = QString("%1 - %2").
-			arg(signal->name()).arg(device_->short_name());
 		view_ = make_shared<views::PlotView>(session_,
 			signal->time_data(), signal->analog_data());
 		break;

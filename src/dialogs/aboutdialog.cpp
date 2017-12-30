@@ -32,13 +32,18 @@
 
 #include "aboutdialog.hpp"
 #include "config.h"
+#include "src/data/basesignal.hpp"
+#include "src/devices/hardwaredevice.hpp"
 
 namespace sv {
 namespace dialogs {
 
-AboutDialog::AboutDialog(DeviceManager &device_manager, QWidget *parent) :
+AboutDialog::AboutDialog(DeviceManager &device_manager,
+		shared_ptr<devices::HardwareDevice> device,
+		QWidget *parent) :
 	QDialog(parent),
-	device_manager_(device_manager)
+	device_manager_(device_manager),
+	device_(device)
 {
 	const int icon_size = 64;
 
@@ -74,6 +79,17 @@ AboutDialog::AboutDialog(DeviceManager &device_manager, QWidget *parent) :
 
 void AboutDialog::create_pages()
 {
+	// Device page
+	if (device_) {
+		pages->addWidget(get_device_page(pages));
+
+		QListWidgetItem *deviceButton = new QListWidgetItem(page_list);
+		deviceButton->setIcon(QIcon(":/icons/device.svg"));
+		deviceButton->setText(tr("Device"));
+		deviceButton->setTextAlignment(Qt::AlignHCenter);
+		deviceButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+	}
+
 	// About page
 	pages->addWidget(get_about_page(pages));
 
@@ -82,17 +98,6 @@ void AboutDialog::create_pages()
 	aboutButton->setText(tr("About"));
 	aboutButton->setTextAlignment(Qt::AlignHCenter);
 	aboutButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-
-	// View page
-	/*
-	pages->addWidget(get_device_page(pages));
-
-	QListWidgetItem *viewButton = new QListWidgetItem(page_list);
-	viewButton->setIcon(QIcon(":/icons/settings-views.svg"));
-	viewButton->setText(tr("Views"));
-	viewButton->setTextAlignment(Qt::AlignHCenter);
-	viewButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-	*/
 }
 
 QWidget *AboutDialog::get_about_page(QWidget *parent) const
@@ -209,8 +214,106 @@ QWidget *AboutDialog::get_about_page(QWidget *parent) const
 
 QWidget *AboutDialog::get_device_page(QWidget *parent) const
 {
-	(void)parent;
-	return nullptr;
+	QLabel *icon = new QLabel();
+	icon->setPixmap(QPixmap(QString::fromUtf8(":/icons/pulseview.svg")));
+
+	// Device info
+	shared_ptr<sigrok::HardwareDevice> sr_device = device_->sr_hardware_device();
+	QString device_info_text("<b>");
+
+	if (sr_device->version().length() > 0) {
+		device_info_text.append(QString("%1 ").arg(
+			QString::fromStdString(sr_device->vendor())));
+	}
+	device_info_text.append(QString("%1</b>").arg(
+		QString::fromStdString(sr_device->model())));
+	if (sr_device->version().length() > 0) {
+		device_info_text.append(QString(" (%1)").arg(
+			QString::fromStdString(sr_device->version())));
+	}
+
+	if (sr_device->serial_number().length() > 0) {
+		device_info_text.append(QString("<br /><b>" + tr("Serial Number") + ":</b> %1").arg(
+			QString::fromStdString(sr_device->serial_number())));
+	}
+	if (sr_device->connection_id().length() > 0) {
+		device_info_text.append(QString("<br /><b>" + tr("Connection") + ":</b> %1").arg(
+			QString::fromStdString(sr_device->connection_id())));
+	}
+
+	QLabel *device_info = new QLabel();
+	device_info->setText(device_info_text);
+
+	QString s;
+	s.append("<style type=\"text/css\"> tr .id { white-space: pre; padding-right: 5px; } </style>");
+	s.append("<table>");
+
+	/* Device functions */
+	s.append("<tr><td colspan=\"2\"><b>" +
+		tr("Device functions:") + "</b></td></tr>");
+
+	const auto sr_keys = sr_device->driver()->config_keys();
+	for (auto sr_key : sr_keys) {
+		s.append(QString("<tr><td><i>- %1</i></td><td>%2</td></tr>").arg(
+			QString::fromStdString(sr_key->identifier()),
+			QString::fromStdString(sr_key->description())));
+	}
+
+	/* Device channel groups + channels */
+	s.append("<tr><td colspan=\"2\"><b>" +
+		tr("Sigrok channel groups and channels:") + "</b></td></tr>");
+
+	const auto sr_cgs = sr_device->channel_groups();
+	for (auto sr_cg_pair : sr_cgs) {
+		QString channel_names("");
+		QString sep("");
+		shared_ptr<sigrok::ChannelGroup> sr_cg = sr_cg_pair.second;
+		for (auto sr_ch : sr_cg->channels()) {
+			channel_names.append(sep);
+			channel_names.append(QString::fromStdString(sr_ch->name()));
+			sep = QString(" ");
+		}
+		s.append(QString("<tr><td><i>%1</i></td><td>%2</td></tr>").arg(
+			QString::fromStdString(sr_cg_pair.first), channel_names));
+	}
+
+	/* Device channel */
+	s.append("<tr><td colspan=\"2\"><b>" +
+		tr("Sigrok device channels:") + "</b></td></tr>");
+
+	const auto sr_channels = sr_device->channels();
+	for (auto sr_channel : sr_channels) {
+		s.append(QString("<tr><td><i>%1</i></td><td></td></tr>").arg(
+			QString::fromStdString(sr_channel->name())));
+	}
+
+	/* Device signals */
+	s.append("<tr><td colspan=\"2\"><b>" +
+		tr("Device signals (SmuView):") + "</b></td></tr>");
+
+	const auto signals = device_->all_signals();
+	for (auto signal : signals) {
+		s.append(QString("<tr><td><i>%1</i></td><td>%2</td></tr>").arg(
+			signal->name(), signal->internal_name()));
+	}
+
+	s.append("</table>");
+
+	QTextDocument *device_doc = new QTextDocument();
+	device_doc->setHtml(s);
+
+	QTextBrowser *device_list = new QTextBrowser();
+	device_list->setDocument(device_doc);
+
+	QGridLayout *layout = new QGridLayout();
+	layout->addWidget(icon, 0, 0, 1, 1);
+	layout->addWidget(device_info, 0, 1, 1, 1);
+	layout->addWidget(device_list, 1, 1, 1, 1);
+
+	QWidget *page = new QWidget(parent);
+	page->setLayout(layout);
+
+	return page;
 }
 
 void AboutDialog::on_page_changed(

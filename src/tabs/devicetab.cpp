@@ -135,8 +135,7 @@ void DeviceTab::on_action_add_control_view_triggered()
 	dialogs::AddViewDialog dlg(session(), device_, 0);
 	dlg.exec();
 
-	add_view(dlg.view_title(), dlg.view(),
-		Qt::TopDockWidgetArea, session_);
+	add_view(dlg.view(), Qt::TopDockWidgetArea, session_);
 }
 
 void DeviceTab::on_action_add_panel_view_triggered()
@@ -144,8 +143,7 @@ void DeviceTab::on_action_add_panel_view_triggered()
 	dialogs::AddViewDialog dlg(session(), device_, 1);
 	dlg.exec();
 
-	add_view(dlg.view_title(), dlg.view(),
-		Qt::TopDockWidgetArea, session_);
+	add_view(dlg.view(), Qt::TopDockWidgetArea, session_);
 }
 
 void DeviceTab::on_action_add_plot_view_triggered()
@@ -153,8 +151,7 @@ void DeviceTab::on_action_add_plot_view_triggered()
 	dialogs::AddViewDialog dlg(session(), device_, 2);
 	dlg.exec();
 
-	add_view(dlg.view_title(), dlg.view(),
-		Qt::TopDockWidgetArea, session_);
+	add_view(dlg.view(), Qt::TopDockWidgetArea, session_);
 }
 
 void DeviceTab::on_action_reset_data_triggered()
@@ -163,7 +160,7 @@ void DeviceTab::on_action_reset_data_triggered()
 
 void DeviceTab::on_action_about_triggered()
 {
-	dialogs::AboutDialog dlg(this->session().device_manager());
+	dialogs::AboutDialog dlg(this->session().device_manager(), device_);
 	dlg.exec();
 }
 

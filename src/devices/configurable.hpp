@@ -1,7 +1,6 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2015 Joel Holdsworth <joel@airwebreathe.org.uk>
  * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,109 +17,62 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DEVICES_HARDWAREDEVICE_HPP
-#define DEVICES_HARDWAREDEVICE_HPP
+#ifndef DEVICES_CONFIGURABLE_HPP
+#define DEVICES_CONFIGURABLE_HPP
 
-#include <functional>
-#include <map>
-#include <mutex>
-#include <unordered_set>
+#include <memory>
+#include <set>
 
-#include <libsigrokcxx/libsigrokcxx.hpp>
-
+#include <QObject>
 #include <QString>
 #include <QStringList>
 
-#include "device.hpp"
-
-using std::bad_alloc;
-using std::dynamic_pointer_cast;
-using std::function;
-using std::lock_guard;
-using std::make_shared;
-using std::set;
-using std::shared_ptr;
-using std::static_pointer_cast;
-using std::string;
-using std::vector;
-using std::unique_ptr;
-
 using std::map;
-using std::mutex;
-using std::recursive_mutex;
 using std::set;
 using std::shared_ptr;
-using std::string;
-using std::unordered_set;
+using std::vector;
 
 namespace sigrok {
-class Channel;
+class ConfigKey;
 class Configurable;
-class Context;
 class Quantity;
 class QuantityFlag;
-class HardwareDevice;
 }
 
 namespace sv {
 
-namespace data {
-class AnalogData;
-class BaseSignal;
-class BaseData;
-}
-
 namespace devices {
 
-class HardwareDevice final : public Device
+class Configurable : public QObject
 {
 	Q_OBJECT
 
 public:
-	explicit HardwareDevice(const shared_ptr<sigrok::Context> &sr_context,
-		shared_ptr<sigrok::HardwareDevice> sr_device);
+	Configurable(const shared_ptr<sigrok::Configurable> sr_configurable);
 
-	~HardwareDevice();
+	// TODO: Find a better way to store/map this + rename
+	typedef map<const sigrok::Quantity *,
+				shared_ptr<vector<set<const sigrok::QuantityFlag *>>>>
+		sr_mq_flags_list_t;
+	typedef map<QString, shared_ptr<vector<set<QString>>>> mq_flags_list_t;
 
-	// TODO: use sigrok ConfigKey?
-	enum Type {
-		POWER_SUPPLY,
-		ELECTRONIC_LOAD,
-		MULTIMETER,
-		DEMO_DEV,
-		UNKNOWN
-	};
+	bool has_get_config(const sigrok::ConfigKey *key) const;
+	template<typename T> T get_config(const sigrok::ConfigKey *key) const;
 
-	shared_ptr<sigrok::HardwareDevice> sr_hardware_device() const;
+	bool has_set_config(const sigrok::ConfigKey *key) const;
+	template<typename T> void set_config(const sigrok::ConfigKey *key,
+		const T value);
 
-	/**
-	 * Builds the full name. It only contains all the fields.
-	 */
-	QString full_name() const;
+	bool has_list_config(const sigrok::ConfigKey *key) const;
+	void list_config_string_array(const sigrok::ConfigKey *key,
+		QStringList &string_list);
+	void list_config_min_max_steps(const sigrok::ConfigKey *key,
+		double &min, double &max, double &step);
+	void list_config_mq(const sigrok::ConfigKey *key,
+		sr_mq_flags_list_t &sr_mq_flags_list, mq_flags_list_t &mq_flags_list);
 
-	/**
-	 * Builds the short name.
-	 */
-	QString short_name() const;
+	QString name() const;
 
-	/**
-	 * Builds the display name. It only contains fields as required.
-	 * @param device_manager a reference to the device manager is needed
-	 * so that other similarly titled devices can be detected.
-	 */
-	string display_name(const DeviceManager &device_manager) const;
-
-	void open(function<void (const QString)> error_handler);
-	void close();
-
-	// TODO: Generic!
-	shared_ptr<data::BaseSignal> voltage_signal() const;
-	shared_ptr<data::BaseSignal> current_signal() const;
-	shared_ptr<data::BaseSignal> measurement_signal() const;
-	vector<shared_ptr<data::BaseSignal>> all_signals() const;
-	vector<shared_ptr<devices::Configurable>> configurables() const;
-
-	/*
 	bool is_controllable() const;
 
 	bool is_enabled_getable() const;
@@ -198,27 +150,12 @@ public:
 	bool list_uvc_threshold(double &min, double &max, double &step);
 	bool list_measured_quantity(sr_mq_flags_list_t &sr_mq_flags_list,
 		mq_flags_list_t &mq_flags_list);
-	*/
 
 private:
-	Type type_;
-	bool device_open_;
+	void init_properties();
+	void init_values();
 
-	void init_device_properties();
-	void init_device_values();
-	void aquisition_thread_proc(function<void (const QString)> error_handler);
-
-	// TODO: Generic!
-	shared_ptr<data::BaseSignal> voltage_signal_;
-	shared_ptr<data::BaseSignal> current_signal_;
-	shared_ptr<data::BaseSignal> measurement_signal_;
-	vector<shared_ptr<data::BaseSignal>> all_signals_;
-
-	shared_ptr<data::AnalogData> init_time_data();
-	shared_ptr<data::BaseSignal> init_signal(
-		shared_ptr<sigrok::Channel> sr_channel,
-		shared_ptr<data::AnalogData> common_time_data,
-		bool quantity_fixed);
+	const shared_ptr<sigrok::Configurable> sr_configurable_;
 
 	/*
 	bool enabled_;
@@ -238,7 +175,6 @@ private:
 	double uvc_threshold_;
 	*/
 
-	/*
 	QStringList regulation_list_;
 	double voltage_target_min_;
 	double voltage_target_max_;
@@ -298,10 +234,10 @@ private:
 	bool is_measured_quantity_getable_;
 	bool is_measured_quantity_setable_;
 	bool is_measured_quantity_listable_;
-	*/
+
+protected:
 
 Q_SIGNALS:
-	/*
 	void enabled_changed(const bool);
 	void voltage_target_changed(const double);
 	void current_limit_changed(const double);
@@ -316,10 +252,10 @@ Q_SIGNALS:
 	void uvc_enabled_changed(const bool);
 	void uvc_active_changed(const bool);
 	void uvc_threshold_changed(const double);
-	*/
+
 };
 
 } // namespace devices
 } // namespace sv
 
-#endif // DEVICES_HARDWAREDEVICE_HPP
+#endif // DEVICES_CONFIGURABLE_HPP

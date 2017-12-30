@@ -22,7 +22,7 @@
 
 #include "sourcecontrolview.hpp"
 #include "src/session.hpp"
-#include "src/devices/hardwaredevice.hpp"
+#include "src/devices/configurable.hpp"
 #include "src/widgets/controlbutton.hpp"
 #include "src/widgets/led.hpp"
 #include "src/widgets/optionalvaluecontrol.hpp"
@@ -32,13 +32,18 @@ namespace sv {
 namespace views {
 
 SourceControlView::SourceControlView(const Session &session,
-	shared_ptr<devices::HardwareDevice> device, QWidget *parent) :
+	shared_ptr<devices::Configurable> configurable, QWidget *parent) :
 		BaseView(session, parent),
-	device_(device)
+	configurable_(configurable)
 {
 	setup_ui();
 	connect_signals();
 	init_values();
+}
+
+QString SourceControlView::title() const
+{
+	return configurable_->name() + " " + tr("Control");
 }
 
 void SourceControlView::setup_ui()
@@ -56,7 +61,8 @@ void SourceControlView::setup_ui()
 
 	// Enable button
 	enableButton = new widgets::ControlButton(
-		device_->is_enabled_getable(), device_->is_enabled_setable());
+		configurable_->is_enabled_getable(),
+		configurable_->is_enabled_setable());
 	infoLayout->addWidget(enableButton, 0, 0, 2, 1,  Qt::AlignLeft);
 
 	// CV
@@ -64,28 +70,28 @@ void SourceControlView::setup_ui()
 	// CC
 	//infoLayout->addWidget(ovpLed, 1, 1, Qt::AlignLeft);
 
-	ovpLed = new widgets::Led(device_->is_ovp_active_getable(),
+	ovpLed = new widgets::Led(configurable_->is_ovp_active_getable(),
 		tr("OVP"), red_icon, grey_icon, grey_icon);
 	infoLayout->addWidget(ovpLed, 0, 2, Qt::AlignLeft);
-	ocpLed = new widgets::Led(device_->is_ocp_active_getable(),
+	ocpLed = new widgets::Led(configurable_->is_ocp_active_getable(),
 		tr("OCP"), red_icon, grey_icon, grey_icon);
 	infoLayout->addWidget(ocpLed, 1, 2, Qt::AlignLeft);
-	otpLed = new widgets::Led(device_->is_otp_active_getable(),
+	otpLed = new widgets::Led(configurable_->is_otp_active_getable(),
 		tr("OTP"), red_icon, grey_icon, grey_icon);
 	infoLayout->addWidget(otpLed, 0, 3, Qt::AlignLeft);
-	uvcLed = new widgets::Led(device_->is_uvc_active_getable(),
+	uvcLed = new widgets::Led(configurable_->is_uvc_active_getable(),
 		tr("UVC"), red_icon, grey_icon, grey_icon);
 	infoLayout->addWidget(uvcLed, 1, 3, Qt::AlignLeft);
 	layout->addLayout(infoLayout, 0);
 
 	QHBoxLayout *ctrlLayout = new QHBoxLayout();
 
-	device_->list_voltage_target(min, max, step);
+	configurable_->list_voltage_target(min, max, step);
 	setVoltageControl = new widgets::ValueControl(
 		tr("Voltage"), 3, tr("V"), min, max, step);
 	ctrlLayout->addWidget(setVoltageControl);
 
-	device_->list_current_limit(min, max, step);
+	configurable_->list_current_limit(min, max, step);
 	setCurrentControl = new widgets::ValueControl(
 		tr("Current"), 3, tr("A"), min, max, step);
 	ctrlLayout->addWidget(setCurrentControl, 1, Qt::AlignLeft);
@@ -94,35 +100,35 @@ void SourceControlView::setup_ui()
 	QHBoxLayout *optCtrlLayout = new QHBoxLayout();
 
 	min = max = step = 0;
-	if (device_->is_ovp_threshold_listable())
-		device_->list_ovp_threshold(min, max, step);
+	if (configurable_->is_ovp_threshold_listable())
+		configurable_->list_ovp_threshold(min, max, step);
 	ovpControl = new widgets::OptionalValueControl(
-		device_->is_ovp_enabled_getable(),
-		device_->is_ovp_enabled_setable(),
-		device_->is_ovp_threshold_getable(),
-		device_->is_ovp_threshold_setable(),
+		configurable_->is_ovp_enabled_getable(),
+		configurable_->is_ovp_enabled_setable(),
+		configurable_->is_ovp_threshold_getable(),
+		configurable_->is_ovp_threshold_setable(),
 		tr("OVP"), tr("V"), min, max, step);
 	optCtrlLayout->addWidget(ovpControl);
 
 	min = max = step = 0;
-	if (device_->is_ocp_threshold_listable())
-		device_->list_ocp_threshold(min, max, step);
+	if (configurable_->is_ocp_threshold_listable())
+		configurable_->list_ocp_threshold(min, max, step);
 	ocpControl = new widgets::OptionalValueControl(
-		device_->is_ocp_enabled_getable(),
-		device_->is_ocp_enabled_setable(),
-		device_->is_ocp_threshold_getable(),
-		device_->is_ocp_threshold_setable(),
+		configurable_->is_ocp_enabled_getable(),
+		configurable_->is_ocp_enabled_setable(),
+		configurable_->is_ocp_threshold_getable(),
+		configurable_->is_ocp_threshold_setable(),
 		tr("OCP"), tr("A"), min, max, step);
 	optCtrlLayout->addWidget(ocpControl);
 
 	min = max = step = 0;
-	if (device_->is_uvc_threshold_listable())
-		device_->list_uvc_threshold(min, max, step);
+	if (configurable_->is_uvc_threshold_listable())
+		configurable_->list_uvc_threshold(min, max, step);
 	uvcControl = new widgets::OptionalValueControl(
-		device_->is_uvc_enabled_getable(),
-		device_->is_uvc_enabled_setable(),
-		device_->is_uvc_threshold_getable(),
-		device_->is_uvc_threshold_setable(),
+		configurable_->is_uvc_enabled_getable(),
+		configurable_->is_uvc_enabled_setable(),
+		configurable_->is_uvc_threshold_getable(),
+		configurable_->is_uvc_threshold_setable(),
 		tr("UVC"), tr("V"), min, max, step);
 	optCtrlLayout->addWidget(uvcControl, 1, Qt::AlignLeft);
 	layout->addLayout(optCtrlLayout, 0);
@@ -154,111 +160,111 @@ void SourceControlView::connect_signals()
 		this, SLOT(on_uvc_threshold_changed(const double)));;
 
 	// Device -> Control elements
-	connect(device_.get(), SIGNAL(enabled_changed(const bool)),
+	connect(configurable_.get(), SIGNAL(enabled_changed(const bool)),
 		enableButton, SLOT(change_state(const bool)));
-	connect(device_.get(), SIGNAL(voltage_target_changed(const double)),
+	connect(configurable_.get(), SIGNAL(voltage_target_changed(const double)),
 		setVoltageControl, SLOT(change_value(const double)));
-	connect(device_.get(), SIGNAL(current_limit_changed(const double)),
+	connect(configurable_.get(), SIGNAL(current_limit_changed(const double)),
 		setCurrentControl, SLOT(change_value(const double)));
-	connect(device_.get(), SIGNAL(ovp_enabled_changed(const bool)),
+	connect(configurable_.get(), SIGNAL(ovp_enabled_changed(const bool)),
 		ovpControl, SLOT(change_state(const bool)));
-	connect(device_.get(), SIGNAL(ovp_threshold_changed(const double)),
+	connect(configurable_.get(), SIGNAL(ovp_threshold_changed(const double)),
 		ovpControl, SLOT(change_value(const double)));
-	connect(device_.get(), SIGNAL(ocp_enabled_changed(const bool)),
+	connect(configurable_.get(), SIGNAL(ocp_enabled_changed(const bool)),
 		ocpControl, SLOT(change_state(const bool)));
-	connect(device_.get(), SIGNAL(ocp_threshold_changed(const double)),
+	connect(configurable_.get(), SIGNAL(ocp_threshold_changed(const double)),
 		ocpControl, SLOT(change_value(const double)));
-	connect(device_.get(), SIGNAL(uvc_enabled_changed(const bool)),
+	connect(configurable_.get(), SIGNAL(uvc_enabled_changed(const bool)),
 		uvcControl, SLOT(change_state(const bool)));
-	connect(device_.get(), SIGNAL(uvc_threshold_changed(const double)),
+	connect(configurable_.get(), SIGNAL(uvc_threshold_changed(const double)),
 		uvcControl, SLOT(change_value(const double)));
 
 	// Device -> LEDs
-	connect(device_.get(), SIGNAL(ovp_active_changed(const bool)),
+	connect(configurable_.get(), SIGNAL(ovp_active_changed(const bool)),
 		ovpLed, SLOT(change_state(const bool)));
-	connect(device_.get(), SIGNAL(ocp_active_changed(const bool)),
+	connect(configurable_.get(), SIGNAL(ocp_active_changed(const bool)),
 		ocpLed, SLOT(change_state(const bool)));
-	connect(device_.get(), SIGNAL(uvc_active_changed(const bool)),
+	connect(configurable_.get(), SIGNAL(uvc_active_changed(const bool)),
 		uvcLed, SLOT(change_state(const bool)));
-	connect(device_.get(), SIGNAL(otp_active_changed(const bool)),
+	connect(configurable_.get(), SIGNAL(otp_active_changed(const bool)),
 		otpLed, SLOT(change_state(const bool)));
 }
 
 void SourceControlView::init_values()
 {
-	if (device_->is_enabled_getable())
-		enableButton->change_state(device_->get_enabled());
-	if (device_->is_voltage_target_getable())
-		setVoltageControl->change_value(device_->get_voltage_target());
-	if (device_->is_current_limit_getable())
-		setCurrentControl->change_value(device_->get_current_limit());
-	if (device_->is_ovp_enabled_getable())
-		ovpControl->change_state(device_->get_ovp_enabled());
-	if (device_->is_ovp_threshold_getable())
-		ovpControl->change_value(device_->get_ovp_threshold());
-	if (device_->is_ocp_enabled_getable())
-		ocpControl->change_state(device_->get_ocp_enabled());
-	if (device_->is_ocp_threshold_getable())
-		ocpControl->change_value(device_->get_ocp_threshold());
-	if (device_->is_uvc_enabled_getable())
-		uvcControl->change_state(device_->get_uvc_enabled());
-	if (device_->is_uvc_threshold_getable())
-		uvcControl->change_value(device_->get_uvc_threshold());
+	if (configurable_->is_enabled_getable())
+		enableButton->change_state(configurable_->get_enabled());
+	if (configurable_->is_voltage_target_getable())
+		setVoltageControl->change_value(configurable_->get_voltage_target());
+	if (configurable_->is_current_limit_getable())
+		setCurrentControl->change_value(configurable_->get_current_limit());
+	if (configurable_->is_ovp_enabled_getable())
+		ovpControl->change_state(configurable_->get_ovp_enabled());
+	if (configurable_->is_ovp_threshold_getable())
+		ovpControl->change_value(configurable_->get_ovp_threshold());
+	if (configurable_->is_ocp_enabled_getable())
+		ocpControl->change_state(configurable_->get_ocp_enabled());
+	if (configurable_->is_ocp_threshold_getable())
+		ocpControl->change_value(configurable_->get_ocp_threshold());
+	if (configurable_->is_uvc_enabled_getable())
+		uvcControl->change_state(configurable_->get_uvc_enabled());
+	if (configurable_->is_uvc_threshold_getable())
+		uvcControl->change_value(configurable_->get_uvc_threshold());
 
 	// LEDs
-	if (device_->is_ovp_active_getable())
-		ovpLed->change_state(device_->get_ovp_active());
-	if (device_->is_ocp_active_getable())
-		ocpLed->change_state(device_->get_ocp_active());
-	if (device_->is_otp_active_getable())
-		otpLed->change_state(device_->get_otp_active());
-	if (device_->is_uvc_active_getable())
-		uvcLed->change_state(device_->get_uvc_active());
+	if (configurable_->is_ovp_active_getable())
+		ovpLed->change_state(configurable_->get_ovp_active());
+	if (configurable_->is_ocp_active_getable())
+		ocpLed->change_state(configurable_->get_ocp_active());
+	if (configurable_->is_otp_active_getable())
+		otpLed->change_state(configurable_->get_otp_active());
+	if (configurable_->is_uvc_active_getable())
+		uvcLed->change_state(configurable_->get_uvc_active());
 }
 
 void SourceControlView::on_enabled_changed(const bool enabled)
 {
-	device_->set_enabled(enabled);
+	configurable_->set_enabled(enabled);
 }
 
 void SourceControlView::on_voltage_changed(const double value)
 {
-	device_->set_voltage_target(value);
+	configurable_->set_voltage_target(value);
 }
 
 void SourceControlView::on_current_changed(const double value)
 {
-	device_->set_current_limit(value);
+	configurable_->set_current_limit(value);
 }
 
 void SourceControlView::on_ovp_enabled_changed(const bool enabled)
 {
-	device_->set_ovp_enabled(enabled);
+	configurable_->set_ovp_enabled(enabled);
 }
 
 void SourceControlView::on_ovp_threshold_changed(const double value)
 {
-	device_->set_ovp_threshold(value);
+	configurable_->set_ovp_threshold(value);
 }
 
 void SourceControlView::on_ocp_enabled_changed(const bool enabled)
 {
-	device_->set_ocp_enabled(enabled);
+	configurable_->set_ocp_enabled(enabled);
 }
 
 void SourceControlView::on_ocp_threshold_changed(const double value)
 {
-	device_->set_ocp_threshold(value);
+	configurable_->set_ocp_threshold(value);
 }
 
 void SourceControlView::on_uvc_enabled_changed(const bool enabled)
 {
-	device_->set_uvc_enabled(enabled);
+	configurable_->set_uvc_enabled(enabled);
 }
 
 void SourceControlView::on_uvc_threshold_changed(const double value)
 {
-	device_->set_uvc_threshold(value);
+	configurable_->set_uvc_threshold(value);
 }
 
 } // namespace views

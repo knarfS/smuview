@@ -71,197 +71,6 @@ shared_ptr<sigrok::Device> Device::sr_device() const
 	return sr_device_;
 }
 
-bool Device::has_get_config(const ConfigKey *key)  const
-{
-	assert(key);
-	assert(sr_configurable_);
-
-	if (!sr_configurable_->config_check(key, Capability::GET))
-		return false;
-
-	return true;
-}
-
-template bool Device::get_config(const sigrok::ConfigKey*) const;
-template uint64_t Device::get_config(const sigrok::ConfigKey*) const;
-template double Device::get_config(const sigrok::ConfigKey*) const;
-template<typename T> T Device::get_config(const ConfigKey *key) const
-{
-	assert(key);
-	assert(sr_configurable_);
-
-	/*
-	try {
-		auto gvar = sr_configurable_->config_get(sigrok::ConfigKey::ENABLED);
-		enable =
-			Glib::VariantBase::cast_dynamic<Glib::Variant<bool>>(gvar).get();
-	} catch (sigrok::Error error) {
-		qDebug() << "Failed to get ENABLED.";
-		return false;
-	}
-	*/
-
-	if (!sr_configurable_->config_check(key, Capability::GET)) {
-		qWarning() << "Device::read_config(): No key " <<
-			QString::fromStdString(key->name());
-		assert(false);
-	}
-
-	return Glib::VariantBase::cast_dynamic<Glib::Variant<T>>(
-		sr_configurable_->config_get(key)).get();
-}
-
-bool Device::has_set_config(const sigrok::ConfigKey *key) const
-{
-	assert(key);
-	assert(sr_configurable_);
-
-	if (!sr_configurable_->config_check(key, Capability::SET))
-		return false;
-
-	return true;
-}
-
-template void Device::set_config(const sigrok::ConfigKey*, const bool);
-template void Device::set_config(const sigrok::ConfigKey*, const uint64_t);
-template void Device::set_config(const sigrok::ConfigKey*, const double);
-template<typename T> void Device::set_config(
-		const sigrok::ConfigKey *key, const T value)
-{
-	assert(key);
-	assert(sr_configurable_);
-
-	/*
-	try {
-		sr_configurable_->config_set(
-			sigrok::ConfigKey::ENABLED, Glib::Variant<bool>::create(enable));
-	} catch (sigrok::Error error) {
-		qDebug() << "Failed to set ENABLED.";
-	}
-	*/
-
-	if (!sr_configurable_->config_check(key, Capability::SET)) {
-		qWarning() << "Device::write_config(): No key " <<
-			QString::fromStdString(key->name());
-		assert(false);
-	}
-
-	sr_configurable_->config_set(key, Glib::Variant<T>::create(value));
-}
-
-bool Device::has_list_config(const sigrok::ConfigKey *key) const
-{
-	assert(key);
-	assert(sr_configurable_);
-
-	if (!sr_configurable_->config_check(key, Capability::LIST))
-		return false;
-
-	return true;
-}
-
-void Device::list_config_string_array(const sigrok::ConfigKey *key,
-	QStringList &string_list)
-{
-	assert(key);
-	assert(sr_configurable_);
-
-	if (!sr_configurable_->config_check(key, Capability::LIST)) {
-		qWarning() << "Device::list_config_string_array(): No key " <<
-			QString::fromStdString(key->name());
-		assert(false);
-	}
-
-	Glib::VariantContainerBase gvar = sr_configurable_->config_list(key);
-	Glib::VariantIter iter(gvar);
-	while (iter.next_value (gvar)) {
-		string_list.append(QString::fromStdString(
-			Glib::VariantBase::cast_dynamic<Glib::Variant<string>>(gvar).get()));
-	}
-}
-
-void Device::list_config_min_max_steps(const sigrok::ConfigKey *key,
-	double &min, double &max, double &step)
-{
-	assert(key);
-	assert(sr_configurable_);
-
-	if (!sr_configurable_->config_check(key, Capability::LIST)) {
-		qWarning() << "Device::list_config_min_max_steps(): No key " <<
-			QString::fromStdString(key->name());
-		assert(false);
-	}
-
-	Glib::VariantContainerBase gvar = sr_configurable_->config_list(key);
-	Glib::VariantIter iter(gvar);
-	iter.next_value(gvar);
-	min = Glib::VariantBase::cast_dynamic<Glib::Variant<double>>(gvar).get();
-	iter.next_value(gvar);
-	max = Glib::VariantBase::cast_dynamic<Glib::Variant<double>>(gvar).get();
-	iter.next_value(gvar);
-	step = Glib::VariantBase::cast_dynamic<Glib::Variant<double>>(gvar).get();
-}
-
-void Device::list_config_mq(const sigrok::ConfigKey *key,
-	sr_mq_flags_list_t &sr_mq_flags_list, mq_flags_list_t &mq_flags_list)
-{
-	assert(key);
-	assert(sr_configurable_);
-
-	if (!sr_configurable_->config_check(key, Capability::LIST)) {
-		qWarning() << "Device::list_config_mq(): No key " <<
-			QString::fromStdString(key->name());
-		assert(false);
-	}
-
-	Glib::VariantContainerBase gvar = sr_configurable_->config_list(key);
-	Glib::VariantIter iter(gvar);
-	while (iter.next_value (gvar)) {
-		uint32_t mqbits = Glib::VariantBase::cast_dynamic
-			<Glib::Variant<uint32_t>>(gvar.get_child(0)).get();
-		const sigrok::Quantity *sr_mq = sigrok::Quantity::get(mqbits);
-		QString mq = util::format_quantity(sr_mq);
-
-		// TODO Das geht besser....
-		shared_ptr<vector<set<const sigrok::QuantityFlag *>>> sr_flag_vector;
-		shared_ptr<vector<set<QString>>> flag_vector;
-		if (!sr_mq_flags_list.count(sr_mq)) {
-			sr_flag_vector = make_shared<vector<set<const sigrok::QuantityFlag *>>>();
-			flag_vector = make_shared<vector<set<QString>>>();
-			sr_mq_flags_list.insert(
-				pair<const sigrok::Quantity *, shared_ptr<vector<set<const sigrok::QuantityFlag *>>>>
-				(sr_mq, sr_flag_vector));
-			mq_flags_list.insert(
-				pair<QString, shared_ptr<vector<set<QString>>>>
-				(mq, flag_vector));
-		}
-		else {
-			sr_flag_vector = sr_mq_flags_list[sr_mq];
-			flag_vector = mq_flags_list[mq];
-		}
-
-		uint64_t sr_mqflags = Glib::VariantBase::cast_dynamic
-			<Glib::Variant<uint64_t>>(gvar.get_child(1)).get();
-
-		set<const sigrok::QuantityFlag *> sr_flag_set;
-		set<QString> flag_set;
-		uint64_t mask = 1;
-		for (uint i = 0; i < 32; i++, mask <<= 1) {
-			if (!(sr_mqflags & mask))
-				continue;
-
-			const sigrok::QuantityFlag *sr_mqflag =
-				sigrok::QuantityFlag::get(sr_mqflags & mask);
-			QString mqflag = util::format_quantityflag(sr_mqflag);
-
-			sr_flag_set.insert(sr_mqflag);
-			flag_set.insert(mqflag);
-		}
-		sr_flag_vector->push_back(sr_flag_set);
-		flag_vector->push_back(flag_set);
-	}
-}
-
 void Device::init_device()
 {
 	// Set up the session
@@ -289,6 +98,7 @@ void Device::feed_in_meta(shared_ptr<sigrok::Meta> sr_meta)
 {
 	for (auto entry : sr_meta->config()) {
 		switch (entry.first->id()) {
+		/*
 		case SR_CONF_ENABLED:
 			Q_EMIT enabled_changed(
 				g_variant_get_boolean(entry.second.gobj()));
@@ -345,6 +155,7 @@ void Device::feed_in_meta(shared_ptr<sigrok::Meta> sr_meta)
 			Q_EMIT uvc_active_changed(
 				g_variant_get_boolean(entry.second.gobj()));
 			break;
+		*/
 		/*
 		case SR_CONF_UNDER_VOLTAGE_CONDITION_THRESHOLD:
 			Q_EMIT uvc_threshold_changed(
@@ -397,25 +208,31 @@ void Device::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
 
 	float *channel_data = data.get();
 	for (auto sr_channel : sr_channels) {
+		/*
 		qWarning() << "Device::feed_in_analog(): Device = " <<
 			QString::fromStdString(sr_device_->model()) <<
 			", Channel.Id = " <<
 			QString::fromStdString(sr_channel->name()) <<
 			" channel_data = " << *channel_data;
+		*/
 
 		if (!channel_data_.count(sr_channel)) {
+			/*
 			qWarning() << "Device::feed_in_analog(): Channel " <<
 				QString::fromStdString(sr_channel->name()) <<
 				" not found, adding";
+			*/
 
 			// TODO: notwendig? Better handling for new channels? Are there new channels??
-			init_signal(sr_channel, nullptr);
+			init_signal(sr_channel, nullptr, false);
 			continue;
 		}
 
 		actual_processed_signal_ = channel_data_[sr_channel];
+		/*
 		qWarning() << "Device::feed_in_analog(): -3- name = " << actual_processed_signal_->name();
 		qWarning() << "Device::feed_in_analog(): -3- count = " << actual_processed_signal_->analog_data()->get_sample_count();
+		*/
 
 		/*
 		actual_processed_signal_->analog_data()->push_interleaved_samples(
@@ -435,7 +252,9 @@ void Device::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
 		*/
 	}
 
+	/*
 	qWarning() << "Device::feed_in_analog(): -END-";
+	*/
 }
 
 void Device::data_feed_in(shared_ptr<sigrok::Device> sr_device,

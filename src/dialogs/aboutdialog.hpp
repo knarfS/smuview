@@ -29,6 +29,10 @@
 
 namespace sv {
 
+namespace devices {
+class HardwareDevice;
+}
+
 namespace dialogs {
 
 class AboutDialog : public QDialog
@@ -36,7 +40,9 @@ class AboutDialog : public QDialog
 	Q_OBJECT
 
 public:
-	AboutDialog(DeviceManager &device_manager, QWidget *parent = nullptr);
+	AboutDialog(DeviceManager &device_manager,
+		shared_ptr<devices::HardwareDevice> device,
+		QWidget *parent = nullptr);
 
 private:
 	void create_pages();
@@ -44,6 +50,8 @@ private:
 	QWidget *get_device_page(QWidget *parent) const;
 
 	DeviceManager &device_manager_;
+	shared_ptr<devices::HardwareDevice> device_;
+
 	QListWidget *page_list;
 	QStackedWidget *pages;
 

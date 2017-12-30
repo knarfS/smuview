@@ -53,6 +53,8 @@ public:
 		QWidget* parent = nullptr);
 	~ValuePanelView();
 
+	QString title() const;
+
 private:
 	uint digits_;
 	shared_ptr<data::BaseSignal> value_signal_;

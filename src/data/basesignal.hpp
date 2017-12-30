@@ -34,8 +34,6 @@
 #include <QTimer>
 #include <QVariant>
 
-#include <libsigrokcxx/libsigrokcxx.hpp>
-
 using std::atomic;
 using std::condition_variable;
 using std::map;
@@ -46,6 +44,7 @@ using std::vector;
 
 namespace sigrok {
 class Channel;
+class Quantity;
 }
 
 namespace sv {
@@ -65,7 +64,8 @@ public:
 	};
 
 public:
-	BaseSignal(shared_ptr<sigrok::Channel> sr_channel, ChannelType channel_type);
+	BaseSignal(shared_ptr<sigrok::Channel> sr_channel,
+		ChannelType channel_type, const bool quantity_fixed);
 	virtual ~BaseSignal();
 
 public:
@@ -110,6 +110,11 @@ public:
 	 * Sets the name of the signal.
 	 */
 	virtual void set_name(QString name);
+
+	/**
+	 * Gets if the quantity is fixed or variable
+	 */
+	bool quantiy_fixed() const;
 
 	/**
 	 * Get the colour of the signal.
@@ -172,6 +177,7 @@ private Q_SLOTS:
 protected:
 	shared_ptr<sigrok::Channel> sr_channel_;
 	ChannelType channel_type_;
+	const bool quantity_fixed_;
 	qint64 time_start_;
 	shared_ptr<sv::data::BaseData> data_;
 	shared_ptr<sv::data::AnalogData> time_data_;

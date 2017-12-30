@@ -23,8 +23,11 @@
 
 #include <QDateTime>
 
+#include <libsigrokcxx/libsigrokcxx.hpp>
+
 #include "basesignal.hpp"
 #include "src/session.hpp"
+#include "src/util.hpp"
 #include "src/data/analogdata.hpp"
 #include "src/data/basedata.hpp"
 
@@ -38,9 +41,10 @@ namespace sv {
 namespace data {
 
 BaseSignal::BaseSignal(shared_ptr<sigrok::Channel> sr_channel,
-		ChannelType channel_type) :
+		ChannelType channel_type, const bool quantity_fixed) :
 	sr_channel_(sr_channel),
-	channel_type_(channel_type)
+	channel_type_(channel_type),
+	quantity_fixed_(quantity_fixed)
 {
 	if (sr_channel_)
 		internal_name_ = QString::fromStdString(sr_channel_->name());
@@ -96,6 +100,11 @@ BaseSignal::ChannelType BaseSignal::type() const
 unsigned int BaseSignal::index() const
 {
 	return (sr_channel_) ? sr_channel_->index() : 0;
+}
+
+bool BaseSignal::quantiy_fixed() const
+{
+	return quantity_fixed_;
 }
 
 QColor BaseSignal::colour() const

@@ -30,14 +30,19 @@ namespace sv {
 namespace views {
 
 MeasurementControlView::MeasurementControlView(const Session &session,
-		shared_ptr<devices::HardwareDevice> device, QWidget *parent) :
+		shared_ptr<devices::Configurable> configurable, QWidget *parent) :
 	BaseView(session, parent),
-	device_(device)
+	configurable_(configurable)
 {
-	device_->list_measured_quantity(sr_mq_flags_list_, mq_flags_list_);
+	configurable_->list_measured_quantity(sr_mq_flags_list_, mq_flags_list_);
 	setup_ui();
 	connect_signals();
 	init_values();
+}
+
+QString MeasurementControlView::title() const
+{
+	return configurable_->name() + " " + tr("Control");
 }
 
 void MeasurementControlView::setup_ui()
@@ -46,7 +51,7 @@ void MeasurementControlView::setup_ui()
 
 	QStringList quantity_list;
 	QStringList quantityflags_list;
-	if (device_->is_measured_quantity_getable()) {
+	if (configurable_->is_measured_quantity_getable()) {
 		for (auto pair : mq_flags_list_) {
 			quantity_list.append(pair.first);
 		}
@@ -99,7 +104,6 @@ void MeasurementControlView::on_quantity_changed(const QString index)
 
 void MeasurementControlView::on_quantity_flags_changed(/*const QString index*/)
 {
-
 	//auto pair = mq_flags_list_.at(index);
 }
 

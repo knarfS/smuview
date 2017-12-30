@@ -33,7 +33,7 @@ namespace sv {
 class Session;
 
 namespace devices {
-class HardwareDevice;
+class Configurable;
 }
 
 namespace widgets {
@@ -51,11 +51,13 @@ class SinkControlView : public BaseView
 
 public:
 	SinkControlView(const Session& session,
-		shared_ptr<devices::HardwareDevice> device,
+		shared_ptr<devices::Configurable> configurable,
 		QWidget* parent = nullptr);
 
+	QString title() const;
+
 private:
-	shared_ptr<devices::HardwareDevice> device_;
+	shared_ptr<devices::Configurable> configurable_;
 
 	widgets::Led *ccLed;
 	widgets::Led *cvLed;

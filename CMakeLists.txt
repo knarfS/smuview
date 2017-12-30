@@ -146,6 +146,7 @@ set(smuview_SOURCES
   src/data/basecurve.cpp
   src/data/basedata.cpp
   src/data/basesignal.cpp
+  src/devices/configurable.cpp
   src/devices/device.cpp
   src/devices/hardwaredevice.cpp
   src/dialogs/addviewdialog.cpp

@@ -31,6 +31,7 @@
 #include "hardwaredevice.hpp"
 #include "src/devicemanager.hpp"
 #include "src/session.hpp"
+#include "src/devices/configurable.hpp"
 #include "src/devices/device.hpp"
 #include "src/data/analogdata.hpp"
 #include "src/data/basesignal.hpp"
@@ -63,12 +64,18 @@ HardwareDevice::HardwareDevice(
 	// TODO: sigrok::Device and not sigrok::HardwareDevice in constructor?? then cast...
 	sr_device_ = sr_device;
 
+	// Sigrok Channel Groups + Channel Group Names Map
 	map<string, shared_ptr<sigrok::ChannelGroup>> sr_cgs =
 		sr_device_->channel_groups();
-
 	map<string, shared_ptr<sigrok::ChannelGroup>>::iterator it = sr_cgs.begin();
 	for (; it != sr_cgs.end(); ++it) {
 		sr_channel_groups_.push_back(it->second);
+
+		/*
+		channel_group_name_signal_map_.insert(
+			pair<QString, shared_ptr<data::BaseSignal>>(
+				QString::fromStdString(it->first), it->second));
+		*/
 	}
 
 	vector<shared_ptr<sigrok::Channel>> sr_channels;
@@ -79,12 +86,17 @@ HardwareDevice::HardwareDevice(
 		type_ = HardwareDevice::POWER_SUPPLY;
 
 		if (sr_device_->channel_groups().size() > 0) {
-			// TODO: Handle all channel groups of a multi channel PSU
-			sr_configurable_ = sr_device_->channel_groups()["1"];
-			sr_channels = sr_device_->channel_groups()["1"]->channels();
+			for (auto channel_group : sr_device_->channel_groups()) {
+				configurables_.push_back(
+					make_shared<Configurable>(channel_group.second));
+				sr_channels.insert(
+					sr_channels.end(),
+					channel_group.second->channels().begin(),
+					channel_group.second->channels().end());
+			}
 		}
 		else {
-			sr_configurable_ = sr_device_;
+			configurables_.push_back(make_shared<Configurable>(sr_device_));
 			sr_channels = sr_device_->channels();
 		}
 
@@ -96,9 +108,21 @@ HardwareDevice::HardwareDevice(
 	else if (sr_keys.count(sigrok::ConfigKey::ELECTRONIC_LOAD)) {
 		type_ = HardwareDevice::ELECTRONIC_LOAD;
 
-		// TODO: Handle all channel groups of a multi channel load
-		sr_configurable_ = sr_device_->channel_groups()["1"];
-		sr_channels = sr_device_->channel_groups()["1"]->channels();
+		// TODO: POWER_SUPPLY + ELECTRONIC_LOAD common code
+		if (sr_device_->channel_groups().size() > 0) {
+			for (auto channel_group : sr_device_->channel_groups()) {
+				configurables_.push_back(
+					make_shared<Configurable>(channel_group.second));
+				sr_channels.insert(
+					sr_channels.end(),
+					channel_group.second->channels().begin(),
+					channel_group.second->channels().end());
+			}
+		}
+		else {
+			configurables_.push_back(make_shared<Configurable>(sr_device_));
+			sr_channels = sr_device_->channels();
+		}
 
 		// TODO: solve this somehow with the detection of frames....
 		// TODO: What if the device has multi channels with a frame around each cg data
@@ -107,14 +131,54 @@ HardwareDevice::HardwareDevice(
 	}
 	else if (sr_keys.count(sigrok::ConfigKey::MULTIMETER)) {
 		type_ = HardwareDevice::MULTIMETER;
-		sr_configurable_ = sr_device_;
-		sr_channels = sr_device_->channels();
+
+		qWarning() << "MM HardwareDevice::MULTIMETER";
+		// TODO: common code
+		/*
+		if (sr_device_->channel_groups().size() > 0) {
+			for (auto channel_group : sr_device_->channel_groups()) {
+				configurables_.push_back(
+					make_shared<Configurable>(channel_group.second));
+				sr_channels.insert(
+					sr_channels.end(),
+					channel_group.second->channels().begin(),
+					channel_group.second->channels().end());
+			}
+		}
+		else {
+			*/
+			configurables_.push_back(make_shared<Configurable>(sr_device_));
+			sr_channels = sr_device_->channels();
+		//}
+
 		common_time_data_ = nullptr;
 	}
 	else if (sr_keys.count(sigrok::ConfigKey::DEMO_DEV)) {
 		type_ = HardwareDevice::DEMO_DEV;
-		sr_configurable_ = sr_device_->channel_groups()["Analog"];
+
+		qWarning() << "XX HardwareDevice::DEMO_DEV";
+		// TODO: common code
+		/*
+		if (sr_device_->channel_groups().size() > 0) {
+			sr_configurable_ = sr_device_->channel_groups()["Analog"];
+			for (auto channel_group : sr_device_->channel_groups()) {
+				configurables_.push_back(
+					make_shared<Configurable>(channel_group.second));
+				sr_channels.insert(
+					sr_channels.end(),
+					channel_group.second->channels().begin(),
+					channel_group.second->channels().end());
+			}
+		}
+		else {
+			configurables_.push_back(make_shared<Configurable>(sr_device_));
+			sr_channels = sr_device_->channels();
+		}
+		*/
+
+		configurables_.push_back(make_shared<Configurable>(sr_device_));
 		sr_channels = sr_device_->channel_groups()["Analog"]->channels();
+
 		common_time_data_ = nullptr;
 	}
 	else {
@@ -122,143 +186,15 @@ HardwareDevice::HardwareDevice(
 		assert("Unknown device");
 	}
 
-	init_device_properties();
-	init_device_values();
-
 	for (auto sr_channel : sr_channels) {
 		// TODO: sr_channel is not necessarily a signal (see Digi35)....
-		init_signal(sr_channel, common_time_data_);
+		init_signal(sr_channel, common_time_data_, true); // TODO: fixed signal?
 	}
 }
 
 HardwareDevice::~HardwareDevice()
 {
 	close();
-}
-
-void HardwareDevice::init_device_properties()
-{
-	is_enabled_getable_ = has_get_config(sigrok::ConfigKey::ENABLED);
-	is_enabled_setable_ = has_set_config(sigrok::ConfigKey::ENABLED);
-
-	is_regulation_getable_ = has_get_config(sigrok::ConfigKey::REGULATION);
-	is_regulation_setable_ = has_set_config(sigrok::ConfigKey::REGULATION);
-	is_regulation_listable_ = has_list_config(sigrok::ConfigKey::REGULATION);
-
-	is_voltage_target_getable_ = has_get_config(
-		sigrok::ConfigKey::VOLTAGE_TARGET);
-	is_voltage_target_setable_ = has_set_config(
-		sigrok::ConfigKey::VOLTAGE_TARGET);
-	is_voltage_target_listable_ = has_list_config(
-		sigrok::ConfigKey::VOLTAGE_TARGET);
-	is_current_limit_getable_ = has_get_config(
-		sigrok::ConfigKey::CURRENT_LIMIT);
-	is_current_limit_setable_ = has_set_config(
-		sigrok::ConfigKey::CURRENT_LIMIT);
-	is_current_limit_listable_ = has_list_config(
-		sigrok::ConfigKey::CURRENT_LIMIT);
-
-	is_otp_enabled_getable_ = has_get_config(
-		sigrok::ConfigKey::OVER_TEMPERATURE_PROTECTION);
-	is_otp_enabled_setable_ = has_set_config(
-		sigrok::ConfigKey::OVER_TEMPERATURE_PROTECTION);
-	is_otp_active_getable_ = has_get_config(
-		sigrok::ConfigKey::OVER_TEMPERATURE_PROTECTION_ACTIVE);
-	is_otp_active_setable_ = has_set_config(
-		sigrok::ConfigKey::OVER_TEMPERATURE_PROTECTION_ACTIVE);
-
-	is_ovp_enabled_getable_ = has_get_config(
-		sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_ENABLED);
-	is_ovp_enabled_setable_ = has_set_config(
-		sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_ENABLED);
-	is_ovp_active_getable_ = has_get_config(
-		sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_ACTIVE);
-	is_ovp_active_setable_ = has_set_config(
-		sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_ACTIVE);
-	is_ovp_threshold_getable_ = has_get_config(
-		sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_THRESHOLD);
-	is_ovp_threshold_setable_ = has_set_config(
-		sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_THRESHOLD);
-	is_ovp_threshold_listable_ = has_list_config(
-		sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_THRESHOLD);
-
-	is_ocp_enabled_getable_ = has_get_config(
-		sigrok::ConfigKey::OVER_CURRENT_PROTECTION_ENABLED);
-	is_ocp_enabled_setable_ = has_set_config(
-		sigrok::ConfigKey::OVER_CURRENT_PROTECTION_ENABLED);
-	is_ocp_active_getable_ = has_get_config(
-		sigrok::ConfigKey::OVER_CURRENT_PROTECTION_ACTIVE);
-	is_ocp_active_setable_ = has_set_config(
-		sigrok::ConfigKey::OVER_CURRENT_PROTECTION_ACTIVE);
-	is_ocp_threshold_getable_ = has_get_config(
-		sigrok::ConfigKey::OVER_CURRENT_PROTECTION_THRESHOLD);
-	is_ocp_threshold_setable_ = has_set_config(
-		sigrok::ConfigKey::OVER_CURRENT_PROTECTION_THRESHOLD);
-	is_ocp_threshold_listable_ = has_list_config(
-		sigrok::ConfigKey::OVER_CURRENT_PROTECTION_THRESHOLD);
-
-	is_uvc_enabled_getable_ = has_get_config(
-		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION);
-	is_uvc_enabled_setable_ = has_set_config(
-		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION);
-	is_uvc_active_getable_ = has_get_config(
-		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_ACTIVE);
-	is_uvc_active_setable_ = has_set_config(
-		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_ACTIVE);
-	/*
-	is_uvc_threshold_getable_ = has_get_config(
-		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD);
-	is_uvc_threshold_setable_ = has_set_config(
-		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD);
-	is_uvc_threshold_listable_ = has_list_config(
-		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD);
-	*/
-	is_uvc_threshold_getable_ = false;
-	is_uvc_threshold_setable_ = false;
-	is_uvc_threshold_listable_ = false;
-
-	is_measured_quantity_getable_ = has_get_config(
-		sigrok::ConfigKey::MEASURED_QUANTITY);
-	is_measured_quantity_setable_ = has_set_config(
-		sigrok::ConfigKey::MEASURED_QUANTITY);
-	is_measured_quantity_listable_ = has_list_config(
-		sigrok::ConfigKey::MEASURED_QUANTITY);
-}
-
-void HardwareDevice::init_device_values()
-{
-	if (is_regulation_listable_)
-		list_config_string_array(sigrok::ConfigKey::REGULATION,
-			regulation_list_);
-
-	if (is_voltage_target_listable_)
-		list_config_min_max_steps(sigrok::ConfigKey::VOLTAGE_TARGET,
-			voltage_target_min_, voltage_target_max_, voltage_target_step_);
-
-	if (is_current_limit_listable_)
-		list_config_min_max_steps(sigrok::ConfigKey::CURRENT_LIMIT,
-			current_limit_min_, current_limit_max_, current_limit_step_);
-
-	if (is_ovp_threshold_listable_)
-		list_config_min_max_steps(
-			sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_THRESHOLD,
-			ovp_threshold_min_, ovp_threshold_max_, ovp_threshold_step_);
-
-	if (is_ocp_threshold_listable_)
-		list_config_min_max_steps(
-			sigrok::ConfigKey::OVER_CURRENT_PROTECTION_THRESHOLD,
-			ocp_threshold_min_, ocp_threshold_max_, ocp_threshold_step_);
-
-	/*
-	if (is_uvc_threshold_listable_)
-		list_config_min_max_steps(
-			sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD,
-			uvc_threshold_min_, uvc_threshold_max_, uvc_threshold_step_);
-	*/
-
-	if (is_measured_quantity_listable_)
-		list_config_mq(sigrok::ConfigKey::MEASURED_QUANTITY,
-			sr_mq_flags_list_, mq_flags_list_);
 }
 
 QString HardwareDevice::full_name() const
@@ -445,7 +381,8 @@ shared_ptr<data::AnalogData> HardwareDevice::init_time_data()
 
 shared_ptr<data::BaseSignal> HardwareDevice::init_signal(
 	shared_ptr<sigrok::Channel> sr_channel,
-	shared_ptr<data::AnalogData> common_time_data)
+	shared_ptr<data::AnalogData> common_time_data,
+	bool quantity_fixed)
 {
 	shared_ptr<data::BaseSignal> signal;
 	//lock_guard<recursive_mutex> lock(data_mutex_);
@@ -458,7 +395,7 @@ shared_ptr<data::BaseSignal> HardwareDevice::init_signal(
 	case SR_CHANNEL_ANALOG:
 	{
 		signal = make_shared<data::BaseSignal>(
-			sr_channel, data::BaseSignal::AnalogChannel);
+			sr_channel, data::BaseSignal::AnalogChannel, quantity_fixed);
 
 		qWarning() << "init_signal(): Init signal " << signal->internal_name();
 
@@ -590,439 +527,10 @@ vector<shared_ptr<data::BaseSignal>> HardwareDevice::all_signals() const
 	return all_signals_;
 }
 
-bool HardwareDevice::get_enabled() const
+vector<shared_ptr<devices::Configurable>> HardwareDevice::configurables() const
 {
-	return get_config<bool>(sigrok::ConfigKey::ENABLED);
+	return configurables_;
 }
-
-void HardwareDevice::set_enabled(const bool enabled)
-{
-	set_config(sigrok::ConfigKey::ENABLED, enabled);
-}
-
-
-bool HardwareDevice::get_regulation() const
-{
-	return get_config<bool>(sigrok::ConfigKey::REGULATION);
-}
-
-void HardwareDevice::set_regulation(const bool regulation)
-{
-	set_config(sigrok::ConfigKey::REGULATION, regulation);
-}
-
-
-double HardwareDevice::get_voltage_target() const
-{
-	return get_config<double>(sigrok::ConfigKey::VOLTAGE_TARGET);
-}
-
-void HardwareDevice::set_voltage_target(const double value)
-{
-	set_config(sigrok::ConfigKey::VOLTAGE_TARGET, value);
-}
-
-
-double HardwareDevice::get_current_limit() const
-{
-	return get_config<double>(sigrok::ConfigKey::CURRENT_LIMIT);
-}
-
-void HardwareDevice::set_current_limit(const double value)
-{
-	set_config(sigrok::ConfigKey::CURRENT_LIMIT, value);
-}
-
-
-bool HardwareDevice::get_ovp_enabled() const
-{
-	return get_config<bool>(sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_ENABLED);
-}
-
-void HardwareDevice::set_ovp_enabled(const bool enabled)
-{
-	set_config(sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_ENABLED, enabled);
-}
-
-bool HardwareDevice::get_ovp_active() const
-{
-	if (is_ovp_active_getable_)
-		return get_config<bool>(
-			sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_ACTIVE);
-	else
-		return false;
-}
-
-double HardwareDevice::get_ovp_threshold() const
-{
-	return get_config<double>(
-		sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_THRESHOLD);
-}
-
-void HardwareDevice::set_ovp_threshold(const double threshold)
-{
-	set_config(
-		sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_THRESHOLD, threshold);
-}
-
-
-bool HardwareDevice::get_ocp_enabled() const
-{
-	return get_config<bool>(sigrok::ConfigKey::OVER_CURRENT_PROTECTION_ENABLED);
-}
-
-void HardwareDevice::set_ocp_enabled(const bool enabled)
-{
-	set_config(sigrok::ConfigKey::OVER_CURRENT_PROTECTION_ENABLED, enabled);
-}
-
-bool HardwareDevice::get_ocp_active() const
-{
-	if (is_ocp_active_getable_)
-		return get_config<bool>(
-			sigrok::ConfigKey::OVER_CURRENT_PROTECTION_ACTIVE);
-	else
-		return false;
-}
-
-double HardwareDevice::get_ocp_threshold() const
-{
-	return get_config<double>(
-		sigrok::ConfigKey::OVER_CURRENT_PROTECTION_THRESHOLD);
-}
-
-void HardwareDevice::set_ocp_threshold(const double threshold)
-{
-	set_config(
-		sigrok::ConfigKey::OVER_CURRENT_PROTECTION_THRESHOLD, threshold);
-}
-
-
-bool HardwareDevice::get_otp_active() const
-{
-	if (is_otp_active_getable_)
-		return get_config<bool>(
-			sigrok::ConfigKey::OVER_TEMPERATURE_PROTECTION_ACTIVE);
-	else
-		return false;
-}
-
-
-bool HardwareDevice::get_uvc_enabled() const
-{
-	return get_config<bool>(sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION);
-}
-
-void HardwareDevice::set_uvc_enabled(const bool enabled)
-{
-	set_config(sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION, enabled);
-}
-
-bool HardwareDevice::get_uvc_active() const
-{
-	if (is_uvc_active_getable_)
-		return get_config<bool>(
-			sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_ACTIVE);
-	else
-		return false;
-}
-
-double HardwareDevice::get_uvc_threshold() const
-{
-	/*
-	return get_config<double>(
-		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD);
-	*/
-	return 0;
-}
-
-void HardwareDevice::set_uvc_threshold(const double threshold)
-{
-	(void)threshold;
-
-	/*
-	set_config(
-		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD, threshold);
-	*/
-}
-
-
-void HardwareDevice::get_measured_quantity() const
-{
-	//get_config<double>(sigrok::ConfigKey::MEASURED_QUANTITY);
-}
-
-void HardwareDevice::set_measured_quantity(uint mq, uint mq_flags)
-{
-	(void)mq;
-	(void)mq_flags;
-
-	//set_config(sigrok::ConfigKey::MEASURED_QUANTITY, mq);
-}
-
-
-bool HardwareDevice::list_regulation(QStringList &regulation_list)
-{
-	if (!is_regulation_listable_)
-		return false;
-
-	regulation_list = regulation_list_;
-	return true;
-}
-
-bool HardwareDevice::list_voltage_target(double &min, double &max, double &step)
-{
-	if (!is_voltage_target_listable_)
-		return false;
-
-	min = voltage_target_min_;
-	max = voltage_target_max_;
-	step = voltage_target_step_;
-	return true;
-}
-
-bool HardwareDevice::list_current_limit(double &min, double &max, double &step)
-{
-	if (!is_current_limit_listable_)
-		return false;
-
-	min = current_limit_min_;
-	max = current_limit_max_;
-	step = current_limit_step_;
-	return true;
-}
-
-bool HardwareDevice::list_ovp_threshold(double &min, double &max, double &step)
-{
-	if (!is_ovp_threshold_listable_)
-		return false;
-
-	min = ovp_threshold_min_;
-	max = ovp_threshold_max_;
-	step = ovp_threshold_step_;
-	return true;
-}
-
-bool HardwareDevice::list_ocp_threshold(double &min, double &max, double &step)
-{
-	if (!is_ocp_threshold_listable_)
-		return false;
-
-	min = ocp_threshold_min_;
-	max = ocp_threshold_max_;
-	step = ocp_threshold_step_;
-	return true;
-}
-
-bool HardwareDevice::list_uvc_threshold(double &min, double &max, double &step)
-{
-	if (!is_uvc_threshold_listable_)
-		return false;
-
-	min = uvc_threshold_min_;
-	max = uvc_threshold_max_;
-	step = uvc_threshold_step_;
-	return true;
-}
-
-bool HardwareDevice::list_measured_quantity(
-	sr_mq_flags_list_t &sr_mq_flags_list, mq_flags_list_t &mq_flags_list)
-{
-	if (!is_measured_quantity_listable_)
-		return false;
-
-	sr_mq_flags_list = sr_mq_flags_list_;
-	mq_flags_list = mq_flags_list_;
-	return true;
-}
-
-
-bool HardwareDevice::is_controllable() const
-{
-	if (type_ == Type::POWER_SUPPLY || type_ == Type::ELECTRONIC_LOAD) {
-		if (is_enabled_setable_ || is_regulation_setable_ ||
-				is_voltage_target_setable_ || is_current_limit_setable_ ||
-				is_ovp_enabled_setable_ || is_ovp_threshold_setable_ ||
-				is_ocp_enabled_setable_ || is_ocp_threshold_setable_ ||
-				is_uvc_enabled_setable_ || is_uvc_threshold_setable_)
-			return true;
-	}
-	else if (type_ == Type::MULTIMETER) {
-		if (is_measured_quantity_getable_ || is_measured_quantity_setable_)
-			return true;
-	}
-
-	return false;
-}
-
-
-bool HardwareDevice::is_enabled_getable() const
-{
-	return is_enabled_getable_;
-}
-
-bool HardwareDevice::is_enabled_setable() const
-{
-	return is_enabled_setable_;
-}
-
-
-bool HardwareDevice::is_regulation_getable() const
-{
-	return is_regulation_getable_;
-}
-
-bool HardwareDevice::is_regulation_setable() const
-{
-	return is_regulation_setable_;
-}
-
-
-bool HardwareDevice::is_voltage_target_getable() const
-{
-	return is_voltage_target_getable_;
-}
-
-bool HardwareDevice::is_voltage_target_setable() const
-{
-	return is_voltage_target_setable_;
-}
-
-bool HardwareDevice::is_voltage_target_listable() const
-{
-	return is_voltage_target_listable_;
-}
-
-
-bool HardwareDevice::is_current_limit_getable() const
-{
-	return is_current_limit_getable_;
-}
-
-bool HardwareDevice::is_current_limit_setable() const
-{
-	return is_current_limit_setable_;
-}
-
-bool HardwareDevice::is_current_limit_listable() const
-{
-	return is_current_limit_listable_;
-}
-
-
-bool HardwareDevice::is_ovp_enabled_getable() const
-{
-	return is_ovp_enabled_getable_;
-}
-
-bool HardwareDevice::is_ovp_enabled_setable() const
-{
-	return is_ovp_enabled_setable_;
-}
-
-bool HardwareDevice::is_ovp_active_getable() const
-{
-	return is_ovp_active_getable_;
-}
-
-bool HardwareDevice::is_ovp_threshold_getable() const
-{
-	return is_ovp_threshold_getable_;
-}
-
-bool HardwareDevice::is_ovp_threshold_setable() const
-{
-	return is_ovp_threshold_setable_;
-}
-
-bool HardwareDevice::is_ovp_threshold_listable() const
-{
-	return is_ovp_threshold_listable_;
-}
-
-
-bool HardwareDevice::is_ocp_enabled_getable() const
-{
-	return is_ocp_enabled_getable_;
-}
-
-bool HardwareDevice::is_ocp_enabled_setable() const
-{
-	return is_ocp_enabled_setable_;
-}
-
-bool HardwareDevice::is_ocp_active_getable() const
-{
-	return is_ocp_active_getable_;
-}
-
-bool HardwareDevice::is_ocp_threshold_getable() const
-{
-	return is_ocp_threshold_getable_;
-}
-
-bool HardwareDevice::is_ocp_threshold_setable() const
-{
-	return is_ocp_threshold_setable_;
-}
-
-bool HardwareDevice::is_ocp_threshold_listable() const
-{
-	return is_ocp_threshold_listable_;
-}
-
-
-bool HardwareDevice::is_otp_active_getable() const
-{
-	return is_otp_active_getable_;
-}
-
-bool HardwareDevice::is_uvc_enabled_getable() const
-{
-	return is_uvc_enabled_getable_;
-}
-
-bool HardwareDevice::is_uvc_enabled_setable() const
-{
-	return is_uvc_enabled_setable_;
-}
-
-bool HardwareDevice::is_uvc_active_getable() const
-{
-	return is_uvc_active_getable_;
-}
-
-bool HardwareDevice::is_uvc_threshold_getable() const
-{
-	return is_uvc_threshold_getable_;
-}
-
-bool HardwareDevice::is_uvc_threshold_setable() const
-{
-	return is_uvc_threshold_setable_;
-}
-
-bool HardwareDevice::is_uvc_threshold_listable() const
-{
-	return is_uvc_threshold_listable_;
-}
-
-
-bool HardwareDevice::is_measured_quantity_getable() const
-{
-	return is_measured_quantity_getable_;
-}
-
-bool HardwareDevice::is_measured_quantity_setable() const
-{
-	return is_measured_quantity_setable_;
-}
-
-bool HardwareDevice::is_measured_quantity_listable() const
-{
-	return is_measured_quantity_listable_;
-}
-
 
 } // namespace devices
 } // namespace sv

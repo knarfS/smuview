@@ -24,8 +24,9 @@
 #include <set>
 
 #include <QComboBox>
+#include <QString>
 
-#include "src/devices/device.hpp"
+#include "src/devices/configurable.hpp"
 #include "src/views/baseview.hpp"
 
 using std::map;
@@ -37,14 +38,9 @@ class Quantity;
 class QuantityFlag;
 }
 
-
 namespace sv {
 
 class Session;
-
-namespace devices {
-class HardwareDevice;
-}
 
 namespace views {
 
@@ -54,13 +50,15 @@ class MeasurementControlView : public BaseView
 
 public:
 	MeasurementControlView(const Session& session,
-		shared_ptr<devices::HardwareDevice> device,
+		shared_ptr<devices::Configurable> configurable,
 		QWidget* parent = nullptr);
 
+	QString title() const;
+
 private:
-	shared_ptr<devices::HardwareDevice> device_;
-	devices::Device::sr_mq_flags_list_t sr_mq_flags_list_;
-	devices::Device::mq_flags_list_t mq_flags_list_;
+	shared_ptr<devices::Configurable> configurable_;
+	devices::Configurable::sr_mq_flags_list_t sr_mq_flags_list_;
+	devices::Configurable::mq_flags_list_t mq_flags_list_;
 
 	QComboBox *quantityBox;
 	QComboBox *quantityFlagsBox;

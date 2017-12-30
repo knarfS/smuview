@@ -31,7 +31,7 @@ namespace sv {
 class Session;
 
 namespace devices {
-class HardwareDevice;
+class Configurable;
 }
 
 namespace widgets {
@@ -49,11 +49,13 @@ class SourceControlView : public BaseView
 
 public:
 	SourceControlView(const Session& session,
-		std::shared_ptr<devices::HardwareDevice> device,
+		std::shared_ptr<devices::Configurable> configurable,
 		QWidget* parent = nullptr);
 
+	QString title() const;
+
 private:
-	shared_ptr<devices::HardwareDevice> device_;
+	shared_ptr<devices::Configurable> configurable_;
 
 	widgets::Led *ccLed;
 	widgets::Led *cvLed;

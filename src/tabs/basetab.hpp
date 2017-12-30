@@ -68,7 +68,7 @@ protected:
 	Session &session_;
 	QMainWindow *parent_;
 
-	shared_ptr<views::BaseView> add_view(const QString &title,
+	shared_ptr<views::BaseView> add_view(
 		shared_ptr<views::BaseView> view, Qt::DockWidgetArea area,
 		Session &session);
 

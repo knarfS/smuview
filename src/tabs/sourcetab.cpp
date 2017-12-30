@@ -24,6 +24,7 @@
 #include "src/tabs/devicetab.hpp"
 #include "src/data/analogdata.hpp"
 #include "src/data/basesignal.hpp"
+#include "src/devices/configurable.hpp"
 #include "src/views/sourcecontrolview.hpp"
 #include "src/views/plotview.hpp"
 #include "src/views/powerpanelview.hpp"
@@ -41,11 +42,12 @@ SourceTab::SourceTab(Session &session,
 void SourceTab::setup_ui()
 {
 	// Device controls
-	if (device_->is_controllable()) {
-		shared_ptr<views::BaseView> control_view =
-			make_shared<views::SourceControlView>(session_, device_);
-		add_view(tr("Device control"), control_view,
-			Qt::TopDockWidgetArea, session_);
+	for (auto c : device_->configurables()) {
+		if (c->is_controllable()) {
+			shared_ptr<views::BaseView> control_view =
+				make_shared<views::SourceControlView>(session_, c);
+			add_view(control_view, Qt::TopDockWidgetArea, session_);
+		}
 	}
 
 	// Power panel
@@ -53,8 +55,7 @@ void SourceTab::setup_ui()
 		shared_ptr<views::BaseView> power_panel_view =
 			make_shared<views::PowerPanelView>(session_,
 				device_->voltage_signal(), device_->current_signal());
-		add_view(tr("Power Panel"), power_panel_view,
-			Qt::TopDockWidgetArea, session_);
+		add_view(power_panel_view, Qt::TopDockWidgetArea, session_);
 	}
 
 	// Voltage plot
@@ -63,8 +64,7 @@ void SourceTab::setup_ui()
 			make_shared<views::PlotView>(session_,
 				device_->voltage_signal()->time_data(),
 				device_->voltage_signal()->analog_data());
-		add_view(tr("Voltage Graph"), voltage_plot_view,
-			Qt::BottomDockWidgetArea, session_);
+		add_view(voltage_plot_view, Qt::BottomDockWidgetArea, session_);
 	}
 
 	// Current plot
@@ -73,8 +73,7 @@ void SourceTab::setup_ui()
 			make_shared<views::PlotView>(session_,
 				device_->current_signal()->time_data(),
 				device_->current_signal()->analog_data());
-		add_view(tr("Current Graph"), current_plot_view,
-			Qt::BottomDockWidgetArea, session_);
+		add_view(current_plot_view, Qt::BottomDockWidgetArea, session_);
 	}
 
 	// UI plot
@@ -83,8 +82,7 @@ void SourceTab::setup_ui()
 			make_shared<views::PlotView>(session_,
 				device_->voltage_signal()->analog_data(),
 				device_->current_signal()->analog_data());
-		add_view(tr("UI Graph"), ui_plot_view,
-			Qt::BottomDockWidgetArea, session_);
+		add_view(ui_plot_view, Qt::BottomDockWidgetArea, session_);
 	}
 }
 

@@ -58,7 +58,7 @@ void BaseTab::restore_settings(QSettings &settings)
 	(void)settings;
 }
 
-shared_ptr<views::BaseView> BaseTab::add_view(const QString &title,
+shared_ptr<views::BaseView> BaseTab::add_view(
 	shared_ptr<views::BaseView> view, Qt::DockWidgetArea area, Session &session)
 {
 	if (!view)
@@ -66,8 +66,8 @@ shared_ptr<views::BaseView> BaseTab::add_view(const QString &title,
 
 	//GlobalSettings settings;
 
-	QDockWidget* dock = new QDockWidget(title, parent_);
-	dock->setObjectName(title);
+	QDockWidget* dock = new QDockWidget(view->title(), parent_);
+	dock->setObjectName(view->title());
 	dock->setAllowedAreas(Qt::AllDockWidgetAreas);
 	parent_->addDockWidget(area, dock);
 

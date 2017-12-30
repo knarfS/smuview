@@ -24,7 +24,6 @@
 
 #include <QDialog>
 #include <QDialogButtonBox>
-#include <QString>
 #include <QTabWidget>
 #include <QTreeWidget>
 
@@ -54,7 +53,6 @@ public:
 		int selected_view_type,
 		QWidget *parent = nullptr);
 
-	QString view_title();
 	shared_ptr<views::BaseView> view();
 
 private:
@@ -67,7 +65,6 @@ private:
 	const Session &session_;
 	const shared_ptr<devices::HardwareDevice> device_;
 	int selected_view_type_; // TODO
-	QString view_title_;
 	shared_ptr<views::BaseView> view_;
 
 	QTabWidget *tab_widget_;

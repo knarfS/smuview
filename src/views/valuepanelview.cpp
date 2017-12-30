@@ -47,6 +47,11 @@ ValuePanelView::ValuePanelView(const Session &session,
 	init_timer();
 }
 
+QString ValuePanelView::title() const
+{
+	return tr("Panel"); // TODO: channel/signal name or Quantity
+}
+
 ValuePanelView::~ValuePanelView()
 {
 	stop_timer();

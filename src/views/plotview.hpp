@@ -53,6 +53,8 @@ public:
 		shared_ptr<data::AnalogData> y_signal_data,
 		QWidget* parent = nullptr);
 
+	QString title() const;
+
 private:
 	shared_ptr<data::AnalogData> x_signal_data_;
 	shared_ptr<data::AnalogData> y_signal_data_;

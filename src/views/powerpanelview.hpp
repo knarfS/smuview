@@ -54,6 +54,8 @@ public:
 		QWidget* parent = nullptr);
 	~PowerPanelView();
 
+	QString title() const;
+
 private:
 	uint digits_;
 	shared_ptr<data::BaseSignal> voltage_signal_;

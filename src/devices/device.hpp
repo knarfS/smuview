@@ -68,6 +68,8 @@ class BaseData;
 
 namespace devices {
 
+class Configurable;
+
 class Device : public QObject
 {
 	Q_OBJECT
@@ -82,14 +84,17 @@ public:
 		Running
 	};
 
+	/*
 	// TODO: Find a better way to store/map this + rename
 	typedef map<const sigrok::Quantity *,
 				shared_ptr<vector<set<const sigrok::QuantityFlag *>>>>
 		sr_mq_flags_list_t;
 	typedef map<QString, shared_ptr<vector<set<QString>>>> mq_flags_list_t;
+	*/
 
 	shared_ptr<sigrok::Device> sr_device() const;
 
+	/*
 	bool has_get_config(const sigrok::ConfigKey *key) const;
 	template<typename T> T get_config(const sigrok::ConfigKey *key) const;
 
@@ -104,6 +109,7 @@ public:
 		double &min, double &max, double &step);
 	void list_config_mq(const sigrok::ConfigKey *key,
 		sr_mq_flags_list_t &sr_mq_flags_list, mq_flags_list_t &mq_flags_list);
+	*/
 
 	/**
 	 * Builds the full name. It only contains all the fields.
@@ -146,8 +152,8 @@ protected:
 	shared_ptr<sigrok::Session> sr_session_;
 	shared_ptr<sigrok::Device> sr_device_;
 	vector<shared_ptr<sigrok::ChannelGroup>> sr_channel_groups_;
-	shared_ptr<sigrok::Configurable> sr_configurable_;
-	vector<shared_ptr<sigrok::Configurable>> sr_configurables_;
+	vector<shared_ptr<devices::Configurable>> configurables_;
+	map<QString, shared_ptr<data::BaseSignal>> channel_group_name_signal_map_; // TODO: Rename
 	map<shared_ptr<sigrok::Channel>, shared_ptr<data::BaseSignal>> channel_data_; // TODO: Rename
 
 	std::thread aquisition_thread_;
@@ -159,10 +165,11 @@ protected:
 	virtual void init_device();
 	virtual shared_ptr<data::BaseSignal> init_signal(
 		shared_ptr<sigrok::Channel> sr_channel,
-		shared_ptr<data::AnalogData> common_time_data) = 0;
+		shared_ptr<data::AnalogData> common_time_data,
+		bool quantity_fixed) = 0;
 
-// TODO: move to hardwaredevice
 Q_SIGNALS:
+	/*
 	void capture_state_changed(int);
 	void enabled_changed(const bool);
 	void voltage_target_changed(const double);
@@ -178,6 +185,7 @@ Q_SIGNALS:
 	void uvc_enabled_changed(const bool);
 	void uvc_active_changed(const bool);
 	void uvc_threshold_changed(const double);
+	*/
 
 	/* TODO?
 	void signals_changed();
