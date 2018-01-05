@@ -216,7 +216,7 @@ void Device::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
 			" channel_data = " << *channel_data;
 		*/
 
-		if (!channel_data_.count(sr_channel)) {
+		if (!sr_channel_signal_map_.count(sr_channel)) {
 			/*
 			qWarning() << "Device::feed_in_analog(): Channel " <<
 				QString::fromStdString(sr_channel->name()) <<
@@ -228,7 +228,7 @@ void Device::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
 			continue;
 		}
 
-		actual_processed_signal_ = channel_data_[sr_channel];
+		actual_processed_signal_ = sr_channel_signal_map_[sr_channel];
 		/*
 		qWarning() << "Device::feed_in_analog(): -3- name = " << actual_processed_signal_->name();
 		qWarning() << "Device::feed_in_analog(): -3- count = " << actual_processed_signal_->analog_data()->get_sample_count();

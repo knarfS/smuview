@@ -24,6 +24,7 @@
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
 #include <QApplication>
+#include <QDebug>
 #include <QDialogButtonBox>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -254,9 +255,33 @@ QWidget *AboutDialog::get_device_page(QWidget *parent) const
 
 	const auto sr_keys = sr_device->driver()->config_keys();
 	for (auto sr_key : sr_keys) {
-		s.append(QString("<tr><td><i>- %1</i></td><td>%2</td></tr>").arg(
-			QString::fromStdString(sr_key->identifier()),
-			QString::fromStdString(sr_key->description())));
+		s.append(QString("<tr><td>%1</td><td>%2</td></tr>").arg(
+			QString::fromStdString(sr_key->description()),
+			QString::fromStdString(sr_key->identifier())));
+	}
+
+	/* SmuView device signals */
+	s.append("<tr><td colspan=\"2\"><b>" +
+		tr("SmuView device signals:") + "</b></td></tr>");
+
+	const auto signals = device_->all_signals();
+	for (auto signal : signals) {
+		s.append(QString("<tr><td>%1</td><td>%2</td></tr>").arg(
+			signal->name(), signal->internal_name()));
+	}
+
+	/* SmuView device channel groups + signals */
+	s.append("<tr><td colspan=\"2\"><b>" +
+		tr("SmuView device channel groups and signals:") + "</b></td></tr>");
+
+	const auto cg_signal_map = device_->channel_group_name_signals_map();
+	for (auto cg_signal_pair : cg_signal_map) {
+		s.append(QString("<tr><td>%1</td><td></td></tr>").arg(
+			cg_signal_pair.first));
+		for (auto signal : cg_signal_pair.second) {
+			s.append(QString("<tr><td></td><td>%1</td></tr>").arg(
+				signal->name()));
+		}
 	}
 
 	/* Device channel groups + channels */
@@ -285,16 +310,6 @@ QWidget *AboutDialog::get_device_page(QWidget *parent) const
 	for (auto sr_channel : sr_channels) {
 		s.append(QString("<tr><td><i>%1</i></td><td></td></tr>").arg(
 			QString::fromStdString(sr_channel->name())));
-	}
-
-	/* Device signals */
-	s.append("<tr><td colspan=\"2\"><b>" +
-		tr("Device signals (SmuView):") + "</b></td></tr>");
-
-	const auto signals = device_->all_signals();
-	for (auto signal : signals) {
-		s.append(QString("<tr><td><i>%1</i></td><td>%2</td></tr>").arg(
-			signal->name(), signal->internal_name()));
 	}
 
 	s.append("</table>");

@@ -84,32 +84,7 @@ public:
 		Running
 	};
 
-	/*
-	// TODO: Find a better way to store/map this + rename
-	typedef map<const sigrok::Quantity *,
-				shared_ptr<vector<set<const sigrok::QuantityFlag *>>>>
-		sr_mq_flags_list_t;
-	typedef map<QString, shared_ptr<vector<set<QString>>>> mq_flags_list_t;
-	*/
-
 	shared_ptr<sigrok::Device> sr_device() const;
-
-	/*
-	bool has_get_config(const sigrok::ConfigKey *key) const;
-	template<typename T> T get_config(const sigrok::ConfigKey *key) const;
-
-	bool has_set_config(const sigrok::ConfigKey *key) const;
-	template<typename T> void set_config(const sigrok::ConfigKey *key,
-		const T value);
-
-	bool has_list_config(const sigrok::ConfigKey *key) const;
-	void list_config_string_array(const sigrok::ConfigKey *key,
-		QStringList &string_list);
-	void list_config_min_max_steps(const sigrok::ConfigKey *key,
-		double &min, double &max, double &step);
-	void list_config_mq(const sigrok::ConfigKey *key,
-		sr_mq_flags_list_t &sr_mq_flags_list, mq_flags_list_t &mq_flags_list);
-	*/
 
 	/**
 	 * Builds the full name. It only contains all the fields.
@@ -151,10 +126,16 @@ protected:
 	const shared_ptr<sigrok::Context> sr_context_;
 	shared_ptr<sigrok::Session> sr_session_;
 	shared_ptr<sigrok::Device> sr_device_;
-	vector<shared_ptr<sigrok::ChannelGroup>> sr_channel_groups_;
+	map<QString, shared_ptr<sigrok::ChannelGroup>> sr_channel_group_name_map_;
+	map<QString, vector<shared_ptr<data::BaseSignal>>> channel_group_name_signals_map_;
+
+	/**
+	 * Mapping of incomming data to BaseSignal
+	 */
+	map<shared_ptr<sigrok::Channel>, shared_ptr<data::BaseSignal>> sr_channel_signal_map_;
+
 	vector<shared_ptr<devices::Configurable>> configurables_;
-	map<QString, shared_ptr<data::BaseSignal>> channel_group_name_signal_map_; // TODO: Rename
-	map<shared_ptr<sigrok::Channel>, shared_ptr<data::BaseSignal>> channel_data_; // TODO: Rename
+	map<QString, shared_ptr<data::BaseSignal>> signal_name_map_;
 
 	std::thread aquisition_thread_;
 	mutable mutex aquisition_mutex_; //!< Protects access to capture_state_.

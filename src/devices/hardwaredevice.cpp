@@ -64,131 +64,76 @@ HardwareDevice::HardwareDevice(
 	// TODO: sigrok::Device and not sigrok::HardwareDevice in constructor?? then cast...
 	sr_device_ = sr_device;
 
-	// Sigrok Channel Groups + Channel Group Names Map
-	map<string, shared_ptr<sigrok::ChannelGroup>> sr_cgs =
-		sr_device_->channel_groups();
-	map<string, shared_ptr<sigrok::ChannelGroup>>::iterator it = sr_cgs.begin();
-	for (; it != sr_cgs.end(); ++it) {
-		sr_channel_groups_.push_back(it->second);
+	/* When multiple channels data is send within a frame, they have common
+	 * time stamps.
+	 *
+	 * TODO: Implement a common time base per channel group. When the "one
+	 * command - multiple return values" feature is done, a frame contains only
+	 * one channel group.
+	 * TODO: The common time data should be detected when a frame starts.
+	 * Maybe use one vector per channel and don't share them.
+	 */
+	shared_ptr<data::AnalogData> common_time_data;
 
-		/*
-		channel_group_name_signal_map_.insert(
-			pair<QString, shared_ptr<data::BaseSignal>>(
-				QString::fromStdString(it->first), it->second));
-		*/
-	}
+	bool fixed_mq;
 
-	vector<shared_ptr<sigrok::Channel>> sr_channels;
-	shared_ptr<data::AnalogData> common_time_data_; // TODO: Per channel group?
-
+	// Set options for different device types
 	const auto sr_keys = sr_device->driver()->config_keys();
 	if (sr_keys.count(sigrok::ConfigKey::POWER_SUPPLY)) {
 		type_ = HardwareDevice::POWER_SUPPLY;
-
-		if (sr_device_->channel_groups().size() > 0) {
-			for (auto channel_group : sr_device_->channel_groups()) {
-				configurables_.push_back(
-					make_shared<Configurable>(channel_group.second));
-				sr_channels.insert(
-					sr_channels.end(),
-					channel_group.second->channels().begin(),
-					channel_group.second->channels().end());
-			}
-		}
-		else {
-			configurables_.push_back(make_shared<Configurable>(sr_device_));
-			sr_channels = sr_device_->channels();
-		}
-
-		// TODO: solve this somehow with the detection of frames....
-		// TODO: What if the device has multi channels with a frame around each cg data
-		// PPUs DON'T have common time data
-		common_time_data_ = nullptr;
+		common_time_data = nullptr;
+		fixed_mq = true;
 	}
 	else if (sr_keys.count(sigrok::ConfigKey::ELECTRONIC_LOAD)) {
 		type_ = HardwareDevice::ELECTRONIC_LOAD;
-
-		// TODO: POWER_SUPPLY + ELECTRONIC_LOAD common code
-		if (sr_device_->channel_groups().size() > 0) {
-			for (auto channel_group : sr_device_->channel_groups()) {
-				configurables_.push_back(
-					make_shared<Configurable>(channel_group.second));
-				sr_channels.insert(
-					sr_channels.end(),
-					channel_group.second->channels().begin(),
-					channel_group.second->channels().end());
-			}
-		}
-		else {
-			configurables_.push_back(make_shared<Configurable>(sr_device_));
-			sr_channels = sr_device_->channels();
-		}
-
-		// TODO: solve this somehow with the detection of frames....
-		// TODO: What if the device has multi channels with a frame around each cg data
-		// Loads have common time data
-		common_time_data_ = init_time_data();
+		common_time_data = init_time_data();
+		fixed_mq = true;
 	}
 	else if (sr_keys.count(sigrok::ConfigKey::MULTIMETER)) {
 		type_ = HardwareDevice::MULTIMETER;
-
-		qWarning() << "MM HardwareDevice::MULTIMETER";
-		// TODO: common code
-		/*
-		if (sr_device_->channel_groups().size() > 0) {
-			for (auto channel_group : sr_device_->channel_groups()) {
-				configurables_.push_back(
-					make_shared<Configurable>(channel_group.second));
-				sr_channels.insert(
-					sr_channels.end(),
-					channel_group.second->channels().begin(),
-					channel_group.second->channels().end());
-			}
-		}
-		else {
-			*/
-			configurables_.push_back(make_shared<Configurable>(sr_device_));
-			sr_channels = sr_device_->channels();
-		//}
-
-		common_time_data_ = nullptr;
+		common_time_data = nullptr;
+		fixed_mq = false;
 	}
 	else if (sr_keys.count(sigrok::ConfigKey::DEMO_DEV)) {
 		type_ = HardwareDevice::DEMO_DEV;
-
-		qWarning() << "XX HardwareDevice::DEMO_DEV";
-		// TODO: common code
-		/*
-		if (sr_device_->channel_groups().size() > 0) {
-			sr_configurable_ = sr_device_->channel_groups()["Analog"];
-			for (auto channel_group : sr_device_->channel_groups()) {
-				configurables_.push_back(
-					make_shared<Configurable>(channel_group.second));
-				sr_channels.insert(
-					sr_channels.end(),
-					channel_group.second->channels().begin(),
-					channel_group.second->channels().end());
-			}
-		}
-		else {
-			configurables_.push_back(make_shared<Configurable>(sr_device_));
-			sr_channels = sr_device_->channels();
-		}
-		*/
-
-		configurables_.push_back(make_shared<Configurable>(sr_device_));
-		sr_channels = sr_device_->channel_groups()["Analog"]->channels();
-
-		common_time_data_ = nullptr;
+		common_time_data = nullptr;
+		fixed_mq = false;
 	}
 	else {
 		type_ = HardwareDevice::UNKNOWN;
 		assert("Unknown device");
 	}
 
+	// Init signals. We get all channels from the device, also all cg signals
+	vector<shared_ptr<sigrok::Channel>> sr_channels = sr_device_->channels();
 	for (auto sr_channel : sr_channels) {
 		// TODO: sr_channel is not necessarily a signal (see Digi35)....
-		init_signal(sr_channel, common_time_data_, true); // TODO: fixed signal?
+		init_signal(sr_channel, common_time_data, fixed_mq);
+	}
+
+	// Sigrok Channel Groups
+	map<string, shared_ptr<sigrok::ChannelGroup>> sr_channel_groups =
+		sr_device_->channel_groups();
+	if (sr_channel_groups.size() > 0) {
+		for (auto sr_cg_pair : sr_channel_groups) {
+			shared_ptr<sigrok::ChannelGroup> sr_cg = sr_cg_pair.second;
+			configurables_.push_back(make_shared<Configurable>(sr_cg));
+			sr_channel_group_name_map_.insert(
+				pair<QString, shared_ptr<sigrok::ChannelGroup>>
+					(QString::fromStdString(sr_cg->name()), sr_cg));
+
+			vector<shared_ptr<data::BaseSignal>> cg_signals;
+			for (auto sr_c : sr_cg->channels()) {
+				if (sr_channel_signal_map_.count(sr_c) > 0)
+					cg_signals.push_back(sr_channel_signal_map_[sr_c]);
+			}
+			channel_group_name_signals_map_.insert(
+				pair<QString, vector<shared_ptr<data::BaseSignal>>>
+					(QString::fromStdString(sr_cg->name()), cg_signals));
+		}
+	}
+	else {
+		configurables_.push_back(make_shared<Configurable>(sr_device_));
 	}
 }
 
@@ -382,7 +327,7 @@ shared_ptr<data::AnalogData> HardwareDevice::init_time_data()
 shared_ptr<data::BaseSignal> HardwareDevice::init_signal(
 	shared_ptr<sigrok::Channel> sr_channel,
 	shared_ptr<data::AnalogData> common_time_data,
-	bool quantity_fixed)
+	bool fixed_mq)
 {
 	shared_ptr<data::BaseSignal> signal;
 	//lock_guard<recursive_mutex> lock(data_mutex_);
@@ -395,7 +340,7 @@ shared_ptr<data::BaseSignal> HardwareDevice::init_signal(
 	case SR_CHANNEL_ANALOG:
 	{
 		signal = make_shared<data::BaseSignal>(
-			sr_channel, data::BaseSignal::AnalogChannel, quantity_fixed);
+			sr_channel, data::BaseSignal::AnalogChannel, fixed_mq);
 
 		qWarning() << "init_signal(): Init signal " << signal->internal_name();
 
@@ -410,26 +355,26 @@ shared_ptr<data::BaseSignal> HardwareDevice::init_signal(
 		auto data = make_shared<data::AnalogData>();
 
 		if (signal->internal_name().startsWith("V")) {
-			data->set_fixed_quantity(true);
+			data->set_fixed_quantity(fixed_mq);
 			data->set_quantity(sigrok::Quantity::VOLTAGE);
 			data->set_unit(sigrok::Unit::VOLT);
 		}
 		else if (signal->internal_name().startsWith("I")) {
-			data->set_fixed_quantity(true);
+			data->set_fixed_quantity(fixed_mq);
 			data->set_quantity(sigrok::Quantity::CURRENT);
 			data->set_unit(sigrok::Unit::AMPERE);
 		}
 		// TODO: Power
 		else if (signal->internal_name().startsWith("F")) {
-			data->set_fixed_quantity(true);
+			data->set_fixed_quantity(fixed_mq);
 			data->set_quantity(sigrok::Quantity::FREQUENCY);
 			data->set_unit(sigrok::Unit::HERTZ);
 		}
 		else if (signal->internal_name() == "P1") {
-			data->set_fixed_quantity(false);
+			data->set_fixed_quantity(fixed_mq);
 		}
 		else if (signal->internal_name().startsWith("A")) {
-			data->set_fixed_quantity(true);
+			data->set_fixed_quantity(fixed_mq);
 			data->set_quantity(sigrok::Quantity::VOLTAGE);
 			data->set_unit(sigrok::Unit::VOLT);
 		}
@@ -437,9 +382,11 @@ shared_ptr<data::BaseSignal> HardwareDevice::init_signal(
 		signal->set_data(data);
 
 		all_signals_.push_back(signal);
-		channel_data_.insert(pair<
-			shared_ptr<sigrok::Channel>,
-			shared_ptr<data::BaseSignal>>
+		signal_name_map_.insert(
+			pair<QString, shared_ptr<data::BaseSignal>>
+				(signal->internal_name(), signal));
+		sr_channel_signal_map_.insert(
+			pair<shared_ptr<sigrok::Channel>, shared_ptr<data::BaseSignal>>
 				(sr_channel, signal));
 
 		if (signal->internal_name().startsWith("V") && !voltage_signal_)
@@ -525,6 +472,12 @@ shared_ptr<data::BaseSignal> HardwareDevice::measurement_signal() const
 vector<shared_ptr<data::BaseSignal>> HardwareDevice::all_signals() const
 {
 	return all_signals_;
+}
+
+map<QString, vector<shared_ptr<data::BaseSignal>>>
+	HardwareDevice::channel_group_name_signals_map() const
+{
+	return channel_group_name_signals_map_;
 }
 
 vector<shared_ptr<devices::Configurable>> HardwareDevice::configurables() const
