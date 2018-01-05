@@ -79,7 +79,9 @@ ConnectDialog::ConnectDialog(sv::DeviceManager &device_manager,
 	QRadioButton *radiobtn_usb = new QRadioButton(tr("&USB"), this);
 	QRadioButton *radiobtn_serial = new QRadioButton(tr("Serial &Port"), this);
 	QRadioButton *radiobtn_tcp = new QRadioButton(tr("&TCP/IP"), this);
-	QRadioButton *radiobtn_gpib = new QRadioButton(tr("&GPIB"), this);
+	QRadioButton *radiobtn_gpib;
+	if (gpib_avialable_)
+		radiobtn_gpib = new QRadioButton(tr("&GPIB"), this);
 
 	radiobtn_usb->setChecked(true);
 
@@ -103,9 +105,11 @@ ConnectDialog::ConnectDialog(sv::DeviceManager &device_manager,
 	tcp_config_layout->setContentsMargins(0, 0, 0, 0);
 	tcp_config_->setEnabled(false);
 
-	gpib_libgpib_name_ = new QLineEdit;
-	gpib_libgpib_name_->setText("hp3478a");
-	gpib_libgpib_name_->setEnabled(false);
+	if (gpib_avialable_) {
+		gpib_libgpib_name_ = new QLineEdit;
+		gpib_libgpib_name_->setText("hp3478a"); // TODO
+		gpib_libgpib_name_->setEnabled(false);
+	}
 
 	check_available_libs();
 
@@ -141,7 +145,8 @@ ConnectDialog::ConnectDialog(sv::DeviceManager &device_manager,
 	connect(radiobtn_serial, SIGNAL(toggled(bool)), this, SLOT(serial_toggled(bool)));
 	connect(radiobtn_tcp, SIGNAL(toggled(bool)), this, SLOT(tcp_toggled(bool)));
 	connect(&scan_button_, SIGNAL(pressed()), this, SLOT(scan_pressed()));
-	connect(radiobtn_gpib, SIGNAL(toggled(bool)), this, SLOT(gpib_toggled(bool)));
+	if (gpib_avialable_)
+		connect(radiobtn_gpib, SIGNAL(toggled(bool)), this, SLOT(gpib_toggled(bool)));
 
 	setLayout(&layout_);
 
