@@ -321,14 +321,11 @@ void Plot::increment_x_interval()
 
 void Plot::increment_y_interval(QRectF boundaries)
 {
-	// TODO: Calculate proper interval_length
-	double interval_length = 0.5;
-
+	// TODO: Add some percent and round to full tick
 	if (boundaries.bottom() < y_interval_.minValue())
-		y_interval_.setMinValue(y_interval_.minValue() - interval_length);
-
-	if (boundaries.top() > y_interval_.maxValue())
-		y_interval_.setMaxValue(y_interval_.maxValue() + interval_length);
+		y_interval_.setMinValue(boundaries.bottom() - 0.5);
+	else if (boundaries.top() > y_interval_.maxValue())
+		y_interval_.setMaxValue(boundaries.top() + 0.5);
 
 	setAxisScale(QwtPlot::yLeft,
 		y_interval_.minValue(), y_interval_.maxValue());
@@ -349,7 +346,7 @@ void Plot::timerEvent(QTimerEvent *event)
 		}
 
 		// Check for y axis resize
-		if (boundaries.bottom() > y_interval_.minValue() ||
+		if (boundaries.bottom() < y_interval_.minValue() ||
 			boundaries.top() > y_interval_.maxValue()) {
 			increment_y_interval(boundaries);
 			intervals_changed = true;

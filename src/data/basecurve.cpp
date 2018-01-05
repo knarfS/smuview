@@ -57,11 +57,10 @@ size_t BaseCurve::size() const
 
 QRectF BaseCurve::boundingRect() const
 {
-	// top left (x, y), width, height
+	// top left, bottom right
 	return QRectF(
-		x_signal_data_->min_value(), y_signal_data_->max_value(),
-		x_signal_data_->max_value() - x_signal_data_->min_value(),
-		y_signal_data_->max_value() - y_signal_data_->min_value());
+		QPointF(x_signal_data_->min_value(), y_signal_data_->max_value()),
+		QPointF(x_signal_data_->max_value(), y_signal_data_->min_value()));
 }
 
 QString BaseCurve::x_signal_quantity() const
