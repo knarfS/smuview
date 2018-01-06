@@ -60,6 +60,7 @@ class Context;
 class Quantity;
 class QuantityFlag;
 class HardwareDevice;
+class Meta;
 }
 
 namespace sv {
@@ -121,6 +122,9 @@ public:
 	map<QString, vector<shared_ptr<data::BaseSignal>>> channel_group_name_signals_map() const;
 	vector<shared_ptr<devices::Configurable>> configurables() const;
 
+protected:
+	void feed_in_meta(shared_ptr<sigrok::Meta> sr_meta);
+
 private:
 	Type type_;
 	bool device_open_;
@@ -140,8 +144,6 @@ private:
 		shared_ptr<sigrok::Channel> sr_channel,
 		shared_ptr<data::AnalogData> common_time_data,
 		bool fixed_mq);
-
-Q_SIGNALS:
 
 };
 

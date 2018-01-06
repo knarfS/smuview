@@ -116,7 +116,6 @@ private:
 	shared_ptr<data::BaseSignal> actual_processed_signal_;
 
 	void feed_in_header();
-	void feed_in_meta(shared_ptr<sigrok::Meta> sr_meta);
 	void feed_in_trigger();
 	void feed_in_frame_begin();
 	void feed_in_frame_end();
@@ -149,23 +148,11 @@ protected:
 		shared_ptr<data::AnalogData> common_time_data,
 		bool quantity_fixed) = 0;
 
+	virtual void feed_in_meta(shared_ptr<sigrok::Meta> sr_meta) = 0;
+
 Q_SIGNALS:
 	/*
 	void capture_state_changed(int);
-	void enabled_changed(const bool);
-	void voltage_target_changed(const double);
-	void current_limit_changed(const double);
-	void otp_enabled_changed(const bool);
-	void otp_active_changed(const bool);
-	void ovp_enabled_changed(const bool);
-	void ovp_active_changed(const bool);
-	void ovp_threshold_changed(const double);
-	void ocp_enabled_changed(const bool);
-	void ocp_active_changed(const bool);
-	void ocp_threshold_changed(const double);
-	void uvc_enabled_changed(const bool);
-	void uvc_active_changed(const bool);
-	void uvc_threshold_changed(const double);
 	*/
 
 	/* TODO?

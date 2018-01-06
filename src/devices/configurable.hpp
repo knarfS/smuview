@@ -235,8 +235,6 @@ private:
 	bool is_measured_quantity_setable_;
 	bool is_measured_quantity_listable_;
 
-protected:
-
 Q_SIGNALS:
 	void enabled_changed(const bool);
 	void voltage_target_changed(const double);
