@@ -79,9 +79,6 @@ ConnectDialog::ConnectDialog(sv::DeviceManager &device_manager,
 	QRadioButton *radiobtn_usb = new QRadioButton(tr("&USB"), this);
 	QRadioButton *radiobtn_serial = new QRadioButton(tr("Serial &Port"), this);
 	QRadioButton *radiobtn_tcp = new QRadioButton(tr("&TCP/IP"), this);
-	QRadioButton *radiobtn_gpib;
-	if (gpib_avialable_)
-		radiobtn_gpib = new QRadioButton(tr("&GPIB"), this);
 
 	radiobtn_usb->setChecked(true);
 
@@ -105,12 +102,6 @@ ConnectDialog::ConnectDialog(sv::DeviceManager &device_manager,
 	tcp_config_layout->setContentsMargins(0, 0, 0, 0);
 	tcp_config_->setEnabled(false);
 
-	if (gpib_avialable_) {
-		gpib_libgpib_name_ = new QLineEdit;
-		gpib_libgpib_name_->setText("hp3478a"); // TODO
-		gpib_libgpib_name_->setEnabled(false);
-	}
-
 	check_available_libs();
 
 	QVBoxLayout *vbox_if = new QVBoxLayout;
@@ -119,10 +110,6 @@ ConnectDialog::ConnectDialog(sv::DeviceManager &device_manager,
 	vbox_if->addWidget(&serial_devices_);
 	vbox_if->addWidget(radiobtn_tcp);
 	vbox_if->addWidget(tcp_config_);
-	if (gpib_avialable_) {
-		vbox_if->addWidget(radiobtn_gpib);
-		vbox_if->addWidget(gpib_libgpib_name_);
-	}
 
 	QGroupBox *groupbox_if = new QGroupBox(tr("Step 2: Choose the interface"));
 	groupbox_if->setLayout(vbox_if);
@@ -145,8 +132,16 @@ ConnectDialog::ConnectDialog(sv::DeviceManager &device_manager,
 	connect(radiobtn_serial, SIGNAL(toggled(bool)), this, SLOT(serial_toggled(bool)));
 	connect(radiobtn_tcp, SIGNAL(toggled(bool)), this, SLOT(tcp_toggled(bool)));
 	connect(&scan_button_, SIGNAL(pressed()), this, SLOT(scan_pressed()));
-	if (gpib_avialable_)
+
+	if (gpib_avialable_) {
+		QRadioButton *radiobtn_gpib = new QRadioButton(tr("&GPIB"), this);
+		gpib_libgpib_name_ = new QLineEdit;
+		gpib_libgpib_name_->setText("hp3478a"); // TODO
+		gpib_libgpib_name_->setEnabled(false);
+		vbox_if->addWidget(radiobtn_gpib);
+		vbox_if->addWidget(gpib_libgpib_name_);
 		connect(radiobtn_gpib, SIGNAL(toggled(bool)), this, SLOT(gpib_toggled(bool)));
+	}
 
 	setLayout(&layout_);
 

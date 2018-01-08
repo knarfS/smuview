@@ -75,7 +75,7 @@ HardwareDevice::HardwareDevice(
 	 */
 	shared_ptr<data::AnalogData> common_time_data;
 
-	bool fixed_mq;
+	bool fixed_mq = false;;
 
 	// Set options for different device types
 	const auto sr_keys = sr_device->driver()->config_keys();
