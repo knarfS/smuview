@@ -58,9 +58,10 @@ enum class SIPrefix {
 	zetta, yotta
 };
 
-typedef map<const sigrok::Quantity *, QString> quantitymap_t;
-typedef map<const sigrok::QuantityFlag *, QString> quantityflagmap_t;
-typedef map<const sigrok::Unit *, QString> unitmap_t;
+typedef map<const sigrok::Quantity *, QString> quantity_name_map_t;
+typedef map<const sigrok::QuantityFlag *, QString> quantityflag_name_map_t;
+typedef map<const sigrok::Unit *, QString> unit_name_map_t;
+typedef map<const sigrok::Quantity *, const sigrok::Unit *> quantity_unit_map_t;
 
 /// Returns the exponent that corresponds to a given prefix.
 int exponent(SIPrefix prefix);
@@ -71,13 +72,23 @@ typedef boost::multiprecision::number<
 	boost::multiprecision::et_off> Timestamp;
 
 /**
+ * Returns the SI sigrok unit for the given sigrok quantity
+ *
+ * @param sr_quantity The sigrok quantity (sigrok::Quantity *)
+ *
+ * @return The sigrok unit (sigrok::Unit *)
+ */
+const sigrok::Unit *get_sr_unit_from_sr_quantity(
+	const sigrok::Quantity *sr_quantity);
+
+/**
  * Formats a sigrok quantity to a string
  *
  * @param sr_quantity The sigrok quantity (sigrok::Quantity) to format
  * .
  * @return The formatted quantity.
  */
-QString format_quantity(const sigrok::Quantity *sr_quantity);
+QString format_sr_quantity(const sigrok::Quantity *sr_quantity);
 
 /**
  * Formats a sigrok quantity flag to a string
@@ -86,7 +97,7 @@ QString format_quantity(const sigrok::Quantity *sr_quantity);
  * .
  * @return The formatted quantity flag.
  */
-QString format_quantityflag(const sigrok::QuantityFlag *sr_quantityflag);
+QString format_sr_quantityflag(const sigrok::QuantityFlag *sr_quantityflag);
 
 /**
  * Formats a sigrok unit to a string
@@ -95,7 +106,7 @@ QString format_quantityflag(const sigrok::QuantityFlag *sr_quantityflag);
  * .
  * @return The formatted unit.
  */
-QString format_unit(const sigrok::Unit *sr_unit);
+QString format_sr_unit(const sigrok::Unit *sr_unit);
 
 /**
  * Formats a given timestamp with the specified SI prefix.

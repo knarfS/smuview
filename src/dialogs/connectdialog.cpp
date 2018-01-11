@@ -140,6 +140,7 @@ ConnectDialog::ConnectDialog(sv::DeviceManager &device_manager,
 		gpib_libgpib_name_->setEnabled(false);
 		vbox_if->addWidget(radiobtn_gpib);
 		vbox_if->addWidget(gpib_libgpib_name_);
+
 		connect(radiobtn_gpib, SIGNAL(toggled(bool)), this, SLOT(gpib_toggled(bool)));
 	}
 

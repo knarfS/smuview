@@ -33,7 +33,7 @@
 
 #include "aboutdialog.hpp"
 #include "config.h"
-#include "src/data/basesignal.hpp"
+#include "src/data/analogsignal.hpp"
 #include "src/devices/hardwaredevice.hpp"
 
 namespace sv {
@@ -265,7 +265,7 @@ QWidget *AboutDialog::get_device_page(QWidget *parent) const
 		tr("SmuView device signals:") + "</b></td></tr>");
 
 	const auto signals = device_->all_signals();
-	for (auto signal : signals) {
+	for (shared_ptr<data::AnalogSignal> signal : signals) {
 		s.append(QString("<tr><td>%1</td><td>%2</td></tr>").arg(
 			signal->name(), signal->internal_name()));
 	}

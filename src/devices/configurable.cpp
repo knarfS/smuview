@@ -317,7 +317,7 @@ void Configurable::list_config_mq(const sigrok::ConfigKey *key,
 		uint32_t mqbits = Glib::VariantBase::cast_dynamic
 			<Glib::Variant<uint32_t>>(gvar.get_child(0)).get();
 		const sigrok::Quantity *sr_mq = sigrok::Quantity::get(mqbits);
-		QString mq = util::format_quantity(sr_mq);
+		QString mq = util::format_sr_quantity(sr_mq);
 
 		// TODO Das geht besser....
 		shared_ptr<vector<set<const sigrok::QuantityFlag *>>> sr_flag_vector;
@@ -349,7 +349,7 @@ void Configurable::list_config_mq(const sigrok::ConfigKey *key,
 
 			const sigrok::QuantityFlag *sr_mqflag =
 				sigrok::QuantityFlag::get(sr_mqflags & mask);
-			QString mqflag = util::format_quantityflag(sr_mqflag);
+			QString mqflag = util::format_sr_quantityflag(sr_mqflag);
 
 			sr_flag_set.insert(sr_mqflag);
 			flag_set.insert(mqflag);

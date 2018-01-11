@@ -1,7 +1,6 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2012 Joel Holdsworth <joel@airwebreathe.org.uk>
  * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,38 +17,60 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DATA_BASEDATA_HPP
-#define DATA_BASEDATA_HPP
+#ifndef DEVICES_SOURCESINKDEVICE_HPP
+#define DEVICES_SOURCESINKDEVICE_HPP
 
-#include <cstdint>
 #include <memory>
 #include <vector>
 
-#include <QObject>
+#include "src/devices/hardwaredevice.hpp"
 
 using std::shared_ptr;
 using std::vector;
 
-namespace sv {
-namespace data {
+namespace sigrok {
+class Channel;
+class Context;
+class HardwareDevice;
+class Meta;
+}
 
-class BaseData : public QObject
+namespace sv {
+
+namespace data {
+class AnalogSignal;
+}
+
+namespace devices {
+
+class SourceSinkDevice final : public HardwareDevice
 {
 	Q_OBJECT
 
 public:
-	BaseData() = default;
-	virtual ~BaseData() = default;
+	explicit SourceSinkDevice(const shared_ptr<sigrok::Context> &sr_context,
+		shared_ptr<sigrok::HardwareDevice> sr_device);
 
-	virtual void clear() = 0;
-	virtual size_t get_sample_count() const = 0;
-	virtual void push_sample(void *sample) = 0;
+	~SourceSinkDevice();
+
+	// TODO: Generic!
+	shared_ptr<data::AnalogSignal> voltage_signal() const;
+	shared_ptr<data::AnalogSignal> current_signal() const;
+
+protected:
+	void feed_in_meta(shared_ptr<sigrok::Meta> sr_meta);
+	void init_signal(
+		shared_ptr<sigrok::Channel> sr_channel,
+		shared_ptr<vector<double>> common_time_data);
 
 private:
+	// TODO: Generic!
+	shared_ptr<data::AnalogSignal> voltage_signal_;
+	shared_ptr<data::AnalogSignal> current_signal_;
 
 };
 
-} // namespace data
+} // namespace devices
 } // namespace sv
 
-#endif // DATA_BASEDATA_HPP
+#endif // DEVICES_SOURCESINKDEVICE_HPP

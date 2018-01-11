@@ -1,7 +1,6 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2012 Joel Holdsworth <joel@airwebreathe.org.uk>
  * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,10 +17,49 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "basedata.hpp"
+#ifndef DATA_TIMECURVE_HPP
+#define DATA_TIMECURVE_HPP
+
+#include <memory>
+#include <vector>
+
+#include <QPointer>
+#include <qwt_series_data.h>
+
+#include "src/data/basecurve.hpp"
+
+using std::shared_ptr;
+using std::vector;
 
 namespace sv {
 namespace data {
 
+class AnalogSignal;
+
+class TimeCurve : public BaseCurve
+{
+
+public:
+	TimeCurve(shared_ptr<AnalogSignal> signal);
+
+	QPointF sample( size_t i ) const;
+	size_t size() const;
+	QRectF boundingRect() const;
+
+	QString x_data_quantity() const;
+	QString x_data_unit() const;
+	QString x_data_title() const;
+	QString y_data_quantity() const;
+	QString y_data_unit() const;
+	QString y_data_title() const;
+
+private:
+	shared_ptr<AnalogSignal> analog_signal_;
+	double signal_start_timestamp_;
+
+};
+
 } // namespace data
 } // namespace sv
+
+#endif // DATA_TIMECURVE_HPP

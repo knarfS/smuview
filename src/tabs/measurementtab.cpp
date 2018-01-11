@@ -21,23 +21,23 @@
 #include <QGroupBox>
 
 #include "measurementtab.hpp"
-
-#include "src/data/analogdata.hpp"
+#include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/devices/configurable.hpp"
+#include "src/devices/measurementdevice.hpp"
 #include "src/views/measurementcontrolview.hpp"
-#include "src/views/plotview.hpp"
+#include "src/views/timeplotview.hpp"
 #include "src/views/valuepanelview.hpp"
 
 namespace sv {
 namespace tabs {
 
 MeasurementTab::MeasurementTab(Session &session,
-		shared_ptr<devices::HardwareDevice> device, QMainWindow *parent) :
-	DeviceTab(session, device, parent)
+		shared_ptr<devices::MeasurementDevice> device, QMainWindow *parent) :
+	DeviceTab(session, device, parent),
+	measurement_device_(device),
+	digits_(5)
 {
-	digits_ = 5;
-
 	setup_ui();
 }
 
@@ -53,19 +53,18 @@ void MeasurementTab::setup_ui()
 	}
 
 	// Value panel
-	if (device_->measurement_signal()) {
+	if (measurement_device_->measurement_signal()) {
 		shared_ptr<views::BaseView> value_panel_view =
 			make_shared<views::ValuePanelView>(session_,
-				device_->measurement_signal());
+				measurement_device_->measurement_signal());
 		add_view(value_panel_view, Qt::TopDockWidgetArea, session_);
 	}
 
 	// Value plot
-	if (device_->measurement_signal()) {
+	if (measurement_device_->measurement_signal()) {
 		shared_ptr<views::BaseView> value_plot_view =
-			make_shared<views::PlotView>(session_,
-				device_->measurement_signal()->time_data(),
-				device_->measurement_signal()->analog_data());
+			make_shared<views::TimePlotView>(
+				session_, measurement_device_->measurement_signal());
 		add_view(value_plot_view, Qt::BottomDockWidgetArea, session_);
 	}
 }

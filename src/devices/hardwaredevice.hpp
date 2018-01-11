@@ -66,19 +66,20 @@ class Meta;
 namespace sv {
 
 namespace data {
-class AnalogData;
+class AnalogSignal;
 class BaseSignal;
-class BaseData;
 }
 
 namespace devices {
 
-class HardwareDevice final : public Device
+class Configurable;
+
+class HardwareDevice : public Device
 {
 	Q_OBJECT
 
 public:
-	explicit HardwareDevice(const shared_ptr<sigrok::Context> &sr_context,
+	HardwareDevice(const shared_ptr<sigrok::Context> &sr_context,
 		shared_ptr<sigrok::HardwareDevice> sr_device);
 
 	~HardwareDevice();
@@ -111,39 +112,32 @@ public:
 	 */
 	string display_name(const DeviceManager &device_manager) const;
 
-	void open(function<void (const QString)> error_handler);
-	void close();
-
-	// TODO: Generic!
-	shared_ptr<data::BaseSignal> voltage_signal() const;
-	shared_ptr<data::BaseSignal> current_signal() const;
-	shared_ptr<data::BaseSignal> measurement_signal() const;
-	vector<shared_ptr<data::BaseSignal>> all_signals() const;
+	vector<shared_ptr<data::AnalogSignal>> all_signals() const;
 	map<QString, vector<shared_ptr<data::BaseSignal>>> channel_group_name_signals_map() const;
 	vector<shared_ptr<devices::Configurable>> configurables() const;
 
 protected:
-	void feed_in_meta(shared_ptr<sigrok::Meta> sr_meta);
+	void feed_in_header();
+	void feed_in_trigger();
+	void feed_in_frame_begin();
+	void feed_in_frame_end();
+	void feed_in_logic(shared_ptr<sigrok::Logic> sr_logic);
+	void feed_in_analog(shared_ptr<sigrok::Analog> sr_analog);
+
+	Type type_;
+
+	/**
+	 * Mapping of incomming data to BaseSignal
+	 */
+	map<shared_ptr<sigrok::Channel>, shared_ptr<data::BaseSignal>> sr_channel_signal_map_;
+	map<QString, vector<shared_ptr<data::BaseSignal>>> channel_group_name_signals_map_;
+	map<QString, shared_ptr<data::BaseSignal>> signal_name_map_;
+	vector<shared_ptr<data::AnalogSignal>> all_signals_;
+
+	vector<shared_ptr<devices::Configurable>> configurables_;
 
 private:
-	Type type_;
-	bool device_open_;
-
-	void init_device_properties();
-	void init_device_values();
-	void aquisition_thread_proc(function<void (const QString)> error_handler);
-
-	// TODO: Generic!
-	shared_ptr<data::BaseSignal> voltage_signal_;
-	shared_ptr<data::BaseSignal> current_signal_;
-	shared_ptr<data::BaseSignal> measurement_signal_;
-	vector<shared_ptr<data::BaseSignal>> all_signals_;
-
-	shared_ptr<data::AnalogData> init_time_data();
-	shared_ptr<data::BaseSignal> init_signal(
-		shared_ptr<sigrok::Channel> sr_channel,
-		shared_ptr<data::AnalogData> common_time_data,
-		bool fixed_mq);
+	shared_ptr<data::BaseSignal> actual_processed_signal_;
 
 };
 

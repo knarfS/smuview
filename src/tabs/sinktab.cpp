@@ -23,12 +23,13 @@
 #include <QGroupBox>
 
 #include "sinktab.hpp"
-#include "src/data/analogdata.hpp"
+#include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/devices/configurable.hpp"
+#include "src/devices/sourcesinkdevice.hpp"
 #include "src/views/sinkcontrolview.hpp"
-#include "src/views/plotview.hpp"
 #include "src/views/powerpanelview.hpp"
+#include "src/views/timeplotview.hpp"
 
 using std::shared_ptr;
 
@@ -36,8 +37,9 @@ namespace sv {
 namespace tabs {
 
 SinkTab::SinkTab(Session &session,
-		shared_ptr<devices::HardwareDevice> device, QMainWindow *parent) :
-	DeviceTab(session, device, parent)
+		shared_ptr<devices::SourceSinkDevice> device, QMainWindow *parent) :
+	DeviceTab(session, device, parent),
+	sourcesink_device_(device)
 {
 	setup_ui();
 }
@@ -54,32 +56,33 @@ void SinkTab::setup_ui()
 	}
 
 	// Power panel
-	if (device_->voltage_signal() && device_->current_signal()) {
+	if (sourcesink_device_->voltage_signal() &&
+			sourcesink_device_->current_signal()) {
 		shared_ptr<views::BaseView> power_panel_view =
 			make_shared<views::PowerPanelView>(session_,
-				device_->voltage_signal(), device_->current_signal());
+				sourcesink_device_->voltage_signal(),
+				sourcesink_device_->current_signal());
 		add_view(power_panel_view, Qt::TopDockWidgetArea, session_);
 	}
 
 	// Voltage plot
-	if (device_->voltage_signal()) {
+	if (sourcesink_device_->voltage_signal()) {
 		shared_ptr<views::BaseView> voltage_plot_view =
-			make_shared<views::PlotView>(session_,
-				device_->voltage_signal()->time_data(),
-				device_->voltage_signal()->analog_data());
+			make_shared<views::TimePlotView>(
+				session_, sourcesink_device_->voltage_signal());
 		add_view(voltage_plot_view, Qt::BottomDockWidgetArea, session_);
 	}
 
 	// Current plot
-	if (device_->current_signal()) {
+	if (sourcesink_device_->current_signal()) {
 		shared_ptr<views::BaseView> current_plot_view =
-			make_shared<views::PlotView>(session_,
-				device_->current_signal()->time_data(),
-				device_->current_signal()->analog_data(), parent_);
+			make_shared<views::TimePlotView>(
+				session_, sourcesink_device_->current_signal());
 		add_view(current_plot_view, Qt::BottomDockWidgetArea, session_);
 	}
 
 	// UI plot
+	/*
 	if (device_->current_signal()) {
 		shared_ptr<views::BaseView> ui_plot_view =
 			make_shared<views::PlotView>(session_,
@@ -87,6 +90,7 @@ void SinkTab::setup_ui()
 				device_->current_signal()->analog_data(), parent_);
 		add_view(ui_plot_view, Qt::BottomDockWidgetArea, session_);
 	}
+	*/
 }
 
 } // namespace tabs

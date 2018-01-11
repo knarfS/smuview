@@ -45,6 +45,7 @@ using std::vector;
 namespace sigrok {
 class Channel;
 class Quantity;
+class Unit;
 }
 
 namespace sv {
@@ -64,15 +65,33 @@ public:
 	};
 
 public:
-	BaseSignal(shared_ptr<sigrok::Channel> sr_channel,
-		ChannelType channel_type, const bool quantity_fixed);
+	BaseSignal(
+		shared_ptr<sigrok::Channel> sr_channel, ChannelType channel_type,
+		const sigrok::Quantity *sr_quantity_);
 	virtual ~BaseSignal();
 
 public:
+	virtual void clear() = 0;
+	virtual size_t get_sample_count() const = 0;
+	/**
+	 * Add a single sample to the signal
+	 */
+	virtual void push_sample(void *sample, const sigrok::Unit *sr_unit) = 0;
+
 	/**
 	 * Returns the underlying SR channel.
 	 */
 	shared_ptr<sigrok::Channel> sr_channel() const;
+
+	/**
+	 * Returns the qunatity of this signal as string
+	 */
+	QString quantity() const;
+
+	/**
+	 * Returns the unit of this signal as string
+	 */
+	QString unit() const;
 
 	/**
 	 * Returns enabled status of this channel.
@@ -112,11 +131,6 @@ public:
 	virtual void set_name(QString name);
 
 	/**
-	 * Gets if the quantity is fixed or variable
-	 */
-	bool quantiy_fixed() const;
-
-	/**
 	 * Get the colour of the signal.
 	 */
 	QColor colour() const;
@@ -126,42 +140,6 @@ public:
 	 */
 	void set_colour(QColor colour);
 
-
-	/**
-	 * Set the start time of the signal.
-	 */
-	void set_time_start(qint64 time_start);
-
-	/**
-	 * Sets the internal data object.
-	 */
-	void set_data(shared_ptr<sv::data::BaseData> data);
-
-	/**
-	 * Sets the internal time data object.
-	 */
-	void set_time_data(shared_ptr<sv::data::AnalogData> time_data);
-
-	/**
-	 * Add a timestamp to time_data
-	 */
-	void add_timestamp();
-
-	/**
-	 * Get the internal data
-	 */
-	shared_ptr<sv::data::BaseData> data();
-
-	/**
-	 * Get the internal data as analog data object in case of analog type.
-	 */
-	shared_ptr<sv::data::AnalogData> analog_data() const;
-
-	/**
-	 * Get the time data as analog data object.
-	 */
-	shared_ptr<sv::data::AnalogData> time_data() const;
-
 	virtual void save_settings(QSettings &settings) const;
 	virtual void restore_settings(QSettings &settings);
 
@@ -169,20 +147,17 @@ Q_SIGNALS:
 	void enabled_changed(const bool &value);
 	void name_changed(const QString &name);
 	void colour_changed(const QColor &colour);
-	void samples_cleared();
-
-private Q_SLOTS:
-	void on_samples_cleared();
 
 protected:
 	shared_ptr<sigrok::Channel> sr_channel_;
 	ChannelType channel_type_;
-	const bool quantity_fixed_;
-	qint64 time_start_;
-	shared_ptr<sv::data::BaseData> data_;
-	shared_ptr<sv::data::AnalogData> time_data_;
 
-	QString internal_name_;
+	const sigrok::Quantity *sr_quantity_;
+	QString quantity_;
+	const sigrok::Unit *sr_unit_;
+	QString unit_;
+
+	QString internal_name_; // TODO: const
 	QString name_;
 	QColor colour_;
 };

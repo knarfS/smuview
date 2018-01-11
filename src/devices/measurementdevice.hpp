@@ -17,23 +17,23 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DIALOGS_SAVEDIALOG_HPP
-#define DIALOGS_SAVEDIALOG_HPP
+#ifndef DEVICES_MEASUREMENTDEVICE_HPP
+#define DEVICES_MEASUREMENTDEVICE_HPP
 
 #include <memory>
 #include <vector>
 
-#include <QCheckBox>
-#include <QDialog>
-#include <QDialogButtonBox>
-#include <QLineEdit>
-#include <QString>
-#include <QTreeWidget>
-
-#include "src/session.hpp"
+#include "src/devices/hardwaredevice.hpp"
 
 using std::shared_ptr;
 using std::vector;
+
+namespace sigrok {
+class Channel;
+class Context;
+class HardwareDevice;
+class Meta;
+}
 
 namespace sv {
 
@@ -41,39 +41,34 @@ namespace data {
 class AnalogSignal;
 }
 
-namespace dialogs {
+namespace devices {
 
-class SaveDialog : public QDialog
+class MeasurementDevice final : public HardwareDevice
 {
 	Q_OBJECT
 
 public:
-	SaveDialog(const Session &session,
-		const vector<shared_ptr<data::AnalogSignal>> selected_signals,
-		QWidget *parent = nullptr);
+	explicit MeasurementDevice(const shared_ptr<sigrok::Context> &sr_context,
+		shared_ptr<sigrok::HardwareDevice> sr_device);
+
+	~MeasurementDevice();
+
+	// TODO: Generic!
+	shared_ptr<data::AnalogSignal> measurement_signal() const;
+
+protected:
+	void feed_in_meta(shared_ptr<sigrok::Meta> sr_meta);
+	void init_signal(
+		shared_ptr<sigrok::Channel> sr_channel,
+		shared_ptr<vector<double>> common_time_data);
 
 private:
-	void setup_ui();
-	void save(QString file_name, QString separator);
-	void save_combined(QString file_name, QString separator);
-
-	const Session &session_;
-	const vector<shared_ptr<data::AnalogSignal>> selected_signals_;
-
-	QTreeWidget *signal_tree_;
-	QCheckBox *timestamps_combined_;
-	QCheckBox *time_absolut_;
-	QLineEdit *separator_edit_;
-	QDialogButtonBox *button_box_;
-
-public Q_SLOTS:
-	void accept() override;
-
-private Q_SLOTS:
+	// TODO: Generic!
+	shared_ptr<data::AnalogSignal> measurement_signal_;
 
 };
 
-} // namespace dialogs
+} // namespace devices
 } // namespace sv
 
-#endif // DIALOGS_SAVEDIALOG_HPP
+#endif // DEVICES_MEASUREMENTDEVICE_HPP

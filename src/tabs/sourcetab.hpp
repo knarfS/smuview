@@ -24,12 +24,15 @@
 
 #include <QMainWindow>
 
-#include "src/devices/hardwaredevice.hpp"
 #include "src/tabs/devicetab.hpp"
 
 using std::shared_ptr;
 
 namespace sv {
+
+namespace devices {
+class SourceSinkDevice;
+}
 
 namespace tabs {
 
@@ -39,10 +42,12 @@ class SourceTab : public DeviceTab
 
 public:
 	SourceTab(Session &session,
- 		shared_ptr<devices::HardwareDevice> device, QMainWindow *parent);
+ 		shared_ptr<devices::SourceSinkDevice> device, QMainWindow *parent);
 
 private:
 	void setup_ui();
+
+	shared_ptr<devices::SourceSinkDevice> sourcesink_device_; // TODO: remove, generic solution in hw_device
 
 public Q_SLOTS:
 

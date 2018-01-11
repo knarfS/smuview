@@ -24,7 +24,7 @@
 
 #include "valuepanelview.hpp"
 #include "src/session.hpp"
-#include "src/data/analogdata.hpp"
+#include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/widgets/lcddisplay.hpp"
 
@@ -32,7 +32,7 @@ namespace sv {
 namespace views {
 
 ValuePanelView::ValuePanelView(const Session &session,
-	shared_ptr<data::BaseSignal> value_signal,
+	shared_ptr<data::AnalogSignal> value_signal,
 	QWidget *parent) :
 		BaseView(session, parent),
 	value_signal_(value_signal),
@@ -68,11 +68,11 @@ void ValuePanelView::setup_ui()
 	QGridLayout *panelLayout = new QGridLayout();
 
 	valueDisplay = new widgets::LcdDisplay(digits_,
-		value_signal_->analog_data()->unit(), "", false);
+		value_signal_->unit(), "", false);
 	valueMinDisplay = new widgets::LcdDisplay(digits_,
-		value_signal_->analog_data()->unit(), "min", true);
+		value_signal_->unit(), "min", true);
 	valueMaxDisplay = new widgets::LcdDisplay(digits_,
-		value_signal_->analog_data()->unit(), "max", true);
+		value_signal_->unit(), "max", true);
 
 	panelLayout->addWidget(valueDisplay, 0, 0, 1, 2, Qt::AlignHCenter);
 	panelLayout->addWidget(valueMinDisplay, 1, 0, 1, 1, Qt::AlignHCenter);
@@ -94,6 +94,7 @@ void ValuePanelView::connect_signals()
 	connect(resetButton, SIGNAL(clicked(bool)), this, SLOT(on_reset()));
 
 	// Signal stuff
+	/* TODO: qunatity don't change anymore
 	if (value_signal_->analog_data()) {
 		connect(value_signal_->analog_data().get(),
 			SIGNAL(quantity_changed(QString)),
@@ -102,6 +103,7 @@ void ValuePanelView::connect_signals()
 			SIGNAL(unit_changed(QString)),
 			this, SLOT(on_unit_changed(QString)));
 	}
+	*/
 }
 
 void ValuePanelView::reset_display()
@@ -140,12 +142,12 @@ void ValuePanelView::on_reset()
 
 void ValuePanelView::on_update()
 {
-	if (value_signal_->analog_data()->get_sample_count() == 0)
+	if (value_signal_->get_sample_count() == 0)
 		return;
 
 	double value = 0;
-	if (value_signal_ && value_signal_->analog_data()) {
-		value = value_signal_->analog_data()->last_value();
+	if (value_signal_) {
+		value = value_signal_->last_value();
 		if (value_min_ > value)
 			value_min_ = value;
 		if (value_max_ < value)

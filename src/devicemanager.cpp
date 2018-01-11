@@ -33,8 +33,10 @@
 #include <QProgressDialog>
 
 #include "devicemanager.hpp"
-#include "util.hpp"
-#include "devices/hardwaredevice.hpp"
+#include "src/util.hpp"
+#include "src/devices/hardwaredevice.hpp"
+#include "src/devices/measurementdevice.hpp"
+#include "src/devices/sourcesinkdevice.hpp"
 
 using std::bind;
 using std::list;
@@ -234,10 +236,11 @@ DeviceManager::driver_scan(
 	assert(sr_driver);
 
 	const auto keys = sr_driver->config_keys();
-	bool supported_device = keys.count(sigrok::ConfigKey::POWER_SUPPLY) |
-		keys.count(sigrok::ConfigKey::ELECTRONIC_LOAD) |
-		keys.count(sigrok::ConfigKey::MULTIMETER) |
-		keys.count(sigrok::ConfigKey::DEMO_DEV);
+	bool supported_device = keys.count(sigrok::ConfigKey::POWER_SUPPLY)
+		| keys.count(sigrok::ConfigKey::ELECTRONIC_LOAD)
+		//| keys.count(sigrok::ConfigKey::MULTIMETER) // TODO
+		//| keys.count(sigrok::ConfigKey::DEMO_DEV) // TODO
+		;
 	if (!supported_device)
 		return driver_devices;
 
@@ -251,9 +254,17 @@ DeviceManager::driver_scan(
 
 	// Add the scanned devices to the main list, set display names and sort.
 	for (shared_ptr<sigrok::HardwareDevice> sr_device : sr_devices) {
-		const shared_ptr<devices::HardwareDevice> d(
-			new devices::HardwareDevice(context_, sr_device));
-		driver_devices.push_back(d);
+		if (keys.count(sigrok::ConfigKey::POWER_SUPPLY) |
+				keys.count(sigrok::ConfigKey::ELECTRONIC_LOAD)) {
+			const shared_ptr<devices::SourceSinkDevice> d(
+				new devices::SourceSinkDevice(context_, sr_device));
+			driver_devices.push_back(d);
+		}
+		else if (keys.count(sigrok::ConfigKey::MULTIMETER)) {
+			const shared_ptr<devices::MeasurementDevice> d(
+				new devices::MeasurementDevice(context_, sr_device));
+			driver_devices.push_back(d);
+		}
 	}
 
 	devices_.insert(devices_.end(), driver_devices.begin(),

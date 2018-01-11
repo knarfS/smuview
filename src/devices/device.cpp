@@ -30,8 +30,7 @@
 #include "device.hpp"
 #include "src/session.hpp"
 #include "src/util.hpp"
-#include "src/data/analogdata.hpp"
-#include "src/data/basedata.hpp"
+#include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
 
 using std::bad_alloc;
@@ -46,16 +45,18 @@ using std::string;
 using std::vector;
 using std::unique_ptr;
 
-using sigrok::ConfigKey;
-using sigrok::Capability;
-
 namespace sv {
 namespace devices {
 
-Device::Device(const shared_ptr<sigrok::Context> &sr_context):
-	sr_context_(sr_context)
+Device::Device(const shared_ptr<sigrok::Context> &sr_context,
+		shared_ptr<sigrok::Device> sr_device):
+	sr_context_(sr_context),
+	sr_device_(sr_device),
+	device_open_(false)
 {
-	init_device();
+	// Set up the session
+	sr_session_ = sv::Session::sr_context->create_session();
+	aquisition_start_timestamp_ = new double(0.);
 }
 
 Device::~Device()
@@ -64,6 +65,7 @@ Device::~Device()
 		sr_session_->stop();
 		sr_session_->remove_datafeed_callbacks();
 	}
+	aquisition_start_timestamp_ = nullptr;
 }
 
 shared_ptr<sigrok::Device> Device::sr_device() const
@@ -71,10 +73,54 @@ shared_ptr<sigrok::Device> Device::sr_device() const
 	return sr_device_;
 }
 
-void Device::init_device()
+void Device::open(function<void (const QString)> error_handler)
 {
-	// Set up the session
-	sr_session_ = sv::Session::sr_context->create_session();
+	if (device_open_)
+		close();
+
+	try {
+		sr_device_->open();
+	}
+	catch (const sigrok::Error &e) {
+		throw QString(e.what());
+	}
+
+	// Add device to session (do this in constructor??)
+	sr_session_->add_device(sr_device_);
+
+	sr_session_->add_datafeed_callback([=]
+		(shared_ptr<sigrok::Device> sr_device, shared_ptr<sigrok::Packet> sr_packet) {
+			data_feed_in(sr_device, sr_packet);
+		});
+
+	device_open_ = true;
+
+	// Start aquisition
+	aquisition_thread_ = std::thread(
+		&Device::aquisition_thread_proc, this, error_handler);
+
+	aquisition_state_ = aquisition_state::Running;
+}
+
+void Device::close()
+{
+	if (!device_open_)
+		return;
+
+	sr_session_->remove_datafeed_callbacks();
+
+	if (aquisition_state_ != aquisition_state::Stopped) {
+		sr_session_->stop();
+		aquisition_state_ = aquisition_state::Stopped;
+	}
+
+	// Check that sampling stopped
+	if (aquisition_thread_.joinable())
+		aquisition_thread_.join();
+
+	sr_session_->remove_devices();
+	sr_device_->close();
+	device_open_ = false;
 }
 
 void Device::free_unused_memory()
@@ -87,96 +133,6 @@ void Device::free_unused_memory()
 			segment->free_unused_memory();
 		}
 	}
-	*/
-}
-
-void Device::feed_in_header()
-{
-}
-
-void Device::feed_in_trigger()
-{
-}
-
-void Device::feed_in_frame_begin()
-{
-	frame_began_ = true;
-}
-
-void Device::feed_in_frame_end()
-{
-	if (frame_began_ && actual_processed_signal_) {
-		/*
-		qWarning() << "feed_in_frame_end(): Set timestamp to " <<
-			actual_processed_signal_->name();
-		*/
-		// TODO: This may not work reliably
-		actual_processed_signal_->add_timestamp();
-		actual_processed_signal_ = nullptr;
-
-	}
-	frame_began_ = false;
-}
-
-void Device::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
-{
-	lock_guard<recursive_mutex> lock(data_mutex_);
-
-	const vector<shared_ptr<sigrok::Channel>> sr_channels = sr_analog->channels();
-	//const unsigned int channel_count = sr_channels.size();
-	//const size_t sample_count = sr_analog->num_samples() / channel_count;
-
-	unique_ptr<float> data(new float[sr_analog->num_samples()]);
-	sr_analog->get_data_as_float(data.get());
-
-	float *channel_data = data.get();
-	for (auto sr_channel : sr_channels) {
-		/*
-		qWarning() << "Device::feed_in_analog(): Device = " <<
-			QString::fromStdString(sr_device_->model()) <<
-			", Channel.Id = " <<
-			QString::fromStdString(sr_channel->name()) <<
-			" channel_data = " << *channel_data;
-		*/
-
-		if (!sr_channel_signal_map_.count(sr_channel)) {
-			/*
-			qWarning() << "Device::feed_in_analog(): Channel " <<
-				QString::fromStdString(sr_channel->name()) <<
-				" not found, adding";
-			*/
-
-			// TODO: notwendig? Better handling for new channels? Are there new channels??
-			init_signal(sr_channel, nullptr, false);
-			continue;
-		}
-
-		actual_processed_signal_ = sr_channel_signal_map_[sr_channel];
-		/*
-		qWarning() << "Device::feed_in_analog(): -3- name = " << actual_processed_signal_->name();
-		qWarning() << "Device::feed_in_analog(): -3- count = " << actual_processed_signal_->analog_data()->get_sample_count();
-		*/
-
-		/*
-		actual_processed_signal_->analog_data()->push_interleaved_samples(
-			channel_data, sample_count,channel_count,
-			sr_analog->mq(), sr_analog->unit());
-		*/
-		actual_processed_signal_->analog_data()->push_sample(channel_data,
-			sr_analog->mq(), sr_analog->unit());
-		channel_data++;
-
-		// Timestamp for values not in a FRAME
-		if (!frame_began_)
-			actual_processed_signal_->add_timestamp();
-
-		/*
-		Q_EMIT data_received(segment);
-		*/
-	}
-
-	/*
-	qWarning() << "Device::feed_in_analog(): -END-";
 	*/
 }
 
@@ -215,6 +171,13 @@ void Device::data_feed_in(shared_ptr<sigrok::Device> sr_device,
 
 	case SR_DF_LOGIC:
 		//qWarning() << "data_feed_in(): SR_DF_LOGIC";
+		try {
+			feed_in_logic(
+				dynamic_pointer_cast<sigrok::Logic>(sr_packet->payload()));
+		} catch (bad_alloc) {
+			out_of_memory_ = true;
+			// TODO: sr_session->stop();
+		}
 		break;
 
 	case SR_DF_ANALOG:
@@ -251,6 +214,51 @@ void Device::data_feed_in(shared_ptr<sigrok::Device> sr_device,
 	default:
 		break;
 	}
+}
+
+void Device::aquisition_thread_proc(
+	function<void (const QString)> error_handler)
+{
+	assert(error_handler);
+
+	out_of_memory_ = false;
+
+	try {
+		sr_session_->start();
+	} catch (sigrok::Error e) {
+		error_handler(e.what());
+		return;
+	}
+
+	aquisition_state_ = aquisition_state::Running;
+	// TODO: use std::chrono / std::time
+	*aquisition_start_timestamp_ =
+		QDateTime::currentMSecsSinceEpoch() / (double)1000;
+
+	try {
+		sr_session_->run();
+	} catch (sigrok::Error e) {
+		error_handler(e.what());
+		aquisition_state_ = aquisition_state::Stopped;
+		return;
+	}
+
+	aquisition_state_ = aquisition_state::Stopped;
+
+	// Optimize memory usage
+	free_unused_memory();
+
+	/*
+	// We now have unsaved data unless we just "captured" from a file
+	shared_ptr<devices::File> file_device =
+		dynamic_pointer_cast<devices::File>(device_);
+
+	if (!file_device)
+		data_saved_ = false;
+	*/
+
+	if (out_of_memory_)
+		error_handler(tr("Out of memory, acquisition stopped."));
 }
 
 } // namespace devices

@@ -25,16 +25,15 @@
 #include "powerpanelview.hpp"
 #include "src/session.hpp"
 #include "src/util.hpp"
-#include "src/data/analogdata.hpp"
-#include "src/data/basesignal.hpp"
+#include "src/data/analogsignal.hpp"
 #include "src/widgets/lcddisplay.hpp"
 
 namespace sv {
 namespace views {
 
 PowerPanelView::PowerPanelView(const Session &session,
-		shared_ptr<data::BaseSignal> voltage_signal,
-		shared_ptr<data::BaseSignal> current_signal,
+		shared_ptr<data::AnalogSignal> voltage_signal,
+		shared_ptr<data::AnalogSignal> current_signal,
 		QWidget *parent) :
 	BaseView(session, parent),
 	voltage_signal_(voltage_signal),
@@ -79,37 +78,37 @@ void PowerPanelView::setup_ui()
 	QGridLayout *panelLayout = new QGridLayout();
 
 	voltageDisplay = new widgets::LcdDisplay(digits_,
-		voltage_signal_->analog_data()->unit(), "", false);
+		voltage_signal_->unit(), "", false);
 	voltageMinDisplay = new widgets::LcdDisplay(digits_,
-		voltage_signal_->analog_data()->unit(), "min", true);
+		voltage_signal_->unit(), "min", true);
 	voltageMaxDisplay = new widgets::LcdDisplay(digits_,
-		voltage_signal_->analog_data()->unit(), "max", true);
+		voltage_signal_->unit(), "max", true);
 
 	currentDisplay = new widgets::LcdDisplay(digits_,
-		current_signal_->analog_data()->unit(), "", false);
+		current_signal_->unit(), "", false);
 	currentMinDisplay = new widgets::LcdDisplay(digits_,
-		current_signal_->analog_data()->unit(), "min", true);
+		current_signal_->unit(), "min", true);
 	currentMaxDisplay = new widgets::LcdDisplay(digits_,
-		current_signal_->analog_data()->unit(), "max", true);
+		current_signal_->unit(), "max", true);
 
 	resistanceDisplay = new widgets::LcdDisplay(digits_,
-		util::format_unit(sigrok::Unit::OHM), "", false);
+		util::format_sr_unit(sigrok::Unit::OHM), "", false);
 	resistanceMinDisplay = new widgets::LcdDisplay(digits_,
-		util::format_unit(sigrok::Unit::OHM), "min", true);
+		util::format_sr_unit(sigrok::Unit::OHM), "min", true);
 	resistanceMaxDisplay = new widgets::LcdDisplay(digits_,
-		util::format_unit(sigrok::Unit::OHM), "max", true);
+		util::format_sr_unit(sigrok::Unit::OHM), "max", true);
 
 	powerDisplay = new widgets::LcdDisplay(digits_,
-		util::format_unit(sigrok::Unit::WATT), "", false);
+		util::format_sr_unit(sigrok::Unit::WATT), "", false);
 	powerMinDisplay = new widgets::LcdDisplay(digits_,
-		util::format_unit(sigrok::Unit::WATT), "min", true);
+		util::format_sr_unit(sigrok::Unit::WATT), "min", true);
 	powerMaxDisplay = new widgets::LcdDisplay(digits_,
-		util::format_unit(sigrok::Unit::WATT), "max", true);
+		util::format_sr_unit(sigrok::Unit::WATT), "max", true);
 
 	// TODO: sigrok::Unit::AMP_HOUR missing!
 	ampHourDisplay = new widgets::LcdDisplay(digits_, "Ah", "", false);
 	wattHourDisplay = new widgets::LcdDisplay(digits_,
-		util::format_unit(sigrok::Unit::WATT_HOUR), "", false);
+		util::format_sr_unit(sigrok::Unit::WATT_HOUR), "", false);
 
 	panelLayout->addWidget(voltageDisplay, 0, 0, 1, 2, Qt::AlignHCenter);
 	panelLayout->addWidget(voltageMinDisplay, 1, 0, 1, 1, Qt::AlignHCenter);
@@ -211,7 +210,7 @@ void PowerPanelView::on_reset()
 
 void PowerPanelView::on_update()
 {
-	if (voltage_signal_->analog_data()->get_sample_count() == 0)
+	if (voltage_signal_->get_sample_count() == 0)
 		return;
 
 	qint64 now = QDateTime::currentMSecsSinceEpoch();
@@ -219,8 +218,8 @@ void PowerPanelView::on_update()
 	last_time_ = now;
 
 	double voltage = 0.;
-	if (voltage_signal_ && voltage_signal_->analog_data()) {
-		voltage = voltage_signal_->analog_data()->last_value();
+	if (voltage_signal_) {
+		voltage = voltage_signal_->last_value();
 		if (voltage_min_ > voltage)
 			voltage_min_ = voltage;
 		if (voltage_max_ < voltage)
@@ -228,8 +227,8 @@ void PowerPanelView::on_update()
 	}
 
 	double current = 0.;
-	if (current_signal_ && current_signal_->analog_data()) {
-		current = current_signal_->analog_data()->last_value();
+	if (current_signal_) {
+		current = current_signal_->last_value();
 		if (current_min_ > current)
 			current_min_ = current;
 		if (current_max_ < current)

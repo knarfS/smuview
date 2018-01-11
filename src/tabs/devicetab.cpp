@@ -21,7 +21,7 @@
 
 #include "devicetab.hpp"
 #include "src/session.hpp"
-#include "src/data/analogdata.hpp"
+#include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/dialogs/addviewdialog.hpp"
 #include "src/dialogs/aboutdialog.hpp"

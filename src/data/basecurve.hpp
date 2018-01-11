@@ -21,37 +21,33 @@
 #define DATA_BASECURVE_HPP
 
 #include <memory>
+#include <vector>
 
 #include <QPointer>
 #include <qwt_series_data.h>
 
 using std::shared_ptr;
+using std::vector;
 
 namespace sv {
 namespace data {
-
-class AnalogData;
 
 class BaseCurve : public QwtSeriesData<QPointF>
 {
 
 public:
-	BaseCurve(shared_ptr<AnalogData> x_signal_data,
-		shared_ptr<AnalogData> y_signal_data);
+	BaseCurve();
 
-	virtual QPointF sample( size_t i ) const;
-	virtual size_t size() const;
-	virtual QRectF boundingRect() const;
-	virtual QString x_signal_quantity() const;
-	virtual QString x_signal_unit() const;
-	virtual QString x_signal_title() const;
-	virtual QString y_signal_quantity() const;
-	virtual QString y_signal_unit() const;
-	virtual QString y_signal_title() const;
+	virtual QPointF sample( size_t i ) const = 0;
+	virtual size_t size() const = 0;
+	virtual QRectF boundingRect() const = 0;
 
-private:
-	shared_ptr<AnalogData> x_signal_data_;
-	shared_ptr<AnalogData> y_signal_data_;
+	virtual QString x_data_quantity() const = 0;
+	virtual QString x_data_unit() const = 0;
+	virtual QString x_data_title() const = 0;
+	virtual QString y_data_quantity() const = 0;
+	virtual QString y_data_unit() const = 0;
+	virtual QString y_data_title() const = 0;
 
 };
 

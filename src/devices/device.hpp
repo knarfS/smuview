@@ -24,33 +24,24 @@
 #include <functional>
 #include <memory>
 #include <mutex>
-#include <set>
 #include <string>
 #include <thread>
-#include <unordered_set>
 
 #include <QString>
 
 using std::function;
-using std::map;
 using std::mutex;
 using std::recursive_mutex;
-using std::set;
 using std::shared_ptr;
 using std::string;
-using std::unordered_set;
 using std::vector;
 
 namespace sigrok {
 class Analog;
 class Channel;
-class ChannelGroup;
-class ConfigKey;
-class Configurable;
 class Context;
 class Device;
-class Quantity;
-class QuantityFlag;
+class Logic;
 class Meta;
 class Packet;
 class Session;
@@ -60,22 +51,15 @@ namespace sv {
 
 class DeviceManager;
 
-namespace data {
-class AnalogData;
-class BaseSignal;
-class BaseData;
-}
-
 namespace devices {
-
-class Configurable;
 
 class Device : public QObject
 {
 	Q_OBJECT
 
 public:
-	Device(const shared_ptr<sigrok::Context> &sr_context);
+	Device(const shared_ptr<sigrok::Context> &sr_context,
+		shared_ptr<sigrok::Device> sr_device);
 	virtual ~Device();
 
 	enum aquisition_state {
@@ -104,61 +88,52 @@ public:
 	virtual string display_name(
 		const DeviceManager &device_manager) const = 0;
 
-	virtual void open(function<void (const QString)> error_handler) = 0;
-	virtual void close() = 0;
+	void open(function<void (const QString)> error_handler);
+	void close();
+
 	virtual void free_unused_memory();
+
+protected:
+	virtual void init_signal(
+		shared_ptr<sigrok::Channel> sr_channel,
+		shared_ptr<vector<double>> common_time_data) = 0;
+
+	virtual void feed_in_header() = 0;
+	virtual void feed_in_trigger() = 0;
+	virtual void feed_in_meta(shared_ptr<sigrok::Meta> sr_meta) = 0;
+	virtual void feed_in_frame_begin() = 0;
+	virtual void feed_in_frame_end() = 0;
+	virtual void feed_in_logic(shared_ptr<sigrok::Logic> sr_logic) = 0;
+	virtual void feed_in_analog(shared_ptr<sigrok::Analog> sr_analog) = 0;
 
 	void data_feed_in(shared_ptr<sigrok::Device> sr_device,
 		shared_ptr<sigrok::Packet> sr_packet);
 
-private:
-	mutable recursive_mutex data_mutex_;
-	shared_ptr<data::BaseSignal> actual_processed_signal_;
-
-	void feed_in_header();
-	void feed_in_trigger();
-	void feed_in_frame_begin();
-	void feed_in_frame_end();
-	void feed_in_analog(shared_ptr<sigrok::Analog> sr_analog);
-
-protected:
 	const shared_ptr<sigrok::Context> sr_context_;
 	shared_ptr<sigrok::Session> sr_session_;
 	shared_ptr<sigrok::Device> sr_device_;
-	map<QString, shared_ptr<sigrok::ChannelGroup>> sr_channel_group_name_map_;
-	map<QString, vector<shared_ptr<data::BaseSignal>>> channel_group_name_signals_map_;
+	bool device_open_;
 
-	/**
-	 * Mapping of incomming data to BaseSignal
-	 */
-	map<shared_ptr<sigrok::Channel>, shared_ptr<data::BaseSignal>> sr_channel_signal_map_;
-
-	vector<shared_ptr<devices::Configurable>> configurables_;
-	map<QString, shared_ptr<data::BaseSignal>> signal_name_map_;
-
-	std::thread aquisition_thread_;
-	mutable mutex aquisition_mutex_; //!< Protects access to capture_state_.
+	mutable mutex aquisition_mutex_; //!< Protects access to capture_state_. // TODO
+	mutable recursive_mutex data_mutex_; // TODO
 	aquisition_state aquisition_state_;
+	double *aquisition_start_timestamp_; // TODO
+
 	bool out_of_memory_;
 	bool frame_began_;
 
-	virtual void init_device();
-	virtual shared_ptr<data::BaseSignal> init_signal(
-		shared_ptr<sigrok::Channel> sr_channel,
-		shared_ptr<data::AnalogData> common_time_data,
-		bool quantity_fixed) = 0;
+private:
+	void aquisition_thread_proc(function<void (const QString)> error_handler);
 
-	virtual void feed_in_meta(shared_ptr<sigrok::Meta> sr_meta) = 0;
+	std::thread aquisition_thread_;
 
 Q_SIGNALS:
-	/*
-	void capture_state_changed(int);
-	*/
-
 	/* TODO?
+	void capture_state_changed(int);
 	void signals_changed();
 	void device_changed();
 	*/
+
 };
 
 } // namespace devices

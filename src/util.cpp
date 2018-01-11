@@ -44,7 +44,7 @@ using namespace Qt;
 namespace sv {
 namespace util {
 
-quantitymap_t quantitymap = {
+quantity_name_map_t quantity_name_map = {
 	{ sigrok::Quantity::VOLTAGE, QString("Voltage") },
 	{ sigrok::Quantity::CURRENT, QString("Current") },
 	{ sigrok::Quantity::RESISTANCE, QString("Resistance") },
@@ -84,7 +84,7 @@ quantitymap_t quantitymap = {
 	{ sigrok::Quantity::HARMONIC_RATIO, QString("Harmonic Ratio") },
 };
 
-quantityflagmap_t quantityflagmap = {
+quantityflag_name_map_t quantityflag_name_map = {
 	{ sigrok::QuantityFlag::AC, QString("AC") },
 	{ sigrok::QuantityFlag::DC, QString("DC") },
 	{ sigrok::QuantityFlag::RMS, QString("RMS") },
@@ -125,7 +125,7 @@ quantityflagmap_t quantityflagmap = {
 	{ sigrok::QuantityFlag::FOUR_WIRE, QString("4W") }
 };
 
-unitmap_t unitmap = {
+unit_name_map_t unit_name_map = {
 	{ sigrok::Unit::VOLT, QString("V") },
 	{ sigrok::Unit::AMPERE, QString("A") },
 	{ sigrok::Unit::OHM, QString::fromUtf8("\u2126") },
@@ -148,7 +148,7 @@ unitmap_t unitmap = {
 	{ sigrok::Unit::WATT, QString("W") },
 	{ sigrok::Unit::WATT_HOUR, QString("Wh") },
 	{ sigrok::Unit::METER_SECOND, QString("m/s") },
-	{ sigrok::Unit::HECTOPASCAL, QString("hPa") },
+	{ sigrok::Unit::HECTOPASCAL, QString("hPa") }, // TODO
 	{ sigrok::Unit::HUMIDITY_293K, QString("%") },
 	{ sigrok::Unit::DEGREE, QString("°") },
 	{ sigrok::Unit::HENRY, QString("H") },
@@ -163,6 +163,43 @@ unitmap_t unitmap = {
 	{ sigrok::Unit::MOMME, QString::fromUtf8("\u5301") },
 	{ sigrok::Unit::TOLA, QString("tola") },
 	{ sigrok::Unit::PIECE, QString("pc.") }
+};
+
+quantity_unit_map_t quantity_unit_map = {
+	{ sigrok::Quantity::VOLTAGE, sigrok::Unit::VOLT },
+	{ sigrok::Quantity::CURRENT, sigrok::Unit::AMPERE },
+	{ sigrok::Quantity::RESISTANCE, sigrok::Unit::OHM },
+	{ sigrok::Quantity::CAPACITANCE, sigrok::Unit::FARAD },
+	{ sigrok::Quantity::TEMPERATURE, sigrok::Unit::KELVIN },
+	{ sigrok::Quantity::FREQUENCY, sigrok::Unit::HERTZ },
+	{ sigrok::Quantity::DUTY_CYCLE, sigrok::Unit::PERCENTAGE },
+	{ sigrok::Quantity::CONTINUITY, sigrok::Unit::OHM },
+	{ sigrok::Quantity::PULSE_WIDTH, sigrok::Unit::PERCENTAGE },
+	{ sigrok::Quantity::CONDUCTANCE, sigrok::Unit::SIEMENS },
+	{ sigrok::Quantity::POWER, sigrok::Unit::WATT }, // TODO: dBm?
+	{ sigrok::Quantity::GAIN, sigrok::Unit::UNITLESS },
+	{ sigrok::Quantity::SOUND_PRESSURE_LEVEL, sigrok::Unit::DECIBEL_SPL },
+	{ sigrok::Quantity::CARBON_MONOXIDE, sigrok::Unit::CONCENTRATION },
+	{ sigrok::Quantity::RELATIVE_HUMIDITY, sigrok::Unit::HUMIDITY_293K },
+	{ sigrok::Quantity::TIME, sigrok::Unit::SECOND },
+	{ sigrok::Quantity::WIND_SPEED, sigrok::Unit::METER_SECOND },
+	{ sigrok::Quantity::PRESSURE, sigrok::Unit::HECTOPASCAL }, // TODO: PASCAL!
+	{ sigrok::Quantity::PARALLEL_INDUCTANCE, sigrok::Unit::HENRY },
+	{ sigrok::Quantity::PARALLEL_CAPACITANCE, sigrok::Unit::KELVIN },
+	{ sigrok::Quantity::PARALLEL_RESISTANCE, sigrok::Unit::OHM },
+	{ sigrok::Quantity::SERIES_INDUCTANCE, sigrok::Unit::HENRY },
+	{ sigrok::Quantity::SERIES_CAPACITANCE, sigrok::Unit::KELVIN },
+	{ sigrok::Quantity::SERIES_RESISTANCE, sigrok::Unit::OHM },
+	{ sigrok::Quantity::DISSIPATION_FACTOR, sigrok::Unit::UNITLESS },
+	{ sigrok::Quantity::QUALITY_FACTOR, sigrok::Unit::UNITLESS },
+	{ sigrok::Quantity::PHASE_ANGLE, sigrok::Unit::DEGREE },
+	// Difference from reference value.
+	//{ sigrok::Quantity::DIFFERENCE, QString("Difference") },
+	{ sigrok::Quantity::COUNT, sigrok::Unit::UNITLESS },
+	{ sigrok::Quantity::POWER_FACTOR, sigrok::Unit::UNITLESS },
+	{ sigrok::Quantity::APPARENT_POWER, sigrok::Unit::VOLT_AMPERE },
+	{ sigrok::Quantity::MASS, sigrok::Unit::GRAM },
+	{ sigrok::Quantity::HARMONIC_RATIO, sigrok::Unit::UNITLESS },
 };
 
 static QTextStream& operator<<(QTextStream& stream, SIPrefix prefix)
@@ -234,28 +271,42 @@ static QTextStream& operator<<(QTextStream& stream, const Timestamp& t)
 	return stream << QString::fromStdString(str);
 }
 
-QString format_quantity(const sigrok::Quantity *sr_quantity)
+const sigrok::Unit * get_sr_unit_from_sr_quantity(
+	const sigrok::Quantity *sr_quantity)
 {
-	if (quantitymap.count(sr_quantity) > 0)
-		return quantitymap[sr_quantity];
+	if (quantity_unit_map.count(sr_quantity) > 0)
+		return quantity_unit_map[sr_quantity];
+	else {
+		qWarning() << "Cannot find a SI Unit for " <<
+			format_sr_quantity(sr_quantity);
+		assert("Unkown sigrok quantity");
+	}
+
+	return nullptr;
+}
+
+QString format_sr_quantity(const sigrok::Quantity *sr_quantity)
+{
+	if (quantity_name_map.count(sr_quantity) > 0)
+		return quantity_name_map[sr_quantity];
 
 	// TODO: error
 	return QString("");
 }
 
-QString format_quantityflag(const sigrok::QuantityFlag *sr_quantityflag)
+QString format_sr_quantityflag(const sigrok::QuantityFlag *sr_quantityflag)
 {
-	if (quantityflagmap.count(sr_quantityflag) > 0)
-		return quantityflagmap[sr_quantityflag];
+	if (quantityflag_name_map.count(sr_quantityflag) > 0)
+		return quantityflag_name_map[sr_quantityflag];
 
 	// TODO: error
 	return QString("");
 }
 
-QString format_unit(const sigrok::Unit *sr_unit)
+QString format_sr_unit(const sigrok::Unit *sr_unit)
 {
-	if (unitmap.count(sr_unit) > 0)
-		return unitmap[sr_unit];
+	if (unit_name_map.count(sr_unit) > 0)
+		return unit_name_map[sr_unit];
 
 	// TODO: error
 	return QString("");

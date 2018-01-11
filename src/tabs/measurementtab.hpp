@@ -24,12 +24,15 @@
 
 #include <QMainWindow>
 
-#include "src/devices/hardwaredevice.hpp"
 #include "src/tabs/devicetab.hpp"
 
 using std::shared_ptr;
 
 namespace sv {
+
+namespace devices {
+class MeasurementDevice;
+}
 
 namespace tabs {
 
@@ -39,12 +42,13 @@ class MeasurementTab : public DeviceTab
 
 public:
 	MeasurementTab(Session &session,
- 		shared_ptr<devices::HardwareDevice> device, QMainWindow *parent);
+ 		shared_ptr<devices::MeasurementDevice> device, QMainWindow *parent);
 
 private:
-	uint digits_;
-
 	void setup_ui();
+
+	shared_ptr<devices::MeasurementDevice> measurement_device_; // TODO: remove, generic solution in hw_device
+	uint digits_;
 
 };
 

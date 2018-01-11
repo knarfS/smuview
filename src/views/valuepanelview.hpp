@@ -34,7 +34,7 @@ namespace sv {
 class Session;
 
 namespace data {
-class BaseSignal;
+class AnalogSignal;
 }
 
 namespace widgets {
@@ -49,7 +49,7 @@ class ValuePanelView : public BaseView
 
 public:
 	ValuePanelView(const Session& session,
-		shared_ptr<data::BaseSignal> value_signal,
+		shared_ptr<data::AnalogSignal> value_signal,
 		QWidget* parent = nullptr);
 	~ValuePanelView();
 
@@ -57,7 +57,7 @@ public:
 
 private:
 	uint digits_;
-	shared_ptr<data::BaseSignal> value_signal_;
+	shared_ptr<data::AnalogSignal> value_signal_;
 
 	QTimer *timer_;
 

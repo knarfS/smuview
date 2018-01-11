@@ -35,7 +35,6 @@
 
 #include "plot.hpp"
 #include "src/data/basecurve.hpp"
-#include "src/data/basedata.hpp"
 
 namespace sv {
 namespace widgets {
@@ -94,8 +93,6 @@ Plot::Plot(data::BaseCurve *curve_data, QWidget *parent) :
 		QwtPlot(parent),
 	curve_data_(curve_data),
 	painted_points_(0),
-	x_interval_(0.0, 30.0),
-	y_interval_(0.0, 0.5),
 	plot_interval_(200),
 	timer_id_(-1)
 {
@@ -115,17 +112,20 @@ Plot::Plot(data::BaseCurve *curve_data, QWidget *parent) :
 	this->insertLegend(legend, QwtPlot::BottomLegend);
 
 	// Time (x) axis
+	x_interval_ = QwtInterval(curve_data_->boundingRect().left(),
+		curve_data_->boundingRect().right());
 	int x_axis_id = QwtPlot::xBottom;
-	this->setAxisTitle(x_axis_id, curve_data_->x_signal_title());
+	this->setAxisTitle(x_axis_id, curve_data_->x_data_title());
 	this->setAxisScale(x_axis_id, x_interval_.minValue(), x_interval_.maxValue());
 	//setAxisAutoScale(x_axis_id, true); // TODO: Not working!?
 
 	// Value (y) axis
+	y_interval_ = QwtInterval(0, curve_data_->boundingRect().top());
 	//setAxesCount(QwtPlot::yLeft, 2); // TODO: Multiaxis
 	//QwtAxisId y_axis_id = QwtAxisId(QwtAxis::yLeft, 0); // TODO: Multiaxis
 	int y_axis_id = QwtPlot::yLeft;
 	//setAxisVisible(y_axis_id, true); // TODO: Multiaxis
-	this->setAxisTitle(y_axis_id, curve_data_->y_signal_title());
+	this->setAxisTitle(y_axis_id, curve_data_->y_data_title());
 	this->setAxisScale(y_axis_id, y_interval_.minValue(), y_interval_.maxValue());
 	this->setAxisAutoScale(y_axis_id, false); // TODO: Not working!?
 
@@ -138,7 +138,7 @@ Plot::Plot(data::BaseCurve *curve_data, QWidget *parent) :
 	grid->attach(this);
 
 	// Value curve
-	value_curve_ = new QwtPlotCurve(curve_data_->y_signal_quantity());
+	value_curve_ = new QwtPlotCurve(curve_data_->y_data_quantity());
 	//value_curve_->setXAxis(QwtAxisId(QwtAxis::yLeft, 0)); // TODO: Multiaxis
 	value_curve_->setYAxis(y_axis_id);
 	value_curve_->setXAxis(x_axis_id);

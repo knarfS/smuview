@@ -21,22 +21,21 @@
 #include <QBoxLayout>
 #include <QVBoxLayout>
 
-#include "plotview.hpp"
+#include "timeplotview.hpp"
 #include "src/session.hpp"
-#include "src/data/analogdata.hpp"
+#include "src/data/analogsignal.hpp"
 #include "src/data/basecurve.hpp"
+#include "src/data/timecurve.hpp"
 #include "src/widgets/plot.hpp"
 
 namespace sv {
 namespace views {
 
-PlotView::PlotView(const Session &session,
-	shared_ptr<data::AnalogData> x_signal_data,
-	shared_ptr<data::AnalogData> y_signal_data,
-	QWidget *parent) :
-		BaseView(session, parent),
-	x_signal_data_(x_signal_data),
-	y_signal_data_(y_signal_data),
+TimePlotView::TimePlotView(const Session &session,
+		shared_ptr<data::AnalogSignal> signal,
+		QWidget *parent) :
+	BaseView(session, parent),
+	signal_(signal),
 	action_zoom_in_(new QAction(this)),
 	action_zoom_out_(new QAction(this)),
 	action_zoom_fit_best_(new QAction(this)),
@@ -52,17 +51,16 @@ PlotView::PlotView(const Session &session,
 	plot->start();
 }
 
-QString PlotView::title() const
+QString TimePlotView::title() const
 {
 	return tr("Plot"); // TODO: + Quantity
 }
 
-void PlotView::setup_ui()
+void TimePlotView::setup_ui()
 {
 	QVBoxLayout *layout = new QVBoxLayout();
 
-	data::BaseCurve *curve = new data::BaseCurve(
-		x_signal_data_, y_signal_data_);
+	data::BaseCurve *curve = (data::BaseCurve *)(new data::TimeCurve(signal_));
 
 	plot = new widgets::Plot(curve);
 	plot->set_plot_mode(widgets::Plot::PlotModes::Additive);
@@ -72,7 +70,7 @@ void PlotView::setup_ui()
 	this->centralWidget->setLayout(layout);
 }
 
-void PlotView::setup_toolbar()
+void TimePlotView::setup_toolbar()
 {
 	action_zoom_in_->setText(tr("Zoom In..."));
 	action_zoom_in_->setIcon(
@@ -134,37 +132,37 @@ void PlotView::setup_toolbar()
 	this->addToolBar(Qt::TopToolBarArea, toolbar);
 }
 
-void PlotView::connect_signals()
+void TimePlotView::connect_signals()
 {
 }
 
-void PlotView::init_values()
+void TimePlotView::init_values()
 {
 }
 
-void PlotView::on_action_zoom_in_triggered()
+void TimePlotView::on_action_zoom_in_triggered()
 {
 }
 
-void PlotView::on_action_zoom_out_triggered()
+void TimePlotView::on_action_zoom_out_triggered()
 {
 }
 
-void PlotView::on_action_zoom_fit_best_triggered()
+void TimePlotView::on_action_zoom_fit_best_triggered()
 {
 }
 
 // TODO: connect directly to plit?
-void PlotView::on_action_add_marker_triggered()
+void TimePlotView::on_action_add_marker_triggered()
 {
 	plot->add_marker();
 }
 
-void PlotView::on_action_add_diff_marker_triggered()
+void TimePlotView::on_action_add_diff_marker_triggered()
 {
 }
 
-void PlotView::on_action_config_graph_triggered()
+void TimePlotView::on_action_config_graph_triggered()
 {
 }
 

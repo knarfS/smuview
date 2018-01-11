@@ -27,8 +27,8 @@
 #include <QTreeWidgetItem>
 
 #include "savedialog.hpp"
+#include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
-#include "src/data/analogdata.hpp"
 #include "src/devices/device.hpp"
 #include "src/devices/hardwaredevice.hpp"
 
@@ -41,7 +41,7 @@ namespace sv {
 namespace dialogs {
 
 SaveDialog::SaveDialog(const Session &session,
-		const vector<shared_ptr<data::BaseSignal>> selected_signals,
+		const vector<shared_ptr<data::AnalogSignal>> selected_signals,
 		QWidget *parent) :
 	QDialog(parent),
 	session_(session),
@@ -70,7 +70,7 @@ void SaveDialog::setup_ui(){
 		device_item->setText(1, "");
 
 		auto hw_device = static_pointer_cast<devices::HardwareDevice>(device);
-		for (shared_ptr<data::BaseSignal> signal : hw_device->all_signals()) {
+		for (shared_ptr<data::AnalogSignal> signal : hw_device->all_signals()) {
 			QTreeWidgetItem *signal_item = new QTreeWidgetItem();
 			signal_item->setText(0, signal->name());
 			signal_item->setText(1, signal->internal_name());
@@ -123,7 +123,7 @@ void SaveDialog::save(QString file_name, QString separator)
 	for (auto signal : selected_signals_) {
 		// TODO signal names
 		if (signal) {
-			sample_count = signal->analog_data()->get_sample_count();
+			sample_count = signal->get_sample_count();
 			output_file << "Time" << signal_count << str_separator
 				<< signal->name().toStdString() << str_separator;
 			signal_count++;
@@ -135,11 +135,10 @@ void SaveDialog::save(QString file_name, QString separator)
 
 	for (size_t i = 0; i < sample_count; i++) {
 		for (size_t j = 0; j < signal_count; j++) {
+			data::sample_t sample = selected_signals_.at(j)->get_sample(i);
 			output_file
-				<< selected_signals_.at(j)->time_data()->get_sample(i)
-				<< str_separator
-				<< selected_signals_.at(j)->analog_data()->get_sample(i)
-				<< str_separator;
+				<< sample.first << str_separator
+				<< sample.first << str_separator;
 		}
 		output_file << std::endl;
 	}
@@ -152,27 +151,24 @@ void SaveDialog::save_combined(QString file_name, QString separator)
 	ofstream output_file;
 	string str_file_name = file_name.toStdString();
 	string str_separator = separator.toStdString();
-	vector<shared_ptr<data::BaseSignal>> print_signals;
+	vector<shared_ptr<data::AnalogSignal>> print_signals;
 	size_t signals_count = 0;
 	vector<size_t> signal_size;
 	vector<size_t> signal_pos;
 
 /*
- *
-
-    auto smart_ptr = std::make_shared<QFile>();
-    QVariant var = QVariant::fromValue(smart_ptr);
-    // ...
-    if (var.canConvert<QObject*>()) {
-        QObject *sp = var.value<QObject*>();
-        qDebug() << sp->metaObject()->className(); // Prints 'QFile'.
-    }
-
+	auto smart_ptr = std::make_shared<QFile>();
+	QVariant var = QVariant::fromValue(smart_ptr);
+	// ...
+	if (var.canConvert<QObject*>()) {
+		QObject *sp = var.value<QObject*>();
+		qDebug() << sp->metaObject()->className(); // Prints 'QFile'.
+	}
 
 	for (auto item : signal_tree_->selectedItems()) {
 		item->data(0, Qt::UserRole).
 		print_signals.push_back(
-			(shared_ptr<data::BaseSignal>).value());
+			(shared_ptr<data::AnalogSignal>).value());
 	}
 */
 
@@ -180,7 +176,8 @@ void SaveDialog::save_combined(QString file_name, QString separator)
 	for (auto device : devices) {
 		auto hw_device = static_pointer_cast<devices::HardwareDevice>(device);
 		for (shared_ptr<data::BaseSignal> signal : hw_device->all_signals()) {
-			print_signals.push_back(signal);
+			print_signals.push_back(
+				static_pointer_cast<data::AnalogSignal>(signal));
 		}
 	}
 
@@ -191,7 +188,7 @@ void SaveDialog::save_combined(QString file_name, QString separator)
 	for (auto signal : print_signals) {
 		output_file << str_separator;
 		if (signal) {
-			signal_size.push_back(signal->analog_data()->get_sample_count());
+			signal_size.push_back(signal->get_sample_count());
 			signal_pos.push_back(0);
 			signals_count++;
 			output_file << signal->name().toStdString();
@@ -203,8 +200,8 @@ void SaveDialog::save_combined(QString file_name, QString separator)
 	while (!finish) {
 		double next_timestamp = -1;
 		for (size_t i=0; i<signals_count; i++) {
-			double signal_timestamp = print_signals.at(i)->time_data()->
-				get_sample(signal_pos.at(i));
+			double signal_timestamp = print_signals.at(i)->
+				get_sample(signal_pos.at(i)).first;
 
 			if (next_timestamp < 0 || signal_timestamp < next_timestamp)
 				next_timestamp = signal_timestamp;
@@ -214,21 +211,18 @@ void SaveDialog::save_combined(QString file_name, QString separator)
 		for (size_t i=0; i<signals_count; i++) {
 			output_file << str_separator;
 
-			if (print_signals.at(i)->time_data()->get_sample_count()
-					<= signal_pos.at(i))
-			{
+			if (print_signals.at(i)->get_sample_count() <= signal_pos.at(i)) {
 				finish = true;
 				continue;
 			}
 			finish = false;
 
-
-			double signal_timestamp = print_signals.at(i)->time_data()->
+			data::sample_t sample = print_signals.at(i)->
 				get_sample(signal_pos.at(i));
 
+			double signal_timestamp = sample.first;
 			if (signal_timestamp == next_timestamp) {
-				output_file << print_signals.at(i)->analog_data()->
-					get_sample(signal_pos.at(i));
+				output_file << sample.second;
 				++signal_pos.at(i);
 			}
 		}

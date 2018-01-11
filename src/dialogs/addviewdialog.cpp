@@ -23,11 +23,11 @@
 #include <QWidget>
 
 #include "addviewdialog.hpp"
+#include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
-#include "src/data/analogdata.hpp"
 #include "src/devices/device.hpp"
 #include "src/devices/hardwaredevice.hpp"
-#include "src/views/plotview.hpp"
+#include "src/views/timeplotview.hpp"
 #include "src/views/valuepanelview.hpp"
 
 using std::unordered_set;
@@ -96,7 +96,7 @@ void AddViewDialog::setup_ui_panel_tab()
 
 void AddViewDialog::setup_ui_plot_tab()
 {
-	QString title("Plot");
+	QString title("Time Plot");
 	QWidget *plot_widget = new QWidget();
 	QFormLayout *form_layout = new QFormLayout();
 	plot_widget->setLayout(form_layout);
@@ -167,7 +167,7 @@ shared_ptr<views::BaseView> AddViewDialog::view()
 
 void AddViewDialog::accept()
 {
-	shared_ptr<data::BaseSignal> signal;
+	shared_ptr<data::AnalogSignal> signal;
 	int tab_index = tab_widget_->currentIndex();
 	switch (tab_index) {
 	case 0:
@@ -175,20 +175,21 @@ void AddViewDialog::accept()
 		break;
 	case 1:
 		for (auto item : panel_signal_tree_->selectedItems()) {
+			// TODO: static_pointer_cast<data::AnalogSignal> ?
 			signal = item->data(0, Qt::UserRole).
-				value<shared_ptr<data::BaseSignal>>();
+				value<shared_ptr<data::AnalogSignal>>();
 			break; // SingleSelect
 		}
 		view_ = make_shared<views::ValuePanelView>(session_, signal);
 		break;
 	case 2:
 		for (auto item : plot_signal_tree_->selectedItems()) {
+			// TODO: static_pointer_cast<data::AnalogSignal> ?
 			signal = item->data(0, Qt::UserRole).
-				value<shared_ptr<data::BaseSignal>>();
+				value<shared_ptr<data::AnalogSignal>>();
 			break; // SingleSelect
 		}
-		view_ = make_shared<views::PlotView>(session_,
-			signal->time_data(), signal->analog_data());
+		view_ = make_shared<views::TimePlotView>(session_, signal);
 		break;
 	default:
 		break;

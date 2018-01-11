@@ -142,13 +142,15 @@ set(smuview_SOURCES
   src/mainwindow.cpp
   src/session.cpp
   src/util.cpp
-  src/data/analogdata.cpp
+  src/data/analogsignal.cpp
   src/data/basecurve.cpp
-  src/data/basedata.cpp
   src/data/basesignal.cpp
+  src/data/timecurve.cpp
   src/devices/configurable.cpp
   src/devices/device.cpp
   src/devices/hardwaredevice.cpp
+  src/devices/measurementdevice.cpp
+  src/devices/sourcesinkdevice.cpp
   src/dialogs/addviewdialog.cpp
   src/dialogs/aboutdialog.cpp
   src/dialogs/addviewdialog.cpp
@@ -162,10 +164,10 @@ set(smuview_SOURCES
   #src/toolbars/maintoolbar.cpp
   src/views/baseview.cpp
   src/views/measurementcontrolview.cpp
-  src/views/plotview.cpp
   src/views/powerpanelview.cpp
   src/views/sinkcontrolview.cpp
   src/views/sourcecontrolview.cpp
+  src/views/timeplotview.cpp
   src/views/valuepanelview.cpp
   src/widgets/controlbutton.cpp
   src/widgets/lcddisplay.cpp

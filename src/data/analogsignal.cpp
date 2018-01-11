@@ -21,12 +21,14 @@
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
+#include <QDateTime>
 #include <QDebug>
 #include <QString>
 
-#include "analogdata.hpp"
+#include "analogsignal.hpp"
 #include "src/util.hpp"
 
+using std::make_pair;
 using std::make_shared;
 using std::shared_ptr;
 using std::unique_ptr;
@@ -35,16 +37,24 @@ using std::vector;
 namespace sv {
 namespace data {
 
-AnalogData::AnalogData() : BaseData(),
+AnalogSignal::AnalogSignal(
+		shared_ptr<sigrok::Channel> sr_channel, ChannelType channel_type,
+		const sigrok::Quantity *sr_quantity, double *signal_start_timestamp) :
+	BaseSignal(sr_channel, channel_type, sr_quantity),
 	sample_count_(0),
-	quantity_fixed_(true),
+	signal_start_timestamp_(signal_start_timestamp),
+	common_time_base_(false), // TODO
 	min_value_(std::numeric_limits<short>::max()),
 	max_value_(std::numeric_limits<short>::min())
 {
+	qWarning() << "Init analog signal " << internal_name_;
+
+	if (!common_time_base_)
+		time_ = make_shared<vector<double>>();
 	data_ = make_shared<vector<double>>();
 }
 
-void AnalogData::clear()
+void AnalogSignal::clear()
 {
 	data_->clear();
 	sample_count_ = 0;
@@ -52,20 +62,21 @@ void AnalogData::clear()
 	samples_cleared();
 }
 
-size_t AnalogData::get_sample_count() const
+size_t AnalogSignal::get_sample_count() const
 {
 	size_t sample_count = sample_count_;
-	//qWarning() << "AnalogData::get_sample_count(): sample_count_ = " << sample_count;
+	//qWarning() << "AnalogSignal::get_sample_count(): sample_count_ = " << sample_count;
 	return sample_count;
 }
 
-vector<double> AnalogData::get_samples(size_t start_sample, size_t end_sample) const
+vector<double> AnalogSignal::get_samples(
+	size_t start_sample, size_t end_sample) const
 {
 	assert(start_sample < sample_count_);
 	assert(end_sample <= sample_count_);
 	assert(start_sample <= end_sample);
 
-	//lock_guard<recursive_mutex> lock(mutex_);
+	// TODO: lock_guard<recursive_mutex> lock(mutex_);
 
 	vector<double>::const_iterator first = data_->begin() + start_sample;
 	vector<double>::const_iterator last = data_->begin() + end_sample; // + 1
@@ -74,29 +85,33 @@ vector<double> AnalogData::get_samples(size_t start_sample, size_t end_sample) c
 	return sub_samples;
 }
 
-double AnalogData::get_sample(size_t pos) const
+sample_t AnalogSignal::get_sample(size_t pos) const
 {
 	//assert(pos <= sample_count_);
 
  	// TODO: retrun reference (&double)?
 
 	if (pos < sample_count_) {
-		double sample = data_->at(pos);
-		//qWarning() << "AnalogData::get_sample(" << pos << "): sample = " << sample;
-		return sample;
+		//qWarning() << "AnalogSignal::get_sample(" << pos << "): sample = " << time_->at(pos) << ", " << data_->at(pos);
+		return make_pair(time_->at(pos), data_->at(pos));
 	}
 
-	qWarning() << "AnalogData::get_sample(" << pos << "): sample_count_ = " << sample_count_;
-	return 0.;
+	qWarning() << "AnalogSignal::get_sample(" << pos << "): sample_count_ = " << sample_count_;
+	return make_pair(0., 0.);
 }
 
-void AnalogData::push_sample(void *sample)
+void AnalogSignal::push_sample(void *sample, const sigrok::Unit *sr_unit)
 {
+	// TODO: Mutex?
+
  	double dsample = (double) *(float*)sample;
 
+	// TODO: use std::chrono / std::time
+	double time = QDateTime::currentMSecsSinceEpoch() / (double)1000;
+
 	/*
-	qWarning() << "AnalogData::push_sample(): sample = " << dsample;
-	qWarning() << "AnalogData::push_sample(): sample_count_ = " << sample_count_;
+	qWarning() << "AnalogSignal::push_sample(): sample = " << dsample << " @ " <<  time;
+	qWarning() << "AnalogSignal::push_sample(): sample_count_ = " << sample_count_+1;
 	*/
 
 	last_value_ = dsample;
@@ -106,38 +121,28 @@ void AnalogData::push_sample(void *sample)
 		max_value_ = dsample;
 
 	/*
-	qWarning() << "AnalogData::push_sample(): last_value_ = " << last_value_;
-	qWarning() << "AnalogData::push_sample(): min_value_ = " << min_value_;
-	qWarning() << "AnalogData::push_sample(): max_value_ = " << max_value_;
+	qWarning() << "AnalogSignal::push_sample(): last_value_ = " << last_value_;
+	qWarning() << "AnalogSignal::push_sample(): min_value_ = " << min_value_;
+	qWarning() << "AnalogSignal::push_sample(): max_value_ = " << max_value_;
 	*/
 
 	data_->push_back(dsample);
 	sample_count_++;
 
-	/*
-	qWarning() << "AnalogData::push_sample(): sample_count_ = " << sample_count_;
-	*/
-}
-
-void AnalogData::push_sample(void *sample,
-	const sigrok::Quantity *sr_quantity, const sigrok::Unit *sr_unit)
-{
-	push_sample(sample);
-
-	if (sr_quantity != sr_quantity_) {
-		set_quantity(sr_quantity);
-		Q_EMIT quantity_changed(quantity_);
-	}
-
 	if (sr_unit != sr_unit_) {
-		set_unit(sr_unit);
+		// TODO: convert to SI unit
+		sr_unit_ = sr_unit;
+		unit_ = util::format_sr_unit(sr_unit_);
 		Q_EMIT unit_changed(unit_);
 	}
+
+	if (!common_time_base_)
+		time_->push_back(time);
 }
 
-void AnalogData::push_interleaved_samples(/*const*/ float *samples,//void *data,
-	size_t sample_count, size_t stride,
-	const sigrok::Quantity *sr_quantity, const sigrok::Unit *sr_unit)
+/*
+void AnalogSignal::push_interleaved_samples(/ *const* / float *samples,//void *data,
+	size_t sample_count, size_t stride, const sigrok::Unit *sr_unit)
 {
 	//assert(unit_size_ == sizeof(float));
 
@@ -161,45 +166,35 @@ void AnalogData::push_interleaved_samples(/*const*/ float *samples,//void *data,
 		samples += stride;
 	}
 }
+*/
 
-void AnalogData::set_fixed_quantity(bool fixed)
+
+double AnalogSignal::signal_start_timestamp() const
 {
-	quantity_fixed_ = fixed;
+	return *signal_start_timestamp_;
 }
 
-void AnalogData::set_quantity(const sigrok::Quantity *sr_quantity)
+double AnalogSignal::first_timestamp() const
 {
-	sr_quantity_ = sr_quantity;
-	quantity_ = util::format_quantity(sr_quantity_);
+	return time_->front();
 }
 
-void AnalogData::set_unit(const sigrok::Unit *sr_unit)
+double AnalogSignal::last_timestamp() const
 {
-	sr_unit_ = sr_unit;
-	unit_ = util::format_unit(sr_unit_);
+	return time_->back();
 }
 
-const QString AnalogData::quantity() const
-{
-	return quantity_;
-}
-
-const QString AnalogData::unit() const
-{
-	return unit_;
-}
-
-double AnalogData::last_value() const
+double AnalogSignal::last_value() const
 {
 	return last_value_;
 }
 
-double AnalogData::min_value() const
+double AnalogSignal::min_value() const
 {
 	return min_value_;
 }
 
-double AnalogData::max_value() const
+double AnalogSignal::max_value() const
 {
 	return max_value_;
 }

@@ -20,34 +20,36 @@
  */
 
 #include <assert.h>
+#include <utility>
 
 #include <QDateTime>
+#include <QDebug>
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
 #include "basesignal.hpp"
 #include "src/session.hpp"
 #include "src/util.hpp"
-#include "src/data/analogdata.hpp"
-#include "src/data/basedata.hpp"
 
 using std::dynamic_pointer_cast;
 using std::make_shared;
+using std::pair;
 using std::shared_ptr;
-using std::tie;
-using std::unique_lock;
 
 namespace sv {
 namespace data {
 
-BaseSignal::BaseSignal(shared_ptr<sigrok::Channel> sr_channel,
-		ChannelType channel_type, const bool quantity_fixed) :
+BaseSignal::BaseSignal(
+		shared_ptr<sigrok::Channel> sr_channel, ChannelType channel_type,
+		const sigrok::Quantity *sr_quantity) :
 	sr_channel_(sr_channel),
 	channel_type_(channel_type),
-	quantity_fixed_(quantity_fixed)
+	sr_quantity_(sr_quantity)
 {
-	if (sr_channel_)
-		internal_name_ = QString::fromStdString(sr_channel_->name());
+	internal_name_ = QString::fromStdString(sr_channel_->name());
+	quantity_ = util::format_sr_quantity(sr_quantity_);
+	sr_unit_ = util::get_sr_unit_from_sr_quantity(sr_quantity_);
+	unit_ = util::format_sr_unit(sr_unit_);
 }
 
 BaseSignal::~BaseSignal()
@@ -57,6 +59,16 @@ BaseSignal::~BaseSignal()
 shared_ptr<sigrok::Channel> BaseSignal::sr_channel() const
 {
 	return sr_channel_;
+}
+
+QString BaseSignal::quantity() const
+{
+	return quantity_;
+}
+
+QString BaseSignal::unit() const
+{
+	return unit_;
 }
 
 QString BaseSignal::name() const
@@ -102,11 +114,6 @@ unsigned int BaseSignal::index() const
 	return (sr_channel_) ? sr_channel_->index() : 0;
 }
 
-bool BaseSignal::quantiy_fixed() const
-{
-	return quantity_fixed_;
-}
-
 QColor BaseSignal::colour() const
 {
 	return colour_;
@@ -116,67 +123,6 @@ void BaseSignal::set_colour(QColor colour)
 {
 	colour_ = colour;
 	colour_changed(colour);
-}
-
-void BaseSignal::set_time_start(qint64 time_start)
-{
-	time_start_ = time_start;
-}
-
-void BaseSignal::set_data(shared_ptr<sv::data::BaseData> data)
-{
-	/*
-	if (data_) {
-		disconnect(data.get(), SIGNAL(samples_cleared()),
-			this, SLOT(on_samples_cleared()));
-		disconnect(data.get(), SIGNAL(samples_added(QObject*, uint64_t, uint64_t)),
-			this, SLOT(on_samples_added(QObject*, uint64_t, uint64_t)));
-	}
-	*/
-
-	data_ = data;
-
-	/*
-	if (data_) {
-		connect(data.get(), SIGNAL(samples_cleared()),
-			this, SLOT(on_samples_cleared()));
-		connect(data.get(), SIGNAL(samples_added(QObject*, uint64_t, uint64_t)),
-			this, SLOT(on_samples_added(QObject*, uint64_t, uint64_t)));
-	}
-	*/
-}
-
-void BaseSignal::set_time_data(shared_ptr<sv::data::AnalogData> time_data)
-{
-	time_data_ = time_data;
-}
-
-void BaseSignal::add_timestamp()
-{
-	// TODO: use std::chrono / std::time and double
-	qint64 time_span = QDateTime::currentMSecsSinceEpoch() - time_start_;
-	float dtime_span = time_span / (float)1000;
-	time_data_->push_sample(&dtime_span);
-}
-
-shared_ptr<sv::data::BaseData> BaseSignal::data()
-{
-	return data_;
-}
-
-shared_ptr<data::AnalogData> BaseSignal::analog_data() const
-{
-	shared_ptr<AnalogData> result = nullptr;
-
-	if (channel_type_ == AnalogChannel)
-		result = dynamic_pointer_cast<AnalogData>(data_);
-
-	return result;
-}
-
-shared_ptr<data::AnalogData> BaseSignal::time_data() const
-{
-	return time_data_;
 }
 
 void BaseSignal::save_settings(QSettings &settings) const
@@ -191,11 +137,6 @@ void BaseSignal::restore_settings(QSettings &settings)
 	set_name(settings.value("name").toString());
 	set_enabled(settings.value("enabled").toBool());
 	set_colour(settings.value("colour").value<QColor>());
-}
-
-void BaseSignal::on_samples_cleared()
-{
-	samples_cleared();
 }
 
 } // namespace data
