@@ -18,10 +18,10 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <algorithm>
 #include <cassert>
 #include <glib.h>
 #include <thread>
-#include <boost/algorithm/string/join.hpp>
 
 #include <QDateTime>
 #include <QDebug>
@@ -39,6 +39,7 @@
 
 using std::bad_alloc;
 using std::dynamic_pointer_cast;
+using std::find;
 using std::lock_guard;
 using std::make_shared;
 using std::map;
@@ -50,8 +51,6 @@ using std::string;
 using std::vector;
 using std::unique_ptr;
 
-using boost::algorithm::join;
-
 namespace sv {
 namespace devices {
 
@@ -60,26 +59,19 @@ HardwareDevice::HardwareDevice(
 		shared_ptr<sigrok::HardwareDevice> sr_device) :
 	Device(sr_context, sr_device)
 {
-	// Sigrok Channel Groups
+	// Get Configurable from Channel Groups and Device
 	map<string, shared_ptr<sigrok::ChannelGroup>> sr_channel_groups =
 		sr_device_->channel_groups();
 	if (sr_channel_groups.size() > 0) {
 		for (auto sr_cg_pair : sr_channel_groups) {
 			shared_ptr<sigrok::ChannelGroup> sr_cg = sr_cg_pair.second;
-			configurables_.push_back(make_shared<devices::Configurable>(sr_cg));
-
-			vector<shared_ptr<data::BaseSignal>> cg_signals;
-			for (auto sr_c : sr_cg->channels()) {
-				if (sr_channel_signal_map_.count(sr_c) > 0)
-					cg_signals.push_back(sr_channel_signal_map_[sr_c]);
-			}
-			channel_group_name_signals_map_.insert(
-				pair<QString, vector<shared_ptr<data::BaseSignal>>>
-					(QString::fromStdString(sr_cg->name()), cg_signals));
+			configurables_.push_back(
+				make_shared<devices::Configurable>(sr_cg, short_name()));
 		}
 	}
 	else {
-		configurables_.push_back(make_shared<Configurable>(sr_device_));
+		configurables_.push_back(
+			make_shared<Configurable>(sr_device_, short_name()));
 	}
 }
 
@@ -88,32 +80,24 @@ HardwareDevice::~HardwareDevice()
 	close();
 }
 
-QString HardwareDevice::full_name() const
+HardwareDevice::Type HardwareDevice::type() const
+{
+	return type_;
+}
+
+QString HardwareDevice::name() const
 {
 	QString sep("");
 	QString name("");
 
 	if (sr_device_->vendor().length() > 0) {
 		name.append(QString::fromStdString(sr_device_->vendor()));
-		name.append(sep);
 		sep = QString(" ");
 	}
 
 	if (sr_device_->model().length() > 0) {
+		name.append(sep);
 		name.append(QString::fromStdString(sr_device_->model()));
-		name.append(sep);
-		sep = QString(" ");
-	}
-
-	if (sr_device_->version().length() > 0) {
-		name.append(QString::fromStdString(sr_device_->version()));
-		name.append(sep);
-		sep = QString(" ");
-	}
-
-	if (sr_device_->serial_number().length() > 0) {
-		name.append(QString::fromStdString(sr_device_->serial_number()));
-		name.append(sep);
 		sep = QString(" ");
 	}
 
@@ -134,13 +118,42 @@ QString HardwareDevice::short_name() const
 
 	if (sr_device_->vendor().length() > 0) {
 		name.append(QString::fromStdString(sr_device_->vendor()));
-		name.append(sep);
 		sep = QString(" ");
 	}
 
 	if (sr_device_->model().length() > 0) {
-		name.append(QString::fromStdString(sr_device_->model()));
 		name.append(sep);
+		name.append(QString::fromStdString(sr_device_->model()));
+	}
+
+	return name;
+}
+
+QString HardwareDevice::full_name() const
+{
+	QString sep("");
+	QString name("");
+
+	if (sr_device_->vendor().length() > 0) {
+		name.append(QString::fromStdString(sr_device_->vendor()));
+		sep = QString(" ");
+	}
+
+	if (sr_device_->model().length() > 0) {
+		name.append(sep);
+		name.append(QString::fromStdString(sr_device_->model()));
+		sep = QString(" ");
+	}
+
+	if (sr_device_->version().length() > 0) {
+		name.append(sep);
+		name.append(QString::fromStdString(sr_device_->version()));
+		sep = QString(" ");
+	}
+
+	if (sr_device_->serial_number().length() > 0) {
+		name.append(sep);
+		name.append(QString::fromStdString(sr_device_->serial_number()));
 		sep = QString(" ");
 	}
 
@@ -154,12 +167,7 @@ QString HardwareDevice::short_name() const
 	return name;
 }
 
-shared_ptr<sigrok::HardwareDevice> HardwareDevice::sr_hardware_device() const
-{
-	return static_pointer_cast<sigrok::HardwareDevice>(sr_device_);
-}
-
-string HardwareDevice::display_name(
+QString HardwareDevice::display_name(
 	const DeviceManager &device_manager) const
 {
 	const auto hw_dev = sr_hardware_device();
@@ -177,19 +185,48 @@ string HardwareDevice::display_name(
 				dev->sr_device_ != sr_device_;
 		});
 
-	vector<string> parts = {
-		sr_device_->vendor(), sr_device_->model() };
+	QString sep("");
+	QString name("");
 
-	if (multiple_dev) {
-		parts.push_back(sr_device_->version());
-		parts.push_back(sr_device_->serial_number());
-
-		if ((sr_device_->serial_number().length() == 0) &&
-			(sr_device_->connection_id().length() > 0))
-			parts.push_back("(" + sr_device_->connection_id() + ")");
+	if (sr_device_->vendor().length() > 0) {
+		name.append(QString::fromStdString(sr_device_->vendor()));
+		sep = QString(" ");
 	}
 
-	return join(parts, " ");
+	if (sr_device_->model().length() > 0) {
+		name.append(sep);
+		name.append(QString::fromStdString(sr_device_->model()));
+		sep = QString(" ");
+	}
+
+	if (multiple_dev) {
+		if (sr_device_->model().length() > 0) {
+			name.append(sep);
+			name.append(QString::fromStdString(sr_device_->version()));
+			sep = QString(" ");
+		}
+
+		if (sr_device_->model().length() > 0) {
+			name.append(sep);
+			name.append(QString::fromStdString(sr_device_->serial_number()));
+			sep = QString(" ");
+		}
+
+		if ((sr_device_->serial_number().length() == 0) &&
+				(sr_device_->connection_id().length() > 0)) {
+			name.append(sep);
+			name.append("(");
+			name.append(QString::fromStdString(sr_device_->connection_id()));
+			name.append(")");
+		}
+	}
+
+	return name;
+}
+
+shared_ptr<sigrok::HardwareDevice> HardwareDevice::sr_hardware_device() const
+{
+	return static_pointer_cast<sigrok::HardwareDevice>(sr_device_);
 }
 
 vector<shared_ptr<data::AnalogSignal>> HardwareDevice::all_signals() const
@@ -198,9 +235,27 @@ vector<shared_ptr<data::AnalogSignal>> HardwareDevice::all_signals() const
 }
 
 map<QString, vector<shared_ptr<data::BaseSignal>>>
-	HardwareDevice::channel_group_name_signals_map() const
+	HardwareDevice::cg_name_signals_map() const
 {
-	return channel_group_name_signals_map_;
+	return cg_name_signals_map_;
+}
+
+map<shared_ptr<sigrok::Channel>, shared_ptr<data::BaseSignal>>
+	HardwareDevice::sr_channel_signal_map() const
+{
+	return sr_channel_signal_map_;
+}
+
+map<QString, shared_ptr<data::BaseSignal>>
+	HardwareDevice::signal_name_map() const
+{
+	return signal_name_map_;
+}
+
+map<QString, map<const sigrok::Quantity *, shared_ptr<data::AnalogSignal>>>
+	HardwareDevice::cg_name_sr_quantity_signals_map() const
+{
+	return cg_name_sr_quantity_signals_map_;
 }
 
 vector<shared_ptr<devices::Configurable>> HardwareDevice::configurables() const
@@ -293,6 +348,47 @@ void HardwareDevice::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
 	/*
 	qWarning() << "HardwareDevice::feed_in_analog(): -END-";
 	*/
+}
+
+void HardwareDevice::add_signal_to_maps(shared_ptr<data::AnalogSignal> signal,
+	shared_ptr<sigrok::Channel> sr_channel, QString channel_group_name)
+{
+	// vector<shared_ptr<data::AnalogSignal>> all_signals_;
+	all_signals_.push_back(signal);
+
+	// map<QString, shared_ptr<data::BaseSignal>> signal_name_map_;
+	signal_name_map_.insert(
+		pair<QString, shared_ptr<data::BaseSignal>>
+		(signal->internal_name(), signal));
+
+	// map<shared_ptr<sigrok::Channel>, shared_ptr<data::BaseSignal>> sr_channel_signal_map_;
+	sr_channel_signal_map_.insert(
+		pair<shared_ptr<sigrok::Channel>, shared_ptr<data::BaseSignal>>
+		(sr_channel, signal));
+
+	// map<QString, map<const sigrok::Quantity *, shared_ptr<data::AnalogSignal>>> cg_name_sr_quantity_signals_map_;
+	if (cg_name_sr_quantity_signals_map_.count(channel_group_name) == 0)
+		cg_name_sr_quantity_signals_map_.insert(
+			pair<QString, map<const sigrok::Quantity *, shared_ptr<data::AnalogSignal>>>
+			(channel_group_name, map<const sigrok::Quantity *, shared_ptr<data::AnalogSignal>>()));
+
+	if (cg_name_sr_quantity_signals_map_[channel_group_name].count(signal->sr_quantity()) == 0)
+		cg_name_sr_quantity_signals_map_[channel_group_name].insert(
+			pair<const sigrok::Quantity *, shared_ptr<data::AnalogSignal>>
+			(signal->sr_quantity(), signal));
+	else
+		assert("Signal already there!");
+
+	// map<QString, vector<shared_ptr<data::BaseSignal>>> cg_name_signals_map_;
+	if (cg_name_signals_map_.count(channel_group_name) == 0)
+		cg_name_signals_map_.insert(
+			pair<QString, vector<shared_ptr<data::BaseSignal>>>
+			(channel_group_name, vector<shared_ptr<data::BaseSignal>>()));
+
+	if (find(cg_name_signals_map_[channel_group_name].begin(),
+			cg_name_signals_map_[channel_group_name].end(),
+			signal) == cg_name_signals_map_[channel_group_name].end())
+		cg_name_signals_map_[channel_group_name].push_back(signal);
 }
 
 } // namespace devices

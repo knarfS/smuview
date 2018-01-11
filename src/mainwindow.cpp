@@ -35,8 +35,7 @@
 #include "src/dialogs/connectdialog.hpp"
 #include "src/tabs/basetab.hpp"
 #include "src/tabs/measurementtab.hpp"
-#include "src/tabs/sinktab.hpp"
-#include "src/tabs/sourcetab.hpp"
+#include "src/tabs/sourcesinktab.hpp"
 
 using std::make_shared;
 
@@ -148,18 +147,14 @@ shared_ptr<devices::Device> MainWindow::add_tab(
 	device_windows_[device] = window;
 	last_focused_device_ = device;
 
-	if (type == tabs::TabTypeSource) {
-		tabs::SourceTab *sourceTab = new tabs::SourceTab(*session_,
+	if (type == tabs::TabTypeSource || type == tabs::TabTypeSink) {
+		tabs::SourceSinkTab *tab = new tabs::SourceSinkTab(*session_,
 			static_pointer_cast<devices::SourceSinkDevice>(device), window);
-		window->setCentralWidget(sourceTab);
-	} else if (type == tabs::TabTypeSink) {
-		tabs::SinkTab *sinkTab = new tabs::SinkTab(*session_,
-			static_pointer_cast<devices::SourceSinkDevice>(device), window);
-		window->setCentralWidget(sinkTab);
+		window->setCentralWidget(tab);
 	} else if (type == tabs::TabTypeMeasurement) {
-		tabs::MeasurementTab *measurementTab = new tabs::MeasurementTab(*session_,
+		tabs::MeasurementTab *tab = new tabs::MeasurementTab(*session_,
 			static_pointer_cast<devices::MeasurementDevice>(device), window);
-		window->setCentralWidget(measurementTab);
+		window->setCentralWidget(tab);
 	} else if (type == tabs::TabTypeViews) {
 	}
 

@@ -24,6 +24,7 @@
 #include <utility>
 
 #include <QObject>
+#include <QString>
 
 #include "basesignal.hpp"
 
@@ -48,7 +49,8 @@ class AnalogSignal : public BaseSignal
 public:
 	AnalogSignal(
 		shared_ptr<sigrok::Channel> sr_channel, ChannelType channel_type,
-		const sigrok::Quantity *sr_quantity, double *signal_start_timestamp);
+		const sigrok::Quantity *sr_quantity, QString channel_group_name,
+		double *signal_start_timestamp);
 
 	void clear();
 

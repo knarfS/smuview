@@ -285,8 +285,7 @@ void ConnectDialog::scan_pressed()
 	for (shared_ptr<HardwareDevice> device : devices) {
 		assert(device);
 
-		QString text = QString::fromStdString(
-			device->display_name(device_manager_));
+		QString text = device->display_name(device_manager_);
 		text += QString(" with %1 channels").arg(
 			device->sr_device()->channels().size());
 

@@ -62,11 +62,27 @@ MeasurementDevice::MeasurementDevice(
 		assert("Unknown device");
 	}
 
-	// Init signals. We get all channels from the device, also all cg signals
+	// TODO: move to hw device ctor, when common_time_data is fixed
+	// Init signals from Sigrok Channel Groups
+	map<string, shared_ptr<sigrok::ChannelGroup>> sr_channel_groups =
+		sr_device_->channel_groups();
+	if (sr_channel_groups.size() > 0) {
+		for (auto sr_cg_pair : sr_channel_groups) {
+			shared_ptr<sigrok::ChannelGroup> sr_cg = sr_cg_pair.second;
+			QString cg_name = QString::fromStdString(sr_cg->name());
+			for (auto sr_channel : sr_cg->channels()) {
+				init_signal(sr_channel, cg_name, common_time_data);
+			}
+		}
+	}
+
+	// Init signals that are not in a channel group
 	vector<shared_ptr<sigrok::Channel>> sr_channels = sr_device_->channels();
 	for (auto sr_channel : sr_channels) {
-		// TODO: sr_channel is not necessarily a signal (see Digi35)....
-		init_signal(sr_channel, common_time_data);
+		if (sr_channel_signal_map_.count(sr_channel) > 0)
+			continue;
+		// TODO: sr_channel must not have a signal (see Digi35)....
+		init_signal(sr_channel, QString(""), common_time_data);
 	}
 }
 
@@ -76,16 +92,17 @@ MeasurementDevice::~MeasurementDevice()
 
 void MeasurementDevice::init_signal(
 	shared_ptr<sigrok::Channel> sr_channel,
+	QString channel_group_name,
 	shared_ptr<vector<double>> common_time_data)
 {
-	//lock_guard<recursive_mutex> lock(data_mutex_);
-
 	if (sr_channel->type()->id() != SR_CHANNEL_ANALOG)
 		return;
 
+	//lock_guard<recursive_mutex> lock(data_mutex_);
+
 	shared_ptr<data::AnalogSignal> signal = make_shared<data::AnalogSignal>(
-		sr_channel, data::BaseSignal::AnalogChannel, sigrok::Quantity::VOLTAGE,
-		aquisition_start_timestamp_);
+		sr_channel, data::BaseSignal::AnalogChannel, sigrok::Quantity::VOLTAGE, // TODO: nullptr
+		channel_group_name, aquisition_start_timestamp_);
 
 	// TODO
 	if (common_time_data) {
@@ -95,15 +112,7 @@ void MeasurementDevice::init_signal(
 		//signal->set_time_data(init_time_data());
 	}
 
-	all_signals_.push_back(signal);
-	signal_name_map_.insert(
-		pair<QString, shared_ptr<data::BaseSignal>>
-			(signal->internal_name(), signal));
-	sr_channel_signal_map_.insert(
-		pair<shared_ptr<sigrok::Channel>, shared_ptr<data::BaseSignal>>
-			(sr_channel, signal));
-
-	measurement_signal_ = signal;
+	add_signal_to_maps(signal, sr_channel, channel_group_name);
 
 	//signals_changed();
 }

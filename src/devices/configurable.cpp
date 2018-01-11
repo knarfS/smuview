@@ -36,8 +36,11 @@ using std::string;
 namespace sv {
 namespace devices {
 
-Configurable::Configurable(const shared_ptr<sigrok::Configurable> sr_configurable):
-	sr_configurable_(sr_configurable)
+Configurable::Configurable(
+		const shared_ptr<sigrok::Configurable> sr_configurable,
+		const QString device_name):
+	sr_configurable_(sr_configurable),
+	device_name_(device_name)
 {
 	init_properties();
 	init_values();
@@ -363,10 +366,11 @@ QString Configurable::name() const
 {
 	QString name("?");
 	if (auto sr = dynamic_pointer_cast<sigrok::HardwareDevice>(sr_configurable_)) {
-		name = QString::fromStdString(sr->model());
+		name = device_name_;
 	}
 	else if (auto sr = dynamic_pointer_cast<sigrok::ChannelGroup>(sr_configurable_)) {
-		name = QString::fromStdString(sr->name());
+		name = QString("%1 - %2").arg(device_name_).
+			arg(QString::fromStdString(sr->name()));
 	}
 	return name;
 }

@@ -33,7 +33,9 @@
 
 #include "aboutdialog.hpp"
 #include "config.h"
+#include "src/util.hpp"
 #include "src/data/analogsignal.hpp"
+#include "src/devices/configurable.hpp"
 #include "src/devices/hardwaredevice.hpp"
 
 namespace sv {
@@ -260,21 +262,33 @@ QWidget *AboutDialog::get_device_page(QWidget *parent) const
 			QString::fromStdString(sr_key->identifier())));
 	}
 
-	/* SmuView device signals */
+	// SmuView all device configurables
+	// vector<shared_ptr<devices::Configurable>> configurables
 	s.append("<tr><td colspan=\"2\"><b>" +
-		tr("SmuView device signals:") + "</b></td></tr>");
+		tr("SmuView device configurables (device->configurables()):") +
+		"</b></td></tr>");
+	const auto configurables = device_->configurables();
+	for (shared_ptr<devices::Configurable> cnf : configurables) {
+		s.append(QString("<tr><td>%1</td><td></td></tr>").arg(cnf->name()));
+	}
 
+	// SmuView all device signals
+	// vector<shared_ptr<data::AnalogSignal>> all_signals()
+	s.append("<tr><td colspan=\"2\"><b>" +
+		tr("SmuView device signals (device->all_signals()):") +
+		"</b></td></tr>");
 	const auto signals = device_->all_signals();
 	for (shared_ptr<data::AnalogSignal> signal : signals) {
 		s.append(QString("<tr><td>%1</td><td>%2</td></tr>").arg(
 			signal->name(), signal->internal_name()));
 	}
 
-	/* SmuView device channel groups + signals */
+	// SmuView device channel group names + signals
+	// map<QString, vector<shared_ptr<data::BaseSignal>>> cg_name_signals_map
 	s.append("<tr><td colspan=\"2\"><b>" +
-		tr("SmuView device channel groups and signals:") + "</b></td></tr>");
-
-	const auto cg_signal_map = device_->channel_group_name_signals_map();
+		tr("SmuView device channel group names and signals (device->cg_name_signals_map()):") +
+		"</b></td></tr>");
+	const auto cg_signal_map = device_->cg_name_signals_map();
 	for (auto cg_signal_pair : cg_signal_map) {
 		s.append(QString("<tr><td>%1</td><td></td></tr>").arg(
 			cg_signal_pair.first));
@@ -284,10 +298,51 @@ QWidget *AboutDialog::get_device_page(QWidget *parent) const
 		}
 	}
 
-	/* Device channel groups + channels */
+	// SmuView sr channels + signal
+	// map<shared_ptr<sigrok::Channel>, shared_ptr<data::BaseSignal>> sr_channel_signal_map
+	s.append("<tr><td colspan=\"2\"><b>" +
+		tr("SmuView sigrok channels and signal (device->sr_channel_signal_map()):") +
+		"</b></td></tr>");
+	const auto sr_c_signal_map = device_->sr_channel_signal_map();
+	for (auto sr_c_signal_pair : sr_c_signal_map) {
+		s.append(QString("<tr><td>%1</td><td>%2</td></tr>").
+			arg(QString::fromStdString(sr_c_signal_pair.first->name())).
+			arg(sr_c_signal_pair.second->name()));
+	}
+
+	// SmuView channel names + signal
+	// map<QString, shared_ptr<data::BaseSignal>> signal_name_map
+	s.append("<tr><td colspan=\"2\"><b>" +
+		tr("SmuView channel names and signal (device->signal_name_map()):") +
+		"</b></td></tr>");
+	const auto signal_name_map = device_->signal_name_map();
+	for (auto signal_name_pair : signal_name_map) {
+		s.append(QString("<tr><td>%1</td><td>%2</td></tr>").
+			arg(signal_name_pair.first).
+			arg(signal_name_pair.second->name()));
+	}
+
+	// SmuView channel group names and quantity + signal
+	// map<QString, map<const sigrok::Quantity *, shared_ptr<data::AnalogSignal>>> cg_name_sr_quantity_signals_map
+	s.append("<tr><td colspan=\"2\"><b>" +
+		tr("SmuView device channel group names and quantity + signal (device->cg_name_sr_quantity_signals_map()):") +
+		"</b></td></tr>");
+	const auto cg_name_quantity_signals_map = device_->cg_name_sr_quantity_signals_map();
+	for (auto cg_name_quantity_signals_pair : cg_name_quantity_signals_map) {
+		qWarning() << "  " << cg_name_quantity_signals_pair.first;
+		s.append(QString("<tr><td>%1</td><td></td></tr>").arg(
+			cg_name_quantity_signals_pair.first));
+		for (auto quantity_signal_pair : cg_name_quantity_signals_pair.second) {
+			qWarning() << "    " << util::format_sr_quantity(quantity_signal_pair.first) << " / " << quantity_signal_pair.second->name();
+			s.append(QString("<tr><td></td><td>%1 - %2</td></tr>").
+				arg(util::format_sr_quantity(quantity_signal_pair.first)).
+				arg(quantity_signal_pair.second->name()));
+		}
+	}
+
+	/* Sigrok Device channel groups + channels */
 	s.append("<tr><td colspan=\"2\"><b>" +
 		tr("Sigrok channel groups and channels:") + "</b></td></tr>");
-
 	const auto sr_cgs = sr_device->channel_groups();
 	for (auto sr_cg_pair : sr_cgs) {
 		QString channel_names("");
@@ -302,10 +357,9 @@ QWidget *AboutDialog::get_device_page(QWidget *parent) const
 			QString::fromStdString(sr_cg_pair.first), channel_names));
 	}
 
-	/* Device channel */
+	/* Sigrok Device channel */
 	s.append("<tr><td colspan=\"2\"><b>" +
 		tr("Sigrok device channels:") + "</b></td></tr>");
-
 	const auto sr_channels = sr_device->channels();
 	for (auto sr_channel : sr_channels) {
 		s.append(QString("<tr><td><i>%1</i></td><td></td></tr>").arg(

@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TABS_SINKTAB_HPP
-#define TABS_SINKTAB_HPP
+#ifndef TABS_SOURCESINKTAB_HPP
+#define TABS_SOURCESINKTAB_HPP
 
 #include <memory>
 
@@ -31,23 +31,21 @@ using std::shared_ptr;
 namespace sv {
 
 namespace devices {
-class SourceSinkDevice;
+class HardwareDevice;
 }
 
 namespace tabs {
 
-class SinkTab : public DeviceTab
+class SourceSinkTab : public DeviceTab
 {
     Q_OBJECT
 
 public:
-	SinkTab(Session &session,
- 		shared_ptr<devices::SourceSinkDevice> device, QMainWindow *parent);
+	SourceSinkTab(Session &session,
+ 		shared_ptr<devices::HardwareDevice> device, QMainWindow *parent);
 
 private:
 	void setup_ui();
-
-	shared_ptr<devices::SourceSinkDevice> sourcesink_device_; // TODO: remove, generic solution in hw_device
 
 public Q_SLOTS:
 
@@ -56,4 +54,4 @@ public Q_SLOTS:
 } // namespace tabs
 } // namespace sv
 
-#endif // TABS_SINKTAB_HPP
+#endif // TABS_SOURCESINKTAB_HPP

@@ -48,7 +48,8 @@ class MeasurementDevice final : public HardwareDevice
 	Q_OBJECT
 
 public:
-	explicit MeasurementDevice(const shared_ptr<sigrok::Context> &sr_context,
+	explicit MeasurementDevice(
+		const shared_ptr<sigrok::Context> &sr_context,
 		shared_ptr<sigrok::HardwareDevice> sr_device);
 
 	~MeasurementDevice();
@@ -60,6 +61,7 @@ protected:
 	void feed_in_meta(shared_ptr<sigrok::Meta> sr_meta);
 	void init_signal(
 		shared_ptr<sigrok::Channel> sr_channel,
+		QString channel_group_name,
 		shared_ptr<vector<double>> common_time_data);
 
 private:

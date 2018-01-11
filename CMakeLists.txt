@@ -159,8 +159,7 @@ set(smuview_SOURCES
   src/tabs/basetab.cpp
   src/tabs/devicetab.cpp
   src/tabs/measurementtab.cpp
-  src/tabs/sinktab.cpp
-  src/tabs/sourcetab.cpp
+  src/tabs/sourcesinktab.cpp
   #src/toolbars/maintoolbar.cpp
   src/views/baseview.cpp
   src/views/measurementcontrolview.cpp

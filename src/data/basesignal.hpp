@@ -67,7 +67,7 @@ public:
 public:
 	BaseSignal(
 		shared_ptr<sigrok::Channel> sr_channel, ChannelType channel_type,
-		const sigrok::Quantity *sr_quantity_);
+		const sigrok::Quantity *sr_quantity_, QString channel_group_name);
 	virtual ~BaseSignal();
 
 public:
@@ -82,6 +82,11 @@ public:
 	 * Returns the underlying SR channel.
 	 */
 	shared_ptr<sigrok::Channel> sr_channel() const;
+
+	/**
+	 * Returns the sigrok qunatity of this signal as object
+	 */
+	const sigrok::Quantity *sr_quantity() const;
 
 	/**
 	 * Returns the qunatity of this signal as string
@@ -114,6 +119,15 @@ public:
 	 * the device driver.
 	 */
 	unsigned int index() const;
+
+	/**
+	 * Get the channel group name, the signal is in. Returns "" if the signal
+	 * is not in a channel group.
+	 *
+	 * TODO: Change to vector<QString>, bc the signal can be in more than one
+	 *       channel group (see "demo" driver)
+	 */
+	QString channel_group_name() const;
 
 	/**
 	 * Gets the name of this signal.
@@ -157,7 +171,8 @@ protected:
 	const sigrok::Unit *sr_unit_;
 	QString unit_;
 
-	QString internal_name_; // TODO: const
+	const QString channel_group_name_;
+	QString internal_name_; // TODO: const?
 	QString name_;
 	QColor colour_;
 };

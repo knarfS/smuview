@@ -17,6 +17,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <algorithm>
 #include <cassert>
 
 #include <QDebug>
@@ -62,11 +63,27 @@ SourceSinkDevice::SourceSinkDevice(
 		assert("Unknown device");
 	}
 
-	// Init signals. We get all channels from the device, also all cg signals
+	// TODO: move to hw device ctor, when common_time_data is fixed
+	// Init signals from Sigrok Channel Groups
+	map<string, shared_ptr<sigrok::ChannelGroup>> sr_channel_groups =
+		sr_device_->channel_groups();
+	if (sr_channel_groups.size() > 0) {
+		for (auto sr_cg_pair : sr_channel_groups) {
+			shared_ptr<sigrok::ChannelGroup> sr_cg = sr_cg_pair.second;
+			QString cg_name = QString::fromStdString(sr_cg->name());
+			for (auto sr_channel : sr_cg->channels()) {
+				init_signal(sr_channel, cg_name, common_time_data);
+			}
+		}
+	}
+
+	// Init signals that are not in a channel group
 	vector<shared_ptr<sigrok::Channel>> sr_channels = sr_device_->channels();
 	for (auto sr_channel : sr_channels) {
-		// TODO: sr_channel is not necessarily a signal (see Digi35)....
-		init_signal(sr_channel, common_time_data);
+		if (sr_channel_signal_map_.count(sr_channel) > 0)
+			continue;
+		// TODO: sr_channel must not have a signal (see Digi35)....
+		init_signal(sr_channel, QString(""), common_time_data);
 	}
 }
 
@@ -77,39 +94,30 @@ SourceSinkDevice::~SourceSinkDevice()
 
 void SourceSinkDevice::init_signal(
 	shared_ptr<sigrok::Channel> sr_channel,
+	QString channel_group_name,
 	shared_ptr<vector<double>> common_time_data)
 {
-	//lock_guard<recursive_mutex> lock(data_mutex_);
-
 	if (sr_channel->type()->id() != SR_CHANNEL_ANALOG)
 		return;
 
-	shared_ptr<data::AnalogSignal> signal;
+	//lock_guard<recursive_mutex> lock(data_mutex_);
+
+	const sigrok::Quantity *sr_quantity;
 	QString signal_name = QString::fromStdString(sr_channel->name());
+	if (signal_name.startsWith("V"))
+		sr_quantity = sigrok::Quantity::VOLTAGE;
+	else if (signal_name.startsWith("I"))
+		sr_quantity = sigrok::Quantity::CURRENT;
+	else if (signal_name.startsWith("P"))
+		sr_quantity = sigrok::Quantity::POWER;
+	else if (signal_name.startsWith("F"))
+		sr_quantity = sigrok::Quantity::FREQUENCY;
+	else
+		assert("Unkown signal in PSU / Load");
 
-	if (signal_name.startsWith("V")) {
-		signal = make_shared<data::AnalogSignal>(sr_channel,
-			data::BaseSignal::AnalogChannel, sigrok::Quantity::VOLTAGE,
-			aquisition_start_timestamp_);
-	}
-	else if (signal_name.startsWith("I")) {
-		signal = make_shared<data::AnalogSignal>(sr_channel,
-			data::BaseSignal::AnalogChannel, sigrok::Quantity::CURRENT,
-			aquisition_start_timestamp_);
-	}
-	else if (signal_name.startsWith("P")) {
-		signal = make_shared<data::AnalogSignal>(sr_channel,
-			data::BaseSignal::AnalogChannel, sigrok::Quantity::POWER,
-			aquisition_start_timestamp_);
-	}
-	else if (signal_name.startsWith("F")) {
-		signal = make_shared<data::AnalogSignal>(sr_channel,
-			data::BaseSignal::AnalogChannel, sigrok::Quantity::FREQUENCY,
-			aquisition_start_timestamp_);
-	}
-
-	if (!signal)
-		return;
+	shared_ptr<data::AnalogSignal> signal = make_shared<data::AnalogSignal>(
+		sr_channel, data::BaseSignal::AnalogChannel, sr_quantity,
+		channel_group_name, aquisition_start_timestamp_);
 
 	// TODO
 	if (common_time_data) {
@@ -119,30 +127,9 @@ void SourceSinkDevice::init_signal(
 		//signal->set_time_data(init_time_data());
 	}
 
-	all_signals_.push_back(signal);
-	signal_name_map_.insert(
-		pair<QString, shared_ptr<data::BaseSignal>>
-			(signal->internal_name(), signal));
-	sr_channel_signal_map_.insert(
-		pair<shared_ptr<sigrok::Channel>, shared_ptr<data::BaseSignal>>
-			(sr_channel, signal));
-
-	if (signal->internal_name().startsWith("V") && !voltage_signal_)
-		voltage_signal_ = signal;
-	else if (signal->internal_name().startsWith("I") && !current_signal_)
-		current_signal_ = signal;
+	add_signal_to_maps(signal, sr_channel, channel_group_name);
 
 	//signals_changed();
-}
-
-shared_ptr<data::AnalogSignal> SourceSinkDevice::voltage_signal() const
-{
-	return voltage_signal_;
-}
-
-shared_ptr<data::AnalogSignal> SourceSinkDevice::current_signal() const
-{
-	return current_signal_;
 }
 
 void SourceSinkDevice::feed_in_meta(shared_ptr<sigrok::Meta> sr_meta)

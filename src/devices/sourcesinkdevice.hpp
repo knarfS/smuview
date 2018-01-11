@@ -53,20 +53,14 @@ public:
 
 	~SourceSinkDevice();
 
-	// TODO: Generic!
-	shared_ptr<data::AnalogSignal> voltage_signal() const;
-	shared_ptr<data::AnalogSignal> current_signal() const;
-
 protected:
 	void feed_in_meta(shared_ptr<sigrok::Meta> sr_meta);
 	void init_signal(
 		shared_ptr<sigrok::Channel> sr_channel,
+		QString channel_group_name,
 		shared_ptr<vector<double>> common_time_data);
 
 private:
-	// TODO: Generic!
-	shared_ptr<data::AnalogSignal> voltage_signal_;
-	shared_ptr<data::AnalogSignal> current_signal_;
 
 };
 

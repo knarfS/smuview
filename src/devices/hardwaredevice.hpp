@@ -58,9 +58,7 @@ class Channel;
 class Configurable;
 class Context;
 class Quantity;
-class QuantityFlag;
 class HardwareDevice;
-class Meta;
 }
 
 namespace sv {
@@ -96,6 +94,16 @@ public:
 	shared_ptr<sigrok::HardwareDevice> sr_hardware_device() const;
 
 	/**
+	 * Returns the device type
+	 */
+	HardwareDevice::Type type() const;
+
+	/**
+	 * Builds the name
+	 */
+	QString name() const;
+
+	/**
 	 * Builds the full name. It only contains all the fields.
 	 */
 	QString full_name() const;
@@ -110,10 +118,16 @@ public:
 	 * @param device_manager a reference to the device manager is needed
 	 * so that other similarly titled devices can be detected.
 	 */
-	string display_name(const DeviceManager &device_manager) const;
+	QString display_name(const DeviceManager &device_manager) const;
 
+	// TODO: move all maps to Device, because aqcu is there?
+	// TODO: typdefs or classes?
 	vector<shared_ptr<data::AnalogSignal>> all_signals() const;
-	map<QString, vector<shared_ptr<data::BaseSignal>>> channel_group_name_signals_map() const;
+	map<QString, vector<shared_ptr<data::BaseSignal>>> cg_name_signals_map() const;
+	map<shared_ptr<sigrok::Channel>, shared_ptr<data::BaseSignal>> sr_channel_signal_map() const;
+	map<QString, shared_ptr<data::BaseSignal>> signal_name_map() const;
+	map<QString, map<const sigrok::Quantity *, shared_ptr<data::AnalogSignal>>> cg_name_sr_quantity_signals_map() const;
+
 	vector<shared_ptr<devices::Configurable>> configurables() const;
 
 protected:
@@ -124,14 +138,20 @@ protected:
 	void feed_in_logic(shared_ptr<sigrok::Logic> sr_logic);
 	void feed_in_analog(shared_ptr<sigrok::Analog> sr_analog);
 
+	void add_signal_to_maps(shared_ptr<data::AnalogSignal> signal,
+		shared_ptr<sigrok::Channel> sr_channel, QString channel_group_name);
+
 	Type type_;
 
+	// TODO: move all maps to Device, because aqcu is there?
+	// TODO: typdefs or classes?
+	map<QString, vector<shared_ptr<data::BaseSignal>>> cg_name_signals_map_;
 	/**
 	 * Mapping of incomming data to BaseSignal
 	 */
 	map<shared_ptr<sigrok::Channel>, shared_ptr<data::BaseSignal>> sr_channel_signal_map_;
-	map<QString, vector<shared_ptr<data::BaseSignal>>> channel_group_name_signals_map_;
 	map<QString, shared_ptr<data::BaseSignal>> signal_name_map_;
+	map<QString, map<const sigrok::Quantity *, shared_ptr<data::AnalogSignal>>> cg_name_sr_quantity_signals_map_; // TODO: Name
 	vector<shared_ptr<data::AnalogSignal>> all_signals_;
 
 	vector<shared_ptr<devices::Configurable>> configurables_;

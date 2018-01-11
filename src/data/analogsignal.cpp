@@ -39,8 +39,9 @@ namespace data {
 
 AnalogSignal::AnalogSignal(
 		shared_ptr<sigrok::Channel> sr_channel, ChannelType channel_type,
-		const sigrok::Quantity *sr_quantity, double *signal_start_timestamp) :
-	BaseSignal(sr_channel, channel_type, sr_quantity),
+		const sigrok::Quantity *sr_quantity, QString channel_group_name,
+		double *signal_start_timestamp) :
+	BaseSignal(sr_channel, channel_type, sr_quantity, channel_group_name),
 	sample_count_(0),
 	signal_start_timestamp_(signal_start_timestamp),
 	common_time_base_(false), // TODO

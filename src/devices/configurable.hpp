@@ -48,7 +48,8 @@ class Configurable : public QObject
 	Q_OBJECT
 
 public:
-	Configurable(const shared_ptr<sigrok::Configurable> sr_configurable);
+	Configurable(const shared_ptr<sigrok::Configurable> sr_configurable,
+		const QString device_name);
 
 	// TODO: Find a better way to store/map this + rename
 	typedef map<const sigrok::Quantity *,
@@ -156,6 +157,7 @@ private:
 	void init_values();
 
 	const shared_ptr<sigrok::Configurable> sr_configurable_;
+	const QString device_name_;
 
 	/*
 	bool enabled_;

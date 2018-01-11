@@ -41,10 +41,11 @@ namespace data {
 
 BaseSignal::BaseSignal(
 		shared_ptr<sigrok::Channel> sr_channel, ChannelType channel_type,
-		const sigrok::Quantity *sr_quantity) :
+		const sigrok::Quantity *sr_quantity, QString channel_group_name) :
 	sr_channel_(sr_channel),
 	channel_type_(channel_type),
-	sr_quantity_(sr_quantity)
+	sr_quantity_(sr_quantity),
+	channel_group_name_(channel_group_name)
 {
 	internal_name_ = QString::fromStdString(sr_channel_->name());
 	quantity_ = util::format_sr_quantity(sr_quantity_);
@@ -61,6 +62,11 @@ shared_ptr<sigrok::Channel> BaseSignal::sr_channel() const
 	return sr_channel_;
 }
 
+const sigrok::Quantity *BaseSignal::sr_quantity() const
+{
+	return sr_quantity_;
+}
+
 QString BaseSignal::quantity() const
 {
 	return quantity_;
@@ -69,6 +75,11 @@ QString BaseSignal::quantity() const
 QString BaseSignal::unit() const
 {
 	return unit_;
+}
+
+QString BaseSignal::channel_group_name() const
+{
+	return channel_group_name_;
 }
 
 QString BaseSignal::name() const

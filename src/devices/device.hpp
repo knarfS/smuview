@@ -71,6 +71,11 @@ public:
 	shared_ptr<sigrok::Device> sr_device() const;
 
 	/**
+	 * Builds the name
+	 */
+	virtual QString name() const = 0;
+
+	/**
 	 * Builds the full name. It only contains all the fields.
 	 */
 	virtual QString full_name() const = 0;
@@ -85,7 +90,7 @@ public:
 	 * @param device_manager a reference to the device manager is needed
 	 * so that other similarly titled devices can be detected.
 	 */
-	virtual string display_name(
+	virtual QString display_name(
 		const DeviceManager &device_manager) const = 0;
 
 	void open(function<void (const QString)> error_handler);
@@ -96,6 +101,7 @@ public:
 protected:
 	virtual void init_signal(
 		shared_ptr<sigrok::Channel> sr_channel,
+		QString channel_group_name,
 		shared_ptr<vector<double>> common_time_data) = 0;
 
 	virtual void feed_in_header() = 0;
