@@ -51,6 +51,10 @@ namespace sv {
 
 class DeviceManager;
 
+namespace data {
+class BaseSignal;
+}
+
 namespace devices {
 
 class Device : public QObject
@@ -99,10 +103,9 @@ public:
 	virtual void free_unused_memory();
 
 protected:
-	virtual void init_signal(
+	virtual shared_ptr<data::BaseSignal> init_signal(
 		shared_ptr<sigrok::Channel> sr_channel,
-		QString channel_group_name,
-		shared_ptr<vector<double>> common_time_data) = 0;
+		QString channel_group_name) = 0;
 
 	virtual void feed_in_header() = 0;
 	virtual void feed_in_trigger() = 0;

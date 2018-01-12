@@ -44,14 +44,14 @@ AnalogSignal::AnalogSignal(
 	BaseSignal(sr_channel, channel_type, sr_quantity, channel_group_name),
 	sample_count_(0),
 	signal_start_timestamp_(signal_start_timestamp),
-	common_time_base_(false), // TODO
+	last_timestamp_(0.),
+	last_value_(0.),
 	min_value_(std::numeric_limits<short>::max()),
 	max_value_(std::numeric_limits<short>::min())
 {
 	qWarning() << "Init analog signal " << internal_name_;
 
-	if (!common_time_base_)
-		time_ = make_shared<vector<double>>();
+	time_ = make_shared<vector<double>>();
 	data_ = make_shared<vector<double>>();
 }
 
@@ -97,24 +97,34 @@ sample_t AnalogSignal::get_sample(size_t pos) const
 		return make_pair(time_->at(pos), data_->at(pos));
 	}
 
-	qWarning() << "AnalogSignal::get_sample(" << pos << "): sample_count_ = " << sample_count_;
+	//qWarning() << "AnalogSignal::get_sample(" << pos << "): sample_count_ = " << sample_count_;
 	return make_pair(0., 0.);
 }
 
-void AnalogSignal::push_sample(void *sample, const sigrok::Unit *sr_unit)
+void AnalogSignal::push_sample(void *sample,
+   const sigrok::Quantity *sr_quantity, const sigrok::Unit *sr_unit)
 {
+	// TODO: use std::chrono / std::time
+	double timestamp = QDateTime::currentMSecsSinceEpoch() / (double)1000;
+	this->push_sample(sample, timestamp, sr_quantity, sr_unit);
+}
+
+void AnalogSignal::push_sample(void *sample, double timestamp,
+	const sigrok::Quantity *sr_quantity, const sigrok::Unit *sr_unit)
+{
+	if (!is_initialized_)
+		init_quantity(sr_quantity);
+
 	// TODO: Mutex?
 
  	double dsample = (double) *(float*)sample;
 
-	// TODO: use std::chrono / std::time
-	double time = QDateTime::currentMSecsSinceEpoch() / (double)1000;
-
 	/*
-	qWarning() << "AnalogSignal::push_sample(): sample = " << dsample << " @ " <<  time;
+	qWarning() << "AnalogSignal::push_sample(): sample = " << dsample << " @ " <<  timestamp;
 	qWarning() << "AnalogSignal::push_sample(): sample_count_ = " << sample_count_+1;
 	*/
 
+	last_timestamp_ = timestamp;
 	last_value_ = dsample;
 	if (min_value_ > dsample)
 		min_value_ = dsample;
@@ -127,6 +137,7 @@ void AnalogSignal::push_sample(void *sample, const sigrok::Unit *sr_unit)
 	qWarning() << "AnalogSignal::push_sample(): max_value_ = " << max_value_;
 	*/
 
+	time_->push_back(timestamp);
 	data_->push_back(dsample);
 	sample_count_++;
 
@@ -136,9 +147,6 @@ void AnalogSignal::push_sample(void *sample, const sigrok::Unit *sr_unit)
 		unit_ = util::format_sr_unit(sr_unit_);
 		Q_EMIT unit_changed(unit_);
 	}
-
-	if (!common_time_base_)
-		time_->push_back(time);
 }
 
 /*
@@ -177,12 +185,15 @@ double AnalogSignal::signal_start_timestamp() const
 
 double AnalogSignal::first_timestamp() const
 {
-	return time_->front();
+	if (time_->size() > 0)
+		return time_->front();
+	else
+		return 0.;
 }
 
 double AnalogSignal::last_timestamp() const
 {
-	return time_->back();
+	return last_timestamp_;
 }
 
 double AnalogSignal::last_value() const

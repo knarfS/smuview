@@ -46,6 +46,9 @@ public:
 	size_t size() const;
 	QRectF boundingRect() const;
 
+	void set_relative_time(bool is_relative_time);
+	bool is_relative_time() const;
+	bool is_initialized() const;
 	QString x_data_quantity() const;
 	QString x_data_unit() const;
 	QString x_data_title() const;
@@ -56,6 +59,7 @@ public:
 private:
 	shared_ptr<AnalogSignal> analog_signal_;
 	double signal_start_timestamp_;
+	bool relative_time_;
 
 };
 

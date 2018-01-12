@@ -52,20 +52,16 @@ void MeasurementTab::setup_ui()
 		}
 	}
 
-	// Value panel
-	if (measurement_device_->measurement_signal()) {
+	for (auto signal : measurement_device_->all_signals()) {
+		// Value panel(s)
 		shared_ptr<views::BaseView> value_panel_view =
-			make_shared<views::ValuePanelView>(session_,
-				measurement_device_->measurement_signal());
+			make_shared<views::ValuePanelView>(session_, signal);
 		add_view(value_panel_view, Qt::TopDockWidgetArea, session_);
-	}
 
-	// Value plot
-	if (measurement_device_->measurement_signal()) {
+		// Value plot(s)
 		shared_ptr<views::BaseView> value_plot_view =
-			make_shared<views::TimePlotView>(
-				session_, measurement_device_->measurement_signal());
-		add_view(value_plot_view, Qt::BottomDockWidgetArea, session_);
+			make_shared<views::TimePlotView>(session_, signal);
+			add_view(value_plot_view, Qt::BottomDockWidgetArea, session_);
 	}
 }
 

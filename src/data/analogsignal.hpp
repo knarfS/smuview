@@ -58,7 +58,10 @@ public:
 	vector<double> get_samples(size_t start_sample, size_t end_sample) const;
 	sample_t get_sample(size_t pos) const;
 
-	void push_sample(void *sample, const sigrok::Unit *sr_unit);
+	void push_sample(void *sample,
+		const sigrok::Quantity *sr_quantity, const sigrok::Unit *sr_unit);
+	void push_sample(void *sample, double timestamp,
+		const sigrok::Quantity *sr_quantity, const sigrok::Unit *sr_unit);
 	/* TODO
 	void push_interleaved_samples(float *samples,
 		size_t sample_count, size_t stride, const sigrok::Unit *sr_unit);
@@ -77,8 +80,6 @@ private:
 	size_t sample_count_;
 
 	double *signal_start_timestamp_;
-	bool common_time_base_;
-
 	double first_timestamp_;
 	double last_timestamp_;
 	double last_value_;

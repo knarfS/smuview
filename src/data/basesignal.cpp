@@ -44,13 +44,14 @@ BaseSignal::BaseSignal(
 		const sigrok::Quantity *sr_quantity, QString channel_group_name) :
 	sr_channel_(sr_channel),
 	channel_type_(channel_type),
-	sr_quantity_(sr_quantity),
 	channel_group_name_(channel_group_name)
 {
 	internal_name_ = QString::fromStdString(sr_channel_->name());
-	quantity_ = util::format_sr_quantity(sr_quantity_);
-	sr_unit_ = util::get_sr_unit_from_sr_quantity(sr_quantity_);
-	unit_ = util::format_sr_unit(sr_unit_);
+
+	if (sr_quantity_)
+		init_quantity(sr_quantity);
+	else
+		is_initialized_ = false;
 }
 
 BaseSignal::~BaseSignal()
@@ -77,6 +78,11 @@ QString BaseSignal::unit() const
 	return unit_;
 }
 
+bool BaseSignal::is_initialized() const
+{
+	return is_initialized_;
+}
+
 QString BaseSignal::channel_group_name() const
 {
 	return channel_group_name_;
@@ -84,7 +90,7 @@ QString BaseSignal::channel_group_name() const
 
 QString BaseSignal::name() const
 {
-	return (sr_channel_) ? QString::fromStdString(sr_channel_->name()) : name_;
+	return name_;
 }
 
 QString BaseSignal::internal_name() const
@@ -148,6 +154,21 @@ void BaseSignal::restore_settings(QSettings &settings)
 	set_name(settings.value("name").toString());
 	set_enabled(settings.value("enabled").toBool());
 	set_colour(settings.value("colour").value<QColor>());
+}
+
+void BaseSignal::init_quantity(const sigrok::Quantity * sr_quantity)
+{
+	sr_quantity_ = sr_quantity;
+	quantity_ = util::format_sr_quantity(sr_quantity_);
+	sr_unit_ = util::get_sr_unit_from_sr_quantity(sr_quantity_);
+	unit_ = util::format_sr_unit(sr_unit_);
+	name_ = QString("%1 [%2]").arg(internal_name_, quantity_);
+	is_initialized_ = true;
+
+	qWarning() << "init_quantity(): " << name() << " - " << quantity_;
+	Q_EMIT quantity_changed(quantity_);
+	Q_EMIT unit_changed(unit_);
+	Q_EMIT name_changed(name_);
 }
 
 } // namespace data

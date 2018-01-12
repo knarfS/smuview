@@ -39,6 +39,7 @@ namespace sv {
 
 namespace data {
 class AnalogSignal;
+class BaseSignal;
 }
 
 namespace devices {
@@ -55,10 +56,9 @@ public:
 
 protected:
 	void feed_in_meta(shared_ptr<sigrok::Meta> sr_meta);
-	void init_signal(
+	shared_ptr<data::BaseSignal> init_signal(
 		shared_ptr<sigrok::Channel> sr_channel,
-		QString channel_group_name,
-		shared_ptr<vector<double>> common_time_data);
+		QString channel_group_name);
 
 private:
 

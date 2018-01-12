@@ -125,7 +125,7 @@ public:
 	vector<shared_ptr<data::AnalogSignal>> all_signals() const;
 	map<QString, vector<shared_ptr<data::BaseSignal>>> cg_name_signals_map() const;
 	map<shared_ptr<sigrok::Channel>, shared_ptr<data::BaseSignal>> sr_channel_signal_map() const;
-	map<QString, shared_ptr<data::BaseSignal>> signal_name_map() const;
+	map<QString, map<const sigrok::Quantity *, shared_ptr<data::AnalogSignal>>> ch_name_sr_quantity_signals_map() const;
 	map<QString, map<const sigrok::Quantity *, shared_ptr<data::AnalogSignal>>> cg_name_sr_quantity_signals_map() const;
 
 	vector<shared_ptr<devices::Configurable>> configurables() const;
@@ -147,17 +147,23 @@ protected:
 	// TODO: typdefs or classes?
 	map<QString, vector<shared_ptr<data::BaseSignal>>> cg_name_signals_map_;
 	/**
-	 * Mapping of incomming data to BaseSignal
+	 * Mapping of incomming data to the actual BaseSignal (Quantity)
 	 */
-	map<shared_ptr<sigrok::Channel>, shared_ptr<data::BaseSignal>> sr_channel_signal_map_;
-	map<QString, shared_ptr<data::BaseSignal>> signal_name_map_;
+	map<shared_ptr<sigrok::Channel>, shared_ptr<data::BaseSignal>> sr_channel_signal_map_; // TODO: Name: sr_channel_actual_signal_
+	/**
+	 * Helps to seperate quantity and channel (for Dmms, etc.)
+	 */
+	map<QString, map<const sigrok::Quantity *, shared_ptr<data::AnalogSignal>>> ch_name_sr_quantity_signals_map_; // TODO: Name
+	/**
+	 * Helps to find V and I signals for calculation P, etc. (PSU and Loads)
+	 */
 	map<QString, map<const sigrok::Quantity *, shared_ptr<data::AnalogSignal>>> cg_name_sr_quantity_signals_map_; // TODO: Name
 	vector<shared_ptr<data::AnalogSignal>> all_signals_;
 
 	vector<shared_ptr<devices::Configurable>> configurables_;
 
 private:
-	shared_ptr<data::BaseSignal> actual_processed_signal_;
+	double frame_start_timestamp_;
 
 };
 

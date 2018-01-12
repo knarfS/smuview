@@ -333,7 +333,8 @@ void Plot::increment_y_interval(QRectF boundaries)
 
 void Plot::timerEvent(QTimerEvent *event)
 {
-	if (event->timerId() == timer_id_) {
+	if (curve_data_->is_initialized() &&
+		event->timerId() == timer_id_) {
 
 		bool intervals_changed = false;
 		QRectF boundaries = curve_data_->boundingRect();

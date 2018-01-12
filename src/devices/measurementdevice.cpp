@@ -36,33 +36,16 @@ MeasurementDevice::MeasurementDevice(
 		shared_ptr<sigrok::HardwareDevice> sr_device) :
 	HardwareDevice(sr_context, sr_device)
 {
-	/* When multiple channels data is send within a frame, they have common
-	 * time stamps.
-	 *
-	 * TODO: Implement a common time base per channel group. When the "one
-	 * command - multiple return values" feature is done, a frame contains only
-	 * one channel group.
-	 * TODO: The common time data should be detected when a frame starts.
-	 * Maybe use one vector per channel and don't share them.
-	 */
-	shared_ptr<vector<double>> common_time_data;
-
 	// Set options for different device types
 	const auto sr_keys = sr_device->driver()->config_keys();
-	if (sr_keys.count(sigrok::ConfigKey::MULTIMETER)) {
+	if (sr_keys.count(sigrok::ConfigKey::MULTIMETER))
 		type_ = HardwareDevice::MULTIMETER;
-		common_time_data = nullptr;
-	}
-	else if (sr_keys.count(sigrok::ConfigKey::DEMO_DEV)) {
+	else if (sr_keys.count(sigrok::ConfigKey::DEMO_DEV))
 		type_ = HardwareDevice::DEMO_DEV;
-		common_time_data = nullptr;
-	}
-	else {
-		type_ = HardwareDevice::UNKNOWN;
+	else
 		assert("Unknown device");
-	}
 
-	// TODO: move to hw device ctor, when common_time_data is fixed
+	// TODO: move to hw device ctor
 	// Init signals from Sigrok Channel Groups
 	map<string, shared_ptr<sigrok::ChannelGroup>> sr_channel_groups =
 		sr_device_->channel_groups();
@@ -71,7 +54,7 @@ MeasurementDevice::MeasurementDevice(
 			shared_ptr<sigrok::ChannelGroup> sr_cg = sr_cg_pair.second;
 			QString cg_name = QString::fromStdString(sr_cg->name());
 			for (auto sr_channel : sr_cg->channels()) {
-				init_signal(sr_channel, cg_name, common_time_data);
+				init_signal(sr_channel, cg_name);
 			}
 		}
 	}
@@ -82,7 +65,7 @@ MeasurementDevice::MeasurementDevice(
 		if (sr_channel_signal_map_.count(sr_channel) > 0)
 			continue;
 		// TODO: sr_channel must not have a signal (see Digi35)....
-		init_signal(sr_channel, QString(""), common_time_data);
+		init_signal(sr_channel, QString(""));
 	}
 }
 
@@ -90,36 +73,24 @@ MeasurementDevice::~MeasurementDevice()
 {
 }
 
-void MeasurementDevice::init_signal(
+shared_ptr<data::BaseSignal> MeasurementDevice::init_signal(
 	shared_ptr<sigrok::Channel> sr_channel,
-	QString channel_group_name,
-	shared_ptr<vector<double>> common_time_data)
+	QString channel_group_name)
 {
 	if (sr_channel->type()->id() != SR_CHANNEL_ANALOG)
-		return;
+		return nullptr;
 
 	//lock_guard<recursive_mutex> lock(data_mutex_);
 
 	shared_ptr<data::AnalogSignal> signal = make_shared<data::AnalogSignal>(
-		sr_channel, data::BaseSignal::AnalogChannel, sigrok::Quantity::VOLTAGE, // TODO: nullptr
+		sr_channel, data::BaseSignal::AnalogChannel, nullptr,
 		channel_group_name, aquisition_start_timestamp_);
-
-	// TODO
-	if (common_time_data) {
-		//signal->set_time_data(common_time_data);
-	}
-	else {
-		//signal->set_time_data(init_time_data());
-	}
 
 	add_signal_to_maps(signal, sr_channel, channel_group_name);
 
 	//signals_changed();
-}
 
-shared_ptr<data::AnalogSignal> MeasurementDevice::measurement_signal() const
-{
-	return measurement_signal_;
+	return signal;
 }
 
 void MeasurementDevice::feed_in_meta(shared_ptr<sigrok::Meta> sr_meta)

@@ -73,10 +73,18 @@ public:
 public:
 	virtual void clear() = 0;
 	virtual size_t get_sample_count() const = 0;
+
 	/**
 	 * Add a single sample to the signal
 	 */
-	virtual void push_sample(void *sample, const sigrok::Unit *sr_unit) = 0;
+	virtual void push_sample(void *sample,
+		 const sigrok::Quantity *sr_quantity, const sigrok::Unit *sr_unit) = 0;
+
+	/**
+	 * Add a single sample with timestamp to the signal
+	 */
+	virtual void push_sample(void *sample, double timestamp,
+		const sigrok::Quantity *sr_quantity, const sigrok::Unit *sr_unit) = 0;
 
 	/**
 	 * Returns the underlying SR channel.
@@ -97,6 +105,11 @@ public:
 	 * Returns the unit of this signal as string
 	 */
 	QString unit() const;
+
+	/*
+	 * Returns true, when the signal (aka quantity + unit) is is_initialized
+	 */
+	bool is_initialized() const;
 
 	/**
 	 * Returns enabled status of this channel.
@@ -157,12 +170,9 @@ public:
 	virtual void save_settings(QSettings &settings) const;
 	virtual void restore_settings(QSettings &settings);
 
-Q_SIGNALS:
-	void enabled_changed(const bool &value);
-	void name_changed(const QString &name);
-	void colour_changed(const QColor &colour);
-
 protected:
+	void init_quantity(const sigrok::Quantity * sr_quantity);
+
 	shared_ptr<sigrok::Channel> sr_channel_;
 	ChannelType channel_type_;
 
@@ -170,11 +180,25 @@ protected:
 	QString quantity_;
 	const sigrok::Unit *sr_unit_;
 	QString unit_;
+	bool is_initialized_;
 
 	const QString channel_group_name_;
 	QString internal_name_; // TODO: const?
 	QString name_;
 	QColor colour_;
+
+Q_SIGNALS:
+	void enabled_changed(const bool &value);
+	void name_changed(const QString &name);
+	void colour_changed(const QColor &colour);
+	/**
+	 * When the signal is not initalized, the quantity is emited
+	 */
+	void quantity_changed(QString);
+	/**
+	 * When the signal is not initalized, the unit is emited
+	 */
+	void unit_changed(QString);
 };
 
 } // namespace data

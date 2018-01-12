@@ -310,16 +310,20 @@ QWidget *AboutDialog::get_device_page(QWidget *parent) const
 			arg(sr_c_signal_pair.second->name()));
 	}
 
-	// SmuView channel names + signal
-	// map<QString, shared_ptr<data::BaseSignal>> signal_name_map
+	// SmuView channel names and quantity + signal
+	// map<QString, map<const sigrok::Quantity *, shared_ptr<data::AnalogSignal>>> ch_name_sr_quantity_signals_map
 	s.append("<tr><td colspan=\"2\"><b>" +
-		tr("SmuView channel names and signal (device->signal_name_map()):") +
-		"</b></td></tr>");
-	const auto signal_name_map = device_->signal_name_map();
-	for (auto signal_name_pair : signal_name_map) {
-		s.append(QString("<tr><td>%1</td><td>%2</td></tr>").
-			arg(signal_name_pair.first).
-			arg(signal_name_pair.second->name()));
+	tr("SmuView device channel names and quantity + signal (device->ch_name_sr_quantity_signals_map()):") +
+	"</b></td></tr>");
+	const auto ch_name_quantity_signals_map = device_->ch_name_sr_quantity_signals_map();
+	for (auto ch_name_quantity_signals_pair : ch_name_quantity_signals_map) {
+		s.append(QString("<tr><td>%1</td><td></td></tr>").arg(
+			ch_name_quantity_signals_pair.first));
+		for (auto quantity_signal_pair : ch_name_quantity_signals_pair.second) {
+			s.append(QString("<tr><td></td><td>%1 - %2</td></tr>").
+				arg(util::format_sr_quantity(quantity_signal_pair.first)).
+				arg(quantity_signal_pair.second->name()));
+		}
 	}
 
 	// SmuView channel group names and quantity + signal
@@ -329,11 +333,9 @@ QWidget *AboutDialog::get_device_page(QWidget *parent) const
 		"</b></td></tr>");
 	const auto cg_name_quantity_signals_map = device_->cg_name_sr_quantity_signals_map();
 	for (auto cg_name_quantity_signals_pair : cg_name_quantity_signals_map) {
-		qWarning() << "  " << cg_name_quantity_signals_pair.first;
 		s.append(QString("<tr><td>%1</td><td></td></tr>").arg(
 			cg_name_quantity_signals_pair.first));
 		for (auto quantity_signal_pair : cg_name_quantity_signals_pair.second) {
-			qWarning() << "    " << util::format_sr_quantity(quantity_signal_pair.first) << " / " << quantity_signal_pair.second->name();
 			s.append(QString("<tr><td></td><td>%1 - %2</td></tr>").
 				arg(util::format_sr_quantity(quantity_signal_pair.first)).
 				arg(quantity_signal_pair.second->name()));

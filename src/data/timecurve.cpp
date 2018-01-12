@@ -28,7 +28,8 @@ namespace data {
 
 TimeCurve::TimeCurve(shared_ptr<AnalogSignal> signal) :
 	BaseCurve(),
-	analog_signal_(signal)
+	analog_signal_(signal),
+	relative_time_(true)
 {
 	signal_start_timestamp_ = signal->signal_start_timestamp();
 }
@@ -38,7 +39,12 @@ QPointF TimeCurve::sample(size_t i) const
 	//signal_data_->lock();
 
 	sample_t sample = analog_signal_->get_sample(i);
-	QPointF sample_point(sample.first - signal_start_timestamp_, sample.second);
+
+	double timestamp = sample.first;
+	if (relative_time_)
+		timestamp -= signal_start_timestamp_;
+
+	QPointF sample_point(timestamp, sample.second);
 
 	//signal_data_->.unlock();
 
@@ -53,12 +59,40 @@ size_t TimeCurve::size() const
 
 QRectF TimeCurve::boundingRect() const
 {
+	double first_timestamp;
+	double last_timestamp;
+	if (is_initialized()) {
+		first_timestamp = analog_signal_->first_timestamp();
+		last_timestamp = analog_signal_->last_timestamp();
+		if (relative_time_) {
+			first_timestamp = 0.;
+			last_timestamp -= signal_start_timestamp_;
+		}
+	}
+	else {
+		first_timestamp = 0.;
+		last_timestamp = 0.;
+	}
+
 	// top left, bottom right
 	return QRectF(
-		QPointF(analog_signal_->first_timestamp() - signal_start_timestamp_,
-				analog_signal_->max_value()),
-		QPointF(analog_signal_->last_timestamp() - signal_start_timestamp_,
-				analog_signal_->min_value()));
+		QPointF(first_timestamp, analog_signal_->max_value()),
+		QPointF(last_timestamp, analog_signal_->min_value()));
+}
+
+void TimeCurve::set_relative_time(bool is_relative_time)
+{
+	relative_time_ = is_relative_time;
+}
+
+bool TimeCurve::is_relative_time() const
+{
+	return relative_time_;
+}
+
+bool TimeCurve::is_initialized() const
+{
+	return analog_signal_->is_initialized();
 }
 
 QString TimeCurve::x_data_quantity() const

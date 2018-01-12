@@ -19,6 +19,7 @@
 
 #include <QApplication>
 #include <QDateTime>
+#include <QDebug>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 
@@ -32,9 +33,9 @@ namespace sv {
 namespace views {
 
 ValuePanelView::ValuePanelView(const Session &session,
-	shared_ptr<data::AnalogSignal> value_signal,
-	QWidget *parent) :
-		BaseView(session, parent),
+		shared_ptr<data::AnalogSignal> value_signal,
+		QWidget *parent) :
+	BaseView(session, parent),
 	value_signal_(value_signal),
 	value_min_(std::numeric_limits<double>::max()),
 	value_max_(std::numeric_limits<double>::lowest())
@@ -49,7 +50,7 @@ ValuePanelView::ValuePanelView(const Session &session,
 
 QString ValuePanelView::title() const
 {
-	return tr("Panel"); // TODO: channel/signal name or Quantity
+	return value_signal_->name().append(" ").append(tr("Panel"));
 }
 
 ValuePanelView::~ValuePanelView()
@@ -93,17 +94,11 @@ void ValuePanelView::connect_signals()
 	// Reset button
 	connect(resetButton, SIGNAL(clicked(bool)), this, SLOT(on_reset()));
 
-	// Signal stuff
-	/* TODO: qunatity don't change anymore
-	if (value_signal_->analog_data()) {
-		connect(value_signal_->analog_data().get(),
-			SIGNAL(quantity_changed(QString)),
+	// Quantity/Unit can change, when signal is not initalized, e.g. DMM signals
+	connect(value_signal_.get(), SIGNAL(quantity_changed(QString)),
 			this, SLOT(on_quantity_changed(QString)));
-		connect(value_signal_->analog_data().get(),
-			SIGNAL(unit_changed(QString)),
+	connect(value_signal_.get(), SIGNAL(unit_changed(QString)),
 			this, SLOT(on_unit_changed(QString)));
-	}
-	*/
 }
 
 void ValuePanelView::reset_display()
@@ -167,6 +162,7 @@ void ValuePanelView::on_quantity_changed(QString quantity)
 
 void ValuePanelView::on_unit_changed(QString unit)
 {
+	qWarning() << "on_unit_changed(): unit = " << unit;
 	valueDisplay->set_unit(unit);
 	valueMinDisplay->set_unit(unit);
 	valueMaxDisplay->set_unit(unit);
