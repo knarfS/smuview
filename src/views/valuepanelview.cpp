@@ -95,9 +95,9 @@ void ValuePanelView::connect_signals()
 	connect(resetButton, SIGNAL(clicked(bool)), this, SLOT(on_reset()));
 
 	// Quantity/Unit can change, when signal is not initalized, e.g. DMM signals
-	connect(value_signal_.get(), SIGNAL(quantity_changed(QString)),
+	connect(value_signal_.get(), SIGNAL(quantity_initialized(QString)),
 			this, SLOT(on_quantity_changed(QString)));
-	connect(value_signal_.get(), SIGNAL(unit_changed(QString)),
+	connect(value_signal_.get(), SIGNAL(unit_initialized(QString)),
 			this, SLOT(on_unit_changed(QString)));
 }
 
@@ -157,12 +157,10 @@ void ValuePanelView::on_update()
 void ValuePanelView::on_quantity_changed(QString quantity)
 {
 	(QString)quantity;
-	//valueDisplay->set_quantity(quantity);
 }
 
 void ValuePanelView::on_unit_changed(QString unit)
 {
-	qWarning() << "on_unit_changed(): unit = " << unit;
 	valueDisplay->set_unit(unit);
 	valueMinDisplay->set_unit(unit);
 	valueMaxDisplay->set_unit(unit);

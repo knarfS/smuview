@@ -72,6 +72,15 @@ typedef boost::multiprecision::number<
 	boost::multiprecision::et_off> Timestamp;
 
 /**
+ * Checks if the sigrok quantity is a known quantity
+ *
+ * @param sr_quantity The sigrok quantity (sigrok::Quantity *)
+ *
+ * @return true if it is a known quantity
+ */
+bool is_valid_sr_quantity(const sigrok::Quantity *sr_quantity);
+
+/**
  * Returns the SI sigrok unit for the given sigrok quantity
  *
  * @param sr_quantity The sigrok quantity (sigrok::Quantity *)

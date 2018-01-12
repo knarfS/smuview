@@ -271,6 +271,13 @@ static QTextStream& operator<<(QTextStream& stream, const Timestamp& t)
 	return stream << QString::fromStdString(str);
 }
 
+bool is_valid_sr_quantity(const sigrok::Quantity *sr_quantity)
+{
+	if (quantity_name_map.count(sr_quantity) > 0)
+		return true;
+	return false;
+}
+
 const sigrok::Unit * get_sr_unit_from_sr_quantity(
 	const sigrok::Quantity *sr_quantity)
 {

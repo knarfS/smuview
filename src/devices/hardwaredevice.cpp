@@ -32,6 +32,7 @@
 #include "hardwaredevice.hpp"
 #include "src/devicemanager.hpp"
 #include "src/session.hpp"
+#include "src/devices/channel.hpp"
 #include "src/devices/configurable.hpp"
 #include "src/devices/device.hpp"
 #include "src/data/analogsignal.hpp"
@@ -59,9 +60,10 @@ HardwareDevice::HardwareDevice(
 		shared_ptr<sigrok::HardwareDevice> sr_device) :
 	Device(sr_context, sr_device)
 {
-	// Get Configurable from Channel Groups and Device
 	map<string, shared_ptr<sigrok::ChannelGroup>> sr_channel_groups =
 		sr_device_->channel_groups();
+
+	// Init Configurables from Channel Groups and Device
 	if (sr_channel_groups.size() > 0) {
 		for (auto sr_cg_pair : sr_channel_groups) {
 			shared_ptr<sigrok::ChannelGroup> sr_cg = sr_cg_pair.second;
@@ -72,6 +74,25 @@ HardwareDevice::HardwareDevice(
 	else {
 		configurables_.push_back(
 			make_shared<Configurable>(sr_device_, short_name()));
+	}
+
+	// Init Channels from Sigrok Channel Groups
+	if (sr_channel_groups.size() > 0) {
+		for (auto sr_cg_pair : sr_channel_groups) {
+			shared_ptr<sigrok::ChannelGroup> sr_cg = sr_cg_pair.second;
+			QString cg_name = QString::fromStdString(sr_cg->name());
+			for (auto sr_channel : sr_cg->channels()) {
+				init_channel(sr_channel, cg_name);
+			}
+		}
+	}
+
+	// Init Channels that are not in a channel group
+	vector<shared_ptr<sigrok::Channel>> sr_channels = sr_device_->channels();
+	for (auto sr_channel : sr_channels) {
+		if (sr_channel_signal_map_.count(sr_channel) > 0)
+			continue;
+		init_channel(sr_channel, QString(""));
 	}
 }
 
@@ -263,6 +284,25 @@ vector<shared_ptr<devices::Configurable>> HardwareDevice::configurables() const
 	return configurables_;
 }
 
+shared_ptr<devices::Channel> HardwareDevice::init_channel(
+	shared_ptr<sigrok::Channel> sr_channel, QString channel_group_name)
+{
+	shared_ptr<devices::Channel> channel = make_shared<devices::Channel>(
+		sr_channel, Channel::ChannelType::AnalogChannel, channel_group_name);
+
+	// map<QString, shared_ptr<devices::Channel>> channel_name_map_;
+	channel_name_map_.insert(
+		pair<QString, shared_ptr<devices::Channel>>
+		(channel_group_name, channel));
+
+	// map<shared_ptr<sigrok::Channel>, shared_ptr<devices::Channel>> sr_channel_map_;
+	sr_channel_map_.insert(
+		pair<shared_ptr<sigrok::Channel>, shared_ptr<devices::Channel>>
+		(sr_channel, channel));
+
+	return channel;
+}
+
 void HardwareDevice::feed_in_header()
 {
 }
@@ -308,9 +348,15 @@ void HardwareDevice::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
 			" channel_data = " << *channel_data;
 		*/
 
+		if (!sr_channel_map_.count(sr_channel))
+			assert("Unknown channel");
+
 		if (!sr_channel_signal_map_.count(sr_channel)) {
 			assert("Unknown channel");
 		}
+
+		shared_ptr<devices::Channel> actual_channel =
+			sr_channel_map_[sr_channel];
 
 		shared_ptr<data::BaseSignal> actual_signal =
 			sr_channel_signal_map_[sr_channel];
@@ -325,26 +371,41 @@ void HardwareDevice::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
 			actual_signal->sr_quantity() != sr_analog->mq()) {
 
 			// DMMs can change their quantity
-			if (ch_name_sr_quantity_signals_map_[actual_signal->internal_name()].count(sr_analog->mq()) == 0) {
-				actual_signal = init_signal(sr_channel, QString("ChannelGroup"));
+			QString channel_name = actual_signal->internal_name();
+			if (ch_name_sr_quantity_signals_map_[channel_name].
+					count(sr_analog->mq()) == 0) {
+				actual_signal = init_signal(sr_channel, QString("ChannelGroup")); // TODO
 				sr_channel_signal_map_[sr_channel] = actual_signal;
 			}
 			else {
-				actual_signal = ch_name_sr_quantity_signals_map_[actual_signal->internal_name()][sr_analog->mq()];
+				actual_signal = ch_name_sr_quantity_signals_map_
+					[channel_name][sr_analog->mq()];
 			}
+			Q_EMIT channel_changed(channel_name);
 		}
 
 		/* TODO: Use push_interleaved_samples() as only push function
 		actual_signal->analog_data()->push_interleaved_samples(
 			channel_data, sample_count,channel_count, sr_analog->unit());
 		*/
-		if (frame_began_)
+		if (frame_began_) {
 			actual_signal->push_sample(
 				channel_data, frame_start_timestamp_,
 				sr_analog->mq(), sr_analog->unit());
-		else
+			/*
+			actual_channel->push_sample(
+				channel_data, frame_start_timestamp_,
+				sr_analog->mq(), sr_analog->mqflags(), sr_analog->unit());
+			*/
+		}
+		else {
 			actual_signal->push_sample(
 				channel_data, sr_analog->mq(), sr_analog->unit());
+			/*
+			actual_channel->push_sample(
+				channel_data, sr_analog->mq(), sr_analog->mqflags(), sr_analog->unit());
+			*/
+		}
 		channel_data++;
 
 		//Q_EMIT data_received(segment);

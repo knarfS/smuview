@@ -70,6 +70,7 @@ class BaseSignal;
 
 namespace devices {
 
+class Channel;
 class Configurable;
 
 class HardwareDevice : public Device
@@ -131,6 +132,9 @@ public:
 	vector<shared_ptr<devices::Configurable>> configurables() const;
 
 protected:
+	shared_ptr<devices::Channel> init_channel(
+		shared_ptr<sigrok::Channel> sr_channel, QString channel_group_name);
+
 	void feed_in_header();
 	void feed_in_trigger();
 	void feed_in_frame_begin();
@@ -162,8 +166,14 @@ protected:
 
 	vector<shared_ptr<devices::Configurable>> configurables_;
 
+	map<QString, shared_ptr<devices::Channel>> channel_name_map_;
+	map<shared_ptr<sigrok::Channel>, shared_ptr<devices::Channel>> sr_channel_map_;
+
 private:
 	double frame_start_timestamp_;
+
+Q_SIGNALS:
+	void channel_changed(QString);
 
 };
 

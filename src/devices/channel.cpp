@@ -20,85 +20,56 @@
  */
 
 #include <assert.h>
-#include <utility>
 
 #include <QDateTime>
 #include <QDebug>
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
-#include "basesignal.hpp"
+#include "channel.hpp"
 #include "src/session.hpp"
 #include "src/util.hpp"
 
-using std::dynamic_pointer_cast;
 using std::make_shared;
-using std::pair;
-using std::shared_ptr;
 
 namespace sv {
-namespace data {
+namespace devices {
 
-BaseSignal::BaseSignal(
+Channel::Channel(
 		shared_ptr<sigrok::Channel> sr_channel, ChannelType channel_type,
-		const sigrok::Quantity *sr_quantity, QString channel_group_name) :
+		QString channel_group_name) :
 	sr_channel_(sr_channel),
 	channel_type_(channel_type),
 	channel_group_name_(channel_group_name)
 {
 	internal_name_ = QString::fromStdString(sr_channel_->name());
-
-	if (util::is_valid_sr_quantity(sr_quantity_))
-		init_quantity(sr_quantity);
-	else
-		is_initialized_ = false;
 }
 
-BaseSignal::~BaseSignal()
+Channel::~Channel()
 {
 }
 
-shared_ptr<sigrok::Channel> BaseSignal::sr_channel() const
+shared_ptr<sigrok::Channel> Channel::sr_channel() const
 {
 	return sr_channel_;
 }
 
-const sigrok::Quantity *BaseSignal::sr_quantity() const
-{
-	return sr_quantity_;
-}
-
-QString BaseSignal::quantity() const
-{
-	return quantity_;
-}
-
-QString BaseSignal::unit() const
-{
-	return unit_;
-}
-
-bool BaseSignal::is_initialized() const
-{
-	return is_initialized_;
-}
-
-QString BaseSignal::channel_group_name() const
+QString Channel::channel_group_name() const
 {
 	return channel_group_name_;
 }
 
-QString BaseSignal::name() const
+QString Channel::name() const
 {
 	return name_;
 }
 
-QString BaseSignal::internal_name() const
+QString Channel::internal_name() const
 {
 	return internal_name_;
 }
 
-void BaseSignal::set_name(QString name)
+void Channel::set_name(QString name)
 {
 	if (sr_channel_)
 		sr_channel_->set_name(name.toUtf8().constData());
@@ -108,12 +79,12 @@ void BaseSignal::set_name(QString name)
 	name_changed(name);
 }
 
-bool BaseSignal::enabled() const
+bool Channel::enabled() const
 {
 	return (sr_channel_) ? sr_channel_->enabled() : true;
 }
 
-void BaseSignal::set_enabled(bool value)
+void Channel::set_enabled(bool value)
 {
 	if (sr_channel_) {
 		sr_channel_->set_enabled(value);
@@ -121,55 +92,59 @@ void BaseSignal::set_enabled(bool value)
 	}
 }
 
-BaseSignal::ChannelType BaseSignal::type() const
+Channel::ChannelType Channel::type() const
 {
 	return channel_type_;
 }
 
-unsigned int BaseSignal::index() const
+unsigned int Channel::index() const
 {
 	return (sr_channel_) ? sr_channel_->index() : 0;
 }
 
-QColor BaseSignal::colour() const
+QColor Channel::colour() const
 {
 	return colour_;
 }
 
-void BaseSignal::set_colour(QColor colour)
+void Channel::set_colour(QColor colour)
 {
 	colour_ = colour;
 	colour_changed(colour);
 }
 
-void BaseSignal::save_settings(QSettings &settings) const
+/*
+void Channel::push_sample(void *sample,
+	const sigrok::Quantity *sr_quantity,
+	const sigrok::QuantityFlag *sr_quantity_flag,
+	const sigrok::Unit *sr_unit)
+{
+	// TODO: use std::chrono / std::time
+	double timestamp = QDateTime::currentMSecsSinceEpoch() / (double)1000;
+	push_sample(sample, timestamp, sr_quantity, sr_quantity_flag, sr_unit);
+}
+
+void Channel::push_sample(void *sample, double timestamp,
+	const sigrok::Quantity *sr_quantity,
+	const sigrok::QuantityFlag *sr_quantity_flag,
+	const sigrok::Unit *sr_unit)
+{
+}
+*/
+
+void Channel::save_settings(QSettings &settings) const
 {
 	settings.setValue("name", name());
 	settings.setValue("enabled", enabled());
 	settings.setValue("colour", colour());
 }
 
-void BaseSignal::restore_settings(QSettings &settings)
+void Channel::restore_settings(QSettings &settings)
 {
 	set_name(settings.value("name").toString());
 	set_enabled(settings.value("enabled").toBool());
 	set_colour(settings.value("colour").value<QColor>());
 }
 
-void BaseSignal::init_quantity(const sigrok::Quantity * sr_quantity)
-{
-	sr_quantity_ = sr_quantity;
-	quantity_ = util::format_sr_quantity(sr_quantity_);
-	sr_unit_ = util::get_sr_unit_from_sr_quantity(sr_quantity_);
-	unit_ = util::format_sr_unit(sr_unit_);
-	name_ = QString("%1 [%2]").arg(internal_name_, quantity_); // TODO: generalize
-	is_initialized_ = true;
-
-	qWarning() << "init_quantity(): " << name() << " - " << quantity_ << ", " << unit_;
-	Q_EMIT quantity_initialized(quantity_);
-	Q_EMIT unit_initialized(unit_);
-	Q_EMIT name_changed(name_);
-}
-
-} // namespace data
+} // namespace devices
 } // namespace sv

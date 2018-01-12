@@ -82,8 +82,8 @@ protected:
 private Q_SLOTS:
 	void on_reset();
 	void on_update();
-	void on_quantity_changed(QString quantity);
-	void on_unit_changed(QString unit);
+	void on_quantity_changed(QString);
+	void on_unit_changed(QString);
 
 };
 

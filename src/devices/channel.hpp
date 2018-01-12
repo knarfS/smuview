@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2012 Joel Holdsworth <joel@airwebreathe.org.uk>
  * Copyright (C) 2016 Soeren Apel <soeren@apelpie.net>
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,39 +19,33 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DATA_BASESIGNAL_HPP
-#define DATA_BASESIGNAL_HPP
+#ifndef DEVICES_CHANNEL_HPP
+#define DEVICES_CHANNEL_HPP
 
-#include <atomic>
-#include <condition_variable>
-#include <thread>
+#include <memory>
 #include <vector>
 
 #include <QColor>
 #include <QObject>
 #include <QSettings>
-#include <QString>
-#include <QTimer>
-#include <QVariant>
 
-using std::atomic;
-using std::condition_variable;
 using std::map;
-using std::mutex;
-using std::pair;
 using std::shared_ptr;
 using std::vector;
 
 namespace sigrok {
 class Channel;
-class Quantity;
-class Unit;
 }
 
 namespace sv {
-namespace data {
 
-class BaseSignal : public QObject
+namespace data {
+class BaseSignal;
+}
+
+namespace devices {
+
+class Channel : public QObject
 {
 	Q_OBJECT
 
@@ -62,51 +56,16 @@ public:
 	};
 
 public:
-	BaseSignal(
+	Channel(
 		shared_ptr<sigrok::Channel> sr_channel, ChannelType channel_type,
-		const sigrok::Quantity *sr_quantity_, QString channel_group_name);
-	virtual ~BaseSignal();
+		QString channel_group_name);
+	virtual ~Channel();
 
 public:
-	virtual void clear() = 0;
-	virtual size_t get_sample_count() const = 0;
-
-	/**
-	 * Add a single sample to the signal
-	 */
-	virtual void push_sample(void *sample,
-		 const sigrok::Quantity *sr_quantity, const sigrok::Unit *sr_unit) = 0;
-
-	/**
-	 * Add a single sample with timestamp to the signal
-	 */
-	virtual void push_sample(void *sample, double timestamp,
-		const sigrok::Quantity *sr_quantity, const sigrok::Unit *sr_unit) = 0;
-
 	/**
 	 * Returns the underlying SR channel.
 	 */
 	shared_ptr<sigrok::Channel> sr_channel() const;
-
-	/**
-	 * Returns the sigrok qunatity of this signal as object
-	 */
-	const sigrok::Quantity *sr_quantity() const;
-
-	/**
-	 * Returns the qunatity of this signal as string
-	 */
-	QString quantity() const;
-
-	/**
-	 * Returns the unit of this signal as string
-	 */
-	QString unit() const;
-
-	/*
-	 * Returns true, when the signal (aka quantity + unit) is is_initialized
-	 */
-	bool is_initialized() const;
 
 	/**
 	 * Returns enabled status of this channel.
@@ -164,20 +123,30 @@ public:
 	 */
 	void set_colour(QColor colour);
 
+	/**
+	 * Add a single sample to the channel
+	void push_sample(void *sample,
+		const sigrok::Quantity *sr_quantity,
+		const sigrok::QuantityFlag *sr_quantity_flag,
+		const sigrok::Unit *sr_unit);
+	 */
+
+	/**
+	 * Add a single sample with timestamp to the channel
+	void push_sample(void *sample, double timestamp,
+		const sigrok::Quantity *sr_quantity,
+		const sigrok::QuantityFlag *sr_quantity_flag,
+		const sigrok::Unit *sr_unit);
+	 */
+
 	virtual void save_settings(QSettings &settings) const;
 	virtual void restore_settings(QSettings &settings);
 
-protected:
-	void init_quantity(const sigrok::Quantity * sr_quantity);
-
+private:
 	shared_ptr<sigrok::Channel> sr_channel_;
 	ChannelType channel_type_;
 
-	const sigrok::Quantity *sr_quantity_;
-	QString quantity_;
-	const sigrok::Unit *sr_unit_;
-	QString unit_;
-	bool is_initialized_;
+	map<const sigrok::Quantity *, vector<shared_ptr<data::BaseSignal>>> signals_;
 
 	const QString channel_group_name_;
 	QString internal_name_; // TODO: const?
@@ -188,18 +157,10 @@ Q_SIGNALS:
 	void enabled_changed(const bool &value);
 	void name_changed(const QString &name);
 	void colour_changed(const QColor &colour);
-
-	/**
-	 * When the signal is initalized, the quantity is emited
-	 */
-	void quantity_initialized(QString);
-	/**
-	 * When the signal is initalized, the unit is emited
-	 */
-	void unit_initialized(QString);
+	void signal_changed();
 };
 
-} // namespace data
+} // namespace devices
 } // namespace sv
 
-#endif // DATA_BASESIGNAL_HPP
+#endif // DEVICES_CHANNEL_HPP

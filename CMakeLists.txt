@@ -145,7 +145,9 @@ set(smuview_SOURCES
   src/data/analogsignal.cpp
   src/data/basecurve.cpp
   src/data/basesignal.cpp
+  src/data/quantity.cpp
   src/data/timecurve.cpp
+  src/devices/channel.cpp
   src/devices/configurable.cpp
   src/devices/device.cpp
   src/devices/hardwaredevice.cpp
