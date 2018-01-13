@@ -26,16 +26,19 @@
 #include "src/data/analogsignal.hpp"
 #include "src/data/basecurve.hpp"
 #include "src/data/timecurve.hpp"
+#include "src/devices/channel.hpp"
 #include "src/widgets/plot.hpp"
+
+using std::dynamic_pointer_cast;
 
 namespace sv {
 namespace views {
 
 TimePlotView::TimePlotView(const Session &session,
-		shared_ptr<data::AnalogSignal> signal,
+		shared_ptr<devices::Channel> channel,
 		QWidget *parent) :
 	BaseView(session, parent),
-	signal_(signal),
+	channel_(channel),
 	action_zoom_in_(new QAction(this)),
 	action_zoom_out_(new QAction(this)),
 	action_zoom_fit_best_(new QAction(this)),
@@ -43,6 +46,17 @@ TimePlotView::TimePlotView(const Session &session,
 	action_add_diff_marker_(new QAction(this)),
 	action_config_graph_(new QAction(this))
 {
+	if (channel_->actual_signal())
+		signal_ = dynamic_pointer_cast<data::AnalogSignal>(
+			channel_->actual_signal());
+	else
+		signal_ = nullptr;
+
+	if (signal_)
+		curve_ = (data::BaseCurve *)(new data::TimeCurve(signal_));
+	else
+		curve_ = nullptr;
+
 	setup_ui();
 	setup_toolbar();
 	connect_signals();
@@ -60,9 +74,7 @@ void TimePlotView::setup_ui()
 {
 	QVBoxLayout *layout = new QVBoxLayout();
 
-	data::BaseCurve *curve = (data::BaseCurve *)(new data::TimeCurve(signal_));
-
-	plot = new widgets::Plot(curve);
+	plot = new widgets::Plot(curve_);
 	plot->set_plot_mode(widgets::Plot::PlotModes::Additive);
 	plot->set_plot_interval(200); // 200ms
 	layout->addWidget(plot);
@@ -134,10 +146,29 @@ void TimePlotView::setup_toolbar()
 
 void TimePlotView::connect_signals()
 {
+	// Signal (Quantity + Unit) can change, e.g. DMM signals
+	connect(channel_.get(), SIGNAL(signal_changed()),
+			this, SLOT(on_signal_changed()));
 }
 
 void TimePlotView::init_values()
 {
+}
+
+void TimePlotView::on_signal_changed()
+{
+	if (channel_->actual_signal())
+		signal_ = dynamic_pointer_cast<data::AnalogSignal>(
+			channel_->actual_signal());
+	else
+		signal_ = nullptr;
+
+	if (signal_) {
+		curve_ = (data::BaseCurve *)(new data::TimeCurve(signal_));
+		plot->set_curve_data(curve_);
+	}
+	else
+		curve_ = nullptr;
 }
 
 void TimePlotView::on_action_zoom_in_triggered()

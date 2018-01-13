@@ -29,7 +29,9 @@
 #include "channel.hpp"
 #include "src/session.hpp"
 #include "src/util.hpp"
+#include "src/data/analogsignal.hpp"
 
+using std::make_pair;
 using std::make_shared;
 
 namespace sv {
@@ -37,12 +39,16 @@ namespace devices {
 
 Channel::Channel(
 		shared_ptr<sigrok::Channel> sr_channel, ChannelType channel_type,
-		QString channel_group_name) :
+		QString channel_group_name, double channel_start_timestamp) :
 	sr_channel_(sr_channel),
 	channel_type_(channel_type),
+	channel_start_timestamp_(channel_start_timestamp),
+	actual_signal_(nullptr),
 	channel_group_name_(channel_group_name)
 {
 	internal_name_ = QString::fromStdString(sr_channel_->name());
+	name_ = internal_name_;
+	qWarning() << "Init channel " << internal_name_ << ", channel_start_timestamp = " << channel_start_timestamp;
 }
 
 Channel::~Channel()
@@ -52,6 +58,11 @@ Channel::~Channel()
 shared_ptr<sigrok::Channel> Channel::sr_channel() const
 {
 	return sr_channel_;
+}
+
+shared_ptr<data::BaseSignal> Channel::actual_signal()
+{
+	return actual_signal_;
 }
 
 QString Channel::channel_group_name() const
@@ -113,24 +124,30 @@ void Channel::set_colour(QColor colour)
 	colour_changed(colour);
 }
 
-/*
 void Channel::push_sample(void *sample,
 	const sigrok::Quantity *sr_quantity,
-	const sigrok::QuantityFlag *sr_quantity_flag,
+	vector<const sigrok::QuantityFlag *> sr_quantity_flags,
 	const sigrok::Unit *sr_unit)
 {
 	// TODO: use std::chrono / std::time
 	double timestamp = QDateTime::currentMSecsSinceEpoch() / (double)1000;
-	push_sample(sample, timestamp, sr_quantity, sr_quantity_flag, sr_unit);
+	push_sample(sample, timestamp, sr_quantity, sr_quantity_flags, sr_unit);
 }
 
 void Channel::push_sample(void *sample, double timestamp,
 	const sigrok::Quantity *sr_quantity,
-	const sigrok::QuantityFlag *sr_quantity_flag,
+	vector<const sigrok::QuantityFlag *> sr_quantity_flags,
 	const sigrok::Unit *sr_unit)
 {
+	quantity_t q_qf = make_pair(sr_quantity, sr_quantity_flags);
+	if (signal_map_.count(q_qf) == 0) {
+		actual_signal_ = init_signal(sr_quantity, sr_quantity_flags, sr_unit);
+		Q_EMIT signal_changed();
+	}
+
+	signal_map_[q_qf]->push_sample(
+		sample, timestamp, sr_quantity, sr_quantity_flags, sr_unit);
 }
-*/
 
 void Channel::save_settings(QSettings &settings) const
 {
@@ -144,6 +161,27 @@ void Channel::restore_settings(QSettings &settings)
 	set_name(settings.value("name").toString());
 	set_enabled(settings.value("enabled").toBool());
 	set_colour(settings.value("colour").value<QColor>());
+}
+
+shared_ptr<data::BaseSignal> Channel::init_signal(
+	const sigrok::Quantity *sr_quantity,
+	vector<const sigrok::QuantityFlag *> sr_quantity_flags,
+	const sigrok::Unit *sr_unit)
+{
+	// TODO: At the moment, only analog channels are supported
+	if (sr_channel_->type()->id() != SR_CHANNEL_ANALOG)
+		return nullptr;
+
+	shared_ptr<data::AnalogSignal> signal = make_shared<data::AnalogSignal>(
+		sr_quantity, sr_quantity_flags, sr_unit,
+		channel_group_name_, channel_start_timestamp_);
+
+	quantity_t q_qf = make_pair(sr_quantity, sr_quantity_flags);
+	signal_map_.insert(
+		pair<quantity_t, shared_ptr<data::BaseSignal>>
+		(q_qf, signal));
+
+	return signal;
 }
 
 } // namespace devices

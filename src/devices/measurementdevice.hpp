@@ -57,9 +57,6 @@ public:
 
 protected:
 	void feed_in_meta(shared_ptr<sigrok::Meta> sr_meta);
-	shared_ptr<data::BaseSignal> init_signal(
-		shared_ptr<sigrok::Channel> sr_channel,
-		QString channel_group_name);
 
 private:
 

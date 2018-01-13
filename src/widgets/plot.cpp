@@ -111,23 +111,8 @@ Plot::Plot(data::BaseCurve *curve_data, QWidget *parent) :
 	legend->setDefaultItemMode(QwtLegendData::Checkable);
 	this->insertLegend(legend, QwtPlot::BottomLegend);
 
-	// Time (x) axis
-	x_interval_ = QwtInterval(curve_data_->boundingRect().left(),
-		curve_data_->boundingRect().right());
-	int x_axis_id = QwtPlot::xBottom;
-	this->setAxisTitle(x_axis_id, curve_data_->x_data_title());
-	this->setAxisScale(x_axis_id, x_interval_.minValue(), x_interval_.maxValue());
-	//setAxisAutoScale(x_axis_id, true); // TODO: Not working!?
-
-	// Value (y) axis
-	y_interval_ = QwtInterval(0, curve_data_->boundingRect().top());
-	//setAxesCount(QwtPlot::yLeft, 2); // TODO: Multiaxis
-	//QwtAxisId y_axis_id = QwtAxisId(QwtAxis::yLeft, 0); // TODO: Multiaxis
-	int y_axis_id = QwtPlot::yLeft;
-	//setAxisVisible(y_axis_id, true); // TODO: Multiaxis
-	this->setAxisTitle(y_axis_id, curve_data_->y_data_title());
-	this->setAxisScale(y_axis_id, y_interval_.minValue(), y_interval_.maxValue());
-	this->setAxisAutoScale(y_axis_id, false); // TODO: Not working!?
+	init_x_axis();
+	init_y_axis();
 
 	QwtPlotGrid *grid = new QwtPlotGrid();
 	grid->setPen(Qt::gray, 0.0, Qt::DotLine);
@@ -137,18 +122,7 @@ Plot::Plot(data::BaseCurve *curve_data, QWidget *parent) :
 	grid->enableYMin(false);
 	grid->attach(this);
 
-	// Value curve
-	value_curve_ = new QwtPlotCurve(curve_data_->y_data_quantity());
-	//value_curve_->setXAxis(QwtAxisId(QwtAxis::yLeft, 0)); // TODO: Multiaxis
-	value_curve_->setYAxis(y_axis_id);
-	value_curve_->setXAxis(x_axis_id);
-	value_curve_->setStyle(QwtPlotCurve::Lines);
-	value_curve_->setPen(Qt::red, 2.0, Qt::SolidLine);
-	value_curve_->setRenderHint(QwtPlotItem::RenderAntialiased, true);
-	value_curve_->setPaintAttribute(QwtPlotCurve::ClipPolygons, false);
-	value_curve_->setData(curve_data_);
-	//value_curve_->setRawSamples(); // TODO: is this an option?
-	value_curve_->attach(this);
+	init_curve();
 }
 
 Plot::~Plot()
@@ -171,9 +145,83 @@ void Plot::replot()
 	//ReLoadProData::instance().lock();
 
 	QwtPlot::replot();
-	painted_points_ = curve_data_->size();
+
+	if (curve_data_ != nullptr)
+		painted_points_ = curve_data_->size();
 
 	//ReLoadProData::instance().unlock();
+}
+
+void Plot::set_curve_data(data::BaseCurve *curve_data)
+{
+	curve_data_ = curve_data;
+	this->init_x_axis();
+	this->init_y_axis();
+	this->init_curve();
+}
+
+int Plot::init_x_axis()
+{
+	x_axis_id_ = QwtPlot::xBottom;
+	double min = 0.;
+	double max = 0.;
+	QString title("");
+	qWarning() << "Plot::init_x_axis()";
+	if (curve_data_ != nullptr) {
+		min = curve_data_->boundingRect().left();
+		max = curve_data_->boundingRect().right();
+		title = curve_data_->x_data_title();
+	}
+
+	x_interval_ = QwtInterval(min, max);
+
+	this->setAxisTitle(x_axis_id_, title);
+	this->setAxisScale(x_axis_id_, x_interval_.minValue(), x_interval_.maxValue());
+	//setAxisAutoScale(x_axis_id_, true); // TODO: Not working!?
+
+	return x_axis_id_;
+}
+
+int Plot::init_y_axis()
+{
+	y_axis_id_ = QwtPlot::yLeft;
+	double min = 0.;
+	double max = 0.;
+	QString title("");
+	if (curve_data_ != nullptr) {
+		max = curve_data_->boundingRect().top();
+		title = curve_data_->y_data_title();
+	}
+
+	y_interval_ = QwtInterval(min, max);
+	//setAxesCount(QwtPlot::yLeft, 2); // TODO: Multiaxis
+	//QwtAxisId y_axis_id = QwtAxisId(QwtAxis::yLeft, 0); // TODO: Multiaxis
+
+	//setAxisVisible(y_axis_id_, true); // TODO: Multiaxis
+	this->setAxisTitle(y_axis_id_, title);
+	this->setAxisScale(y_axis_id_, y_interval_.minValue(), y_interval_.maxValue());
+	this->setAxisAutoScale(y_axis_id_, false); // TODO: Not working!?
+
+	return y_axis_id_;
+}
+
+void Plot::init_curve()
+{
+	if (curve_data_ == nullptr)
+		return;
+
+	value_curve_ = new QwtPlotCurve(curve_data_->y_data_quantity());
+	//value_curve_->setXAxis(QwtAxisId(QwtAxis::yLeft, 0)); // TODO: Multiaxis
+	value_curve_->setYAxis(y_axis_id_);
+	value_curve_->setXAxis(x_axis_id_);
+	value_curve_->setStyle(QwtPlotCurve::Lines);
+	value_curve_->setPen(Qt::red, 2.0, Qt::SolidLine);
+	value_curve_->setRenderHint(QwtPlotItem::RenderAntialiased, true);
+	value_curve_->setPaintAttribute(QwtPlotCurve::ClipPolygons, false);
+	value_curve_->setData(curve_data_);
+	//value_curve_->setRawSamples(); // TODO: is this an option?
+
+	value_curve_->attach(this);
 }
 
 void Plot::set_x_interval(double x_start, double x_end)
@@ -239,6 +287,9 @@ void Plot::on_marker_moved(QPoint p)
 void Plot::update_curve()
 {
 	//ReLoadProData::instance().lock(); // TODO
+
+	if (!curve_data_)
+		return;
 
 	const int numPoints = curve_data_->size();
 	if (numPoints > painted_points_) {
@@ -333,9 +384,7 @@ void Plot::increment_y_interval(QRectF boundaries)
 
 void Plot::timerEvent(QTimerEvent *event)
 {
-	if (curve_data_->is_initialized() &&
-		event->timerId() == timer_id_) {
-
+	if (event->timerId() == timer_id_) {
 		bool intervals_changed = false;
 		QRectF boundaries = curve_data_->boundingRect();
 

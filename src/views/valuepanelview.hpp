@@ -38,6 +38,10 @@ namespace data {
 class AnalogSignal;
 }
 
+namespace devices {
+class Channel;
+}
+
 namespace widgets {
 class LcdDisplay;
 }
@@ -50,7 +54,7 @@ class ValuePanelView : public BaseView
 
 public:
 	ValuePanelView(const Session& session,
-		shared_ptr<data::AnalogSignal> value_signal,
+		shared_ptr<devices::Channel> channel,
 		QWidget* parent = nullptr);
 	~ValuePanelView();
 
@@ -58,7 +62,8 @@ public:
 
 private:
 	uint digits_;
-	shared_ptr<data::AnalogSignal> value_signal_;
+	shared_ptr<devices::Channel> channel_;
+	shared_ptr<data::AnalogSignal> signal_;
 
 	QTimer *timer_;
 
@@ -82,8 +87,7 @@ protected:
 private Q_SLOTS:
 	void on_reset();
 	void on_update();
-	void on_quantity_changed(QString);
-	void on_unit_changed(QString);
+	void on_signal_changed();
 
 };
 

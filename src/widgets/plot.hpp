@@ -53,12 +53,16 @@ public:
 
 	virtual void replot();
 	virtual bool eventFilter(QObject *, QEvent *);
+	void set_curve_data(data::BaseCurve *curve_data);
 	void set_plot_interval(int plot_interval) { plot_interval_ = plot_interval; }
 	void set_plot_mode(Plot::PlotModes plot_mode) { plot_mode_ = plot_mode; }
 
 public Q_SLOTS:
 	void start();
 	void stop();
+	int init_x_axis();
+	int init_y_axis();
+	void init_curve();
 	void set_x_interval(double x_start, double x_end);
 	void set_y_interval(double y_start, double y_end);
 	void add_marker();
@@ -80,7 +84,9 @@ private:
 	int painted_points_;
 
 	QwtInterval x_interval_;
+	int x_axis_id_;
 	QwtInterval y_interval_;
+	int y_axis_id_;
 	int plot_interval_;
 	int timer_id_;
 	PlotModes plot_mode_;

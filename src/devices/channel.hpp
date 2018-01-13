@@ -23,6 +23,7 @@
 #define DEVICES_CHANNEL_HPP
 
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include <QColor>
@@ -30,11 +31,15 @@
 #include <QSettings>
 
 using std::map;
+using std::pair;
 using std::shared_ptr;
 using std::vector;
 
 namespace sigrok {
 class Channel;
+class Quantity;
+class QuantityFlag;
+class Unit;
 }
 
 namespace sv {
@@ -58,7 +63,7 @@ public:
 public:
 	Channel(
 		shared_ptr<sigrok::Channel> sr_channel, ChannelType channel_type,
-		QString channel_group_name);
+		QString channel_group_name, double channel_start_timestamp);
 	virtual ~Channel();
 
 public:
@@ -88,6 +93,11 @@ public:
 	 * the device driver.
 	 */
 	unsigned int index() const;
+
+	/**
+	 * Gets the actual signal
+	 */
+	shared_ptr<data::BaseSignal> actual_signal();
 
 	/**
 	 * Get the channel group name, the signal is in. Returns "" if the signal
@@ -125,28 +135,37 @@ public:
 
 	/**
 	 * Add a single sample to the channel
+	 */
 	void push_sample(void *sample,
 		const sigrok::Quantity *sr_quantity,
-		const sigrok::QuantityFlag *sr_quantity_flag,
+		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
 		const sigrok::Unit *sr_unit);
-	 */
 
 	/**
 	 * Add a single sample with timestamp to the channel
+	 */
 	void push_sample(void *sample, double timestamp,
 		const sigrok::Quantity *sr_quantity,
-		const sigrok::QuantityFlag *sr_quantity_flag,
+		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
 		const sigrok::Unit *sr_unit);
-	 */
 
 	virtual void save_settings(QSettings &settings) const;
 	virtual void restore_settings(QSettings &settings);
 
 private:
+	shared_ptr<data::BaseSignal> init_signal(
+		const sigrok::Quantity *sr_quantity,
+		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
+		const sigrok::Unit *sr_unit);
+
+	typedef pair<const sigrok::Quantity *, vector<const sigrok::QuantityFlag *>> quantity_t;
+
 	shared_ptr<sigrok::Channel> sr_channel_;
 	ChannelType channel_type_;
+	double channel_start_timestamp_;
 
-	map<const sigrok::Quantity *, vector<shared_ptr<data::BaseSignal>>> signals_;
+	shared_ptr<data::BaseSignal> actual_signal_;
+	map<quantity_t, shared_ptr<data::BaseSignal>> signal_map_;
 
 	const QString channel_group_name_;
 	QString internal_name_; // TODO: const?
@@ -158,6 +177,7 @@ Q_SIGNALS:
 	void name_changed(const QString &name);
 	void colour_changed(const QColor &colour);
 	void signal_changed();
+
 };
 
 } // namespace devices

@@ -48,9 +48,10 @@ class AnalogSignal : public BaseSignal
 
 public:
 	AnalogSignal(
-		shared_ptr<sigrok::Channel> sr_channel, ChannelType channel_type,
-		const sigrok::Quantity *sr_quantity, QString channel_group_name,
-		double *signal_start_timestamp);
+		const sigrok::Quantity *sr_quantity,
+		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
+		const sigrok::Unit *sr_unit,
+		QString channel_group_name, double signal_start_timestamp);
 
 	void clear();
 
@@ -59,9 +60,13 @@ public:
 	sample_t get_sample(size_t pos) const;
 
 	void push_sample(void *sample,
-		const sigrok::Quantity *sr_quantity, const sigrok::Unit *sr_unit);
+		const sigrok::Quantity *sr_quantity,
+		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
+		const sigrok::Unit *sr_unit);
 	void push_sample(void *sample, double timestamp,
-		const sigrok::Quantity *sr_quantity, const sigrok::Unit *sr_unit);
+		const sigrok::Quantity *sr_quantity,
+		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
+		const sigrok::Unit *sr_unit);
 	/* TODO
 	void push_interleaved_samples(float *samples,
 		size_t sample_count, size_t stride, const sigrok::Unit *sr_unit);
@@ -79,7 +84,7 @@ private:
 	shared_ptr<vector<double>> data_;
 	size_t sample_count_;
 
-	double *signal_start_timestamp_;
+	double signal_start_timestamp_;
 	double first_timestamp_;
 	double last_timestamp_;
 	double last_value_;
@@ -87,7 +92,6 @@ private:
 	double max_value_;
 
 Q_SIGNALS:
-	void unit_changed(QString);
 	void samples_cleared();
 
 };

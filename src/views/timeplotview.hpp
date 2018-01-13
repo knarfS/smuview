@@ -35,6 +35,11 @@ class Session;
 
 namespace data {
 class AnalogSignal;
+class BaseCurve;
+}
+
+namespace devices {
+class Channel;
 }
 
 namespace widgets {
@@ -49,13 +54,15 @@ class TimePlotView : public BaseView
 
 public:
 	TimePlotView(const Session& session,
-		shared_ptr<data::AnalogSignal> signal,
+		shared_ptr<devices::Channel> channel,
 		QWidget* parent = nullptr);
 
 	QString title() const;
 
 private:
+	shared_ptr<devices::Channel> channel_;
 	shared_ptr<data::AnalogSignal> signal_;
+	data::BaseCurve *curve_;
 
 	QAction *const action_zoom_in_;
 	QAction *const action_zoom_out_;
@@ -76,6 +83,7 @@ protected:
 public Q_SLOTS:
 
 private Q_SLOTS:
+	void on_signal_changed();
 	void on_action_zoom_in_triggered();
 	void on_action_zoom_out_triggered();
 	void on_action_zoom_fit_best_triggered();

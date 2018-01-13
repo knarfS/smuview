@@ -280,9 +280,10 @@ QWidget *AboutDialog::get_device_page(QWidget *parent) const
 	const auto signals = device_->all_signals();
 	for (shared_ptr<data::AnalogSignal> signal : signals) {
 		s.append(QString("<tr><td>%1</td><td>%2</td></tr>").arg(
-			signal->name(), signal->internal_name()));
+			signal->name(), signal->name()));
 	}
 
+	/*
 	// SmuView device channel group names + signals
 	// map<QString, vector<shared_ptr<data::BaseSignal>>> cg_name_signals_map
 	s.append("<tr><td colspan=\"2\"><b>" +
@@ -341,6 +342,7 @@ QWidget *AboutDialog::get_device_page(QWidget *parent) const
 				arg(quantity_signal_pair.second->name()));
 		}
 	}
+	*/
 
 	/* Sigrok Device channel groups + channels */
 	s.append("<tr><td colspan=\"2\"><b>" +

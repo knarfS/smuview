@@ -46,6 +46,7 @@ SourceSinkDevice::SourceSinkDevice(
 	else
 		assert("Unknown device");
 
+	/*
 	// TODO: move to hw device ctor
 	// Init signals from Sigrok Channel Groups
 	map<string, shared_ptr<sigrok::ChannelGroup>> sr_channel_groups =
@@ -68,6 +69,7 @@ SourceSinkDevice::SourceSinkDevice(
 		// TODO: sr_channel must not have a signal (see Digi35)....
 		init_signal(sr_channel, QString(""));
 	}
+	*/
 }
 
 SourceSinkDevice::~SourceSinkDevice()
@@ -75,6 +77,7 @@ SourceSinkDevice::~SourceSinkDevice()
 	close();
 }
 
+/*
 shared_ptr<data::BaseSignal> SourceSinkDevice::init_signal(
 	shared_ptr<sigrok::Channel> sr_channel,
 	QString channel_group_name)
@@ -107,6 +110,7 @@ shared_ptr<data::BaseSignal> SourceSinkDevice::init_signal(
 
 	return signal;
 }
+*/
 
 void SourceSinkDevice::feed_in_meta(shared_ptr<sigrok::Meta> sr_meta)
 {

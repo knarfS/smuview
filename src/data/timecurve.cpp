@@ -19,6 +19,8 @@
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
+#include <QDateTime>
+
 #include "timecurve.hpp"
 #include "src/util.hpp"
 #include "src/data/analogsignal.hpp"
@@ -31,7 +33,11 @@ TimeCurve::TimeCurve(shared_ptr<AnalogSignal> signal) :
 	analog_signal_(signal),
 	relative_time_(true)
 {
-	signal_start_timestamp_ = signal->signal_start_timestamp();
+	//TODO
+	//signal_start_timestamp_ = signal->signal_start_timestamp();
+	signal_start_timestamp_ =
+		QDateTime::currentMSecsSinceEpoch() / (double)1000;
+	qWarning() << "TimeCurve::TimeCurve(): signal_start_timestamp_ = " << signal_start_timestamp_;
 }
 
 QPointF TimeCurve::sample(size_t i) const
@@ -59,19 +65,11 @@ size_t TimeCurve::size() const
 
 QRectF TimeCurve::boundingRect() const
 {
-	double first_timestamp;
-	double last_timestamp;
-	if (is_initialized()) {
-		first_timestamp = analog_signal_->first_timestamp();
-		last_timestamp = analog_signal_->last_timestamp();
-		if (relative_time_) {
-			first_timestamp = 0.;
-			last_timestamp -= signal_start_timestamp_;
-		}
-	}
-	else {
+	double first_timestamp = analog_signal_->first_timestamp();
+	double last_timestamp = analog_signal_->last_timestamp();
+	if (relative_time_) {
 		first_timestamp = 0.;
-		last_timestamp = 0.;
+		last_timestamp -= signal_start_timestamp_;
 	}
 
 	// top left, bottom right
@@ -88,11 +86,6 @@ void TimeCurve::set_relative_time(bool is_relative_time)
 bool TimeCurve::is_relative_time() const
 {
 	return relative_time_;
-}
-
-bool TimeCurve::is_initialized() const
-{
-	return analog_signal_->is_initialized();
 }
 
 QString TimeCurve::x_data_quantity() const

@@ -26,20 +26,25 @@
 #include "valuepanelview.hpp"
 #include "src/session.hpp"
 #include "src/data/analogsignal.hpp"
-#include "src/data/basesignal.hpp"
+#include "src/devices/channel.hpp"
 #include "src/widgets/lcddisplay.hpp"
+
+using std::dynamic_pointer_cast;
 
 namespace sv {
 namespace views {
 
 ValuePanelView::ValuePanelView(const Session &session,
-		shared_ptr<data::AnalogSignal> value_signal,
+		shared_ptr<devices::Channel> channel,
 		QWidget *parent) :
 	BaseView(session, parent),
-	value_signal_(value_signal),
+	channel_(channel),
 	value_min_(std::numeric_limits<double>::max()),
 	value_max_(std::numeric_limits<double>::lowest())
 {
+	signal_ =
+		dynamic_pointer_cast<data::AnalogSignal>(channel_->actual_signal());
+
 	setup_ui();
 	connect_signals();
 	reset_display();
@@ -50,7 +55,7 @@ ValuePanelView::ValuePanelView(const Session &session,
 
 QString ValuePanelView::title() const
 {
-	return value_signal_->name().append(" ").append(tr("Panel"));
+	return channel_->name().append(" ").append(tr("Panel"));
 }
 
 ValuePanelView::~ValuePanelView()
@@ -68,12 +73,13 @@ void ValuePanelView::setup_ui()
 
 	QGridLayout *panelLayout = new QGridLayout();
 
-	valueDisplay = new widgets::LcdDisplay(digits_,
-		value_signal_->unit(), "", false);
-	valueMinDisplay = new widgets::LcdDisplay(digits_,
-		value_signal_->unit(), "min", true);
-	valueMaxDisplay = new widgets::LcdDisplay(digits_,
-		value_signal_->unit(), "max", true);
+	QString unit("");
+	if (signal_)
+		unit = signal_->unit();
+
+	valueDisplay = new widgets::LcdDisplay(digits_, unit, "", false);
+	valueMinDisplay = new widgets::LcdDisplay(digits_, unit, "min", true);
+	valueMaxDisplay = new widgets::LcdDisplay(digits_, unit, "max", true);
 
 	panelLayout->addWidget(valueDisplay, 0, 0, 1, 2, Qt::AlignHCenter);
 	panelLayout->addWidget(valueMinDisplay, 1, 0, 1, 1, Qt::AlignHCenter);
@@ -94,11 +100,9 @@ void ValuePanelView::connect_signals()
 	// Reset button
 	connect(resetButton, SIGNAL(clicked(bool)), this, SLOT(on_reset()));
 
-	// Quantity/Unit can change, when signal is not initalized, e.g. DMM signals
-	connect(value_signal_.get(), SIGNAL(quantity_initialized(QString)),
-			this, SLOT(on_quantity_changed(QString)));
-	connect(value_signal_.get(), SIGNAL(unit_initialized(QString)),
-			this, SLOT(on_unit_changed(QString)));
+	// Signal (Quantity + Unit) can change, e.g. DMM signals
+	connect(channel_.get(), SIGNAL(signal_changed()),
+			this, SLOT(on_signal_changed()));
 }
 
 void ValuePanelView::reset_display()
@@ -108,9 +112,6 @@ void ValuePanelView::reset_display()
 
 void ValuePanelView::init_timer()
 {
-	if (!value_signal_)
-		return;
-
 	value_min_ = std::numeric_limits<double>::max();
 	value_max_ = std::numeric_limits<double>::lowest();
 
@@ -137,12 +138,12 @@ void ValuePanelView::on_reset()
 
 void ValuePanelView::on_update()
 {
-	if (value_signal_->get_sample_count() == 0)
+	if (!signal_ || signal_->get_sample_count() == 0)
 		return;
 
 	double value = 0;
-	if (value_signal_) {
-		value = value_signal_->last_value();
+	if (signal_) {
+		value = signal_->last_value();
 		if (value_min_ > value)
 			value_min_ = value;
 		if (value_max_ < value)
@@ -154,16 +155,14 @@ void ValuePanelView::on_update()
 	valueMaxDisplay->set_value(value_max_);
 }
 
-void ValuePanelView::on_quantity_changed(QString quantity)
+void ValuePanelView::on_signal_changed()
 {
-	(QString)quantity;
-}
+	signal_ =
+		dynamic_pointer_cast<data::AnalogSignal>(channel_->actual_signal());
 
-void ValuePanelView::on_unit_changed(QString unit)
-{
-	valueDisplay->set_unit(unit);
-	valueMinDisplay->set_unit(unit);
-	valueMaxDisplay->set_unit(unit);
+	valueDisplay->set_unit(signal_->unit());
+	valueMinDisplay->set_unit(signal_->unit());
+	valueMaxDisplay->set_unit(signal_->unit());
 }
 
 } // namespace views

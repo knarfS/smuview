@@ -58,11 +58,11 @@ void SourceSinkTab::setup_ui()
 		}
 	}
 
-	const auto cg_name_quantity_signal_map =
-		device_->cg_name_sr_quantity_signals_map();
+	/*
+	const auto channel_name_map = device_->channel_name_map();
 
-	for (auto cg_name_map_pair : cg_name_quantity_signal_map) {
-		auto quantity_signal_map = cg_name_map_pair.second;
+	for (auto ch_name_channel_pair : channel_name_map) {
+		auto channel = ch_name_channel_pair.second;
 
 		// Power panel(s)
 		if (quantity_signal_map.count(sigrok::Quantity::VOLTAGE) != 0 &&
@@ -90,6 +90,7 @@ void SourceSinkTab::setup_ui()
 			add_view(current_plot_view, Qt::BottomDockWidgetArea, session_);
 		}
 	}
+	*/
 
 	// UI plot(s)
 	/*

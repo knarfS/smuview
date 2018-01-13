@@ -103,10 +103,6 @@ public:
 	virtual void free_unused_memory();
 
 protected:
-	virtual shared_ptr<data::BaseSignal> init_signal(
-		shared_ptr<sigrok::Channel> sr_channel,
-		QString channel_group_name) = 0;
-
 	virtual void feed_in_header() = 0;
 	virtual void feed_in_trigger() = 0;
 	virtual void feed_in_meta(shared_ptr<sigrok::Meta> sr_meta) = 0;
@@ -126,7 +122,7 @@ protected:
 	mutable mutex aquisition_mutex_; //!< Protects access to capture_state_. // TODO
 	mutable recursive_mutex data_mutex_; // TODO
 	aquisition_state aquisition_state_;
-	double *aquisition_start_timestamp_; // TODO
+	double aquisition_start_timestamp_;
 
 	bool out_of_memory_;
 	bool frame_began_;

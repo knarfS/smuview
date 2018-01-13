@@ -44,35 +44,13 @@ MeasurementDevice::MeasurementDevice(
 		type_ = HardwareDevice::DEMO_DEV;
 	else
 		assert("Unknown device");
-
-	// TODO: move to hw device ctor
-	// Init signals from Sigrok Channel Groups
-	map<string, shared_ptr<sigrok::ChannelGroup>> sr_channel_groups =
-		sr_device_->channel_groups();
-	if (sr_channel_groups.size() > 0) {
-		for (auto sr_cg_pair : sr_channel_groups) {
-			shared_ptr<sigrok::ChannelGroup> sr_cg = sr_cg_pair.second;
-			QString cg_name = QString::fromStdString(sr_cg->name());
-			for (auto sr_channel : sr_cg->channels()) {
-				init_signal(sr_channel, cg_name);
-			}
-		}
-	}
-
-	// Init signals that are not in a channel group
-	vector<shared_ptr<sigrok::Channel>> sr_channels = sr_device_->channels();
-	for (auto sr_channel : sr_channels) {
-		if (sr_channel_signal_map_.count(sr_channel) > 0)
-			continue;
-		// TODO: sr_channel must not have a signal (see Digi35)....
-		init_signal(sr_channel, QString(""));
-	}
 }
 
 MeasurementDevice::~MeasurementDevice()
 {
 }
 
+/*
 shared_ptr<data::BaseSignal> MeasurementDevice::init_signal(
 	shared_ptr<sigrok::Channel> sr_channel,
 	QString channel_group_name)
@@ -92,6 +70,7 @@ shared_ptr<data::BaseSignal> MeasurementDevice::init_signal(
 
 	return signal;
 }
+*/
 
 void MeasurementDevice::feed_in_meta(shared_ptr<sigrok::Meta> sr_meta)
 {

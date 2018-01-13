@@ -90,7 +90,7 @@ HardwareDevice::HardwareDevice(
 	// Init Channels that are not in a channel group
 	vector<shared_ptr<sigrok::Channel>> sr_channels = sr_device_->channels();
 	for (auto sr_channel : sr_channels) {
-		if (sr_channel_signal_map_.count(sr_channel) > 0)
+		if (sr_channel_map_.count(sr_channel) > 0)
 			continue;
 		init_channel(sr_channel, QString(""));
 	}
@@ -250,11 +250,7 @@ shared_ptr<sigrok::HardwareDevice> HardwareDevice::sr_hardware_device() const
 	return static_pointer_cast<sigrok::HardwareDevice>(sr_device_);
 }
 
-vector<shared_ptr<data::AnalogSignal>> HardwareDevice::all_signals() const
-{
-	return all_signals_;
-}
-
+/*
 map<QString, vector<shared_ptr<data::BaseSignal>>>
 	HardwareDevice::cg_name_signals_map() const
 {
@@ -278,27 +274,56 @@ map<QString, map<const sigrok::Quantity *, shared_ptr<data::AnalogSignal>>>
 {
 	return cg_name_sr_quantity_signals_map_;
 }
+*/
 
 vector<shared_ptr<devices::Configurable>> HardwareDevice::configurables() const
 {
 	return configurables_;
 }
 
+map<QString, shared_ptr<devices::Channel>> HardwareDevice::channel_name_map() const
+{
+	return channel_name_map_;
+}
+
+map<shared_ptr<sigrok::Channel>, shared_ptr<devices::Channel>> HardwareDevice::sr_channel_map() const
+{
+	return sr_channel_map_;
+}
+
+map<QString, vector<shared_ptr<devices::Channel>>> HardwareDevice::channel_group_name_map() const
+{
+	return channel_group_name_map_;
+}
+
+vector<shared_ptr<data::AnalogSignal>> HardwareDevice::all_signals() const
+{
+	return all_signals_;
+}
+
 shared_ptr<devices::Channel> HardwareDevice::init_channel(
 	shared_ptr<sigrok::Channel> sr_channel, QString channel_group_name)
 {
 	shared_ptr<devices::Channel> channel = make_shared<devices::Channel>(
-		sr_channel, Channel::ChannelType::AnalogChannel, channel_group_name);
+		sr_channel, Channel::ChannelType::AnalogChannel,
+		channel_group_name, aquisition_start_timestamp_);
 
 	// map<QString, shared_ptr<devices::Channel>> channel_name_map_;
 	channel_name_map_.insert(
 		pair<QString, shared_ptr<devices::Channel>>
-		(channel_group_name, channel));
+		(channel->internal_name(), channel));
 
 	// map<shared_ptr<sigrok::Channel>, shared_ptr<devices::Channel>> sr_channel_map_;
 	sr_channel_map_.insert(
 		pair<shared_ptr<sigrok::Channel>, shared_ptr<devices::Channel>>
 		(sr_channel, channel));
+
+	// map<QString, vector<shared_ptr<devices::Channel>>> channel_group_name_map_;
+	if (channel_group_name_map_.count(channel_group_name) == 0)
+		channel_group_name_map_.insert(
+			pair<QString, vector<shared_ptr<devices::Channel>>>
+			(channel_group_name, vector<shared_ptr<devices::Channel>>()));
+	channel_group_name_map_[channel_group_name].push_back(channel);
 
 	return channel;
 }
@@ -350,117 +375,26 @@ void HardwareDevice::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
 
 		if (!sr_channel_map_.count(sr_channel))
 			assert("Unknown channel");
+		shared_ptr<devices::Channel> channel = sr_channel_map_[sr_channel];
 
-		if (!sr_channel_signal_map_.count(sr_channel)) {
-			assert("Unknown channel");
-		}
-
-		shared_ptr<devices::Channel> actual_channel =
-			sr_channel_map_[sr_channel];
-
-		shared_ptr<data::BaseSignal> actual_signal =
-			sr_channel_signal_map_[sr_channel];
 		/*
-		qWarning() << "HardwareDevice::feed_in_analog(): -3- name = " <<
-			actual_signal*->name();
-		qWarning() << "HardwareDevice::feed_in_analog(): -3- count = " <<
-			actual_signal->get_sample_count();
-		*/
-
-		if (actual_signal->is_initialized() &&
-			actual_signal->sr_quantity() != sr_analog->mq()) {
-
-			// DMMs can change their quantity
-			QString channel_name = actual_signal->internal_name();
-			if (ch_name_sr_quantity_signals_map_[channel_name].
-					count(sr_analog->mq()) == 0) {
-				actual_signal = init_signal(sr_channel, QString("ChannelGroup")); // TODO
-				sr_channel_signal_map_[sr_channel] = actual_signal;
-			}
-			else {
-				actual_signal = ch_name_sr_quantity_signals_map_
-					[channel_name][sr_analog->mq()];
-			}
-			Q_EMIT channel_changed(channel_name);
-		}
-
-		/* TODO: Use push_interleaved_samples() as only push function
+		 * TODO: Use push_interleaved_samples() as only push function
 		actual_signal->analog_data()->push_interleaved_samples(
 			channel_data, sample_count,channel_count, sr_analog->unit());
 		*/
+
 		if (frame_began_) {
-			actual_signal->push_sample(
+			channel->push_sample(
 				channel_data, frame_start_timestamp_,
-				sr_analog->mq(), sr_analog->unit());
-			/*
-			actual_channel->push_sample(
-				channel_data, frame_start_timestamp_,
-				sr_analog->mq(), sr_analog->mqflags(), sr_analog->unit());
-			*/
+				sr_analog->mq(), sr_analog->mq_flags(), sr_analog->unit());
 		}
 		else {
-			actual_signal->push_sample(
-				channel_data, sr_analog->mq(), sr_analog->unit());
-			/*
-			actual_channel->push_sample(
-				channel_data, sr_analog->mq(), sr_analog->mqflags(), sr_analog->unit());
-			*/
+			channel->push_sample(
+				channel_data,
+				sr_analog->mq(), sr_analog->mq_flags(), sr_analog->unit());
 		}
 		channel_data++;
-
-		//Q_EMIT data_received(segment);
 	}
-}
-
-void HardwareDevice::add_signal_to_maps(shared_ptr<data::AnalogSignal> signal,
-	shared_ptr<sigrok::Channel> sr_channel, QString channel_group_name)
-{
-	// vector<shared_ptr<data::AnalogSignal>> all_signals_;
-	all_signals_.push_back(signal);
-
-	// map<shared_ptr<sigrok::Channel>, shared_ptr<data::BaseSignal>> sr_channel_signal_map_;
-	sr_channel_signal_map_.insert(
-		pair<shared_ptr<sigrok::Channel>, shared_ptr<data::BaseSignal>>
-		(sr_channel, signal));
-
-	// map<QString, map<const sigrok::Quantity *, shared_ptr<data::AnalogSignal>>> ch_name_sr_quantity_signals_map_;
-	if (ch_name_sr_quantity_signals_map_.count(signal->internal_name()) == 0) {
-		ch_name_sr_quantity_signals_map_.insert(
-			pair<QString, map<const sigrok::Quantity *, shared_ptr<data::AnalogSignal>>>
-			(signal->internal_name(), map<const sigrok::Quantity *, shared_ptr<data::AnalogSignal>>()));
-	}
-	if (ch_name_sr_quantity_signals_map_[signal->internal_name()].count(signal->sr_quantity()) == 0) {
-		ch_name_sr_quantity_signals_map_[signal->internal_name()].insert(
-			pair<const sigrok::Quantity *, shared_ptr<data::AnalogSignal>>
-			(signal->sr_quantity(), signal));
-	}
-	else
-		assert("Signal already there!");
-
-	// map<QString, map<const sigrok::Quantity *, shared_ptr<data::AnalogSignal>>> cg_name_sr_quantity_signals_map_;
-	if (cg_name_sr_quantity_signals_map_.count(channel_group_name) == 0) {
-		cg_name_sr_quantity_signals_map_.insert(
-			pair<QString, map<const sigrok::Quantity *, shared_ptr<data::AnalogSignal>>>
-			(channel_group_name, map<const sigrok::Quantity *, shared_ptr<data::AnalogSignal>>()));
-	}
-	if (cg_name_sr_quantity_signals_map_[channel_group_name].count(signal->sr_quantity()) == 0) {
-		cg_name_sr_quantity_signals_map_[channel_group_name].insert(
-			pair<const sigrok::Quantity *, shared_ptr<data::AnalogSignal>>
-			(signal->sr_quantity(), signal));
-	}
-	else
-		assert("Signal already there!");
-
-	// map<QString, vector<shared_ptr<data::BaseSignal>>> cg_name_signals_map_;
-	if (cg_name_signals_map_.count(channel_group_name) == 0)
-		cg_name_signals_map_.insert(
-			pair<QString, vector<shared_ptr<data::BaseSignal>>>
-			(channel_group_name, vector<shared_ptr<data::BaseSignal>>()));
-
-	if (find(cg_name_signals_map_[channel_group_name].begin(),
-			cg_name_signals_map_[channel_group_name].end(),
-			signal) == cg_name_signals_map_[channel_group_name].end())
-		cg_name_signals_map_[channel_group_name].push_back(signal);
 }
 
 } // namespace devices

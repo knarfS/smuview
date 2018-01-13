@@ -38,10 +38,11 @@ namespace sv {
 namespace data {
 
 AnalogSignal::AnalogSignal(
-		shared_ptr<sigrok::Channel> sr_channel, ChannelType channel_type,
-		const sigrok::Quantity *sr_quantity, QString channel_group_name,
-		double *signal_start_timestamp) :
-	BaseSignal(sr_channel, channel_type, sr_quantity, channel_group_name),
+		const sigrok::Quantity *sr_quantity,
+		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
+		const sigrok::Unit *sr_unit,
+		QString channel_group_name, double signal_start_timestamp) :
+	BaseSignal(sr_quantity, sr_quantity_flags, sr_unit, channel_group_name),
 	sample_count_(0),
 	signal_start_timestamp_(signal_start_timestamp),
 	last_timestamp_(0.),
@@ -49,7 +50,7 @@ AnalogSignal::AnalogSignal(
 	min_value_(std::numeric_limits<short>::max()),
 	max_value_(std::numeric_limits<short>::min())
 {
-	qWarning() << "Init analog signal " << internal_name_;
+	qWarning() << "Init analog signal " << name_ << ", signal_start_timestamp_ = " << signal_start_timestamp_;
 
 	time_ = make_shared<vector<double>>();
 	data_ = make_shared<vector<double>>();
@@ -102,20 +103,26 @@ sample_t AnalogSignal::get_sample(size_t pos) const
 }
 
 void AnalogSignal::push_sample(void *sample,
-   const sigrok::Quantity *sr_quantity, const sigrok::Unit *sr_unit)
+	const sigrok::Quantity *sr_quantity,
+	vector<const sigrok::QuantityFlag *> sr_quantity_flags,
+	const sigrok::Unit *sr_unit)
 {
 	// TODO: use std::chrono / std::time
 	double timestamp = QDateTime::currentMSecsSinceEpoch() / (double)1000;
-	this->push_sample(sample, timestamp, sr_quantity, sr_unit);
+	this->push_sample(
+		sample, timestamp, sr_quantity, sr_quantity_flags, sr_unit);
 }
 
 void AnalogSignal::push_sample(void *sample, double timestamp,
-	const sigrok::Quantity *sr_quantity, const sigrok::Unit *sr_unit)
+	const sigrok::Quantity *sr_quantity,
+	vector<const sigrok::QuantityFlag *> sr_quantity_flags,
+	const sigrok::Unit *sr_unit)
 {
-	if (!is_initialized_)
-		init_quantity(sr_quantity);
-
 	// TODO: Mutex?
+	// TODO: check q, qf, u?
+	(void)sr_quantity;
+	(void)sr_quantity_flags;
+	(void)sr_unit;
 
  	double dsample = (double) *(float*)sample;
 
@@ -140,13 +147,6 @@ void AnalogSignal::push_sample(void *sample, double timestamp,
 	time_->push_back(timestamp);
 	data_->push_back(dsample);
 	sample_count_++;
-
-	if (sr_unit != sr_unit_) {
-		// TODO: convert to SI unit
-		sr_unit_ = sr_unit;
-		unit_ = util::format_sr_unit(sr_unit_);
-		Q_EMIT unit_changed(unit_);
-	}
 }
 
 /*
@@ -180,7 +180,7 @@ void AnalogSignal::push_interleaved_samples(/ *const* / float *samples,//void *d
 
 double AnalogSignal::signal_start_timestamp() const
 {
-	return *signal_start_timestamp_;
+	return signal_start_timestamp_;
 }
 
 double AnalogSignal::first_timestamp() const

@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QDebug>
 #include <QHBoxLayout>
 #include <QGroupBox>
 
@@ -52,16 +53,18 @@ void MeasurementTab::setup_ui()
 		}
 	}
 
-	for (auto signal : measurement_device_->all_signals()) {
+	for (auto ch_name_channel_pair : measurement_device_->channel_name_map()) {
+		auto channel = ch_name_channel_pair.second;
+
 		// Value panel(s)
 		shared_ptr<views::BaseView> value_panel_view =
-			make_shared<views::ValuePanelView>(session_, signal);
+			make_shared<views::ValuePanelView>(session_, channel);
 		add_view(value_panel_view, Qt::TopDockWidgetArea, session_);
 
 		// Value plot(s)
 		shared_ptr<views::BaseView> value_plot_view =
-			make_shared<views::TimePlotView>(session_, signal);
-			add_view(value_plot_view, Qt::BottomDockWidgetArea, session_);
+			make_shared<views::TimePlotView>(session_, channel);
+		add_view(value_plot_view, Qt::BottomDockWidgetArea, session_);
 	}
 }
 

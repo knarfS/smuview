@@ -73,7 +73,7 @@ void SaveDialog::setup_ui(){
 		for (shared_ptr<data::AnalogSignal> signal : hw_device->all_signals()) {
 			QTreeWidgetItem *signal_item = new QTreeWidgetItem();
 			signal_item->setText(0, signal->name());
-			signal_item->setText(1, signal->internal_name());
+			signal_item->setText(1, signal->name());
 
 			QVariant var = QVariant::fromValue(device);
 			signal_item->setData(0, Qt::UserRole, var);

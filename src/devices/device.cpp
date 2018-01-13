@@ -52,11 +52,11 @@ Device::Device(const shared_ptr<sigrok::Context> &sr_context,
 		shared_ptr<sigrok::Device> sr_device):
 	sr_context_(sr_context),
 	sr_device_(sr_device),
-	device_open_(false)
+	device_open_(false),
+	aquisition_start_timestamp_(0.)
 {
 	// Set up the session
 	sr_session_ = sv::Session::sr_context->create_session();
-	aquisition_start_timestamp_ = new double(0.);
 }
 
 Device::~Device()
@@ -65,7 +65,6 @@ Device::~Device()
 		sr_session_->stop();
 		sr_session_->remove_datafeed_callbacks();
 	}
-	aquisition_start_timestamp_ = nullptr;
 }
 
 shared_ptr<sigrok::Device> Device::sr_device() const
@@ -232,8 +231,11 @@ void Device::aquisition_thread_proc(
 
 	aquisition_state_ = aquisition_state::Running;
 	// TODO: use std::chrono / std::time
-	*aquisition_start_timestamp_ =
+	aquisition_start_timestamp_ =
 		QDateTime::currentMSecsSinceEpoch() / (double)1000;
+
+	qWarning() << "Start aquisition for " << short_name() <<
+		",  aquisition_start_timestamp_ = " << aquisition_start_timestamp_;
 
 	try {
 		sr_session_->run();
