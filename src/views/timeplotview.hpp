@@ -56,6 +56,9 @@ public:
 	TimePlotView(const Session& session,
 		shared_ptr<devices::Channel> channel,
 		QWidget* parent = nullptr);
+	TimePlotView(const Session& session,
+		shared_ptr<data::AnalogSignal> signal,
+		QWidget* parent = nullptr);
 
 	QString title() const;
 

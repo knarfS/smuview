@@ -57,6 +57,36 @@ TimePlotView::TimePlotView(const Session &session,
 	else
 		curve_ = nullptr;
 
+	// Signal (Quantity + Unit) can change, e.g. DMM signals
+	connect(channel_.get(), SIGNAL(signal_changed()),
+			this, SLOT(on_signal_changed()));
+
+	setup_ui();
+	setup_toolbar();
+	connect_signals();
+	init_values();
+
+	plot->start();
+}
+
+TimePlotView::TimePlotView(const Session& session,
+		shared_ptr<data::AnalogSignal> signal,
+		QWidget* parent) :
+	BaseView(session, parent),
+	channel_(nullptr),
+	signal_(signal),
+	action_zoom_in_(new QAction(this)),
+	action_zoom_out_(new QAction(this)),
+	action_zoom_fit_best_(new QAction(this)),
+	action_add_marker_(new QAction(this)),
+	action_add_diff_marker_(new QAction(this)),
+	action_config_graph_(new QAction(this))
+{
+	if (signal_)
+		curve_ = (data::BaseCurve *)(new data::TimeCurve(signal_));
+	else
+		curve_ = nullptr;
+
 	setup_ui();
 	setup_toolbar();
 	connect_signals();
@@ -146,9 +176,6 @@ void TimePlotView::setup_toolbar()
 
 void TimePlotView::connect_signals()
 {
-	// Signal (Quantity + Unit) can change, e.g. DMM signals
-	connect(channel_.get(), SIGNAL(signal_changed()),
-			this, SLOT(on_signal_changed()));
 }
 
 void TimePlotView::init_values()
@@ -157,6 +184,9 @@ void TimePlotView::init_values()
 
 void TimePlotView::on_signal_changed()
 {
+	if (!channel_)
+		return;
+
 	if (channel_->actual_signal())
 		signal_ = dynamic_pointer_cast<data::AnalogSignal>(
 			channel_->actual_signal());

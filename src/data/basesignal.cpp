@@ -54,9 +54,13 @@ BaseSignal::BaseSignal(
 		assert("Invalide quantity for BaseSignal()");
 
 	quantity_ = util::format_sr_quantity(sr_quantity_);
-	//quantity_flags_;
+	quantity_flags_ = util::format_sr_quantity_flags(sr_quantity_flags_);
 	unit_ = util::format_sr_unit(sr_unit_);
-	name_ = QString("%1 [%2]").arg(channel_name, quantity_);
+
+	name_ = QString("%1 [%2").arg(channel_name, quantity_);
+	if (quantity_flags_.size() > 0)
+		name_ = name_.append(" ").append(quantity_flags_);
+	name_ = name_.append("]");
 }
 
 BaseSignal::~BaseSignal()

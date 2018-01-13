@@ -24,12 +24,15 @@
 #include <QWidget>
 
 #include "addviewdialog.hpp"
+#include "src/data/analogsignal.hpp"
 #include "src/devices/channel.hpp"
 #include "src/devices/device.hpp"
 #include "src/devices/hardwaredevice.hpp"
 #include "src/views/timeplotview.hpp"
 #include "src/views/valuepanelview.hpp"
 #include "src/widgets/signaltree.hpp"
+
+using std::static_pointer_cast;
 
 Q_DECLARE_SMART_POINTER_METATYPE(std::shared_ptr)
 
@@ -100,7 +103,7 @@ void AddViewDialog::setup_ui_plot_tab()
 	QFormLayout *form_layout = new QFormLayout();
 	plot_widget->setLayout(form_layout);
 
-	plot_channel_tree_ = new widgets::SignalTree(session_, false, device_);
+	plot_channel_tree_ = new widgets::SignalTree(session_, true, device_);
 	form_layout->addWidget(plot_channel_tree_);
 
 	tab_widget_->addTab(plot_widget, title);
@@ -130,6 +133,13 @@ void AddViewDialog::accept()
 			views_.push_back(
 				make_shared<views::TimePlotView>(session_, channel));
 		}
+		for (auto signal : plot_channel_tree_->selected_signals()) {
+			//TODO
+			auto a_signal = static_pointer_cast<data::AnalogSignal>(signal);
+			views_.push_back(
+				make_shared<views::TimePlotView>(session_, a_signal));
+		}
+
 		break;
 	default:
 		break;

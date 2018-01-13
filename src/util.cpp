@@ -84,7 +84,7 @@ quantity_name_map_t quantity_name_map = {
 	{ sigrok::Quantity::HARMONIC_RATIO, QString("Harmonic Ratio") },
 };
 
-quantityflag_name_map_t quantityflag_name_map = {
+quantity_flag_name_map_t quantity_flag_name_map = {
 	{ sigrok::QuantityFlag::AC, QString("AC") },
 	{ sigrok::QuantityFlag::DC, QString("DC") },
 	{ sigrok::QuantityFlag::RMS, QString("RMS") },
@@ -296,25 +296,65 @@ QString format_sr_quantity(const sigrok::Quantity *sr_quantity)
 {
 	if (quantity_name_map.count(sr_quantity) > 0)
 		return quantity_name_map[sr_quantity];
-
 	// TODO: error
 	return QString("");
 }
 
-QString format_sr_quantityflag(const sigrok::QuantityFlag *sr_quantityflag)
+QString format_sr_quantity_flag(const sigrok::QuantityFlag * sr_quantity_flag)
 {
-	if (quantityflag_name_map.count(sr_quantityflag) > 0)
-		return quantityflag_name_map[sr_quantityflag];
-
+	if (quantity_flag_name_map.count(sr_quantity_flag) > 0)
+		return quantity_flag_name_map[sr_quantity_flag];
 	// TODO: error
 	return QString("");
+}
+
+QString format_sr_quantity_flags(
+	vector<const sigrok::QuantityFlag *> sr_quantity_flags)
+{
+	QString quantity_flags("");
+	QString sep("");
+
+	// Show AC/DC first
+	if (find(sr_quantity_flags.begin(), sr_quantity_flags.end(),
+			sigrok::QuantityFlag::AC) != sr_quantity_flags.end()) {
+		quantity_flags.append(quantity_flag_name_map[sigrok::QuantityFlag::AC]);
+		sep = " ";
+	}
+	if (find(sr_quantity_flags.begin(), sr_quantity_flags.end(),
+			sigrok::QuantityFlag::DC) != sr_quantity_flags.end()) {
+		quantity_flags.append(sep);
+		quantity_flags.append(quantity_flag_name_map[sigrok::QuantityFlag::DC]);
+		sep = " ";
+	}
+	// 2nd is RMS
+	if (find(sr_quantity_flags.begin(), sr_quantity_flags.end(),
+			sigrok::QuantityFlag::RMS) != sr_quantity_flags.end()) {
+		quantity_flags.append(sep);
+		quantity_flags.append(quantity_flag_name_map[sigrok::QuantityFlag::RMS]);
+		sep = " ";
+	}
+
+	for (auto sr_quantity_flag : sr_quantity_flags) {
+		if (sr_quantity_flag == sigrok::QuantityFlag::AC ||
+				sr_quantity_flag == sigrok::QuantityFlag::DC ||
+				sr_quantity_flag == sigrok::QuantityFlag::RMS)
+			continue;
+
+		if (quantity_flag_name_map.count(sr_quantity_flag) == 0)
+			continue;
+
+		quantity_flags.append(sep);
+		quantity_flags.append(quantity_flag_name_map[sr_quantity_flag]);
+		sep = " ";
+	}
+
+	return quantity_flags;
 }
 
 QString format_sr_unit(const sigrok::Unit *sr_unit)
 {
 	if (unit_name_map.count(sr_unit) > 0)
 		return unit_name_map[sr_unit];
-
 	// TODO: error
 	return QString("");
 }

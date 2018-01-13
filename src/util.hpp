@@ -59,7 +59,7 @@ enum class SIPrefix {
 };
 
 typedef map<const sigrok::Quantity *, QString> quantity_name_map_t;
-typedef map<const sigrok::QuantityFlag *, QString> quantityflag_name_map_t;
+typedef map<const sigrok::QuantityFlag *, QString> quantity_flag_name_map_t;
 typedef map<const sigrok::Unit *, QString> unit_name_map_t;
 typedef map<const sigrok::Quantity *, const sigrok::Unit *> quantity_unit_map_t;
 
@@ -102,11 +102,23 @@ QString format_sr_quantity(const sigrok::Quantity *sr_quantity);
 /**
  * Formats a sigrok quantity flag to a string
  *
- * @param sr_quantityflag The sigrok quantity (sigrok::QuantityFlag) to format
+ * @param sr_quantity_flag The sigrok quantity flag (sigrok::QuantityFlag)
+ *        to format
  * .
  * @return The formatted quantity flag.
  */
-QString format_sr_quantityflag(const sigrok::QuantityFlag *sr_quantityflag);
+QString format_sr_quantity_flag(const sigrok::QuantityFlag * sr_quantity_flag);
+
+/**
+ * Formats a sigrok quantity flags to a string
+ *
+ * @param sr_quantity_flags The sigrok quantity flags (sigrok::QuantityFlag)
+ *        to format
+ * .
+ * @return The formatted quantity flags.
+ */
+QString format_sr_quantity_flags(
+	vector<const sigrok::QuantityFlag *> sr_quantity_flags);
 
 /**
  * Formats a sigrok unit to a string

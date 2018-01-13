@@ -352,7 +352,7 @@ void Configurable::list_config_mq(const sigrok::ConfigKey *key,
 
 			const sigrok::QuantityFlag *sr_mqflag =
 				sigrok::QuantityFlag::get(sr_mqflags & mask);
-			QString mqflag = util::format_sr_quantityflag(sr_mqflag);
+			QString mqflag = util::format_sr_quantity_flag(sr_mqflag);
 
 			sr_flag_set.insert(sr_mqflag);
 			flag_set.insert(mqflag);
