@@ -67,6 +67,8 @@ public:
 	virtual ~Channel();
 
 public:
+	typedef pair<const sigrok::Quantity *, vector<const sigrok::QuantityFlag *>> quantity_t;
+
 	/**
 	 * Returns the underlying SR channel.
 	 */
@@ -98,6 +100,11 @@ public:
 	 * Gets the actual signal
 	 */
 	shared_ptr<data::BaseSignal> actual_signal();
+
+	/**
+	 * Get all signals for this channel
+	 */
+	map<quantity_t, shared_ptr<data::BaseSignal>> signal_map();
 
 	/**
 	 * Get the channel group name, the signal is in. Returns "" if the signal
@@ -157,8 +164,6 @@ private:
 		const sigrok::Quantity *sr_quantity,
 		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
 		const sigrok::Unit *sr_unit);
-
-	typedef pair<const sigrok::Quantity *, vector<const sigrok::QuantityFlag *>> quantity_t;
 
 	shared_ptr<sigrok::Channel> sr_channel_;
 	ChannelType channel_type_;

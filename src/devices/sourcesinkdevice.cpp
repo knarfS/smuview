@@ -45,72 +45,12 @@ SourceSinkDevice::SourceSinkDevice(
 		type_ = HardwareDevice::ELECTRONIC_LOAD;
 	else
 		assert("Unknown device");
-
-	/*
-	// TODO: move to hw device ctor
-	// Init signals from Sigrok Channel Groups
-	map<string, shared_ptr<sigrok::ChannelGroup>> sr_channel_groups =
-	sr_device_->channel_groups();
-	if (sr_channel_groups.size() > 0) {
-		for (auto sr_cg_pair : sr_channel_groups) {
-			shared_ptr<sigrok::ChannelGroup> sr_cg = sr_cg_pair.second;
-			QString cg_name = QString::fromStdString(sr_cg->name());
-			for (auto sr_channel : sr_cg->channels()) {
-				init_signal(sr_channel, cg_name);
-			}
-		}
-	}
-
-	// Init signals that are not in a channel group
-	vector<shared_ptr<sigrok::Channel>> sr_channels = sr_device_->channels();
-	for (auto sr_channel : sr_channels) {
-		if (sr_channel_signal_map_.count(sr_channel) > 0)
-			continue;
-		// TODO: sr_channel must not have a signal (see Digi35)....
-		init_signal(sr_channel, QString(""));
-	}
-	*/
 }
 
 SourceSinkDevice::~SourceSinkDevice()
 {
 	close();
 }
-
-/*
-shared_ptr<data::BaseSignal> SourceSinkDevice::init_signal(
-	shared_ptr<sigrok::Channel> sr_channel,
-	QString channel_group_name)
-{
-	if (sr_channel->type()->id() != SR_CHANNEL_ANALOG)
-		return nullptr;
-
-	//lock_guard<recursive_mutex> lock(data_mutex_);
-
-	const sigrok::Quantity *sr_quantity;
-	QString signal_name = QString::fromStdString(sr_channel->name());
-	if (signal_name.startsWith("V"))
-		sr_quantity = sigrok::Quantity::VOLTAGE;
-	else if (signal_name.startsWith("I"))
-		sr_quantity = sigrok::Quantity::CURRENT;
-	else if (signal_name.startsWith("P"))
-		sr_quantity = sigrok::Quantity::POWER;
-	else if (signal_name.startsWith("F"))
-		sr_quantity = sigrok::Quantity::FREQUENCY;
-	else
-		assert("Unkown signal in PSU / Load");
-
-	shared_ptr<data::AnalogSignal> signal = make_shared<data::AnalogSignal>(
-		sr_channel, data::BaseSignal::AnalogChannel, sr_quantity,
-		channel_group_name, aquisition_start_timestamp_);
-
-	add_signal_to_maps(signal, sr_channel, channel_group_name);
-
-	//signals_changed();
-
-	return signal;
-}
-*/
 
 void SourceSinkDevice::feed_in_meta(shared_ptr<sigrok::Meta> sr_meta)
 {

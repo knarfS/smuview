@@ -133,11 +133,6 @@ private:
 	std::thread aquisition_thread_;
 
 Q_SIGNALS:
-	/* TODO?
-	void capture_state_changed(int);
-	void signals_changed();
-	void device_changed();
-	*/
 
 };
 

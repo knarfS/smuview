@@ -65,6 +65,11 @@ shared_ptr<data::BaseSignal> Channel::actual_signal()
 	return actual_signal_;
 }
 
+map<Channel::quantity_t, shared_ptr<data::BaseSignal>> Channel::signal_map()
+{
+	return signal_map_;
+}
+
 QString Channel::channel_group_name() const
 {
 	return channel_group_name_;
@@ -174,7 +179,7 @@ shared_ptr<data::BaseSignal> Channel::init_signal(
 
 	shared_ptr<data::AnalogSignal> signal = make_shared<data::AnalogSignal>(
 		sr_quantity, sr_quantity_flags, sr_unit,
-		channel_group_name_, channel_start_timestamp_);
+		internal_name_, channel_group_name_, channel_start_timestamp_);
 
 	quantity_t q_qf = make_pair(sr_quantity, sr_quantity_flags);
 	signal_map_.insert(

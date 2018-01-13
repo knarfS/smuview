@@ -25,12 +25,11 @@
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QTabWidget>
-#include <QTreeWidget>
-#include <QTreeWidgetItem>
 
 #include "src/session.hpp"
 
 using std::shared_ptr;
+using std::vector;
 
 namespace sv {
 
@@ -40,6 +39,10 @@ class HardwareDevice;
 
 namespace views {
 class BaseView;
+}
+
+namespace widgets {
+class SignalTree;
 }
 
 namespace dialogs {
@@ -54,32 +57,26 @@ public:
 		int selected_view_type,
 		QWidget *parent = nullptr);
 
-	shared_ptr<views::BaseView> view();
+	vector<shared_ptr<views::BaseView>> views();
 
 private:
 	void setup_ui();
 	void setup_ui_control_tab();
 	void setup_ui_panel_tab();
 	void setup_ui_plot_tab();
-	QTreeWidget * setup_ui_channel_tree();
-	void recursive_up_checks(QTreeWidgetItem *parent);
-	void recursive_down_checks(QTreeWidgetItem *parent);
 
 	const Session &session_;
 	const shared_ptr<devices::HardwareDevice> device_;
 	int selected_view_type_; // TODO
-	shared_ptr<views::BaseView> view_;
+	vector<shared_ptr<views::BaseView>> views_;
 
 	QTabWidget *tab_widget_;
-	QTreeWidget *panel_channel_tree_;
-	QTreeWidget *plot_channel_tree_;
+	widgets::SignalTree *panel_channel_tree_;
+	widgets::SignalTree *plot_channel_tree_;
 	QDialogButtonBox *button_box_;
 
 public Q_SLOTS:
 	void accept() override;
-
-private Q_SLOTS:
-	void update_checks(QTreeWidgetItem *, int);
 
 };
 

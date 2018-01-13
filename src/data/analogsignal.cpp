@@ -41,8 +41,9 @@ AnalogSignal::AnalogSignal(
 		const sigrok::Quantity *sr_quantity,
 		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
 		const sigrok::Unit *sr_unit,
-		QString channel_group_name, double signal_start_timestamp) :
-	BaseSignal(sr_quantity, sr_quantity_flags, sr_unit, channel_group_name),
+		QString channel_name, QString channel_group_name,
+		double signal_start_timestamp) :
+	BaseSignal(sr_quantity, sr_quantity_flags, sr_unit, channel_name, channel_group_name),
 	sample_count_(0),
 	signal_start_timestamp_(signal_start_timestamp),
 	last_timestamp_(0.),
@@ -50,7 +51,8 @@ AnalogSignal::AnalogSignal(
 	min_value_(std::numeric_limits<short>::max()),
 	max_value_(std::numeric_limits<short>::min())
 {
-	qWarning() << "Init analog signal " << name_ << ", signal_start_timestamp_ = " << signal_start_timestamp_;
+	qWarning() << "Init analog signal " << name_ <<
+		", signal_start_timestamp_ = " << signal_start_timestamp_;
 
 	time_ = make_shared<vector<double>>();
 	data_ = make_shared<vector<double>>();

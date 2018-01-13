@@ -61,7 +61,7 @@ public:
 		const sigrok::Quantity *sr_quantity,
 		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
 		const sigrok::Unit *sr_unit,
-		QString channel_group_name);
+		QString channel_name, QString channel_group_name);
 	virtual ~BaseSignal();
 
 public:
@@ -136,6 +136,7 @@ protected:
 	QString quantity_flags_;
 	const sigrok::Unit *sr_unit_;
 	QString unit_;
+	const QString channel_name_;
 	const QString channel_group_name_;
 
 	QString name_; // TODO: const?

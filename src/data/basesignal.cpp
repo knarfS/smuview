@@ -43,10 +43,11 @@ BaseSignal::BaseSignal(
 		const sigrok::Quantity *sr_quantity,
 		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
 		const sigrok::Unit *sr_unit,
-		QString channel_group_name) :
+		QString channel_name, QString channel_group_name) :
 	sr_quantity_(sr_quantity),
 	sr_quantity_flags_(sr_quantity_flags),
 	sr_unit_(sr_unit),
+	channel_name_(channel_name),
 	channel_group_name_(channel_group_name)
 {
 	if (!util::is_valid_sr_quantity(sr_quantity_))
@@ -55,7 +56,7 @@ BaseSignal::BaseSignal(
 	quantity_ = util::format_sr_quantity(sr_quantity_);
 	//quantity_flags_;
 	unit_ = util::format_sr_unit(sr_unit_);
-	name_ = QString("%1 [%2]").arg(channel_group_name, quantity_);
+	name_ = QString("%1 [%2]").arg(channel_name, quantity_);
 }
 
 BaseSignal::~BaseSignal()

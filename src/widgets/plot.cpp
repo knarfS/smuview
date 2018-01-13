@@ -166,7 +166,6 @@ int Plot::init_x_axis()
 	double min = 0.;
 	double max = 0.;
 	QString title("");
-	qWarning() << "Plot::init_x_axis()";
 	if (curve_data_ != nullptr) {
 		min = curve_data_->boundingRect().left();
 		max = curve_data_->boundingRect().right();
@@ -326,7 +325,10 @@ void Plot::update_curve()
 
 void Plot::increment_x_interval()
 {
-	qWarning() << QString("Plot::increment_x_interval(): old min = %1, old max = %2").arg(x_interval_.minValue()).arg(x_interval_.maxValue());
+	/*
+	qWarning() << QString("Plot::increment_x_interval(): old min = %1, old max = %2").
+		arg(x_interval_.minValue()).arg(x_interval_.maxValue());
+	*/
 
 	if (plot_mode_ == Plot::Additive) {
 		// TODO: Calculate proper interval_length
@@ -334,7 +336,10 @@ void Plot::increment_x_interval()
 		x_interval_ = QwtInterval(x_interval_.minValue(),
 			x_interval_.maxValue() + interval_length);
 
-		qWarning() << QString("Plot::increment_x_interval(): new min = %1, new max = %2").arg(x_interval_.minValue()).arg(x_interval_.maxValue());
+		/*
+		qWarning() << QString("Plot::increment_x_interval(): new min = %1, new max = %2").
+			arg(x_interval_.minValue()).arg(x_interval_.maxValue());
+		*/
 	}
 	else if (plot_mode_ == Plot::Oscilloscope) {
 		x_interval_ = QwtInterval(x_interval_.maxValue(),

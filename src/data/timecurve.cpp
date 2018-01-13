@@ -37,7 +37,8 @@ TimeCurve::TimeCurve(shared_ptr<AnalogSignal> signal) :
 	//signal_start_timestamp_ = signal->signal_start_timestamp();
 	signal_start_timestamp_ =
 		QDateTime::currentMSecsSinceEpoch() / (double)1000;
-	qWarning() << "TimeCurve::TimeCurve(): signal_start_timestamp_ = " << signal_start_timestamp_;
+	//qWarning() << "TimeCurve::TimeCurve(): signal_start_timestamp_ = " <<
+	//	signal_start_timestamp_;
 }
 
 QPointF TimeCurve::sample(size_t i) const

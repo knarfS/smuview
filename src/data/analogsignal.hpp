@@ -51,7 +51,8 @@ public:
 		const sigrok::Quantity *sr_quantity,
 		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
 		const sigrok::Unit *sr_unit,
-		QString channel_group_name, double signal_start_timestamp);
+		QString channel_name, QString channel_group_name,
+		double signal_start_timestamp);
 
 	void clear();
 
@@ -63,10 +64,12 @@ public:
 		const sigrok::Quantity *sr_quantity,
 		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
 		const sigrok::Unit *sr_unit);
+
 	void push_sample(void *sample, double timestamp,
 		const sigrok::Quantity *sr_quantity,
 		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
 		const sigrok::Unit *sr_unit);
+
 	/* TODO
 	void push_interleaved_samples(float *samples,
 		size_t sample_count, size_t stride, const sigrok::Unit *sr_unit);

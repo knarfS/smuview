@@ -50,28 +50,6 @@ MeasurementDevice::~MeasurementDevice()
 {
 }
 
-/*
-shared_ptr<data::BaseSignal> MeasurementDevice::init_signal(
-	shared_ptr<sigrok::Channel> sr_channel,
-	QString channel_group_name)
-{
-	if (sr_channel->type()->id() != SR_CHANNEL_ANALOG)
-		return nullptr;
-
-	//lock_guard<recursive_mutex> lock(data_mutex_);
-
-	shared_ptr<data::AnalogSignal> signal = make_shared<data::AnalogSignal>(
-		sr_channel, data::BaseSignal::AnalogChannel, nullptr,
-		channel_group_name, aquisition_start_timestamp_);
-
-	add_signal_to_maps(signal, sr_channel, channel_group_name);
-
-	//signals_changed();
-
-	return signal;
-}
-*/
-
 void MeasurementDevice::feed_in_meta(shared_ptr<sigrok::Meta> sr_meta)
 {
 	// TODO: Move to devices::Configurable and implement device specific signals

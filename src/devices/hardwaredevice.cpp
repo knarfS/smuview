@@ -250,32 +250,6 @@ shared_ptr<sigrok::HardwareDevice> HardwareDevice::sr_hardware_device() const
 	return static_pointer_cast<sigrok::HardwareDevice>(sr_device_);
 }
 
-/*
-map<QString, vector<shared_ptr<data::BaseSignal>>>
-	HardwareDevice::cg_name_signals_map() const
-{
-	return cg_name_signals_map_;
-}
-
-map<shared_ptr<sigrok::Channel>, shared_ptr<data::BaseSignal>>
-	HardwareDevice::sr_channel_signal_map() const
-{
-	return sr_channel_signal_map_;
-}
-
-map<QString, map<const sigrok::Quantity *, shared_ptr<data::AnalogSignal>>>
-	HardwareDevice::ch_name_sr_quantity_signals_map() const
-{
-	return ch_name_sr_quantity_signals_map_;
-}
-
-map<QString, map<const sigrok::Quantity *, shared_ptr<data::AnalogSignal>>>
-	HardwareDevice::cg_name_sr_quantity_signals_map() const
-{
-	return cg_name_sr_quantity_signals_map_;
-}
-*/
-
 vector<shared_ptr<devices::Configurable>> HardwareDevice::configurables() const
 {
 	return configurables_;
@@ -304,6 +278,23 @@ vector<shared_ptr<data::AnalogSignal>> HardwareDevice::all_signals() const
 shared_ptr<devices::Channel> HardwareDevice::init_channel(
 	shared_ptr<sigrok::Channel> sr_channel, QString channel_group_name)
 {
+	/*
+	 * TODO: Some channels/Signals are fixed (e.g. PSUs, Loads), channels
+	 *       should be defined as fixed
+	const sigrok::Quantity *sr_quantity;
+	QString signal_name = QString::fromStdString(sr_channel->name());
+	if (signal_name.startsWith("V"))
+		sr_quantity = sigrok::Quantity::VOLTAGE;
+	else if (signal_name.startsWith("I"))
+		sr_quantity = sigrok::Quantity::CURRENT;
+	else if (signal_name.startsWith("P"))
+		sr_quantity = sigrok::Quantity::POWER;
+	else if (signal_name.startsWith("F"))
+		sr_quantity = sigrok::Quantity::FREQUENCY;
+	else
+		assert("Unkown signal in PSU / Load");
+	*/
+
 	shared_ptr<devices::Channel> channel = make_shared<devices::Channel>(
 		sr_channel, Channel::ChannelType::AnalogChannel,
 		channel_group_name, aquisition_start_timestamp_);

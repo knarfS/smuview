@@ -24,13 +24,13 @@
 #include <QDir>
 #include <QFileDialog>
 #include <QFormLayout>
-#include <QTreeWidgetItem>
 
 #include "savedialog.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/devices/device.hpp"
 #include "src/devices/hardwaredevice.hpp"
+#include "src/widgets/signaltree.hpp"
 
 using std::ofstream;
 using std::string;
@@ -55,38 +55,7 @@ void SaveDialog::setup_ui(){
 
 	QFormLayout *form_layout = new QFormLayout();
 
-	// TODO hierarchy checkboxes
-	signal_tree_ = new QTreeWidget();
-	signal_tree_->setColumnCount(2);
-	signal_tree_->setSelectionMode(QTreeView::MultiSelection);
-
-	auto devices = session_.devices();
-	for (auto device : devices) {
-		// Tree root
-
-		// QTreeWidgetItem(QTreeWidget * parent, int type = Type)
-		QTreeWidgetItem *device_item = new QTreeWidgetItem(signal_tree_);
-		device_item->setText(0, device->full_name());
-		device_item->setText(1, "");
-
-		auto hw_device = static_pointer_cast<devices::HardwareDevice>(device);
-		for (shared_ptr<data::AnalogSignal> signal : hw_device->all_signals()) {
-			QTreeWidgetItem *signal_item = new QTreeWidgetItem();
-			signal_item->setText(0, signal->name());
-			signal_item->setText(1, signal->name());
-
-			QVariant var = QVariant::fromValue(device);
-			signal_item->setData(0, Qt::UserRole, var);
-
-			for (auto sel_signal : selected_signals_) {
-				if (sel_signal.get() == signal.get()) {
-					signal_item->setSelected(true);
-					break;
-				}
-			}
-			device_item->addChild(signal_item);
-		}
-	}
+	signal_tree_ = new widgets::SignalTree(session_, true, nullptr);
 	form_layout->addWidget(signal_tree_);
 
 	timestamps_combined_ = new QCheckBox(tr("Combine all time stamps"));
