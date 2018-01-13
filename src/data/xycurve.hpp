@@ -17,8 +17,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DATA_TIMECURVE_HPP
-#define DATA_TIMECURVE_HPP
+#ifndef DATA_XYCURVE_HPP
+#define DATA_XYCURVE_HPP
 
 #include <memory>
 #include <vector>
@@ -36,11 +36,12 @@ namespace data {
 
 class AnalogSignal;
 
-class TimeCurve : public BaseCurve
+class XYCurve : public BaseCurve
 {
 
 public:
-	TimeCurve(shared_ptr<AnalogSignal> signal);
+	XYCurve(shared_ptr<AnalogSignal> x_signal,
+		shared_ptr<AnalogSignal> y_signal);
 
 	QPointF sample( size_t i ) const;
 	size_t size() const;
@@ -56,7 +57,8 @@ public:
 	QString y_data_title() const;
 
 private:
-	shared_ptr<AnalogSignal> signal_;
+	shared_ptr<AnalogSignal> x_signal_;
+	shared_ptr<AnalogSignal> y_signal_;
 	double signal_start_timestamp_;
 	bool relative_time_;
 
@@ -65,4 +67,4 @@ private:
 } // namespace data
 } // namespace sv
 
-#endif // DATA_TIMECURVE_HPP
+#endif // DATA_XYCURVE_HPP

@@ -27,6 +27,7 @@
 #include "sourcesinkdevice.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
+#include "src/devices/channel.hpp"
 #include "src/devices/configurable.hpp"
 
 namespace sv {
@@ -45,6 +46,41 @@ SourceSinkDevice::SourceSinkDevice(
 		type_ = HardwareDevice::ELECTRONIC_LOAD;
 	else
 		assert("Unknown device");
+
+	// Preinitialize known fixed channels with a signal
+	for (auto chg_name_channels_pair : channel_group_name_map_) {
+		for (auto channel : chg_name_channels_pair.second) {
+			bool init = false;
+			const sigrok::Quantity *sr_quantity;
+			vector<const sigrok::QuantityFlag *> sr_quantity_flags; // TODO: AC/DC
+			const sigrok::Unit *sr_unit;
+			if (channel->internal_name().startsWith("V")) {
+				sr_quantity = sigrok::Quantity::VOLTAGE;
+				sr_unit = sigrok::Unit::VOLT;
+				init = true;
+			}
+			else if (channel->internal_name().startsWith("I")) {
+				sr_quantity = sigrok::Quantity::CURRENT;
+				sr_unit = sigrok::Unit::AMPERE;
+				init = true;
+			}
+			else if (channel->internal_name().startsWith("P")) {
+				sr_quantity = sigrok::Quantity::POWER;
+				sr_unit = sigrok::Unit::WATT;
+				init = true;
+			}
+			else if (channel->internal_name().startsWith("F")) {
+				sr_quantity = sigrok::Quantity::FREQUENCY;
+				sr_unit = sigrok::Unit::HERTZ;
+				init = true;
+			}
+
+			if (init) {
+				channel->set_fixed_signal(true);
+				channel->init_signal(sr_quantity, sr_quantity_flags, sr_unit);
+			}
+		}
+	}
 }
 
 SourceSinkDevice::~SourceSinkDevice()
@@ -60,7 +96,7 @@ void SourceSinkDevice::feed_in_meta(shared_ptr<sigrok::Meta> sr_meta)
 	// channel group the config key belongs.
 	shared_ptr<devices::Configurable> configurable;
 	if (configurables_.size() > 0)
-	configurable = configurables_.front();
+		configurable = configurables_.front();
 
 	for (auto entry : sr_meta->config()) {
 		switch (entry.first->id()) {

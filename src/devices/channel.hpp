@@ -97,6 +97,16 @@ public:
 	unsigned int index() const;
 
 	/**
+	 * Does this channel have just one signal, thats quantity doesn't chege?
+	 */
+	bool has_fixed_signal();
+
+	/**
+	 * Sets if this channel has just one signal, thats quantity doesn't chege
+	 */
+	void set_fixed_signal(bool has_fixed_signal);
+
+	/**
 	 * Gets the actual signal
 	 */
 	shared_ptr<data::BaseSignal> actual_signal();
@@ -141,6 +151,14 @@ public:
 	void set_colour(QColor colour);
 
 	/**
+	 * Inits a signal
+	 */
+	shared_ptr<data::BaseSignal> init_signal(
+		const sigrok::Quantity *sr_quantity,
+		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
+		const sigrok::Unit *sr_unit);
+
+	/**
 	 * Add a single sample to the channel
 	 */
 	void push_sample(void *sample,
@@ -160,14 +178,10 @@ public:
 	virtual void restore_settings(QSettings &settings);
 
 private:
-	shared_ptr<data::BaseSignal> init_signal(
-		const sigrok::Quantity *sr_quantity,
-		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
-		const sigrok::Unit *sr_unit);
-
 	shared_ptr<sigrok::Channel> sr_channel_;
 	ChannelType channel_type_;
 	double channel_start_timestamp_;
+	bool has_fixed_signal_;
 
 	shared_ptr<data::BaseSignal> actual_signal_;
 	map<quantity_t, shared_ptr<data::BaseSignal>> signal_map_;

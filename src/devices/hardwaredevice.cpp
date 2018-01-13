@@ -278,23 +278,6 @@ vector<shared_ptr<data::AnalogSignal>> HardwareDevice::all_signals() const
 shared_ptr<devices::Channel> HardwareDevice::init_channel(
 	shared_ptr<sigrok::Channel> sr_channel, QString channel_group_name)
 {
-	/*
-	 * TODO: Some channels/Signals are fixed (e.g. PSUs, Loads), channels
-	 *       should be defined as fixed
-	const sigrok::Quantity *sr_quantity;
-	QString signal_name = QString::fromStdString(sr_channel->name());
-	if (signal_name.startsWith("V"))
-		sr_quantity = sigrok::Quantity::VOLTAGE;
-	else if (signal_name.startsWith("I"))
-		sr_quantity = sigrok::Quantity::CURRENT;
-	else if (signal_name.startsWith("P"))
-		sr_quantity = sigrok::Quantity::POWER;
-	else if (signal_name.startsWith("F"))
-		sr_quantity = sigrok::Quantity::FREQUENCY;
-	else
-		assert("Unkown signal in PSU / Load");
-	*/
-
 	shared_ptr<devices::Channel> channel = make_shared<devices::Channel>(
 		sr_channel, Channel::ChannelType::AnalogChannel,
 		channel_group_name, aquisition_start_timestamp_);

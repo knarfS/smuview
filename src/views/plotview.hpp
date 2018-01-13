@@ -17,8 +17,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VIEWS_TIMEPLOTVIEW_HPP
-#define VIEWS_TIMEPLOTVIEW_HPP
+#ifndef VIEWS_PLOTVIEW_HPP
+#define VIEWS_PLOTVIEW_HPP
 
 #include <memory>
 
@@ -48,23 +48,26 @@ class Plot;
 
 namespace views {
 
-class TimePlotView : public BaseView
+class PlotView : public BaseView
 {
 	Q_OBJECT
 
 public:
-	TimePlotView(const Session& session,
+	PlotView(const Session& session,
 		shared_ptr<devices::Channel> channel,
 		QWidget* parent = nullptr);
-	TimePlotView(const Session& session,
+	PlotView(const Session& session,
 		shared_ptr<data::AnalogSignal> signal,
+		QWidget* parent = nullptr);
+	PlotView(const Session& session,
+		shared_ptr<data::AnalogSignal> x_signal,
+		shared_ptr<data::AnalogSignal> y_signal,
 		QWidget* parent = nullptr);
 
 	QString title() const;
 
 private:
 	shared_ptr<devices::Channel> channel_;
-	shared_ptr<data::AnalogSignal> signal_;
 	data::BaseCurve *curve_;
 
 	QAction *const action_zoom_in_;
@@ -99,5 +102,5 @@ private Q_SLOTS:
 } // namespace views
 } // namespace sv
 
-#endif // VIEWS_TIMEPLOTVIEW_HPP
+#endif // VIEWS_PLOTVIEW_HPP
 

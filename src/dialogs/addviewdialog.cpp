@@ -28,7 +28,7 @@
 #include "src/devices/channel.hpp"
 #include "src/devices/device.hpp"
 #include "src/devices/hardwaredevice.hpp"
-#include "src/views/timeplotview.hpp"
+#include "src/views/plotview.hpp"
 #include "src/views/valuepanelview.hpp"
 #include "src/widgets/signaltree.hpp"
 
@@ -130,14 +130,12 @@ void AddViewDialog::accept()
 		break;
 	case 2:
 		for (auto channel : plot_channel_tree_->selected_channels()) {
-			views_.push_back(
-				make_shared<views::TimePlotView>(session_, channel));
+			views_.push_back(make_shared<views::PlotView>(session_, channel));
 		}
 		for (auto signal : plot_channel_tree_->selected_signals()) {
 			//TODO
 			auto a_signal = static_pointer_cast<data::AnalogSignal>(signal);
-			views_.push_back(
-				make_shared<views::TimePlotView>(session_, a_signal));
+			views_.push_back(make_shared<views::PlotView>(session_, a_signal));
 		}
 
 		break;

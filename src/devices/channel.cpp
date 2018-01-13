@@ -60,6 +60,16 @@ shared_ptr<sigrok::Channel> Channel::sr_channel() const
 	return sr_channel_;
 }
 
+bool Channel::has_fixed_signal()
+{
+	return has_fixed_signal_;
+}
+
+void Channel::set_fixed_signal(bool has_fixed_signal)
+{
+	has_fixed_signal_ = has_fixed_signal;
+}
+
 shared_ptr<data::BaseSignal> Channel::actual_signal()
 {
 	return actual_signal_;
@@ -129,6 +139,28 @@ void Channel::set_colour(QColor colour)
 	colour_changed(colour);
 }
 
+shared_ptr<data::BaseSignal> Channel::init_signal(
+	const sigrok::Quantity *sr_quantity,
+	vector<const sigrok::QuantityFlag *> sr_quantity_flags,
+	const sigrok::Unit *sr_unit)
+{
+	// TODO: At the moment, only analog channels are supported
+	if (sr_channel_->type()->id() != SR_CHANNEL_ANALOG)
+		return nullptr;
+
+	qWarning() << "Channel::init_signal(): qf = " << sr_quantity_flags;
+	shared_ptr<data::AnalogSignal> signal = make_shared<data::AnalogSignal>(
+		sr_quantity, sr_quantity_flags, sr_unit,
+		internal_name_, channel_group_name_, channel_start_timestamp_);
+
+	quantity_t q_qf = make_pair(sr_quantity, sr_quantity_flags);
+	signal_map_.insert(
+		pair<quantity_t, shared_ptr<data::BaseSignal>>
+		(q_qf, signal));
+
+	return signal;
+}
+
 void Channel::push_sample(void *sample,
 	const sigrok::Quantity *sr_quantity,
 	vector<const sigrok::QuantityFlag *> sr_quantity_flags,
@@ -168,28 +200,6 @@ void Channel::restore_settings(QSettings &settings)
 	set_name(settings.value("name").toString());
 	set_enabled(settings.value("enabled").toBool());
 	set_colour(settings.value("colour").value<QColor>());
-}
-
-shared_ptr<data::BaseSignal> Channel::init_signal(
-	const sigrok::Quantity *sr_quantity,
-	vector<const sigrok::QuantityFlag *> sr_quantity_flags,
-	const sigrok::Unit *sr_unit)
-{
-	// TODO: At the moment, only analog channels are supported
-	if (sr_channel_->type()->id() != SR_CHANNEL_ANALOG)
-		return nullptr;
-
-	qWarning() << "Channel::init_signal(): qf = " << sr_quantity_flags;
-	shared_ptr<data::AnalogSignal> signal = make_shared<data::AnalogSignal>(
-		sr_quantity, sr_quantity_flags, sr_unit,
-		internal_name_, channel_group_name_, channel_start_timestamp_);
-
-	quantity_t q_qf = make_pair(sr_quantity, sr_quantity_flags);
-	signal_map_.insert(
-		pair<quantity_t, shared_ptr<data::BaseSignal>>
-		(q_qf, signal));
-
-	return signal;
 }
 
 } // namespace devices

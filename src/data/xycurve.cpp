@@ -21,100 +21,94 @@
 
 #include <QDateTime>
 
-#include "timecurve.hpp"
+#include "xycurve.hpp"
 #include "src/util.hpp"
 #include "src/data/analogsignal.hpp"
 
 namespace sv {
 namespace data {
 
-TimeCurve::TimeCurve(shared_ptr<AnalogSignal> signal) :
+XYCurve::XYCurve(shared_ptr<AnalogSignal> x_signal,
+		shared_ptr<AnalogSignal> y_signal) :
 	BaseCurve(),
-	signal_(signal),
+	x_signal_(x_signal),
+	y_signal_(y_signal),
 	relative_time_(true)
 {
 	//TODO
 	//signal_start_timestamp_ = signal->signal_start_timestamp();
 	signal_start_timestamp_ =
 		QDateTime::currentMSecsSinceEpoch() / (double)1000;
-	//qWarning() << "TimeCurve::TimeCurve(): signal_start_timestamp_ = " <<
+	//qWarning() << "XYCurve::XYCurve(): signal_start_timestamp_ = " <<
 	//	signal_start_timestamp_;
 }
 
-QPointF TimeCurve::sample(size_t i) const
+QPointF XYCurve::sample(size_t i) const
 {
 	//signal_data_->lock();
 
-	sample_t sample = signal_->get_sample(i);
+	// TODO: synchronize timestamps between signals, that are not
+	//       from the same frame
+	sample_t x_sample = x_signal_->get_sample(i);
+	sample_t y_sample = y_signal_->get_sample(i);
 
-	double timestamp = sample.first;
-	if (relative_time_)
-		timestamp -= signal_start_timestamp_;
-
-	QPointF sample_point(timestamp, sample.second);
+	QPointF sample_point(x_sample.second, y_sample.second);
 
 	//signal_data_->.unlock();
 
 	return sample_point;
 }
 
-size_t TimeCurve::size() const
+size_t XYCurve::size() const
 {
 	// TODO: Synchronize x/y sample data
-	return signal_->get_sample_count();
+	return x_signal_->get_sample_count();
 }
 
-QRectF TimeCurve::boundingRect() const
+QRectF XYCurve::boundingRect() const
 {
-	double first_timestamp = signal_->first_timestamp();
-	double last_timestamp = signal_->last_timestamp();
-	if (relative_time_) {
-		first_timestamp = 0.;
-		last_timestamp -= signal_start_timestamp_;
-	}
-
 	// top left, bottom right
 	return QRectF(
-		QPointF(first_timestamp, signal_->max_value()),
-		QPointF(last_timestamp, signal_->min_value()));
+		QPointF(x_signal_->min_value(), y_signal_->max_value()),
+		QPointF(x_signal_->max_value(), y_signal_->min_value()));
 }
 
-void TimeCurve::set_relative_time(bool is_relative_time)
+void XYCurve::set_relative_time(bool is_relative_time)
 {
 	relative_time_ = is_relative_time;
 }
 
-bool TimeCurve::is_relative_time() const
+bool XYCurve::is_relative_time() const
 {
 	return relative_time_;
 }
 
-QString TimeCurve::x_data_quantity() const
+QString XYCurve::x_data_quantity() const
 {
-	return util::format_sr_quantity(sigrok::Quantity::TIME);
+	return x_signal_->quantity();
 }
 
-QString TimeCurve::x_data_unit() const
+QString XYCurve::x_data_unit() const
 {
-	return util::format_sr_unit(sigrok::Unit::SECOND);
+	return x_signal_->unit();
 }
 
-QString TimeCurve::x_data_title() const
+QString XYCurve::x_data_title() const
 {
 	return QString("%1 [%2]").arg(x_data_quantity()).arg(x_data_unit());
 }
 
-QString TimeCurve::y_data_quantity() const
+QString XYCurve::y_data_quantity() const
 {
-	return signal_->quantity();
+	return y_signal_->quantity();
 }
 
-QString TimeCurve::y_data_unit() const
+QString XYCurve::y_data_unit() const
 {
-	return signal_->unit();
+	return y_signal_->unit();
 }
 
-QString TimeCurve::y_data_title() const
+QString XYCurve::y_data_title() const
 {
 	return QString("%1 [%2]").arg(y_data_quantity()).arg(y_data_unit());
 }

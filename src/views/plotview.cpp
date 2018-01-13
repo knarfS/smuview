@@ -21,20 +21,22 @@
 #include <QBoxLayout>
 #include <QVBoxLayout>
 
-#include "timeplotview.hpp"
+#include "plotview.hpp"
 #include "src/session.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/data/basecurve.hpp"
 #include "src/data/timecurve.hpp"
+#include "src/data/xycurve.hpp"
 #include "src/devices/channel.hpp"
 #include "src/widgets/plot.hpp"
 
 using std::dynamic_pointer_cast;
+using std::static_pointer_cast;
 
 namespace sv {
 namespace views {
 
-TimePlotView::TimePlotView(const Session &session,
+PlotView::PlotView(const Session &session,
 		shared_ptr<devices::Channel> channel,
 		QWidget *parent) :
 	BaseView(session, parent),
@@ -46,14 +48,13 @@ TimePlotView::TimePlotView(const Session &session,
 	action_add_diff_marker_(new QAction(this)),
 	action_config_graph_(new QAction(this))
 {
+	shared_ptr<data::AnalogSignal> signal;
 	if (channel_->actual_signal())
-		signal_ = dynamic_pointer_cast<data::AnalogSignal>(
+		signal = static_pointer_cast<data::AnalogSignal>(
 			channel_->actual_signal());
-	else
-		signal_ = nullptr;
 
-	if (signal_)
-		curve_ = (data::BaseCurve *)(new data::TimeCurve(signal_));
+	if (signal)
+		curve_ = (data::BaseCurve *)(new data::TimeCurve(signal));
 	else
 		curve_ = nullptr;
 
@@ -69,12 +70,11 @@ TimePlotView::TimePlotView(const Session &session,
 	plot->start();
 }
 
-TimePlotView::TimePlotView(const Session& session,
+PlotView::PlotView(const Session& session,
 		shared_ptr<data::AnalogSignal> signal,
 		QWidget* parent) :
 	BaseView(session, parent),
 	channel_(nullptr),
-	signal_(signal),
 	action_zoom_in_(new QAction(this)),
 	action_zoom_out_(new QAction(this)),
 	action_zoom_fit_best_(new QAction(this)),
@@ -82,8 +82,8 @@ TimePlotView::TimePlotView(const Session& session,
 	action_add_diff_marker_(new QAction(this)),
 	action_config_graph_(new QAction(this))
 {
-	if (signal_)
-		curve_ = (data::BaseCurve *)(new data::TimeCurve(signal_));
+	if (signal)
+		curve_ = (data::BaseCurve *)(new data::TimeCurve(signal));
 	else
 		curve_ = nullptr;
 
@@ -95,12 +95,38 @@ TimePlotView::TimePlotView(const Session& session,
 	plot->start();
 }
 
-QString TimePlotView::title() const
+PlotView::PlotView(const Session& session,
+		shared_ptr<data::AnalogSignal> x_signal,
+		shared_ptr<data::AnalogSignal> y_signal,
+		QWidget* parent) :
+	BaseView(session, parent),
+	channel_(nullptr),
+	action_zoom_in_(new QAction(this)),
+	action_zoom_out_(new QAction(this)),
+	action_zoom_fit_best_(new QAction(this)),
+	action_add_marker_(new QAction(this)),
+	action_add_diff_marker_(new QAction(this)),
+	action_config_graph_(new QAction(this))
+{
+	if (x_signal && y_signal)
+		curve_ = (data::BaseCurve *)(new data::XYCurve(x_signal, y_signal));
+	else
+		curve_ = nullptr;
+
+	setup_ui();
+	setup_toolbar();
+	connect_signals();
+	init_values();
+
+	plot->start();
+}
+
+QString PlotView::title() const
 {
 	return tr("Plot"); // TODO: + Quantity
 }
 
-void TimePlotView::setup_ui()
+void PlotView::setup_ui()
 {
 	QVBoxLayout *layout = new QVBoxLayout();
 
@@ -112,7 +138,7 @@ void TimePlotView::setup_ui()
 	this->centralWidget->setLayout(layout);
 }
 
-void TimePlotView::setup_toolbar()
+void PlotView::setup_toolbar()
 {
 	action_zoom_in_->setText(tr("Zoom In..."));
 	action_zoom_in_->setIcon(
@@ -174,56 +200,55 @@ void TimePlotView::setup_toolbar()
 	this->addToolBar(Qt::TopToolBarArea, toolbar);
 }
 
-void TimePlotView::connect_signals()
+void PlotView::connect_signals()
 {
 }
 
-void TimePlotView::init_values()
+void PlotView::init_values()
 {
 }
 
-void TimePlotView::on_signal_changed()
+void PlotView::on_signal_changed()
 {
 	if (!channel_)
 		return;
 
+	shared_ptr<data::AnalogSignal> signal;
 	if (channel_->actual_signal())
-		signal_ = dynamic_pointer_cast<data::AnalogSignal>(
+		signal = dynamic_pointer_cast<data::AnalogSignal>(
 			channel_->actual_signal());
-	else
-		signal_ = nullptr;
 
-	if (signal_) {
-		curve_ = (data::BaseCurve *)(new data::TimeCurve(signal_));
+	if (signal) {
+		curve_ = (data::BaseCurve *)(new data::TimeCurve(signal));
 		plot->set_curve_data(curve_);
 	}
 	else
 		curve_ = nullptr;
 }
 
-void TimePlotView::on_action_zoom_in_triggered()
+void PlotView::on_action_zoom_in_triggered()
 {
 }
 
-void TimePlotView::on_action_zoom_out_triggered()
+void PlotView::on_action_zoom_out_triggered()
 {
 }
 
-void TimePlotView::on_action_zoom_fit_best_triggered()
+void PlotView::on_action_zoom_fit_best_triggered()
 {
 }
 
 // TODO: connect directly to plit?
-void TimePlotView::on_action_add_marker_triggered()
+void PlotView::on_action_add_marker_triggered()
 {
 	plot->add_marker();
 }
 
-void TimePlotView::on_action_add_diff_marker_triggered()
+void PlotView::on_action_add_diff_marker_triggered()
 {
 }
 
-void TimePlotView::on_action_config_graph_triggered()
+void PlotView::on_action_config_graph_triggered()
 {
 }
 

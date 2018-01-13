@@ -147,6 +147,7 @@ set(smuview_SOURCES
   src/data/basesignal.cpp
   src/data/quantity.cpp
   src/data/timecurve.cpp
+  src/data/xycurve.cpp
   src/devices/channel.cpp
   src/devices/configurable.cpp
   src/devices/device.cpp
@@ -165,10 +166,10 @@ set(smuview_SOURCES
   #src/toolbars/maintoolbar.cpp
   src/views/baseview.cpp
   src/views/measurementcontrolview.cpp
+  src/views/plotview.cpp
   src/views/powerpanelview.cpp
   src/views/sinkcontrolview.cpp
   src/views/sourcecontrolview.cpp
-  src/views/timeplotview.cpp
   src/views/valuepanelview.cpp
   src/widgets/controlbutton.cpp
   src/widgets/lcddisplay.cpp

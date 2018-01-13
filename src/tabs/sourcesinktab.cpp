@@ -26,12 +26,13 @@
 #include "src/tabs/devicetab.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
+#include "src/devices/channel.hpp"
 #include "src/devices/configurable.hpp"
 #include "src/devices/hardwaredevice.hpp"
 #include "src/views/sinkcontrolview.hpp"
 #include "src/views/sourcecontrolview.hpp"
+#include "src/views/plotview.hpp"
 #include "src/views/powerpanelview.hpp"
-#include "src/views/timeplotview.hpp"
 
 namespace sv {
 namespace tabs {
@@ -58,50 +59,41 @@ void SourceSinkTab::setup_ui()
 		}
 	}
 
-	/*
-	const auto channel_name_map = device_->channel_name_map();
+	// Get signals by their channel group. The signals in a channel are "fixed"
+	// for power supplys and loads.
+	for (auto chg_name_signals_pair : device_->channel_group_name_map()) {
+		shared_ptr<data::AnalogSignal> voltage_signal;
+		shared_ptr<data::AnalogSignal> current_signal;
+		auto channels = chg_name_signals_pair.second;
+		for (auto channel : channels) {
+			auto signal = static_pointer_cast<data::AnalogSignal>(
+				channel->actual_signal());
 
-	for (auto ch_name_channel_pair : channel_name_map) {
-		auto channel = ch_name_channel_pair.second;
+			if (signal->sr_quantity() == sigrok::Quantity::VOLTAGE)
+				voltage_signal = signal;
+			if (signal->sr_quantity() == sigrok::Quantity::CURRENT)
+				current_signal = signal;
 
-		// Power panel(s)
-		if (quantity_signal_map.count(sigrok::Quantity::VOLTAGE) != 0 &&
-				quantity_signal_map.count(sigrok::Quantity::CURRENT) != 0) {
+			// Value plot(s)
+			shared_ptr<views::BaseView> value_plot_view =
+				make_shared<views::PlotView>(session_, signal);
+			add_view(value_plot_view, Qt::BottomDockWidgetArea, session_);
+		}
+
+		if (voltage_signal && current_signal) {
+			// PowerPanel(s)
 			shared_ptr<views::BaseView> power_panel_view =
 				make_shared<views::PowerPanelView>(session_,
-					quantity_signal_map[sigrok::Quantity::VOLTAGE],
-					quantity_signal_map[sigrok::Quantity::CURRENT]);
+					voltage_signal, current_signal);
 			add_view(power_panel_view, Qt::TopDockWidgetArea, session_);
-		}
 
-		// Voltage plot(s)
-		if (quantity_signal_map.count(sigrok::Quantity::VOLTAGE) != 0) {
-			shared_ptr<views::BaseView> voltage_plot_view =
-				make_shared<views::TimePlotView>(
-					session_, quantity_signal_map[sigrok::Quantity::VOLTAGE]);
-			add_view(voltage_plot_view, Qt::BottomDockWidgetArea, session_);
-		}
-
-		// Current plot(s)
-		if (quantity_signal_map.count(sigrok::Quantity::CURRENT) != 0) {
-			shared_ptr<views::BaseView> current_plot_view =
-				make_shared<views::TimePlotView>(
-					session_, quantity_signal_map[sigrok::Quantity::CURRENT]);
-			add_view(current_plot_view, Qt::BottomDockWidgetArea, session_);
+			// UI Plots
+			shared_ptr<views::BaseView> ui_plot_view =
+				make_shared<views::PlotView>(session_,
+					voltage_signal, current_signal);
+			add_view(ui_plot_view, Qt::BottomDockWidgetArea, session_);
 		}
 	}
-	*/
-
-	// UI plot(s)
-	/*
-	if (device_->current_signal()) {
-		shared_ptr<views::BaseView> ui_plot_view =
-			make_shared<views::PlotView>(session_,
-				device_->voltage_signal()->analog_data(),
-				device_->current_signal()->analog_data());
-		add_view(ui_plot_view, Qt::BottomDockWidgetArea, session_);
-	}
-	*/
 }
 
 } // namespace tabs

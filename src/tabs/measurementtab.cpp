@@ -27,7 +27,7 @@
 #include "src/devices/configurable.hpp"
 #include "src/devices/measurementdevice.hpp"
 #include "src/views/measurementcontrolview.hpp"
-#include "src/views/timeplotview.hpp"
+#include "src/views/plotview.hpp"
 #include "src/views/valuepanelview.hpp"
 
 namespace sv {
@@ -63,7 +63,7 @@ void MeasurementTab::setup_ui()
 
 		// Value plot(s)
 		shared_ptr<views::BaseView> value_plot_view =
-			make_shared<views::TimePlotView>(session_, channel);
+			make_shared<views::PlotView>(session_, channel);
 		add_view(value_plot_view, Qt::BottomDockWidgetArea, session_);
 	}
 }
