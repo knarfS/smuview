@@ -114,15 +114,15 @@ void SaveDialog::save(QString file_name)
 			max_sample_count = sample_count;
 		sample_counts.push_back(sample_count);
 
-		device_header_line.append(start_sep).append("Device");
-		device_header_line.append(sep).append("Device");
-		chg_name_header_line.append(start_sep).append("ChannelGroup");
-		chg_name_header_line.append(sep).append("ChannelGroup");
-		ch_name_header_line.append(start_sep).append("Channel");
-		ch_name_header_line.append(sep).append("Channel");
+		device_header_line.append(start_sep).append("Device"); // Time
+		device_header_line.append(sep).append("Device"); // Value
+		chg_name_header_line.append(start_sep).append("ChannelGroup"); // Time
+		chg_name_header_line.append(sep).append("ChannelGroup"); // Value
+		ch_name_header_line.append(start_sep).append("Channel"); // Time
+		ch_name_header_line.append(sep).append("Channel"); // Value
 		signal_name_header_line.append(start_sep).
-			append("Time ").append(signal->name());
-		signal_name_header_line.append(sep).append(signal->name());
+			append("Time ").append(signal->name()); // Time
+		signal_name_header_line.append(sep).append(signal->name()); // Value
 
 		start_sep = sep;
 	}
@@ -166,12 +166,86 @@ void SaveDialog::save_combined(QString file_name)
 	ofstream output_file;
 	string str_file_name = file_name.toStdString();
 	string str_separator = separator_edit_->text().toStdString();
-	vector<shared_ptr<data::AnalogSignal>> print_signals;
-	size_t signals_count = 0;
-	vector<size_t> signal_size;
-	vector<size_t> signal_pos;
+	vector<size_t> sample_counts;
+	vector<size_t> sample_pos;
 
+	output_file.open(str_file_name);
+
+	auto signals = signal_tree_->selected_signals();
 	bool relative_time = !time_absolut_->isChecked();
+	QString sep = separator_edit_->text();
+
+	// Header
+	QString device_header_line("Time"); // Time
+	QString chg_name_header_line("Time"); // Time
+	QString ch_name_header_line("Time"); // Time
+	QString signal_name_header_line("Time"); // Time
+	for (auto signal : signals) {
+		auto a_signal = static_pointer_cast<data::AnalogSignal>(signal);
+		sample_counts.push_back(a_signal->get_sample_count());
+		sample_pos.push_back(0);
+
+		device_header_line.append(sep).append("Device"); // Value
+		chg_name_header_line.append(sep).append("ChannelGroup"); // Value
+		ch_name_header_line.append(sep).append("Channel"); // Value
+		signal_name_header_line.append(sep).append(signal->name()); // Value
+	}
+	output_file << device_header_line.toStdString() << std::endl;
+	output_file << chg_name_header_line.toStdString() << std::endl;
+	output_file << ch_name_header_line.toStdString() << std::endl;
+	output_file << signal_name_header_line.toStdString() << std::endl;
+
+	// Data
+	bool finish = false;
+	while (!finish) {
+		qWarning() << "save_combined()";
+		double next_timestamp = -1;
+		for (size_t i=0; i<signals.size(); i++) {
+			auto a_signal = static_pointer_cast<data::AnalogSignal>(signals[i]);
+			double timestamp =
+				a_signal->get_sample(sample_pos[i++], relative_time).first;
+
+			qWarning() << "save_combined() *3*";
+
+			if (next_timestamp < 0 || timestamp < next_timestamp)
+				next_timestamp = timestamp;
+
+			qWarning() << "save_combined(): 1. " << a_signal->name();
+		}
+		QString line = QString("%1").arg(next_timestamp);
+
+		for (size_t i=0; i<signals.size(); i++) {
+			line.append(sep);
+
+			if (sample_counts[i] <= sample_pos[i]) {
+				finish = true;
+				continue;
+			}
+			finish = false;
+
+			auto a_signal = static_pointer_cast<data::AnalogSignal>(signals[i]);
+			data::sample_t sample =
+				a_signal->get_sample(sample_pos[i], relative_time);
+
+			qWarning() << "save_combined(): 2. " << a_signal->name();
+
+			double timestamp = sample.first;
+			if (timestamp == next_timestamp) {
+				line.append(QString("%1").arg(sample.second));
+				qWarning() << "save_combined(): 2. " << a_signal->name() << " ADDED";
+				++sample_pos[i];
+			}
+		}
+		output_file << line.toStdString() << std::endl;
+	}
+
+	output_file.close();
+
+
+
+
+
+
 
 /*
 	auto smart_ptr = std::make_shared<QFile>();
@@ -189,6 +263,7 @@ void SaveDialog::save_combined(QString file_name)
 	}
 */
 
+/*
 	auto devices = session_.devices();
 	for (auto device : devices) {
 		auto hw_device = static_pointer_cast<devices::HardwareDevice>(device);
@@ -245,8 +320,7 @@ void SaveDialog::save_combined(QString file_name)
 		}
 		output_file << std::endl;
 	}
-
-	output_file.close();
+*/
 }
 
 void SaveDialog::accept()
