@@ -58,7 +58,7 @@ public:
 
 	size_t get_sample_count() const;
 	vector<double> get_samples(size_t start_sample, size_t end_sample) const;
-	sample_t get_sample(size_t pos) const;
+	sample_t get_sample(size_t pos, bool relative_time) const;
 
 	void push_sample(void *sample,
 		const sigrok::Quantity *sr_quantity,
@@ -76,8 +76,8 @@ public:
 	*/
 
 	double signal_start_timestamp() const;
-	double first_timestamp() const;
-	double last_timestamp() const;
+	double first_timestamp(bool relative_time) const;
+	double last_timestamp(bool relative_time) const;
 	double last_value() const;
 	double min_value() const;
 	double max_value() const;
@@ -88,7 +88,6 @@ private:
 	size_t sample_count_;
 
 	double signal_start_timestamp_;
-	double first_timestamp_;
 	double last_timestamp_;
 	double last_value_;
 	double min_value_;

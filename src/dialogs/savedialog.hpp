@@ -41,6 +41,10 @@ namespace data {
 class AnalogSignal;
 }
 
+namespace widgets {
+class SignalTree;
+}
+
 namespace dialogs {
 
 class SaveDialog : public QDialog
@@ -54,13 +58,13 @@ public:
 
 private:
 	void setup_ui();
-	void save(QString file_name, QString separator);
-	void save_combined(QString file_name, QString separator);
+	void save(QString file_name);
+	void save_combined(QString file_name);
 
 	const Session &session_;
 	const vector<shared_ptr<data::AnalogSignal>> selected_signals_;
 
-	QTreeWidget *signal_tree_;
+	widgets::SignalTree *signal_tree_;
 	QCheckBox *timestamps_combined_;
 	QCheckBox *time_absolut_;
 	QLineEdit *separator_edit_;

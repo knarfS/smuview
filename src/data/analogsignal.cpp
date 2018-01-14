@@ -51,6 +51,9 @@ AnalogSignal::AnalogSignal(
 	min_value_(std::numeric_limits<short>::max()),
 	max_value_(std::numeric_limits<short>::min())
 {
+	// TODO
+	signal_start_timestamp_ =
+		QDateTime::currentMSecsSinceEpoch() / (double)1000;
 	qWarning() << "Init analog signal " << name_ <<
 		", signal_start_timestamp_ = " << signal_start_timestamp_;
 
@@ -81,6 +84,7 @@ vector<double> AnalogSignal::get_samples(
 	assert(start_sample <= end_sample);
 
 	// TODO: lock_guard<recursive_mutex> lock(mutex_);
+	// TODO: relative time
 
 	vector<double>::const_iterator first = data_->begin() + start_sample;
 	vector<double>::const_iterator last = data_->begin() + end_sample; // + 1
@@ -89,15 +93,18 @@ vector<double> AnalogSignal::get_samples(
 	return sub_samples;
 }
 
-sample_t AnalogSignal::get_sample(size_t pos) const
+sample_t AnalogSignal::get_sample(size_t pos, bool is_relative_time) const
 {
 	//assert(pos <= sample_count_);
 
  	// TODO: retrun reference (&double)?
 
 	if (pos < sample_count_) {
-		//qWarning() << "AnalogSignal::get_sample(" << pos << "): sample = " << time_->at(pos) << ", " << data_->at(pos);
-		return make_pair(time_->at(pos), data_->at(pos));
+		double timestamp = time_->at(pos);
+		if (is_relative_time)
+			timestamp -= signal_start_timestamp_;
+		//qWarning() << "AnalogSignal::get_sample(" << pos << "): sample = " << timestamp << ", " << data_->at(pos);
+		return make_pair(timestamp, data_->at(pos));
 	}
 
 	//qWarning() << "AnalogSignal::get_sample(" << pos << "): sample_count_ = " << sample_count_;
@@ -185,16 +192,27 @@ double AnalogSignal::signal_start_timestamp() const
 	return signal_start_timestamp_;
 }
 
-double AnalogSignal::first_timestamp() const
+double AnalogSignal::first_timestamp(bool relative_time) const
 {
-	if (time_->size() > 0)
-		return time_->front();
-	else
+	if (time_->size() == 0)
 		return 0.;
+
+	if (relative_time)
+		return time_->front() - signal_start_timestamp_;
+	else
+		return time_->front();
 }
 
-double AnalogSignal::last_timestamp() const
+double AnalogSignal::last_timestamp(bool relative_time) const
 {
+	if (time_->size() == 0)
+		return 0.;
+
+	if (relative_time)
+		return last_timestamp_ - signal_start_timestamp_;
+	else
+		return last_timestamp_;
+
 	return last_timestamp_;
 }
 

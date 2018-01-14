@@ -19,8 +19,6 @@
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
-#include <QDateTime>
-
 #include "timecurve.hpp"
 #include "src/util.hpp"
 #include "src/data/analogsignal.hpp"
@@ -33,25 +31,14 @@ TimeCurve::TimeCurve(shared_ptr<AnalogSignal> signal) :
 	signal_(signal),
 	relative_time_(true)
 {
-	//TODO
-	//signal_start_timestamp_ = signal->signal_start_timestamp();
-	signal_start_timestamp_ =
-		QDateTime::currentMSecsSinceEpoch() / (double)1000;
-	//qWarning() << "TimeCurve::TimeCurve(): signal_start_timestamp_ = " <<
-	//	signal_start_timestamp_;
 }
 
 QPointF TimeCurve::sample(size_t i) const
 {
 	//signal_data_->lock();
 
-	sample_t sample = signal_->get_sample(i);
-
-	double timestamp = sample.first;
-	if (relative_time_)
-		timestamp -= signal_start_timestamp_;
-
-	QPointF sample_point(timestamp, sample.second);
+	sample_t sample = signal_->get_sample(i, relative_time_);
+	QPointF sample_point(sample.first, sample.second);
 
 	//signal_data_->.unlock();
 
@@ -66,17 +53,10 @@ size_t TimeCurve::size() const
 
 QRectF TimeCurve::boundingRect() const
 {
-	double first_timestamp = signal_->first_timestamp();
-	double last_timestamp = signal_->last_timestamp();
-	if (relative_time_) {
-		first_timestamp = 0.;
-		last_timestamp -= signal_start_timestamp_;
-	}
-
 	// top left, bottom right
 	return QRectF(
-		QPointF(first_timestamp, signal_->max_value()),
-		QPointF(last_timestamp, signal_->min_value()));
+		QPointF(signal_->first_timestamp(relative_time_), signal_->max_value()),
+		QPointF(signal_->last_timestamp(relative_time_), signal_->min_value()));
 }
 
 void TimeCurve::set_relative_time(bool is_relative_time)

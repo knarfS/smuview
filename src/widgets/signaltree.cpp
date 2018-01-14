@@ -73,7 +73,7 @@ vector<shared_ptr<devices::Channel>> SignalTree::selected_channels()
 vector<shared_ptr<data::BaseSignal>> SignalTree::selected_signals()
 {
 	vector<shared_ptr<data::BaseSignal>> signals;
-	for (auto item : this->selectedItems()) {
+	for (auto item : this->checked_items()) {
 		QVariant data = item->data(0, Qt::UserRole);
 		if (data.isNull())
 			continue;

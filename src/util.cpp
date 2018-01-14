@@ -25,6 +25,7 @@
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
+#include <QDateTime>
 #include <QDebug>
 #include <QTextStream>
 
@@ -471,6 +472,14 @@ QString format_time_minutes(const Timestamp& t, signed precision, bool sign)
 	}
 
 	return s;
+}
+
+QString format_time_date(double t)
+{
+	QDateTime timestamp;
+	timestamp.setMSecsSinceEpoch(t*1000);
+	QString date = timestamp.toString("yyyy.MM.dd hh:mm:ss.zzz");
+	return date;
 }
 
 vector<string> split_string(string text, string separator)

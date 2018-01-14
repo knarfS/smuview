@@ -199,8 +199,8 @@ void MainWindow::setup_ui()
 		this, SLOT(on_action_add_device_triggered()));
 
 	add_user_tab_button_ = new QToolButton();
-	add_user_tab_button_->setIcon(QIcon::fromTheme("document-new",
-		QIcon(":/icons/document-new.png")));
+	add_user_tab_button_->setIcon(QIcon::fromTheme("tab-new",
+		QIcon(":/icons/tab-new.png")));
 	add_user_tab_button_->setToolTip(tr("Add new user tab"));
 	add_user_tab_button_->setAutoRaise(true);
 	connect(add_user_tab_button_, SIGNAL(clicked(bool)),

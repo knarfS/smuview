@@ -35,12 +35,6 @@ XYCurve::XYCurve(shared_ptr<AnalogSignal> x_signal,
 	y_signal_(y_signal),
 	relative_time_(true)
 {
-	//TODO
-	//signal_start_timestamp_ = signal->signal_start_timestamp();
-	signal_start_timestamp_ =
-		QDateTime::currentMSecsSinceEpoch() / (double)1000;
-	//qWarning() << "XYCurve::XYCurve(): signal_start_timestamp_ = " <<
-	//	signal_start_timestamp_;
 }
 
 QPointF XYCurve::sample(size_t i) const
@@ -49,8 +43,8 @@ QPointF XYCurve::sample(size_t i) const
 
 	// TODO: synchronize timestamps between signals, that are not
 	//       from the same frame
-	sample_t x_sample = x_signal_->get_sample(i);
-	sample_t y_sample = y_signal_->get_sample(i);
+	sample_t x_sample = x_signal_->get_sample(i, relative_time_);
+	sample_t y_sample = y_signal_->get_sample(i, relative_time_);
 
 	QPointF sample_point(x_sample.second, y_sample.second);
 

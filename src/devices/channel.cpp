@@ -148,11 +148,11 @@ shared_ptr<data::BaseSignal> Channel::init_signal(
 	if (sr_channel_->type()->id() != SR_CHANNEL_ANALOG)
 		return nullptr;
 
-	qWarning() << "Channel::init_signal(): qf = " << sr_quantity_flags;
 	shared_ptr<data::AnalogSignal> signal = make_shared<data::AnalogSignal>(
 		sr_quantity, sr_quantity_flags, sr_unit,
 		internal_name_, channel_group_name_, channel_start_timestamp_);
 
+	actual_signal_ = signal;
 	quantity_t q_qf = make_pair(sr_quantity, sr_quantity_flags);
 	signal_map_.insert(
 		pair<quantity_t, shared_ptr<data::BaseSignal>>
@@ -178,7 +178,7 @@ void Channel::push_sample(void *sample, double timestamp,
 {
 	quantity_t q_qf = make_pair(sr_quantity, sr_quantity_flags);
 	if (signal_map_.count(q_qf) == 0) {
-		actual_signal_ = init_signal(sr_quantity, sr_quantity_flags, sr_unit);
+		init_signal(sr_quantity, sr_quantity_flags, sr_unit);
 		Q_EMIT signal_changed();
 		qWarning() << "Channel::push_sample(): " << internal_name_ <<
 			" - No signal found: " << actual_signal_->name();

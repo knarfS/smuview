@@ -186,6 +186,20 @@ QString format_time_minutes(const Timestamp& t, signed precision = 0,
 	bool sign = true);
 
 /**
+ * Formats the given timestamp as a date using
+ * "yyyy.MM.dd hh:mm:ss.zzz" QDateTime.toString() format.
+ *
+ * The number of subsecond digits can be influenced using the
+ * 'precision' parameter.
+ *
+ * @param t The value to format.
+ * @param precision The number of digits after the decimal separator.
+ *
+ * @return The formatted value.
+ */
+QString format_time_date(double t);
+
+/**
  * Split a string into tokens at occurences of the separator.
  *
  * @param[in] text The input string to split.

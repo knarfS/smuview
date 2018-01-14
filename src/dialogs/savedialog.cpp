@@ -21,11 +21,17 @@
 #include <fstream>
 #include <string>
 
+#include <QDebug>
 #include <QDir>
 #include <QFileDialog>
 #include <QFormLayout>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QVBoxLayout>
 
 #include "savedialog.hpp"
+#include "src/util.hpp"
+#include "src/data/analogsignal.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/devices/device.hpp"
@@ -50,80 +56,122 @@ SaveDialog::SaveDialog(const Session &session,
 	setup_ui();
 }
 
-void SaveDialog::setup_ui(){
-	setWindowTitle(tr("Save"));
+void SaveDialog::setup_ui()
+{
+	this->setWindowTitle(tr("Save Signals"));
+
+	QVBoxLayout *main_layout = new QVBoxLayout;
+
+	signal_tree_ = new widgets::SignalTree(session_, true, nullptr);
+	main_layout->addWidget(signal_tree_);
 
 	QFormLayout *form_layout = new QFormLayout();
 
-	signal_tree_ = new widgets::SignalTree(session_, true, nullptr);
-	form_layout->addWidget(signal_tree_);
-
 	timestamps_combined_ = new QCheckBox(tr("Combine all time stamps"));
-	form_layout->addRow(timestamps_combined_);
+	form_layout->addRow("", timestamps_combined_);
 
 	time_absolut_ = new QCheckBox(tr("Absolut time"));
-	form_layout->addRow(time_absolut_);
+	form_layout->addRow("", time_absolut_);
 
 	separator_edit_ = new QLineEdit();
 	separator_edit_->setText(",");
 	form_layout->addRow(tr("CSV separator"), separator_edit_);
 
+	main_layout->addLayout(form_layout);
+
 	button_box_ = new QDialogButtonBox(
 		QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
-	form_layout->addWidget(button_box_);
+	main_layout->addWidget(button_box_);
 	connect(button_box_, SIGNAL(accepted()), this, SLOT(accept()));
 	connect(button_box_, SIGNAL(rejected()), this, SLOT(reject()));
 
-	this->setLayout(form_layout);
+	this->setLayout(main_layout);
 }
 
-void SaveDialog::save(QString file_name, QString separator)
+void SaveDialog::save(QString file_name)
 {
 	ofstream output_file;
 	string str_file_name = file_name.toStdString();
-	string str_separator = separator.toStdString();
-	size_t signal_count = 0;
-	size_t sample_count = 0;
+	string str_separator = separator_edit_->text().toStdString();
+	vector<size_t> sample_counts;
 
 	output_file.open(str_file_name);
 
-	// TODO: No tailing ","
+	auto signals = signal_tree_->selected_signals();
+	bool relative_time = !time_absolut_->isChecked();
+	QString sep = separator_edit_->text();
+	size_t max_sample_count = 0;
 
-	for (auto signal : selected_signals_) {
-		// TODO signal names
-		if (signal) {
-			sample_count = signal->get_sample_count();
-			output_file << "Time" << signal_count << str_separator
-				<< signal->name().toStdString() << str_separator;
-			signal_count++;
-		}
+	// Header
+	QString start_sep("");
+	QString device_header_line("");
+	QString chg_name_header_line("");
+	QString ch_name_header_line("");
+	QString signal_name_header_line("");
+	for (auto signal : signals) {
+		size_t sample_count = signal->get_sample_count();
+		if (sample_count > max_sample_count)
+			max_sample_count = sample_count;
+		sample_counts.push_back(sample_count);
+
+		device_header_line.append(start_sep).append("Device");
+		device_header_line.append(sep).append("Device");
+		chg_name_header_line.append(start_sep).append("ChannelGroup");
+		chg_name_header_line.append(sep).append("ChannelGroup");
+		ch_name_header_line.append(start_sep).append("Channel");
+		ch_name_header_line.append(sep).append("Channel");
+		signal_name_header_line.append(start_sep).
+			append("Time ").append(signal->name());
+		signal_name_header_line.append(sep).append(signal->name());
+
+		start_sep = sep;
 	}
-	output_file << std::endl;
+	output_file << device_header_line.toStdString() << std::endl;
+	output_file << chg_name_header_line.toStdString() << std::endl;
+	output_file << ch_name_header_line.toStdString() << std::endl;
+	output_file << signal_name_header_line.toStdString() << std::endl;
 
+	// Data
 	// TODO: we asume here, that the vector size is the same for all vectors....
+	for (size_t i = 0; i < max_sample_count; i++) {
+		start_sep = "";
+		QString line("");
+		for (size_t j = 0; j < signals.size(); j++) {
+			size_t sample_count = sample_counts[j];
+			if (sample_count < i)
+				continue;
 
-	for (size_t i = 0; i < sample_count; i++) {
-		for (size_t j = 0; j < signal_count; j++) {
-			data::sample_t sample = selected_signals_.at(j)->get_sample(i);
-			output_file
-				<< sample.first << str_separator
-				<< sample.first << str_separator;
+			auto a_signal = static_pointer_cast<data::AnalogSignal>(
+				signals.at(j));
+			data::sample_t sample = a_signal->get_sample(i, relative_time);
+
+			QString time;
+			if (relative_time)
+				time = QString("%1").arg(sample.first);
+			else
+				time = util::format_time_date(sample.first);
+			line.append(QString("%1%2%3%4").arg(start_sep).arg(time).
+				arg(sep).arg(sample.second));
+
+			start_sep = sep;
 		}
-		output_file << std::endl;
+		output_file << line.toStdString() << std::endl;
 	}
 
 	output_file.close();
 }
 
-void SaveDialog::save_combined(QString file_name, QString separator)
+void SaveDialog::save_combined(QString file_name)
 {
 	ofstream output_file;
 	string str_file_name = file_name.toStdString();
-	string str_separator = separator.toStdString();
+	string str_separator = separator_edit_->text().toStdString();
 	vector<shared_ptr<data::AnalogSignal>> print_signals;
 	size_t signals_count = 0;
 	vector<size_t> signal_size;
 	vector<size_t> signal_pos;
+
+	bool relative_time = !time_absolut_->isChecked();
 
 /*
 	auto smart_ptr = std::make_shared<QFile>();
@@ -170,7 +218,7 @@ void SaveDialog::save_combined(QString file_name, QString separator)
 		double next_timestamp = -1;
 		for (size_t i=0; i<signals_count; i++) {
 			double signal_timestamp = print_signals.at(i)->
-				get_sample(signal_pos.at(i)).first;
+				get_sample(signal_pos.at(i), relative_time).first;
 
 			if (next_timestamp < 0 || signal_timestamp < next_timestamp)
 				next_timestamp = signal_timestamp;
@@ -187,7 +235,7 @@ void SaveDialog::save_combined(QString file_name, QString separator)
 			finish = false;
 
 			data::sample_t sample = print_signals.at(i)->
-				get_sample(signal_pos.at(i));
+				get_sample(signal_pos.at(i), relative_time);
 
 			double signal_timestamp = sample.first;
 			if (signal_timestamp == next_timestamp) {
@@ -209,9 +257,9 @@ void SaveDialog::accept()
 
 	if (file_name.length() > 0) {
 		if (timestamps_combined_->isChecked())
-			save_combined(file_name, separator_edit_->text());
+			save_combined(file_name);
 		else
-			save(file_name, separator_edit_->text());
+			save(file_name);
 
 		QDialog::accept();
 	}

@@ -58,7 +58,6 @@ public:
 
 private:
 	shared_ptr<AnalogSignal> signal_;
-	double signal_start_timestamp_;
 	bool relative_time_;
 
 };

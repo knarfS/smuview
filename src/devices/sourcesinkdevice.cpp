@@ -52,15 +52,19 @@ SourceSinkDevice::SourceSinkDevice(
 		for (auto channel : chg_name_channels_pair.second) {
 			bool init = false;
 			const sigrok::Quantity *sr_quantity;
-			vector<const sigrok::QuantityFlag *> sr_quantity_flags; // TODO: AC/DC
+			vector<const sigrok::QuantityFlag *> sr_quantity_flags;
 			const sigrok::Unit *sr_unit;
 			if (channel->internal_name().startsWith("V")) {
 				sr_quantity = sigrok::Quantity::VOLTAGE;
+				// TODO: Set AC for AC Sources
+				sr_quantity_flags.push_back(sigrok::QuantityFlag::DC);
 				sr_unit = sigrok::Unit::VOLT;
 				init = true;
 			}
 			else if (channel->internal_name().startsWith("I")) {
 				sr_quantity = sigrok::Quantity::CURRENT;
+				// TODO: Set AC for AC Sources
+				sr_quantity_flags.push_back(sigrok::QuantityFlag::DC);
 				sr_unit = sigrok::Unit::AMPERE;
 				init = true;
 			}

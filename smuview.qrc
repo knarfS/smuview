@@ -5,6 +5,7 @@
     <file>icons/decoder-delete.svg</file>
     <file>icons/decoder-hidden.svg</file>
     <file>icons/decoder-shown.svg</file>
+    <file>icons/document-new.svgz</file>
     <file>icons/document-new.png</file>
     <file>icons/document-open.png</file>
     <file>icons/document-save-as.png</file>
@@ -19,6 +20,8 @@
     <file>icons/status-green.svg</file>
     <file>icons/status-grey.svg</file>
     <file>icons/status-red.svg</file>
+    <file>icons/tab-new.svgz</file>
+    <file>icons/tab-new.png</file>
     <file>icons/trigger-change.svg</file>
     <file>icons/trigger-falling.svg</file>
     <file>icons/trigger-high.svg</file>

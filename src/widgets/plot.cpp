@@ -329,13 +329,11 @@ void Plot::increment_x_interval()
 	qWarning() << QString("Plot::increment_x_interval(): old min = %1, old max = %2").
 		arg(x_interval_.minValue()).arg(x_interval_.maxValue());
 	*/
-
 	if (plot_mode_ == Plot::Additive) {
 		// TODO: Calculate proper interval_length
 		int interval_length = 30;
 		x_interval_ = QwtInterval(x_interval_.minValue(),
 			x_interval_.maxValue() + interval_length);
-
 		/*
 		qWarning() << QString("Plot::increment_x_interval(): new min = %1, new max = %2").
 			arg(x_interval_.minValue()).arg(x_interval_.maxValue());
