@@ -152,6 +152,9 @@ shared_ptr<data::BaseSignal> Channel::init_signal(
 		sr_quantity, sr_quantity_flags, sr_unit,
 		internal_name_, channel_group_name_, channel_start_timestamp_);
 
+	connect(this, SIGNAL(channel_start_timestamp_changed(double)),
+			signal.get(), SLOT(on_channel_start_timestamp_changed(double)));
+
 	actual_signal_ = signal;
 	quantity_t q_qf = make_pair(sr_quantity, sr_quantity_flags);
 	signal_map_.insert(
@@ -200,6 +203,12 @@ void Channel::restore_settings(QSettings &settings)
 	set_name(settings.value("name").toString());
 	set_enabled(settings.value("enabled").toBool());
 	set_colour(settings.value("colour").value<QColor>());
+}
+
+void Channel::on_aquisition_start_timestamp_changed(double timestamp)
+{
+	channel_start_timestamp_ = timestamp;
+	Q_EMIT channel_start_timestamp_changed(timestamp);
 }
 
 } // namespace devices

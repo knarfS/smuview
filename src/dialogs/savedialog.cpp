@@ -198,26 +198,28 @@ void SaveDialog::save_combined(QString file_name)
 	// Data
 	bool finish = false;
 	while (!finish) {
-		qWarning() << "save_combined()";
 		double next_timestamp = -1;
 		for (size_t i=0; i<signals.size(); i++) {
 			auto a_signal = static_pointer_cast<data::AnalogSignal>(signals[i]);
 			double timestamp =
-				a_signal->get_sample(sample_pos[i++], relative_time).first;
-
-			qWarning() << "save_combined() *3*";
+				a_signal->get_sample(sample_pos[i], relative_time).first;
 
 			if (next_timestamp < 0 || timestamp < next_timestamp)
 				next_timestamp = timestamp;
-
-			qWarning() << "save_combined(): 1. " << a_signal->name();
 		}
-		QString line = QString("%1").arg(next_timestamp);
 
+		// Timestamp
+		QString line;
+		if (relative_time)
+			line = QString("%1").arg(next_timestamp);
+		else
+			line = util::format_time_date(next_timestamp);
+
+		// Values
 		for (size_t i=0; i<signals.size(); i++) {
 			line.append(sep);
 
-			if (sample_counts[i] <= sample_pos[i]) {
+			if (sample_counts[i] < sample_pos[i]) {
 				finish = true;
 				continue;
 			}
@@ -227,12 +229,9 @@ void SaveDialog::save_combined(QString file_name)
 			data::sample_t sample =
 				a_signal->get_sample(sample_pos[i], relative_time);
 
-			qWarning() << "save_combined(): 2. " << a_signal->name();
-
 			double timestamp = sample.first;
 			if (timestamp == next_timestamp) {
 				line.append(QString("%1").arg(sample.second));
-				qWarning() << "save_combined(): 2. " << a_signal->name() << " ADDED";
 				++sample_pos[i];
 			}
 		}
@@ -240,87 +239,6 @@ void SaveDialog::save_combined(QString file_name)
 	}
 
 	output_file.close();
-
-
-
-
-
-
-
-/*
-	auto smart_ptr = std::make_shared<QFile>();
-	QVariant var = QVariant::fromValue(smart_ptr);
-	// ...
-	if (var.canConvert<QObject*>()) {
-		QObject *sp = var.value<QObject*>();
-		qDebug() << sp->metaObject()->className(); // Prints 'QFile'.
-	}
-
-	for (auto item : signal_tree_->selectedItems()) {
-		item->data(0, Qt::UserRole).
-		print_signals.push_back(
-			(shared_ptr<data::AnalogSignal>).value());
-	}
-*/
-
-/*
-	auto devices = session_.devices();
-	for (auto device : devices) {
-		auto hw_device = static_pointer_cast<devices::HardwareDevice>(device);
-		for (shared_ptr<data::BaseSignal> signal : hw_device->all_signals()) {
-			print_signals.push_back(
-				static_pointer_cast<data::AnalogSignal>(signal));
-		}
-	}
-
-	output_file.open(str_file_name);
-
-	// TODO signal names
-	output_file << "Time";
-	for (auto signal : print_signals) {
-		output_file << str_separator;
-		if (signal) {
-			signal_size.push_back(signal->get_sample_count());
-			signal_pos.push_back(0);
-			signals_count++;
-			output_file << signal->name().toStdString();
-		}
-	}
-	output_file << std::endl;
-
-	bool finish = false;
-	while (!finish) {
-		double next_timestamp = -1;
-		for (size_t i=0; i<signals_count; i++) {
-			double signal_timestamp = print_signals.at(i)->
-				get_sample(signal_pos.at(i), relative_time).first;
-
-			if (next_timestamp < 0 || signal_timestamp < next_timestamp)
-				next_timestamp = signal_timestamp;
-		}
-		output_file << next_timestamp;
-
-		for (size_t i=0; i<signals_count; i++) {
-			output_file << str_separator;
-
-			if (print_signals.at(i)->get_sample_count() <= signal_pos.at(i)) {
-				finish = true;
-				continue;
-			}
-			finish = false;
-
-			data::sample_t sample = print_signals.at(i)->
-				get_sample(signal_pos.at(i), relative_time);
-
-			double signal_timestamp = sample.first;
-			if (signal_timestamp == next_timestamp) {
-				output_file << sample.second;
-				++signal_pos.at(i);
-			}
-		}
-		output_file << std::endl;
-	}
-*/
 }
 
 void SaveDialog::accept()

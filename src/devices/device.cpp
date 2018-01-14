@@ -233,6 +233,7 @@ void Device::aquisition_thread_proc(
 	// TODO: use std::chrono / std::time
 	aquisition_start_timestamp_ =
 		QDateTime::currentMSecsSinceEpoch() / (double)1000;
+	Q_EMIT aquisition_start_timestamp_changed(aquisition_start_timestamp_);
 
 	qWarning() << "Start aquisition for " << short_name() <<
 		",  aquisition_start_timestamp_ = " << aquisition_start_timestamp_;

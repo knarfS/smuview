@@ -133,6 +133,7 @@ private:
 	std::thread aquisition_thread_;
 
 Q_SIGNALS:
+	void aquisition_start_timestamp_changed(double);
 
 };
 

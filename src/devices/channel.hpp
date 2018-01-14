@@ -191,7 +191,11 @@ private:
 	QString name_;
 	QColor colour_;
 
+public Q_SLOTS:
+	void on_aquisition_start_timestamp_changed(double);
+
 Q_SIGNALS:
+	void channel_start_timestamp_changed(double);
 	void enabled_changed(const bool &value);
 	void name_changed(const QString &name);
 	void colour_changed(const QColor &colour);

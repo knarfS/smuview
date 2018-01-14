@@ -51,9 +51,6 @@ AnalogSignal::AnalogSignal(
 	min_value_(std::numeric_limits<short>::max()),
 	max_value_(std::numeric_limits<short>::min())
 {
-	// TODO
-	signal_start_timestamp_ =
-		QDateTime::currentMSecsSinceEpoch() / (double)1000;
 	qWarning() << "Init analog signal " << name_ <<
 		", signal_start_timestamp_ = " << signal_start_timestamp_;
 
@@ -229,6 +226,12 @@ double AnalogSignal::min_value() const
 double AnalogSignal::max_value() const
 {
 	return max_value_;
+}
+
+void AnalogSignal::on_channel_start_timestamp_changed(double timestamp)
+{
+	signal_start_timestamp_ = timestamp;
+	Q_EMIT signal_start_timestamp_changed(timestamp);
 }
 
 } // namespace data

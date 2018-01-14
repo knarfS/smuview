@@ -93,7 +93,11 @@ private:
 	double min_value_;
 	double max_value_;
 
+public Q_SLOTS:
+	void on_channel_start_timestamp_changed(double);
+
 Q_SIGNALS:
+	void signal_start_timestamp_changed(double);
 	void samples_cleared();
 
 };

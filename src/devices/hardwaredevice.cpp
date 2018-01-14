@@ -282,6 +282,9 @@ shared_ptr<devices::Channel> HardwareDevice::init_channel(
 		sr_channel, Channel::ChannelType::AnalogChannel,
 		channel_group_name, aquisition_start_timestamp_);
 
+	connect(this, SIGNAL(aquisition_start_timestamp_changed(double)),
+		channel.get(), SLOT(on_aquisition_start_timestamp_changed(double)));
+
 	// map<QString, shared_ptr<devices::Channel>> channel_name_map_;
 	channel_name_map_.insert(
 		pair<QString, shared_ptr<devices::Channel>>
