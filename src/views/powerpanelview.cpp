@@ -19,7 +19,6 @@
 
 #include <QApplication>
 #include <QDateTime>
-#include <QHBoxLayout>
 #include <QVBoxLayout>
 
 #include "powerpanelview.hpp"
@@ -47,9 +46,11 @@ PowerPanelView::PowerPanelView(const Session &session,
 	power_min_(std::numeric_limits<double>::max()),
 	power_max_(std::numeric_limits<double>::lowest()),
 	actual_amp_hours_(0),
-	actual_watt_hours_(0)
+	actual_watt_hours_(0),
+	action_reset_displays_(new QAction(this))
 {
 	setup_ui();
+	setup_toolbar();
 	connect_signals();
 	reset_displays();
 
@@ -131,19 +132,25 @@ void PowerPanelView::setup_ui()
 
 	layout->addLayout(panelLayout);
 
-	QHBoxLayout *buttonLayout = new QHBoxLayout();
-	resetButton = new QPushButton();
-	resetButton->setText(tr("Reset"));
-	buttonLayout->addWidget(resetButton);
-	buttonLayout->addStretch(5);
-	layout->addItem(buttonLayout);
-
 	this->centralWidget_->setLayout(layout);
+}
+
+void PowerPanelView::setup_toolbar()
+{
+	action_reset_displays_->setText(tr("Reset displays"));
+	action_reset_displays_->setIcon(
+		QIcon::fromTheme("view-refresh",
+		QIcon(":/icons/view-refresh.png")));
+	connect(action_reset_displays_, SIGNAL(triggered(bool)),
+		this, SLOT(on_action_reset_displays_triggered()));
+
+	toolbar_ = new QToolBar("Power Panel Toolbar");
+	toolbar_->addAction(action_reset_displays_);
+	this->addToolBar(Qt::TopToolBarArea, toolbar_);
 }
 
 void PowerPanelView::connect_signals()
 {
-	connect(resetButton, SIGNAL(clicked(bool)), this, SLOT(on_reset()));
 }
 
 void PowerPanelView::reset_displays()
@@ -200,12 +207,6 @@ void PowerPanelView::stop_timer()
 	disconnect(timer_, SIGNAL(timeout()), this, SLOT(on_update()));
 
 	reset_displays();
-}
-
-void PowerPanelView::on_reset()
-{
-	stop_timer();
-	init_timer();
 }
 
 void PowerPanelView::on_update()
@@ -269,6 +270,12 @@ void PowerPanelView::on_update()
 
 	ampHourDisplay->set_value(actual_amp_hours_);
 	wattHourDisplay->set_value(actual_watt_hours_);
+}
+
+void PowerPanelView::on_action_reset_displays_triggered()
+{
+	stop_timer();
+	init_timer();
 }
 
 } // namespace views

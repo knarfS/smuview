@@ -22,8 +22,9 @@
 
 #include <memory>
 
-#include <QPushButton>
+#include <QAction>
 #include <QTimer>
+#include <QToolBar>
 
 #include "src/views/baseview.hpp"
 
@@ -77,6 +78,8 @@ private:
 	double actual_amp_hours_;
 	double actual_watt_hours_;
 
+	QAction *const action_reset_displays_;
+	QToolBar *toolbar_;
 	widgets::LcdDisplay *voltageDisplay;
 	widgets::LcdDisplay *voltageMinDisplay;
 	widgets::LcdDisplay *voltageMaxDisplay;
@@ -91,21 +94,17 @@ private:
 	widgets::LcdDisplay *powerMaxDisplay;
 	widgets::LcdDisplay *ampHourDisplay;
 	widgets::LcdDisplay *wattHourDisplay;
-	QPushButton *resetButton;
 
 	void setup_ui();
+	void setup_toolbar();
 	void connect_signals();
 	void reset_displays();
 	void init_timer();
 	void stop_timer();
 
-protected:
-
-public Q_SLOTS:
-
 private Q_SLOTS:
-	void on_reset();
 	void on_update();
+	void on_action_reset_displays_triggered();
 
 };
 

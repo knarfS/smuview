@@ -71,7 +71,7 @@ PlotView::PlotView(const Session &session,
 	connect_signals();
 	init_values();
 
-	plot->start();
+	plot_->start();
 }
 
 PlotView::PlotView(const Session& session,
@@ -95,7 +95,7 @@ PlotView::PlotView(const Session& session,
 	connect_signals();
 	init_values();
 
-	plot->start();
+	plot_->start();
 }
 
 PlotView::PlotView(const Session& session,
@@ -121,7 +121,7 @@ PlotView::PlotView(const Session& session,
 	connect_signals();
 	init_values();
 
-	plot->start();
+	plot_->start();
 }
 
 QString PlotView::title() const
@@ -145,10 +145,10 @@ void PlotView::setup_ui()
 {
 	QVBoxLayout *layout = new QVBoxLayout();
 
-	plot = new widgets::Plot(curve_);
-	plot->set_plot_mode(widgets::Plot::PlotModes::Additive);
-	plot->set_plot_interval(200); // 200ms
-	layout->addWidget(plot);
+	plot_ = new widgets::Plot(curve_);
+	plot_->set_plot_mode(widgets::Plot::PlotModes::Additive);
+	plot_->set_plot_interval(200); // 200ms
+	layout->addWidget(plot_);
 
 	this->centralWidget_->setLayout(layout);
 }
@@ -203,16 +203,16 @@ void PlotView::setup_toolbar()
 	//connect(action_config_graph_, SIGNAL(triggered(bool)),
 	//	this, SLOT(on_actionSaveAs_triggered()));
 
-	toolbar = new QToolBar("Device Toolbar");
-	toolbar->addAction(action_zoom_in_);
-	toolbar->addAction(action_zoom_out_);
-	toolbar->addAction(action_zoom_fit_best_);
-	toolbar->addSeparator();
-	toolbar->addAction(action_add_marker_);
-	toolbar->addAction(action_add_diff_marker_);
-	toolbar->addSeparator();
-	toolbar->addAction(action_config_graph_);
-	this->addToolBar(Qt::TopToolBarArea, toolbar);
+	toolbar_ = new QToolBar("Device Toolbar");
+	toolbar_->addAction(action_zoom_in_);
+	toolbar_->addAction(action_zoom_out_);
+	toolbar_->addAction(action_zoom_fit_best_);
+	toolbar_->addSeparator();
+	toolbar_->addAction(action_add_marker_);
+	toolbar_->addAction(action_add_diff_marker_);
+	toolbar_->addSeparator();
+	toolbar_->addAction(action_config_graph_);
+	this->addToolBar(Qt::TopToolBarArea, toolbar_);
 }
 
 void PlotView::connect_signals()
@@ -237,7 +237,7 @@ void PlotView::on_signal_changed()
 
 	if (signal) {
 		curve_ = (data::BaseCurve *)(new data::TimeCurve(signal));
-		plot->set_curve_data(curve_);
+		plot_->set_curve_data(curve_);
 	}
 	else
 		curve_ = nullptr;
@@ -255,10 +255,10 @@ void PlotView::on_action_zoom_fit_best_triggered()
 {
 }
 
-// TODO: connect directly to plit?
+// TODO: connect directly to plot?
 void PlotView::on_action_add_marker_triggered()
 {
-	plot->add_marker();
+	plot_->add_marker();
 }
 
 void PlotView::on_action_add_diff_marker_triggered()

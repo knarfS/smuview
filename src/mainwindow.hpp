@@ -25,9 +25,9 @@
 #include <memory>
 #include <string>
 
-#include <QAction>
 #include <QToolBar>
 #include <QToolBox>
+#include <QToolButton>
 #include <QStatusBar>
 #include <QMainWindow>
 
@@ -68,30 +68,29 @@ public:
 	void remove_tab(shared_ptr<devices::HardwareDevice> device);
 
 private:
-	DeviceManager &device_manager_;
-
-	shared_ptr<Session> session_;
-
-	shared_ptr<devices::Device> last_focused_device_;
-	map< shared_ptr<devices::Device>, QMainWindow*> device_windows_;
-
-	QAction *actionExit;
-	QAction *actionAbout;
-	QAction *actionAddTab;
-	QWidget *centralWidget;
-	QToolBox *infoWidget;
-	QTabWidget *tabWidget;
-	QToolBar *mainToolBar;
-	QStatusBar *statusBar;
-
 	void setup_ui();
 	void connect_signals();
 	void retranslate_ui();
 	void session_error(const QString text, const QString info_text);
 
+	DeviceManager &device_manager_;
+	shared_ptr<Session> session_;
+
+	shared_ptr<devices::Device> last_focused_device_;
+	map<shared_ptr<devices::Device>, QMainWindow*> device_windows_;
+
+	QToolButton *add_device_button_;
+	QToolButton *add_user_tab_button_;
+	QWidget *centralWidget;
+	QToolBox *infoWidget;
+	QTabWidget *tab_widget_;
+	QWidget *static_toolbar_;
+	QStatusBar *statusBar;
+
 private Q_SLOTS:
 	void show_session_error(const QString text, const QString info_text);
-	void on_actionAddTab_triggered();
+	void on_action_add_device_triggered();
+	void on_action_add_user_tab_triggered();
 
 };
 

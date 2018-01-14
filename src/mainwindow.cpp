@@ -122,9 +122,6 @@ shared_ptr<devices::Device> MainWindow::add_tab(
 	shared_ptr<devices::HardwareDevice> device)
 {
 	tabs::TabType type;
-	QString title = QString::fromStdString(
-		device->sr_hardware_device()->model());
-
 	const auto keys = device->sr_hardware_device()->driver()->config_keys();
 	if (keys.count(sigrok::ConfigKey::POWER_SUPPLY))
 		type = tabs::TabTypeSource;
@@ -136,8 +133,8 @@ shared_ptr<devices::Device> MainWindow::add_tab(
 	QMainWindow *window = new QMainWindow();
 	window->setWindowFlags(Qt::Widget);  // Remove Qt::Window flag
 
-	int index = tabWidget->addTab(window, title);
-	tabWidget->setCurrentIndex(index);
+	int index = tab_widget_->addTab(window, device->short_name());
+	tab_widget_->setCurrentIndex(index);
 
 	window->setDockNestingEnabled(true);
 
@@ -151,11 +148,13 @@ shared_ptr<devices::Device> MainWindow::add_tab(
 		tabs::SourceSinkTab *tab = new tabs::SourceSinkTab(*session_,
 			static_pointer_cast<devices::SourceSinkDevice>(device), window);
 		window->setCentralWidget(tab);
-	} else if (type == tabs::TabTypeMeasurement) {
+	}
+	else if (type == tabs::TabTypeMeasurement) {
 		tabs::MeasurementTab *tab = new tabs::MeasurementTab(*session_,
 			static_pointer_cast<devices::MeasurementDevice>(device), window);
 		window->setCentralWidget(tab);
-	} else if (type == tabs::TabTypeViews) {
+	}
+	else if (type == tabs::TabTypeViews) {
 	}
 
 	return device;
@@ -163,9 +162,23 @@ shared_ptr<devices::Device> MainWindow::add_tab(
 
 void MainWindow::remove_tab(shared_ptr<devices::HardwareDevice> device)
 {
-	session_->remove_device(device);
-}
+	// Determine the height of the button before it collapses
+	int h = add_device_button_->height();
 
+	device_windows_.erase(device);
+	session_->remove_device(device);
+
+	if (device_windows_.size() == 0) {
+		// When there are no more tabs, the height of the QTabWidget
+		// drops to zero. We must prevent this to keep the toolbar visible
+		for (QWidget *w : tab_widget_->findChildren<QWidget*>())
+			w->setMinimumHeight(h);
+
+		int margin = tab_widget_->layout()->contentsMargins().bottom();
+		tab_widget_->setMinimumHeight(h + 2 * margin);
+		//session_selector_.setMinimumHeight(h + 2 * margin);
+	}
+}
 
 void MainWindow::setup_ui()
 {
@@ -176,36 +189,33 @@ void MainWindow::setup_ui()
 		QSize(), QIcon::Normal, QIcon::Off);
 	setWindowIcon(mainIcon);
 
-	mainToolBar = new QToolBar();
+	// Toolbar
+	add_device_button_ = new QToolButton();
+	add_device_button_->setIcon(QIcon::fromTheme("document-new",
+		QIcon(":/icons/document-new.png")));
+	add_device_button_->setToolTip(tr("Add new device"));
+	add_device_button_->setAutoRaise(true);
+	connect(add_device_button_, SIGNAL(clicked(bool)),
+		this, SLOT(on_action_add_device_triggered()));
 
-	/* QAction(QObject *parent) must have a parent for Qt < 5.7 */
+	add_user_tab_button_ = new QToolButton();
+	add_user_tab_button_->setIcon(QIcon::fromTheme("document-new",
+		QIcon(":/icons/document-new.png")));
+	add_user_tab_button_->setToolTip(tr("Add new user tab"));
+	add_user_tab_button_->setAutoRaise(true);
+	connect(add_user_tab_button_, SIGNAL(clicked(bool)),
+		this, SLOT(on_action_add_user_tab_triggered()));
 
-	actionExit = new QAction(mainToolBar);
-	QIcon exitIcon;
-	exitIcon.addFile(QStringLiteral(":/icons/application-exit.png"),
-		QSize(), QIcon::Normal, QIcon::Off);
-	actionExit->setIcon(exitIcon);
+	QHBoxLayout* toolbar_layout = new QHBoxLayout();
+	toolbar_layout->setContentsMargins(2, 2, 2, 2);
+	toolbar_layout->addWidget(add_device_button_);
+	toolbar_layout->addWidget(add_user_tab_button_);
+	static_toolbar_ = new QWidget();
+	static_toolbar_->setLayout(toolbar_layout);
 
-	actionAbout = new QAction(mainToolBar);
-	QIcon aboutIcon;
-	aboutIcon.addFile(QStringLiteral(":/icons/information.svg"),
-		QSize(), QIcon::Normal, QIcon::Off);
-	actionAbout->setIcon(aboutIcon);
-
-	actionAddTab = new QAction(mainToolBar);
-	QIcon tabIcon;
-	tabIcon.addFile(QStringLiteral(":/icons/window-new.png"),
-		QSize(), QIcon::Normal, QIcon::Off);
-	actionAddTab->setIcon(tabIcon);
-
-	mainToolBar->addAction(actionAddTab);
-	mainToolBar->addSeparator();
-	mainToolBar->addAction(actionAbout);
-	mainToolBar->addAction(actionExit);
-	this->addToolBar(Qt::TopToolBarArea, mainToolBar);
+	// Statusbar
 	statusBar = new QStatusBar();
 	this->setStatusBar(statusBar);
-
 
 	QHBoxLayout *centralLayout = new QHBoxLayout();
 	centralLayout->setContentsMargins(2, 2, 2, 2);
@@ -223,35 +233,25 @@ void MainWindow::setup_ui()
 	centralLayout->addWidget(infoWidget);
 	*/
 
-	tabWidget = new QTabWidget();
-	centralLayout->addWidget(tabWidget);
+	tab_widget_ = new QTabWidget();
+	tab_widget_->setCornerWidget(static_toolbar_, Qt::TopLeftCorner);
+	tab_widget_->setTabsClosable(true);
+	centralLayout->addWidget(tab_widget_);
 
 	this->setCentralWidget(centralWidget);
 
 	retranslate_ui();
 
-	tabWidget->setCurrentIndex(1);
+	tab_widget_->setCurrentIndex(1);
 }
 
 void MainWindow::connect_signals()
 {
-	// Actions
-	connect(actionAddTab, SIGNAL(triggered(bool)),
-		this, SLOT(on_actionAddTab_triggered()));
 }
 
 void MainWindow::retranslate_ui()
 {
 	this->setWindowTitle(QApplication::translate("SmuView", "SmuView", Q_NULLPTR));
-	actionExit->setText(QApplication::translate("SmuView", "Exit", Q_NULLPTR));
-	actionAbout->setText(QApplication::translate("SmuView", "About", Q_NULLPTR));
-#ifndef QT_NO_TOOLTIP
-	actionAbout->setToolTip(QApplication::translate("SmuView", "About", Q_NULLPTR));
-#endif // QT_NO_TOOLTIP
-	actionAddTab->setText(QApplication::translate("SmuView", "Add Tab", Q_NULLPTR));
-#ifndef QT_NO_TOOLTIP
-	actionAddTab->setToolTip(QApplication::translate("SmuView", "Add Tab", Q_NULLPTR));
-#endif // QT_NO_TOOLTIP
 }
 
 void MainWindow::session_error(const QString text, const QString info_text)
@@ -271,7 +271,15 @@ void MainWindow::show_session_error(const QString text, const QString info_text)
 	msg.exec();
 }
 
-void MainWindow::on_actionAddTab_triggered()
+void MainWindow::on_action_add_device_triggered()
+{
+	dialogs::ConnectDialog dlg(device_manager_);
+
+	if (dlg.exec())
+		add_tab(dlg.get_selected_device());
+}
+
+void MainWindow::on_action_add_user_tab_triggered()
 {
 	dialogs::ConnectDialog dlg(device_manager_);
 

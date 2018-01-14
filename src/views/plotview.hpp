@@ -67,6 +67,11 @@ public:
 	QString title() const;
 
 private:
+	void setup_ui();
+	void setup_toolbar();
+	void connect_signals();
+	void init_values();
+
 	shared_ptr<devices::Channel> channel_;
 	data::BaseCurve *curve_;
 
@@ -76,17 +81,8 @@ private:
 	QAction *const action_add_marker_;
 	QAction *const action_add_diff_marker_;
 	QAction *const action_config_graph_;
-	QToolBar *toolbar;
-	widgets::Plot *plot;
-
-	void setup_ui();
-	void setup_toolbar();
-	void connect_signals();
-	void init_values();
-
-protected:
-
-public Q_SLOTS:
+	QToolBar *toolbar_;
+	widgets::Plot *plot_;
 
 private Q_SLOTS:
 	void on_signal_changed();

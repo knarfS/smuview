@@ -42,7 +42,8 @@ ValuePanelView::ValuePanelView(const Session &session,
 	BaseView(session, parent),
 	channel_(channel),
 	value_min_(std::numeric_limits<double>::max()),
-	value_max_(std::numeric_limits<double>::lowest())
+	value_max_(std::numeric_limits<double>::lowest()),
+	action_reset_display_(new QAction(this))
 {
 	assert(channel_);
 
@@ -50,6 +51,7 @@ ValuePanelView::ValuePanelView(const Session &session,
 		channel_->actual_signal());
 
 	setup_ui();
+	setup_toolbar();
 	connect_signals();
 	reset_display();
 
@@ -69,11 +71,13 @@ ValuePanelView::ValuePanelView(const Session& session,
 	channel_(nullptr),
 	signal_(signal),
 	value_min_(std::numeric_limits<double>::max()),
-	value_max_(std::numeric_limits<double>::lowest())
+	value_max_(std::numeric_limits<double>::lowest()),
+	action_reset_display_(new QAction(this))
 {
 	assert(signal_);
 
 	setup_ui();
+	setup_toolbar();
 	connect_signals();
 	reset_display();
 
@@ -126,19 +130,27 @@ void ValuePanelView::setup_ui()
 	panelLayout->addWidget(valueMaxDisplay, 1, 1, 1, 1, Qt::AlignHCenter);
 	layout->addLayout(panelLayout);
 
-	resetButton = new QPushButton();
-	resetButton->setText(tr("Reset"));
-	layout->addWidget(resetButton);
-
 	layout->addStretch(4);
 
 	this->centralWidget_->setLayout(layout);
 }
 
+void ValuePanelView::setup_toolbar()
+{
+	action_reset_display_->setText(tr("Reset display"));
+	action_reset_display_->setIcon(
+		QIcon::fromTheme("view-refresh",
+		QIcon(":/icons/view-refresh.png")));
+	connect(action_reset_display_, SIGNAL(triggered(bool)),
+		this, SLOT(on_action_reset_display_triggered()));
+
+	toolbar_ = new QToolBar("Panel Toolbar");
+	toolbar_->addAction(action_reset_display_);
+	this->addToolBar(Qt::TopToolBarArea, toolbar_);
+}
+
 void ValuePanelView::connect_signals()
 {
-	// Reset button
-	connect(resetButton, SIGNAL(clicked(bool)), this, SLOT(on_reset()));
 }
 
 void ValuePanelView::reset_display()
@@ -164,12 +176,6 @@ void ValuePanelView::stop_timer()
 	disconnect(timer_, SIGNAL(timeout()), this, SLOT(on_update()));
 
 	reset_display();
-}
-
-void ValuePanelView::on_reset()
-{
-	stop_timer();
-	init_timer();
 }
 
 void ValuePanelView::on_update()
@@ -203,6 +209,12 @@ void ValuePanelView::on_signal_changed()
 	valueDisplay->set_unit(signal_->unit());
 	valueMinDisplay->set_unit(signal_->unit());
 	valueMaxDisplay->set_unit(signal_->unit());
+}
+
+void ValuePanelView::on_action_reset_display_triggered()
+{
+	stop_timer();
+	init_timer();
 }
 
 } // namespace views

@@ -22,9 +22,10 @@
 
 #include <memory>
 
-#include <QPushButton>
+#include <QAction>
 #include <QString>
 #include <QTimer>
+#include <QToolBar>
 
 #include "src/views/baseview.hpp"
 
@@ -76,23 +77,23 @@ private:
 	double value_min_;
 	double value_max_;
 
+	QAction *const action_reset_display_;
+	QToolBar *toolbar_;
 	widgets::LcdDisplay *valueDisplay;
 	widgets::LcdDisplay *valueMinDisplay;
 	widgets::LcdDisplay *valueMaxDisplay;
-	QPushButton *resetButton;
 
 	void setup_ui();
+	void setup_toolbar();
 	void connect_signals();
 	void reset_display();
 	void init_timer();
 	void stop_timer();
 
-protected:
-
 private Q_SLOTS:
-	void on_reset();
 	void on_update();
 	void on_signal_changed();
+	void on_action_reset_display_triggered();
 
 };
 
