@@ -17,6 +17,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <cassert>
+
 #include <QApplication>
 #include <QDateTime>
 #include <QDebug>
@@ -42,8 +44,34 @@ ValuePanelView::ValuePanelView(const Session &session,
 	value_min_(std::numeric_limits<double>::max()),
 	value_max_(std::numeric_limits<double>::lowest())
 {
-	signal_ =
-		dynamic_pointer_cast<data::AnalogSignal>(channel_->actual_signal());
+	assert(channel_);
+
+	signal_ = dynamic_pointer_cast<data::AnalogSignal>(
+		channel_->actual_signal());
+
+	setup_ui();
+	connect_signals();
+	reset_display();
+
+	// Signal (Quantity + Unit) can change, e.g. DMM signals
+	connect(channel_.get(), SIGNAL(signal_changed()),
+			this, SLOT(on_signal_changed()));
+
+	timer_ = new QTimer(this);
+	init_timer();
+}
+
+
+ValuePanelView::ValuePanelView(const Session& session,
+		shared_ptr<data::AnalogSignal> signal,
+		QWidget* parent) :
+	BaseView(session, parent),
+	channel_(nullptr),
+	signal_(signal),
+	value_min_(std::numeric_limits<double>::max()),
+	value_max_(std::numeric_limits<double>::lowest())
+{
+	assert(signal_);
 
 	setup_ui();
 	connect_signals();
@@ -55,7 +83,19 @@ ValuePanelView::ValuePanelView(const Session &session,
 
 QString ValuePanelView::title() const
 {
-	return channel_->name().append(" ").append(tr("Panel"));
+	QString title;
+
+	if (channel_)
+		title = tr("Channel");
+	else
+		title = tr("Signal");
+
+	if (signal_)
+		title = title.append(" ").append(signal_->name());
+	else if (channel_)
+		title = title.append(" ").append(channel_->internal_name());
+
+	return title;
 }
 
 ValuePanelView::~ValuePanelView()
@@ -92,17 +132,13 @@ void ValuePanelView::setup_ui()
 
 	layout->addStretch(4);
 
-	this->centralWidget->setLayout(layout);
+	this->centralWidget_->setLayout(layout);
 }
 
 void ValuePanelView::connect_signals()
 {
 	// Reset button
 	connect(resetButton, SIGNAL(clicked(bool)), this, SLOT(on_reset()));
-
-	// Signal (Quantity + Unit) can change, e.g. DMM signals
-	connect(channel_.get(), SIGNAL(signal_changed()),
-			this, SLOT(on_signal_changed()));
 }
 
 void ValuePanelView::reset_display()
@@ -157,9 +193,13 @@ void ValuePanelView::on_update()
 
 void ValuePanelView::on_signal_changed()
 {
-	signal_ =
-		dynamic_pointer_cast<data::AnalogSignal>(channel_->actual_signal());
+	if (!channel_)
+		return;
 
+	signal_ = dynamic_pointer_cast<data::AnalogSignal>(
+		channel_->actual_signal());
+
+	this->parentWidget()->setWindowTitle(this->title());
 	valueDisplay->set_unit(signal_->unit());
 	valueMinDisplay->set_unit(signal_->unit());
 	valueMaxDisplay->set_unit(signal_->unit());

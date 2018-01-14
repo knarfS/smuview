@@ -68,7 +68,7 @@ void MeasurementControlView::setup_ui()
 	//ctrlLayout->addWidget(regulationBox, 1, Qt::AlignLeft);
 	//layout->addLayout(quantityFlagsBox, 0);
 
-	this->centralWidget->setLayout(layout);
+	this->centralWidget_->setLayout(layout);
 }
 
 void MeasurementControlView::connect_signals()

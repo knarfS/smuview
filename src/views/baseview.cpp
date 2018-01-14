@@ -33,8 +33,8 @@ BaseView::BaseView(const Session &session, QWidget *parent) :
 	this->setWindowFlags(Qt::Widget);
 
 	// Use a QMainWindow (in the dock widget) to allow for a tool bar
-	centralWidget = new QWidget();
-	this->setCentralWidget(centralWidget);
+	centralWidget_ = new QWidget();
+	this->setCentralWidget(centralWidget_);
 }
 
 const Session& BaseView::session() const

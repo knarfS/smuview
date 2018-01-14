@@ -55,7 +55,7 @@ void SourceSinkTab::setup_ui()
 			else if (device_->type() == devices::HardwareDevice::Type::ELECTRONIC_LOAD)
 				control_view = make_shared<views::SinkControlView>(session_, c);
 
-			add_view(control_view, Qt::TopDockWidgetArea, session_);
+			add_view(control_view, Qt::TopDockWidgetArea);
 		}
 	}
 
@@ -77,7 +77,7 @@ void SourceSinkTab::setup_ui()
 			// Value plot(s)
 			shared_ptr<views::BaseView> value_plot_view =
 				make_shared<views::PlotView>(session_, signal);
-			add_view(value_plot_view, Qt::BottomDockWidgetArea, session_);
+			add_view(value_plot_view, Qt::BottomDockWidgetArea);
 		}
 
 		if (voltage_signal && current_signal) {
@@ -85,13 +85,13 @@ void SourceSinkTab::setup_ui()
 			shared_ptr<views::BaseView> power_panel_view =
 				make_shared<views::PowerPanelView>(session_,
 					voltage_signal, current_signal);
-			add_view(power_panel_view, Qt::TopDockWidgetArea, session_);
+			add_view(power_panel_view, Qt::TopDockWidgetArea);
 
 			// UI Plots
 			shared_ptr<views::BaseView> ui_plot_view =
 				make_shared<views::PlotView>(session_,
 					voltage_signal, current_signal);
-			add_view(ui_plot_view, Qt::BottomDockWidgetArea, session_);
+			add_view(ui_plot_view, Qt::BottomDockWidgetArea);
 		}
 	}
 }

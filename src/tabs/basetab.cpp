@@ -19,7 +19,6 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QAbstractButton>
 #include <QMainWindow>
 #include <QSizePolicy>
 
@@ -32,7 +31,7 @@ namespace sv {
 namespace tabs {
 
 BaseTab::BaseTab(Session &session, QMainWindow *parent) :
-		//QWidget(parent),
+		QWidget(parent),
 	session_(session),
 	parent_(parent)
 {
@@ -59,77 +58,26 @@ void BaseTab::restore_settings(QSettings &settings)
 }
 
 shared_ptr<views::BaseView> BaseTab::add_view(
-	shared_ptr<views::BaseView> view, Qt::DockWidgetArea area, Session &session)
+	shared_ptr<views::BaseView> view, Qt::DockWidgetArea area)
 {
 	if (!view)
 		return nullptr;
 
 	//GlobalSettings settings;
 
-	QDockWidget* dock = new QDockWidget(view->title(), parent_);
-	dock->setObjectName(view->title());
+	// Dock widget must be here, because the layout must be set to the central
+	// widget of the view main window before dock->setWidget() is called.
+	QDockWidget* dock = new QDockWidget(view->title());
 	dock->setAllowedAreas(Qt::AllDockWidgetAreas);
-	parent_->addDockWidget(area, dock);
-
-	view_docks_[dock] = view;
-	//session.register_view(view);
-
-	dock->setWidget(view.get());
-
 	dock->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	dock->setContextMenuPolicy(Qt::PreventContextMenu);
 	dock->setFeatures(QDockWidget::DockWidgetMovable |
 		QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable);
+	dock->setWidget(view.get());
+	parent_->addDockWidget(area, dock);
 
-	session.device_manager();
-	/*
-	QAbstractButton *close_btn =
-		dock->findChildren<QAbstractButton*>
-			("qt_dockwidget_closebutton").front();
-
-	connect(close_btn, SIGNAL(clicked(bool)),
-		this, SLOT(on_view_close_clicked()));
-
-	connect(&session, SIGNAL(trigger_event(util::Timestamp)),
-		qobject_cast<views::BaseView*>(view.get()),
-		SLOT(trigger_event(util::Timestamp)));
-	*/
-
-	/*
-	if (type == views::ViewTypeTrace) {
-		views::trace::View *tv =
-			qobject_cast<views::trace::View*>(view.get());
-
-		tv->enable_coloured_bg(settings.value(GlobalSettings::Key_View_ColouredBG).toBool());
-		tv->enable_show_sampling_points(settings.value(GlobalSettings::Key_View_ShowSamplingPoints).toBool());
-		tv->enable_show_analog_minor_grid(settings.value(GlobalSettings::Key_View_ShowAnalogMinorGrid).toBool());
-
-		if (!main_bar) {
-			/ * Initial view, create the main bar * /
-			main_bar = make_shared<MainBar>(session, this, tv);
-			dock_main->addToolBar(main_bar.get());
-			session.set_main_bar(main_bar);
-
-			connect(main_bar.get(), SIGNAL(new_view(Session*)),
-				this, SLOT(on_new_view(Session*)));
-
-			main_bar->action_view_show_cursors()->setChecked(tv->cursors_shown());
-
-			/ * For the main view we need to prevent the dock widget from
-			 * closing itself when its close button is clicked. This is
-			 * so we can confirm with the user first. Regular views don't
-			 * need this * /
-			close_btn->disconnect(SIGNAL(clicked()), dock, SLOT(close()));
-		} else {
-			/ * Additional view, create a standard bar * /
-			pv::views::trace::StandardBar *standard_bar =
-				new pv::views::trace::StandardBar(session, this, tv);
-			dock_main->addToolBar(standard_bar);
-
-			standard_bar->action_view_show_cursors()->setChecked(tv->cursors_shown());
-		}
-	}
-	*/
+	// TODO: When removed, the view widget in the dock isn't shown anymore!
+	view_docks_[dock] = view;
 
 	return view;
 }

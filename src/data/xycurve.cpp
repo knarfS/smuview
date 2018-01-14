@@ -83,6 +83,11 @@ bool XYCurve::is_relative_time() const
 	return relative_time_;
 }
 
+QString XYCurve::name() const
+{
+	return y_signal_->name().append(" -> ").append(x_signal_->name());
+}
+
 QString XYCurve::x_data_quantity() const
 {
 	return x_signal_->quantity();

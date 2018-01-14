@@ -58,23 +58,17 @@ public:
 	const Session &session() const;
 
 	virtual void save_settings(QSettings &settings) const;
-
 	virtual void restore_settings(QSettings &settings);
 
 private:
-	map< QDockWidget*, shared_ptr<views::BaseView> > view_docks_;
+	map<QDockWidget*, shared_ptr<views::BaseView>> view_docks_;
 
 protected:
+	shared_ptr<views::BaseView> add_view(
+		shared_ptr<views::BaseView> view, Qt::DockWidgetArea area);
+
 	Session &session_;
 	QMainWindow *parent_;
-
-	shared_ptr<views::BaseView> add_view(
-		shared_ptr<views::BaseView> view, Qt::DockWidgetArea area,
-		Session &session);
-
-public Q_SLOTS:
-
-private Q_SLOTS:
 
 };
 

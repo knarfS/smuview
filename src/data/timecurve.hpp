@@ -48,6 +48,7 @@ public:
 
 	void set_relative_time(bool is_relative_time);
 	bool is_relative_time() const;
+	QString name() const;
 	QString x_data_quantity() const;
 	QString x_data_unit() const;
 	QString x_data_title() const;

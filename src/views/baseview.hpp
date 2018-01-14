@@ -54,15 +54,10 @@ public:
 
 protected:
 	const Session &session_;
-
-	QWidget *centralWidget;
+	QWidget *centralWidget_;
 
 private:
 	static const int MaxViewAutoUpdateRate;
-
-public Q_SLOTS:
-
-private Q_SLOTS:
 
 };
 

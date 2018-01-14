@@ -89,6 +89,11 @@ bool TimeCurve::is_relative_time() const
 	return relative_time_;
 }
 
+QString TimeCurve::name() const
+{
+	return signal_->name();
+}
+
 QString TimeCurve::x_data_quantity() const
 {
 	return util::format_sr_quantity(sigrok::Quantity::TIME);

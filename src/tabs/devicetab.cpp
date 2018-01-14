@@ -136,7 +136,7 @@ void DeviceTab::on_action_add_control_view_triggered()
 	dlg.exec();
 
 	for (auto view : dlg.views())
-		add_view(view, Qt::TopDockWidgetArea, session_);
+		add_view(view, Qt::TopDockWidgetArea);
 }
 
 void DeviceTab::on_action_add_panel_view_triggered()
@@ -145,7 +145,7 @@ void DeviceTab::on_action_add_panel_view_triggered()
 	dlg.exec();
 
 	for (auto view : dlg.views())
-		add_view(view, Qt::TopDockWidgetArea, session_);
+		add_view(view, Qt::TopDockWidgetArea);
 }
 
 void DeviceTab::on_action_add_plot_view_triggered()
@@ -154,7 +154,7 @@ void DeviceTab::on_action_add_plot_view_triggered()
 	dlg.exec();
 
 	for (auto view : dlg.views())
-		add_view(view, Qt::BottomDockWidgetArea, session_);
+		add_view(view, Qt::BottomDockWidgetArea);
 }
 
 void DeviceTab::on_action_reset_data_triggered()

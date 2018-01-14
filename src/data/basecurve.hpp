@@ -42,6 +42,7 @@ public:
 	virtual size_t size() const = 0;
 	virtual QRectF boundingRect() const = 0;
 
+	virtual QString name() const = 0;
 	virtual QString x_data_quantity() const = 0;
 	virtual QString x_data_unit() const = 0;
 	virtual QString x_data_title() const = 0;

@@ -49,7 +49,7 @@ void MeasurementTab::setup_ui()
 		if (c->is_controllable()) {
 			shared_ptr<views::BaseView> control_view =
 				make_shared<views::MeasurementControlView>(session_, c);
-			add_view(control_view, Qt::TopDockWidgetArea, session_);
+			add_view(control_view, Qt::TopDockWidgetArea);
 		}
 	}
 
@@ -59,12 +59,12 @@ void MeasurementTab::setup_ui()
 		// Value panel(s)
 		shared_ptr<views::BaseView> value_panel_view =
 			make_shared<views::ValuePanelView>(session_, channel);
-		add_view(value_panel_view, Qt::TopDockWidgetArea, session_);
+		add_view(value_panel_view, Qt::TopDockWidgetArea);
 
 		// Value plot(s)
 		shared_ptr<views::BaseView> value_plot_view =
 			make_shared<views::PlotView>(session_, channel);
-		add_view(value_plot_view, Qt::BottomDockWidgetArea, session_);
+		add_view(value_plot_view, Qt::BottomDockWidgetArea);
 	}
 }
 

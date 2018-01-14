@@ -17,6 +17,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <cassert>
+
 #include <QMainWindow>
 #include <QBoxLayout>
 #include <QVBoxLayout>
@@ -48,6 +50,8 @@ PlotView::PlotView(const Session &session,
 	action_add_diff_marker_(new QAction(this)),
 	action_config_graph_(new QAction(this))
 {
+	assert(channel_);
+
 	shared_ptr<data::AnalogSignal> signal;
 	if (channel_->actual_signal())
 		signal = static_pointer_cast<data::AnalogSignal>(
@@ -82,10 +86,9 @@ PlotView::PlotView(const Session& session,
 	action_add_diff_marker_(new QAction(this)),
 	action_config_graph_(new QAction(this))
 {
-	if (signal)
-		curve_ = (data::BaseCurve *)(new data::TimeCurve(signal));
-	else
-		curve_ = nullptr;
+	assert(signal);
+
+	curve_ = (data::BaseCurve *)(new data::TimeCurve(signal));
 
 	setup_ui();
 	setup_toolbar();
@@ -108,10 +111,10 @@ PlotView::PlotView(const Session& session,
 	action_add_diff_marker_(new QAction(this)),
 	action_config_graph_(new QAction(this))
 {
-	if (x_signal && y_signal)
-		curve_ = (data::BaseCurve *)(new data::XYCurve(x_signal, y_signal));
-	else
-		curve_ = nullptr;
+	assert(x_signal);
+	assert(y_signal);
+
+	curve_ = (data::BaseCurve *)(new data::XYCurve(x_signal, y_signal));
 
 	setup_ui();
 	setup_toolbar();
@@ -123,7 +126,19 @@ PlotView::PlotView(const Session& session,
 
 QString PlotView::title() const
 {
-	return tr("Plot"); // TODO: + Quantity
+	QString title;
+
+	if (channel_)
+		title = tr("Channel");
+	else
+		title = tr("Signal");
+
+	if (curve_)
+		title = title.append(" ").append(curve_->name());
+	else if (channel_)
+		title = title.append(" ").append(channel_->internal_name());
+
+	return title;
 }
 
 void PlotView::setup_ui()
@@ -135,7 +150,7 @@ void PlotView::setup_ui()
 	plot->set_plot_interval(200); // 200ms
 	layout->addWidget(plot);
 
-	this->centralWidget->setLayout(layout);
+	this->centralWidget_->setLayout(layout);
 }
 
 void PlotView::setup_toolbar()
@@ -217,6 +232,8 @@ void PlotView::on_signal_changed()
 	if (channel_->actual_signal())
 		signal = dynamic_pointer_cast<data::AnalogSignal>(
 			channel_->actual_signal());
+
+	this->parentWidget()->setWindowTitle(this->title());
 
 	if (signal) {
 		curve_ = (data::BaseCurve *)(new data::TimeCurve(signal));

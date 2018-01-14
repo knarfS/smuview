@@ -56,6 +56,11 @@ public:
 	ValuePanelView(const Session& session,
 		shared_ptr<devices::Channel> channel,
 		QWidget* parent = nullptr);
+
+	ValuePanelView(const Session& session,
+		shared_ptr<data::AnalogSignal> signal,
+		QWidget* parent = nullptr);
+
 	~ValuePanelView();
 
 	QString title() const;
