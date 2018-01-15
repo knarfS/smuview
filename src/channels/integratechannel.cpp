@@ -23,7 +23,7 @@
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
-#include "multiplychannel.hpp"
+#include "integratechannel.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/channels/mathchannel.hpp"
 #include "src/data/analogsignal.hpp"
@@ -31,61 +31,59 @@
 namespace sv {
 namespace channels {
 
-MultiplyChannel::MultiplyChannel(
+IntegrateChannel::IntegrateChannel(
 		const sigrok::Quantity *sr_quantity,
 		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
 		const sigrok::Unit *sr_unit,
-		shared_ptr<data::AnalogSignal> signal1,
-		shared_ptr<data::AnalogSignal> signal2,
+		shared_ptr<data::AnalogSignal> int_signal,
 		const QString device_name,
 		const QString channel_group_name,
 		double channel_start_timestamp) :
 	MathChannel(sr_quantity, sr_quantity_flags, sr_unit,
 				device_name, channel_group_name, channel_start_timestamp),
-	signal1_(signal1),
-	signal2_(signal2),
-	next_signal1_pos_(0),
-	next_signal2_pos_(0)
+	int_signal_(int_signal),
+	next_int_signal_pos_(0),
+	last_timestamp_(-1),
+	last_value_(0.)
 {
-	assert(signal1_);
-	assert(signal2_);
+	assert(int_signal_);
 
-	connect(signal1_.get(), SIGNAL(sample_added()),
-		this, SLOT(on_sample_added()));
-	connect(signal2_.get(), SIGNAL(sample_added()),
+	connect(this, SIGNAL(channel_start_timestamp_changed(double)),
+		this, SLOT(on_channel_start_timestamp_changed(double)));
+	connect(int_signal_.get(), SIGNAL(sample_added()),
 		this, SLOT(on_sample_added()));
 }
 
-void MultiplyChannel::on_sample_added()
+void IntegrateChannel::on_channel_start_timestamp_changed(double timestamp)
 {
-	size_t signal1_sample_count = signal1_->get_sample_count();
-	if (signal1_sample_count < next_signal1_pos_)
+	// TODO: check if already started?
+	if (last_timestamp_ < 0)
+		last_timestamp_ = timestamp;
+}
+
+void IntegrateChannel::on_sample_added()
+{
+	size_t int_signal_sample_count = int_signal_->get_sample_count();
+	if (int_signal_sample_count < next_int_signal_pos_)
 		return;
-	size_t signal2_sample_count = signal2_->get_sample_count();
-	if (signal2_sample_count < next_signal2_pos_)
-		return;
 
-	// Multiply
-	while (signal1_sample_count > next_signal1_pos_ &&
-			signal2_sample_count > next_signal2_pos_) {
+	// Integrate
+	while (int_signal_sample_count > next_int_signal_pos_) {
+		data::sample_t sample =
+			int_signal_->get_sample(next_int_signal_pos_, false);
 
-		data::sample_t sample1 = signal1_->get_sample(next_signal1_pos_, false);
-		data::sample_t sample2 = signal2_->get_sample(next_signal2_pos_, false);
 
-		double time1 = sample1.first;
-		double time2 = sample2.first;
+		double time = sample.first;
+		double elapsed_time_hours = (time - last_timestamp_) / (double)3600;
 		// TODO: double
-		float value = sample1.second * sample2.second;
+		float value = last_value_ + (sample.second * elapsed_time_hours);
 
-		if (time1 == time2)
-			BaseChannel::push_sample(&value, time1,
-				sr_quantity_, sr_quantity_flags_, sr_unit_);
-		else
-			BaseChannel::push_sample(&value, time1>time2 ? time2 : time1,
-				sr_quantity_, sr_quantity_flags_, sr_unit_);
+		BaseChannel::push_sample(&value, time,
+			sr_quantity_, sr_quantity_flags_, sr_unit_);
 
-		++next_signal1_pos_;
-		++next_signal2_pos_;
+		last_timestamp_ = time;
+		last_value_ = value;
+		++next_int_signal_pos_;
 	}
 }
 

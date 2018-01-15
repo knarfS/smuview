@@ -48,11 +48,13 @@ AnalogSignal::AnalogSignal(
 	signal_start_timestamp_(signal_start_timestamp),
 	last_timestamp_(0.),
 	last_value_(0.),
-	min_value_(std::numeric_limits<short>::max()),
-	max_value_(std::numeric_limits<short>::min())
+	min_value_(std::numeric_limits<double>::max()),
+	max_value_(std::numeric_limits<double>::min())
 {
-	qWarning() << "Init analog signal " << name_ <<
-		", signal_start_timestamp_ = " << signal_start_timestamp_;
+	qWarning()
+		<< "Init analog signal " << name_
+		<< ", signal_start_timestamp_ = "
+		<< util::format_time_date(signal_start_timestamp_);
 
 	time_ = make_shared<vector<double>>();
 	data_ = make_shared<vector<double>>();
@@ -69,7 +71,8 @@ void AnalogSignal::clear()
 size_t AnalogSignal::get_sample_count() const
 {
 	size_t sample_count = sample_count_;
-	//qWarning() << "AnalogSignal::get_sample_count(): sample_count_ = " << sample_count;
+	//qWarning() << "AnalogSignal::get_sample_count(): sample_count_ = "
+	//	<< sample_count;
 	return sample_count;
 }
 
@@ -96,15 +99,19 @@ sample_t AnalogSignal::get_sample(size_t pos, bool is_relative_time) const
 
  	// TODO: retrun reference (&double)?
 
+	//qWarning() << "AnalogSignal::get_sample(" << pos
+	//	<< "): sample_count_ = " << sample_count_;
+
 	if (pos < sample_count_) {
 		double timestamp = time_->at(pos);
 		if (is_relative_time)
 			timestamp -= signal_start_timestamp_;
-		//qWarning() << "AnalogSignal::get_sample(" << pos << "): sample = " << timestamp << ", " << data_->at(pos);
+		//qWarning() << "AnalogSignal::get_sample(" << pos
+		//	<< "): sample = " << timestamp << ", " << data_->at(pos);
 		return make_pair(timestamp, data_->at(pos));
 	}
 
-	//qWarning() << "AnalogSignal::get_sample(" << pos << "): sample_count_ = " << sample_count_;
+	//qWarning() << "AnalogSignal::get_sample(" << pos << "): sample = .0, .0";
 	return make_pair(0., 0.);
 }
 
@@ -133,8 +140,10 @@ void AnalogSignal::push_sample(void *sample, double timestamp,
  	double dsample = (double) *(float*)sample;
 
 	/*
-	qWarning() << "AnalogSignal::push_sample(): sample = " << dsample << " @ " <<  timestamp;
-	qWarning() << "AnalogSignal::push_sample(): sample_count_ = " << sample_count_+1;
+	qWarning() << "AnalogSignal::push_sample(): " << name_
+		<< ": sample = " << dsample << " @ " <<  timestamp;
+	qWarning() << "AnalogSignal::push_sample(): " << name_
+		<< ":sample_count_ = " << sample_count_+1;
 	*/
 
 	last_timestamp_ = timestamp;
@@ -145,9 +154,14 @@ void AnalogSignal::push_sample(void *sample, double timestamp,
 		max_value_ = dsample;
 
 	/*
-	qWarning() << "AnalogSignal::push_sample(): last_value_ = " << last_value_;
-	qWarning() << "AnalogSignal::push_sample(): min_value_ = " << min_value_;
-	qWarning() << "AnalogSignal::push_sample(): max_value_ = " << max_value_;
+	qWarning() << "AnalogSignal::push_sample(): " << name_
+		<< ":last_timestamp_ = " << last_timestamp_;
+	qWarning() << "AnalogSignal::push_sample(): " << name_
+		<< ":last_value_ = " << last_value_;
+	qWarning() << "AnalogSignal::push_sample(): " << name_
+		<< ":min_value_ = " << min_value_;
+	qWarning() << "AnalogSignal::push_sample(): " << name_
+		<< ":max_value_ = " << max_value_;
 	*/
 
 	time_->push_back(timestamp);
@@ -216,16 +230,22 @@ double AnalogSignal::last_timestamp(bool relative_time) const
 
 double AnalogSignal::last_value() const
 {
+	//qWarning() << "AnalogSignal::last_value(): " << name_
+	//	<< ": last_value_ = " << last_value_;
 	return last_value_;
 }
 
 double AnalogSignal::min_value() const
 {
+	//qWarning() << "AnalogSignal::min_value(): " << name_
+	//	<< ": min_value_ = " << min_value_;
 	return min_value_;
 }
 
 double AnalogSignal::max_value() const
 {
+	//qWarning() << "AnalogSignal::max_value(): " << name_
+	//	<< ": max_value_ = " << max_value_;
 	return max_value_;
 }
 

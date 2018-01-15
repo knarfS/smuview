@@ -38,8 +38,10 @@ namespace channels {
 
 HardwareChannel::HardwareChannel(
 		shared_ptr<sigrok::Channel> sr_channel,
-		QString channel_group_name, double channel_start_timestamp) :
-	BaseChannel(channel_group_name, channel_start_timestamp),
+		const QString device_name,
+		const QString channel_group_name,
+		double channel_start_timestamp) :
+	BaseChannel(device_name, channel_group_name, channel_start_timestamp),
 	//channel_type_(ChannelType::AnalogChannel),
 	sr_channel_(sr_channel)
 {

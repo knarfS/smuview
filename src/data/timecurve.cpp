@@ -53,6 +53,17 @@ size_t TimeCurve::size() const
 
 QRectF TimeCurve::boundingRect() const
 {
+	/*
+	qWarning() << "TimeCurve::boundingRect(): min time = "
+		<< signal_->first_timestamp(relative_time_);
+	qWarning() << "TimeCurve::boundingRect(): max time = "
+		<< signal_->last_timestamp(relative_time_);
+	qWarning() << "TimeCurve::boundingRect(): min value = "
+		<< signal_->min_value();
+	qWarning() << "TimeCurve::boundingRect(): max value = "
+		<< signal_->max_value();
+	*/
+
 	// top left, bottom right
 	return QRectF(
 		QPointF(signal_->first_timestamp(relative_time_), signal_->max_value()),

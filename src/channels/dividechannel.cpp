@@ -23,7 +23,7 @@
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
-#include "multiplychannel.hpp"
+#include "dividechannel.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/channels/mathchannel.hpp"
 #include "src/data/analogsignal.hpp"
@@ -31,61 +31,73 @@
 namespace sv {
 namespace channels {
 
-MultiplyChannel::MultiplyChannel(
+DivideChannel::DivideChannel(
 		const sigrok::Quantity *sr_quantity,
 		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
 		const sigrok::Unit *sr_unit,
-		shared_ptr<data::AnalogSignal> signal1,
-		shared_ptr<data::AnalogSignal> signal2,
+		shared_ptr<data::AnalogSignal> dividend_signal,
+		shared_ptr<data::AnalogSignal> divisor_signal,
 		const QString device_name,
 		const QString channel_group_name,
 		double channel_start_timestamp) :
 	MathChannel(sr_quantity, sr_quantity_flags, sr_unit,
 				device_name, channel_group_name, channel_start_timestamp),
-	signal1_(signal1),
-	signal2_(signal2),
-	next_signal1_pos_(0),
-	next_signal2_pos_(0)
+	dividend_signal_(dividend_signal),
+	divisor_signal_(divisor_signal),
+	next_dividend_signal_pos_(0),
+	next_divisor_signal_pos_(0)
 {
-	assert(signal1_);
-	assert(signal2_);
+	assert(dividend_signal_);
+	assert(divisor_signal_);
 
-	connect(signal1_.get(), SIGNAL(sample_added()),
+	connect(dividend_signal_.get(), SIGNAL(sample_added()),
 		this, SLOT(on_sample_added()));
-	connect(signal2_.get(), SIGNAL(sample_added()),
+	connect(divisor_signal_.get(), SIGNAL(sample_added()),
 		this, SLOT(on_sample_added()));
 }
 
-void MultiplyChannel::on_sample_added()
+void DivideChannel::on_sample_added()
 {
-	size_t signal1_sample_count = signal1_->get_sample_count();
-	if (signal1_sample_count < next_signal1_pos_)
+	size_t dividend_signal_sample_count = dividend_signal_->get_sample_count();
+	if (dividend_signal_sample_count < next_dividend_signal_pos_)
 		return;
-	size_t signal2_sample_count = signal2_->get_sample_count();
-	if (signal2_sample_count < next_signal2_pos_)
+	size_t divisor_signal_sample_count = divisor_signal_->get_sample_count();
+	if (divisor_signal_sample_count < next_divisor_signal_pos_)
 		return;
 
-	// Multiply
-	while (signal1_sample_count > next_signal1_pos_ &&
-			signal2_sample_count > next_signal2_pos_) {
+	// Divide
+	while (dividend_signal_sample_count > next_dividend_signal_pos_ &&
+			divisor_signal_sample_count > next_divisor_signal_pos_) {
 
-		data::sample_t sample1 = signal1_->get_sample(next_signal1_pos_, false);
-		data::sample_t sample2 = signal2_->get_sample(next_signal2_pos_, false);
+		data::sample_t dividend_sample =
+			dividend_signal_->get_sample(next_dividend_signal_pos_, false);
+		data::sample_t divisor_sample =
+			divisor_signal_->get_sample(next_divisor_signal_pos_, false);
 
-		double time1 = sample1.first;
-		double time2 = sample2.first;
+		double time1 = dividend_sample.first;
+		double time2 = divisor_sample.first;
 		// TODO: double
-		float value = sample1.second * sample2.second;
+		float value;
+		if (divisor_sample.second == 0) {
+			if (dividend_sample.second > 0)
+				value = std::numeric_limits<float>::max();
+			else
+				value = std::numeric_limits<float>::lowest();
+		}
+		else
+			value = dividend_sample.second / divisor_sample.second;
 
 		if (time1 == time2)
+			// TODO
 			BaseChannel::push_sample(&value, time1,
 				sr_quantity_, sr_quantity_flags_, sr_unit_);
 		else
+			// TODO
 			BaseChannel::push_sample(&value, time1>time2 ? time2 : time1,
 				sr_quantity_, sr_quantity_flags_, sr_unit_);
 
-		++next_signal1_pos_;
-		++next_signal2_pos_;
+		++next_dividend_signal_pos_;
+		++next_divisor_signal_pos_;
 	}
 }
 

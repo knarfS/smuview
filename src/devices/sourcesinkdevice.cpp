@@ -26,6 +26,8 @@
 
 #include "sourcesinkdevice.hpp"
 #include "src/channels/basechannel.hpp"
+#include "src/channels/dividechannel.hpp"
+#include "src/channels/integratechannel.hpp"
 #include "src/channels/multiplychannel.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
@@ -89,6 +91,7 @@ SourceSinkDevice::SourceSinkDevice(
 			}
 		}
 
+		// Math Channels
 		shared_ptr<data::AnalogSignal> voltage_signal;
 		shared_ptr<data::AnalogSignal> current_signal;
 		shared_ptr<data::AnalogSignal> power_signal;
@@ -104,19 +107,67 @@ SourceSinkDevice::SourceSinkDevice(
 				power_signal = static_pointer_cast<data::AnalogSignal>(signal);
 		}
 
-		// Create math channels
-		if (!power_signal) {
+		// Create power channel
+		if (voltage_signal && current_signal && !power_signal) {
 			shared_ptr<channels::MultiplyChannel> power_channel =
 				make_shared<channels::MultiplyChannel>(
+					sigrok::Quantity::POWER,
+					vector<const sigrok::QuantityFlag *>(),
+					sigrok::Unit::WATT,
 					voltage_signal, current_signal,
-					chg_name_channels_pair.first, aquisition_start_timestamp_);
+					short_name(), chg_name_channels_pair.first,
+					aquisition_start_timestamp_);
 
-				Device::init_channel(power_channel, chg_name_channels_pair.first);
+				power_signal = static_pointer_cast<data::AnalogSignal>(
+					power_channel->actual_signal());
+				Device::init_channel(
+					power_channel, chg_name_channels_pair.first);
 		}
 
-		// Resistance
-		// Wh
-		// Ah
+		// Create resistance channel
+		if (voltage_signal && current_signal) {
+			shared_ptr<channels::DivideChannel> resistance_channel =
+				make_shared<channels::DivideChannel>(
+					sigrok::Quantity::RESISTANCE,
+					vector<const sigrok::QuantityFlag *>(),
+					sigrok::Unit::OHM,
+					voltage_signal, current_signal,
+					short_name(), chg_name_channels_pair.first,
+					aquisition_start_timestamp_);
+
+				Device::init_channel(
+					resistance_channel, chg_name_channels_pair.first);
+		}
+
+		// Create Wh channel
+		if (power_signal) {
+			shared_ptr<channels::IntegrateChannel> wh_channel =
+				make_shared<channels::IntegrateChannel>(
+					sigrok::Quantity::PRESSURE, // TODO: WORK / ENERGIE
+					vector<const sigrok::QuantityFlag *>(),
+					sigrok::Unit::WATT_HOUR,
+					power_signal,
+					short_name(), chg_name_channels_pair.first,
+					aquisition_start_timestamp_);
+
+				Device::init_channel(
+					wh_channel, chg_name_channels_pair.first);
+		}
+
+		// Create Ah channel
+		if (current_signal) {
+			shared_ptr<channels::IntegrateChannel> ah_channel =
+				make_shared<channels::IntegrateChannel>(
+					sigrok::Quantity::MASS, // TODO: ELECTRIC_CHARGE
+					vector<const sigrok::QuantityFlag *>(),
+					sigrok::Unit::WATT_HOUR, // TODO: AMPERE_HOUR
+					current_signal,
+					short_name(), chg_name_channels_pair.first,
+					aquisition_start_timestamp_);
+
+				Device::init_channel(
+					ah_channel, chg_name_channels_pair.first);
+		}
 	}
 }
 

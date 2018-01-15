@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <assert.h>
+#include <cassert>
 
 #include <QDebug>
 
@@ -35,12 +35,27 @@ namespace sv {
 namespace channels {
 
 MathChannel::MathChannel(
-		QString channel_group_name, double channel_start_timestamp) :
-	BaseChannel(channel_group_name, channel_start_timestamp)//,
-	//channel_type_(ChannelType::MathChannel),
-	//name_("MatchChannel"),
-	//internal_name_("MatchChannel")
+		const sigrok::Quantity *sr_quantity,
+		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
+		const sigrok::Unit *sr_unit,
+		const QString device_name,
+		const QString channel_group_name,
+		double channel_start_timestamp) :
+	BaseChannel(device_name, channel_group_name, channel_start_timestamp),
+	sr_quantity_(sr_quantity),
+	sr_quantity_flags_(sr_quantity_flags),
+	sr_unit_(sr_unit)
 {
+	assert(sr_quantity_);
+	//assert(sr_quantity_flags_);
+	assert(sr_unit_);
+
+	channel_type_ = ChannelType::MathChannel;
+	has_fixed_signal_ = true;
+	name_ = "Math Channel";
+	internal_name_ = "Math Channel";
+
+	init_signal(sr_quantity_, sr_quantity_flags_, sr_unit_);
 }
 
 unsigned int MathChannel::index() const
@@ -53,6 +68,9 @@ shared_ptr<data::BaseSignal> MathChannel::init_signal(
 	vector<const sigrok::QuantityFlag *> sr_quantity_flags,
 	const sigrok::Unit *sr_unit)
 {
+	// TODO: use class sr_quantity_, sr_quantity_flags_, sr_unit_
+	// and name init_signal() for math channles
+
 	// TODO: At the moment, only analog channels are supported
 	shared_ptr<data::AnalogSignal> signal = make_shared<data::AnalogSignal>(
 		sr_quantity, sr_quantity_flags, sr_unit,

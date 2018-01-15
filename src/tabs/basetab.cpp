@@ -82,5 +82,13 @@ shared_ptr<views::BaseView> BaseTab::add_view(
 	return view;
 }
 
+void BaseTab::close_view(shared_ptr<views::BaseView> view)
+{
+	if (!view)
+		return;
+
+	//view_docks_[dock] = view;
+}
+
 } // namespace tabs
 } // namespace sv

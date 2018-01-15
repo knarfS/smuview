@@ -66,6 +66,7 @@ private:
 protected:
 	shared_ptr<views::BaseView> add_view(
 		shared_ptr<views::BaseView> view, Qt::DockWidgetArea area);
+	void close_view(shared_ptr<views::BaseView> view);
 
 	Session &session_;
 	QMainWindow *parent_;

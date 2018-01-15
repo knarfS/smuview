@@ -53,9 +53,11 @@ Device::Device(const shared_ptr<sigrok::Context> &sr_context,
 		shared_ptr<sigrok::Device> sr_device):
 	sr_context_(sr_context),
 	sr_device_(sr_device),
-	device_open_(false),
-	aquisition_start_timestamp_(0.)
+	device_open_(false)
 {
+	aquisition_start_timestamp_ =
+		QDateTime::currentMSecsSinceEpoch() / (double)1000;
+
 	// Set up the session
 	sr_session_ = sv::Session::sr_context->create_session();
 }
@@ -273,8 +275,10 @@ void Device::aquisition_thread_proc(
 		QDateTime::currentMSecsSinceEpoch() / (double)1000;
 	Q_EMIT aquisition_start_timestamp_changed(aquisition_start_timestamp_);
 
-	qWarning() << "Start aquisition for " << short_name() <<
-		",  aquisition_start_timestamp_ = " << aquisition_start_timestamp_;
+	qWarning()
+		<< "Start aquisition for " << short_name()
+		<< ",  aquisition_start_timestamp_ = "
+		<< util::format_time_date(aquisition_start_timestamp_);
 
 	try {
 		sr_session_->run();

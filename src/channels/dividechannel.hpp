@@ -17,8 +17,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CHANNELS_MULTIPLYCHANNEL_HPP
-#define CHANNELS_MULTIPLYCHANNEL_HPP
+#ifndef CHANNELS_DIVIDECHANNEL_HPP
+#define CHANNELS_DIVIDECHANNEL_HPP
 
 #include <memory>
 #include <vector>
@@ -45,26 +45,26 @@ class AnalogSignal;
 
 namespace channels {
 
-class MultiplyChannel : public MathChannel
+class DivideChannel : public MathChannel
 {
 	Q_OBJECT
 
 public:
-	MultiplyChannel(
+	DivideChannel(
 		const sigrok::Quantity *sr_quantity,
 		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
 		const sigrok::Unit *sr_unit,
-		shared_ptr<data::AnalogSignal> signal1,
-		shared_ptr<data::AnalogSignal> signal2,
+		shared_ptr<data::AnalogSignal> dividend_signal,
+		shared_ptr<data::AnalogSignal> divisor_signal,
 		const QString device_name,
 		const QString channel_group_name,
 		double channel_start_timestamp);
 
 private:
-	shared_ptr<data::AnalogSignal> signal1_;
-	shared_ptr<data::AnalogSignal> signal2_;
-	size_t next_signal1_pos_;
-	size_t next_signal2_pos_;
+	shared_ptr<data::AnalogSignal> dividend_signal_;
+	shared_ptr<data::AnalogSignal> divisor_signal_;
+	size_t next_dividend_signal_pos_;
+	size_t next_divisor_signal_pos_;
 
 private Q_SLOTS:
 	void on_sample_added();
@@ -74,4 +74,4 @@ private Q_SLOTS:
 } // namespace channels
 } // namespace sv
 
-#endif // CHANNELS_MULTIPLYCHANNEL_HPP
+#endif // CHANNELS_DIVIDECHANNEL_HPP

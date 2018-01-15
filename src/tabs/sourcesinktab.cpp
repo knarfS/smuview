@@ -68,18 +68,28 @@ void SourceSinkTab::setup_ui()
 		shared_ptr<data::AnalogSignal> current_signal;
 		auto channels = chg_name_signals_pair.second;
 		for (auto channel : channels) {
-			auto signal = static_pointer_cast<data::AnalogSignal>(
-				channel->actual_signal());
+			shared_ptr<views::BaseView> value_plot_view;
+			if (channel->has_fixed_signal()) {
+				auto signal = static_pointer_cast<data::AnalogSignal>(
+					channel->actual_signal());
 
-			if (signal->sr_quantity() == sigrok::Quantity::VOLTAGE)
-				voltage_signal = signal;
-			if (signal->sr_quantity() == sigrok::Quantity::CURRENT)
-				current_signal = signal;
+				if (signal->sr_quantity() == sigrok::Quantity::VOLTAGE)
+					voltage_signal = signal;
+				if (signal->sr_quantity() == sigrok::Quantity::CURRENT)
+					current_signal = signal;
 
-			// Value plot(s)
-			shared_ptr<views::BaseView> value_plot_view =
-				make_shared<views::PlotView>(session_, signal);
-			add_view(value_plot_view, Qt::BottomDockWidgetArea);
+				// Signal plot(s)
+				value_plot_view =
+					make_shared<views::PlotView>(session_, signal);
+			}
+			else {
+				// Channel plot(s)
+				// TODO: Check for channels without data (Digi 35 CPU "CH1")
+				//value_plot_view =
+				//	make_shared<views::PlotView>(session_, channel);
+			}
+			if (value_plot_view)
+				add_view(value_plot_view, Qt::BottomDockWidgetArea);
 		}
 
 		if (voltage_signal && current_signal) {

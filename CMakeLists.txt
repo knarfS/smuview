@@ -143,7 +143,9 @@ set(smuview_SOURCES
   src/session.cpp
   src/util.cpp
   src/channels/basechannel.cpp
+  src/channels/dividechannel.cpp
   src/channels/hardwarechannel.cpp
+  src/channels/integratechannel.cpp
   src/channels/mathchannel.cpp
   src/channels/multiplychannel.cpp
   src/data/analogsignal.cpp

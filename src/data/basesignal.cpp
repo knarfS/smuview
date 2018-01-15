@@ -19,7 +19,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <assert.h>
+#include <cassert>
 #include <utility>
 
 #include <QDateTime>

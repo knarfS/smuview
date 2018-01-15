@@ -60,7 +60,10 @@ class BaseChannel : public QObject
 	Q_OBJECT
 
 public:
-	BaseChannel(QString channel_group_name, double channel_start_timestamp);
+	BaseChannel(
+		const QString device_name, // TODO: replace with device object?
+		const QString channel_group_name, // TODO: replace with ? object?
+		double channel_start_timestamp);
 	virtual ~BaseChannel();
 
 public:
@@ -177,8 +180,10 @@ protected:
 	shared_ptr<data::BaseSignal> actual_signal_;
 	map<quantity_t, shared_ptr<data::BaseSignal>> signal_map_;
 
-	const QString channel_group_name_;
-	QString internal_name_; // TODO: const?
+	const QString device_name_; // TODO: better way?
+	const QString channel_group_name_; // TODO: better way?
+	// TODO: channel_name_?
+	QString internal_name_; // TODO: const?, TODO: notwendig?
 	QString name_;
 	QColor colour_;
 

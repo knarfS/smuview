@@ -263,8 +263,8 @@ shared_ptr<channels::BaseChannel> HardwareDevice::init_channel(
 	shared_ptr<sigrok::Channel> sr_channel, QString channel_group_name)
 {
 	shared_ptr<channels::HardwareChannel> channel =
-		make_shared<channels::HardwareChannel>(
-			sr_channel, channel_group_name, aquisition_start_timestamp_);
+		make_shared<channels::HardwareChannel>(sr_channel,
+			short_name(), channel_group_name, aquisition_start_timestamp_);
 
 	Device::init_channel(channel, channel_group_name);
 

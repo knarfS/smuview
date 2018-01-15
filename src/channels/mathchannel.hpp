@@ -21,16 +21,12 @@
 #define CHANNELS_MATHCHANNEL_HPP
 
 #include <memory>
-#include <utility>
 #include <vector>
 
 #include <QObject>
-#include <QSettings>
 
 #include "src/channels/basechannel.hpp"
 
-using std::map;
-using std::pair;
 using std::shared_ptr;
 using std::vector;
 
@@ -53,7 +49,13 @@ class MathChannel : public BaseChannel
 	Q_OBJECT
 
 public:
-	MathChannel(QString channel_group_name, double channel_start_timestamp);
+	MathChannel(
+		const sigrok::Quantity *sr_quantity,
+		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
+		const sigrok::Unit *sr_unit,
+		const QString device_name,
+		const QString channel_group_name,
+		double channel_start_timestamp);
 
 public:
 	/**
@@ -68,6 +70,11 @@ public:
 		const sigrok::Quantity *sr_quantity,
 		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
 		const sigrok::Unit *sr_unit);
+
+protected:
+	const sigrok::Quantity *sr_quantity_;
+	vector<const sigrok::QuantityFlag *> sr_quantity_flags_;
+	const sigrok::Unit *sr_unit_;
 
 };
 

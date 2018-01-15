@@ -39,14 +39,20 @@ namespace sv {
 namespace channels {
 
 BaseChannel::BaseChannel(
-		QString channel_group_name, double channel_start_timestamp) :
+		const QString device_name,
+		const QString channel_group_name,
+		double channel_start_timestamp) :
 	channel_start_timestamp_(channel_start_timestamp),
+	has_fixed_signal_(false),
 	actual_signal_(nullptr),
+	device_name_(device_name),
 	channel_group_name_(channel_group_name),
 	internal_name_(""),
 	name_("")
 {
-	qWarning() << "Init channel " << internal_name_ << ", channel_start_timestamp = " << channel_start_timestamp;
+	qWarning() << "Init channel " << internal_name_
+		<< ", channel_start_timestamp = "
+		<< util::format_time_date(channel_start_timestamp);
 }
 
 BaseChannel::~BaseChannel()
@@ -163,6 +169,9 @@ void BaseChannel::restore_settings(QSettings &settings)
 
 void BaseChannel::on_aquisition_start_timestamp_changed(double timestamp)
 {
+	qWarning()
+		<< "BaseChannel::on_aquisition_start_timestamp_changed() timestamp = "
+		<< util::format_time_date(timestamp);
 	channel_start_timestamp_ = timestamp;
 	Q_EMIT channel_start_timestamp_changed(timestamp);
 }

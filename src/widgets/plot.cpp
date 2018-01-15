@@ -127,6 +127,8 @@ Plot::Plot(data::BaseCurve *curve_data, QWidget *parent) :
 
 Plot::~Plot()
 {
+	qWarning() << "Plot::~Plot() for " << curve_data_->name();
+	this->stop();
 	delete valueDirectPainter_;
 }
 
@@ -137,6 +139,7 @@ void Plot::start()
 
 void Plot::stop()
 {
+	qWarning() << "Plot::stop() for " << curve_data_->name();
 	killTimer(timer_id_);
 }
 
@@ -325,19 +328,16 @@ void Plot::update_curve()
 
 void Plot::increment_x_interval()
 {
-	/*
 	qWarning() << QString("Plot::increment_x_interval(): old min = %1, old max = %2").
 		arg(x_interval_.minValue()).arg(x_interval_.maxValue());
-	*/
 	if (plot_mode_ == Plot::Additive) {
 		// TODO: Calculate proper interval_length
 		int interval_length = 30;
 		x_interval_ = QwtInterval(x_interval_.minValue(),
 			x_interval_.maxValue() + interval_length);
-		/*
-		qWarning() << QString("Plot::increment_x_interval(): new min = %1, new max = %2").
+		qWarning() <<
+			QString("Plot::increment_x_interval(): new min = %1, new max = %2").
 			arg(x_interval_.minValue()).arg(x_interval_.maxValue());
-		*/
 	}
 	else if (plot_mode_ == Plot::Oscilloscope) {
 		x_interval_ = QwtInterval(x_interval_.maxValue(),
@@ -388,6 +388,7 @@ void Plot::increment_y_interval(QRectF boundaries)
 void Plot::timerEvent(QTimerEvent *event)
 {
 	if (event->timerId() == timer_id_) {
+		//qWarning() << "Plot::timerEvent() for " << curve_data_->name();
 		bool intervals_changed = false;
 		QRectF boundaries = curve_data_->boundingRect();
 
