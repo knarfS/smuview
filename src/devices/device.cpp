@@ -30,6 +30,7 @@
 #include "device.hpp"
 #include "src/session.hpp"
 #include "src/util.hpp"
+#include "src/channels/basechannel.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
 
@@ -70,6 +71,11 @@ Device::~Device()
 shared_ptr<sigrok::Device> Device::sr_device() const
 {
 	return sr_device_;
+}
+
+DeviceType Device::type() const
+{
+	return device_type_;
 }
 
 void Device::open(function<void (const QString)> error_handler)
@@ -122,6 +128,22 @@ void Device::close()
 	device_open_ = false;
 }
 
+map<QString, shared_ptr<channels::BaseChannel>> Device::channel_name_map() const
+{
+	return channel_name_map_;
+}
+
+map<QString, vector<shared_ptr<channels::BaseChannel>>>
+	Device::channel_group_name_map() const
+{
+	return channel_group_name_map_;
+}
+
+vector<shared_ptr<data::AnalogSignal>> Device::all_signals() const
+{
+	return all_signals_;
+}
+
 void Device::free_unused_memory()
 {
 	/* TODO
@@ -133,6 +155,22 @@ void Device::free_unused_memory()
 		}
 	}
 	*/
+}
+
+void Device::init_channel(shared_ptr<channels::BaseChannel> channel,
+	QString channel_group_name)
+{
+	connect(this, SIGNAL(aquisition_start_timestamp_changed(double)),
+			channel.get(), SLOT(on_aquisition_start_timestamp_changed(double)));
+
+	// map<QString, shared_ptr<channels::BaseChannel>> channel_name_map_;
+	channel_name_map_.insert(make_pair(channel->internal_name(), channel));
+
+	// map<QString, vector<shared_ptr<channels::BaseChannel>>> channel_group_name_map_;
+	if (channel_group_name_map_.count(channel_group_name) == 0)
+		channel_group_name_map_.insert(make_pair(
+			channel_group_name, vector<shared_ptr<channels::BaseChannel>>()));
+	channel_group_name_map_[channel_group_name].push_back(channel);
 }
 
 void Device::data_feed_in(shared_ptr<sigrok::Device> sr_device,

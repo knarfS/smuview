@@ -22,6 +22,7 @@
 #include <cassert>
 #include <glib.h>
 #include <thread>
+#include <utility>
 
 #include <QDateTime>
 #include <QDebug>
@@ -32,7 +33,8 @@
 #include "hardwaredevice.hpp"
 #include "src/devicemanager.hpp"
 #include "src/session.hpp"
-#include "src/devices/channel.hpp"
+#include "src/channels/basechannel.hpp"
+#include "src/channels/hardwarechannel.hpp"
 #include "src/devices/configurable.hpp"
 #include "src/devices/device.hpp"
 #include "src/data/analogsignal.hpp"
@@ -42,6 +44,7 @@ using std::bad_alloc;
 using std::dynamic_pointer_cast;
 using std::find;
 using std::lock_guard;
+using std::make_pair;
 using std::make_shared;
 using std::map;
 using std::pair;
@@ -99,11 +102,6 @@ HardwareDevice::HardwareDevice(
 HardwareDevice::~HardwareDevice()
 {
 	close();
-}
-
-HardwareDevice::Type HardwareDevice::type() const
-{
-	return type_;
 }
 
 QString HardwareDevice::name() const
@@ -255,52 +253,23 @@ vector<shared_ptr<devices::Configurable>> HardwareDevice::configurables() const
 	return configurables_;
 }
 
-map<QString, shared_ptr<devices::Channel>> HardwareDevice::channel_name_map() const
-{
-	return channel_name_map_;
-}
-
-map<shared_ptr<sigrok::Channel>, shared_ptr<devices::Channel>> HardwareDevice::sr_channel_map() const
+map<shared_ptr<sigrok::Channel>, shared_ptr<channels::BaseChannel>>
+	HardwareDevice::sr_channel_map() const
 {
 	return sr_channel_map_;
 }
 
-map<QString, vector<shared_ptr<devices::Channel>>> HardwareDevice::channel_group_name_map() const
-{
-	return channel_group_name_map_;
-}
-
-vector<shared_ptr<data::AnalogSignal>> HardwareDevice::all_signals() const
-{
-	return all_signals_;
-}
-
-shared_ptr<devices::Channel> HardwareDevice::init_channel(
+shared_ptr<channels::BaseChannel> HardwareDevice::init_channel(
 	shared_ptr<sigrok::Channel> sr_channel, QString channel_group_name)
 {
-	shared_ptr<devices::Channel> channel = make_shared<devices::Channel>(
-		sr_channel, Channel::ChannelType::AnalogChannel,
-		channel_group_name, aquisition_start_timestamp_);
+	shared_ptr<channels::HardwareChannel> channel =
+		make_shared<channels::HardwareChannel>(
+			sr_channel, channel_group_name, aquisition_start_timestamp_);
 
-	connect(this, SIGNAL(aquisition_start_timestamp_changed(double)),
-		channel.get(), SLOT(on_aquisition_start_timestamp_changed(double)));
+	Device::init_channel(channel, channel_group_name);
 
-	// map<QString, shared_ptr<devices::Channel>> channel_name_map_;
-	channel_name_map_.insert(
-		pair<QString, shared_ptr<devices::Channel>>
-		(channel->internal_name(), channel));
-
-	// map<shared_ptr<sigrok::Channel>, shared_ptr<devices::Channel>> sr_channel_map_;
-	sr_channel_map_.insert(
-		pair<shared_ptr<sigrok::Channel>, shared_ptr<devices::Channel>>
-		(sr_channel, channel));
-
-	// map<QString, vector<shared_ptr<devices::Channel>>> channel_group_name_map_;
-	if (channel_group_name_map_.count(channel_group_name) == 0)
-		channel_group_name_map_.insert(
-			pair<QString, vector<shared_ptr<devices::Channel>>>
-			(channel_group_name, vector<shared_ptr<devices::Channel>>()));
-	channel_group_name_map_[channel_group_name].push_back(channel);
+	// map<shared_ptr<sigrok::Channel>, shared_ptr<channels::BaseChannel>> sr_channel_map_;
+	sr_channel_map_.insert(make_pair(sr_channel, channel));
 
 	return channel;
 }
@@ -352,7 +321,7 @@ void HardwareDevice::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
 
 		if (!sr_channel_map_.count(sr_channel))
 			assert("Unknown channel");
-		shared_ptr<devices::Channel> channel = sr_channel_map_[sr_channel];
+		shared_ptr<channels::BaseChannel> channel = sr_channel_map_[sr_channel];
 
 		/*
 		 * TODO: Use push_interleaved_samples() as only push function

@@ -25,11 +25,11 @@
 
 #include "plotview.hpp"
 #include "src/session.hpp"
+#include "src/channels/basechannel.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/data/basecurve.hpp"
 #include "src/data/timecurve.hpp"
 #include "src/data/xycurve.hpp"
-#include "src/devices/channel.hpp"
 #include "src/widgets/plot.hpp"
 
 using std::dynamic_pointer_cast;
@@ -39,7 +39,7 @@ namespace sv {
 namespace views {
 
 PlotView::PlotView(const Session &session,
-		shared_ptr<devices::Channel> channel,
+		shared_ptr<channels::BaseChannel> channel,
 		QWidget *parent) :
 	BaseView(session, parent),
 	channel_(channel),

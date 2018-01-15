@@ -35,12 +35,12 @@ namespace sv {
 
 class Session;
 
-namespace data {
-class AnalogSignal;
+namespace channels {
+class BaseChannel;
 }
 
-namespace devices {
-class Channel;
+namespace data {
+class AnalogSignal;
 }
 
 namespace widgets {
@@ -55,7 +55,7 @@ class ValuePanelView : public BaseView
 
 public:
 	ValuePanelView(const Session& session,
-		shared_ptr<devices::Channel> channel,
+		shared_ptr<channels::BaseChannel> channel,
 		QWidget* parent = nullptr);
 
 	ValuePanelView(const Session& session,
@@ -68,7 +68,7 @@ public:
 
 private:
 	uint digits_;
-	shared_ptr<devices::Channel> channel_;
+	shared_ptr<channels::BaseChannel> channel_;
 	shared_ptr<data::AnalogSignal> signal_;
 
 	QTimer *timer_;

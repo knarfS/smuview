@@ -23,8 +23,8 @@
 #include <QTreeView>
 
 #include "signaltree.hpp"
+#include "src/channels/basechannel.hpp"
 #include "src/data/basesignal.hpp"
-#include "src/devices/channel.hpp"
 #include "src/devices/device.hpp"
 #include "src/devices/hardwaredevice.hpp"
 
@@ -48,9 +48,9 @@ SignalTree::SignalTree(const Session &session, bool is_show_signals,
 	setup_ui();
 }
 
-vector<shared_ptr<devices::Channel>> SignalTree::selected_channels()
+vector<shared_ptr<channels::BaseChannel>> SignalTree::selected_channels()
 {
-	vector<shared_ptr<devices::Channel>> channels;
+	vector<shared_ptr<channels::BaseChannel>> channels;
 	auto items = this->checked_items();
 	for (auto item : items) {
 		QVariant data = item->data(0, Qt::UserRole);
@@ -58,11 +58,11 @@ vector<shared_ptr<devices::Channel>> SignalTree::selected_channels()
 			continue;
 
 		/*
-		shared_ptr<devices::Channel> channel =
-			dynamic_pointer_cast<devices::Channel>(data.value);
+		shared_ptr<channels::BaseChannel> channel =
+			dynamic_pointer_cast<channels::BaseChannel>(data.value);
 		*/
-		shared_ptr<devices::Channel> channel =
-			data.value<shared_ptr<devices::Channel>>();
+		shared_ptr<channels::BaseChannel> channel =
+			data.value<shared_ptr<channels::BaseChannel>>();
 
 		if (channel)
 			channels.push_back(channel);
@@ -93,7 +93,7 @@ vector<shared_ptr<data::BaseSignal>> SignalTree::selected_signals()
 
 void SignalTree::setup_ui()
 {
-	this->setColumnCount(1);
+	this->setColumnCount(2);
 	this->setSelectionMode(QTreeView::MultiSelection);
 
 	unordered_set<shared_ptr<devices::Device>> devices;
@@ -125,7 +125,7 @@ void SignalTree::setup_ui()
 			device_item->flags() | Qt::ItemIsUserCheckable | Qt::ItemIsSelectable);
 		device_item->setCheckState(0, Qt::Checked);
 		device_item->setIcon(0, QIcon(":/icon/smuview.ico"));
-		device_item->setText(0, hw_device->full_name());
+		device_item->setText(1, hw_device->full_name());
 		this->addTopLevelItem(device_item);
 
 		auto chg_name_channels_map = hw_device->channel_group_name_map();
@@ -134,7 +134,7 @@ void SignalTree::setup_ui()
 			chg_item->setFlags(
 				chg_item->flags() | Qt::ItemIsUserCheckable | Qt::ItemIsSelectable);
 			chg_item->setCheckState(0, Qt::Checked);
-			chg_item->setText(0, chg_name_channels_pair.first);
+			chg_item->setText(1, chg_name_channels_pair.first);
 			device_item->addChild(chg_item);
 
 			add_channels(chg_name_channels_pair.second, expanded, chg_item);
@@ -148,7 +148,7 @@ void SignalTree::setup_ui()
 }
 
 void SignalTree::add_channels(
-	vector<shared_ptr<devices::Channel>> channels, bool expanded,
+	vector<shared_ptr<channels::BaseChannel>> channels, bool expanded,
 	QTreeWidgetItem *parent)
 {
 	for (auto channel : channels) {
@@ -156,7 +156,7 @@ void SignalTree::add_channels(
 		ch_item->setFlags(
 			ch_item->flags() | Qt::ItemIsUserCheckable | Qt::ItemIsSelectable);
 		ch_item->setCheckState(0, Qt::Checked);
-		ch_item->setText(0, channel->name());
+		ch_item->setText(1, channel->name());
 		ch_item->setData(0, Qt::UserRole, QVariant::fromValue(channel));
 		parent->addChild(ch_item);
 
@@ -167,7 +167,7 @@ void SignalTree::add_channels(
 }
 
 void SignalTree::add_signals(
-	map<devices::Channel::quantity_t, shared_ptr<data::BaseSignal>> signal_map,
+	map<channels::BaseChannel::quantity_t, shared_ptr<data::BaseSignal>> signal_map,
 	QTreeWidgetItem *parent)
 {
 	for (auto signal_pair : signal_map) {
@@ -176,7 +176,7 @@ void SignalTree::add_signals(
 		signal_item->setFlags(
 			signal_item->flags() | Qt::ItemIsUserCheckable | Qt::ItemIsSelectable);
 		signal_item->setCheckState(0, Qt::Checked);
-		signal_item->setText(0, signal->name());
+		signal_item->setText(1, signal->name());
 		signal_item->setData(0, Qt::UserRole, QVariant::fromValue(signal));
 		parent->addChild(signal_item);
 	}

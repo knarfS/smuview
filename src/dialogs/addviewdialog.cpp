@@ -24,8 +24,8 @@
 #include <QWidget>
 
 #include "addviewdialog.hpp"
+#include "src/channels/basechannel.hpp"
 #include "src/data/analogsignal.hpp"
-#include "src/devices/channel.hpp"
 #include "src/devices/device.hpp"
 #include "src/devices/hardwaredevice.hpp"
 #include "src/views/plotview.hpp"

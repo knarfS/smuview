@@ -33,13 +33,13 @@ namespace sv {
 
 class Session;
 
+namespace channels {
+class BaseChannel;
+}
+
 namespace data {
 class AnalogSignal;
 class BaseCurve;
-}
-
-namespace devices {
-class Channel;
 }
 
 namespace widgets {
@@ -54,7 +54,7 @@ class PlotView : public BaseView
 
 public:
 	PlotView(const Session& session,
-		shared_ptr<devices::Channel> channel,
+		shared_ptr<channels::BaseChannel> channel,
 		QWidget* parent = nullptr);
 	PlotView(const Session& session,
 		shared_ptr<data::AnalogSignal> signal,
@@ -72,7 +72,7 @@ private:
 	void connect_signals();
 	void init_values();
 
-	shared_ptr<devices::Channel> channel_;
+	shared_ptr<channels::BaseChannel> channel_;
 	data::BaseCurve *curve_;
 
 	QAction *const action_zoom_in_;

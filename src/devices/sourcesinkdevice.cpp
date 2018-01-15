@@ -25,10 +25,13 @@
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
 #include "sourcesinkdevice.hpp"
+#include "src/channels/basechannel.hpp"
+#include "src/channels/multiplychannel.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
-#include "src/devices/channel.hpp"
 #include "src/devices/configurable.hpp"
+
+using std::static_pointer_cast;
 
 namespace sv {
 namespace devices {
@@ -41,15 +44,16 @@ SourceSinkDevice::SourceSinkDevice(
 	// Set options for different device types
 	const auto sr_keys = sr_device->driver()->config_keys();
 	if (sr_keys.count(sigrok::ConfigKey::POWER_SUPPLY))
-		type_ = HardwareDevice::POWER_SUPPLY;
+		device_type_ = DeviceType::POWER_SUPPLY;
 	else if (sr_keys.count(sigrok::ConfigKey::ELECTRONIC_LOAD))
-		type_ = HardwareDevice::ELECTRONIC_LOAD;
+		device_type_ = DeviceType::ELECTRONIC_LOAD;
 	else
 		assert("Unknown device");
 
 	// Preinitialize known fixed channels with a signal
 	for (auto chg_name_channels_pair : channel_group_name_map_) {
 		for (auto channel : chg_name_channels_pair.second) {
+			// TODO: preinit with channel.meaning.mq, ...
 			bool init = false;
 			const sigrok::Quantity *sr_quantity;
 			vector<const sigrok::QuantityFlag *> sr_quantity_flags;
@@ -84,6 +88,35 @@ SourceSinkDevice::SourceSinkDevice(
 				channel->init_signal(sr_quantity, sr_quantity_flags, sr_unit);
 			}
 		}
+
+		shared_ptr<data::AnalogSignal> voltage_signal;
+		shared_ptr<data::AnalogSignal> current_signal;
+		shared_ptr<data::AnalogSignal> power_signal;
+		for (auto channel : chg_name_channels_pair.second) {
+			if (!channel->has_fixed_signal())
+				continue;
+			auto signal = channel->actual_signal();
+			if (signal->sr_quantity() == sigrok::Quantity::VOLTAGE)
+				voltage_signal = static_pointer_cast<data::AnalogSignal>(signal);
+			else if (signal->sr_quantity() == sigrok::Quantity::CURRENT)
+				current_signal = static_pointer_cast<data::AnalogSignal>(signal);
+			else if (signal->sr_quantity() == sigrok::Quantity::POWER)
+				power_signal = static_pointer_cast<data::AnalogSignal>(signal);
+		}
+
+		// Create math channels
+		if (!power_signal) {
+			shared_ptr<channels::MultiplyChannel> power_channel =
+				make_shared<channels::MultiplyChannel>(
+					voltage_signal, current_signal,
+					chg_name_channels_pair.first, aquisition_start_timestamp_);
+
+				Device::init_channel(power_channel, chg_name_channels_pair.first);
+		}
+
+		// Resistance
+		// Wh
+		// Ah
 	}
 }
 

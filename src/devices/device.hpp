@@ -30,6 +30,7 @@
 #include <QString>
 
 using std::function;
+using std::map;
 using std::mutex;
 using std::recursive_mutex;
 using std::shared_ptr;
@@ -51,11 +52,24 @@ namespace sv {
 
 class DeviceManager;
 
+namespace channels {
+class BaseChannel;
+}
+
 namespace data {
+class AnalogSignal;
 class BaseSignal;
 }
 
 namespace devices {
+
+enum class DeviceType {
+	POWER_SUPPLY,
+	ELECTRONIC_LOAD,
+	MULTIMETER,
+	DEMO_DEV,
+	UNKNOWN
+};
 
 class Device : public QObject
 {
@@ -73,6 +87,11 @@ public:
 	};
 
 	shared_ptr<sigrok::Device> sr_device() const;
+
+	/**
+	 * Returns the device type
+	 */
+	DeviceType type() const;
 
 	/**
 	 * Builds the name
@@ -100,6 +119,12 @@ public:
 	void open(function<void (const QString)> error_handler);
 	void close();
 
+	// TODO: typdefs?
+	// TODO: Doxy
+	map<QString, shared_ptr<channels::BaseChannel>> channel_name_map() const;
+	map<QString, vector<shared_ptr<channels::BaseChannel>>> channel_group_name_map() const;
+	vector<shared_ptr<data::AnalogSignal>> all_signals() const;
+
 	virtual void free_unused_memory();
 
 protected:
@@ -111,13 +136,23 @@ protected:
 	virtual void feed_in_logic(shared_ptr<sigrok::Logic> sr_logic) = 0;
 	virtual void feed_in_analog(shared_ptr<sigrok::Analog> sr_analog) = 0;
 
+	void init_channel(shared_ptr<channels::BaseChannel> channel,
+		QString channel_group_name);
+
 	void data_feed_in(shared_ptr<sigrok::Device> sr_device,
 		shared_ptr<sigrok::Packet> sr_packet);
 
 	const shared_ptr<sigrok::Context> sr_context_;
 	shared_ptr<sigrok::Session> sr_session_;
 	shared_ptr<sigrok::Device> sr_device_;
+	DeviceType device_type_;
 	bool device_open_;
+
+	// TODO: typdefs?
+	// TODO: Doxy
+	map<QString, shared_ptr<channels::BaseChannel>> channel_name_map_;
+	map<QString, vector<shared_ptr<channels::BaseChannel>>> channel_group_name_map_;
+	vector<shared_ptr<data::AnalogSignal>> all_signals_;
 
 	mutable mutex aquisition_mutex_; //!< Protects access to capture_state_. // TODO
 	mutable recursive_mutex data_mutex_; // TODO

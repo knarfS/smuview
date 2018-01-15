@@ -63,6 +63,10 @@ class HardwareDevice;
 
 namespace sv {
 
+namespace channels {
+class BaseChannel;
+}
+
 namespace data {
 class AnalogSignal;
 class BaseSignal;
@@ -83,21 +87,7 @@ public:
 
 	~HardwareDevice();
 
-	// TODO: use sigrok ConfigKey?
-	enum Type {
-		POWER_SUPPLY,
-		ELECTRONIC_LOAD,
-		MULTIMETER,
-		DEMO_DEV,
-		UNKNOWN
-	};
-
 	shared_ptr<sigrok::HardwareDevice> sr_hardware_device() const;
-
-	/**
-	 * Returns the device type
-	 */
-	HardwareDevice::Type type() const;
 
 	/**
 	 * Builds the name
@@ -121,17 +111,12 @@ public:
 	 */
 	QString display_name(const DeviceManager &device_manager) const;
 
-	// TODO: move all maps to Device, because aqcu is there?
-	// TODO: typdefs?
-	// TODO: Doxy
 	vector<shared_ptr<devices::Configurable>> configurables() const;
-	map<QString, shared_ptr<devices::Channel>> channel_name_map() const;
-	map<shared_ptr<sigrok::Channel>, shared_ptr<devices::Channel>> sr_channel_map() const;
-	map<QString, vector<shared_ptr<devices::Channel>>> channel_group_name_map() const;
-	vector<shared_ptr<data::AnalogSignal>> all_signals() const;
+	// TODO: typdef?
+	map<shared_ptr<sigrok::Channel>, shared_ptr<channels::BaseChannel>> sr_channel_map() const;
 
 protected:
-	shared_ptr<devices::Channel> init_channel(
+	shared_ptr<channels::BaseChannel> init_channel(
 		shared_ptr<sigrok::Channel> sr_channel, QString channel_group_name);
 
 	void feed_in_header();
@@ -141,16 +126,9 @@ protected:
 	void feed_in_logic(shared_ptr<sigrok::Logic> sr_logic);
 	void feed_in_analog(shared_ptr<sigrok::Analog> sr_analog);
 
-	Type type_;
-
-	// TODO: move all maps to Device, because aqcu is there?
-	// TODO: typdefs?
-	// TODO: Doxy
 	vector<shared_ptr<devices::Configurable>> configurables_;
-	map<QString, shared_ptr<devices::Channel>> channel_name_map_;
-	map<shared_ptr<sigrok::Channel>, shared_ptr<devices::Channel>> sr_channel_map_;
-	map<QString, vector<shared_ptr<devices::Channel>>> channel_group_name_map_;
-	vector<shared_ptr<data::AnalogSignal>> all_signals_;
+	// TODO: typdef?
+	map<shared_ptr<sigrok::Channel>, shared_ptr<channels::BaseChannel>> sr_channel_map_;
 
 private:
 	double frame_start_timestamp_;

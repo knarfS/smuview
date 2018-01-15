@@ -152,6 +152,7 @@ void AnalogSignal::push_sample(void *sample, double timestamp,
 
 	time_->push_back(timestamp);
 	data_->push_back(dsample);
+	Q_EMIT sample_added();
 	sample_count_++;
 }
 

@@ -27,8 +27,8 @@
 
 #include "valuepanelview.hpp"
 #include "src/session.hpp"
+#include "src/channels/basechannel.hpp"
 #include "src/data/analogsignal.hpp"
-#include "src/devices/channel.hpp"
 #include "src/widgets/lcddisplay.hpp"
 
 using std::dynamic_pointer_cast;
@@ -37,7 +37,7 @@ namespace sv {
 namespace views {
 
 ValuePanelView::ValuePanelView(const Session &session,
-		shared_ptr<devices::Channel> channel,
+		shared_ptr<channels::BaseChannel> channel,
 		QWidget *parent) :
 	BaseView(session, parent),
 	channel_(channel),

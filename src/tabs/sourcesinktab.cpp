@@ -24,12 +24,13 @@
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
 #include "sourcesinktab.hpp"
-#include "src/tabs/devicetab.hpp"
+#include "src/channels/basechannel.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
-#include "src/devices/channel.hpp"
 #include "src/devices/configurable.hpp"
+#include "src/devices/device.hpp"
 #include "src/devices/hardwaredevice.hpp"
+#include "src/tabs/devicetab.hpp"
 #include "src/views/sinkcontrolview.hpp"
 #include "src/views/sourcecontrolview.hpp"
 #include "src/views/plotview.hpp"
@@ -51,9 +52,9 @@ void SourceSinkTab::setup_ui()
 	for (auto c : device_->configurables()) {
 		if (c->is_controllable()) {
 			shared_ptr<views::BaseView> control_view;
-			if (device_->type() == devices::HardwareDevice::Type::POWER_SUPPLY)
+			if (device_->type() == devices::DeviceType::POWER_SUPPLY)
 				control_view = make_shared<views::SourceControlView>(session_, c);
-			else if (device_->type() == devices::HardwareDevice::Type::ELECTRONIC_LOAD)
+			else if (device_->type() == devices::DeviceType::ELECTRONIC_LOAD)
 				control_view = make_shared<views::SinkControlView>(session_, c);
 
 			add_view(control_view, Qt::TopDockWidgetArea);

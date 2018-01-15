@@ -142,13 +142,16 @@ set(smuview_SOURCES
   src/mainwindow.cpp
   src/session.cpp
   src/util.cpp
+  src/channels/basechannel.cpp
+  src/channels/hardwarechannel.cpp
+  src/channels/mathchannel.cpp
+  src/channels/multiplychannel.cpp
   src/data/analogsignal.cpp
   src/data/basecurve.cpp
   src/data/basesignal.cpp
   src/data/quantity.cpp
   src/data/timecurve.cpp
   src/data/xycurve.cpp
-  src/devices/channel.cpp
   src/devices/configurable.cpp
   src/devices/device.cpp
   src/devices/hardwaredevice.cpp

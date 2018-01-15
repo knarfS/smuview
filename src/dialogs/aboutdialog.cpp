@@ -34,8 +34,8 @@
 #include "aboutdialog.hpp"
 #include "config.h"
 #include "src/util.hpp"
+#include "src/channels/basechannel.hpp"
 #include "src/data/analogsignal.hpp"
-#include "src/devices/channel.hpp"
 #include "src/devices/configurable.hpp"
 #include "src/devices/hardwaredevice.hpp"
 

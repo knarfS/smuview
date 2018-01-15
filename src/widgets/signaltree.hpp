@@ -27,7 +27,7 @@
 #include <QWidget>
 
 #include "src/session.hpp"
-#include "src/devices/channel.hpp"
+#include "src/channels/basechannel.hpp"
 
 using std::map;
 using std::shared_ptr;
@@ -54,17 +54,17 @@ public:
 		shared_ptr<devices::Device> selected_device,
 		QWidget *parent = nullptr);
 
-	vector<shared_ptr<devices::Channel>> selected_channels();
+	vector<shared_ptr<channels::BaseChannel>> selected_channels();
 	vector<shared_ptr<data::BaseSignal>> selected_signals();
 
 private:
 	void setup_ui();
 
 	void add_channels(
-		vector<shared_ptr<devices::Channel>> channels, bool expanded,
+		vector<shared_ptr<channels::BaseChannel>> channels, bool expanded,
 		QTreeWidgetItem *parent);
 	void add_signals(
-		map<devices::Channel::quantity_t, shared_ptr<data::BaseSignal>> signal_map,
+		map<channels::BaseChannel::quantity_t, shared_ptr<data::BaseSignal>> signal_map,
 		QTreeWidgetItem *parent);
 
 	vector<const QTreeWidgetItem *> checked_items();
