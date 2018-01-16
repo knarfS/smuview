@@ -387,7 +387,7 @@ void Plot::increment_y_interval(QRectF boundaries)
 
 void Plot::timerEvent(QTimerEvent *event)
 {
-	if (event->timerId() == timer_id_) {
+	if (event->timerId() == timer_id_ && curve_data_) {
 		//qWarning() << "Plot::timerEvent() for " << curve_data_->name();
 		bool intervals_changed = false;
 		QRectF boundaries = curve_data_->boundingRect();
