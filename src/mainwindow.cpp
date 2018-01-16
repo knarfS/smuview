@@ -80,8 +80,14 @@ void MainWindow::init_default_session()
 		return;
 	}
 
-	for (auto user_device : device_manager_.user_spec_devices())
+	for (auto user_device : device_manager_.user_spec_devices()) {
+		// TODO: handle in session/device
+		session_->add_device(user_device, [&](QString message) {
+			session_error("Aquisition failed", message);
+		});
+
 		add_device_tab(user_device);
+	}
 }
 
 void MainWindow::init_session_with_file(
@@ -174,9 +180,6 @@ void MainWindow::add_device_tab(
 
 	add_tab(tab_window, device->short_name());
 
-	// TODO: handle in session/device
-	session_->add_device(device,
-		[&](QString message) { session_error("Aquisition failed", message); });
 	Q_EMIT device_added(device);
 }
 
