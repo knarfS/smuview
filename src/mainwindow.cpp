@@ -18,9 +18,11 @@
  */
 
 #include <memory>
+#include <utility>
 
 #include <QApplication>
 #include <QDebug>
+#include <QDockWidget>
 #include <QLabel>
 #include <QMessageBox>
 #include <QHBoxLayout>
@@ -36,7 +38,10 @@
 #include "src/tabs/basetab.hpp"
 #include "src/tabs/measurementtab.hpp"
 #include "src/tabs/sourcesinktab.hpp"
+#include "src/tabs/usertab.hpp"
+#include "src/widgets/signaltree.hpp"
 
+using std::make_pair;
 using std::make_shared;
 
 namespace sv
@@ -66,8 +71,17 @@ void MainWindow::init_default_session()
 {
 	init_session();
 
+	// Display a "UserTab" if no "DeviceTab"s have been opend. This is because
+	// without a tab in the QTabWidget the tab tool bar (CornerWidget) doesn't
+	// show up. Collapsing the tool bar to 0 is prevented in the cose_tab()
+	// function.
+	if (device_manager_.user_spec_devices().empty()) {
+		add_user_tab();
+		return;
+	}
+
 	for (auto user_device : device_manager_.user_spec_devices())
-		add_tab(user_device);
+		add_device_tab(user_device);
 }
 
 void MainWindow::init_session_with_file(
@@ -118,85 +132,111 @@ void MainWindow::remove_session()
 	//	return s == session_; });
 }
 
-shared_ptr<devices::Device> MainWindow::add_tab(
-	shared_ptr<devices::HardwareDevice> device)
+void MainWindow::add_tab(QMainWindow *tab_window, QString title)
 {
-	tabs::TabType type;
-	const auto keys = device->sr_hardware_device()->driver()->config_keys();
-	if (keys.count(sigrok::ConfigKey::POWER_SUPPLY))
-		type = tabs::TabTypeSource;
-	else if (keys.count(sigrok::ConfigKey::ELECTRONIC_LOAD))
-		type = tabs::TabTypeSink;
-	else //TODO
-		type = tabs::TabTypeMeasurement;
-
-	QMainWindow *window = new QMainWindow();
-	window->setWindowFlags(Qt::Widget);  // Remove Qt::Window flag
-
-	int index = tab_widget_->addTab(window, device->short_name());
+	int index = tab_widget_->addTab(tab_window, title);
 	tab_widget_->setCurrentIndex(index);
 
-	window->setDockNestingEnabled(true);
-
-	session_->add_device(device,
-		[&](QString message) { session_error("Aquisition failed", message); });
-
-	device_windows_[device] = window;
-	last_focused_device_ = device;
-
-	if (type == tabs::TabTypeSource || type == tabs::TabTypeSink) {
-		tabs::SourceSinkTab *tab = new tabs::SourceSinkTab(*session_,
-			static_pointer_cast<devices::SourceSinkDevice>(device), window);
-		window->setCentralWidget(tab);
-	}
-	else if (type == tabs::TabTypeMeasurement) {
-		tabs::MeasurementTab *tab = new tabs::MeasurementTab(*session_,
-			static_pointer_cast<devices::MeasurementDevice>(device), window);
-		window->setCentralWidget(tab);
-	}
-	else if (type == tabs::TabTypeViews) {
-	}
-
-	return device;
+	tab_window_map_.insert(make_pair(index, tab_window));
+	last_focused_tab_index_ = index;
 }
 
-void MainWindow::remove_tab(shared_ptr<devices::HardwareDevice> device)
+void MainWindow::add_user_tab()
+{
+	QMainWindow *tab_window = new QMainWindow();
+	tab_window->setWindowFlags(Qt::Widget);  // Remove Qt::Window flag
+	tab_window->setDockNestingEnabled(true);
+
+	tabs::UserTab *tab = new tabs::UserTab(*session_, tab_window);
+	tab_window->setCentralWidget(tab);
+
+	add_tab(tab_window, QString("User Tab"));
+}
+
+void MainWindow::add_device_tab(
+	shared_ptr<devices::HardwareDevice> device)
+{
+	QMainWindow *tab_window = new QMainWindow();
+	tab_window->setWindowFlags(Qt::Widget);  // Remove Qt::Window flag
+	tab_window->setDockNestingEnabled(true);
+
+	tabs::BaseTab *tab;
+	const auto keys = device->sr_hardware_device()->driver()->config_keys();
+	if (keys.count(sigrok::ConfigKey::POWER_SUPPLY) ||
+			keys.count(sigrok::ConfigKey::ELECTRONIC_LOAD)) {
+		tab = new tabs::SourceSinkTab(*session_,
+			static_pointer_cast<devices::SourceSinkDevice>(device), tab_window);
+	}
+	else
+		tab = new tabs::MeasurementTab(*session_,
+			static_pointer_cast<devices::MeasurementDevice>(device), tab_window);
+	tab_window->setCentralWidget(tab);
+
+	add_tab(tab_window, device->short_name());
+
+	// TODO: handle in session/device
+	session_->add_device(device,
+		[&](QString message) { session_error("Aquisition failed", message); });
+	Q_EMIT device_added(device);
+}
+
+void MainWindow::remove_tab(int tab_index)
 {
 	// Determine the height of the button before it collapses
 	int h = add_device_button_->height();
 
-	device_windows_.erase(device);
-	session_->remove_device(device);
+	tab_widget_->removeTab(tab_index);
+	tab_window_map_.erase(tab_index);
 
-	if (device_windows_.size() == 0) {
+	if (tab_window_map_.empty()) {
+		// TODO: not working!
+		qWarning() << "MainWindow::remove_tab(): height = " << h;
 		// When there are no more tabs, the height of the QTabWidget
 		// drops to zero. We must prevent this to keep the toolbar visible
-		for (QWidget *w : tab_widget_->findChildren<QWidget*>())
+		for (QWidget *w : tab_widget_toolbar_->findChildren<QWidget*>()) {
+			qWarning() << "MainWindow::remove_tab(): w = " << w << ", " << w->height();
 			w->setMinimumHeight(h);
+			qWarning() << "MainWindow::remove_tab(): w = " << w << ", " << w->height();
+		}
 
-		int margin = tab_widget_->layout()->contentsMargins().bottom();
-		tab_widget_->setMinimumHeight(h + 2 * margin);
-		//session_selector_.setMinimumHeight(h + 2 * margin);
+		int margin = tab_widget_toolbar_->layout()->contentsMargins().bottom();
+		qWarning() << "MainWindow::remove_tab(): margin = " << margin;
+		qWarning() << "MainWindow::remove_tab(): tab_widget_toolbar_ = " << tab_widget_toolbar_->height();
+		qWarning() << "MainWindow::remove_tab(): tab_widget_ = " << tab_widget_->height();
+		tab_widget_toolbar_->setMinimumHeight(h + 2*margin);
+		tab_widget_->setMinimumHeight(h + 2*margin);
+		qWarning() << "MainWindow::remove_tab(): tab_widget_toolbar_ = " << tab_widget_toolbar_->height();
+		qWarning() << "MainWindow::remove_tab(): tab_widget_ = " << tab_widget_->height();
 	}
 }
 
 void MainWindow::setup_ui()
 {
-	this->resize(724, 444);
-
 	QIcon mainIcon;
 	mainIcon.addFile(QStringLiteral(":/icons/smuview.ico"),
 		QSize(), QIcon::Normal, QIcon::Off);
 	setWindowIcon(mainIcon);
 
-	// Toolbar
+	QHBoxLayout *centralLayout = new QHBoxLayout();
+	centralLayout->setContentsMargins(2, 2, 2, 2);
+	centralWidget = new QWidget();
+	centralWidget->setLayout(centralLayout);
+
+	/*
+	// Info Widget
+	info_widget = new QToolBox();
+	info_widget->addItem(signal_tree_, tr("Devices && Signals"));
+	centralLayout->addWidget(info_widget);
+	*/
+
+	// Tab Toolbar
 	add_device_button_ = new QToolButton();
 	add_device_button_->setIcon(QIcon::fromTheme("document-new",
 		QIcon(":/icons/document-new.png")));
 	add_device_button_->setToolTip(tr("Add new device"));
 	add_device_button_->setAutoRaise(true);
 	connect(add_device_button_, SIGNAL(clicked(bool)),
-		this, SLOT(on_action_add_device_triggered()));
+		this, SLOT(on_action_add_device_tab_triggered()));
 
 	add_user_tab_button_ = new QToolButton();
 	add_user_tab_button_->setIcon(QIcon::fromTheme("tab-new",
@@ -210,39 +250,36 @@ void MainWindow::setup_ui()
 	toolbar_layout->setContentsMargins(2, 2, 2, 2);
 	toolbar_layout->addWidget(add_device_button_);
 	toolbar_layout->addWidget(add_user_tab_button_);
-	static_toolbar_ = new QWidget();
-	static_toolbar_->setLayout(toolbar_layout);
+	tab_widget_toolbar_ = new QWidget();
+	tab_widget_toolbar_->setLayout(toolbar_layout);
 
-	// Statusbar
-	statusBar = new QStatusBar();
-	this->setStatusBar(statusBar);
-
-	QHBoxLayout *centralLayout = new QHBoxLayout();
-	centralLayout->setContentsMargins(2, 2, 2, 2);
-	centralWidget = new QWidget();
-	centralWidget->setLayout(centralLayout);
-
-	/*
-	infoWidget = new QToolBox();
-	QPushButton *btn = new QPushButton();
-	btn->setText("TEST");
-	infoWidget->addItem(btn, "--==TEST==--");
-	QLabel *lbl = new QLabel();
-	lbl->setText("Hallo 123");
-	infoWidget->addItem(lbl, "--==HALLO==--");
-	centralLayout->addWidget(infoWidget);
-	*/
-
+	// Tab Widget
 	tab_widget_ = new QTabWidget();
-	tab_widget_->setCornerWidget(static_toolbar_, Qt::TopLeftCorner);
+	tab_widget_->setCornerWidget(tab_widget_toolbar_, Qt::TopLeftCorner);
 	tab_widget_->setTabsClosable(true);
+	connect(tab_widget_, SIGNAL(tabCloseRequested(int)),
+		this, SLOT(on_tab_close_requested(int)));
 	centralLayout->addWidget(tab_widget_);
 
 	this->setCentralWidget(centralWidget);
 
-	retranslate_ui();
+	// Signal Tree Dock
+	signal_tree_ = new widgets::SignalTree(*session_, true, false, nullptr);
+	connect(this, SIGNAL(device_added(shared_ptr<devices::HardwareDevice>)),
+		signal_tree_, SLOT(on_device_added(shared_ptr<devices::HardwareDevice>)));
 
-	tab_widget_->setCurrentIndex(1);
+	// A layout must be set to the central widget of the main window
+	// before dock->setWidget() is called.
+	QDockWidget* dock = new QDockWidget(tr("Devices && Signals"));
+	dock->setAllowedAreas(Qt::AllDockWidgetAreas);
+	dock->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	dock->setContextMenuPolicy(Qt::PreventContextMenu);
+	dock->setFeatures(QDockWidget::DockWidgetMovable |
+		QDockWidget::DockWidgetFloatable);
+	dock->setWidget(signal_tree_);
+	this->addDockWidget(Qt::LeftDockWidgetArea, dock);
+
+	retranslate_ui();
 }
 
 void MainWindow::connect_signals()
@@ -271,20 +308,26 @@ void MainWindow::show_session_error(const QString text, const QString info_text)
 	msg.exec();
 }
 
-void MainWindow::on_action_add_device_triggered()
+void MainWindow::on_action_add_device_tab_triggered()
 {
 	dialogs::ConnectDialog dlg(device_manager_);
 
 	if (dlg.exec())
-		add_tab(dlg.get_selected_device());
+		add_device_tab(dlg.get_selected_device());
 }
 
 void MainWindow::on_action_add_user_tab_triggered()
 {
-	dialogs::ConnectDialog dlg(device_manager_);
+	this->add_user_tab();
+}
 
-	if (dlg.exec())
-		add_tab(dlg.get_selected_device());
+void MainWindow::on_tab_close_requested(int index)
+{
+	QMessageBox::StandardButton reply = QMessageBox::question(this,
+		"Test", "Close?", QMessageBox::Yes | QMessageBox::No);
+
+	if (reply == QMessageBox::Yes)
+		remove_tab(index);
 }
 
 } // namespace sv

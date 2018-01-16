@@ -159,6 +159,7 @@ set(smuview_SOURCES
   src/devices/hardwaredevice.cpp
   src/devices/measurementdevice.cpp
   src/devices/sourcesinkdevice.cpp
+  src/dialogs/addmathchanneldialog.cpp
   src/dialogs/addviewdialog.cpp
   src/dialogs/aboutdialog.cpp
   src/dialogs/addviewdialog.cpp
@@ -168,6 +169,7 @@ set(smuview_SOURCES
   src/tabs/devicetab.cpp
   src/tabs/measurementtab.cpp
   src/tabs/sourcesinktab.cpp
+  src/tabs/usertab.cpp
   #src/toolbars/maintoolbar.cpp
   src/views/baseview.cpp
   src/views/measurementcontrolview.cpp

@@ -28,7 +28,6 @@
 #include <QToolBar>
 #include <QToolBox>
 #include <QToolButton>
-#include <QStatusBar>
 #include <QMainWindow>
 
 using std::list;
@@ -44,6 +43,14 @@ class Session;
 namespace devices {
 class Device;
 class HardwareDevice;
+}
+
+namespace tabs {
+class BaseTab;
+}
+
+namespace widgets {
+class SignalTree;
 }
 
 class MainWindow : public QMainWindow
@@ -63,34 +70,38 @@ public:
 	void restore_session();
 	void remove_session();
 
-	shared_ptr<devices::Device> add_tab(
-		shared_ptr<devices::HardwareDevice> device);
-	void remove_tab(shared_ptr<devices::HardwareDevice> device);
-
 private:
 	void setup_ui();
 	void connect_signals();
 	void retranslate_ui();
 	void session_error(const QString text, const QString info_text);
+	void add_tab(QMainWindow *tab_window, QString title);
+	void add_user_tab();
+	void add_device_tab(shared_ptr<devices::HardwareDevice> device);
+	void remove_tab(int tab_index);
 
 	DeviceManager &device_manager_;
 	shared_ptr<Session> session_;
 
-	shared_ptr<devices::Device> last_focused_device_;
-	map<shared_ptr<devices::Device>, QMainWindow*> device_windows_;
+	map<int, QMainWindow *> tab_window_map_;
+	int last_focused_tab_index_;
 
 	QToolButton *add_device_button_;
 	QToolButton *add_user_tab_button_;
 	QWidget *centralWidget;
-	QToolBox *infoWidget;
+	QToolBox *info_widget;
+	widgets::SignalTree *signal_tree_;
 	QTabWidget *tab_widget_;
-	QWidget *static_toolbar_;
-	QStatusBar *statusBar;
+	QWidget *tab_widget_toolbar_;
 
 private Q_SLOTS:
 	void show_session_error(const QString text, const QString info_text);
-	void on_action_add_device_triggered();
+	void on_action_add_device_tab_triggered();
 	void on_action_add_user_tab_triggered();
+	void on_tab_close_requested(int);
+
+Q_SIGNALS:
+	void device_added(shared_ptr<devices::HardwareDevice>); // TODO: Move to session?
 
 };
 

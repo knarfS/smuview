@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,13 +37,15 @@ Q_DECLARE_SMART_POINTER_METATYPE(std::shared_ptr)
 namespace sv {
 namespace widgets {
 
-SignalTree::SignalTree(const Session &session, bool is_show_signals,
+SignalTree::SignalTree(const Session &session,
+		bool show_signals, bool multiselect,
 		shared_ptr<devices::Device> selected_device,
 		QWidget *parent) :
 	QTreeWidget(parent),
 	session_(session),
 	selected_device_(selected_device),
-	is_show_signals_(is_show_signals)
+	show_signals_(show_signals),
+	multiselect_(multiselect)
 {
 	setup_ui();
 }
@@ -94,10 +96,11 @@ vector<shared_ptr<data::BaseSignal>> SignalTree::selected_signals()
 void SignalTree::setup_ui()
 {
 	this->setColumnCount(2);
-	this->setSelectionMode(QTreeView::MultiSelection);
+	if (multiselect_)
+		this->setSelectionMode(QTreeView::MultiSelection);
 
 	unordered_set<shared_ptr<devices::Device>> devices;
-	if (!selected_device_)
+	if (!selected_device_ && &session_)
 		devices = session_.devices();
 	else
 		devices.insert(selected_device_);
@@ -118,68 +121,77 @@ void SignalTree::setup_ui()
 		// TODO: Move channel stuff from HardwareDevice to Device
 		shared_ptr<devices::HardwareDevice> hw_device =
 			static_pointer_cast<devices::HardwareDevice>(device);
+		if (!hw_device)
+			continue;
 
-		// Tree root
-		QTreeWidgetItem *device_item = new QTreeWidgetItem();
-		device_item->setFlags(
-			device_item->flags() | Qt::ItemIsUserCheckable | Qt::ItemIsSelectable);
-		device_item->setCheckState(0, Qt::Checked);
-		device_item->setIcon(0, QIcon(":/icon/smuview.ico"));
-		device_item->setText(1, hw_device->full_name());
-		this->addTopLevelItem(device_item);
-
-		auto chg_name_channels_map = hw_device->channel_group_name_map();
-		for (auto chg_name_channels_pair : chg_name_channels_map) {
-			QTreeWidgetItem *chg_item = new QTreeWidgetItem();
-			chg_item->setFlags(
-				chg_item->flags() | Qt::ItemIsUserCheckable | Qt::ItemIsSelectable);
-			chg_item->setCheckState(0, Qt::Checked);
-			chg_item->setText(1, chg_name_channels_pair.first);
-			device_item->addChild(chg_item);
-
-			add_channels(chg_name_channels_pair.second, expanded, chg_item);
-			chg_item->setExpanded(expanded);
-		}
-		device_item->setExpanded(expanded);
+		add_device(hw_device, expanded);
 	}
 
+	/*
 	connect(this, SIGNAL(itemChanged(QTreeWidgetItem*, int)),
 		this, SLOT(update_checks(QTreeWidgetItem*, int)));
+	*/
 }
 
-void SignalTree::add_channels(
-	vector<shared_ptr<channels::BaseChannel>> channels, bool expanded,
-	QTreeWidgetItem *parent)
+void SignalTree::add_device(shared_ptr<devices::HardwareDevice> device,
+	bool expanded)
 {
-	for (auto channel : channels) {
-		QTreeWidgetItem *ch_item = new QTreeWidgetItem();
-		ch_item->setFlags(
-			ch_item->flags() | Qt::ItemIsUserCheckable | Qt::ItemIsSelectable);
-		ch_item->setCheckState(0, Qt::Checked);
-		ch_item->setText(1, channel->name());
-		ch_item->setData(0, Qt::UserRole, QVariant::fromValue(channel));
-		parent->addChild(ch_item);
+	QTreeWidgetItem *device_item = new QTreeWidgetItem();
+	device_item->setFlags(
+		device_item->flags() | Qt::ItemIsUserCheckable | Qt::ItemIsSelectable);
+	device_item->setCheckState(0, Qt::Unchecked);
+	device_item->setIcon(0, QIcon(":/icon/smuview.ico"));
+	device_item->setText(1, device->full_name());
+	this->addTopLevelItem(device_item);
 
-		if (is_show_signals_)
-			add_signals(channel->signal_map(), ch_item);
-		ch_item->setExpanded(expanded);
+	auto chg_name_channels_map = device->channel_group_name_map();
+	for (auto chg_name_channels_pair : chg_name_channels_map) {
+		QTreeWidgetItem *chg_item = new QTreeWidgetItem();
+		chg_item->setFlags(
+			chg_item->flags() | Qt::ItemIsUserCheckable | Qt::ItemIsSelectable);
+		chg_item->setCheckState(0, Qt::Unchecked);
+		chg_item->setText(1, chg_name_channels_pair.first);
+		device_item->addChild(chg_item);
+
+		for (auto channel : chg_name_channels_pair.second)
+			add_channel(channel, expanded, chg_item);
+
+		chg_item->setExpanded(expanded);
 	}
+	device_item->setExpanded(expanded);
+
+	return;
 }
 
-void SignalTree::add_signals(
-	map<channels::BaseChannel::quantity_t, shared_ptr<data::BaseSignal>> signal_map,
+void SignalTree::add_channel(shared_ptr<channels::BaseChannel> channel,
+	bool expanded, QTreeWidgetItem *parent)
+{
+	QTreeWidgetItem *ch_item = new QTreeWidgetItem();
+	ch_item->setFlags(
+		ch_item->flags() | Qt::ItemIsUserCheckable | Qt::ItemIsSelectable);
+	ch_item->setCheckState(0, Qt::Unchecked);
+	ch_item->setText(1, channel->name());
+	ch_item->setData(0, Qt::UserRole, QVariant::fromValue(channel));
+	parent->addChild(ch_item);
+
+	if (show_signals_) {
+		for (auto signal_pair : channel->signal_map())
+			add_signal(signal_pair.second, ch_item);
+	}
+
+	ch_item->setExpanded(expanded);
+}
+
+void SignalTree::add_signal(shared_ptr<data::BaseSignal> signal,
 	QTreeWidgetItem *parent)
 {
-	for (auto signal_pair : signal_map) {
-		auto signal = signal_pair.second;
-		QTreeWidgetItem *signal_item = new QTreeWidgetItem();
-		signal_item->setFlags(
-			signal_item->flags() | Qt::ItemIsUserCheckable | Qt::ItemIsSelectable);
-		signal_item->setCheckState(0, Qt::Checked);
-		signal_item->setText(1, signal->name());
-		signal_item->setData(0, Qt::UserRole, QVariant::fromValue(signal));
-		parent->addChild(signal_item);
-	}
+	QTreeWidgetItem *signal_item = new QTreeWidgetItem();
+	signal_item->setFlags(
+		signal_item->flags() | Qt::ItemIsUserCheckable | Qt::ItemIsSelectable);
+	signal_item->setCheckState(0, Qt::Unchecked);
+	signal_item->setText(1, signal->name());
+	signal_item->setData(0, Qt::UserRole, QVariant::fromValue(signal));
+	parent->addChild(signal_item);
 }
 
 vector<const QTreeWidgetItem *> SignalTree::checked_items()
@@ -253,6 +265,37 @@ void SignalTree::update_check_down_recursive(QTreeWidgetItem *item)
 		item->child(i)->setCheckState(0, checkState);
 		update_check_down_recursive(item->child(i));
 	}
+}
+
+void SignalTree::on_device_added(shared_ptr<devices::HardwareDevice> device)
+{
+	qWarning() << "SignalTree::on_device_added()" << device->name();
+	add_device(device, true);
+}
+
+void SignalTree::on_device_removed()
+{
+
+}
+
+void SignalTree::on_channel_added()
+{
+
+}
+
+void SignalTree::on_channel_removed()
+{
+
+}
+
+void SignalTree::on_signal_added()
+{
+
+}
+
+void SignalTree::on_signal_removed()
+{
+
 }
 
 } // namespace widgets

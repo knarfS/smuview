@@ -119,6 +119,9 @@ public:
 	void open(function<void (const QString)> error_handler);
 	void close();
 
+	virtual void init_channel(shared_ptr<channels::BaseChannel> channel,
+		QString channel_group_name);
+
 	// TODO: typdefs?
 	// TODO: Doxy
 	map<QString, shared_ptr<channels::BaseChannel>> channel_name_map() const;
@@ -135,9 +138,6 @@ protected:
 	virtual void feed_in_frame_end() = 0;
 	virtual void feed_in_logic(shared_ptr<sigrok::Logic> sr_logic) = 0;
 	virtual void feed_in_analog(shared_ptr<sigrok::Analog> sr_analog) = 0;
-
-	void init_channel(shared_ptr<channels::BaseChannel> channel,
-		QString channel_group_name);
 
 	void data_feed_in(shared_ptr<sigrok::Device> sr_device,
 		shared_ptr<sigrok::Packet> sr_packet);

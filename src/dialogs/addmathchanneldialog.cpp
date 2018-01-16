@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,13 +23,12 @@
 #include <QVBoxLayout>
 #include <QWidget>
 
-#include "addviewdialog.hpp"
-#include "src/channels/basechannel.hpp"
+#include "addmathchanneldialog.hpp"
+#include "src/channels/mathchannel.hpp"
+#include "src/channels/multiplychannel.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/devices/device.hpp"
 #include "src/devices/hardwaredevice.hpp"
-#include "src/views/plotview.hpp"
-#include "src/views/valuepanelview.hpp"
 #include "src/widgets/signaltree.hpp"
 
 using std::static_pointer_cast;
@@ -39,29 +38,27 @@ Q_DECLARE_SMART_POINTER_METATYPE(std::shared_ptr)
 namespace sv {
 namespace dialogs {
 
-AddViewDialog::AddViewDialog(const Session &session,
+AddMathChannelDialog::AddMathChannelDialog(const Session &session,
 		const shared_ptr<devices::HardwareDevice> device,
-		int selected_view_type,
 		QWidget *parent) :
 	QDialog(parent),
 	session_(session),
-	device_(device),
-	selected_view_type_(selected_view_type)
+	device_(device)
 {
 	setup_ui();
 }
 
-void AddViewDialog::setup_ui()
+void AddMathChannelDialog::setup_ui()
 {
 	this->setWindowTitle(tr("Add View"));
 
 	QVBoxLayout *main_layout = new QVBoxLayout;
 
 	tab_widget_ = new QTabWidget();
-	this->setup_ui_control_tab();
-	this->setup_ui_panel_tab();
-	this->setup_ui_plot_tab();
-	tab_widget_->setCurrentIndex(selected_view_type_);
+	this->setup_ui_multiply_tab();
+	this->setup_ui_divide_tab();
+	this->setup_ui_integrate_tab();
+	//tab_widget_->setCurrentIndex(selected_view_type_);
 	main_layout->addWidget(tab_widget_);
 
 	button_box_ = new QDialogButtonBox(
@@ -73,64 +70,88 @@ void AddViewDialog::setup_ui()
 	this->setLayout(main_layout);
 }
 
-void AddViewDialog::setup_ui_control_tab()
+void AddMathChannelDialog::setup_ui_multiply_tab()
 {
-	QString title(tr("Control"));
-	QWidget *control_widget = new QWidget();
-	QFormLayout *form_layout = new QFormLayout();
-	control_widget->setLayout(form_layout);
+	QString title(tr("Multiply"));
+	QWidget *multiply_widget = new QWidget();
+	QFormLayout *layout = new QFormLayout();
+	multiply_widget->setLayout(layout);
 
-	tab_widget_->addTab(control_widget, title);
+	multiply_signal_1_tree_ = new widgets::SignalTree(
+		session_, true, false, device_);
+	layout->addWidget(multiply_signal_1_tree_);
+
+	multiply_signal_2_tree_ = new widgets::SignalTree(
+		session_, true, false, device_);
+	layout->addWidget(multiply_signal_2_tree_);
+
+	tab_widget_->addTab(multiply_widget, title);
 }
 
-void AddViewDialog::setup_ui_panel_tab()
+void AddMathChannelDialog::setup_ui_divide_tab()
 {
-	QString title(tr("Panel"));
-	QWidget *panel_widget = new QWidget();
+	QString title(tr("Divide"));
+	QWidget *divide_widget = new QWidget();
 	QVBoxLayout *layout = new QVBoxLayout();
-	panel_widget->setLayout(layout);
+	divide_widget->setLayout(layout);
 
-	panel_channel_tree_ = new widgets::SignalTree(
-		session_, false, true, device_);
-	layout->addWidget(panel_channel_tree_);
-
-	tab_widget_->addTab(panel_widget, title);
+	tab_widget_->addTab(divide_widget, title);
 }
 
-void AddViewDialog::setup_ui_plot_tab()
+void AddMathChannelDialog::setup_ui_integrate_tab()
 {
-	QString title(tr("Time Plot"));
-	QWidget *plot_widget = new QWidget();
+	QString title(tr("Integrate"));
+	QWidget *integrate_widget = new QWidget();
 	QVBoxLayout *layout = new QVBoxLayout();
-	plot_widget->setLayout(layout);
+	integrate_widget->setLayout(layout);
 
-	plot_channel_tree_ = new widgets::SignalTree(
-		session_, true, true, device_);
-	layout->addWidget(plot_channel_tree_);
-
-	tab_widget_->addTab(plot_widget, title);
+	tab_widget_->addTab(integrate_widget, title);
 }
 
-vector<shared_ptr<views::BaseView>> AddViewDialog::views()
+vector<shared_ptr<channels::MathChannel>> AddMathChannelDialog::channels()
 {
-	return views_;
+	return channels_;
 }
 
-void AddViewDialog::accept()
+void AddMathChannelDialog::accept()
 {
 	shared_ptr<devices::Channel> channel;
 	int tab_index = tab_widget_->currentIndex();
 	switch (tab_index) {
-	case 0:
-		//view_ = nullptr;
+	case 0: {
+			shared_ptr<data::AnalogSignal> signal_1;
+			auto signals_1 = multiply_signal_1_tree_->selected_signals();
+			if (signals_1.size() != 1)
+				return;
+			signal_1 = static_pointer_cast<data::AnalogSignal>(signals_1[0]);
+
+			shared_ptr<data::AnalogSignal> signal_2;
+			auto signals_2 = multiply_signal_2_tree_->selected_signals();
+			if (signals_2.size() != 1)
+				return;
+			signal_2 = static_pointer_cast<data::AnalogSignal>(signals_2[0]);
+
+			auto channel = make_shared<channels::MultiplyChannel>(
+				sigrok::Quantity::POWER,
+				vector<const sigrok::QuantityFlag *>(),
+				sigrok::Unit::WATT,
+				signal_1, signal_2,
+				QString("Math 1"), QString("CHG 1"),
+				signal_1->signal_start_timestamp());
+
+			channels_.push_back(channel);
+		}
 		break;
 	case 1:
+		/*
 		for (auto channel : panel_channel_tree_->selected_channels()) {
 			views_.push_back(
 				make_shared<views::ValuePanelView>(session_, channel));
 		}
+		*/
 		break;
 	case 2:
+		/*
 		for (auto channel : plot_channel_tree_->selected_channels()) {
 			views_.push_back(make_shared<views::PlotView>(session_, channel));
 		}
@@ -139,7 +160,7 @@ void AddViewDialog::accept()
 			auto a_signal = static_pointer_cast<data::AnalogSignal>(signal);
 			views_.push_back(make_shared<views::PlotView>(session_, a_signal));
 		}
-
+		*/
 		break;
 	default:
 		break;

@@ -23,6 +23,7 @@
 #include "src/session.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
+#include "src/dialogs/addmathchanneldialog.hpp"
 #include "src/dialogs/addviewdialog.hpp"
 #include "src/dialogs/aboutdialog.hpp"
 #include "src/dialogs/savedialog.hpp"
@@ -39,6 +40,7 @@ DeviceTab::DeviceTab(Session &session,
 	action_add_control_view_(new QAction(this)),
 	action_add_panel_view_(new QAction(this)),
 	action_add_plot_view_(new QAction(this)),
+	action_add_math_channel_(new QAction(this)),
 	action_reset_data_(new QAction(this)),
 	action_about_(new QAction(this))
 {
@@ -98,6 +100,14 @@ void DeviceTab::setup_toolbar()
 	connect(action_add_plot_view_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_add_plot_view_triggered()));
 
+	action_add_math_channel_->setText(tr("Add &Math Channel..."));
+	action_add_math_channel_->setIcon(
+		QIcon::fromTheme("office-chart-line",
+		QIcon(":/icons/office-chart-line.png")));
+	action_add_math_channel_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_M));
+	connect(action_add_math_channel_, SIGNAL(triggered(bool)),
+		this, SLOT(on_action_add_math_channel_triggered()));
+
 	action_about_->setText(tr("&About..."));
 	action_about_->setIcon(
 		QIcon::fromTheme("help-about",
@@ -115,6 +125,8 @@ void DeviceTab::setup_toolbar()
 	toolbar->addAction(action_add_control_view_);
 	toolbar->addAction(action_add_panel_view_);
 	toolbar->addAction(action_add_plot_view_);
+	toolbar->addSeparator();
+	toolbar->addAction(action_add_math_channel_);
 	toolbar->addSeparator();
 	toolbar->addAction(action_about_);
 	parent_->addToolBar(Qt::TopToolBarArea, toolbar);
@@ -157,6 +169,17 @@ void DeviceTab::on_action_add_plot_view_triggered()
 		add_view(view, Qt::BottomDockWidgetArea);
 }
 
+void DeviceTab::on_action_add_math_channel_triggered()
+{
+	dialogs::AddMathChannelDialog dlg(session(), device_);
+	dlg.exec();
+
+	/*
+	for (auto channel : dlg.channels())
+		device_->init_channel(channel, QString("sid"));
+	*/
+}
+
 void DeviceTab::on_action_reset_data_triggered()
 {
 }
@@ -166,7 +189,6 @@ void DeviceTab::on_action_about_triggered()
 	dialogs::AboutDialog dlg(this->session().device_manager(), device_);
 	dlg.exec();
 }
-
 
 } // namespace tabs
 } // namespace sv

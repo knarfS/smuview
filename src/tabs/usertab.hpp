@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,17 +17,13 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TABS_DEVICETAB_HPP
-#define TABS_DEVICETAB_HPP
-
-#include <memory>
+#ifndef TABS_USERTAB_HPP
+#define TABS_USERTAB_HPP
 
 #include <QAction>
 #include <QMainWindow>
 #include <QToolBar>
 
-#include "src/util.hpp"
-#include "src/devices/hardwaredevice.hpp"
 #include "src/tabs/basetab.hpp"
 
 using std::shared_ptr;
@@ -38,50 +34,35 @@ class Session;
 
 namespace tabs {
 
-class DeviceTab : public BaseTab
+class UserTab : public BaseTab
 {
 	Q_OBJECT
 
 private:
 
 public:
-	DeviceTab(Session &session,
-		shared_ptr<devices::HardwareDevice> device, QMainWindow *parent);
-
-	virtual void clear_signals();
+	UserTab(Session &session, QMainWindow *parent);
 
 protected:
-	shared_ptr<devices::HardwareDevice> device_;
-	util::TimeUnit time_unit_;
 
 private:
 	void setup_toolbar();
 
-	QAction *const action_open_;
-	QAction *const action_save_as_;
 	QAction *const action_add_control_view_;
 	QAction *const action_add_panel_view_;
 	QAction *const action_add_plot_view_;
-	QAction *const action_add_math_channel_;
-	QAction *const action_reset_data_;
-	QAction *const action_about_;
 	QToolBar *toolbar;
 
 public Q_SLOTS:
 
 private Q_SLOTS:
-	void on_action_open_triggered();
-	void on_action_save_as_triggered();
 	void on_action_add_control_view_triggered();
 	void on_action_add_panel_view_triggered();
 	void on_action_add_plot_view_triggered();
-	void on_action_add_math_channel_triggered();
-	void on_action_reset_data_triggered();
-	void on_action_about_triggered();
 
 };
 
 } // namespace tabs
 } // namespace sv
 
-#endif // TABS_DEVICETAB_HPP
+#endif // TABS_USERTAB_HPP

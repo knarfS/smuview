@@ -62,7 +62,7 @@ void SaveDialog::setup_ui()
 
 	QVBoxLayout *main_layout = new QVBoxLayout;
 
-	signal_tree_ = new widgets::SignalTree(session_, true, nullptr);
+	signal_tree_ = new widgets::SignalTree(session_, true, true, nullptr);
 	main_layout->addWidget(signal_tree_);
 
 	QFormLayout *form_layout = new QFormLayout();

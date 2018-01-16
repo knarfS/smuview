@@ -40,11 +40,11 @@ class Session;
 
 namespace tabs {
 
-enum TabType {
-	TabTypeSource,
-	TabTypeSink,
-	TabTypeMeasurement,
-	TabTypeViews
+enum class TabType {
+	SourceTab,
+	SinkTab,
+	MeasurementTab,
+	ViewsTab
 };
 
 class BaseTab : public QWidget

@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,7 +50,8 @@ class SignalTree : public QTreeWidget
     Q_OBJECT
 
 public:
-	SignalTree(const Session &session, bool is_show_signals,
+	SignalTree(const Session &session,
+		bool show_signals, bool multiselect,
 		shared_ptr<devices::Device> selected_device,
 		QWidget *parent = nullptr);
 
@@ -60,11 +61,10 @@ public:
 private:
 	void setup_ui();
 
-	void add_channels(
-		vector<shared_ptr<channels::BaseChannel>> channels, bool expanded,
+	void add_device(shared_ptr<devices::HardwareDevice> device, bool expanded);
+	void add_channel(shared_ptr<channels::BaseChannel> channel, bool expanded,
 		QTreeWidgetItem *parent);
-	void add_signals(
-		map<channels::BaseChannel::quantity_t, shared_ptr<data::BaseSignal>> signal_map,
+	void add_signal(shared_ptr<data::BaseSignal> signal,
 		QTreeWidgetItem *parent);
 
 	vector<const QTreeWidgetItem *> checked_items();
@@ -77,7 +77,16 @@ private:
 	const Session &session_;
 	shared_ptr<devices::Device> selected_device_;
 
-	bool is_show_signals_;
+	bool show_signals_;
+	bool multiselect_;
+
+public Q_SLOTS:
+	void on_device_added(shared_ptr<devices::HardwareDevice> device);
+	void on_device_removed();
+	void on_channel_added();
+	void on_channel_removed();
+	void on_signal_added();
+	void on_signal_removed();
 
 private Q_SLOTS:
 	void update_checks(QTreeWidgetItem *, int);
