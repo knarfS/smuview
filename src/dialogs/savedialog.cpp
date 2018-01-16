@@ -114,12 +114,12 @@ void SaveDialog::save(QString file_name)
 			max_sample_count = sample_count;
 		sample_counts.push_back(sample_count);
 
-		device_header_line.append(start_sep).append("Device"); // Time
-		device_header_line.append(sep).append("Device"); // Value
-		chg_name_header_line.append(start_sep).append("ChannelGroup"); // Time
-		chg_name_header_line.append(sep).append("ChannelGroup"); // Value
-		ch_name_header_line.append(start_sep).append("Channel"); // Time
-		ch_name_header_line.append(sep).append("Channel"); // Value
+		device_header_line.append(start_sep).append(signal->device_name()); // Time
+		device_header_line.append(sep).append(signal->device_name()); // Value
+		chg_name_header_line.append(start_sep).append(signal->channel_group_name()); // Time
+		chg_name_header_line.append(sep).append(signal->channel_group_name()); // Value
+		ch_name_header_line.append(start_sep).append(signal->channel_name()); // Time
+		ch_name_header_line.append(sep).append(signal->channel_name()); // Value
 		signal_name_header_line.append(start_sep).
 			append("Time ").append(signal->name()); // Time
 		signal_name_header_line.append(sep).append(signal->name()); // Value
@@ -187,9 +187,9 @@ void SaveDialog::save_combined(QString file_name)
 		sample_counts.push_back(a_signal->get_sample_count());
 		sample_pos.push_back(0);
 
-		device_header_line.append(sep).append("Device"); // Value
-		chg_name_header_line.append(sep).append("ChannelGroup"); // Value
-		ch_name_header_line.append(sep).append("Channel"); // Value
+		device_header_line.append(sep).append(signal->device_name()); // Value
+		chg_name_header_line.append(sep).append(signal->channel_group_name()); // Value
+		ch_name_header_line.append(sep).append(signal->channel_name()); // Value
 		signal_name_header_line.append(sep).append(signal->name()); // Value
 	}
 	output_file << device_header_line.toStdString() << std::endl;

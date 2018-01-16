@@ -293,6 +293,11 @@ const sigrok::Unit * get_sr_unit_from_sr_quantity(
 	return nullptr;
 }
 
+quantity_name_map_t get_quantity_name_map()
+{
+	return quantity_name_map;
+}
+
 QString format_sr_quantity(const sigrok::Quantity *sr_quantity)
 {
 	if (quantity_name_map.count(sr_quantity) > 0)
@@ -350,6 +355,11 @@ QString format_sr_quantity_flags(
 	}
 
 	return quantity_flags;
+}
+
+unit_name_map_t get_unit_name_map()
+{
+	return unit_name_map;
 }
 
 QString format_sr_unit(const sigrok::Unit *sr_unit)

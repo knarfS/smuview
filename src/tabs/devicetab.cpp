@@ -174,10 +174,9 @@ void DeviceTab::on_action_add_math_channel_triggered()
 	dialogs::AddMathChannelDialog dlg(session(), device_);
 	dlg.exec();
 
-	/*
-	for (auto channel : dlg.channels())
-		device_->init_channel(channel, QString("sid"));
-	*/
+	for (auto channel : dlg.channels()) {
+		device_->add_channel(channel, QString("sid"));
+	}
 }
 
 void DeviceTab::on_action_reset_data_triggered()

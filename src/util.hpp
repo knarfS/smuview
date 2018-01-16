@@ -91,10 +91,17 @@ const sigrok::Unit *get_sr_unit_from_sr_quantity(
 	const sigrok::Quantity *sr_quantity);
 
 /**
+ * Returns all known quantities
+ *
+ * @param sr_quantity The sigrok quantity name map
+ */
+quantity_name_map_t get_quantity_name_map();
+
+/**
  * Formats a sigrok quantity to a string
  *
- * @param sr_quantity The sigrok quantity (sigrok::Quantity) to format
- * .
+ * @param sr_quantity The sigrok quantity (sigrok::Quantity) to format.
+ *
  * @return The formatted quantity.
  */
 QString format_sr_quantity(const sigrok::Quantity *sr_quantity);
@@ -103,8 +110,8 @@ QString format_sr_quantity(const sigrok::Quantity *sr_quantity);
  * Formats a sigrok quantity flag to a string
  *
  * @param sr_quantity_flag The sigrok quantity flag (sigrok::QuantityFlag)
- *        to format
- * .
+ *        to format.
+ *
  * @return The formatted quantity flag.
  */
 QString format_sr_quantity_flag(const sigrok::QuantityFlag * sr_quantity_flag);
@@ -113,18 +120,25 @@ QString format_sr_quantity_flag(const sigrok::QuantityFlag * sr_quantity_flag);
  * Formats a sigrok quantity flags to a string
  *
  * @param sr_quantity_flags The sigrok quantity flags (sigrok::QuantityFlag)
- *        to format
- * .
+ *        to format.
+ *
  * @return The formatted quantity flags.
  */
 QString format_sr_quantity_flags(
 	vector<const sigrok::QuantityFlag *> sr_quantity_flags);
 
 /**
+ * Returns all known units
+ *
+ * @param sr_quantity The sigrok unit name map
+ */
+unit_name_map_t get_unit_name_map();
+
+/**
  * Formats a sigrok unit to a string
  *
- * @param sr_unit The sigrok unit (sigrok::Unit) to format
- * .
+ * @param sr_unit The sigrok unit (sigrok::Unit) to format.
+ *
  * @return The formatted unit.
  */
 QString format_sr_unit(const sigrok::Unit *sr_unit);

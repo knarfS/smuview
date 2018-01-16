@@ -2,7 +2,7 @@
  * This file is part of the SmuView project.
  *
  * Copyright (C) 2015 Joel Holdsworth <joel@airwebreathe.org.uk>
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -159,7 +159,7 @@ void Device::free_unused_memory()
 	*/
 }
 
-void Device::init_channel(shared_ptr<channels::BaseChannel> channel,
+void Device::add_channel(shared_ptr<channels::BaseChannel> channel,
 	QString channel_group_name)
 {
 	connect(this, SIGNAL(aquisition_start_timestamp_changed(double)),

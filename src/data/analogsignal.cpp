@@ -41,9 +41,11 @@ AnalogSignal::AnalogSignal(
 		const sigrok::Quantity *sr_quantity,
 		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
 		const sigrok::Unit *sr_unit,
-		QString channel_name, QString channel_group_name,
+		const QString device_name,
+		const QString channel_group_name, const QString channel_name,
 		double signal_start_timestamp) :
-	BaseSignal(sr_quantity, sr_quantity_flags, sr_unit, channel_name, channel_group_name),
+	BaseSignal(sr_quantity, sr_quantity_flags, sr_unit,
+		device_name, channel_group_name, channel_name),
 	sample_count_(0),
 	signal_start_timestamp_(signal_start_timestamp),
 	last_timestamp_(0.),

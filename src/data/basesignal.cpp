@@ -43,12 +43,14 @@ BaseSignal::BaseSignal(
 		const sigrok::Quantity *sr_quantity,
 		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
 		const sigrok::Unit *sr_unit,
-		QString channel_name, QString channel_group_name) :
+		const QString device_name, const QString channel_group_name,
+		const QString channel_name) :
 	sr_quantity_(sr_quantity),
 	sr_quantity_flags_(sr_quantity_flags),
 	sr_unit_(sr_unit),
-	channel_name_(channel_name),
-	channel_group_name_(channel_group_name)
+	device_name_(device_name),
+	channel_group_name_(channel_group_name),
+	channel_name_(channel_name)
 {
 	if (!util::is_valid_sr_quantity(sr_quantity_))
 		assert("Invalide quantity for BaseSignal()");
@@ -95,6 +97,21 @@ const sigrok::Unit *BaseSignal::sr_unit() const
 QString BaseSignal::unit() const
 {
 	return unit_;
+}
+
+QString BaseSignal::device_name() const
+{
+	return device_name_;
+}
+
+QString BaseSignal::channel_group_name() const
+{
+	return channel_group_name_;
+}
+
+QString BaseSignal::channel_name() const
+{
+	return channel_name_;
 }
 
 QString BaseSignal::name() const

@@ -183,6 +183,7 @@ set(smuview_SOURCES
   src/widgets/led.cpp
   src/widgets/optionalvaluecontrol.cpp
   src/widgets/plot.cpp
+  src/widgets/quantitycombobox.cpp
   src/widgets/signaltree.cpp
   src/widgets/valuecontrol.cpp
 )

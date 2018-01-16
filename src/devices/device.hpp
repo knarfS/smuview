@@ -2,7 +2,7 @@
  * This file is part of the SmuView project.
  *
  * Copyright (C) 2015 Joel Holdsworth <joel@airwebreathe.org.uk>
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,11 +64,11 @@ class BaseSignal;
 namespace devices {
 
 enum class DeviceType {
-	POWER_SUPPLY,
-	ELECTRONIC_LOAD,
-	MULTIMETER,
-	DEMO_DEV,
-	UNKNOWN
+	PowerSupply,
+	ElectronicLoad,
+	Multimeter,
+	DemoDevice,
+	Unknown
 };
 
 class Device : public QObject
@@ -119,7 +119,7 @@ public:
 	void open(function<void (const QString)> error_handler);
 	void close();
 
-	virtual void init_channel(shared_ptr<channels::BaseChannel> channel,
+	virtual void add_channel(shared_ptr<channels::BaseChannel> channel,
 		QString channel_group_name);
 
 	// TODO: typdefs?

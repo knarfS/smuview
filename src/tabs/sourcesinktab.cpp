@@ -52,9 +52,9 @@ void SourceSinkTab::setup_ui()
 	for (auto c : device_->configurables()) {
 		if (c->is_controllable()) {
 			shared_ptr<views::BaseView> control_view;
-			if (device_->type() == devices::DeviceType::POWER_SUPPLY)
+			if (device_->type() == devices::DeviceType::PowerSupply)
 				control_view = make_shared<views::SourceControlView>(session_, c);
-			else if (device_->type() == devices::DeviceType::ELECTRONIC_LOAD)
+			else if (device_->type() == devices::DeviceType::ElectronicLoad)
 				control_view = make_shared<views::SinkControlView>(session_, c);
 
 			add_view(control_view, Qt::TopDockWidgetArea);

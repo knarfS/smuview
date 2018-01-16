@@ -2,7 +2,7 @@
  * This file is part of the SmuView project.
  *
  * Copyright (C) 2015 Joel Holdsworth <joel@airwebreathe.org.uk>
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -266,7 +266,7 @@ shared_ptr<channels::BaseChannel> HardwareDevice::init_channel(
 		make_shared<channels::HardwareChannel>(sr_channel,
 			short_name(), channel_group_name, aquisition_start_timestamp_);
 
-	Device::init_channel(channel, channel_group_name);
+	add_channel(channel, channel_group_name);
 
 	// map<shared_ptr<sigrok::Channel>, shared_ptr<channels::BaseChannel>> sr_channel_map_;
 	sr_channel_map_.insert(make_pair(sr_channel, channel));

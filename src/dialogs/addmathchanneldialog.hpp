@@ -38,7 +38,7 @@ class HardwareDevice;
 }
 
 namespace channels {
-class MathChannel;
+class BaseChannel;
 }
 
 namespace widgets {
@@ -56,7 +56,7 @@ public:
 		const shared_ptr<devices::HardwareDevice> device,
 		QWidget *parent = nullptr);
 
-	vector<shared_ptr<channels::MathChannel>> channels();
+	vector<shared_ptr<channels::BaseChannel>> channels();
 
 private:
 	void setup_ui();
@@ -66,7 +66,7 @@ private:
 
 	const Session &session_;
 	const shared_ptr<devices::HardwareDevice> device_;
-	vector<shared_ptr<channels::MathChannel>> channels_;
+	vector<shared_ptr<channels::BaseChannel>> channels_;
 
 	QTabWidget *tab_widget_;
 	widgets::SignalTree *multiply_signal_1_tree_;

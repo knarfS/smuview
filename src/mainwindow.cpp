@@ -80,14 +80,8 @@ void MainWindow::init_default_session()
 		return;
 	}
 
-	for (auto user_device : device_manager_.user_spec_devices()) {
-		// TODO: handle in session/device
-		session_->add_device(user_device, [&](QString message) {
-			session_error("Aquisition failed", message);
-		});
-
+	for (auto user_device : device_manager_.user_spec_devices())
 		add_device_tab(user_device);
-	}
 }
 
 void MainWindow::init_session_with_file(
@@ -162,6 +156,13 @@ void MainWindow::add_user_tab()
 void MainWindow::add_device_tab(
 	shared_ptr<devices::HardwareDevice> device)
 {
+	// TODO: handle in session/device. Must be called, before the device tab
+	//       tries to access the device (device is not opend yet).
+	// TODO: Pass the error_handler somehow in main.cpp?
+	session_->add_device(device, [&](QString message) {
+		session_error("Aquisition failed", message);
+	});
+
 	QMainWindow *tab_window = new QMainWindow();
 	tab_window->setWindowFlags(Qt::Widget);  // Remove Qt::Window flag
 	tab_window->setDockNestingEnabled(true);

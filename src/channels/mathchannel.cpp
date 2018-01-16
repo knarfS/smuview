@@ -74,7 +74,8 @@ shared_ptr<data::BaseSignal> MathChannel::init_signal(
 	// TODO: At the moment, only analog channels are supported
 	shared_ptr<data::AnalogSignal> signal = make_shared<data::AnalogSignal>(
 		sr_quantity, sr_quantity_flags, sr_unit,
-		internal_name_, channel_group_name_, channel_start_timestamp_);
+		device_name_, channel_group_name_, internal_name_,
+		channel_start_timestamp_);
 
 	connect(this, SIGNAL(channel_start_timestamp_changed(double)),
 			signal.get(), SLOT(on_channel_start_timestamp_changed(double)));

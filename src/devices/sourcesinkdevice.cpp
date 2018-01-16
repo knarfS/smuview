@@ -46,9 +46,9 @@ SourceSinkDevice::SourceSinkDevice(
 	// Set options for different device types
 	const auto sr_keys = sr_device->driver()->config_keys();
 	if (sr_keys.count(sigrok::ConfigKey::POWER_SUPPLY))
-		device_type_ = DeviceType::POWER_SUPPLY;
+		device_type_ = DeviceType::PowerSupply;
 	else if (sr_keys.count(sigrok::ConfigKey::ELECTRONIC_LOAD))
-		device_type_ = DeviceType::ELECTRONIC_LOAD;
+		device_type_ = DeviceType::ElectronicLoad;
 	else
 		assert("Unknown device");
 
@@ -120,7 +120,7 @@ SourceSinkDevice::SourceSinkDevice(
 
 				power_signal = static_pointer_cast<data::AnalogSignal>(
 					power_channel->actual_signal());
-				Device::init_channel(
+				Device::add_channel(
 					power_channel, chg_name_channels_pair.first);
 		}
 
@@ -135,7 +135,7 @@ SourceSinkDevice::SourceSinkDevice(
 					short_name(), chg_name_channels_pair.first,
 					aquisition_start_timestamp_);
 
-				Device::init_channel(
+				Device::add_channel(
 					resistance_channel, chg_name_channels_pair.first);
 		}
 
@@ -150,7 +150,7 @@ SourceSinkDevice::SourceSinkDevice(
 					short_name(), chg_name_channels_pair.first,
 					aquisition_start_timestamp_);
 
-				Device::init_channel(
+				Device::add_channel(
 					wh_channel, chg_name_channels_pair.first);
 		}
 
@@ -165,7 +165,7 @@ SourceSinkDevice::SourceSinkDevice(
 					short_name(), chg_name_channels_pair.first,
 					aquisition_start_timestamp_);
 
-				Device::init_channel(
+				Device::add_channel(
 					ah_channel, chg_name_channels_pair.first);
 		}
 	}

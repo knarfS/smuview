@@ -17,6 +17,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QComboBox>
 #include <QDebug>
 #include <QFormLayout>
 #include <QString>
@@ -24,11 +25,13 @@
 #include <QWidget>
 
 #include "addmathchanneldialog.hpp"
+#include "src/channels/basechannel.hpp"
 #include "src/channels/mathchannel.hpp"
 #include "src/channels/multiplychannel.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/devices/device.hpp"
 #include "src/devices/hardwaredevice.hpp"
+#include "src/widgets/quantitycombobox.hpp"
 #include "src/widgets/signaltree.hpp"
 
 using std::static_pointer_cast;
@@ -74,16 +77,25 @@ void AddMathChannelDialog::setup_ui_multiply_tab()
 {
 	QString title(tr("Multiply"));
 	QWidget *multiply_widget = new QWidget();
-	QFormLayout *layout = new QFormLayout();
-	multiply_widget->setLayout(layout);
+
+	QVBoxLayout *main_layout = new QVBoxLayout;
 
 	multiply_signal_1_tree_ = new widgets::SignalTree(
 		session_, true, false, device_);
-	layout->addWidget(multiply_signal_1_tree_);
+	main_layout->addWidget(multiply_signal_1_tree_);
 
 	multiply_signal_2_tree_ = new widgets::SignalTree(
 		session_, true, false, device_);
-	layout->addWidget(multiply_signal_2_tree_);
+	main_layout->addWidget(multiply_signal_2_tree_);
+	multiply_widget->setLayout(main_layout);
+
+	QFormLayout *form_layout = new QFormLayout();
+
+	widgets::QuantityComboBox *quantity_box_ =
+		new widgets::QuantityComboBox(session_);
+	form_layout->addRow(tr("Quantity"), quantity_box_);
+
+	main_layout->addLayout(form_layout);
 
 	tab_widget_->addTab(multiply_widget, title);
 }
@@ -108,7 +120,7 @@ void AddMathChannelDialog::setup_ui_integrate_tab()
 	tab_widget_->addTab(integrate_widget, title);
 }
 
-vector<shared_ptr<channels::MathChannel>> AddMathChannelDialog::channels()
+vector<shared_ptr<channels::BaseChannel>> AddMathChannelDialog::channels()
 {
 	return channels_;
 }
