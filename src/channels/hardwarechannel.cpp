@@ -42,13 +42,12 @@ HardwareChannel::HardwareChannel(
 		const QString channel_group_name,
 		double channel_start_timestamp) :
 	BaseChannel(device_name, channel_group_name, channel_start_timestamp),
-	//channel_type_(ChannelType::AnalogChannel),
 	sr_channel_(sr_channel)
 {
 	assert(sr_channel);
 
-	internal_name_ = QString::fromStdString(sr_channel_->name());
-	name_ = internal_name_;
+	channel_type_ = ChannelType::AnalogChannel;
+	name_ = QString::fromStdString(sr_channel_->name());
 }
 
 bool HardwareChannel::enabled() const
@@ -93,7 +92,7 @@ shared_ptr<data::BaseSignal> HardwareChannel::init_signal(
 
 	shared_ptr<data::AnalogSignal> signal = make_shared<data::AnalogSignal>(
 		sr_quantity, sr_quantity_flags, sr_unit,
-		device_name_, channel_group_name_, internal_name_,
+		device_name_, channel_group_name_, name_,
 		channel_start_timestamp_);
 
 	connect(this, SIGNAL(channel_start_timestamp_changed(double)),

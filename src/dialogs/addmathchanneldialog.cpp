@@ -32,7 +32,9 @@
 #include "src/devices/device.hpp"
 #include "src/devices/hardwaredevice.hpp"
 #include "src/widgets/quantitycombobox.hpp"
+#include "src/widgets/quantityflagslist.hpp"
 #include "src/widgets/signaltree.hpp"
+#include "src/widgets/unitcombobox.hpp"
 
 using std::static_pointer_cast;
 
@@ -53,9 +55,47 @@ AddMathChannelDialog::AddMathChannelDialog(const Session &session,
 
 void AddMathChannelDialog::setup_ui()
 {
-	this->setWindowTitle(tr("Add View"));
+	QIcon mainIcon;
+	mainIcon.addFile(QStringLiteral(":/icons/smuview.ico"),
+		QSize(), QIcon::Normal, QIcon::Off);
+	this->setWindowIcon(mainIcon);
+	this->setWindowTitle(tr("Add Math Channel"));
 
+	QFormLayout *form_layout = new QFormLayout();
+
+	name_edit_ = new QLineEdit();
+	form_layout->addRow(tr("Name"), name_edit_);
+
+	quantity_box_ = new widgets::QuantityComboBox();
+	form_layout->addRow(tr("Quantity"), quantity_box_);
+
+	quantity_flags_list_ = new widgets::QuantityFlagsList();
+	form_layout->addRow(tr("Quantity Flags"), quantity_flags_list_);
+
+	unit_box_ = new widgets::UnitComboBox();
+	form_layout->addRow(tr("Unit"), unit_box_);
+
+	multiply_signal_1_tree_ = new widgets::SignalTree(
+		session_, true, false, device_);
+	form_layout->addRow(tr("Signal 1"), multiply_signal_1_tree_);
+
+	multiply_signal_2_tree_ = new widgets::SignalTree(
+		session_, true, false, device_);
+	form_layout->addRow(tr("Signal 2"), multiply_signal_2_tree_);
+
+	button_box_ = new QDialogButtonBox(
+		QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
+	form_layout->addWidget(button_box_);
+	connect(button_box_, SIGNAL(accepted()), this, SLOT(accept()));
+	connect(button_box_, SIGNAL(rejected()), this, SLOT(reject()));
+
+	this->setLayout(form_layout);
+
+
+	/*
 	QVBoxLayout *main_layout = new QVBoxLayout;
+
+
 
 	tab_widget_ = new QTabWidget();
 	this->setup_ui_multiply_tab();
@@ -71,6 +111,7 @@ void AddMathChannelDialog::setup_ui()
 	connect(button_box_, SIGNAL(rejected()), this, SLOT(reject()));
 
 	this->setLayout(main_layout);
+	*/
 }
 
 void AddMathChannelDialog::setup_ui_multiply_tab()
@@ -92,8 +133,15 @@ void AddMathChannelDialog::setup_ui_multiply_tab()
 	QFormLayout *form_layout = new QFormLayout();
 
 	widgets::QuantityComboBox *quantity_box_ =
-		new widgets::QuantityComboBox(session_);
+		new widgets::QuantityComboBox();
 	form_layout->addRow(tr("Quantity"), quantity_box_);
+
+	widgets::QuantityFlagsList *quantity_flags_list_ =
+		new widgets::QuantityFlagsList();
+	form_layout->addRow(tr("Quantity Flags"), quantity_flags_list_);
+
+	widgets::UnitComboBox *unit_box_ = new widgets::UnitComboBox();
+	form_layout->addRow(tr("Unit"), unit_box_);
 
 	main_layout->addLayout(form_layout);
 
@@ -127,7 +175,34 @@ vector<shared_ptr<channels::BaseChannel>> AddMathChannelDialog::channels()
 
 void AddMathChannelDialog::accept()
 {
+	if (name_edit_->text().size() == 0)
+		return;
+
+	shared_ptr<data::AnalogSignal> signal_1;
+	auto signals_1 = multiply_signal_1_tree_->selected_signals();
+	if (signals_1.size() != 1)
+		return;
+	signal_1 = static_pointer_cast<data::AnalogSignal>(signals_1[0]);
+
+	shared_ptr<data::AnalogSignal> signal_2;
+	auto signals_2 = multiply_signal_2_tree_->selected_signals();
+	if (signals_2.size() != 1)
+		return;
+	signal_2 = static_pointer_cast<data::AnalogSignal>(signals_2[0]);
+
+	auto channel = make_shared<channels::MultiplyChannel>(
+		quantity_box_->selected_sr_quantity(),
+		quantity_flags_list_->selected_sr_quantity_flags(),
+		unit_box_->selected_sr_unit(),
+		signal_1, signal_2,
+		device_->short_name(), tr("Math"), name_edit_->text(),
+		signal_1->signal_start_timestamp());
+
+	channels_.push_back(channel);
+
+	/*
 	shared_ptr<devices::Channel> channel;
+
 	int tab_index = tab_widget_->currentIndex();
 	switch (tab_index) {
 	case 0: {
@@ -155,15 +230,15 @@ void AddMathChannelDialog::accept()
 		}
 		break;
 	case 1:
-		/*
+		/ *
 		for (auto channel : panel_channel_tree_->selected_channels()) {
 			views_.push_back(
 				make_shared<views::ValuePanelView>(session_, channel));
 		}
-		*/
+		* /
 		break;
 	case 2:
-		/*
+		/ *
 		for (auto channel : plot_channel_tree_->selected_channels()) {
 			views_.push_back(make_shared<views::PlotView>(session_, channel));
 		}
@@ -172,11 +247,12 @@ void AddMathChannelDialog::accept()
 			auto a_signal = static_pointer_cast<data::AnalogSignal>(signal);
 			views_.push_back(make_shared<views::PlotView>(session_, a_signal));
 		}
-		*/
+		* /
 		break;
 	default:
 		break;
 	}
+	*/
 
 	QDialog::accept();
 }

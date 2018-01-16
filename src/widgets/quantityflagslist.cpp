@@ -17,35 +17,51 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <utility>
-
 #include <QDebug>
+#include <QListView>
+#include <QListWidgetItem>
 
-#include "quantitycombobox.hpp"
+#include "quantityflagslist.hpp"
 #include "src/util.hpp"
 
-Q_DECLARE_METATYPE(const sigrok::Quantity *)
+Q_DECLARE_METATYPE(const sigrok::QuantityFlag *)
 
 namespace sv {
 namespace widgets {
 
 
-QuantityComboBox::QuantityComboBox(QWidget *parent) :
-	QComboBox(parent)
+QuantityFlagsList::QuantityFlagsList(QWidget *parent) :
+	QListWidget(parent)
 {
 	setup_ui();
 }
 
-const sigrok::Quantity *QuantityComboBox::selected_sr_quantity()
+vector<const sigrok::QuantityFlag *>
+	QuantityFlagsList::selected_sr_quantity_flags()
 {
-	return nullptr;
+	vector<const sigrok::QuantityFlag *> flags;
+	auto items = this->selectedItems();
+	for (auto item : items) {
+		QVariant data = item->data(Qt::UserRole);
+		if (data.isNull())
+			continue;
+
+		auto flag = data.value<const sigrok::QuantityFlag *>();
+		if (flag)
+			flags.push_back(flag);
+	}
+	return flags;
 }
 
-void QuantityComboBox::setup_ui()
+void QuantityFlagsList::setup_ui()
 {
-	for (auto q_name_pair : util::get_quantity_name_map()) {
-		this->addItem(
-			q_name_pair.second, QVariant::fromValue(q_name_pair.second));
+	this->setSelectionMode(QListView::MultiSelection);
+
+	for (auto qf_name_pair : util::get_quantity_flag_name_map()) {
+		QListWidgetItem *item = new QListWidgetItem();
+		item->setText(qf_name_pair.second);
+		item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
+		this->addItem(item);
 	}
 }
 

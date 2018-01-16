@@ -39,9 +39,10 @@ MultiplyChannel::MultiplyChannel(
 		shared_ptr<data::AnalogSignal> signal2,
 		const QString device_name,
 		const QString channel_group_name,
+		QString channel_name,
 		double channel_start_timestamp) :
 	MathChannel(sr_quantity, sr_quantity_flags, sr_unit,
-				device_name, channel_group_name, channel_start_timestamp),
+		device_name, channel_group_name, channel_name, channel_start_timestamp),
 	signal1_(signal1),
 	signal2_(signal2),
 	next_signal1_pos_(0),

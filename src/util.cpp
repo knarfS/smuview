@@ -306,6 +306,11 @@ QString format_sr_quantity(const sigrok::Quantity *sr_quantity)
 	return QString("");
 }
 
+quantity_flag_name_map_t get_quantity_flag_name_map()
+{
+	return quantity_flag_name_map;
+}
+
 QString format_sr_quantity_flag(const sigrok::QuantityFlag * sr_quantity_flag)
 {
 	if (quantity_flag_name_map.count(sr_quantity_flag) > 0)

@@ -19,37 +19,38 @@
 
 #include <utility>
 
+#include <libsigrokcxx/libsigrokcxx.hpp>
+
 #include <QDebug>
+#include <QVariant>
 
 #include "unitcombobox.hpp"
 #include "src/util.hpp"
 
-using std::dynamic_pointer_cast;
-using std::static_pointer_cast;
-
-Q_DECLARE_SMART_POINTER_METATYPE(std::shared_ptr)
+Q_DECLARE_METATYPE(const sigrok::Unit *)
 
 namespace sv {
 namespace widgets {
 
 
-UnitComboBox::UnitComboBox(const Session &session, QWidget *parent) :
-	QComboBox(parent),
-	session_(session)
+UnitComboBox::UnitComboBox(QWidget *parent) :
+	QComboBox(parent)
 {
 	setup_ui();
 }
 
-shared_ptr<const sigrok::Unit *> UnitComboBox::selected_sr_unit()
+const sigrok::Unit *UnitComboBox::selected_sr_unit()
 {
-	return nullptr;
+	QVariant data = this->currentData();
+	return data.value<const sigrok::Unit *>();
 }
 
 void UnitComboBox::setup_ui()
 {
 	for (auto u_name_pair : util::get_unit_name_map()) {
+		qWarning() << "UnitComboBox: " << u_name_pair.second << ", " << u_name_pair.first;
 		this->addItem(
-			u_name_pair.second, QVariant::fromValue(u_name_pair.second));
+			u_name_pair.second, QVariant::fromValue(u_name_pair.first));
 	}
 }
 

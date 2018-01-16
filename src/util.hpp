@@ -107,6 +107,13 @@ quantity_name_map_t get_quantity_name_map();
 QString format_sr_quantity(const sigrok::Quantity *sr_quantity);
 
 /**
+ * Returns all known quantity flags
+ *
+ * @param sr_quantity The sigrok quantity flag name map
+ */
+quantity_flag_name_map_t get_quantity_flag_name_map();
+
+/**
  * Formats a sigrok quantity flag to a string
  *
  * @param sr_quantity_flag The sigrok quantity flag (sigrok::QuantityFlag)

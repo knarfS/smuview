@@ -58,6 +58,7 @@ public:
 		shared_ptr<data::AnalogSignal> signal2,
 		const QString device_name,
 		const QString channel_group_name,
+		QString channel_name,
 		double channel_start_timestamp);
 
 private:

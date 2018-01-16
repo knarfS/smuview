@@ -20,20 +20,14 @@
 #ifndef WIDGETS_QUANTITYCOMBOBOX_HPP
 #define WIDGETS_QUANTITYCOMBOBOX_HPP
 
-#include <memory>
-
 #include <QComboBox>
 #include <QWidget>
-
-using std::shared_ptr;
 
 namespace sigrok {
 class Quantity;
 }
 
 namespace sv {
-
-class Session;
 
 namespace widgets {
 
@@ -42,15 +36,12 @@ class QuantityComboBox : public QComboBox
     Q_OBJECT
 
 public:
-	QuantityComboBox(const Session &session, QWidget *parent = nullptr);
+	QuantityComboBox(QWidget *parent = nullptr);
 
-	shared_ptr<const sigrok::Quantity *> selected_sr_quantity();
+	const sigrok::Quantity *selected_sr_quantity();
 
 private:
 	void setup_ui();
-
-	const Session &session_;
-	shared_ptr<const sigrok::Quantity *> selected_sr_quantity_;
 
 };
 

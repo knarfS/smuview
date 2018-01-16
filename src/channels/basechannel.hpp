@@ -112,28 +112,28 @@ public:
 	map<quantity_t, shared_ptr<data::BaseSignal>> signal_map();
 
 	/**
-	 * Get the channel group name, the signal is in. Returns "" if the signal
+	 * Get the channel group name, the channel is in. Returns "" if the channel
 	 * is not in a channel group.
 	 *
-	 * TODO: Change to vector<QString>, bc the signal can be in more than one
+	 * TODO: Change to vector<QString>, bc the channel can be in more than one
 	 *       channel group (see "demo" driver)
 	 */
 	QString channel_group_name() const;
 
 	/**
-	 * Gets the name of this signal.
+	 * Gets the name of this channel, i.e. how the device calls it.
 	 */
 	QString name() const;
-
-	/**
-	 * Gets the internal name of this signal, i.e. how the device calls it.
-	 */
-	QString internal_name() const;
 
 	/**
 	 * Sets the name of the signal.
 	 */
 	virtual void set_name(QString name);
+
+	/**
+	 * Gets the display name of this channel.
+	 */
+	QString display_name() const;
 
 	/**
 	 * Get the colour of the signal.
@@ -182,8 +182,6 @@ protected:
 
 	const QString device_name_; // TODO: better way?
 	const QString channel_group_name_; // TODO: better way?
-	// TODO: channel_name_?
-	QString internal_name_; // TODO: const?, TODO: notwendig?
 	QString name_;
 	QColor colour_;
 

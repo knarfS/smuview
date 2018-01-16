@@ -166,7 +166,7 @@ void Device::add_channel(shared_ptr<channels::BaseChannel> channel,
 			channel.get(), SLOT(on_aquisition_start_timestamp_changed(double)));
 
 	// map<QString, shared_ptr<channels::BaseChannel>> channel_name_map_;
-	channel_name_map_.insert(make_pair(channel->internal_name(), channel));
+	channel_name_map_.insert(make_pair(channel->name(), channel));
 
 	// map<QString, vector<shared_ptr<channels::BaseChannel>>> channel_group_name_map_;
 	if (channel_group_name_map_.count(channel_group_name) == 0)

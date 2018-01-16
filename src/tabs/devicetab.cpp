@@ -21,6 +21,7 @@
 
 #include "devicetab.hpp"
 #include "src/session.hpp"
+#include "src/channels/basechannel.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/dialogs/addmathchanneldialog.hpp"
@@ -174,9 +175,8 @@ void DeviceTab::on_action_add_math_channel_triggered()
 	dialogs::AddMathChannelDialog dlg(session(), device_);
 	dlg.exec();
 
-	for (auto channel : dlg.channels()) {
-		device_->add_channel(channel, QString("sid"));
-	}
+	for (auto channel : dlg.channels())
+		device_->add_channel(channel, channel->channel_group_name());
 }
 
 void DeviceTab::on_action_reset_data_triggered()

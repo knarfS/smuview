@@ -24,6 +24,7 @@
 
 #include <QDateTime>
 #include <QDebug>
+#include <QString>
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
@@ -52,6 +53,10 @@ BaseSignal::BaseSignal(
 	channel_group_name_(channel_group_name),
 	channel_name_(channel_name)
 {
+	assert(sr_quantity);
+	assert(sr_quantity_flags);
+	assert(sr_unit);
+
 	if (!util::is_valid_sr_quantity(sr_quantity_))
 		assert("Invalide quantity for BaseSignal()");
 
@@ -59,7 +64,7 @@ BaseSignal::BaseSignal(
 	quantity_flags_ = util::format_sr_quantity_flags(sr_quantity_flags_);
 	unit_ = util::format_sr_unit(sr_unit_);
 
-	name_ = QString("%1 [%2").arg(channel_name, quantity_);
+	name_ = QString(channel_name_).append(" [").append(unit_);
 	if (quantity_flags_.size() > 0)
 		name_ = name_.append(" ").append(quantity_flags_);
 	name_ = name_.append("]");

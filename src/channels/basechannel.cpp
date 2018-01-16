@@ -47,10 +47,9 @@ BaseChannel::BaseChannel(
 	actual_signal_(nullptr),
 	device_name_(device_name),
 	channel_group_name_(channel_group_name),
-	internal_name_(""),
 	name_("")
 {
-	qWarning() << "Init channel " << internal_name_
+	qWarning() << "Init channel " << name_
 		<< ", channel_start_timestamp = "
 		<< util::format_time_date(channel_start_timestamp);
 }
@@ -89,15 +88,15 @@ QString BaseChannel::name() const
 	return name_;
 }
 
-QString BaseChannel::internal_name() const
-{
-	return internal_name_;
-}
-
 void BaseChannel::set_name(QString name)
 {
 	name_ = name;
 	name_changed(name);
+}
+
+QString BaseChannel::display_name() const
+{
+	return name_;
 }
 
 bool BaseChannel::enabled() const
@@ -145,7 +144,7 @@ void BaseChannel::push_sample(void *sample, double timestamp,
 	if (signal_map_.count(q_qf) == 0) {
 		init_signal(sr_quantity, sr_quantity_flags, sr_unit);
 		Q_EMIT signal_changed();
-		qWarning() << "Channel::push_sample(): " << internal_name_ <<
+		qWarning() << "Channel::push_sample(): " << name_ <<
 		" - No signal found: " << actual_signal_->name();
 	}
 

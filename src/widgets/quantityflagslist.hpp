@@ -17,38 +17,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <utility>
+#ifndef WIDGETS_QUANTITYFLAGSLIST_HPP
+#define WIDGETS_QUANTITYFLAGSLIST_HPP
 
-#include <QDebug>
+#include <vector>
 
-#include "quantitycombobox.hpp"
-#include "src/util.hpp"
+#include <QListWidget>
+#include <QWidget>
 
-Q_DECLARE_METATYPE(const sigrok::Quantity *)
+using std::vector;
+
+namespace sigrok {
+class QuantityFlag;
+}
 
 namespace sv {
+
 namespace widgets {
 
-
-QuantityComboBox::QuantityComboBox(QWidget *parent) :
-	QComboBox(parent)
+class QuantityFlagsList : public QListWidget
 {
-	setup_ui();
-}
+    Q_OBJECT
 
-const sigrok::Quantity *QuantityComboBox::selected_sr_quantity()
-{
-	return nullptr;
-}
+public:
+	QuantityFlagsList(QWidget *parent = nullptr);
 
-void QuantityComboBox::setup_ui()
-{
-	for (auto q_name_pair : util::get_quantity_name_map()) {
-		this->addItem(
-			q_name_pair.second, QVariant::fromValue(q_name_pair.second));
-	}
-}
+	vector<const sigrok::QuantityFlag *> selected_sr_quantity_flags();
+
+private:
+	void setup_ui();
+
+};
 
 } // namespace widgets
 } // namespace sv
+
+#endif // WIDGETS_QUANTITYFLAGSLIST_HPP
 

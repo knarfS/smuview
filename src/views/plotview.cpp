@@ -136,7 +136,7 @@ QString PlotView::title() const
 	if (curve_)
 		title = title.append(" ").append(curve_->name());
 	else if (channel_)
-		title = title.append(" ").append(channel_->internal_name());
+		title = title.append(" ").append(channel_->display_name());
 
 	return title;
 }

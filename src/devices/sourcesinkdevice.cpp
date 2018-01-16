@@ -60,26 +60,26 @@ SourceSinkDevice::SourceSinkDevice(
 			const sigrok::Quantity *sr_quantity;
 			vector<const sigrok::QuantityFlag *> sr_quantity_flags;
 			const sigrok::Unit *sr_unit;
-			if (channel->internal_name().startsWith("V")) {
+			if (channel->name().startsWith("V")) {
 				sr_quantity = sigrok::Quantity::VOLTAGE;
 				// TODO: Set AC for AC Sources
 				sr_quantity_flags.push_back(sigrok::QuantityFlag::DC);
 				sr_unit = sigrok::Unit::VOLT;
 				init = true;
 			}
-			else if (channel->internal_name().startsWith("I")) {
+			else if (channel->name().startsWith("I")) {
 				sr_quantity = sigrok::Quantity::CURRENT;
 				// TODO: Set AC for AC Sources
 				sr_quantity_flags.push_back(sigrok::QuantityFlag::DC);
 				sr_unit = sigrok::Unit::AMPERE;
 				init = true;
 			}
-			else if (channel->internal_name().startsWith("P")) {
+			else if (channel->name().startsWith("P")) {
 				sr_quantity = sigrok::Quantity::POWER;
 				sr_unit = sigrok::Unit::WATT;
 				init = true;
 			}
-			else if (channel->internal_name().startsWith("F")) {
+			else if (channel->name().startsWith("F")) {
 				sr_quantity = sigrok::Quantity::FREQUENCY;
 				sr_unit = sigrok::Unit::HERTZ;
 				init = true;
@@ -115,7 +115,7 @@ SourceSinkDevice::SourceSinkDevice(
 					vector<const sigrok::QuantityFlag *>(),
 					sigrok::Unit::WATT,
 					voltage_signal, current_signal,
-					short_name(), chg_name_channels_pair.first,
+					short_name(), chg_name_channels_pair.first, tr("P"),
 					aquisition_start_timestamp_);
 
 				power_signal = static_pointer_cast<data::AnalogSignal>(
@@ -132,7 +132,7 @@ SourceSinkDevice::SourceSinkDevice(
 					vector<const sigrok::QuantityFlag *>(),
 					sigrok::Unit::OHM,
 					voltage_signal, current_signal,
-					short_name(), chg_name_channels_pair.first,
+					short_name(), chg_name_channels_pair.first, tr("R"),
 					aquisition_start_timestamp_);
 
 				Device::add_channel(
@@ -147,7 +147,7 @@ SourceSinkDevice::SourceSinkDevice(
 					vector<const sigrok::QuantityFlag *>(),
 					sigrok::Unit::WATT_HOUR,
 					power_signal,
-					short_name(), chg_name_channels_pair.first,
+					short_name(), chg_name_channels_pair.first, tr("Wh"),
 					aquisition_start_timestamp_);
 
 				Device::add_channel(
@@ -162,7 +162,7 @@ SourceSinkDevice::SourceSinkDevice(
 					vector<const sigrok::QuantityFlag *>(),
 					sigrok::Unit::WATT_HOUR, // TODO: AMPERE_HOUR
 					current_signal,
-					short_name(), chg_name_channels_pair.first,
+					short_name(), chg_name_channels_pair.first, tr("Ah"),
 					aquisition_start_timestamp_);
 
 				Device::add_channel(

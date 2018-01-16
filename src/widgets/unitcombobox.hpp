@@ -20,20 +20,14 @@
 #ifndef WIDGETS_UNITCOMBOBOX_HPP
 #define WIDGETS_UNITCOMBOBOX_HPP
 
-#include <memory>
-
 #include <QComboBox>
 #include <QWidget>
-
-using std::shared_ptr;
 
 namespace sigrok {
 class Unit;
 }
 
 namespace sv {
-
-class Session;
 
 namespace widgets {
 
@@ -42,15 +36,12 @@ class UnitComboBox : public QComboBox
     Q_OBJECT
 
 public:
-	UnitComboBox(const Session &session, QWidget *parent = nullptr);
+	UnitComboBox(QWidget *parent = nullptr);
 
-	shared_ptr<const sigrok::Unit *> selected_sr_unit();
+	const sigrok::Unit *selected_sr_unit();
 
 private:
 	void setup_ui();
-
-	const Session &session_;
-	shared_ptr<const sigrok::Unit *> selected_sr_unit_;
 
 };
 

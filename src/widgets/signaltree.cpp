@@ -63,9 +63,7 @@ vector<shared_ptr<channels::BaseChannel>> SignalTree::selected_channels()
 		shared_ptr<channels::BaseChannel> channel =
 			dynamic_pointer_cast<channels::BaseChannel>(data.value);
 		*/
-		shared_ptr<channels::BaseChannel> channel =
-			data.value<shared_ptr<channels::BaseChannel>>();
-
+		auto channel = data.value<shared_ptr<channels::BaseChannel>>();
 		if (channel)
 			channels.push_back(channel);
 	}
@@ -84,9 +82,7 @@ vector<shared_ptr<data::BaseSignal>> SignalTree::selected_signals()
 		shared_ptr<data::BaseSignal> signal =
 			dynamic_pointer_cast<data::BaseSignal>(data.value);
 		*/
-		shared_ptr<data::BaseSignal> signal =
-			data.value<shared_ptr<data::BaseSignal>>();
-
+		auto signal = data.value<shared_ptr<data::BaseSignal>>();
 		if (signal)
 			signals.push_back(signal);
 	}
@@ -137,19 +133,13 @@ void SignalTree::add_device(shared_ptr<devices::HardwareDevice> device,
 	bool expanded)
 {
 	QTreeWidgetItem *device_item = new QTreeWidgetItem();
-	device_item->setFlags(
-		device_item->flags() | Qt::ItemIsUserCheckable | Qt::ItemIsSelectable);
-	device_item->setCheckState(0, Qt::Unchecked);
-	device_item->setIcon(0, QIcon(":/icon/smuview.ico"));
+	device_item->setIcon(0, QIcon(":/icons/smuview.ico"));
 	device_item->setText(1, device->full_name());
 	this->addTopLevelItem(device_item);
 
 	auto chg_name_channels_map = device->channel_group_name_map();
 	for (auto chg_name_channels_pair : chg_name_channels_map) {
 		QTreeWidgetItem *chg_item = new QTreeWidgetItem();
-		chg_item->setFlags(
-			chg_item->flags() | Qt::ItemIsUserCheckable | Qt::ItemIsSelectable);
-		chg_item->setCheckState(0, Qt::Unchecked);
 		chg_item->setText(1, chg_name_channels_pair.first);
 		device_item->addChild(chg_item);
 
@@ -167,8 +157,7 @@ void SignalTree::add_channel(shared_ptr<channels::BaseChannel> channel,
 	bool expanded, QTreeWidgetItem *parent)
 {
 	QTreeWidgetItem *ch_item = new QTreeWidgetItem();
-	ch_item->setFlags(
-		ch_item->flags() | Qt::ItemIsUserCheckable | Qt::ItemIsSelectable);
+	ch_item->setFlags(ch_item->flags() | Qt::ItemIsUserCheckable); // | Qt::ItemIsSelectable
 	ch_item->setCheckState(0, Qt::Unchecked);
 	ch_item->setText(1, channel->name());
 	ch_item->setData(0, Qt::UserRole, QVariant::fromValue(channel));
@@ -186,8 +175,7 @@ void SignalTree::add_signal(shared_ptr<data::BaseSignal> signal,
 	QTreeWidgetItem *parent)
 {
 	QTreeWidgetItem *signal_item = new QTreeWidgetItem();
-	signal_item->setFlags(
-		signal_item->flags() | Qt::ItemIsUserCheckable | Qt::ItemIsSelectable);
+	signal_item->setFlags(signal_item->flags() | Qt::ItemIsUserCheckable); // | Qt::ItemIsSelectable
 	signal_item->setCheckState(0, Qt::Unchecked);
 	signal_item->setText(1, signal->name());
 	signal_item->setData(0, Qt::UserRole, QVariant::fromValue(signal));

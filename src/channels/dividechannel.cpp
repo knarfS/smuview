@@ -39,9 +39,10 @@ DivideChannel::DivideChannel(
 		shared_ptr<data::AnalogSignal> divisor_signal,
 		const QString device_name,
 		const QString channel_group_name,
+		QString channel_name,
 		double channel_start_timestamp) :
 	MathChannel(sr_quantity, sr_quantity_flags, sr_unit,
-				device_name, channel_group_name, channel_start_timestamp),
+		device_name, channel_group_name, channel_name, channel_start_timestamp),
 	dividend_signal_(dividend_signal),
 	divisor_signal_(divisor_signal),
 	next_dividend_signal_pos_(0),

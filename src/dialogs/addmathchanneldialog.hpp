@@ -24,6 +24,7 @@
 
 #include <QDialog>
 #include <QDialogButtonBox>
+#include <QLineEdit>
 #include <QTabWidget>
 
 #include "src/session.hpp"
@@ -42,7 +43,10 @@ class BaseChannel;
 }
 
 namespace widgets {
+class QuantityComboBox;
+class QuantityFlagsList;
 class SignalTree;
+class UnitComboBox;
 }
 
 namespace dialogs {
@@ -69,6 +73,10 @@ private:
 	vector<shared_ptr<channels::BaseChannel>> channels_;
 
 	QTabWidget *tab_widget_;
+	QLineEdit *name_edit_;
+	widgets::QuantityComboBox *quantity_box_;
+	widgets::QuantityFlagsList *quantity_flags_list_;
+	widgets::UnitComboBox *unit_box_;
 	widgets::SignalTree *multiply_signal_1_tree_;
 	widgets::SignalTree *multiply_signal_2_tree_;
 	QDialogButtonBox *button_box_;

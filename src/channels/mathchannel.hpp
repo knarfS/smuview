@@ -44,6 +44,12 @@ class BaseSignal;
 
 namespace channels {
 
+enum class MathChannelType {
+		MultiplyChannel,
+		DivideChannel,
+		IntegrateChannel
+};
+
 class MathChannel : public BaseChannel
 {
 	Q_OBJECT
@@ -55,6 +61,7 @@ public:
 		const sigrok::Unit *sr_unit,
 		const QString device_name,
 		const QString channel_group_name,
+		QString channel_name,
 		double channel_start_timestamp);
 
 public:
