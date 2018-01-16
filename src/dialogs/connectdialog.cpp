@@ -271,7 +271,7 @@ void ConnectDialog::scan_pressed()
 		}
 	}
 
-	if (gpib_libgpib_name_->isEnabled()) {
+	if (gpib_avialable_ && gpib_libgpib_name_->isEnabled()) {
 		QString name = gpib_libgpib_name_->text();
 		QString conn = QString("libgpib/%1").arg(name);
 
