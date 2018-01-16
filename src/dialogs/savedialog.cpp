@@ -137,22 +137,24 @@ void SaveDialog::save(QString file_name)
 		start_sep = "";
 		QString line("");
 		for (size_t j = 0; j < signals.size(); j++) {
+			QString time("");
+			QString value("");
+
 			size_t sample_count = sample_counts[j];
-			if (sample_count < i)
-				continue;
+			if (sample_count >= i) {
+				// More samples for this signal
+				auto a_signal = static_pointer_cast<data::AnalogSignal>(
+					signals.at(j));
+				data::sample_t sample = a_signal->get_sample(i, relative_time);
+				value = QString("%1").arg(sample.second);
+				if (relative_time)
+					time = QString("%1").arg(sample.first);
+				else
+					time = util::format_time_date(sample.first);
+			}
 
-			auto a_signal = static_pointer_cast<data::AnalogSignal>(
-				signals.at(j));
-			data::sample_t sample = a_signal->get_sample(i, relative_time);
-
-			QString time;
-			if (relative_time)
-				time = QString("%1").arg(sample.first);
-			else
-				time = util::format_time_date(sample.first);
 			line.append(QString("%1%2%3%4").arg(start_sep).arg(time).
-				arg(sep).arg(sample.second));
-
+				arg(sep).arg(value));
 			start_sep = sep;
 		}
 		output_file << line.toStdString() << std::endl;
