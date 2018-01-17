@@ -54,7 +54,7 @@ BaseSignal::BaseSignal(
 	channel_name_(channel_name)
 {
 	assert(sr_quantity);
-	assert(sr_quantity_flags);
+	//assert(sr_quantity_flags);
 	assert(sr_unit);
 
 	if (!util::is_valid_sr_quantity(sr_quantity_))
