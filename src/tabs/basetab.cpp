@@ -57,11 +57,10 @@ void BaseTab::restore_settings(QSettings &settings)
 	(void)settings;
 }
 
-shared_ptr<views::BaseView> BaseTab::add_view(
-	shared_ptr<views::BaseView> view, Qt::DockWidgetArea area)
+void BaseTab::add_view(views::BaseView *view, Qt::DockWidgetArea area)
 {
 	if (!view)
-		return nullptr;
+		return;
 
 	//GlobalSettings settings;
 
@@ -73,16 +72,14 @@ shared_ptr<views::BaseView> BaseTab::add_view(
 	dock->setContextMenuPolicy(Qt::PreventContextMenu);
 	dock->setFeatures(QDockWidget::DockWidgetMovable |
 		QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable);
-	dock->setWidget(view.get());
+	dock->setWidget(view);
 	parent_->addDockWidget(area, dock);
 
 	// TODO: When removed, the view widget in the dock isn't shown anymore!
 	view_docks_[dock] = view;
-
-	return view;
 }
 
-void BaseTab::close_view(shared_ptr<views::BaseView> view)
+void BaseTab::close_view(views::BaseView *view)
 {
 	if (!view)
 		return;

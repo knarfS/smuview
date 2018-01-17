@@ -22,8 +22,6 @@
 #ifndef TABS_BASETAB_HPP
 #define TABS_BASETAB_HPP
 
-#include <memory>
-
 #include <QDockWidget>
 #include <QMainWindow>
 #include <QSettings>
@@ -32,7 +30,6 @@
 #include "src/views/baseview.hpp"
 
 using std::map;
-using std::shared_ptr;
 
 namespace sv {
 
@@ -61,12 +58,11 @@ public:
 	virtual void restore_settings(QSettings &settings);
 
 private:
-	map<QDockWidget*, shared_ptr<views::BaseView>> view_docks_;
+	map<QDockWidget *, views::BaseView *> view_docks_;
 
 protected:
-	shared_ptr<views::BaseView> add_view(
-		shared_ptr<views::BaseView> view, Qt::DockWidgetArea area);
-	void close_view(shared_ptr<views::BaseView> view);
+	void add_view(views::BaseView *view, Qt::DockWidgetArea area);
+	void close_view(views::BaseView *view);
 
 	Session &session_;
 	QMainWindow *parent_;

@@ -51,13 +51,12 @@ void SourceSinkTab::setup_ui()
 	// Device control(s)
 	for (auto c : device_->configurables()) {
 		if (c->is_controllable()) {
-			shared_ptr<views::BaseView> control_view;
 			if (device_->type() == devices::DeviceType::PowerSupply)
-				control_view = make_shared<views::SourceControlView>(session_, c);
+				add_view(new views::SourceControlView(session_, c),
+					Qt::TopDockWidgetArea);
 			else if (device_->type() == devices::DeviceType::ElectronicLoad)
-				control_view = make_shared<views::SinkControlView>(session_, c);
-
-			add_view(control_view, Qt::TopDockWidgetArea);
+				add_view(new views::SinkControlView(session_, c),
+					Qt::TopDockWidgetArea);
 		}
 	}
 
@@ -68,7 +67,6 @@ void SourceSinkTab::setup_ui()
 		shared_ptr<data::AnalogSignal> current_signal;
 		auto channels = chg_name_signals_pair.second;
 		for (auto channel : channels) {
-			shared_ptr<views::BaseView> value_plot_view;
 			if (channel->has_fixed_signal()) {
 				auto signal = static_pointer_cast<data::AnalogSignal>(
 					channel->actual_signal());
@@ -79,30 +77,26 @@ void SourceSinkTab::setup_ui()
 					current_signal = signal;
 
 				// Signal plot(s)
-				value_plot_view =
-					make_shared<views::PlotView>(session_, signal);
+				add_view(new views::PlotView(session_, signal),
+					Qt::BottomDockWidgetArea);
 			}
 			else {
 				// Channel plot(s)
 				// TODO: Check for channels without data (Digi 35 CPU "CH1")
-				//value_plot_view =
-				//	make_shared<views::PlotView>(session_, channel);
+				//add_view(new views::PlotView(session_, channel),
+				//	Qt::BottomDockWidgetArea);
 			}
-			if (value_plot_view)
-				add_view(value_plot_view, Qt::BottomDockWidgetArea);
 		}
 
 		if (voltage_signal && current_signal) {
 			// PowerPanel(s)
-			shared_ptr<views::BaseView> power_panel_view =
-				make_shared<views::PowerPanelView>(session_,
-					voltage_signal, current_signal);
+			views::BaseView *power_panel_view = new views::PowerPanelView(
+				session_, voltage_signal, current_signal);
 			add_view(power_panel_view, Qt::TopDockWidgetArea);
 
 			// UI Plots
-			shared_ptr<views::BaseView> ui_plot_view =
-				make_shared<views::PlotView>(session_,
-					voltage_signal, current_signal);
+			views::BaseView *ui_plot_view = new views::PlotView(
+				session_, voltage_signal, current_signal);
 			add_view(ui_plot_view, Qt::BottomDockWidgetArea);
 		}
 	}

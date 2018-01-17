@@ -111,7 +111,7 @@ void AddViewDialog::setup_ui_plot_tab()
 	tab_widget_->addTab(plot_widget, title);
 }
 
-vector<shared_ptr<views::BaseView>> AddViewDialog::views()
+vector<views::BaseView *> AddViewDialog::views()
 {
 	return views_;
 }
@@ -126,18 +126,17 @@ void AddViewDialog::accept()
 		break;
 	case 1:
 		for (auto channel : panel_channel_tree_->selected_channels()) {
-			views_.push_back(
-				make_shared<views::ValuePanelView>(session_, channel));
+			views_.push_back(new views::ValuePanelView(session_, channel));
 		}
 		break;
 	case 2:
 		for (auto channel : plot_channel_tree_->selected_channels()) {
-			views_.push_back(make_shared<views::PlotView>(session_, channel));
+			views_.push_back(new views::PlotView(session_, channel));
 		}
 		for (auto signal : plot_channel_tree_->selected_signals()) {
 			//TODO
 			auto a_signal = static_pointer_cast<data::AnalogSignal>(signal);
-			views_.push_back(make_shared<views::PlotView>(session_, a_signal));
+			views_.push_back(new views::PlotView(session_, a_signal));
 		}
 
 		break;

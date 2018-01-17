@@ -57,7 +57,7 @@ public:
 		int selected_view_type,
 		QWidget *parent = nullptr);
 
-	vector<shared_ptr<views::BaseView>> views();
+	vector<views::BaseView *> views();
 
 private:
 	void setup_ui();
@@ -68,7 +68,7 @@ private:
 	const Session &session_;
 	const shared_ptr<devices::HardwareDevice> device_;
 	int selected_view_type_; // TODO
-	vector<shared_ptr<views::BaseView>> views_;
+	vector<views::BaseView *> views_;
 
 	QTabWidget *tab_widget_;
 	widgets::SignalTree *panel_channel_tree_;

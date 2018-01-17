@@ -26,8 +26,6 @@
 
 #include "src/tabs/basetab.hpp"
 
-using std::shared_ptr;
-
 namespace sv {
 
 class Session;
