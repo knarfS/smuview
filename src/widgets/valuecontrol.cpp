@@ -60,7 +60,7 @@ void ValueControl::setup_ui()
 
 	lcdDisplay = new widgets::LcdDisplay(
 		get_digits(), get_decimal_places(), false, unit_, "", false);
-	lcdDisplay->on_value_change(0);
+	lcdDisplay->set_value(0);
 	layout->addWidget(lcdDisplay, 0, Qt::AlignRight);
 
 	QHBoxLayout *getValuesHLayout = new QHBoxLayout();
@@ -113,7 +113,7 @@ void ValueControl::change_value(const double value)
 
 	value_ = value;
 
-	lcdDisplay->on_value_change(value);
+	lcdDisplay->set_value(value);
 	doubleSpinBox->setValue(value);
 	knob->setValue(value);
 
@@ -135,7 +135,7 @@ void ValueControl::on_value_changed(const double value)
 
 	value_ = value;
 
-	lcdDisplay->on_value_change(value);
+	lcdDisplay->set_value(value);
 	doubleSpinBox->setValue(value);
 	knob->setValue(value);
 

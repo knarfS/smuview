@@ -50,7 +50,7 @@ AnalogSignal::AnalogSignal(
 	last_timestamp_(0.),
 	last_value_(0.),
 	min_value_(std::numeric_limits<double>::max()),
-	max_value_(std::numeric_limits<double>::min())
+	max_value_(std::numeric_limits<double>::lowest())
 {
 	qWarning()
 		<< "Init analog signal " << name_
@@ -155,6 +155,7 @@ void AnalogSignal::push_sample(void *sample, double timestamp,
 	Q_EMIT sample_added();
 
 	if (digits != digits_) {
+		qWarning() << "AnalogSignal::push_sample(): digits changed: " << digits_ << " -> " << digits;
 		digits_ = digits;
 		Q_EMIT digits_changed(digits_);
 	}

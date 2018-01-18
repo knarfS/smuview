@@ -169,20 +169,20 @@ void PowerPanelView::setup_toolbar()
 void PowerPanelView::connect_signals()
 {
 	connect(voltage_signal_.get(), SIGNAL(digits_changed(int)),
-		voltageDisplay, SLOT(on_digits_change(int)));
+		voltageDisplay, SLOT(set_digits(int)));
 	connect(voltage_signal_.get(), SIGNAL(digits_changed(int)),
-		voltageMinDisplay, SLOT(on_digits_change(int)));
+		voltageMinDisplay, SLOT(set_digits(int)));
 	connect(voltage_signal_.get(), SIGNAL(digits_changed(int)),
-		voltageMaxDisplay, SLOT(on_digits_change(int)));
+		voltageMaxDisplay, SLOT(set_digits(int)));
 
 	connect(current_signal_.get(), SIGNAL(digits_changed(int)),
-		currentDisplay, SLOT(on_digits_change(int)));
+		currentDisplay, SLOT(set_digits(int)));
 	connect(current_signal_.get(), SIGNAL(digits_changed(int)),
-		currentMinDisplay, SLOT(on_digits_change(int)));
+		currentMinDisplay, SLOT(set_digits(int)));
 	connect(current_signal_.get(), SIGNAL(digits_changed(int)),
-		currentMaxDisplay, SLOT(on_digits_change(int)));
+		currentMaxDisplay, SLOT(set_digits(int)));
 
-	// TODO: on_digits_change() for the other displays!
+	// TODO: set_digits() for the other displays!
 }
 
 void PowerPanelView::reset_displays()
@@ -284,24 +284,24 @@ void PowerPanelView::on_update()
 	actual_amp_hours_ = actual_amp_hours_ + (current * elapsed_time);
 	actual_watt_hours_ = actual_watt_hours_ + (power * elapsed_time);
 
-	voltageDisplay->on_value_change(voltage);
-	voltageMinDisplay->on_value_change(voltage_min_);
-	voltageMaxDisplay->on_value_change(voltage_max_);
+	voltageDisplay->set_value(voltage);
+	voltageMinDisplay->set_value(voltage_min_);
+	voltageMaxDisplay->set_value(voltage_max_);
 
-	currentDisplay->on_value_change(current);
-	currentMinDisplay->on_value_change(current_min_);
-	currentMaxDisplay->on_value_change(current_max_);
+	currentDisplay->set_value(current);
+	currentMinDisplay->set_value(current_min_);
+	currentMaxDisplay->set_value(current_max_);
 
-	resistanceDisplay->on_value_change(resistance);
-	resistanceMinDisplay->on_value_change(resistance_min_);
-	resistanceMaxDisplay->on_value_change(resistance_max_);
+	resistanceDisplay->set_value(resistance);
+	resistanceMinDisplay->set_value(resistance_min_);
+	resistanceMaxDisplay->set_value(resistance_max_);
 
-	powerDisplay->on_value_change(power);
-	powerMinDisplay->on_value_change(power_min_);
-	powerMaxDisplay->on_value_change(power_max_);
+	powerDisplay->set_value(power);
+	powerMinDisplay->set_value(power_min_);
+	powerMaxDisplay->set_value(power_max_);
 
-	ampHourDisplay->on_value_change(actual_amp_hours_);
-	wattHourDisplay->on_value_change(actual_watt_hours_);
+	ampHourDisplay->set_value(actual_amp_hours_);
+	wattHourDisplay->set_value(actual_watt_hours_);
 }
 
 void PowerPanelView::on_action_reset_displays_triggered()

@@ -117,20 +117,16 @@ void HardwareChannel::push_sample_sr_analog(
 		" - No signal found: " << actual_signal_->name();
 	}
 
-	// TODO: Not implemented in sigrok bindings yet: sr_analog->digits();
-	// Number of significant digits after the decimal point if positive, or
-	// number of non-significant digits before the decimal point if negative
-	// (refers to vendor specifications/datasheet or actual device display).
-
 	// Number of significant digits after the decimal point if positive, or
 	// number of non-significant digits before the decimal point if negative
 	// (refers to the value we actually read on the wire).
+	qWarning() << "HardwareChannel::push_sample_sr_analog(): sr_analog->digits() = " << sr_analog->digits();
 	int digits = 7;
 	int decimal_places = -1;
 	if (sr_analog->digits() > 0)
-		digits = sr_analog->digits();
+		decimal_places = sr_analog->digits();
 	else
-		digits = -1*sr_analog->digits() + 3; // TODO
+		digits = -1*sr_analog->digits(); // TODO
 
 	auto signal = static_pointer_cast<data::AnalogSignal>(signal_map_[q_qf]);
 	signal->push_sample(sample, timestamp, digits, decimal_places);

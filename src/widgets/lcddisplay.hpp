@@ -44,7 +44,7 @@ private:
 	QString unit_;
 	QString unit_si_prefix_;
 	QString extra_text_;
-	float value_;
+	double value_;
 
 	uint height_;
 	uint width_scale_factor_;
@@ -58,10 +58,10 @@ private:
 	void setup_ui();
 
 public Q_SLOTS:
-	void on_value_change(const double value);
-	void on_unit_change(const QString unit);
-	void on_digits_change(const int digits);
-	void on_decimal_places_change(const int decimal_places);
+	void set_value(const double value);
+	void set_unit(const QString unit);
+	void set_digits(const int digits);
+	void set_decimal_places(const int decimal_places);
 	void reset_value();
 	void update_display();
 

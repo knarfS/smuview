@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QDebug>
 #include <QFont>
 #include <QSizePolicy>
 #include <QString>
@@ -120,26 +121,27 @@ void LcdDisplay::setup_ui()
 	this->setLayout(layout);
 }
 
-void LcdDisplay::on_value_change(const double value)
+void LcdDisplay::set_value(const double value)
 {
 	value_ = value;
 	update_display();
 }
 
 
-void LcdDisplay::on_unit_change(const QString unit)
+void LcdDisplay::set_unit(const QString unit)
 {
 	unit_ = unit;
 	update_display();
 }
 
-void LcdDisplay::on_digits_change(const int digits)
+void LcdDisplay::set_digits(const int digits)
 {
 	digits_ = digits;
+	qWarning() << "LcdDisplay::set_digits(): digits = " << digits_;
 	update_display();
 }
 
-void LcdDisplay::on_decimal_places_change(const int decimal_places)
+void LcdDisplay::set_decimal_places(const int decimal_places)
 {
 	decimal_places_ = decimal_places;
 	update_display();
@@ -156,29 +158,30 @@ void LcdDisplay::reset_value()
 
 void LcdDisplay::update_display()
 {
-	QString str_value;
-	if (value_ == std::numeric_limits<double>::max())
-		str_value = QString("OL");
-	else if (value_ == std::numeric_limits<double>::min())
-		str_value = QString("UL");
+	QString value_str;
+	if (value_ >= std::numeric_limits<double>::max())
+		value_str = QString("OL");
+	else if (value_ <= std::numeric_limits<double>::lowest())
+		value_str = QString("UL");
+	else if (!auto_range_) {
+		value_str = QString("%1").
+			arg(value_, digits_, 'f', decimal_places_, QChar('0'));
+		//value_str =
+		//	QString("%1").arg(value_, digits_, 'f', decimal_places_);
+	}
 	else {
-		if (!auto_range_) {
-			str_value = QString("%1").
-				arg(value_, digits_, 'f', decimal_places_, QChar('0'));
-			//str_value = QString("%1").arg(value_, digits_, 'f', decimal_places_);
-		}
-		else {
-			QString si_prefix;
-			util::format_value_si(
-				value_, digits_, decimal_places_, str_value, si_prefix);
-			if (si_prefix != unit_si_prefix_) {
-				unit_si_prefix_ = si_prefix;
-				lcdUnit_->setText(
-					QString("%1%2").arg(unit_si_prefix_).arg(unit_));
-			}
+		QString si_prefix;
+		util::format_value_si(
+			value_, digits_, decimal_places_, value_str, si_prefix);
+		if (si_prefix != unit_si_prefix_) {
+			unit_si_prefix_ = si_prefix;
+			QString text = QString("%1%2").arg(unit_si_prefix_).arg(unit_);
+			lcdUnit_->setText(text);
+
+			//qWarning() << "LcdDisplay::update_display(): text = " << text;
 		}
 	}
-	lcdValue_->display(str_value);
+	lcdValue_->display(value_str);
 }
 
 } // namespace widgets

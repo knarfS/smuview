@@ -94,7 +94,7 @@ private:
 
 private Q_SLOTS:
 	void on_update();
-	void on_signal_change();
+	void on_signal_changed();
 	void on_action_reset_display_triggered();
 
 };

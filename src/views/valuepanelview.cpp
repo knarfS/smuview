@@ -51,19 +51,12 @@ ValuePanelView::ValuePanelView(const Session &session,
 		channel_->actual_signal());
 
 	unit_ = QString("");
-	digits_ = 6; // TODO
-	decimal_places_ = 3; // TODO
+	digits_ = 7; // TODO
+	decimal_places_ = -1; // TODO
 	if (signal_) {
-		//digits_ = signal->digits();
-		//decimal_places_ =;
+		digits_ = signal_->digits();
+		decimal_places_ = signal_->decimal_places();
 		unit_ = signal_->unit();
-
-		connect(signal_.get(), SIGNAL(digits_changed(int)),
-			valueDisplay, SLOT(on_digits_change(int)));
-		connect(signal_.get(), SIGNAL(digits_changed(int)),
-			valueMinDisplay, SLOT(on_digits_change(int)));
-		connect(signal_.get(), SIGNAL(digits_changed(int)),
-			valueMaxDisplay, SLOT(on_digits_change(int)));
 	}
 
 	setup_ui();
@@ -92,17 +85,14 @@ ValuePanelView::ValuePanelView(const Session& session,
 {
 	assert(signal_);
 
+	digits_ = signal_->digits();
+	decimal_places_ = signal_->decimal_places();
+	unit_ = signal_->unit();
+
 	setup_ui();
 	setup_toolbar();
 	connect_signals();
 	reset_display();
-
-	connect(signal_.get(), SIGNAL(digits_changed(int)),
-		valueDisplay, SLOT(on_digits_change(int)));
-	connect(signal_.get(), SIGNAL(digits_changed(int)),
-		valueMinDisplay, SLOT(on_digits_change(int)));
-	connect(signal_.get(), SIGNAL(digits_changed(int)),
-		valueMaxDisplay, SLOT(on_digits_change(int)));
 
 	timer_ = new QTimer(this);
 	init_timer();
@@ -132,10 +122,6 @@ ValuePanelView::~ValuePanelView()
 
 void ValuePanelView::setup_ui()
 {
-	// TODO: This is good enough for 7.5 digit multimeters, but should really
-	// depend on the digits submitted by the analog packet.
-	digits_ = 8;
-
 	QVBoxLayout *layout = new QVBoxLayout();
 
 	QGridLayout *panelLayout = new QGridLayout();
@@ -173,6 +159,14 @@ void ValuePanelView::setup_toolbar()
 
 void ValuePanelView::connect_signals()
 {
+	if (signal_) {
+		connect(signal_.get(), SIGNAL(digits_changed(int)),
+			valueDisplay, SLOT(set_digits(int)));
+		connect(signal_.get(), SIGNAL(digits_changed(int)),
+			valueMinDisplay, SLOT(set_digits(int)));
+		connect(signal_.get(), SIGNAL(digits_changed(int)),
+			valueMaxDisplay, SLOT(set_digits(int)));
+	}
 }
 
 void ValuePanelView::reset_display()
@@ -214,28 +208,42 @@ void ValuePanelView::on_update()
 			value_max_ = value;
 	}
 
-	valueDisplay->on_value_change(value);
-	valueMinDisplay->on_value_change(value_min_);
-	valueMaxDisplay->on_value_change(value_max_);
+	valueDisplay->set_value(value);
+	valueMinDisplay->set_value(value_min_);
+	valueMaxDisplay->set_value(value_max_);
 }
 
-void ValuePanelView::on_signal_change()
+void ValuePanelView::on_signal_changed()
 {
 	if (!channel_)
 		return;
 
+	if (signal_) {
+		disconnect(signal_.get(), SIGNAL(digits_changed(int)),
+			valueDisplay, SLOT(set_digits(int)));
+		disconnect(signal_.get(), SIGNAL(digits_changed(int)),
+			valueMinDisplay, SLOT(set_digits(int)));
+		disconnect(signal_.get(), SIGNAL(digits_changed(int)),
+			valueMaxDisplay, SLOT(set_digits(int)));
+	}
+
 	signal_ = dynamic_pointer_cast<data::AnalogSignal>(
 		channel_->actual_signal());
 
-	//digits_ = signal->digits();
-	//decimal_places_ =;
-
+	digits_ = signal_->digits();
+	decimal_places_ = signal_->decimal_places();
 	unit_ = signal_->unit();
-	valueDisplay->on_unit_change(unit_);
-	valueMinDisplay->on_unit_change(unit_);
-	valueMaxDisplay->on_unit_change(unit_);
-
+	valueDisplay->set_unit(unit_);
+	valueMinDisplay->set_unit(unit_);
+	valueMaxDisplay->set_unit(unit_);
 	this->parentWidget()->setWindowTitle(this->title());
+
+	connect(signal_.get(), SIGNAL(digits_changed(int)),
+		valueDisplay, SLOT(set_digits(int)));
+	connect(signal_.get(), SIGNAL(digits_changed(int)),
+		valueMinDisplay, SLOT(set_digits(int)));
+	connect(signal_.get(), SIGNAL(digits_changed(int)),
+		valueMaxDisplay, SLOT(set_digits(int)));
 }
 
 void ValuePanelView::on_action_reset_display_triggered()
