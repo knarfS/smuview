@@ -71,14 +71,20 @@ void SourceSinkTab::setup_ui()
 				auto signal = static_pointer_cast<data::AnalogSignal>(
 					channel->actual_signal());
 
-				if (signal->sr_quantity() == sigrok::Quantity::VOLTAGE)
-					voltage_signal = signal;
-				if (signal->sr_quantity() == sigrok::Quantity::CURRENT)
-					current_signal = signal;
+				// Only plot voltage and current
 
-				// Signal plot(s)
-				add_view(new views::PlotView(session_, signal),
-					Qt::BottomDockWidgetArea);
+				if (signal->sr_quantity() == sigrok::Quantity::VOLTAGE) {
+					voltage_signal = signal;
+					// Voltage plot(s)
+					add_view(new views::PlotView(session_, voltage_signal),
+						Qt::BottomDockWidgetArea);
+				}
+				if (signal->sr_quantity() == sigrok::Quantity::CURRENT) {
+					current_signal = signal;
+					// Voltage plot(s)
+					add_view(new views::PlotView(session_, current_signal),
+						Qt::BottomDockWidgetArea);
+				}
 			}
 			else {
 				// Channel plot(s)
