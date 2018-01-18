@@ -43,13 +43,10 @@ private:
 	const bool auto_range_;
 	QString unit_;
 	QString unit_si_prefix_;
+	bool update_unit_;
 	QString extra_text_;
+	const bool small_;
 	double value_;
-
-	uint height_;
-	uint width_scale_factor_;
-	uint font_size_unit_;
-	uint font_size_extra_;
 
 	QLCDNumber *lcdValue_;
 	QLabel *lcdExtra_;

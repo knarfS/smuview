@@ -46,6 +46,8 @@ AnalogSignal::AnalogSignal(
 	BaseSignal(sr_quantity, sr_quantity_flags, sr_unit,
 		device_name, channel_group_name, channel_name),
 	sample_count_(0),
+	digits_(7), // A good start value for digits
+	decimal_places_(-1), // A good start value for decimal places
 	signal_start_timestamp_(signal_start_timestamp),
 	last_timestamp_(0.),
 	last_value_(0.),
@@ -112,7 +114,6 @@ sample_t AnalogSignal::get_sample(size_t pos, bool is_relative_time) const
 		return make_pair(timestamp, data_->at(pos));
 	}
 
-	//qWarning() << "AnalogSignal::get_sample(" << pos << "): sample = .0, .0";
 	return make_pair(0., 0.);
 }
 
@@ -155,14 +156,13 @@ void AnalogSignal::push_sample(void *sample, double timestamp,
 	Q_EMIT sample_added();
 
 	if (digits != digits_) {
-		qWarning() << "AnalogSignal::push_sample(): digits changed: " << digits_ << " -> " << digits;
 		digits_ = digits;
 		Q_EMIT digits_changed(digits_);
 	}
 
 	if (decimal_places != decimal_places_) {
 		decimal_places_ = decimal_places;
-		Q_EMIT decimal_places_chaned(decimal_places_);
+		Q_EMIT decimal_places_changed(decimal_places_);
 	}
 }
 
@@ -235,22 +235,16 @@ double AnalogSignal::last_timestamp(bool relative_time) const
 
 double AnalogSignal::last_value() const
 {
-	//qWarning() << "AnalogSignal::last_value(): " << name_
-	//	<< ": last_value_ = " << last_value_;
 	return last_value_;
 }
 
 double AnalogSignal::min_value() const
 {
-	//qWarning() << "AnalogSignal::min_value(): " << name_
-	//	<< ": min_value_ = " << min_value_;
 	return min_value_;
 }
 
 double AnalogSignal::max_value() const
 {
-	//qWarning() << "AnalogSignal::max_value(): " << name_
-	//	<< ": max_value_ = " << max_value_;
 	return max_value_;
 }
 

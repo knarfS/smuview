@@ -39,26 +39,14 @@ LcdDisplay::LcdDisplay(
 	auto_range_(auto_range),
 	unit_(unit),
 	unit_si_prefix_(""),
-	extra_text_(extra_text)
+	update_unit_(true),
+	extra_text_(extra_text),
+	small_(small)
 {
-	digits_ = digits;
-	if (digits > 3)
+	if (digits_ > 3)
 		// This is a workaround, b/c LCDNumber shows one digit less with
 		// smallDecimalPoint == true && digits > 3
 		digits_++;
-
-	if (!small) {
-		height_ = 50;
-		width_scale_factor_ = 30;
-		font_size_unit_ = 18;;
-		font_size_extra_ = 10;
-	}
-	else {
-		height_ = 25;
-		width_scale_factor_ = 15;
-		font_size_unit_ = 10;
-		font_size_extra_ = 7;
-	}
 
 	setup_ui();
 	reset_value();
@@ -66,10 +54,26 @@ LcdDisplay::LcdDisplay(
 
 void LcdDisplay::setup_ui()
 {
+	uint height;
+	uint width_scale_factor;
+	uint font_size_unit;
+	uint font_size_extra;
+	if (!small_) {
+		height = 50;
+		width_scale_factor = 30;
+		font_size_unit = 18;;
+		font_size_extra = 10;
+	}
+	else {
+		height = 25;
+		width_scale_factor = 15;
+		font_size_unit = 10;
+		font_size_extra = 7;
+	}
 	// TODO: Are the number of digits displayed correctly?
 	// TODO: Maybe there is a better way to draw the width proportional to the
 	// height? This is maybe even dpi dependent?
-	uint width = width_scale_factor_ * digits_;
+	uint width = width_scale_factor * digits_;
 
 	//this->setFrameShape(QFrame::Box);
 	QSizePolicy layoutSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -82,8 +86,8 @@ void LcdDisplay::setup_ui()
 
 	lcdValue_ = new QLCDNumber();
 	lcdValue_->setDigitCount(digits_);
-	//lcdValue_->setMinimumSize(QSize(width, height_));
-	lcdValue_->setFixedSize(QSize(width, height_));
+	//lcdValue_->setMinimumSize(QSize(width, height));
+	lcdValue_->setFixedSize(QSize(width, height));
 
 	lcdValue_->setFrameShape(QFrame::NoFrame);
 	//lcdValue_->setFrameShape(QFrame::Box);
@@ -97,7 +101,7 @@ void LcdDisplay::setup_ui()
 	// Extra text (small)
 	lcdExtra_ = new QLabel();
 	QFont extraFont;
-	extraFont.setPointSize(font_size_extra_);
+	extraFont.setPointSize(font_size_extra);
 	//extraFont.setBold(true);
 	//extraFont.setWeight(QFont::Bold);
 	lcdExtra_->setFont(extraFont);
@@ -108,9 +112,11 @@ void LcdDisplay::setup_ui()
 	// Unit
 	lcdUnit_ = new QLabel();
 	QFont unitFont;
-	unitFont.setPointSize(font_size_unit_);
-	unitFont.setBold(true);
-	unitFont.setWeight(QFont::Bold);
+	unitFont.setPointSize(font_size_unit);
+	if (!small_) {
+		unitFont.setBold(true);
+		unitFont.setWeight(QFont::Bold);
+	}
 	lcdUnit_->setFont(unitFont);
 	lcdUnit_->setText(QString("%1%2").arg(unit_si_prefix_).arg(unit_));
 	lcdUnit_->setAlignment(Qt::AlignBottom|Qt::AlignHCenter);
@@ -131,13 +137,13 @@ void LcdDisplay::set_value(const double value)
 void LcdDisplay::set_unit(const QString unit)
 {
 	unit_ = unit;
+	update_unit_ = true;
 	update_display();
 }
 
 void LcdDisplay::set_digits(const int digits)
 {
 	digits_ = digits;
-	qWarning() << "LcdDisplay::set_digits(): digits = " << digits_;
 	update_display();
 }
 
@@ -163,22 +169,17 @@ void LcdDisplay::update_display()
 		value_str = QString("OL");
 	else if (value_ <= std::numeric_limits<double>::lowest())
 		value_str = QString("UL");
-	else if (!auto_range_) {
+	else if (!auto_range_)
 		value_str = QString("%1").
-			arg(value_, digits_, 'f', decimal_places_, QChar('0'));
-		//value_str =
-		//	QString("%1").arg(value_, digits_, 'f', decimal_places_);
-	}
+			arg(value_, digits_, 'f', decimal_places_, QChar(' '));
 	else {
 		QString si_prefix;
 		util::format_value_si(
 			value_, digits_, decimal_places_, value_str, si_prefix);
-		if (si_prefix != unit_si_prefix_) {
+		if (si_prefix != unit_si_prefix_ || update_unit_) {
 			unit_si_prefix_ = si_prefix;
 			QString text = QString("%1%2").arg(unit_si_prefix_).arg(unit_);
 			lcdUnit_->setText(text);
-
-			//qWarning() << "LcdDisplay::update_display(): text = " << text;
 		}
 	}
 	lcdValue_->display(value_str);

@@ -35,14 +35,14 @@ class ValueControl : public QGroupBox
 
 public:
 	ValueControl(
-		const QString title, const uint digits, const QString unit,
+		const QString title, const int digits, const QString unit,
 		const double min, const double max, const double steps,
 		QWidget *parent = nullptr);
 
 private:
 	QString title_;
 	double value_;
-	uint digits_;
+	int digits_;
 	QString unit_;
 	double min_;
 	double max_;

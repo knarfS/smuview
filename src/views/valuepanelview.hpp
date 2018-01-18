@@ -70,8 +70,8 @@ private:
 	shared_ptr<channels::BaseChannel> channel_;
 	shared_ptr<data::AnalogSignal> signal_;
 	QString unit_;
-	uint digits_;
-	uint decimal_places_;
+	int digits_;
+	int decimal_places_;
 
 	QTimer *timer_;
 
@@ -87,7 +87,8 @@ private:
 
 	void setup_ui();
 	void setup_toolbar();
-	void connect_signals();
+	void connect_signals_displays();
+	void disconnect_signals_displays();
 	void reset_display();
 	void init_timer();
 	void stop_timer();

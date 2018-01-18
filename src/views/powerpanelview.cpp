@@ -94,11 +94,15 @@ void PowerPanelView::setup_ui()
 		current_signal_->unit(), tr("max"), true);
 
 	int digits;
-	if (voltage_signal_->digits() > current_signal_->unit())
+	if (voltage_signal_->digits() > current_signal_->digits())
 		digits = voltage_signal_->digits();
 	else
 		digits = current_signal_->digits();
-	int decimal_places = -1;
+	int decimal_places;
+	if (voltage_signal_->decimal_places() > current_signal_->decimal_places())
+		decimal_places = voltage_signal_->decimal_places();
+	else
+		decimal_places = current_signal_->decimal_places();
 
 	resistanceDisplay = new widgets::LcdDisplay(
 		digits, decimal_places, true,

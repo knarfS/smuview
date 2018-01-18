@@ -379,47 +379,28 @@ void format_value_si(
 	const double value, const int digits, const int decimal_places,
 	QString &value_str, QString &si_prefix_str)
 {
-	//qWarning() << "format_value_si(): ----------------";
 	SIPrefix si_prefix;
-	if (value == 0) {
-		qWarning() << "format_value_si(): value == 0";
+	if (value == 0)
 		si_prefix = SIPrefix::none;
-	}
 	else {
-		//qWarning() << "format_value_si(): digits = " << digits;
-		long max_val = 0;
-		for (int i=0; i<digits; ++i) {
-			max_val += 9 * pow(10, i) ;
-			//qWarning() << "format_value_si(): max_val = " << max_val;
-		}
-
 		int exp = exponent(SIPrefix::yotta);
-		//qWarning() << "format_value_si(): exp = " << exp;
 		si_prefix = SIPrefix::yocto;
-		//qWarning() << "format_value_si(): si_prefix = " << si_prefix;
-		while ((fabs(value) * pow(10, exp)) > max_val &&
+		while ((fabs(value) * pow(10, exp)) > 999 &&
 				si_prefix < SIPrefix::yotta) {
 			si_prefix = successor(si_prefix);
-			//qWarning() << "format_value_si(): si_prefix = " << si_prefix;
 			exp -= 3;
-			//qWarning() << "format_value_si(): exp = " << exp;
 		}
-		//qWarning() << "format_value_si(): exp = " << exp;
 	}
 	assert(si_prefix >= SIPrefix::yocto);
 	assert(si_prefix <= SIPrefix::yotta);
 
 	const double multiplier = pow(10, -exponent(si_prefix));
-	//qWarning() << "format_value_si(): multiplier = " << multiplier;
 
-	//QChar fill_char(''); // '0'
 	value_str = QString("%1").
-		arg(value * multiplier, digits, 'f', decimal_places, QChar('0'));
-	//qWarning() << "format_value_si(): value_str = " << value_str;
+		arg(value * multiplier, digits, 'f', decimal_places, QChar(' '));
 
 	QTextStream si_prefix_stream(&si_prefix_str);
 	si_prefix_stream << si_prefix;
-	//qWarning() << "format_value_si(): si_prefix_str = " << si_prefix_str;
 }
 
 QString format_time_si(const Timestamp& v, SIPrefix prefix,

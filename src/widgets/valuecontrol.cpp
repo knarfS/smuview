@@ -27,7 +27,7 @@ namespace sv {
 namespace widgets {
 
 ValueControl::ValueControl(
-		const QString title, const uint digits, const QString unit,
+		const QString title, const int digits, const QString unit,
 		const double min, const double max, const double steps,
 		QWidget *parent) :
 	QGroupBox(parent),

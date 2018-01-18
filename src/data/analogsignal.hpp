@@ -93,7 +93,7 @@ Q_SIGNALS:
 	void samples_cleared();
 	void sample_added();
 	void digits_changed(int);
-	void decimal_places_chaned(int);
+	void decimal_places_changed(int);
 
 };
 
