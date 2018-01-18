@@ -19,6 +19,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QDebug>
 #include <QMainWindow>
 #include <QSizePolicy>
 
@@ -66,7 +67,7 @@ void BaseTab::add_view(views::BaseView *view, Qt::DockWidgetArea area)
 
 	// Dock widget must be here, because the layout must be set to the central
 	// widget of the view main window before dock->setWidget() is called.
-	QDockWidget* dock = new QDockWidget(view->title());
+	QDockWidget *dock = new QDockWidget(view->title());
 	dock->setAllowedAreas(Qt::AllDockWidgetAreas);
 	dock->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	dock->setContextMenuPolicy(Qt::PreventContextMenu);
@@ -75,16 +76,23 @@ void BaseTab::add_view(views::BaseView *view, Qt::DockWidgetArea area)
 	dock->setWidget(view);
 	parent_->addDockWidget(area, dock);
 
-	// TODO: When removed, the view widget in the dock isn't shown anymore!
+	connect(dock, SIGNAL(visibilityChanged(bool)),
+		this, SLOT(on_view_closed(bool)));
+
 	view_docks_[dock] = view;
 }
 
-void BaseTab::close_view(views::BaseView *view)
+void BaseTab::on_view_closed(bool visible)
 {
-	if (!view)
+	if (visible)
 		return;
 
-	//view_docks_[dock] = view;
+	// TODO: use signal mapper
+	QDockWidget *dock = (QDockWidget *)sender();
+	views::BaseView *view = view_docks_[dock];
+	delete view;
+	parent_->removeDockWidget(dock);
+	delete dock;
 }
 
 } // namespace tabs

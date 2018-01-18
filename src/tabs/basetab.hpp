@@ -62,10 +62,12 @@ private:
 
 protected:
 	void add_view(views::BaseView *view, Qt::DockWidgetArea area);
-	void close_view(views::BaseView *view);
 
 	Session &session_;
 	QMainWindow *parent_;
+
+private Q_SLOTS:
+	void on_view_closed(bool visible);
 
 };
 
