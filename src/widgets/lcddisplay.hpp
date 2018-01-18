@@ -31,30 +31,40 @@ class LcdDisplay : public QFrame
 {
     Q_OBJECT
 
+public:
+	LcdDisplay(
+		int digits, int decimal_places, const bool auto_range,
+		const QString unit, const QString extra_text, const bool small,
+		QWidget *parent = nullptr);
+
 private:
-	uint digits_;
+	int digits_;
+	int decimal_places_;
+	const bool auto_range_;
 	QString unit_;
+	QString unit_si_prefix_;
 	QString extra_text_;
 	float value_;
 
-	uint height;
+	uint height_;
 	uint width_scale_factor_;
 	uint font_size_unit_;
 	uint font_size_extra_;
 
-	QLCDNumber *lcdValue;
-	QLabel *lcdExtra;
-	QLabel *lcdUnit;
+	QLCDNumber *lcdValue_;
+	QLabel *lcdExtra_;
+	QLabel *lcdUnit_;
 
 	void setup_ui();
 
-public:
-	LcdDisplay(const uint digits, const QString unit,
-		const QString extra_text, const bool small, QWidget *parent = nullptr);
-
-	void set_value(const double value);
-	void set_unit(const QString unit);
+public Q_SLOTS:
+	void on_value_change(const double value);
+	void on_unit_change(const QString unit);
+	void on_digits_change(const int digits);
+	void on_decimal_places_change(const int decimal_places);
 	void reset_value();
+	void update_display();
+
 };
 
 } // namespace widgets

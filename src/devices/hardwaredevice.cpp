@@ -321,7 +321,8 @@ void HardwareDevice::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
 
 		if (!sr_channel_map_.count(sr_channel))
 			assert("Unknown channel");
-		shared_ptr<channels::BaseChannel> channel = sr_channel_map_[sr_channel];
+		auto channel = static_pointer_cast<channels::HardwareChannel>(
+			sr_channel_map_[sr_channel]);
 
 		/*
 		 * TODO: Use push_interleaved_samples() as only push function
@@ -330,14 +331,14 @@ void HardwareDevice::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
 		*/
 
 		if (frame_began_) {
-			channel->push_sample(
-				channel_data, frame_start_timestamp_,
-				sr_analog->mq(), sr_analog->mq_flags(), sr_analog->unit());
+			channel->push_sample_sr_analog(
+				channel_data, frame_start_timestamp_, sr_analog);
 		}
 		else {
-			channel->push_sample(
-				channel_data,
-				sr_analog->mq(), sr_analog->mq_flags(), sr_analog->unit());
+			// TODO: use std::chrono / std::time
+			double timestamp =
+				QDateTime::currentMSecsSinceEpoch() / (double)1000;
+			channel->push_sample_sr_analog(channel_data, timestamp, sr_analog);
 		}
 		channel_data++;
 	}

@@ -51,6 +51,11 @@ MultiplyChannel::MultiplyChannel(
 	assert(signal1_);
 	assert(signal2_);
 
+	if (signal1_->digits() >= signal2_->digits())
+		digits_ = signal1_->digits();
+	else
+		digits_ = signal2_->digits();
+
 	connect(signal1_.get(), SIGNAL(sample_added()),
 		this, SLOT(on_sample_added()));
 	connect(signal2_.get(), SIGNAL(sample_added()),
@@ -79,11 +84,9 @@ void MultiplyChannel::on_sample_added()
 		float value = sample1.second * sample2.second;
 
 		if (time1 == time2)
-			BaseChannel::push_sample(&value, time1,
-				sr_quantity_, sr_quantity_flags_, sr_unit_);
+			push_sample(&value, time1);
 		else
-			BaseChannel::push_sample(&value, time1>time2 ? time2 : time1,
-				sr_quantity_, sr_quantity_flags_, sr_unit_);
+			push_sample(&value, time1>time2 ? time2 : time1);
 
 		++next_signal1_pos_;
 		++next_signal2_pos_;

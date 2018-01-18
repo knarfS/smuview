@@ -21,7 +21,6 @@
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
-#include <QDateTime>
 #include <QDebug>
 #include <QString>
 
@@ -117,28 +116,10 @@ sample_t AnalogSignal::get_sample(size_t pos, bool is_relative_time) const
 	return make_pair(0., 0.);
 }
 
-void AnalogSignal::push_sample(void *sample,
-	const sigrok::Quantity *sr_quantity,
-	vector<const sigrok::QuantityFlag *> sr_quantity_flags,
-	const sigrok::Unit *sr_unit)
-{
-	// TODO: use std::chrono / std::time
-	double timestamp = QDateTime::currentMSecsSinceEpoch() / (double)1000;
-	this->push_sample(
-		sample, timestamp, sr_quantity, sr_quantity_flags, sr_unit);
-}
-
 void AnalogSignal::push_sample(void *sample, double timestamp,
-	const sigrok::Quantity *sr_quantity,
-	vector<const sigrok::QuantityFlag *> sr_quantity_flags,
-	const sigrok::Unit *sr_unit)
+		int digits, int decimal_places)
 {
-	// TODO: Mutex?
-	// TODO: check q, qf, u?
-	(void)sr_quantity;
-	(void)sr_quantity_flags;
-	(void)sr_unit;
-
+	// TODO: double / float
  	double dsample = (double) *(float*)sample;
 
 	/*
@@ -148,6 +129,7 @@ void AnalogSignal::push_sample(void *sample, double timestamp,
 		<< ":sample_count_ = " << sample_count_+1;
 	*/
 
+	// TODO: Mutex?
 	last_timestamp_ = timestamp;
 	last_value_ = dsample;
 	if (min_value_ > dsample)
@@ -166,10 +148,21 @@ void AnalogSignal::push_sample(void *sample, double timestamp,
 		<< ":max_value_ = " << max_value_;
 	*/
 
+	// TODO: Mutex?
 	time_->push_back(timestamp);
 	data_->push_back(dsample);
-	Q_EMIT sample_added();
 	sample_count_++;
+	Q_EMIT sample_added();
+
+	if (digits != digits_) {
+		digits_ = digits;
+		Q_EMIT digits_changed(digits_);
+	}
+
+	if (decimal_places != decimal_places_) {
+		decimal_places_ = decimal_places;
+		Q_EMIT decimal_places_chaned(decimal_places_);
+	}
 }
 
 /*
@@ -200,6 +193,15 @@ void AnalogSignal::push_interleaved_samples(/ *const* / float *samples,//void *d
 }
 */
 
+int AnalogSignal::digits() const
+{
+	return digits_;
+}
+
+int AnalogSignal::decimal_places() const
+{
+	return decimal_places_;
+}
 
 double AnalogSignal::signal_start_timestamp() const
 {

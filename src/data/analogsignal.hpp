@@ -61,21 +61,11 @@ public:
 	vector<double> get_samples(size_t start_sample, size_t end_sample) const;
 	sample_t get_sample(size_t pos, bool relative_time) const;
 
-	void push_sample(void *sample,
-		const sigrok::Quantity *sr_quantity,
-		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
-		const sigrok::Unit *sr_unit);
-
 	void push_sample(void *sample, double timestamp,
-		const sigrok::Quantity *sr_quantity,
-		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
-		const sigrok::Unit *sr_unit);
+		int digits, int decimal_places);
 
-	/* TODO
-	void push_interleaved_samples(float *samples,
-		size_t sample_count, size_t stride, const sigrok::Unit *sr_unit);
-	*/
-
+	int digits() const;
+	int decimal_places() const;
 	double signal_start_timestamp() const;
 	double first_timestamp(bool relative_time) const;
 	double last_timestamp(bool relative_time) const;
@@ -87,7 +77,8 @@ private:
 	shared_ptr<vector<double>> time_;
 	shared_ptr<vector<double>> data_;
 	size_t sample_count_;
-
+	int digits_;
+	int decimal_places_;
 	double signal_start_timestamp_;
 	double last_timestamp_;
 	double last_value_;
@@ -101,6 +92,8 @@ Q_SIGNALS:
 	void signal_start_timestamp_changed(double);
 	void samples_cleared();
 	void sample_added();
+	void digits_changed(int);
+	void decimal_places_chaned(int);
 
 };
 

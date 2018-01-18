@@ -151,6 +151,19 @@ unit_name_map_t get_unit_name_map();
 QString format_sr_unit(const sigrok::Unit *sr_unit);
 
 /**
+ * Formats a given double value with the specified SI prefix.
+ *
+ * @param value The value to format.
+ * @param digits The number of digits (incl. the decimal places) for value_str
+ * @param decimal_places The number of decimal places for value_str
+ * @param value_str A reference to a QString to stre the digits to.
+ * @param si_prefix A reference to a QString to store the SI prefix to.
+ */
+void format_value_si(
+	const double value, const int digits, const int decimal_places,
+	QString &value_str, QString &si_prefix_str);
+
+/**
  * Formats a given timestamp with the specified SI prefix.
  *
  * If 'prefix' is left 'unspecified', the function chooses a prefix so that

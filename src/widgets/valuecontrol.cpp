@@ -58,15 +58,16 @@ void ValueControl::setup_ui()
 
 	QVBoxLayout *layout = new QVBoxLayout();
 
-	lcdDisplay = new widgets::LcdDisplay(get_digits(), unit_, "", false);
-	lcdDisplay->set_value(0);
+	lcdDisplay = new widgets::LcdDisplay(
+		get_digits(), get_decimal_places(), false, unit_, "", false);
+	lcdDisplay->on_value_change(0);
 	layout->addWidget(lcdDisplay, 0, Qt::AlignRight);
 
 	QHBoxLayout *getValuesHLayout = new QHBoxLayout();
 
 	doubleSpinBox = new QDoubleSpinBox();
 	doubleSpinBox->setSuffix(QString(" %1").arg(unit_));
-	doubleSpinBox->setDecimals(get_decimals());
+	doubleSpinBox->setDecimals(get_decimal_places());
 	doubleSpinBox->setMinimum(min_);
 	doubleSpinBox->setMaximum(max_);
 	doubleSpinBox->setSingleStep(steps_);
@@ -90,10 +91,10 @@ void ValueControl::setup_ui()
 uint ValueControl::get_digits()
 {
 	int i = (int)floor(max_);
-	return util::count_int_digits(i) + get_decimals();
+	return util::count_int_digits(i) + get_decimal_places();
 }
 
-uint ValueControl::get_decimals()
+uint ValueControl::get_decimal_places()
 {
 	int d = (int)ceil(1/steps_) - 1;
 	uint cnt = util::count_int_digits(d);
@@ -112,7 +113,7 @@ void ValueControl::change_value(const double value)
 
 	value_ = value;
 
-	lcdDisplay->set_value(value);
+	lcdDisplay->on_value_change(value);
 	doubleSpinBox->setValue(value);
 	knob->setValue(value);
 
@@ -134,7 +135,7 @@ void ValueControl::on_value_changed(const double value)
 
 	value_ = value;
 
-	lcdDisplay->set_value(value);
+	lcdDisplay->on_value_change(value);
 	doubleSpinBox->setValue(value);
 	knob->setValue(value);
 

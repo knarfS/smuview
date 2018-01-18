@@ -70,22 +70,6 @@ public:
 	virtual size_t get_sample_count() const = 0;
 
 	/**
-	 * Add a single sample to the signal
-	 */
-	virtual void push_sample(void *sample,
-		const sigrok::Quantity *sr_quantity,
-		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
-		const sigrok::Unit *sr_unit) = 0;
-
-	/**
-	 * Add a single sample with a timestampto the signal
-	 */
-	virtual void push_sample(void *sample, double timestamp,
-		const sigrok::Quantity *sr_quantity,
-		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
-		const sigrok::Unit *sr_unit) = 0;
-
-	/**
 	 * Returns the sigrok qunatity of this signal as object
 	 */
 	const sigrok::Quantity *sr_quantity() const;

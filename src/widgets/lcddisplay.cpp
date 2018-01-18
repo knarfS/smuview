@@ -17,32 +17,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QFont>
+#include <QSizePolicy>
+#include <QString>
 #include <QVBoxLayout>
 
 #include "lcddisplay.hpp"
+#include "src/util.hpp"
 
 namespace sv {
 namespace widgets {
 
-LcdDisplay::LcdDisplay(const uint digits, const QString unit,
-		const QString extra_text, const bool small, QWidget *parent) :
+LcdDisplay::LcdDisplay(
+		int digits, int decimal_places, const bool auto_range,
+		const QString unit, const QString extra_text, const bool small,
+		QWidget *parent) :
 	QFrame(parent),
+	digits_(digits),
+	decimal_places_(decimal_places),
+	auto_range_(auto_range),
 	unit_(unit),
+	unit_si_prefix_(""),
 	extra_text_(extra_text)
 {
 	digits_ = digits;
 	if (digits > 3)
-		// LCDNumber show one digit less with smallDecimalPoint && digits > 3
+		// This is a workaround, b/c LCDNumber shows one digit less with
+		// smallDecimalPoint == true && digits > 3
 		digits_++;
 
 	if (!small) {
-		height = 50;
+		height_ = 50;
 		width_scale_factor_ = 30;
 		font_size_unit_ = 18;;
 		font_size_extra_ = 10;
 	}
 	else {
-		height = 25;
+		height_ = 25;
 		width_scale_factor_ = 15;
 		font_size_unit_ = 10;
 		font_size_extra_ = 7;
@@ -54,7 +65,7 @@ LcdDisplay::LcdDisplay(const uint digits, const QString unit,
 
 void LcdDisplay::setup_ui()
 {
-	// TODO: Are ne number of digits displayed correctly?
+	// TODO: Are the number of digits displayed correctly?
 	// TODO: Maybe there is a better way to draw the width proportional to the
 	// height? This is maybe even dpi dependent?
 	uint width = width_scale_factor_ * digits_;
@@ -68,76 +79,106 @@ void LcdDisplay::setup_ui()
 
 	QHBoxLayout *layout = new QHBoxLayout();
 
-	lcdValue = new QLCDNumber();
-	lcdValue->setDigitCount(digits_);
-	//lcdValue->setMinimumSize(QSize(width, height));
-	lcdValue->setFixedSize(QSize(width, height));
+	lcdValue_ = new QLCDNumber();
+	lcdValue_->setDigitCount(digits_);
+	//lcdValue_->setMinimumSize(QSize(width, height_));
+	lcdValue_->setFixedSize(QSize(width, height_));
 
-	lcdValue->setFrameShape(QFrame::NoFrame);
-	//lcdValue->setFrameShape(QFrame::Box);
-	lcdValue->setSmallDecimalPoint(true);
-	lcdValue->setSegmentStyle(QLCDNumber::Flat);
-	layout->addWidget(lcdValue);
+	lcdValue_->setFrameShape(QFrame::NoFrame);
+	//lcdValue_->setFrameShape(QFrame::Box);
+	lcdValue_->setSmallDecimalPoint(true);
+	lcdValue_->setSegmentStyle(QLCDNumber::Flat);
+	layout->addWidget(lcdValue_);
 
 	QVBoxLayout *textLayout = new QVBoxLayout();
 	textLayout->addStretch(5);
 
-	// Extra text
-	lcdExtra = new QLabel();
+	// Extra text (small)
+	lcdExtra_ = new QLabel();
 	QFont extraFont;
 	extraFont.setPointSize(font_size_extra_);
 	//extraFont.setBold(true);
 	//extraFont.setWeight(QFont::Bold);
-	lcdExtra->setFont(extraFont);
-	lcdExtra->setText(extra_text_);
-	lcdExtra->setAlignment(Qt::AlignBottom|Qt::AlignHCenter);
-	textLayout->addWidget(lcdExtra);
+	lcdExtra_->setFont(extraFont);
+	lcdExtra_->setText(extra_text_);
+	lcdExtra_->setAlignment(Qt::AlignBottom|Qt::AlignHCenter);
+	textLayout->addWidget(lcdExtra_);
 
 	// Unit
-	lcdUnit = new QLabel();
+	lcdUnit_ = new QLabel();
 	QFont unitFont;
 	unitFont.setPointSize(font_size_unit_);
 	unitFont.setBold(true);
 	unitFont.setWeight(QFont::Bold);
-	lcdUnit->setFont(unitFont);
-	lcdUnit->setText(unit_);
-	lcdUnit->setAlignment(Qt::AlignBottom|Qt::AlignHCenter);
-	textLayout->addWidget(lcdUnit);
+	lcdUnit_->setFont(unitFont);
+	lcdUnit_->setText(QString("%1%2").arg(unit_si_prefix_).arg(unit_));
+	lcdUnit_->setAlignment(Qt::AlignBottom|Qt::AlignHCenter);
+	textLayout->addWidget(lcdUnit_);
 
 	layout->addLayout(textLayout);
 
 	this->setLayout(layout);
 }
 
-void LcdDisplay::set_value(const double value)
+void LcdDisplay::on_value_change(const double value)
 {
-	QString str_value;
-	if (value == std::numeric_limits<double>::max())
-		str_value = QString("OL");
-	else if (value == std::numeric_limits<double>::min())
-		str_value = QString("UL");
-	else
-		// TODO: set precision
-		//str_value = QString("%1").arg(value, digits_, 'f', 3, QChar('0'));
-		str_value = QString("%1").arg(value, digits_, 'f', 3);
-
-	lcdValue->display(str_value);
+	value_ = value;
+	update_display();
 }
 
 
-void LcdDisplay::set_unit(const QString unit)
+void LcdDisplay::on_unit_change(const QString unit)
 {
 	unit_ = unit;
-	lcdUnit->setText(unit_);
+	update_display();
+}
+
+void LcdDisplay::on_digits_change(const int digits)
+{
+	digits_ = digits;
+	update_display();
+}
+
+void LcdDisplay::on_decimal_places_change(const int decimal_places)
+{
+	decimal_places_ = decimal_places;
+	update_display();
 }
 
 void LcdDisplay::reset_value()
 {
 	QString init_value("");
-	for (uint i=0; i<digits_; i++)
+	for (int i=0; i<digits_; i++)
 		init_value.append("-");
 
-	lcdValue->display(init_value);
+	lcdValue_->display(init_value);
+}
+
+void LcdDisplay::update_display()
+{
+	QString str_value;
+	if (value_ == std::numeric_limits<double>::max())
+		str_value = QString("OL");
+	else if (value_ == std::numeric_limits<double>::min())
+		str_value = QString("UL");
+	else {
+		if (!auto_range_) {
+			str_value = QString("%1").
+				arg(value_, digits_, 'f', decimal_places_, QChar('0'));
+			//str_value = QString("%1").arg(value_, digits_, 'f', decimal_places_);
+		}
+		else {
+			QString si_prefix;
+			util::format_value_si(
+				value_, digits_, decimal_places_, str_value, si_prefix);
+			if (si_prefix != unit_si_prefix_) {
+				unit_si_prefix_ = si_prefix;
+				lcdUnit_->setText(
+					QString("%1%2").arg(unit_si_prefix_).arg(unit_));
+			}
+		}
+	}
+	lcdValue_->display(str_value);
 }
 
 } // namespace widgets

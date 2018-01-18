@@ -54,7 +54,7 @@ private:
 
 	void setup_ui();
 	uint get_digits();
-	uint get_decimals();
+	uint get_decimal_places();
 
 public Q_SLOTS:
 	void change_value(const double value);

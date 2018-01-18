@@ -48,7 +48,6 @@ private:
 	void setup_ui();
 
 	shared_ptr<devices::MeasurementDevice> measurement_device_; // TODO: remove, generic solution in hw_device
-	uint digits_;
 
 };
 

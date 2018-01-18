@@ -51,6 +51,11 @@ DivideChannel::DivideChannel(
 	assert(dividend_signal_);
 	assert(divisor_signal_);
 
+	if (dividend_signal->digits() >= divisor_signal->digits())
+		digits_ = dividend_signal->digits();
+	else
+		digits_ = divisor_signal->digits();
+
 	connect(dividend_signal_.get(), SIGNAL(sample_added()),
 		this, SLOT(on_sample_added()));
 	connect(divisor_signal_.get(), SIGNAL(sample_added()),
@@ -89,13 +94,9 @@ void DivideChannel::on_sample_added()
 			value = dividend_sample.second / divisor_sample.second;
 
 		if (time1 == time2)
-			// TODO
-			BaseChannel::push_sample(&value, time1,
-				sr_quantity_, sr_quantity_flags_, sr_unit_);
+			push_sample(&value, time1);
 		else
-			// TODO
-			BaseChannel::push_sample(&value, time1>time2 ? time2 : time1,
-				sr_quantity_, sr_quantity_flags_, sr_unit_);
+			push_sample(&value, time1>time2 ? time2 : time1);
 
 		++next_dividend_signal_pos_;
 		++next_divisor_signal_pos_;

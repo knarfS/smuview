@@ -18,6 +18,7 @@
  */
 
 #include <cassert>
+#include <memory>
 
 #include <QDebug>
 
@@ -30,6 +31,7 @@
 
 using std::make_pair;
 using std::make_shared;
+using std::static_pointer_cast;
 
 namespace sv {
 namespace channels {
@@ -43,6 +45,8 @@ MathChannel::MathChannel(
 		QString channel_name,
 		double channel_start_timestamp) :
 	BaseChannel(device_name, channel_group_name, channel_start_timestamp),
+	digits_(8),
+	decimal_places_(-1),
 	sr_quantity_(sr_quantity),
 	sr_quantity_flags_(sr_quantity_flags),
 	sr_unit_(sr_unit)
@@ -85,6 +89,12 @@ shared_ptr<data::BaseSignal> MathChannel::init_signal(
 	signal_map_.insert(make_pair(q_qf, signal));
 
 	return signal;
+}
+
+void MathChannel::push_sample(void *sample, double timestamp)
+{
+	auto signal = static_pointer_cast<data::AnalogSignal>(actual_signal_);
+	signal->push_sample(sample, timestamp, digits_, decimal_places_);
 }
 
 } // namespace devices

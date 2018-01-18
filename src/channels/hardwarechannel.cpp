@@ -18,8 +18,8 @@
  */
 
 #include <cassert>
+#include <memory>
 
-#include <QDateTime>
 #include <QDebug>
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
@@ -32,6 +32,7 @@
 
 using std::make_pair;
 using std::make_shared;
+using std::static_pointer_cast;
 
 namespace sv {
 namespace channels {
@@ -103,6 +104,36 @@ shared_ptr<data::BaseSignal> HardwareChannel::init_signal(
 	signal_map_.insert(make_pair(q_qf, signal));
 
 	return signal;
+}
+
+void HardwareChannel::push_sample_sr_analog(
+	void *sample, double timestamp, shared_ptr<sigrok::Analog> sr_analog)
+{
+	quantity_t q_qf = make_pair(sr_analog->mq(), sr_analog->mq_flags());
+	if (signal_map_.count(q_qf) == 0) {
+		init_signal(sr_analog->mq(), sr_analog->mq_flags(), sr_analog->unit());
+		Q_EMIT signal_changed();
+		qWarning() << "HardwareChannel::push_sample_sr_analog(): " << name_ <<
+		" - No signal found: " << actual_signal_->name();
+	}
+
+	// TODO: Not implemented in sigrok bindings yet: sr_analog->digits();
+	// Number of significant digits after the decimal point if positive, or
+	// number of non-significant digits before the decimal point if negative
+	// (refers to vendor specifications/datasheet or actual device display).
+
+	// Number of significant digits after the decimal point if positive, or
+	// number of non-significant digits before the decimal point if negative
+	// (refers to the value we actually read on the wire).
+	int digits = 7;
+	int decimal_places = -1;
+	if (sr_analog->digits() > 0)
+		digits = sr_analog->digits();
+	else
+		digits = -1*sr_analog->digits() + 3; // TODO
+
+	auto signal = static_pointer_cast<data::AnalogSignal>(signal_map_[q_qf]);
+	signal->push_sample(sample, timestamp, digits, decimal_places);
 }
 
 } // namespace channels

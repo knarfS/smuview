@@ -21,7 +21,6 @@
 
 #include <cassert>
 
-#include <QDateTime>
 #include <QDebug>
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
@@ -123,33 +122,6 @@ void BaseChannel::set_colour(QColor colour)
 {
 	colour_ = colour;
 	colour_changed(colour);
-}
-
-void BaseChannel::push_sample(void *sample,
-		const sigrok::Quantity *sr_quantity,
-		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
-		const sigrok::Unit *sr_unit)
-{
-	// TODO: use std::chrono / std::time
-	double timestamp = QDateTime::currentMSecsSinceEpoch() / (double)1000;
-	push_sample(sample, timestamp, sr_quantity, sr_quantity_flags, sr_unit);
-}
-
-void BaseChannel::push_sample(void *sample, double timestamp,
-	const sigrok::Quantity *sr_quantity,
-	vector<const sigrok::QuantityFlag *> sr_quantity_flags,
-	const sigrok::Unit *sr_unit)
-{
-	quantity_t q_qf = make_pair(sr_quantity, sr_quantity_flags);
-	if (signal_map_.count(q_qf) == 0) {
-		init_signal(sr_quantity, sr_quantity_flags, sr_unit);
-		Q_EMIT signal_changed();
-		qWarning() << "Channel::push_sample(): " << name_ <<
-		" - No signal found: " << actual_signal_->name();
-	}
-
-	signal_map_[q_qf]->push_sample(
-		sample, timestamp, sr_quantity, sr_quantity_flags, sr_unit);
 }
 
 void BaseChannel::save_settings(QSettings &settings) const

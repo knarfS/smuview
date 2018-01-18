@@ -67,9 +67,11 @@ public:
 	QString title() const;
 
 private:
-	uint digits_;
 	shared_ptr<channels::BaseChannel> channel_;
 	shared_ptr<data::AnalogSignal> signal_;
+	QString unit_;
+	uint digits_;
+	uint decimal_places_;
 
 	QTimer *timer_;
 
@@ -92,7 +94,7 @@ private:
 
 private Q_SLOTS:
 	void on_update();
-	void on_signal_changed();
+	void on_signal_change();
 	void on_action_reset_display_triggered();
 
 };

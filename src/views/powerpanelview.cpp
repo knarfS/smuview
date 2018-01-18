@@ -70,45 +70,62 @@ QString PowerPanelView::title() const
 
 void PowerPanelView::setup_ui()
 {
-	// TODO: This is good enough for 7.5 digit multimeters, but should really
-	// depend on the digits submitted by the analog packet.
-	digits_ = 8;
-
 	QVBoxLayout *layout = new QVBoxLayout();
-
 	QGridLayout *panelLayout = new QGridLayout();
 
-	voltageDisplay = new widgets::LcdDisplay(digits_,
+	voltageDisplay = new widgets::LcdDisplay(
+		voltage_signal_->digits(), voltage_signal_->decimal_places(), false,
 		voltage_signal_->unit(), "", false);
-	voltageMinDisplay = new widgets::LcdDisplay(digits_,
-		voltage_signal_->unit(), "min", true);
-	voltageMaxDisplay = new widgets::LcdDisplay(digits_,
-		voltage_signal_->unit(), "max", true);
+	voltageMinDisplay = new widgets::LcdDisplay(
+		voltage_signal_->digits(), voltage_signal_->decimal_places(), false,
+		voltage_signal_->unit(), tr("min"), true);
+	voltageMaxDisplay = new widgets::LcdDisplay(
+		voltage_signal_->digits(), voltage_signal_->decimal_places(), false,
+		voltage_signal_->unit(), tr("max"), true);
 
-	currentDisplay = new widgets::LcdDisplay(digits_,
+	currentDisplay = new widgets::LcdDisplay(
+		current_signal_->digits(), current_signal_->decimal_places(), false,
 		current_signal_->unit(), "", false);
-	currentMinDisplay = new widgets::LcdDisplay(digits_,
-		current_signal_->unit(), "min", true);
-	currentMaxDisplay = new widgets::LcdDisplay(digits_,
-		current_signal_->unit(), "max", true);
+	currentMinDisplay = new widgets::LcdDisplay(
+		current_signal_->digits(), current_signal_->decimal_places(), false,
+		current_signal_->unit(), tr("min"), true);
+	currentMaxDisplay = new widgets::LcdDisplay(
+		current_signal_->digits(), current_signal_->decimal_places(), false,
+		current_signal_->unit(), tr("max"), true);
 
-	resistanceDisplay = new widgets::LcdDisplay(digits_,
+	int digits;
+	if (voltage_signal_->digits() > current_signal_->unit())
+		digits = voltage_signal_->digits();
+	else
+		digits = current_signal_->digits();
+	int decimal_places = -1;
+
+	resistanceDisplay = new widgets::LcdDisplay(
+		digits, decimal_places, true,
 		util::format_sr_unit(sigrok::Unit::OHM), "", false);
-	resistanceMinDisplay = new widgets::LcdDisplay(digits_,
-		util::format_sr_unit(sigrok::Unit::OHM), "min", true);
-	resistanceMaxDisplay = new widgets::LcdDisplay(digits_,
-		util::format_sr_unit(sigrok::Unit::OHM), "max", true);
+	resistanceMinDisplay = new widgets::LcdDisplay(
+		digits, decimal_places, true,
+		util::format_sr_unit(sigrok::Unit::OHM), tr("min"), true);
+	resistanceMaxDisplay = new widgets::LcdDisplay(
+		digits, decimal_places, true,
+		util::format_sr_unit(sigrok::Unit::OHM), tr("max"), true);
 
-	powerDisplay = new widgets::LcdDisplay(digits_,
+	powerDisplay = new widgets::LcdDisplay(
+		digits, decimal_places, true,
 		util::format_sr_unit(sigrok::Unit::WATT), "", false);
-	powerMinDisplay = new widgets::LcdDisplay(digits_,
-		util::format_sr_unit(sigrok::Unit::WATT), "min", true);
-	powerMaxDisplay = new widgets::LcdDisplay(digits_,
-		util::format_sr_unit(sigrok::Unit::WATT), "max", true);
+	powerMinDisplay = new widgets::LcdDisplay(
+		digits, decimal_places, true,
+		util::format_sr_unit(sigrok::Unit::WATT), tr("min"), true);
+	powerMaxDisplay = new widgets::LcdDisplay(
+		digits, decimal_places, true,
+		util::format_sr_unit(sigrok::Unit::WATT), tr("max"), true);
 
 	// TODO: sigrok::Unit::AMP_HOUR missing!
-	ampHourDisplay = new widgets::LcdDisplay(digits_, "Ah", "", false);
-	wattHourDisplay = new widgets::LcdDisplay(digits_,
+	ampHourDisplay = new widgets::LcdDisplay(
+		digits, decimal_places, true,
+		"Ah", "", false);
+	wattHourDisplay = new widgets::LcdDisplay(
+		digits, decimal_places, true,
 		util::format_sr_unit(sigrok::Unit::WATT_HOUR), "", false);
 
 	panelLayout->addWidget(voltageDisplay, 0, 0, 1, 2, Qt::AlignHCenter);
@@ -151,6 +168,21 @@ void PowerPanelView::setup_toolbar()
 
 void PowerPanelView::connect_signals()
 {
+	connect(voltage_signal_.get(), SIGNAL(digits_changed(int)),
+		voltageDisplay, SLOT(on_digits_change(int)));
+	connect(voltage_signal_.get(), SIGNAL(digits_changed(int)),
+		voltageMinDisplay, SLOT(on_digits_change(int)));
+	connect(voltage_signal_.get(), SIGNAL(digits_changed(int)),
+		voltageMaxDisplay, SLOT(on_digits_change(int)));
+
+	connect(current_signal_.get(), SIGNAL(digits_changed(int)),
+		currentDisplay, SLOT(on_digits_change(int)));
+	connect(current_signal_.get(), SIGNAL(digits_changed(int)),
+		currentMinDisplay, SLOT(on_digits_change(int)));
+	connect(current_signal_.get(), SIGNAL(digits_changed(int)),
+		currentMaxDisplay, SLOT(on_digits_change(int)));
+
+	// TODO: on_digits_change() for the other displays!
 }
 
 void PowerPanelView::reset_displays()
@@ -252,24 +284,24 @@ void PowerPanelView::on_update()
 	actual_amp_hours_ = actual_amp_hours_ + (current * elapsed_time);
 	actual_watt_hours_ = actual_watt_hours_ + (power * elapsed_time);
 
-	voltageDisplay->set_value(voltage);
-	voltageMinDisplay->set_value(voltage_min_);
-	voltageMaxDisplay->set_value(voltage_max_);
+	voltageDisplay->on_value_change(voltage);
+	voltageMinDisplay->on_value_change(voltage_min_);
+	voltageMaxDisplay->on_value_change(voltage_max_);
 
-	currentDisplay->set_value(current);
-	currentMinDisplay->set_value(current_min_);
-	currentMaxDisplay->set_value(current_max_);
+	currentDisplay->on_value_change(current);
+	currentMinDisplay->on_value_change(current_min_);
+	currentMaxDisplay->on_value_change(current_max_);
 
-	resistanceDisplay->set_value(resistance);
-	resistanceMinDisplay->set_value(resistance_min_);
-	resistanceMaxDisplay->set_value(resistance_max_);
+	resistanceDisplay->on_value_change(resistance);
+	resistanceMinDisplay->on_value_change(resistance_min_);
+	resistanceMaxDisplay->on_value_change(resistance_max_);
 
-	powerDisplay->set_value(power);
-	powerMinDisplay->set_value(power_min_);
-	powerMaxDisplay->set_value(power_max_);
+	powerDisplay->on_value_change(power);
+	powerMinDisplay->on_value_change(power_min_);
+	powerMaxDisplay->on_value_change(power_max_);
 
-	ampHourDisplay->set_value(actual_amp_hours_);
-	wattHourDisplay->set_value(actual_watt_hours_);
+	ampHourDisplay->on_value_change(actual_amp_hours_);
+	wattHourDisplay->on_value_change(actual_watt_hours_);
 }
 
 void PowerPanelView::on_action_reset_displays_triggered()

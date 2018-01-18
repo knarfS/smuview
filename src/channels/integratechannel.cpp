@@ -49,6 +49,8 @@ IntegrateChannel::IntegrateChannel(
 {
 	assert(int_signal_);
 
+	digits_ = int_signal_->digits();
+
 	connect(this, SIGNAL(channel_start_timestamp_changed(double)),
 		this, SLOT(on_channel_start_timestamp_changed(double)));
 	connect(int_signal_.get(), SIGNAL(sample_added()),
@@ -73,14 +75,12 @@ void IntegrateChannel::on_sample_added()
 		data::sample_t sample =
 			int_signal_->get_sample(next_int_signal_pos_, false);
 
-
 		double time = sample.first;
 		double elapsed_time_hours = (time - last_timestamp_) / (double)3600;
 		// TODO: double
 		float value = last_value_ + (sample.second * elapsed_time_hours);
 
-		BaseChannel::push_sample(&value, time,
-			sr_quantity_, sr_quantity_flags_, sr_unit_);
+		push_sample(&value, time);
 
 		last_timestamp_ = time;
 		last_value_ = value;

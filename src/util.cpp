@@ -212,7 +212,7 @@ static QTextStream& operator<<(QTextStream& stream, SIPrefix prefix)
 	case SIPrefix::femto: return stream << 'f';
 	case SIPrefix::pico:  return stream << 'p';
 	case SIPrefix::nano:  return stream << 'n';
-	case SIPrefix::micro: return stream << QChar(0x03BC);
+	case SIPrefix::micro: return stream << QChar(0x00B5);
 	case SIPrefix::milli: return stream << 'm';
 	case SIPrefix::kilo:  return stream << 'k';
 	case SIPrefix::mega:  return stream << 'M';
@@ -373,6 +373,35 @@ QString format_sr_unit(const sigrok::Unit *sr_unit)
 		return unit_name_map[sr_unit];
 	// TODO: error
 	return QString("");
+}
+
+void format_value_si(
+	const double value, const int digits, const int decimal_places,
+	QString &value_str, QString &si_prefix_str)
+{
+	SIPrefix si_prefix;
+	if (value == 0)
+		si_prefix = SIPrefix::none;
+	else {
+		int exp = exponent(SIPrefix::yotta);
+		si_prefix = SIPrefix::yocto;
+		while ((fabs(value) * pow(10, exp)) > 999 &&
+				si_prefix < SIPrefix::yotta) {
+			si_prefix = successor(si_prefix);
+			exp -= 3;
+		}
+	}
+	assert(si_prefix >= SIPrefix::yocto);
+	assert(si_prefix <= SIPrefix::yotta);
+
+	const double multiplier = pow(10, -exponent(si_prefix));
+
+	//QChar fill_char(''); // '0'
+	value_str = QString("%1").
+		arg(value * multiplier, digits, 'f', decimal_places, QChar('0'));
+
+	QTextStream si_prefix_stream(&si_prefix_str);
+	si_prefix_stream << si_prefix;
 }
 
 QString format_time_si(const Timestamp& v, SIPrefix prefix,

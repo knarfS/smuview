@@ -28,6 +28,7 @@
 using std::shared_ptr;
 
 namespace sigrok {
+class Analog;
 class Channel;
 class Quantity;
 class QuantityFlag;
@@ -87,6 +88,12 @@ public:
 		const sigrok::Quantity *sr_quantity,
 		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
 		const sigrok::Unit *sr_unit);
+
+	/**
+	 * Add a single sample with timestamp to the channel
+	 */
+	void push_sample_sr_analog(
+		void *sample, double timestamp, shared_ptr<sigrok::Analog> sr_analog);
 
 protected:
 	shared_ptr<sigrok::Channel> sr_channel_;

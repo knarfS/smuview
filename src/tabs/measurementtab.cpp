@@ -36,8 +36,7 @@ namespace tabs {
 MeasurementTab::MeasurementTab(Session &session,
 		shared_ptr<devices::MeasurementDevice> device, QMainWindow *parent) :
 	DeviceTab(session, device, parent),
-	measurement_device_(device),
-	digits_(5)
+	measurement_device_(device)
 {
 	setup_ui();
 }

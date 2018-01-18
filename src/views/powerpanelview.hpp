@@ -58,7 +58,6 @@ public:
 	QString title() const;
 
 private:
-	uint digits_;
 	shared_ptr<data::AnalogSignal> voltage_signal_;
 	shared_ptr<data::AnalogSignal> current_signal_;
 
