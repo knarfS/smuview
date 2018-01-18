@@ -87,12 +87,17 @@ void BaseTab::on_view_closed(bool visible)
 	if (visible)
 		return;
 
+	/*
 	// TODO: use signal mapper
 	QDockWidget *dock = (QDockWidget *)sender();
 	views::BaseView *view = view_docks_[dock];
-	delete view;
-	parent_->removeDockWidget(dock);
-	delete dock;
+	//if (view) {
+		delete view;
+		// TODO: This will seg fault when closing (on application exit)
+		parent_->removeDockWidget(dock);
+		delete dock;
+	//}
+	*/
 }
 
 } // namespace tabs
