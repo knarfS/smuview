@@ -38,14 +38,15 @@ QuantityComboBox::QuantityComboBox(QWidget *parent) :
 
 const sigrok::Quantity *QuantityComboBox::selected_sr_quantity()
 {
-	return nullptr;
+	QVariant data = this->currentData();
+	return data.value<const sigrok::Quantity *>();
 }
 
 void QuantityComboBox::setup_ui()
 {
 	for (auto q_name_pair : util::get_quantity_name_map()) {
 		this->addItem(
-			q_name_pair.second, QVariant::fromValue(q_name_pair.second));
+			q_name_pair.second, QVariant::fromValue(q_name_pair.first));
 	}
 }
 

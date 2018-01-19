@@ -27,6 +27,7 @@
 #include "src/channels/basechannel.hpp"
 #include "src/channels/mathchannel.hpp"
 #include "src/data/analogsignal.hpp"
+#include "src/devices/device.hpp"
 
 namespace sv {
 namespace channels {
@@ -37,12 +38,13 @@ DivideChannel::DivideChannel(
 		const sigrok::Unit *sr_unit,
 		shared_ptr<data::AnalogSignal> dividend_signal,
 		shared_ptr<data::AnalogSignal> divisor_signal,
-		const QString device_name,
+		shared_ptr<devices::Device> parent_device,
 		const QString channel_group_name,
 		QString channel_name,
 		double channel_start_timestamp) :
 	MathChannel(sr_quantity, sr_quantity_flags, sr_unit,
-		device_name, channel_group_name, channel_name, channel_start_timestamp),
+		parent_device, channel_group_name, channel_name,
+		channel_start_timestamp),
 	dividend_signal_(dividend_signal),
 	divisor_signal_(divisor_signal),
 	next_dividend_signal_pos_(0),

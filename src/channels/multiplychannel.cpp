@@ -27,6 +27,7 @@
 #include "src/channels/basechannel.hpp"
 #include "src/channels/mathchannel.hpp"
 #include "src/data/analogsignal.hpp"
+#include "src/devices/device.hpp"
 
 namespace sv {
 namespace channels {
@@ -37,12 +38,13 @@ MultiplyChannel::MultiplyChannel(
 		const sigrok::Unit *sr_unit,
 		shared_ptr<data::AnalogSignal> signal1,
 		shared_ptr<data::AnalogSignal> signal2,
-		const QString device_name,
+		shared_ptr<devices::Device> parent_device,
 		const QString channel_group_name,
 		QString channel_name,
 		double channel_start_timestamp) :
 	MathChannel(sr_quantity, sr_quantity_flags, sr_unit,
-		device_name, channel_group_name, channel_name, channel_start_timestamp),
+		parent_device, channel_group_name, channel_name,
+		channel_start_timestamp),
 	signal1_(signal1),
 	signal2_(signal2),
 	next_signal1_pos_(0),

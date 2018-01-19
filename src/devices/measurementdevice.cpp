@@ -38,14 +38,12 @@ MeasurementDevice::MeasurementDevice(
 {
 	// Set options for different device types
 	const auto sr_keys = sr_device->driver()->config_keys();
-	if (sr_keys.count(sigrok::ConfigKey::MULTIMETER))
+	if (sr_keys.count(sigrok::ConfigKey::DEMO_DEV))
+		device_type_ = DeviceType::DemoDMMDevice;
+	else if (sr_keys.count(sigrok::ConfigKey::MULTIMETER))
 		device_type_ = DeviceType::Multimeter;
 	else
 		assert("Unknown device");
-}
-
-MeasurementDevice::~MeasurementDevice()
-{
 }
 
 void MeasurementDevice::feed_in_meta(shared_ptr<sigrok::Meta> sr_meta)

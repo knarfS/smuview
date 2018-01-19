@@ -64,10 +64,8 @@ Device::Device(const shared_ptr<sigrok::Context> &sr_context,
 
 Device::~Device()
 {
-	if (sr_session_) {
-		sr_session_->stop();
-		sr_session_->remove_datafeed_callbacks();
-	}
+	if (sr_session_)
+		close();
 }
 
 shared_ptr<sigrok::Device> Device::sr_device() const
@@ -102,6 +100,9 @@ void Device::open(function<void (const QString)> error_handler)
 
 	device_open_ = true;
 
+	// Init all channels
+	init_channels();
+
 	// Start aquisition
 	aquisition_thread_ = std::thread(
 		&Device::aquisition_thread_proc, this, error_handler);
@@ -111,8 +112,12 @@ void Device::open(function<void (const QString)> error_handler)
 
 void Device::close()
 {
+	qWarning() << "Trying to close device " << full_name();
+
 	if (!device_open_)
 		return;
+
+	qWarning() << "Closing device " << full_name();
 
 	sr_session_->remove_datafeed_callbacks();
 
@@ -173,6 +178,8 @@ void Device::add_channel(shared_ptr<channels::BaseChannel> channel,
 		channel_group_name_map_.insert(make_pair(
 			channel_group_name, vector<shared_ptr<channels::BaseChannel>>()));
 	channel_group_name_map_[channel_group_name].push_back(channel);
+
+	Q_EMIT channel_added(channel);
 }
 
 void Device::data_feed_in(shared_ptr<sigrok::Device> sr_device,

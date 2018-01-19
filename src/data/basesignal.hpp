@@ -50,6 +50,11 @@ class Unit;
 }
 
 namespace sv {
+
+namespace channels {
+class BaseChannel;
+}
+
 namespace data {
 
 class BaseSignal : public QObject
@@ -61,8 +66,7 @@ public:
 		const sigrok::Quantity *sr_quantity,
 		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
 		const sigrok::Unit *sr_unit,
-		const QString device_name, const QString channel_group_name,
-		const QString channel_name);
+		shared_ptr<channels::BaseChannel> parent_channel);
 	virtual ~BaseSignal();
 
 public:
@@ -100,19 +104,9 @@ public:
 	QString unit() const;
 
 	/**
-	 * Returns the device name, this signal belongs to
+	 * Returns the parent channel, this signal belongs to
 	 */
-	QString device_name() const;
-
-	/**
-	 * Returns the channel group name, this signal belongs to
-	 */
-	QString channel_group_name() const;
-
-	/**
-	 * Returns the channel name, this signal belongs to
-	 */
-	QString channel_name() const;
+	shared_ptr<channels::BaseChannel> parent_channel() const;
 
 	/**
 	 * Gets the name of this signal.
@@ -136,9 +130,7 @@ protected:
 	QString quantity_flags_;
 	const sigrok::Unit *sr_unit_;
 	QString unit_;
-	const QString device_name_;
-	const QString channel_group_name_;
-	const QString channel_name_;
+	shared_ptr<channels::BaseChannel> parent_channel_;
 
 	QString name_; // TODO: const?
 	QColor colour_;

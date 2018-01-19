@@ -51,6 +51,11 @@ SourceSinkDevice::SourceSinkDevice(
 		device_type_ = DeviceType::ElectronicLoad;
 	else
 		assert("Unknown device");
+}
+
+void SourceSinkDevice::init_channels()
+{
+	HardwareDevice::init_channels();
 
 	// Preinitialize known fixed channels with a signal
 	for (auto chg_name_channels_pair : channel_group_name_map_) {
@@ -92,6 +97,7 @@ SourceSinkDevice::SourceSinkDevice(
 		}
 
 		// Math Channels
+		QString chg_name(tr("Math Auto"));
 		shared_ptr<data::AnalogSignal> voltage_signal;
 		shared_ptr<data::AnalogSignal> current_signal;
 		shared_ptr<data::AnalogSignal> power_signal;
@@ -115,13 +121,12 @@ SourceSinkDevice::SourceSinkDevice(
 					vector<const sigrok::QuantityFlag *>(),
 					sigrok::Unit::WATT,
 					voltage_signal, current_signal,
-					short_name(), chg_name_channels_pair.first, tr("P"),
+					shared_from_this(), chg_name, tr("P"),
 					aquisition_start_timestamp_);
 
 				power_signal = static_pointer_cast<data::AnalogSignal>(
 					power_channel->actual_signal());
-				Device::add_channel(
-					power_channel, chg_name_channels_pair.first);
+				Device::add_channel(power_channel, chg_name);
 		}
 
 		// Create resistance channel
@@ -132,11 +137,10 @@ SourceSinkDevice::SourceSinkDevice(
 					vector<const sigrok::QuantityFlag *>(),
 					sigrok::Unit::OHM,
 					voltage_signal, current_signal,
-					short_name(), chg_name_channels_pair.first, tr("R"),
+					shared_from_this(), chg_name, tr("R"),
 					aquisition_start_timestamp_);
 
-				Device::add_channel(
-					resistance_channel, chg_name_channels_pair.first);
+				Device::add_channel(resistance_channel, chg_name);
 		}
 
 		// Create Wh channel
@@ -147,11 +151,10 @@ SourceSinkDevice::SourceSinkDevice(
 					vector<const sigrok::QuantityFlag *>(),
 					sigrok::Unit::WATT_HOUR,
 					power_signal,
-					short_name(), chg_name_channels_pair.first, tr("Wh"),
+					shared_from_this(), chg_name, tr("Wh"),
 					aquisition_start_timestamp_);
 
-				Device::add_channel(
-					wh_channel, chg_name_channels_pair.first);
+				Device::add_channel(wh_channel, chg_name);
 		}
 
 		// Create Ah channel
@@ -162,18 +165,12 @@ SourceSinkDevice::SourceSinkDevice(
 					vector<const sigrok::QuantityFlag *>(),
 					sigrok::Unit::WATT_HOUR, // TODO: AMPERE_HOUR
 					current_signal,
-					short_name(), chg_name_channels_pair.first, tr("Ah"),
+					shared_from_this(), chg_name, tr("Ah"),
 					aquisition_start_timestamp_);
 
-				Device::add_channel(
-					ah_channel, chg_name_channels_pair.first);
+				Device::add_channel(ah_channel, chg_name);
 		}
 	}
-}
-
-SourceSinkDevice::~SourceSinkDevice()
-{
-	close();
 }
 
 void SourceSinkDevice::feed_in_meta(shared_ptr<sigrok::Meta> sr_meta)

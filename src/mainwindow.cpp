@@ -31,6 +31,7 @@
 #include "mainwindow.hpp"
 #include "src/devicemanager.hpp"
 #include "src/session.hpp"
+#include "src/data/basesignal.hpp"
 #include "src/devices/hardwaredevice.hpp"
 #include "src/devices/measurementdevice.hpp"
 #include "src/devices/sourcesinkdevice.hpp"
@@ -43,6 +44,10 @@
 
 using std::make_pair;
 using std::make_shared;
+using std::shared_ptr;
+
+Q_DECLARE_SMART_POINTER_METATYPE(std::shared_ptr)
+Q_DECLARE_METATYPE(std::shared_ptr<sv::data::BaseSignal>)
 
 namespace sv
 {
@@ -53,6 +58,7 @@ MainWindow::MainWindow(DeviceManager &device_manager, QWidget *parent) :
 {
 	qRegisterMetaType<util::Timestamp>("util::Timestamp");
 	qRegisterMetaType<uint64_t>("uint64_t");
+	qRegisterMetaType<shared_ptr<data::BaseSignal>>("shared_ptr<data::BaseSignal>");
 
     setup_ui();
 	connect_signals();
@@ -268,7 +274,8 @@ void MainWindow::setup_ui()
 	this->setCentralWidget(centralWidget);
 
 	// Signal Tree Dock
-	signal_tree_ = new widgets::SignalTree(*session_, true, false, nullptr);
+	signal_tree_ = new widgets::SignalTree(
+		*session_, true, false, false, nullptr);
 	connect(this, SIGNAL(device_added(shared_ptr<devices::HardwareDevice>)),
 		signal_tree_, SLOT(on_device_added(shared_ptr<devices::HardwareDevice>)));
 

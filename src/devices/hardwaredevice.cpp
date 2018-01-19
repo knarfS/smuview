@@ -63,45 +63,8 @@ HardwareDevice::HardwareDevice(
 		shared_ptr<sigrok::HardwareDevice> sr_device) :
 	Device(sr_context, sr_device)
 {
-	map<string, shared_ptr<sigrok::ChannelGroup>> sr_channel_groups =
-		sr_device_->channel_groups();
-
-	// Init Configurables from Channel Groups and Device
-	if (sr_channel_groups.size() > 0) {
-		for (auto sr_cg_pair : sr_channel_groups) {
-			shared_ptr<sigrok::ChannelGroup> sr_cg = sr_cg_pair.second;
-			configurables_.push_back(
-				make_shared<devices::Configurable>(sr_cg, short_name()));
-		}
-	}
-	else {
-		configurables_.push_back(
-			make_shared<Configurable>(sr_device_, short_name()));
-	}
-
-	// Init Channels from Sigrok Channel Groups
-	if (sr_channel_groups.size() > 0) {
-		for (auto sr_cg_pair : sr_channel_groups) {
-			shared_ptr<sigrok::ChannelGroup> sr_cg = sr_cg_pair.second;
-			QString cg_name = QString::fromStdString(sr_cg->name());
-			for (auto sr_channel : sr_cg->channels()) {
-				init_channel(sr_channel, cg_name);
-			}
-		}
-	}
-
-	// Init Channels that are not in a channel group
-	vector<shared_ptr<sigrok::Channel>> sr_channels = sr_device_->channels();
-	for (auto sr_channel : sr_channels) {
-		if (sr_channel_map_.count(sr_channel) > 0)
-			continue;
-		init_channel(sr_channel, QString(""));
-	}
-}
-
-HardwareDevice::~HardwareDevice()
-{
-	close();
+	// TODO
+	init_configurables();
 }
 
 QString HardwareDevice::name() const
@@ -259,12 +222,56 @@ map<shared_ptr<sigrok::Channel>, shared_ptr<channels::BaseChannel>>
 	return sr_channel_map_;
 }
 
+void HardwareDevice::init_channels()
+{
+	map<string, shared_ptr<sigrok::ChannelGroup>> sr_channel_groups =
+		sr_device_->channel_groups();
+
+	// Init Channels from Sigrok Channel Groups
+	if (sr_channel_groups.size() > 0) {
+		for (auto sr_cg_pair : sr_channel_groups) {
+			shared_ptr<sigrok::ChannelGroup> sr_cg = sr_cg_pair.second;
+			QString cg_name = QString::fromStdString(sr_cg->name());
+			for (auto sr_channel : sr_cg->channels()) {
+				init_channel(sr_channel, cg_name);
+			}
+		}
+	}
+
+	// Init Channels that are not in a channel group
+	vector<shared_ptr<sigrok::Channel>> sr_channels = sr_device_->channels();
+	for (auto sr_channel : sr_channels) {
+		if (sr_channel_map_.count(sr_channel) > 0)
+			continue;
+		init_channel(sr_channel, QString(""));
+	}
+}
+
+void HardwareDevice::init_configurables()
+{
+	map<string, shared_ptr<sigrok::ChannelGroup>> sr_channel_groups =
+		sr_device_->channel_groups();
+
+	// Init Configurables from Channel Groups and Device
+	if (sr_channel_groups.size() > 0) {
+		for (auto sr_cg_pair : sr_channel_groups) {
+			shared_ptr<sigrok::ChannelGroup> sr_cg = sr_cg_pair.second;
+			configurables_.push_back(
+				make_shared<devices::Configurable>(sr_cg, short_name()));
+		}
+	}
+	else {
+		configurables_.push_back(
+			make_shared<Configurable>(sr_device_, short_name()));
+	}
+}
+
 shared_ptr<channels::BaseChannel> HardwareDevice::init_channel(
 	shared_ptr<sigrok::Channel> sr_channel, QString channel_group_name)
 {
 	shared_ptr<channels::HardwareChannel> channel =
 		make_shared<channels::HardwareChannel>(sr_channel,
-			short_name(), channel_group_name, aquisition_start_timestamp_);
+			shared_from_this(), channel_group_name, aquisition_start_timestamp_);
 
 	add_channel(channel, channel_group_name);
 

@@ -62,9 +62,11 @@ PlotView::PlotView(const Session &session,
 	else
 		curve_ = nullptr;
 
-	// Signal (Quantity + Unit) can change, e.g. DMM signals
-	connect(channel_.get(), SIGNAL(signal_changed()),
-			this, SLOT(on_signal_changed()));
+	// Signal (aka Quantity + Flags + Unit) can change, e.g. DMM signals
+	connect(channel_.get(), SIGNAL(signal_added(shared_ptr<data::BaseSignal>)),
+		this, SLOT(on_signal_changed()));
+	connect(channel_.get(), SIGNAL(signal_changed(shared_ptr<data::BaseSignal>)),
+		this, SLOT(on_signal_changed()));
 
 	setup_ui();
 	setup_toolbar();

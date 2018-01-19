@@ -67,18 +67,20 @@ enum class DeviceType {
 	PowerSupply,
 	ElectronicLoad,
 	Multimeter,
-	DemoDevice,
+	DemoDMMDevice,
 	Unknown
 };
 
-class Device : public QObject
+class Device :
+	public QObject,
+	public std::enable_shared_from_this<Device>
 {
 	Q_OBJECT
 
 public:
 	Device(const shared_ptr<sigrok::Context> &sr_context,
 		shared_ptr<sigrok::Device> sr_device);
-	virtual ~Device();
+	~Device();
 
 	enum aquisition_state {
 		Stopped,
@@ -86,6 +88,9 @@ public:
 		Running
 	};
 
+	/**
+	 *
+	 */
 	shared_ptr<sigrok::Device> sr_device() const;
 
 	/**
@@ -131,6 +136,17 @@ public:
 	virtual void free_unused_memory();
 
 protected:
+	/**
+	 * Inits all channles for this device. Implemented in the specific device.
+	 */
+	virtual void init_channels() = 0;
+
+	/**
+	 * Inits all configurables for this device. Implemented in the
+	 * specific device.
+	 */
+	virtual void init_configurables() = 0;
+
 	virtual void feed_in_header() = 0;
 	virtual void feed_in_trigger() = 0;
 	virtual void feed_in_meta(shared_ptr<sigrok::Meta> sr_meta) = 0;
@@ -169,6 +185,7 @@ private:
 
 Q_SIGNALS:
 	void aquisition_start_timestamp_changed(double);
+	void channel_added(shared_ptr<channels::BaseChannel>);
 
 };
 

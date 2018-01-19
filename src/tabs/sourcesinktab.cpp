@@ -72,7 +72,6 @@ void SourceSinkTab::setup_ui()
 					channel->actual_signal());
 
 				// Only plot voltage and current
-
 				if (signal->sr_quantity() == sigrok::Quantity::VOLTAGE) {
 					voltage_signal = signal;
 					// Voltage plot(s)
@@ -85,6 +84,12 @@ void SourceSinkTab::setup_ui()
 					add_view(new views::PlotView(session_, current_signal),
 						Qt::BottomDockWidgetArea);
 				}
+
+				// Plot all signals
+				/*
+				add_view(new views::PlotView(session_, signal),
+					Qt::BottomDockWidgetArea);
+				*/
 			}
 			else {
 				// Channel plot(s)

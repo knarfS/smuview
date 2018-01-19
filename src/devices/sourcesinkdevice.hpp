@@ -52,9 +52,8 @@ public:
 	explicit SourceSinkDevice(const shared_ptr<sigrok::Context> &sr_context,
 		shared_ptr<sigrok::HardwareDevice> sr_device);
 
-	~SourceSinkDevice();
-
 protected:
+	void init_channels();
 	void feed_in_meta(shared_ptr<sigrok::Meta> sr_meta);
 
 private:

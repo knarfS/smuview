@@ -18,8 +18,10 @@
  */
 
 #include <unordered_set>
+#include <utility>
 
 #include <QDebug>
+#include <QHeaderView>
 #include <QTreeView>
 
 #include "signaltree.hpp"
@@ -29,6 +31,8 @@
 #include "src/devices/hardwaredevice.hpp"
 
 using std::dynamic_pointer_cast;
+using std::make_pair;
+using std::make_shared;
 using std::static_pointer_cast;
 using std::unordered_set;
 
@@ -38,13 +42,14 @@ namespace sv {
 namespace widgets {
 
 SignalTree::SignalTree(const Session &session,
-		bool show_signals, bool multiselect,
+		bool show_signals, bool selectable, bool multiselect,
 		shared_ptr<devices::Device> selected_device,
 		QWidget *parent) :
 	QTreeWidget(parent),
 	session_(session),
 	selected_device_(selected_device),
 	show_signals_(show_signals),
+	selectable_(selectable),
 	multiselect_(multiselect)
 {
 	setup_ui();
@@ -91,7 +96,8 @@ vector<shared_ptr<data::BaseSignal>> SignalTree::selected_signals()
 
 void SignalTree::setup_ui()
 {
-	this->setColumnCount(2);
+	this->setColumnCount(1); // 2
+	this->header()->close();
 	if (multiselect_)
 		this->setSelectionMode(QTreeView::MultiSelection);
 
@@ -123,10 +129,9 @@ void SignalTree::setup_ui()
 		add_device(hw_device, expanded);
 	}
 
-	/*
-	connect(this, SIGNAL(itemChanged(QTreeWidgetItem*, int)),
-		this, SLOT(update_checks(QTreeWidgetItem*, int)));
-	*/
+	// Resize all columns
+	this->resizeColumnToContents(0);
+	this->resizeColumnToContents(1);
 }
 
 void SignalTree::add_device(shared_ptr<devices::HardwareDevice> device,
@@ -134,50 +139,90 @@ void SignalTree::add_device(shared_ptr<devices::HardwareDevice> device,
 {
 	QTreeWidgetItem *device_item = new QTreeWidgetItem();
 	device_item->setIcon(0, QIcon(":/icons/smuview.ico"));
-	device_item->setText(1, device->full_name());
+	device_item->setText(0, device->full_name());
 	this->addTopLevelItem(device_item);
+	this->setFirstItemColumnSpanned(device_item, true);
+
+	device_map_.insert(make_pair(device, device_item));
 
 	auto chg_name_channels_map = device->channel_group_name_map();
 	for (auto chg_name_channels_pair : chg_name_channels_map) {
-		QTreeWidgetItem *chg_item = new QTreeWidgetItem();
-		chg_item->setText(1, chg_name_channels_pair.first);
-		device_item->addChild(chg_item);
-
-		for (auto channel : chg_name_channels_pair.second)
-			add_channel(channel, expanded, chg_item);
-
-		chg_item->setExpanded(expanded);
+		for (auto channel : chg_name_channels_pair.second) {
+			add_channel(channel, chg_name_channels_pair.first,
+				expanded, device_item);
+		}
 	}
 	device_item->setExpanded(expanded);
+
+	connect(
+		device.get(), SIGNAL(channel_added(shared_ptr<channels::BaseChannel>)),
+		this, SLOT(on_channel_added(shared_ptr<channels::BaseChannel>)));
 
 	return;
 }
 
 void SignalTree::add_channel(shared_ptr<channels::BaseChannel> channel,
-	bool expanded, QTreeWidgetItem *parent)
+	QString channel_group_name, bool expanded, QTreeWidgetItem *parent)
 {
-	QTreeWidgetItem *ch_item = new QTreeWidgetItem();
-	ch_item->setFlags(ch_item->flags() | Qt::ItemIsUserCheckable); // | Qt::ItemIsSelectable
-	ch_item->setCheckState(0, Qt::Unchecked);
-	ch_item->setText(1, channel->name());
+	QTreeWidgetItem *chg_item;
+	if (channel_group_name.size() > 0) {
+		if (channel_group_map_.count(channel_group_name) == 0) {
+			// Channel is in a channel group, add group first
+			chg_item = new QTreeWidgetItem();
+			chg_item->setIcon(0, QIcon::fromTheme(
+				"document-open-folder", QIcon(":/icons/smuview.ico")));
+			chg_item->setText(0, channel_group_name);
+			parent->addChild(chg_item);
+
+			channel_group_map_.insert(make_pair(channel_group_name, chg_item));
+		}
+		parent = channel_group_map_[channel_group_name];
+	}
+
+	// Channel already in the tree?
+	QTreeWidgetItem *ch_item;
+	if (channel_map_.count(channel) != 0)
+		ch_item = channel_map_[channel];
+	else {
+		ch_item = new QTreeWidgetItem();
+		if (selectable_) {
+			ch_item->setFlags(ch_item->flags() | Qt::ItemIsUserCheckable); // | Qt::ItemIsSelectable
+			ch_item->setCheckState(0, Qt::Unchecked);
+		}
+
+		channel_map_.insert(make_pair(channel, ch_item));
+
+		if (show_signals_) {
+			for (auto signal_pair : channel->signal_map())
+				add_signal(signal_pair.second, ch_item);
+		}
+
+		connect(
+			channel.get(), SIGNAL(signal_added(shared_ptr<data::BaseSignal>)),
+			this, SLOT(on_signal_added(shared_ptr<data::BaseSignal>)));
+	}
+	ch_item->setIcon(0,
+		QIcon::fromTheme("office-chart-area", QIcon(":/icons/smuview.ico")));
+	ch_item->setText(0, channel->name());
 	ch_item->setData(0, Qt::UserRole, QVariant::fromValue(channel));
 	parent->addChild(ch_item);
 
-	if (show_signals_) {
-		for (auto signal_pair : channel->signal_map())
-			add_signal(signal_pair.second, ch_item);
-	}
-
 	ch_item->setExpanded(expanded);
+	if (channel_group_name.size() > 0)
+		chg_item->setExpanded(expanded);
 }
 
 void SignalTree::add_signal(shared_ptr<data::BaseSignal> signal,
 	QTreeWidgetItem *parent)
 {
 	QTreeWidgetItem *signal_item = new QTreeWidgetItem();
-	signal_item->setFlags(signal_item->flags() | Qt::ItemIsUserCheckable); // | Qt::ItemIsSelectable
-	signal_item->setCheckState(0, Qt::Unchecked);
-	signal_item->setText(1, signal->name());
+	if (selectable_) {
+		signal_item->setFlags(signal_item->flags() | Qt::ItemIsUserCheckable); // | Qt::ItemIsSelectable
+		signal_item->setCheckState(0, Qt::Unchecked);
+	}
+	signal_item->setIcon(0,
+		QIcon::fromTheme("office-chart-line", QIcon(":/icons/smuview.ico")));
+	signal_item->setText(0, signal->name());
 	signal_item->setData(0, Qt::UserRole, QVariant::fromValue(signal));
 	parent->addChild(signal_item);
 }
@@ -214,76 +259,37 @@ vector<const QTreeWidgetItem *> SignalTree::checked_items_recursiv(
 	return items;
 }
 
-void SignalTree::update_checks(QTreeWidgetItem *item, int column)
-{
-	if(column != 0)
-		return;
-
-	disconnect(this, SIGNAL(itemChanged(QTreeWidgetItem*, int)),
-		this, SLOT(update_checks(QTreeWidgetItem*, int)));
-
-	update_check_down_recursive(item);
-	update_check_up_recursive(item);
-
-	connect(this, SIGNAL(itemChanged(QTreeWidgetItem*, int)),
-		this, SLOT(update_checks(QTreeWidgetItem*, int)));
-}
-
-void SignalTree::update_check_up_recursive(QTreeWidgetItem *item)
-{
-	if (!item->parent())
-		return;
-
-	Qt::CheckState checkState = item->parent()->child(0)->checkState(0);
-	for (int i = 1; i < item->parent()->childCount(); ++i) {
-		if (item->parent()->child(i)->checkState(0) != checkState) {
-			checkState = Qt::PartiallyChecked;
-			break;
-		}
-	}
-	item->parent()->setCheckState(0, checkState);
-
-	update_check_up_recursive(item->parent());
-}
-
-void SignalTree::update_check_down_recursive(QTreeWidgetItem *item)
-{
-	Qt::CheckState checkState = item->checkState(0);
-	for (int i = 0; i < item->childCount(); ++i) {
-		item->child(i)->setCheckState(0, checkState);
-		update_check_down_recursive(item->child(i));
-	}
-}
-
 void SignalTree::on_device_added(shared_ptr<devices::HardwareDevice> device)
 {
-	qWarning() << "SignalTree::on_device_added()" << device->name();
 	add_device(device, true);
 }
 
 void SignalTree::on_device_removed()
 {
-
 }
 
-void SignalTree::on_channel_added()
+void SignalTree::on_channel_added(shared_ptr<channels::BaseChannel> channel)
 {
-
+	auto parent_item = device_map_[channel->parent_device()];
+	add_channel(channel, channel->channel_group_name(), true, parent_item);
 }
 
 void SignalTree::on_channel_removed()
 {
-
 }
 
-void SignalTree::on_signal_added()
+void SignalTree::on_signal_added(shared_ptr<data::BaseSignal> signal)
 {
+	qWarning() << "SignalTree::on_signal_added(): signal = "  << signal->name();
 
+	auto parent_item = channel_map_[signal->parent_channel()];
+	add_signal(signal, parent_item);
+
+	//add_signal(signal, channels_[0]);
 }
 
 void SignalTree::on_signal_removed()
 {
-
 }
 
 } // namespace widgets

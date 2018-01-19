@@ -141,7 +141,9 @@ public:
 	bool is_measured_quantity_setable() const;
 	bool is_measured_quantity_listable() const;
 	void get_measured_quantity() const;
-	void set_measured_quantity(uint mq, uint mq_flags);
+	void set_measured_quantity(
+		const sigrok::Quantity *sr_quantity,
+		vector<const sigrok::QuantityFlag *> sr_qunatity_flags);
 
 	bool list_regulation(QStringList &regulation_list);
 	bool list_voltage_target(double &min, double &max, double &step);

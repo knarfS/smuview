@@ -20,6 +20,12 @@
 #include <cassert>
 #include <type_traits>
 
+#include <glib.h>
+// Suppress warnings due to use of deprecated std::auto_ptr<> by glibmm.
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
+#include <glibmm.h>
+G_GNUC_END_IGNORE_DEPRECATIONS
+
 #include <QDebug>
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
@@ -29,9 +35,12 @@
 
 using std::dynamic_pointer_cast;
 using std::is_base_of;
+using std::make_pair;
 using std::make_shared;
+using std::make_tuple;
 using std::pair;
 using std::string;
+using std::tuple;
 
 namespace sv {
 namespace devices {
@@ -225,6 +234,7 @@ bool Configurable::has_set_config(const sigrok::ConfigKey *key) const
 template void Configurable::set_config(const sigrok::ConfigKey*, const bool);
 template void Configurable::set_config(const sigrok::ConfigKey*, const uint64_t);
 template void Configurable::set_config(const sigrok::ConfigKey*, const double);
+template void Configurable::set_config(const sigrok::ConfigKey*, const tuple<uint32_t, uint64_t>);
 template<typename T> void Configurable::set_config(
 		const sigrok::ConfigKey *key, const T value)
 {
@@ -537,12 +547,18 @@ void Configurable::get_measured_quantity() const
 	//get_config<double>(sigrok::ConfigKey::MEASURED_QUANTITY);
 }
 
-void Configurable::set_measured_quantity(uint mq, uint mq_flags)
-{
-	(void)mq;
-	(void)mq_flags;
 
-	//set_config(sigrok::ConfigKey::MEASURED_QUANTITY, mq);
+void Configurable::set_measured_quantity(
+		const sigrok::Quantity *sr_quantity,
+		vector<const sigrok::QuantityFlag *> sr_qunatity_flags)
+{
+	uint32_t q = sr_quantity->id();
+	uint64_t qf = 0;
+    for (auto sr_qunatity_flag : sr_qunatity_flags)
+		qf |= sr_qunatity_flag->id();
+	auto q_mf_tuple = make_tuple(q, qf);
+
+	set_config(sigrok::ConfigKey::MEASURED_QUANTITY, q_mf_tuple);
 }
 
 

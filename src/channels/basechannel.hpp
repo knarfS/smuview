@@ -48,6 +48,10 @@ namespace data {
 class BaseSignal;
 }
 
+namespace devices {
+class Device;
+}
+
 namespace channels {
 
 enum class ChannelType {
@@ -61,13 +65,15 @@ enum class ChannelType {
 	MathChannel
 };
 
-class BaseChannel : public QObject
+class BaseChannel :
+	public QObject,
+	public std::enable_shared_from_this<BaseChannel>
 {
 	Q_OBJECT
 
 public:
 	BaseChannel(
-		const QString device_name, // TODO: replace with device object?
+		shared_ptr<devices::Device> parent_device,
 		const QString channel_group_name, // TODO: replace with ? object?
 		double channel_start_timestamp);
 	virtual ~BaseChannel();
@@ -116,6 +122,11 @@ public:
 	 * Get all signals for this channel
 	 */
 	map<quantity_t, shared_ptr<data::BaseSignal>> signal_map();
+
+	/**
+	 * Returns the device, this channel belongs to.
+	 */
+	shared_ptr<devices::Device> parent_device();
 
 	/**
 	 * Get the channel group name, the channel is in. Returns "" if the channel
@@ -170,7 +181,7 @@ protected:
 	shared_ptr<data::BaseSignal> actual_signal_;
 	map<quantity_t, shared_ptr<data::BaseSignal>> signal_map_;
 
-	const QString device_name_; // TODO: better way?
+	shared_ptr<devices::Device> parent_device_;
 	const QString channel_group_name_; // TODO: better way?
 	QString name_;
 	QColor colour_;
@@ -180,10 +191,11 @@ public Q_SLOTS:
 
 Q_SIGNALS:
 	void channel_start_timestamp_changed(double);
-	void enabled_changed(const bool &value);
-	void name_changed(const QString &name);
-	void colour_changed(const QColor &colour);
-	void signal_changed();
+	void enabled_changed(const bool);
+	void name_changed(const QString);
+	void colour_changed(const QColor);
+	void signal_added(shared_ptr<data::BaseSignal>);
+	void signal_changed(shared_ptr<data::BaseSignal>);
 
 };
 

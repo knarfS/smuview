@@ -41,6 +41,10 @@ namespace data {
 class BaseSignal;
 }
 
+namespace devices {
+class Device;
+}
+
 namespace channels {
 
 class HardwareChannel : public BaseChannel
@@ -50,7 +54,7 @@ class HardwareChannel : public BaseChannel
 public:
 	HardwareChannel(
 		shared_ptr<sigrok::Channel> sr_channel,
-		const QString device_name,
+		shared_ptr<devices::Device> parent_device,
 		const QString channel_group_name,
 		double channel_start_timestamp);
 

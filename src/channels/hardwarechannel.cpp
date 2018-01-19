@@ -29,20 +29,24 @@
 #include "src/util.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/data/analogsignal.hpp"
+#include "src/devices/device.hpp"
 
 using std::make_pair;
 using std::make_shared;
 using std::static_pointer_cast;
+
+//Q_DECLARE_SMART_POINTER_METATYPE(std::shared_ptr)
+Q_DECLARE_METATYPE(std::shared_ptr<sv::data::BaseSignal>)
 
 namespace sv {
 namespace channels {
 
 HardwareChannel::HardwareChannel(
 		shared_ptr<sigrok::Channel> sr_channel,
-		const QString device_name,
+		shared_ptr<devices::Device> parent_device,
 		const QString channel_group_name,
 		double channel_start_timestamp) :
-	BaseChannel(device_name, channel_group_name, channel_start_timestamp),
+	BaseChannel(parent_device, channel_group_name, channel_start_timestamp),
 	sr_channel_(sr_channel)
 {
 	assert(sr_channel);
@@ -82,6 +86,7 @@ shared_ptr<sigrok::Channel> HardwareChannel::sr_channel() const
 	return sr_channel_;
 }
 
+// TODO: Call base
 shared_ptr<data::BaseSignal> HardwareChannel::init_signal(
 	const sigrok::Quantity *sr_quantity,
 	vector<const sigrok::QuantityFlag *> sr_quantity_flags,
@@ -93,8 +98,7 @@ shared_ptr<data::BaseSignal> HardwareChannel::init_signal(
 
 	shared_ptr<data::AnalogSignal> signal = make_shared<data::AnalogSignal>(
 		sr_quantity, sr_quantity_flags, sr_unit,
-		device_name_, channel_group_name_, name_,
-		channel_start_timestamp_);
+		shared_from_this(), channel_start_timestamp_);
 
 	connect(this, SIGNAL(channel_start_timestamp_changed(double)),
 			signal.get(), SLOT(on_channel_start_timestamp_changed(double)));
@@ -102,6 +106,8 @@ shared_ptr<data::BaseSignal> HardwareChannel::init_signal(
 	actual_signal_ = signal;
 	quantity_t q_qf = make_pair(sr_quantity, sr_quantity_flags);
 	signal_map_.insert(make_pair(q_qf, signal));
+
+	Q_EMIT signal_added(signal);
 
 	return signal;
 }
@@ -112,9 +118,14 @@ void HardwareChannel::push_sample_sr_analog(
 	quantity_t q_qf = make_pair(sr_analog->mq(), sr_analog->mq_flags());
 	if (signal_map_.count(q_qf) == 0) {
 		init_signal(sr_analog->mq(), sr_analog->mq_flags(), sr_analog->unit());
-		Q_EMIT signal_changed();
 		qWarning() << "HardwareChannel::push_sample_sr_analog(): " << name_ <<
 		" - No signal found: " << actual_signal_->name();
+	}
+
+	auto signal = static_pointer_cast<data::AnalogSignal>(signal_map_[q_qf]);
+	if (signal.get() != actual_signal_.get()) {
+		actual_signal_ = signal;
+		Q_EMIT signal_changed(actual_signal_);
 	}
 
 	// Number of significant digits after the decimal point if positive, or
@@ -127,7 +138,6 @@ void HardwareChannel::push_sample_sr_analog(
 	else
 		digits = -1 * sr_analog->digits(); // TODO
 
-	auto signal = static_pointer_cast<data::AnalogSignal>(signal_map_[q_qf]);
 	signal->push_sample(sample, timestamp, digits, decimal_places);
 }
 

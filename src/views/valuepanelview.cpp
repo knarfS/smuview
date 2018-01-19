@@ -18,6 +18,7 @@
  */
 
 #include <cassert>
+#include <memory>
 
 #include <QApplication>
 #include <QDateTime>
@@ -29,6 +30,7 @@
 #include "src/session.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/data/analogsignal.hpp"
+#include "src/data/basesignal.hpp"
 #include "src/widgets/lcddisplay.hpp"
 
 using std::dynamic_pointer_cast;
@@ -68,8 +70,14 @@ ValuePanelView::ValuePanelView(const Session &session,
 	connect_signals_displays();
 	reset_display();
 
-	// Signal (Quantity + Unit) can change, e.g. DMM signals
-	connect(channel_.get(), SIGNAL(signal_changed()),
+	// Signal (aka Quantity + Flags + Unit) can change, e.g. DMM signals
+	/*
+	connect(channel_.get(), &channels::BaseChannel::signal_changed,
+			this, &ValuePanelView::on_signal_changed);
+	*/
+	connect(channel_.get(), SIGNAL(signal_added(shared_ptr<data::BaseSignal>)),
+		this, SLOT(on_signal_changed()));
+	connect(channel_.get(), SIGNAL(signal_changed(shared_ptr<data::BaseSignal>)),
 		this, SLOT(on_signal_changed()));
 
 	timer_ = new QTimer(this);

@@ -62,7 +62,7 @@ void SaveDialog::setup_ui()
 
 	QVBoxLayout *main_layout = new QVBoxLayout;
 
-	signal_tree_ = new widgets::SignalTree(session_, true, true, nullptr);
+	signal_tree_ = new widgets::SignalTree(session_, true, true, true, nullptr);
 	main_layout->addWidget(signal_tree_);
 
 	QFormLayout *form_layout = new QFormLayout();
@@ -114,12 +114,18 @@ void SaveDialog::save(QString file_name)
 			max_sample_count = sample_count;
 		sample_counts.push_back(sample_count);
 
-		device_header_line.append(start_sep).append(signal->device_name()); // Time
-		device_header_line.append(sep).append(signal->device_name()); // Value
-		chg_name_header_line.append(start_sep).append(signal->channel_group_name()); // Time
-		chg_name_header_line.append(sep).append(signal->channel_group_name()); // Value
-		ch_name_header_line.append(start_sep).append(signal->channel_name()); // Time
-		ch_name_header_line.append(sep).append(signal->channel_name()); // Value
+		device_header_line.append(start_sep).append(
+			signal->parent_channel()->parent_device()->name()); // Time
+		device_header_line.append(sep).append(
+			signal->parent_channel()->parent_device()->name()); // Value
+		chg_name_header_line.append(start_sep).append(
+			signal->parent_channel()->channel_group_name()); // Time
+		chg_name_header_line.append(sep).append(
+			signal->parent_channel()->channel_group_name()); // Value
+		ch_name_header_line.append(start_sep).append(
+			signal->parent_channel()->name()); // Time
+		ch_name_header_line.append(sep).append(
+			signal->parent_channel()->name()); // Value
 		signal_name_header_line.append(start_sep).
 			append("Time ").append(signal->name()); // Time
 		signal_name_header_line.append(sep).append(signal->name()); // Value
@@ -187,9 +193,12 @@ void SaveDialog::save_combined(QString file_name)
 		sample_counts.push_back(a_signal->get_sample_count());
 		sample_pos.push_back(0);
 
-		device_header_line.append(sep).append(signal->device_name()); // Value
-		chg_name_header_line.append(sep).append(signal->channel_group_name()); // Value
-		ch_name_header_line.append(sep).append(signal->channel_name()); // Value
+		device_header_line.append(sep).append(
+			signal->parent_channel()->parent_device()->name()); // Value
+		chg_name_header_line.append(sep).append(
+			signal->parent_channel()->channel_group_name()); // Value
+		ch_name_header_line.append(sep).append(
+			signal->parent_channel()->name()); // Value
 		signal_name_header_line.append(sep).append(signal->name()); // Value
 	}
 	output_file << device_header_line.toStdString() << std::endl;

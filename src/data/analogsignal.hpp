@@ -51,8 +51,7 @@ public:
 		const sigrok::Quantity *sr_quantity,
 		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
 		const sigrok::Unit *sr_unit,
-		const QString device_name,
-		const QString channel_group_name, const QString channel_name,
+		shared_ptr<channels::BaseChannel> parent_channel,
 		double signal_start_timestamp);
 
 	void clear();

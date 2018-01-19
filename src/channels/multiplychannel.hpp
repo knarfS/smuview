@@ -43,6 +43,10 @@ namespace data {
 class AnalogSignal;
 }
 
+namespace devices {
+class Device;
+}
+
 namespace channels {
 
 class MultiplyChannel : public MathChannel
@@ -56,7 +60,7 @@ public:
 		const sigrok::Unit *sr_unit,
 		shared_ptr<data::AnalogSignal> signal1,
 		shared_ptr<data::AnalogSignal> signal2,
-		const QString device_name,
+		shared_ptr<devices::Device> parent_device,
 		const QString channel_group_name,
 		QString channel_name,
 		double channel_start_timestamp);

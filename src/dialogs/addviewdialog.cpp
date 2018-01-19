@@ -91,7 +91,7 @@ void AddViewDialog::setup_ui_panel_tab()
 	panel_widget->setLayout(layout);
 
 	panel_channel_tree_ = new widgets::SignalTree(
-		session_, false, true, device_);
+		session_, false, true, true, device_);
 	layout->addWidget(panel_channel_tree_);
 
 	tab_widget_->addTab(panel_widget, title);
@@ -105,7 +105,7 @@ void AddViewDialog::setup_ui_plot_tab()
 	plot_widget->setLayout(layout);
 
 	plot_channel_tree_ = new widgets::SignalTree(
-		session_, true, true, device_);
+		session_, true, true, true, device_);
 	layout->addWidget(plot_channel_tree_);
 
 	tab_widget_->addTab(plot_widget, title);

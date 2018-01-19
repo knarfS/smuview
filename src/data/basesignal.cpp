@@ -31,6 +31,7 @@
 #include "basesignal.hpp"
 #include "src/session.hpp"
 #include "src/util.hpp"
+#include "src/channels/basechannel.hpp"
 
 using std::dynamic_pointer_cast;
 using std::make_shared;
@@ -44,14 +45,11 @@ BaseSignal::BaseSignal(
 		const sigrok::Quantity *sr_quantity,
 		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
 		const sigrok::Unit *sr_unit,
-		const QString device_name, const QString channel_group_name,
-		const QString channel_name) :
+		shared_ptr<channels::BaseChannel> parent_channel) :
 	sr_quantity_(sr_quantity),
 	sr_quantity_flags_(sr_quantity_flags),
 	sr_unit_(sr_unit),
-	device_name_(device_name),
-	channel_group_name_(channel_group_name),
-	channel_name_(channel_name)
+	parent_channel_(parent_channel)
 {
 	assert(sr_quantity);
 	//assert(sr_quantity_flags);
@@ -64,7 +62,7 @@ BaseSignal::BaseSignal(
 	quantity_flags_ = util::format_sr_quantity_flags(sr_quantity_flags_);
 	unit_ = util::format_sr_unit(sr_unit_);
 
-	name_ = QString(channel_name_).append(" [").append(unit_);
+	name_ = QString(parent_channel_->name()).append(" [").append(unit_);
 	if (quantity_flags_.size() > 0)
 		name_ = name_.append(" ").append(quantity_flags_);
 	name_ = name_.append("]");
@@ -104,19 +102,9 @@ QString BaseSignal::unit() const
 	return unit_;
 }
 
-QString BaseSignal::device_name() const
+shared_ptr<channels::BaseChannel> BaseSignal::parent_channel() const
 {
-	return device_name_;
-}
-
-QString BaseSignal::channel_group_name() const
-{
-	return channel_group_name_;
-}
-
-QString BaseSignal::channel_name() const
-{
-	return channel_name_;
+	return parent_channel_;
 }
 
 QString BaseSignal::name() const

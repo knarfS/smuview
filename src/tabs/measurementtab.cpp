@@ -26,6 +26,7 @@
 #include "src/data/basesignal.hpp"
 #include "src/devices/configurable.hpp"
 #include "src/devices/measurementdevice.hpp"
+#include "src/views/demodmmcontrolview.hpp"
 #include "src/views/measurementcontrolview.hpp"
 #include "src/views/plotview.hpp"
 #include "src/views/valuepanelview.hpp"
@@ -44,14 +45,24 @@ MeasurementTab::MeasurementTab(Session &session,
 void MeasurementTab::setup_ui()
 {
 	// Device controls
+	size_t i = 0;
 	for (auto c : device_->configurables()) {
 		if (c->is_controllable()) {
-			views::BaseView *control_view =
-				new views::MeasurementControlView(session_, c);
-			add_view(control_view, Qt::TopDockWidgetArea);
+			if (device_->type() == devices::DeviceType::DemoDMMDevice)
+				add_view(new views::DemoDMMControlView(session_, c),
+					Qt::TopDockWidgetArea);
+			else if (device_->type() == devices::DeviceType::Multimeter)
+				add_view(new views::MeasurementControlView(session_, c),
+					Qt::TopDockWidgetArea);
+
+			// Shown only 2 configurables
+			i++;
+			if (i >= 2)
+				break;
 		}
 	}
 
+	i = 0;
 	for (auto ch_name_channel_pair : measurement_device_->channel_name_map()) {
 		auto channel = ch_name_channel_pair.second;
 
@@ -64,6 +75,11 @@ void MeasurementTab::setup_ui()
 		views::BaseView *value_plot_view =
 			new views::PlotView(session_, channel);
 		add_view(value_plot_view, Qt::BottomDockWidgetArea);
+
+		// Shown only 2 panles/plots
+		i++;
+		if (i >= 2)
+			break;
 	}
 }
 

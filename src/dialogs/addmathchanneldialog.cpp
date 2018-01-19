@@ -76,11 +76,11 @@ void AddMathChannelDialog::setup_ui()
 	form_layout->addRow(tr("Unit"), unit_box_);
 
 	multiply_signal_1_tree_ = new widgets::SignalTree(
-		session_, true, false, device_);
+		session_, true, true, false, device_);
 	form_layout->addRow(tr("Signal 1"), multiply_signal_1_tree_);
 
 	multiply_signal_2_tree_ = new widgets::SignalTree(
-		session_, true, false, device_);
+		session_, true, true, false, device_);
 	form_layout->addRow(tr("Signal 2"), multiply_signal_2_tree_);
 
 	button_box_ = new QDialogButtonBox(
@@ -122,11 +122,11 @@ void AddMathChannelDialog::setup_ui_multiply_tab()
 	QVBoxLayout *main_layout = new QVBoxLayout;
 
 	multiply_signal_1_tree_ = new widgets::SignalTree(
-		session_, true, false, device_);
+		session_, true, true, false, device_);
 	main_layout->addWidget(multiply_signal_1_tree_);
 
 	multiply_signal_2_tree_ = new widgets::SignalTree(
-		session_, true, false, device_);
+		session_, true, true, false, device_);
 	main_layout->addWidget(multiply_signal_2_tree_);
 	multiply_widget->setLayout(main_layout);
 
@@ -195,64 +195,10 @@ void AddMathChannelDialog::accept()
 		quantity_flags_list_->selected_sr_quantity_flags(),
 		unit_box_->selected_sr_unit(),
 		signal_1, signal_2,
-		device_->short_name(), tr("Math"), name_edit_->text(),
+		device_, tr("Math User"), name_edit_->text(),
 		signal_1->signal_start_timestamp());
 
 	channels_.push_back(channel);
-
-	/*
-	shared_ptr<devices::Channel> channel;
-
-	int tab_index = tab_widget_->currentIndex();
-	switch (tab_index) {
-	case 0: {
-			shared_ptr<data::AnalogSignal> signal_1;
-			auto signals_1 = multiply_signal_1_tree_->selected_signals();
-			if (signals_1.size() != 1)
-				return;
-			signal_1 = static_pointer_cast<data::AnalogSignal>(signals_1[0]);
-
-			shared_ptr<data::AnalogSignal> signal_2;
-			auto signals_2 = multiply_signal_2_tree_->selected_signals();
-			if (signals_2.size() != 1)
-				return;
-			signal_2 = static_pointer_cast<data::AnalogSignal>(signals_2[0]);
-
-			auto channel = make_shared<channels::MultiplyChannel>(
-				sigrok::Quantity::POWER,
-				vector<const sigrok::QuantityFlag *>(),
-				sigrok::Unit::WATT,
-				signal_1, signal_2,
-				QString("Math 1"), QString("CHG 1"),
-				signal_1->signal_start_timestamp());
-
-			channels_.push_back(channel);
-		}
-		break;
-	case 1:
-		/ *
-		for (auto channel : panel_channel_tree_->selected_channels()) {
-			views_.push_back(
-				make_shared<views::ValuePanelView>(session_, channel));
-		}
-		* /
-		break;
-	case 2:
-		/ *
-		for (auto channel : plot_channel_tree_->selected_channels()) {
-			views_.push_back(make_shared<views::PlotView>(session_, channel));
-		}
-		for (auto signal : plot_channel_tree_->selected_signals()) {
-			//TODO
-			auto a_signal = static_pointer_cast<data::AnalogSignal>(signal);
-			views_.push_back(make_shared<views::PlotView>(session_, a_signal));
-		}
-		* /
-		break;
-	default:
-		break;
-	}
-	*/
 
 	QDialog::accept();
 }

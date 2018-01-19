@@ -46,6 +46,8 @@ Session::Session(DeviceManager &device_manager) :
 Session::~Session()
 {
 	// TODO: Close open devices (aka sessions)
+	for (auto device : devices_)
+		device->close();
 }
 
 DeviceManager& Session::device_manager()

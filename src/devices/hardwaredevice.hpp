@@ -85,8 +85,9 @@ public:
 	HardwareDevice(const shared_ptr<sigrok::Context> &sr_context,
 		shared_ptr<sigrok::HardwareDevice> sr_device);
 
-	~HardwareDevice();
-
+	/**
+	 * Returns the sigrok hardware device
+	 */
 	shared_ptr<sigrok::HardwareDevice> sr_hardware_device() const;
 
 	/**
@@ -116,6 +117,19 @@ public:
 	map<shared_ptr<sigrok::Channel>, shared_ptr<channels::BaseChannel>> sr_channel_map() const;
 
 protected:
+	/**
+	 * Inits all channles of this hardware device
+	 */
+	void init_channels();
+
+	/**
+	 * Inits all configurables for this hardware device.
+	 */
+	void init_configurables();
+
+	/**
+	 * Adds a channel to the device
+	 */
 	shared_ptr<channels::BaseChannel> init_channel(
 		shared_ptr<sigrok::Channel> sr_channel, QString channel_group_name);
 

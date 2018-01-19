@@ -27,6 +27,7 @@
 #include "src/channels/basechannel.hpp"
 #include "src/channels/mathchannel.hpp"
 #include "src/data/analogsignal.hpp"
+#include "src/devices/device.hpp"
 
 namespace sv {
 namespace channels {
@@ -36,12 +37,13 @@ IntegrateChannel::IntegrateChannel(
 		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
 		const sigrok::Unit *sr_unit,
 		shared_ptr<data::AnalogSignal> int_signal,
-		const QString device_name,
+		shared_ptr<devices::Device> parent_device,
 		const QString channel_group_name,
 		QString channel_name,
 		double channel_start_timestamp) :
 	MathChannel(sr_quantity, sr_quantity_flags, sr_unit,
-		device_name, channel_group_name, channel_name, channel_start_timestamp),
+		parent_device, channel_group_name, channel_name,
+		channel_start_timestamp),
 	int_signal_(int_signal),
 	next_int_signal_pos_(0),
 	last_timestamp_(-1),

@@ -28,6 +28,7 @@
 #include "src/channels/basechannel.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
+#include "src/devices/device.hpp"
 
 using std::make_pair;
 using std::make_shared;
@@ -40,11 +41,11 @@ MathChannel::MathChannel(
 		const sigrok::Quantity *sr_quantity,
 		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
 		const sigrok::Unit *sr_unit,
-		const QString device_name,
+		shared_ptr<devices::Device> parent_device,
 		const QString channel_group_name,
 		QString channel_name,
 		double channel_start_timestamp) :
-	BaseChannel(device_name, channel_group_name, channel_start_timestamp),
+	BaseChannel(parent_device, channel_group_name, channel_start_timestamp),
 	digits_(8),
 	decimal_places_(-1),
 	sr_quantity_(sr_quantity),
@@ -67,6 +68,7 @@ unsigned int MathChannel::index() const
 	return 1000;
 }
 
+// TODO: Move to base
 shared_ptr<data::BaseSignal> MathChannel::init_signal(
 	const sigrok::Quantity *sr_quantity,
 	vector<const sigrok::QuantityFlag *> sr_quantity_flags,
@@ -78,8 +80,7 @@ shared_ptr<data::BaseSignal> MathChannel::init_signal(
 	// TODO: At the moment, only analog channels are supported
 	shared_ptr<data::AnalogSignal> signal = make_shared<data::AnalogSignal>(
 		sr_quantity, sr_quantity_flags, sr_unit,
-		device_name_, channel_group_name_, name_,
-		channel_start_timestamp_);
+		shared_from_this(), channel_start_timestamp_);
 
 	connect(this, SIGNAL(channel_start_timestamp_changed(double)),
 		signal.get(), SLOT(on_channel_start_timestamp_changed(double)));
@@ -87,6 +88,8 @@ shared_ptr<data::BaseSignal> MathChannel::init_signal(
 	actual_signal_ = signal;
 	quantity_t q_qf = make_pair(sr_quantity, sr_quantity_flags);
 	signal_map_.insert(make_pair(q_qf, signal));
+
+	Q_EMIT signal_added(signal);
 
 	return signal;
 }

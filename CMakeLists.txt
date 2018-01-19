@@ -172,6 +172,7 @@ set(smuview_SOURCES
   src/tabs/usertab.cpp
   #src/toolbars/maintoolbar.cpp
   src/views/baseview.cpp
+  src/views/demodmmcontrolview.cpp
   src/views/measurementcontrolview.cpp
   src/views/plotview.cpp
   src/views/powerpanelview.cpp

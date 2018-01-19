@@ -42,6 +42,10 @@ namespace data {
 class BaseSignal;
 }
 
+namespace devices {
+class Device;
+}
+
 namespace channels {
 
 enum class MathChannelType {
@@ -59,7 +63,7 @@ public:
 		const sigrok::Quantity *sr_quantity,
 		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
 		const sigrok::Unit *sr_unit,
-		const QString device_name,
+		shared_ptr<devices::Device> parent_device,
 		const QString channel_group_name,
 		QString channel_name,
 		double channel_start_timestamp);

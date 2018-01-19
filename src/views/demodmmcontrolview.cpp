@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,19 +17,27 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <vector>
+
 #include <QApplication>
 #include <QDebug>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 
-#include "measurementcontrolview.hpp"
+#include <libsigrokcxx/libsigrokcxx.hpp>
+
+#include "demodmmcontrolview.hpp"
 #include "src/session.hpp"
 #include "src/devices/hardwaredevice.hpp"
+#include "src/widgets/quantitycombobox.hpp"
+#include "src/widgets/quantityflagslist.hpp"
+
+using std::vector;
 
 namespace sv {
 namespace views {
 
-MeasurementControlView::MeasurementControlView(const Session &session,
+DemoDMMControlView::DemoDMMControlView(const Session &session,
 		shared_ptr<devices::Configurable> configurable, QWidget *parent) :
 	BaseView(session, parent),
 	configurable_(configurable)
@@ -40,14 +48,14 @@ MeasurementControlView::MeasurementControlView(const Session &session,
 	init_values();
 }
 
-QString MeasurementControlView::title() const
+QString DemoDMMControlView::title() const
 {
-	return configurable_->name() + " " + tr("Control");
+	return configurable_->name() + " " + tr("X Control");
 }
 
-void MeasurementControlView::setup_ui()
+void DemoDMMControlView::setup_ui()
 {
-	QHBoxLayout *layout = new QHBoxLayout();
+	QVBoxLayout *layout = new QVBoxLayout();
 
 	QStringList quantity_list;
 	QStringList quantityflags_list;
@@ -57,13 +65,11 @@ void MeasurementControlView::setup_ui()
 		}
 	}
 
-	quantityBox = new QComboBox();
-	quantityBox->addItems(quantity_list);
-	layout->addWidget(quantityBox, 0);
+	quantity_box_ = new widgets::QuantityComboBox();
+	layout->addWidget( quantity_box_);
 
-	quantityFlagsBox = new QComboBox();
-	quantityFlagsBox->addItems(quantityflags_list);
-	layout->addWidget(quantityFlagsBox, 0);
+	quantity_flags_list_ = new widgets::QuantityFlagsList();
+	layout->addWidget(quantity_flags_list_);
 
 	//ctrlLayout->addWidget(regulationBox, 1, Qt::AlignLeft);
 	//layout->addLayout(quantityFlagsBox, 0);
@@ -71,40 +77,28 @@ void MeasurementControlView::setup_ui()
 	this->centralWidget_->setLayout(layout);
 }
 
-void MeasurementControlView::connect_signals()
+void DemoDMMControlView::connect_signals()
 {
-	// Private
-	connect(quantityBox, SIGNAL(currentIndexChanged(const QString)),
-		this, SLOT(on_quantity_changed(const QString)));
-	connect(quantityFlagsBox, SIGNAL(currentIndexChanged(const QString)),
-		this, SLOT(on_quantity_flags_changed(/*const QString*/)));
-
+	connect(quantity_box_, SIGNAL(currentIndexChanged(int)),
+		this, SLOT(on_quantity_changed(int)));
 }
 
-void MeasurementControlView::init_values()
+void DemoDMMControlView::init_values()
 {
 }
 
-void MeasurementControlView::on_quantity_changed(const QString index)
+void DemoDMMControlView::on_quantity_changed(int index)
 {
-	quantityFlagsBox->clear();
-	shared_ptr<vector<set<QString>>> flags_vector = mq_flags_list_.at(index);
-	for (auto v : *flags_vector) {
-		bool first = true;
-		QString flags;
-		for (QString flag : v) {
-			if (!first) flags.append(" ");
-			else first = false;
+	(void)index;
 
-			flags.append(flag);
-		}
-		quantityFlagsBox->addItem(flags);
-	}
+	const sigrok::Quantity *sr_q = quantity_box_->selected_sr_quantity();
+	vector<const sigrok::QuantityFlag *> sr_qfs =
+		quantity_flags_list_->selected_sr_quantity_flags();
+	configurable_->set_measured_quantity(sr_q, sr_qfs);
 }
 
-void MeasurementControlView::on_quantity_flags_changed(/*const QString index*/)
+void DemoDMMControlView::on_quantity_flags_changed()
 {
-	//auto pair = mq_flags_list_.at(index);
 }
 
 } // namespace views

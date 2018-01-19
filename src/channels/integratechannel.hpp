@@ -43,6 +43,10 @@ namespace data {
 class AnalogSignal;
 }
 
+namespace devices {
+class Device;
+}
+
 namespace channels {
 
 class IntegrateChannel : public MathChannel
@@ -55,7 +59,7 @@ public:
 		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
 		const sigrok::Unit *sr_unit,
 		shared_ptr<data::AnalogSignal> int_signal,
-		const QString device_name,
+		shared_ptr<devices::Device> parent_device,
 		const QString channel_group_name,
 		QString channel_name,
 		double channel_start_timestamp);
