@@ -29,7 +29,9 @@
 #include <qwt_plot_curve.h>
 #include <qwt_plot_grid.h>
 #include <qwt_plot_layout.h>
+#include <qwt_plot_panner.h>
 #include <qwt_plot_picker.h>
+#include <qwt_plot_magnifier.h>
 #include <qwt_scale_draw.h>
 #include <qwt_symbol.h>
 
@@ -121,6 +123,9 @@ Plot::Plot(data::BaseCurve *curve_data, QWidget *parent) :
 	grid->enableY(true);
 	grid->enableYMin(false);
 	grid->attach(this);
+
+	(void)new QwtPlotPanner(this->canvas());
+	(void)new QwtPlotMagnifier(this->canvas());
 
 	init_curve();
 }
