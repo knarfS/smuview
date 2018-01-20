@@ -393,8 +393,8 @@ void Plot::timerEvent(QTimerEvent *event)
 		QRectF boundaries = curve_data_->boundingRect();
 
 		// Check for x axis resize
-		// TODO: this is for time only! Implement like y axis!
-		if (boundaries.right() > x_interval_.maxValue()) {
+		if (boundaries.left() < x_interval_.minValue() ||
+			boundaries.right() > x_interval_.maxValue()) {
 			increment_x_interval();
 			intervals_changed = true;
 		}

@@ -53,7 +53,9 @@ Device::Device(const shared_ptr<sigrok::Context> &sr_context,
 		shared_ptr<sigrok::Device> sr_device):
 	sr_context_(sr_context),
 	sr_device_(sr_device),
-	device_open_(false)
+	device_open_(false),
+	out_of_memory_(false),
+	frame_began_(false)
 {
 	aquisition_start_timestamp_ =
 		QDateTime::currentMSecsSinceEpoch() / (double)1000;
