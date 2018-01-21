@@ -20,6 +20,7 @@
 #include <utility>
 
 #include <QDebug>
+#include <QVariant>
 
 #include "quantitycombobox.hpp"
 #include "src/util.hpp"

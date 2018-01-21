@@ -20,6 +20,7 @@
 #include <QDebug>
 #include <QListView>
 #include <QListWidgetItem>
+#include <QVariant>
 
 #include "quantityflagslist.hpp"
 #include "src/util.hpp"
@@ -61,6 +62,7 @@ void QuantityFlagsList::setup_ui()
 		QListWidgetItem *item = new QListWidgetItem();
 		item->setText(qf_name_pair.second);
 		item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
+		item->setData(Qt::UserRole, QVariant::fromValue(qf_name_pair.first));
 		this->addItem(item);
 	}
 }
