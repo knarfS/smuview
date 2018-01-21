@@ -164,11 +164,15 @@ public:
 
 	/**
 	 * Inits a signal
+	 *
+	 * TODO: Implement here!
 	 */
+	/*
 	virtual shared_ptr<data::BaseSignal> init_signal(
 		const sigrok::Quantity *sr_quantity,
 		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
 		const sigrok::Unit *sr_unit) = 0;
+	*/
 
 	virtual void save_settings(QSettings &settings) const;
 	virtual void restore_settings(QSettings &settings);

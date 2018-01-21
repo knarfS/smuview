@@ -17,8 +17,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CHANNELS_MATHCHANNEL_HPP
-#define CHANNELS_MATHCHANNEL_HPP
+#ifndef CHANNELS_MULTIPLYSSCHANNEL_HPP
+#define CHANNELS_MULTIPLYSSCHANNEL_HPP
 
 #include <memory>
 #include <vector>
@@ -26,6 +26,7 @@
 #include <QObject>
 
 #include "src/channels/basechannel.hpp"
+#include "src/channels/mathchannel.hpp"
 
 using std::shared_ptr;
 using std::vector;
@@ -39,7 +40,7 @@ class Unit;
 namespace sv {
 
 namespace data {
-class BaseSignal;
+class AnalogSignal;
 }
 
 namespace devices {
@@ -48,68 +49,34 @@ class Device;
 
 namespace channels {
 
-enum class MathChannelType {
-		MultiplyChannel,
-		DivideChannel,
-		IntegrateChannel
-};
-
-class MathChannel : public BaseChannel
+class MultiplySSChannel : public MathChannel
 {
 	Q_OBJECT
 
 public:
-	MathChannel(
+	MultiplySSChannel(
 		const sigrok::Quantity *sr_quantity,
 		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
 		const sigrok::Unit *sr_unit,
+		shared_ptr<data::AnalogSignal> signal_1,
+		shared_ptr<data::AnalogSignal> signal_2,
 		shared_ptr<devices::Device> parent_device,
 		const QString channel_group_name,
 		QString channel_name,
 		double channel_start_timestamp);
 
-public:
-	/**
-	 * Gets the index number of this channel
-	 */
-	unsigned int index() const;
+private:
+	shared_ptr<data::AnalogSignal> signal_1_;
+	shared_ptr<data::AnalogSignal> signal_2_;
+	size_t next_signal_1_pos_;
+	size_t next_signal_2_pos_;
 
-	/**
-	 * Inits a signal
-	 */
-	/*
-	shared_ptr<data::BaseSignal> init_signal(
-		const sigrok::Quantity *sr_quantity,
-		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
-		const sigrok::Unit *sr_unit);
-	*/
-
-	/**
-	 * Inits a signal.
-	 *
-	 * Must be called after instanziation of the object, because of the use of
-	 * shared_from_this() in here! init_signal().
-	 *
-	 * TODO: Move to base
-	 * TODO: Reinmplement, so that init_signal() can be called from ctor
-	 */
-	shared_ptr<data::BaseSignal> init_signal();
-
-protected:
-	/**
-	 * Add a single sample with timestamp to the channel/signal
-	 */
-	void push_sample(void *sample, double timestamp);
-
-	int digits_;
-	int decimal_places_;
-	const sigrok::Quantity *sr_quantity_;
-	vector<const sigrok::QuantityFlag *> sr_quantity_flags_;
-	const sigrok::Unit *sr_unit_;
+private Q_SLOTS:
+	void on_sample_added();
 
 };
 
 } // namespace channels
 } // namespace sv
 
-#endif // CHANNELS_MATHCHANNEL_HPP
+#endif // CHANNELS_MULTIPLYSSCHANNEL_HPP

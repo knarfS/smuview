@@ -87,6 +87,8 @@ public:
 
 	/**
 	 * Inits a signal
+	 *
+	 * TODO: Move to base!
 	 */
 	shared_ptr<data::BaseSignal> init_signal(
 		const sigrok::Quantity *sr_quantity,

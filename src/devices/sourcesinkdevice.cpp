@@ -27,8 +27,10 @@
 #include "sourcesinkdevice.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/channels/dividechannel.hpp"
+#include "src/channels/hardwarechannel.hpp"
 #include "src/channels/integratechannel.hpp"
-#include "src/channels/multiplychannel.hpp"
+#include "src/channels/mathchannel.hpp"
+#include "src/channels/multiplysschannel.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/devices/configurable.hpp"
@@ -61,6 +63,7 @@ void SourceSinkDevice::init_channels()
 	for (auto chg_name_channels_pair : channel_group_name_map_) {
 		for (auto channel : chg_name_channels_pair.second) {
 			// TODO: preinit with channel.meaning.mq, ...
+			//       (must be implemented in sigrok)
 			bool init = false;
 			const sigrok::Quantity *sr_quantity;
 			vector<const sigrok::QuantityFlag *> sr_quantity_flags;
@@ -91,8 +94,11 @@ void SourceSinkDevice::init_channels()
 			}
 
 			if (init) {
-				channel->set_fixed_signal(true);
-				channel->init_signal(sr_quantity, sr_quantity_flags, sr_unit);
+				auto hw_channel =
+					static_pointer_cast<channels::HardwareChannel>(channel);
+				hw_channel->set_fixed_signal(true);
+				hw_channel->init_signal(
+					sr_quantity, sr_quantity_flags, sr_unit);
 			}
 		}
 
@@ -115,18 +121,18 @@ void SourceSinkDevice::init_channels()
 
 		// Create power channel
 		if (voltage_signal && current_signal && !power_signal) {
-			shared_ptr<channels::MultiplyChannel> power_channel =
-				make_shared<channels::MultiplyChannel>(
+			shared_ptr<channels::MultiplySSChannel> power_channel =
+				make_shared<channels::MultiplySSChannel>(
 					sigrok::Quantity::POWER,
 					vector<const sigrok::QuantityFlag *>(),
 					sigrok::Unit::WATT,
 					voltage_signal, current_signal,
 					shared_from_this(), chg_name, tr("P"),
 					aquisition_start_timestamp_);
-
-				power_signal = static_pointer_cast<data::AnalogSignal>(
-					power_channel->actual_signal());
-				Device::add_channel(power_channel, chg_name);
+			power_channel->init_signal();
+			power_signal = static_pointer_cast<data::AnalogSignal>(
+				power_channel->actual_signal());
+			Device::add_channel(power_channel, chg_name);
 		}
 
 		// Create resistance channel
@@ -139,8 +145,8 @@ void SourceSinkDevice::init_channels()
 					voltage_signal, current_signal,
 					shared_from_this(), chg_name, tr("R"),
 					aquisition_start_timestamp_);
-
-				Device::add_channel(resistance_channel, chg_name);
+			resistance_channel->init_signal();
+			Device::add_channel(resistance_channel, chg_name);
 		}
 
 		// Create Wh channel
@@ -153,8 +159,8 @@ void SourceSinkDevice::init_channels()
 					power_signal,
 					shared_from_this(), chg_name, tr("Wh"),
 					aquisition_start_timestamp_);
-
-				Device::add_channel(wh_channel, chg_name);
+			wh_channel->init_signal();
+			Device::add_channel(wh_channel, chg_name);
 		}
 
 		// Create Ah channel
@@ -167,8 +173,8 @@ void SourceSinkDevice::init_channels()
 					current_signal,
 					shared_from_this(), chg_name, tr("Ah"),
 					aquisition_start_timestamp_);
-
-				Device::add_channel(ah_channel, chg_name);
+			ah_channel->init_signal();
+			Device::add_channel(ah_channel, chg_name);
 		}
 	}
 }

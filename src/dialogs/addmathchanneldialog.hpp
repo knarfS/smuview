@@ -64,9 +64,11 @@ public:
 
 private:
 	void setup_ui();
-	void setup_ui_multiply_tab();
-	void setup_ui_divide_tab();
-	void setup_ui_integrate_tab();
+	void setup_ui_multiply_signals_tab();
+	void setup_ui_multiply_signal_tab();
+	void setup_ui_divide_signals_tab();
+	void setup_ui_divide_signal_tab();
+	void setup_ui_integrate_signal_tab();
 
 	const Session &session_;
 	const shared_ptr<devices::HardwareDevice> device_;
@@ -77,8 +79,15 @@ private:
 	widgets::QuantityComboBox *quantity_box_;
 	widgets::QuantityFlagsList *quantity_flags_list_;
 	widgets::UnitComboBox *unit_box_;
-	widgets::SignalTree *multiply_signal_1_tree_;
-	widgets::SignalTree *multiply_signal_2_tree_;
+	widgets::SignalTree *m_ss_signal_1_tree_;
+	widgets::SignalTree *m_ss_signal_2_tree_;
+	widgets::SignalTree *m_sf_signal_tree_;
+	QLineEdit *m_sf_factor_edit_;
+	widgets::SignalTree *d_ss_signal_1_tree_;
+	widgets::SignalTree *d_ss_signal_2_tree_;
+	widgets::SignalTree *d_sf_signal_tree_;
+	QLineEdit *d_sf_factor_edit_;
+	widgets::SignalTree *i_s_signal_tree_;
 	QDialogButtonBox *button_box_;
 
 public Q_SLOTS:

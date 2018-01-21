@@ -166,7 +166,9 @@ void SignalTree::add_channel(shared_ptr<channels::BaseChannel> channel,
 {
 	QTreeWidgetItem *chg_item;
 	if (channel_group_name.size() > 0) {
-		if (channel_group_map_.count(channel_group_name) == 0) {
+		if (channel_group_map_.count(channel_group_name) != 0)
+			chg_item = channel_group_map_[channel_group_name];
+		else {
 			// Channel is in a channel group, add group first
 			chg_item = new QTreeWidgetItem();
 			chg_item->setIcon(0, QIcon::fromTheme(
@@ -176,6 +178,7 @@ void SignalTree::add_channel(shared_ptr<channels::BaseChannel> channel,
 
 			channel_group_map_.insert(make_pair(channel_group_name, chg_item));
 		}
+
 		parent = channel_group_map_[channel_group_name];
 	}
 

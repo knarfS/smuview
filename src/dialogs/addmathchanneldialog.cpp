@@ -20,14 +20,18 @@
 #include <QComboBox>
 #include <QDebug>
 #include <QFormLayout>
+#include <QMessageBox>
 #include <QString>
 #include <QVBoxLayout>
 #include <QWidget>
 
 #include "addmathchanneldialog.hpp"
 #include "src/channels/basechannel.hpp"
+#include "src/channels/dividechannel.hpp"
+#include "src/channels/integratechannel.hpp"
 #include "src/channels/mathchannel.hpp"
-#include "src/channels/multiplychannel.hpp"
+#include "src/channels/multiplysfchannel.hpp"
+#include "src/channels/multiplysschannel.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/devices/device.hpp"
 #include "src/devices/hardwaredevice.hpp"
@@ -61,49 +65,30 @@ void AddMathChannelDialog::setup_ui()
 	this->setWindowIcon(mainIcon);
 	this->setWindowTitle(tr("Add Math Channel"));
 
-	QFormLayout *form_layout = new QFormLayout();
+	QVBoxLayout *main_layout = new QVBoxLayout();
 
+	// General stuff
+	QFormLayout *form_layout = new QFormLayout();
 	name_edit_ = new QLineEdit();
 	form_layout->addRow(tr("Name"), name_edit_);
-
 	quantity_box_ = new widgets::QuantityComboBox();
 	form_layout->addRow(tr("Quantity"), quantity_box_);
-
 	quantity_flags_list_ = new widgets::QuantityFlagsList();
 	form_layout->addRow(tr("Quantity Flags"), quantity_flags_list_);
-
 	unit_box_ = new widgets::UnitComboBox();
 	form_layout->addRow(tr("Unit"), unit_box_);
+	main_layout->addLayout(form_layout);
 
-	multiply_signal_1_tree_ = new widgets::SignalTree(
-		session_, true, true, false, device_);
-	form_layout->addRow(tr("Signal 1"), multiply_signal_1_tree_);
-
-	multiply_signal_2_tree_ = new widgets::SignalTree(
-		session_, true, true, false, device_);
-	form_layout->addRow(tr("Signal 2"), multiply_signal_2_tree_);
-
-	button_box_ = new QDialogButtonBox(
-		QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
-	form_layout->addWidget(button_box_);
-	connect(button_box_, SIGNAL(accepted()), this, SLOT(accept()));
-	connect(button_box_, SIGNAL(rejected()), this, SLOT(reject()));
-
-	this->setLayout(form_layout);
-
-
-	/*
-	QVBoxLayout *main_layout = new QVBoxLayout;
-
-
-
+	// Tabs
 	tab_widget_ = new QTabWidget();
-	this->setup_ui_multiply_tab();
-	this->setup_ui_divide_tab();
-	this->setup_ui_integrate_tab();
-	//tab_widget_->setCurrentIndex(selected_view_type_);
+	this->setup_ui_multiply_signals_tab();
+	this->setup_ui_multiply_signal_tab();
+	this->setup_ui_divide_signals_tab();
+	this->setup_ui_integrate_signal_tab();
+	tab_widget_->setCurrentIndex(0);
 	main_layout->addWidget(tab_widget_);
 
+	// Buttons
 	button_box_ = new QDialogButtonBox(
 		QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
 	main_layout->addWidget(button_box_);
@@ -111,61 +96,77 @@ void AddMathChannelDialog::setup_ui()
 	connect(button_box_, SIGNAL(rejected()), this, SLOT(reject()));
 
 	this->setLayout(main_layout);
-	*/
 }
 
-void AddMathChannelDialog::setup_ui_multiply_tab()
+void AddMathChannelDialog::setup_ui_multiply_signals_tab()
 {
-	QString title(tr("Multiply"));
-	QWidget *multiply_widget = new QWidget();
+	QString title(tr("S1 * S2"));
 
-	QVBoxLayout *main_layout = new QVBoxLayout;
-
-	multiply_signal_1_tree_ = new widgets::SignalTree(
-		session_, true, true, false, device_);
-	main_layout->addWidget(multiply_signal_1_tree_);
-
-	multiply_signal_2_tree_ = new widgets::SignalTree(
-		session_, true, true, false, device_);
-	main_layout->addWidget(multiply_signal_2_tree_);
-	multiply_widget->setLayout(main_layout);
-
+	QWidget *widget = new QWidget();
 	QFormLayout *form_layout = new QFormLayout();
 
-	widgets::QuantityComboBox *quantity_box_ =
-		new widgets::QuantityComboBox();
-	form_layout->addRow(tr("Quantity"), quantity_box_);
+	m_ss_signal_1_tree_ = new widgets::SignalTree(
+		session_, true, true, false, device_);
+	form_layout->addRow(tr("Signal 1"), m_ss_signal_1_tree_);
 
-	widgets::QuantityFlagsList *quantity_flags_list_ =
-		new widgets::QuantityFlagsList();
-	form_layout->addRow(tr("Quantity Flags"), quantity_flags_list_);
+	m_ss_signal_2_tree_ = new widgets::SignalTree(
+		session_, true, true, false, device_);
+	form_layout->addRow(tr("Signal 2"), m_ss_signal_2_tree_);
 
-	widgets::UnitComboBox *unit_box_ = new widgets::UnitComboBox();
-	form_layout->addRow(tr("Unit"), unit_box_);
-
-	main_layout->addLayout(form_layout);
-
-	tab_widget_->addTab(multiply_widget, title);
+	widget->setLayout(form_layout);
+	tab_widget_->addTab(widget, title);
 }
 
-void AddMathChannelDialog::setup_ui_divide_tab()
+void AddMathChannelDialog::setup_ui_multiply_signal_tab()
 {
-	QString title(tr("Divide"));
-	QWidget *divide_widget = new QWidget();
-	QVBoxLayout *layout = new QVBoxLayout();
-	divide_widget->setLayout(layout);
+	QString title(tr("S1 * f"));
 
-	tab_widget_->addTab(divide_widget, title);
+	QWidget *widget = new QWidget();
+	QFormLayout *form_layout = new QFormLayout();
+
+	m_sf_signal_tree_ = new widgets::SignalTree(
+		session_, true, true, false, device_);
+	form_layout->addRow(tr("Signal"), m_sf_signal_tree_);
+
+	m_sf_factor_edit_ = new QLineEdit();
+	form_layout->addRow(tr("Factor"), m_sf_factor_edit_);
+
+	widget->setLayout(form_layout);
+	tab_widget_->addTab(widget, title);
 }
 
-void AddMathChannelDialog::setup_ui_integrate_tab()
+void AddMathChannelDialog::setup_ui_divide_signals_tab()
 {
-	QString title(tr("Integrate"));
-	QWidget *integrate_widget = new QWidget();
-	QVBoxLayout *layout = new QVBoxLayout();
-	integrate_widget->setLayout(layout);
+	QString title(tr("S1 / S2"));
 
-	tab_widget_->addTab(integrate_widget, title);
+	QWidget *widget = new QWidget();
+	QFormLayout *form_layout = new QFormLayout();
+
+	d_ss_signal_1_tree_ = new widgets::SignalTree(
+		session_, true, true, false, device_);
+	form_layout->addRow(tr("Signal 1"), d_ss_signal_1_tree_);
+
+	d_ss_signal_2_tree_ = new widgets::SignalTree(
+		session_, true, true, false, device_);
+	form_layout->addRow(tr("Signal 2"), d_ss_signal_2_tree_);
+
+	widget->setLayout(form_layout);
+	tab_widget_->addTab(widget, title);
+}
+
+void AddMathChannelDialog::setup_ui_integrate_signal_tab()
+{
+	QString title(tr("S1 * dx"));
+
+	QWidget *widget = new QWidget();
+	QFormLayout *form_layout = new QFormLayout();
+
+	i_s_signal_tree_ = new widgets::SignalTree(
+		session_, true, true, false, device_);
+	form_layout->addRow(tr("Signal"), i_s_signal_tree_);
+
+	widget->setLayout(form_layout);
+	tab_widget_->addTab(widget, title);
 }
 
 vector<shared_ptr<channels::BaseChannel>> AddMathChannelDialog::channels()
@@ -175,29 +176,149 @@ vector<shared_ptr<channels::BaseChannel>> AddMathChannelDialog::channels()
 
 void AddMathChannelDialog::accept()
 {
-	if (name_edit_->text().size() == 0)
+	if (name_edit_->text().size() == 0) {
+		QMessageBox::warning(this,
+			tr("Channel name missing"),
+			tr("Please enter a name for the new channel."),
+			QMessageBox::Ok);
 		return;
+	}
 
-	shared_ptr<data::AnalogSignal> signal_1;
-	auto signals_1 = multiply_signal_1_tree_->selected_signals();
-	if (signals_1.size() != 1)
-		return;
-	signal_1 = static_pointer_cast<data::AnalogSignal>(signals_1[0]);
+	QString channel_group_name("Math User");
 
-	shared_ptr<data::AnalogSignal> signal_2;
-	auto signals_2 = multiply_signal_2_tree_->selected_signals();
-	if (signals_2.size() != 1)
-		return;
-	signal_2 = static_pointer_cast<data::AnalogSignal>(signals_2[0]);
+	shared_ptr<channels::MathChannel> channel;
+	switch (tab_widget_->currentIndex()) {
+	case 0: {
+			shared_ptr<data::AnalogSignal> signal_1;
+			auto signals_1 = m_ss_signal_1_tree_->selected_signals();
+			if (signals_1.size() != 1) {
+				QMessageBox::warning(this,
+					tr("Signal 1 missing"),
+					tr("Please choose a signal 1 for the new channel."),
+					QMessageBox::Ok);
+				return;
+			}
+			signal_1 = static_pointer_cast<data::AnalogSignal>(signals_1[0]);
 
-	auto channel = make_shared<channels::MultiplyChannel>(
-		quantity_box_->selected_sr_quantity(),
-		quantity_flags_list_->selected_sr_quantity_flags(),
-		unit_box_->selected_sr_unit(),
-		signal_1, signal_2,
-		device_, tr("Math User"), name_edit_->text(),
-		signal_1->signal_start_timestamp());
+			shared_ptr<data::AnalogSignal> signal_2;
+			auto signals_2 = m_ss_signal_1_tree_->selected_signals();
+			if (signals_2.size() != 1) {
+				QMessageBox::warning(this,
+					tr("Signal 2 missing"),
+					tr("Please choose a signal 2 for the new channel."),
+					QMessageBox::Ok);
+				return;
+			}
+			signal_2 = static_pointer_cast<data::AnalogSignal>(signals_2[0]);
 
+			qWarning() << "----3----";
+			channel = make_shared<channels::MultiplySSChannel>(
+				quantity_box_->selected_sr_quantity(),
+				quantity_flags_list_->selected_sr_quantity_flags(),
+				unit_box_->selected_sr_unit(),
+				signal_1, signal_2,
+				device_, channel_group_name, name_edit_->text(),
+				signal_1->signal_start_timestamp());
+			qWarning() << "----4----";
+		}
+		break;
+	case 1: {
+			shared_ptr<data::AnalogSignal> signal;
+			auto signals = m_sf_signal_tree_->selected_signals();
+			if (signals.size() != 1) {
+				QMessageBox::warning(this,
+					tr("Signal missing"),
+					tr("Please choose a signal for the new channel."),
+					QMessageBox::Ok);
+				return;
+			}
+			signal = static_pointer_cast<data::AnalogSignal>(signals[0]);
+
+			if (m_sf_factor_edit_->text().size() == 0) {
+				QMessageBox::warning(this,
+					tr("Factor missing"),
+					tr("Please enter a factor for the new channel."),
+					QMessageBox::Ok);
+				return;
+			}
+
+			bool ok;
+			double factor = QString(m_sf_factor_edit_->text()).toDouble(&ok);
+			if (!ok) {
+				QMessageBox::warning(this,
+					tr("Factor not a number"),
+					tr("Please enter a number as factor for the new channel."),
+					QMessageBox::Ok);
+				return;
+			}
+
+			channel = make_shared<channels::MultiplySFChannel>(
+				quantity_box_->selected_sr_quantity(),
+				quantity_flags_list_->selected_sr_quantity_flags(),
+				unit_box_->selected_sr_unit(),
+				signal, factor,
+				device_, channel_group_name, name_edit_->text(),
+				signal->signal_start_timestamp());
+		}
+		break;
+	case 2: {
+			shared_ptr<data::AnalogSignal> signal_1;
+			auto signals_1 = d_ss_signal_1_tree_->selected_signals();
+			if (signals_1.size() != 1) {
+				QMessageBox::warning(this,
+					tr("Signal 1 missing"),
+					tr("Please choose a signal 1 for the new channel."),
+					QMessageBox::Ok);
+				return;
+			}
+			signal_1 = static_pointer_cast<data::AnalogSignal>(signals_1[0]);
+
+			shared_ptr<data::AnalogSignal> signal_2;
+			auto signals_2 = d_ss_signal_1_tree_->selected_signals();
+			if (signals_2.size() != 1) {
+				QMessageBox::warning(this,
+					tr("Signal 2 missing"),
+					tr("Please choose a signal 2 for the new channel."),
+					QMessageBox::Ok);
+				return;
+			}
+			signal_2 = static_pointer_cast<data::AnalogSignal>(signals_2[0]);
+
+			channel = make_shared<channels::DivideChannel>(
+				quantity_box_->selected_sr_quantity(),
+				quantity_flags_list_->selected_sr_quantity_flags(),
+				unit_box_->selected_sr_unit(),
+				signal_1, signal_2,
+				device_, channel_group_name, name_edit_->text(),
+				signal_1->signal_start_timestamp());
+		}
+		break;
+	case 3: {
+			shared_ptr<data::AnalogSignal> signal;
+			auto signals_i = i_s_signal_tree_->selected_signals();
+			if (signals_i.size() != 1) {
+				QMessageBox::warning(this,
+					tr("Signal missing"),
+					tr("Please choose a signal for the new channel."),
+					QMessageBox::Ok);
+				return;
+			}
+			signal = static_pointer_cast<data::AnalogSignal>(signals_i[0]);
+
+			channel = make_shared<channels::IntegrateChannel>(
+				quantity_box_->selected_sr_quantity(),
+				quantity_flags_list_->selected_sr_quantity_flags(),
+				unit_box_->selected_sr_unit(),
+				signal,
+				device_, channel_group_name, name_edit_->text(),
+				signal->signal_start_timestamp());
+		}
+		break;
+	default:
+		break;
+	}
+
+	channel->init_signal();
 	channels_.push_back(channel);
 
 	QDialog::accept();

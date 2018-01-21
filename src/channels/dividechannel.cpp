@@ -66,14 +66,9 @@ DivideChannel::DivideChannel(
 
 void DivideChannel::on_sample_added()
 {
-	size_t dividend_signal_sample_count = dividend_signal_->get_sample_count();
-	if (dividend_signal_sample_count < next_dividend_signal_pos_)
-		return;
-	size_t divisor_signal_sample_count = divisor_signal_->get_sample_count();
-	if (divisor_signal_sample_count < next_divisor_signal_pos_)
-		return;
-
 	// Divide
+	size_t dividend_signal_sample_count = dividend_signal_->get_sample_count();
+	size_t divisor_signal_sample_count = divisor_signal_->get_sample_count();
 	while (dividend_signal_sample_count > next_dividend_signal_pos_ &&
 			divisor_signal_sample_count > next_divisor_signal_pos_) {
 
@@ -88,8 +83,10 @@ void DivideChannel::on_sample_added()
 		float value;
 		if (divisor_sample.second == 0) {
 			if (dividend_sample.second > 0)
+				// TODO: use infinity() instead?
 				value = std::numeric_limits<float>::max();
 			else
+				// TODO: use -1 * infinity() instead?
 				value = std::numeric_limits<float>::lowest();
 		}
 		else

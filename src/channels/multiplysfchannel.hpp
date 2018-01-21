@@ -17,8 +17,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CHANNELS_MULTIPLYCHANNEL_HPP
-#define CHANNELS_MULTIPLYCHANNEL_HPP
+#ifndef CHANNELS_MULTIPLYSFCHANNEL_HPP
+#define CHANNELS_MULTIPLYSFCHANNEL_HPP
 
 #include <memory>
 #include <vector>
@@ -49,27 +49,26 @@ class Device;
 
 namespace channels {
 
-class MultiplyChannel : public MathChannel
+class MultiplySFChannel : public MathChannel
 {
 	Q_OBJECT
 
 public:
-	MultiplyChannel(
+	MultiplySFChannel(
 		const sigrok::Quantity *sr_quantity,
 		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
 		const sigrok::Unit *sr_unit,
-		shared_ptr<data::AnalogSignal> signal1,
-		shared_ptr<data::AnalogSignal> signal2,
+		shared_ptr<data::AnalogSignal> signal,
+		double factor,
 		shared_ptr<devices::Device> parent_device,
 		const QString channel_group_name,
 		QString channel_name,
 		double channel_start_timestamp);
 
 private:
-	shared_ptr<data::AnalogSignal> signal1_;
-	shared_ptr<data::AnalogSignal> signal2_;
-	size_t next_signal1_pos_;
-	size_t next_signal2_pos_;
+	shared_ptr<data::AnalogSignal> signal_;
+	double factor_;
+	size_t next_signal_pos_;
 
 private Q_SLOTS:
 	void on_sample_added();
@@ -79,4 +78,4 @@ private Q_SLOTS:
 } // namespace channels
 } // namespace sv
 
-#endif // CHANNELS_MULTIPLYCHANNEL_HPP
+#endif // CHANNELS_MULTIPLYSFCHANNEL_HPP

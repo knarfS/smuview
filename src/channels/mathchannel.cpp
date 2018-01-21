@@ -59,8 +59,6 @@ MathChannel::MathChannel(
 	channel_type_ = ChannelType::MathChannel;
 	has_fixed_signal_ = true;
 	name_ = channel_name;
-
-	init_signal(sr_quantity_, sr_quantity_flags_, sr_unit_);
 }
 
 unsigned int MathChannel::index() const
@@ -68,25 +66,18 @@ unsigned int MathChannel::index() const
 	return 1000;
 }
 
-// TODO: Move to base
-shared_ptr<data::BaseSignal> MathChannel::init_signal(
-	const sigrok::Quantity *sr_quantity,
-	vector<const sigrok::QuantityFlag *> sr_quantity_flags,
-	const sigrok::Unit *sr_unit)
+shared_ptr<data::BaseSignal> MathChannel::init_signal()
 {
-	// TODO: use class sr_quantity_, sr_quantity_flags_, sr_unit_
-	// and name init_signal() for math channles
-
 	// TODO: At the moment, only analog channels are supported
 	shared_ptr<data::AnalogSignal> signal = make_shared<data::AnalogSignal>(
-		sr_quantity, sr_quantity_flags, sr_unit,
+		sr_quantity_, sr_quantity_flags_, sr_unit_,
 		shared_from_this(), channel_start_timestamp_);
 
 	connect(this, SIGNAL(channel_start_timestamp_changed(double)),
 		signal.get(), SLOT(on_channel_start_timestamp_changed(double)));
 
 	actual_signal_ = signal;
-	quantity_t q_qf = make_pair(sr_quantity, sr_quantity_flags);
+	quantity_t q_qf = make_pair(sr_quantity_, sr_quantity_flags_);
 	signal_map_.insert(make_pair(q_qf, signal));
 
 	Q_EMIT signal_added(signal);
