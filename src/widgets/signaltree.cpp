@@ -108,9 +108,12 @@ void SignalTree::setup_ui()
 		devices.insert(selected_device_);
 
 	for (auto device : devices) {
+		bool expanded = true;
+		/*
 		bool expanded = false;
 		if (selected_device_ && selected_device_.get() == device.get())
 			expanded = true;
+		*/
 		/* TODO
 		for (auto sel_signal : selected_signals_) {
 			if (sel_signal.get() == signal.get()) {

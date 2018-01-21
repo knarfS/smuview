@@ -58,7 +58,13 @@ SaveDialog::SaveDialog(const Session &session,
 
 void SaveDialog::setup_ui()
 {
+	QIcon mainIcon;
+	mainIcon.addFile(QStringLiteral(":/icons/smuview.ico"),
+		QSize(), QIcon::Normal, QIcon::Off);
+	this->setWindowIcon(mainIcon);
 	this->setWindowTitle(tr("Save Signals"));
+	this->setMinimumWidth(450);
+	this->setMinimumHeight(400);
 
 	QVBoxLayout *main_layout = new QVBoxLayout;
 
@@ -147,7 +153,7 @@ void SaveDialog::save(QString file_name)
 			QString value("");
 
 			size_t sample_count = sample_counts[j];
-			if (sample_count >= i) {
+			if (i < sample_count-1) {
 				// More samples for this signal
 				auto a_signal = static_pointer_cast<data::AnalogSignal>(
 					signals.at(j));
@@ -207,17 +213,21 @@ void SaveDialog::save_combined(QString file_name)
 	output_file << signal_name_header_line.toStdString() << std::endl;
 
 	// Data
-	bool finish = false;
-	while (!finish) {
+	while (true) {
 		double next_timestamp = -1;
 		for (size_t i=0; i<signals.size(); i++) {
+			if (sample_pos[i] >= sample_counts[i]-1)
+				continue;
+
 			auto a_signal = static_pointer_cast<data::AnalogSignal>(signals[i]);
 			double timestamp =
 				a_signal->get_sample(sample_pos[i], relative_time).first;
-
 			if (next_timestamp < 0 || timestamp < next_timestamp)
 				next_timestamp = timestamp;
 		}
+
+		if (next_timestamp < 0)
+			break;
 
 		// Timestamp
 		QString line;
@@ -230,16 +240,9 @@ void SaveDialog::save_combined(QString file_name)
 		for (size_t i=0; i<signals.size(); i++) {
 			line.append(sep);
 
-			if (sample_counts[i] < sample_pos[i]) {
-				finish = true;
-				continue;
-			}
-			finish = false;
-
 			auto a_signal = static_pointer_cast<data::AnalogSignal>(signals[i]);
 			data::sample_t sample =
 				a_signal->get_sample(sample_pos[i], relative_time);
-
 			double timestamp = sample.first;
 			if (timestamp == next_timestamp) {
 				line.append(QString("%1").arg(sample.second));
