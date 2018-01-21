@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,9 +23,10 @@
 #include <QApplication>
 #include <QDebug>
 #include <QDockWidget>
+#include <QHBoxLayout>
 #include <QLabel>
 #include <QMessageBox>
-#include <QHBoxLayout>
+#include <QSizePolicy>
 #include <QVBoxLayout>
 
 #include "mainwindow.hpp"
@@ -276,6 +277,8 @@ void MainWindow::setup_ui()
 	// Signal Tree Dock
 	signal_tree_ = new widgets::SignalTree(
 		*session_, true, false, false, nullptr);
+	signal_tree_->setSizePolicy(
+		QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);
 	connect(this, SIGNAL(device_added(shared_ptr<devices::HardwareDevice>)),
 		signal_tree_, SLOT(on_device_added(shared_ptr<devices::HardwareDevice>)));
 
@@ -283,7 +286,6 @@ void MainWindow::setup_ui()
 	// before dock->setWidget() is called.
 	QDockWidget* dock = new QDockWidget(tr("Devices && Signals"));
 	dock->setAllowedAreas(Qt::AllDockWidgetAreas);
-	dock->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	dock->setContextMenuPolicy(Qt::PreventContextMenu);
 	dock->setFeatures(QDockWidget::DockWidgetMovable |
 		QDockWidget::DockWidgetFloatable);
