@@ -103,8 +103,8 @@ void DeviceTab::setup_toolbar()
 
 	action_add_math_channel_->setText(tr("Add &Math Channel..."));
 	action_add_math_channel_->setIcon(
-		QIcon::fromTheme("office-chart-line",
-		QIcon(":/icons/office-chart-line.png")));
+		QIcon::fromTheme("accessories-calculator",
+		QIcon(":/icons/accessories-calculator.png")));
 	action_add_math_channel_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_M));
 	connect(action_add_math_channel_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_add_math_channel_triggered()));

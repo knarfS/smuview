@@ -21,6 +21,7 @@
 #include <QDebug>
 #include <QFormLayout>
 #include <QMessageBox>
+#include <QSizePolicy>
 #include <QString>
 #include <QVBoxLayout>
 #include <QWidget>
@@ -127,6 +128,10 @@ void AddMathChannelDialog::setup_ui_multiply_signal_tab()
 
 	m_sf_signal_tree_ = new widgets::SignalTree(
 		session_, true, true, false, device_);
+	// Workaround to vert. maximize the tree in the form layout
+	QSizePolicy policy = m_sf_signal_tree_->sizePolicy();
+	policy.setVerticalStretch(1);
+	m_sf_signal_tree_->setSizePolicy(policy);
 	form_layout->addRow(tr("Signal"), m_sf_signal_tree_);
 
 	m_sf_factor_edit_ = new QLineEdit();
@@ -164,6 +169,10 @@ void AddMathChannelDialog::setup_ui_integrate_signal_tab()
 
 	i_s_signal_tree_ = new widgets::SignalTree(
 		session_, true, true, false, device_);
+	// Workaround to vert. maximize the tree in the form layout
+	QSizePolicy policy = i_s_signal_tree_->sizePolicy();
+	policy.setVerticalStretch(1);
+	i_s_signal_tree_->setSizePolicy(policy);
 	form_layout->addRow(tr("Signal"), i_s_signal_tree_);
 
 	widget->setLayout(form_layout);
