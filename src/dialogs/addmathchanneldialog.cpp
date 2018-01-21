@@ -64,6 +64,7 @@ void AddMathChannelDialog::setup_ui()
 		QSize(), QIcon::Normal, QIcon::Off);
 	this->setWindowIcon(mainIcon);
 	this->setWindowTitle(tr("Add Math Channel"));
+	this->setMinimumWidth(550);
 
 	QVBoxLayout *main_layout = new QVBoxLayout();
 
@@ -100,7 +101,7 @@ void AddMathChannelDialog::setup_ui()
 
 void AddMathChannelDialog::setup_ui_multiply_signals_tab()
 {
-	QString title(tr("S1 * S2"));
+	QString title(tr("S\u2098(t) = S\u2081(t) * S\u2082(t)"));
 
 	QWidget *widget = new QWidget();
 	QFormLayout *form_layout = new QFormLayout();
@@ -119,7 +120,7 @@ void AddMathChannelDialog::setup_ui_multiply_signals_tab()
 
 void AddMathChannelDialog::setup_ui_multiply_signal_tab()
 {
-	QString title(tr("S1 * f"));
+	QString title(tr("S\u2098(t) = S(t) * f"));
 
 	QWidget *widget = new QWidget();
 	QFormLayout *form_layout = new QFormLayout();
@@ -137,7 +138,7 @@ void AddMathChannelDialog::setup_ui_multiply_signal_tab()
 
 void AddMathChannelDialog::setup_ui_divide_signals_tab()
 {
-	QString title(tr("S1 / S2"));
+	QString title(tr("S\u2098(t) = S\u2081(t) / S\u2082(t)"));
 
 	QWidget *widget = new QWidget();
 	QFormLayout *form_layout = new QFormLayout();
@@ -156,7 +157,7 @@ void AddMathChannelDialog::setup_ui_divide_signals_tab()
 
 void AddMathChannelDialog::setup_ui_integrate_signal_tab()
 {
-	QString title(tr("S1 * dx"));
+	QString title(tr("S\u2098(t) = \u222B S(t) * dt"));
 
 	QWidget *widget = new QWidget();
 	QFormLayout *form_layout = new QFormLayout();
