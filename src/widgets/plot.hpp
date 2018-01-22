@@ -75,7 +75,7 @@ protected:
 
 private:
 	void update_curve();
-	void increment_x_interval();
+	void increment_x_interval(QRectF boundaries);
 	void increment_y_interval(QRectF boundaries);
 
 	data::BaseCurve *curve_data_;
