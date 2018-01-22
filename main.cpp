@@ -20,16 +20,11 @@
 
 #include <cstdint>
 #include <getopt.h>
+
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
 #include <QDebug>
 #include <QSettings>
-
-#ifdef _WIN32
-#include <QtPlugin>
-Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin)
-Q_IMPORT_PLUGIN(QSvgPlugin)
-#endif
 
 #include "config.h"
 #include "src/application.hpp"
@@ -39,6 +34,12 @@ Q_IMPORT_PLUGIN(QSvgPlugin)
 
 #ifdef ENABLE_SIGNALS
 #include "signalhandler.hpp"
+#endif
+
+#ifdef _WIN32
+#include <QtPlugin>
+Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin)
+Q_IMPORT_PLUGIN(QSvgPlugin)
 #endif
 
 using std::exception;

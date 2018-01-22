@@ -1,0 +1,40 @@
+make MXE_TARGETS=i686-w64-mingw32.static.posix gcc glib libzip libusb1 libftdi1 glibmm qt5 boost check
+
+
+
+git clone https://github.com/mxe/mxe.git mxe-git
+cd mxe-git
+patch -p1 < mxe_fixes.patch
+ls -l
+patch -p1 < ~/Projekte/elektronik/sigrok/sigrok-util/cross-compile/mingw/mxe_fixes.patch
+make MXE_TARGETS=i686-w64-mingw32.static.posix gcc glib libzip libusb1    libftdi1 glibmm qt5 boost check
+
+
+
+
+make MXE_TARGETS=i686-w64-mingw32.static.posix \
+   MXE_PLUGIN_DIRS=plugins/examples/qt5-freeze \
+   gcc glib libzip libusb1 libftdi1 glibmm qtbase qtimageformats qtsvg \
+   boost check gendef qtbase_CONFIGURE_OPTS='-no-sql-mysql'
+
+
+
+
+
+git clone https://github.com/mxe/mxe.git mxe-git-qt5_10
+cd mxe-git-qt5_10
+patch -p1 < ~/Projekte/elektronik/sigrok/sigrok-util/cross-compile/mingw/mxe_fixes.patch
+make MXE_TARGETS=i686-w64-mingw32.static.posix gcc glib libzip libusb1 libftdi1 glibmm qt5 qwt boost check gendef
+
+make MXE_TARGETS=i686-w64-mingw32.static.posix gcc glib libzip libusb1 libftdi1 glibmm qt5 qwt boost check gendef MXE_CONFIGURE_OPTS='--with-default-msvcrt=msvcr100' mingw-w64_SOURCE_TREE=/home/frank/mingw-w64
+
+
+
+
+
+git clone https://github.com/mxe/mxe.git mxe-git-std
+cd mxe-git-std
+patch -p1 < ~/Projekte/elektronik/sigrok/sigrok-util/cross-compile/mingw/mxe_fixes.patch
+make MXE_TARGETS=i686-w64-mingw32.static.posix MXE_PLUGIN_DIRS=plugins/examples/qt5-freeze gcc glib libzip libusb1 libftdi1 glibmm qtbase qtimageformats qtsvg qwt boost check gendef qtbase_CONFIGURE_OPTS='-no-sql-mysql'
+
+make MXE_TARGETS=i686-w64-mingw32.static.posix MXE_PLUGIN_DIRS=plugins/examples/qt5-freeze gcc glib libzip libusb1 libftdi1 glibmm qtbase qtimageformats qtsvg qwt boost check gendef qtbase_CONFIGURE_OPTS='-no-sql-mysql' mingw-w64_SOURCE_TREE=/home/frank/mingw-w64 mingw-w64_CONFIGURE_OPTS='--with-default-msvcrt=msvcr100'

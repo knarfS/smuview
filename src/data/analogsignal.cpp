@@ -118,7 +118,7 @@ sample_t AnalogSignal::get_sample(size_t pos, bool is_relative_time) const
 void AnalogSignal::push_sample(void *sample, double timestamp,
 	size_t unit_size, int digits, int decimal_places)
 {
-	double dsample;
+	double dsample = 0.;
 	if (unit_size == size_of_float_)
 		dsample = (double) *(float *)sample;
 	else if (unit_size == size_of_double_)

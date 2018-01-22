@@ -3,7 +3,7 @@
 ##
 ## Copyright (C) 2012 Joel Holdsworth <joel@airwebreathe.org.uk>
 ## Copyright (C) 2012-2013 Alexandru Gagniuc <mr.nuke.me@gmail.com>
-## Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+## Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
 ##
 ## This program is free software: you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -200,6 +200,13 @@ set(smuview_RESOURCES
 	smuview.qrc
 )
 
+if(WIN32)
+	# Use the sigrok icon for the smuview.exe executable.
+	set(CMAKE_RC_COMPILE_OBJECT "${CMAKE_RC_COMPILER} -O coff -I${CMAKE_CURRENT_SOURCE_DIR} <SOURCE> <OBJECT>")
+	enable_language(RC)
+	list(APPEND smuview_SOURCES smuviewico.rc)
+endif()
+
 qt5_add_resources(smuview_RESOURCES_RCC ${smuview_RESOURCES})
 
 
@@ -271,13 +278,21 @@ if(WIN32)
 	list(APPEND SMUVIEW_LINK_LIBS Qt5::QSvgPlugin)
 	list(APPEND SMUVIEW_LINK_LIBS Qt5::QWindowsIntegrationPlugin)
 	list(APPEND SMUVIEW_LINK_LIBS -lQt5PlatformSupport ${QT5ALL_LDFLAGS})
+
+	# Form Qt 5.8 on, Qt5PlatformSupport is split into several plugins:
+	# QtAccessibilitySupport QtCliboardSupport QtEventDispatcherSupport
+	# QtFontDatabaseSupport QtGraphicsSupport QtThemeSupport (<- some are wrong)
+	#list(APPEND SMUVIEW_LINK_LIBS -lQt5AccessibilitySupport -lQt5EventDispatcherSupport)
+	#list(APPEND SMUVIEW_LINK_LIBS -lQt5FontDatabaseSupport -lQt5ThemeSupport)
+	#list(APPEND SMUVIEW_LINK_LIBS -lQt5ClipboardSupport -lQt5GraphicsSupport)
+	#list(APPEND SMUVIEW_LINK_LIBS ${QT5ALL_LDFLAGS})
 endif()
 
 add_executable(${PROJECT_NAME} ${smuview_SOURCES} ${smuview_RESOURCES_RCC})
 
 target_link_libraries(${PROJECT_NAME} ${SMUVIEW_LINK_LIBS})
 
-if(WIN32)
+if(WIN32 AND NOT ${CMAKE_BUILD_TYPE} STREQUAL "Debug")
 	# Pass -mwindows so that no "DOS box" opens when SmuView is started.
 	set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-mwindows")
 endif()

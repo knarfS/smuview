@@ -234,7 +234,7 @@ bool Configurable::has_set_config(const sigrok::ConfigKey *key) const
 template void Configurable::set_config(const sigrok::ConfigKey*, const bool);
 template void Configurable::set_config(const sigrok::ConfigKey*, const uint64_t);
 template void Configurable::set_config(const sigrok::ConfigKey*, const double);
-template void Configurable::set_config(const sigrok::ConfigKey*, const tuple<uint32_t, uint64_t>);
+template void Configurable::set_config(const sigrok::ConfigKey*, const pair<uint32_t, uint64_t>);
 template<typename T> void Configurable::set_config(
 		const sigrok::ConfigKey *key, const T value)
 {
@@ -556,9 +556,9 @@ void Configurable::set_measured_quantity(
 	uint64_t qf = 0;
     for (auto sr_qunatity_flag : sr_qunatity_flags)
 		qf |= sr_qunatity_flag->id();
-	auto q_mf_tuple = make_tuple(q, qf);
+	auto q_qf_pair = make_pair(q, qf);
 
-	set_config(sigrok::ConfigKey::MEASURED_QUANTITY, q_mf_tuple);
+	set_config(sigrok::ConfigKey::MEASURED_QUANTITY, q_qf_pair);
 }
 
 

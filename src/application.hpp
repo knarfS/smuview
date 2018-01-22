@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef APPLICATION_HPP
-#define APPLICATION_HPP
+#ifndef SV_APPLICATION_HPP
+#define SV_APPLICATION_HPP
 
 #include <QApplication>
 
@@ -34,4 +34,4 @@ private:
 
 };
 
-#endif // APPLICATION_HPP
+#endif // SV_APPLICATION_HPP
