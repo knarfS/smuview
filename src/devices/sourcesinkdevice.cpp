@@ -62,6 +62,9 @@ void SourceSinkDevice::init_channels()
 	// Preinitialize known fixed channels with a signal
 	for (auto chg_name_channels_pair : channel_group_name_map_) {
 		for (auto channel : chg_name_channels_pair.second) {
+			if (channel->type() != channels::ChannelType::AnalogChannel)
+				continue;
+
 			// TODO: preinit with channel.meaning.mq, ...
 			//       (must be implemented in sigrok)
 			bool init = false;
@@ -103,7 +106,7 @@ void SourceSinkDevice::init_channels()
 		}
 
 		// Math Channels
-		QString chg_name(tr("Math Auto"));
+		QString chg_name(tr("Math Auto")); // TODO: to voltage/curren channel group?
 		shared_ptr<data::AnalogSignal> voltage_signal;
 		shared_ptr<data::AnalogSignal> current_signal;
 		shared_ptr<data::AnalogSignal> power_signal;
