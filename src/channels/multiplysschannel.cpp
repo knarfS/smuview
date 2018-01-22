@@ -69,8 +69,8 @@ void MultiplySSChannel::on_sample_added()
 	// Multiply
 	size_t signal_1_sample_count = signal_1_->get_sample_count();
 	size_t signal_2_sample_count = signal_2_->get_sample_count();
-	while (signal_1_sample_count > next_signal_1_pos_ &&
-			signal_2_sample_count > next_signal_2_pos_) {
+	while (next_signal_1_pos_ < signal_1_sample_count &&
+			next_signal_2_pos_ < signal_2_sample_count) {
 
 		data::sample_t sample_1 =
 			signal_1_->get_sample(next_signal_1_pos_, false);
@@ -79,13 +79,9 @@ void MultiplySSChannel::on_sample_added()
 
 		double time_1 = sample_1.first;
 		double time_2 = sample_2.first;
-		// TODO: double
-		float value = sample_1.second * sample_2.second;
+		double value = sample_1.second * sample_2.second;
 
-		if (time_1 == time_2)
-			push_sample(&value, time_1);
-		else
-			push_sample(&value, time_1>time_2 ? time_2 : time_1);
+		push_sample(value, time_1>time_2 ? time_2 : time_1);
 
 		++next_signal_1_pos_;
 		++next_signal_2_pos_;

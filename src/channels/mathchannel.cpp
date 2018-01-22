@@ -85,10 +85,11 @@ shared_ptr<data::BaseSignal> MathChannel::init_signal()
 	return signal;
 }
 
-void MathChannel::push_sample(void *sample, double timestamp)
+void MathChannel::push_sample(double sample, double timestamp)
 {
 	auto signal = static_pointer_cast<data::AnalogSignal>(actual_signal_);
-	signal->push_sample(sample, timestamp, digits_, decimal_places_);
+	signal->push_sample(&sample, timestamp,
+		size_of_double_, digits_, decimal_places_);
 }
 
 } // namespace devices

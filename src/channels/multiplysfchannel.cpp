@@ -60,12 +60,11 @@ MultiplySFChannel::MultiplySFChannel(
 void MultiplySFChannel::on_sample_added()
 {
 	size_t signal_sample_count = signal_->get_sample_count();
-	while (signal_sample_count > next_signal_pos_) {
+	while (next_signal_pos_ < signal_sample_count) {
 		data::sample_t sample = signal_->get_sample(next_signal_pos_, false);
 		double time = sample.first;
-		// TODO: double
-		float value = sample.second * factor_;
-		push_sample(&value, time);
+		double value = sample.second * factor_;
+		push_sample(value, time);
 		++next_signal_pos_;
 	}
 }

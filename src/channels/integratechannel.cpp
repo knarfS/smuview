@@ -70,16 +70,15 @@ void IntegrateChannel::on_sample_added()
 {
 	// Integrate
 	size_t int_signal_sample_count = int_signal_->get_sample_count();
-	while (int_signal_sample_count > next_int_signal_pos_) {
+	while (next_int_signal_pos_ < int_signal_sample_count) {
 		data::sample_t sample =
 			int_signal_->get_sample(next_int_signal_pos_, false);
 
 		double time = sample.first;
 		double elapsed_time_hours = (time - last_timestamp_) / (double)3600;
-		// TODO: double
-		float value = last_value_ + (sample.second * elapsed_time_hours);
+		double value = last_value_ + (sample.second * elapsed_time_hours);
 
-		push_sample(&value, time);
+		push_sample(value, time);
 
 		last_timestamp_ = time;
 		last_value_ = value;

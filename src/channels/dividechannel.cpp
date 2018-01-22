@@ -69,8 +69,8 @@ void DivideChannel::on_sample_added()
 	// Divide
 	size_t dividend_signal_sample_count = dividend_signal_->get_sample_count();
 	size_t divisor_signal_sample_count = divisor_signal_->get_sample_count();
-	while (dividend_signal_sample_count > next_dividend_signal_pos_ &&
-			divisor_signal_sample_count > next_divisor_signal_pos_) {
+	while (next_dividend_signal_pos_ < dividend_signal_sample_count  &&
+			next_divisor_signal_pos_ < divisor_signal_sample_count) {
 
 		data::sample_t dividend_sample =
 			dividend_signal_->get_sample(next_dividend_signal_pos_, false);
@@ -79,23 +79,19 @@ void DivideChannel::on_sample_added()
 
 		double time1 = dividend_sample.first;
 		double time2 = divisor_sample.first;
-		// TODO: double
-		float value;
+		double value;
 		if (divisor_sample.second == 0) {
 			if (dividend_sample.second > 0)
 				// TODO: use infinity() instead?
-				value = std::numeric_limits<float>::max();
+				value = std::numeric_limits<double>::max();
 			else
 				// TODO: use -1 * infinity() instead?
-				value = std::numeric_limits<float>::lowest();
+				value = std::numeric_limits<double>::lowest();
 		}
 		else
 			value = dividend_sample.second / divisor_sample.second;
 
-		if (time1 == time2)
-			push_sample(&value, time1);
-		else
-			push_sample(&value, time1>time2 ? time2 : time1);
+		push_sample(value, time1>time2 ? time2 : time1);
 
 		++next_dividend_signal_pos_;
 		++next_divisor_signal_pos_;

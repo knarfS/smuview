@@ -99,13 +99,15 @@ protected:
 	/**
 	 * Add a single sample with timestamp to the channel/signal
 	 */
-	void push_sample(void *sample, double timestamp);
+	void push_sample(double sample, double timestamp);
 
 	int digits_;
 	int decimal_places_;
 	const sigrok::Quantity *sr_quantity_;
 	vector<const sigrok::QuantityFlag *> sr_quantity_flags_;
 	const sigrok::Unit *sr_unit_;
+
+	static const size_t size_of_double_ = sizeof(double);
 
 };
 

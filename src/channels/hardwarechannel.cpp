@@ -138,7 +138,8 @@ void HardwareChannel::push_sample_sr_analog(
 	else
 		digits = -1 * sr_analog->digits(); // TODO
 
-	signal->push_sample(sample, timestamp, digits, decimal_places);
+	signal->push_sample(sample, timestamp,
+		sr_analog->unitsize(), digits, decimal_places);
 }
 
 } // namespace channels

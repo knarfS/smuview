@@ -61,7 +61,7 @@ public:
 	sample_t get_sample(size_t pos, bool relative_time) const;
 
 	void push_sample(void *sample, double timestamp,
-		int digits, int decimal_places);
+		size_t unit_size, int digits, int decimal_places);
 
 	int digits() const;
 	int decimal_places() const;
@@ -83,6 +83,9 @@ private:
 	double last_value_;
 	double min_value_;
 	double max_value_;
+
+	static const size_t size_of_float_ = sizeof(float);
+	static const size_t size_of_double_ = sizeof(double);
 
 public Q_SLOTS:
 	void on_channel_start_timestamp_changed(double);
