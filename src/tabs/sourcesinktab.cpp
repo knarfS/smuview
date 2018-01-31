@@ -48,8 +48,10 @@ SourceSinkTab::SourceSinkTab(Session &session,
 
 void SourceSinkTab::setup_ui()
 {
+	auto hw_device = static_pointer_cast<devices::HardwareDevice>(device_);
+
 	// Device control(s)
-	for (auto c : device_->configurables()) {
+	for (auto c : hw_device->configurables()) {
 		if (c->is_controllable()) {
 			if (device_->type() == devices::DeviceType::PowerSupply)
 				add_view(new views::SourceControlView(session_, c),

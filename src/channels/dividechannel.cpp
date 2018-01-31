@@ -69,19 +69,82 @@ void DivideChannel::on_sample_added()
 	// Divide
 	size_t dividend_signal_sample_count = dividend_signal_->get_sample_count();
 	size_t divisor_signal_sample_count = divisor_signal_->get_sample_count();
-	while (next_dividend_signal_pos_ < dividend_signal_sample_count  &&
+
+	while (next_dividend_signal_pos_ < dividend_signal_sample_count ||
 			next_divisor_signal_pos_ < divisor_signal_sample_count) {
 
-		data::sample_t dividend_sample =
-			dividend_signal_->get_sample(next_dividend_signal_pos_, false);
-		data::sample_t divisor_sample =
-			divisor_signal_->get_sample(next_divisor_signal_pos_, false);
+		bool has_sample_1 = false;
+		data::sample_t sample_1;
+		if (next_dividend_signal_pos_ < dividend_signal_sample_count) {
+			sample_1 = dividend_signal_->get_sample(
+				next_dividend_signal_pos_, false);
+			has_sample_1 = true;
+		}
 
-		double time1 = dividend_sample.first;
-		double time2 = divisor_sample.first;
+		bool has_sample_2 = false;
+		data::sample_t sample_2;
+		if (next_divisor_signal_pos_ < divisor_signal_sample_count) {
+			sample_2 = divisor_signal_->get_sample(
+				next_divisor_signal_pos_, false);
+			has_sample_2 = true;
+		}
+
+		double time = 0;
+		if (has_sample_1 && !has_sample_2 && next_divisor_signal_pos_ == 0) {
+			last_dividend_value_ = sample_1.second;
+			++next_dividend_signal_pos_;
+			continue;
+		}
+		else if (has_sample_2 && !has_sample_1 && next_dividend_signal_pos_ == 0) {
+			last_divisor_value_ = sample_2.second;
+			++next_divisor_signal_pos_;
+			continue;
+		}
+		else if (has_sample_1 && !has_sample_2) {
+			time = sample_1.first;
+			last_dividend_value_ = sample_1.second;
+			++next_dividend_signal_pos_;
+		}
+		else if (has_sample_2 && !has_sample_1) {
+			time = sample_2.first;
+			last_divisor_value_ = sample_2.second;
+			++next_divisor_signal_pos_;
+		}
+		else if (has_sample_1 && has_sample_2) {
+			double time_1 = sample_1.first;
+			double time_2 = sample_2.first;
+			if (time_1 == time_2) {
+				time = time_1;
+				last_dividend_value_ = sample_1.second;
+				last_divisor_value_ = sample_2.second;
+				++next_dividend_signal_pos_;
+				++next_divisor_signal_pos_;
+			}
+			else if (time_1 < time_2) {
+				time = time_1;
+				last_dividend_value_ = sample_1.second;
+				++next_dividend_signal_pos_;
+			}
+			else if (time_2 < time_1) {
+				time = time_2;
+				last_divisor_value_ = sample_2.second;
+				++next_divisor_signal_pos_;
+			}
+			else {
+				// Something is wrong here...
+				qWarning() << "MultiplySSChannel::on_sample_added(): " <<
+					"Could not match the two signals!";
+			}
+		}
+		else {
+			// Something is wrong here...
+			qWarning() << "MultiplySSChannel::on_sample_added(): " <<
+				"Could not match the two signals!";
+		}
+
 		double value;
-		if (divisor_sample.second == 0) {
-			if (dividend_sample.second > 0)
+		if (last_divisor_value_ == 0) {
+			if (last_dividend_value_ > 0)
 				// TODO: use infinity() instead?
 				value = std::numeric_limits<double>::max();
 			else
@@ -89,12 +152,8 @@ void DivideChannel::on_sample_added()
 				value = std::numeric_limits<double>::lowest();
 		}
 		else
-			value = dividend_sample.second / divisor_sample.second;
-
-		push_sample(value, time1>time2 ? time2 : time1);
-
-		++next_dividend_signal_pos_;
-		++next_divisor_signal_pos_;
+			value = last_dividend_value_ / last_divisor_value_;
+		push_sample(value, time);
 	}
 }
 

@@ -61,7 +61,7 @@ public:
 private:
 	void setup_ui();
 
-	void add_device(shared_ptr<devices::HardwareDevice> device, bool expanded);
+	void add_device(shared_ptr<devices::Device> device, bool expanded);
 	void add_channel(shared_ptr<channels::BaseChannel> channel,
 		QString channel_group_name, bool expanded, QTreeWidgetItem *parent);
 	void add_signal(shared_ptr<data::BaseSignal> signal,
@@ -79,11 +79,11 @@ private:
 	bool multiselect_;
 
 	map<shared_ptr<devices::Device>, QTreeWidgetItem *> device_map_;
-	map<QString, QTreeWidgetItem *> channel_group_map_;
+	map<QString, QTreeWidgetItem *> channel_group_map_; // TODO: device+chg_name
 	map<shared_ptr<channels::BaseChannel>, QTreeWidgetItem *> channel_map_;
 
 public Q_SLOTS:
-	void on_device_added(shared_ptr<devices::HardwareDevice> device);
+	void on_device_added(shared_ptr<devices::Device> device);
 	void on_device_removed();
 
 private Q_SLOTS:

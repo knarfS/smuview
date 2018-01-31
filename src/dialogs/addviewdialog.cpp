@@ -27,7 +27,6 @@
 #include "src/channels/basechannel.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/devices/device.hpp"
-#include "src/devices/hardwaredevice.hpp"
 #include "src/views/dataview.hpp"
 #include "src/views/plotview.hpp"
 #include "src/views/valuepanelview.hpp"
@@ -41,7 +40,7 @@ namespace sv {
 namespace dialogs {
 
 AddViewDialog::AddViewDialog(const Session &session,
-		const shared_ptr<devices::HardwareDevice> device,
+		const shared_ptr<devices::Device> device,
 		int selected_view_type,
 		QWidget *parent) :
 	QDialog(parent),
@@ -54,7 +53,12 @@ AddViewDialog::AddViewDialog(const Session &session,
 
 void AddViewDialog::setup_ui()
 {
+	QIcon mainIcon;
+	mainIcon.addFile(QStringLiteral(":/icons/smuview.ico"),
+		QSize(), QIcon::Normal, QIcon::Off);
+	this->setWindowIcon(mainIcon);
 	this->setWindowTitle(tr("Add View"));
+	this->setMinimumWidth(500);
 
 	QVBoxLayout *main_layout = new QVBoxLayout;
 
@@ -152,7 +156,6 @@ vector<views::BaseView *> AddViewDialog::views()
 
 void AddViewDialog::accept()
 {
-	shared_ptr<devices::Channel> channel;
 	int tab_index = tab_widget_->currentIndex();
 	switch (tab_index) {
 	case 0:

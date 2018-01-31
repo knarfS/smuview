@@ -70,6 +70,8 @@ private:
 	shared_ptr<data::AnalogSignal> divisor_signal_;
 	size_t next_dividend_signal_pos_;
 	size_t next_divisor_signal_pos_;
+	double last_dividend_value_;
+	double last_divisor_value_;
 
 private Q_SLOTS:
 	void on_sample_added();

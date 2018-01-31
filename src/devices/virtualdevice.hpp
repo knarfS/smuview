@@ -1,7 +1,6 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2015 Joel Holdsworth <joel@airwebreathe.org.uk>
  * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,76 +17,33 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DEVICES_HARDWAREDEVICE_HPP
-#define DEVICES_HARDWAREDEVICE_HPP
+#ifndef DEVICES_VIRTUALDEVICE_HPP
+#define DEVICES_VIRTUALDEVICE_HPP
 
-#include <functional>
-#include <map>
-#include <mutex>
-#include <unordered_set>
+#include <memory>
 
-#include <libsigrokcxx/libsigrokcxx.hpp>
-
+#include <QObject>
 #include <QString>
-#include <QStringList>
 
 #include "device.hpp"
 
-using std::bad_alloc;
-using std::dynamic_pointer_cast;
-using std::function;
-using std::lock_guard;
-using std::make_shared;
-using std::set;
 using std::shared_ptr;
-using std::static_pointer_cast;
-using std::string;
-using std::vector;
-using std::unique_ptr;
-
-using std::map;
-using std::mutex;
-using std::recursive_mutex;
-using std::set;
-using std::shared_ptr;
-using std::string;
-using std::unordered_set;
 
 namespace sigrok {
-class Channel;
-class Configurable;
 class Context;
-class Quantity;
-class HardwareDevice;
 }
 
 namespace sv {
 
-namespace channels {
-class BaseChannel;
-}
-
-namespace data {
-class AnalogSignal;
-class BaseSignal;
-}
-
 namespace devices {
 
-class Configurable;
-
-class HardwareDevice : public Device
+class VirtualDevice : public Device
 {
 	Q_OBJECT
 
 public:
-	HardwareDevice(const shared_ptr<sigrok::Context> &sr_context,
-		shared_ptr<sigrok::HardwareDevice> sr_device);
-
-	/**
-	 * Returns the sigrok hardware device
-	 */
-	shared_ptr<sigrok::HardwareDevice> sr_hardware_device() const;
+	VirtualDevice(const shared_ptr<sigrok::Context> &sr_context,
+		QString vendor, QString model, QString version);
 
 	/**
 	 * Builds the name
@@ -111,40 +67,34 @@ public:
 	 */
 	QString display_name(const DeviceManager &device_manager) const;
 
-	vector<shared_ptr<devices::Configurable>> configurables() const;
-	// TODO: typdef?
-	map<shared_ptr<sigrok::Channel>, shared_ptr<channels::BaseChannel>> sr_channel_map() const;
+	void open(function<void (const QString)> error_handler);
+	void close();
+	void add_channel(shared_ptr<channels::BaseChannel> channel,
+		QString channel_group_name);
 
 protected:
 	/**
 	 * Inits all channles of this hardware device
 	 */
 	void init_channels();
-
 	/**
-	 * Inits all configurables for this hardware device.
+	 * Inits all configurables for this hardware device. Not used in here!
 	 */
 	void init_configurables();
-
-	/**
-	 * Adds a channel to the device
-	 */
-	shared_ptr<channels::BaseChannel> init_channel(
-		shared_ptr<sigrok::Channel> sr_channel, QString channel_group_name);
-
 	void feed_in_header();
 	void feed_in_trigger();
+	void feed_in_meta(shared_ptr<sigrok::Meta> sr_meta);
 	void feed_in_frame_begin();
 	void feed_in_frame_end();
 	void feed_in_logic(shared_ptr<sigrok::Logic> sr_logic);
 	void feed_in_analog(shared_ptr<sigrok::Analog> sr_analog);
 
-	vector<shared_ptr<devices::Configurable>> configurables_;
-	// TODO: typdef?
-	map<shared_ptr<sigrok::Channel>, shared_ptr<channels::BaseChannel>> sr_channel_map_;
-
 private:
 	double frame_start_timestamp_;
+	QString vendor_;
+	QString model_;
+	QString version_;
+	unsigned int channel_index_;
 
 Q_SIGNALS:
 	void channel_changed(QString);
@@ -154,4 +104,4 @@ Q_SIGNALS:
 } // namespace devices
 } // namespace sv
 
-#endif // DEVICES_HARDWAREDEVICE_HPP
+#endif // DEVICES_VIRTUALDEVICE_HPP

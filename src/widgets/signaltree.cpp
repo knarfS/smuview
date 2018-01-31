@@ -28,7 +28,6 @@
 #include "src/channels/basechannel.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/devices/device.hpp"
-#include "src/devices/hardwaredevice.hpp"
 
 using std::dynamic_pointer_cast;
 using std::make_pair;
@@ -64,10 +63,6 @@ vector<shared_ptr<channels::BaseChannel>> SignalTree::selected_channels()
 		if (data.isNull())
 			continue;
 
-		/*
-		shared_ptr<channels::BaseChannel> channel =
-			dynamic_pointer_cast<channels::BaseChannel>(data.value);
-		*/
 		auto channel = data.value<shared_ptr<channels::BaseChannel>>();
 		if (channel)
 			channels.push_back(channel);
@@ -83,10 +78,6 @@ vector<shared_ptr<data::BaseSignal>> SignalTree::selected_signals()
 		if (data.isNull())
 			continue;
 
-		/*
-		shared_ptr<data::BaseSignal> signal =
-			dynamic_pointer_cast<data::BaseSignal>(data.value);
-		*/
 		auto signal = data.value<shared_ptr<data::BaseSignal>>();
 		if (signal)
 			signals.push_back(signal);
@@ -104,7 +95,7 @@ void SignalTree::setup_ui()
 	unordered_set<shared_ptr<devices::Device>> devices;
 	if (!selected_device_ && &session_)
 		devices = session_.devices();
-	else
+	else if (selected_device_)
 		devices.insert(selected_device_);
 
 	for (auto device : devices) {
@@ -123,13 +114,7 @@ void SignalTree::setup_ui()
 		}
 		*/
 
-		// TODO: Move channel stuff from HardwareDevice to Device
-		shared_ptr<devices::HardwareDevice> hw_device =
-			static_pointer_cast<devices::HardwareDevice>(device);
-		if (!hw_device)
-			continue;
-
-		add_device(hw_device, expanded);
+		add_device(device, expanded);
 	}
 
 	// Resize all columns
@@ -137,7 +122,7 @@ void SignalTree::setup_ui()
 	this->resizeColumnToContents(1);
 }
 
-void SignalTree::add_device(shared_ptr<devices::HardwareDevice> device,
+void SignalTree::add_device(shared_ptr<devices::Device> device,
 	bool expanded)
 {
 	QTreeWidgetItem *device_item = new QTreeWidgetItem();
@@ -265,7 +250,7 @@ vector<const QTreeWidgetItem *> SignalTree::checked_items_recursiv(
 	return items;
 }
 
-void SignalTree::on_device_added(shared_ptr<devices::HardwareDevice> device)
+void SignalTree::on_device_added(shared_ptr<devices::Device> device)
 {
 	add_device(device, true);
 }
@@ -286,12 +271,8 @@ void SignalTree::on_channel_removed()
 
 void SignalTree::on_signal_added(shared_ptr<data::BaseSignal> signal)
 {
-	qWarning() << "SignalTree::on_signal_added(): signal = "  << signal->name();
-
 	auto parent_item = channel_map_[signal->parent_channel()];
 	add_signal(signal, parent_item);
-
-	//add_signal(signal, channels_[0]);
 }
 
 void SignalTree::on_signal_removed()

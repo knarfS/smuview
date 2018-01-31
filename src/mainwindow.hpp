@@ -76,8 +76,9 @@ private:
 	void retranslate_ui();
 	void session_error(const QString text, const QString info_text);
 	void add_tab(QMainWindow *tab_window, QString title);
-	void add_user_tab();
-	void add_device_tab(shared_ptr<devices::HardwareDevice> device);
+	void add_welcome_tab();
+	void add_virtual_device_tab();
+	void add_hw_device_tab(shared_ptr<devices::HardwareDevice> device);
 	void remove_tab(int tab_index);
 
 	DeviceManager &device_manager_;
@@ -97,11 +98,11 @@ private:
 private Q_SLOTS:
 	void show_session_error(const QString text, const QString info_text);
 	void on_action_add_device_tab_triggered();
-	void on_action_add_user_tab_triggered();
+	void on_action_add_virtual_tab_triggered();
 	void on_tab_close_requested(int);
 
 Q_SIGNALS:
-	void device_added(shared_ptr<devices::HardwareDevice>); // TODO: Move to session?
+	void device_added(shared_ptr<devices::Device>); // TODO: Move to session?
 
 };
 

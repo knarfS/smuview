@@ -24,6 +24,7 @@
 #include "src/channels/basechannel.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
+#include "src/devices/device.hpp"
 #include "src/dialogs/addmathchanneldialog.hpp"
 #include "src/dialogs/addviewdialog.hpp"
 #include "src/dialogs/aboutdialog.hpp"
@@ -33,7 +34,7 @@ namespace sv {
 namespace tabs {
 
 DeviceTab::DeviceTab(Session &session,
-		shared_ptr<devices::HardwareDevice> device, QMainWindow *parent) :
+		shared_ptr<devices::Device> device, QMainWindow *parent) :
 		BaseTab(session, parent),
 	device_(device),
 	action_open_(new QAction(this)),
@@ -145,7 +146,11 @@ void DeviceTab::on_action_save_as_triggered()
 
 void DeviceTab::on_action_add_control_view_triggered()
 {
-	dialogs::AddViewDialog dlg(session(), device_, 0);
+	shared_ptr<devices::Device> d = nullptr;
+	if (device_->type() != devices::DeviceType::VirtualDevice)
+		d = device_;
+
+	dialogs::AddViewDialog dlg(session(), d, 0);
 	dlg.exec();
 
 	for (auto view : dlg.views())
@@ -154,7 +159,11 @@ void DeviceTab::on_action_add_control_view_triggered()
 
 void DeviceTab::on_action_add_panel_view_triggered()
 {
-	dialogs::AddViewDialog dlg(session(), device_, 1);
+	shared_ptr<devices::Device> d = nullptr;
+	if (device_->type() != devices::DeviceType::VirtualDevice)
+		d = device_;
+
+	dialogs::AddViewDialog dlg(session(), d, 1);
 	dlg.exec();
 
 	for (auto view : dlg.views())
@@ -163,7 +172,11 @@ void DeviceTab::on_action_add_panel_view_triggered()
 
 void DeviceTab::on_action_add_plot_view_triggered()
 {
-	dialogs::AddViewDialog dlg(session(), device_, 2);
+	shared_ptr<devices::Device> d = nullptr;
+	if (device_->type() != devices::DeviceType::VirtualDevice)
+		d = device_;
+
+	dialogs::AddViewDialog dlg(session(), d, 2);
 	dlg.exec();
 
 	for (auto view : dlg.views())
@@ -172,7 +185,11 @@ void DeviceTab::on_action_add_plot_view_triggered()
 
 void DeviceTab::on_action_add_math_channel_triggered()
 {
-	dialogs::AddMathChannelDialog dlg(session(), device_);
+	shared_ptr<devices::Device> d = nullptr;
+	if (device_->type() != devices::DeviceType::VirtualDevice)
+		d = device_;
+
+	dialogs::AddMathChannelDialog dlg(session(), d);
 	dlg.exec();
 
 	for (auto channel : dlg.channels())

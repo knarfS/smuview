@@ -17,50 +17,34 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TABS_USERTAB_HPP
-#define TABS_USERTAB_HPP
+#ifndef TABS_VIRTUALTAB_HPP
+#define TABS_VIRTUALTAB_HPP
 
-#include <QAction>
-#include <QMainWindow>
-#include <QToolBar>
+#include <QObject>
 
-#include "src/tabs/basetab.hpp"
+#include "src/tabs/devicetab.hpp"
 
 namespace sv {
 
 class Session;
 
+namespace devices {
+class VirtualDevice;
+}
+
 namespace tabs {
 
-class UserTab : public BaseTab
+class VirtualTab : public DeviceTab
 {
 	Q_OBJECT
 
-private:
-
 public:
-	UserTab(Session &session, QMainWindow *parent);
-
-protected:
-
-private:
-	void setup_toolbar();
-
-	QAction *const action_add_control_view_;
-	QAction *const action_add_panel_view_;
-	QAction *const action_add_plot_view_;
-	QToolBar *toolbar;
-
-public Q_SLOTS:
-
-private Q_SLOTS:
-	void on_action_add_control_view_triggered();
-	void on_action_add_panel_view_triggered();
-	void on_action_add_plot_view_triggered();
+	VirtualTab(Session &session,
+ 		shared_ptr<devices::VirtualDevice> device,  QMainWindow *parent);
 
 };
 
 } // namespace tabs
 } // namespace sv
 
-#endif // TABS_USERTAB_HPP
+#endif // TABS_VIRTUALTAB_HPP

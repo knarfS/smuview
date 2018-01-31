@@ -120,8 +120,13 @@ void SaveDialog::save(QString file_name)
 			max_sample_count = sample_count;
 		sample_counts.push_back(sample_count);
 
+		qWarning() << "SaveDialog::save(): signal.name() = " << signal->name();
+		qWarning() << "SaveDialog::save(): signal.parent_channel().name() = " << signal->parent_channel()->name();
+		qWarning() << "SaveDialog::save(): signal.parent_channel().parent_device().name() = " << signal->parent_channel()->parent_device()->name();
+
 		device_header_line.append(start_sep).append(
 			signal->parent_channel()->parent_device()->name()); // Time
+
 		device_header_line.append(sep).append(
 			signal->parent_channel()->parent_device()->name()); // Value
 		chg_name_header_line.append(start_sep).append(
@@ -232,7 +237,7 @@ void SaveDialog::save_combined(QString file_name)
 		// Timestamp
 		QString line;
 		if (relative_time)
-			line = QString("%1").arg(next_timestamp);
+			line = QString("%1").arg(next_timestamp, 0, 'f', 4);
 		else
 			line = util::format_time_date(next_timestamp);
 
@@ -245,7 +250,7 @@ void SaveDialog::save_combined(QString file_name)
 				a_signal->get_sample(sample_pos[i], relative_time);
 			double timestamp = sample.first;
 			if (timestamp == next_timestamp) {
-				line.append(QString("%1").arg(sample.second));
+				line.append(QString("%1").arg(sample.second, 0, 'g', -1));
 				++sample_pos[i];
 			}
 		}

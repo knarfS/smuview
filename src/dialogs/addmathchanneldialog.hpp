@@ -35,7 +35,7 @@ using std::vector;
 namespace sv {
 
 namespace devices {
-class HardwareDevice;
+class Device;
 }
 
 namespace channels {
@@ -43,6 +43,8 @@ class BaseChannel;
 }
 
 namespace widgets {
+class ChannelGroupComboBox;
+class DeviceComboBox;
 class QuantityComboBox;
 class QuantityFlagsList;
 class SignalTree;
@@ -57,7 +59,7 @@ class AddMathChannelDialog : public QDialog
 
 public:
 	AddMathChannelDialog(const Session &session,
-		const shared_ptr<devices::HardwareDevice> device,
+		shared_ptr<devices::Device> device,
 		QWidget *parent = nullptr);
 
 	vector<shared_ptr<channels::BaseChannel>> channels();
@@ -71,7 +73,7 @@ private:
 	void setup_ui_integrate_signal_tab();
 
 	const Session &session_;
-	const shared_ptr<devices::HardwareDevice> device_;
+	shared_ptr<devices::Device> device_;
 	vector<shared_ptr<channels::BaseChannel>> channels_;
 
 	QTabWidget *tab_widget_;
@@ -79,6 +81,8 @@ private:
 	widgets::QuantityComboBox *quantity_box_;
 	widgets::QuantityFlagsList *quantity_flags_list_;
 	widgets::UnitComboBox *unit_box_;
+	widgets::DeviceComboBox *device_box_;
+	widgets::ChannelGroupComboBox *channel_group_box_;
 	widgets::SignalTree *m_ss_signal_1_tree_;
 	widgets::SignalTree *m_ss_signal_2_tree_;
 	widgets::SignalTree *m_sf_signal_tree_;
@@ -92,6 +96,9 @@ private:
 
 public Q_SLOTS:
 	void accept() override;
+
+private Q_SLOTS:
+	void on_device_changed();
 
 };
 

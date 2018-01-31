@@ -27,6 +27,7 @@
 #include <string>
 #include <thread>
 
+#include <QObject>
 #include <QString>
 
 using std::function;
@@ -68,6 +69,7 @@ enum class DeviceType {
 	ElectronicLoad,
 	Multimeter,
 	DemoDMMDevice,
+	VirtualDevice,
 	Unknown
 };
 
@@ -121,8 +123,8 @@ public:
 	virtual QString display_name(
 		const DeviceManager &device_manager) const = 0;
 
-	void open(function<void (const QString)> error_handler);
-	void close();
+	virtual void open(function<void (const QString)> error_handler);
+	virtual void close();
 
 	virtual void add_channel(shared_ptr<channels::BaseChannel> channel,
 		QString channel_group_name);

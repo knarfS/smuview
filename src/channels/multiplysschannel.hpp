@@ -70,6 +70,8 @@ private:
 	shared_ptr<data::AnalogSignal> signal_2_;
 	size_t next_signal_1_pos_;
 	size_t next_signal_2_pos_;
+	double last_signal_1_value_;
+	double last_signal_2_value_;
 
 private Q_SLOTS:
 	void on_sample_added();

@@ -17,6 +17,9 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <cassert>
+#include <memory>
+
 #include <QComboBox>
 #include <QDebug>
 #include <QFormLayout>
@@ -35,12 +38,14 @@
 #include "src/channels/multiplysschannel.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/devices/device.hpp"
-#include "src/devices/hardwaredevice.hpp"
+#include "src/widgets/channelgroupcombobox.hpp"
+#include "src/widgets/devicecombobox.hpp"
 #include "src/widgets/quantitycombobox.hpp"
 #include "src/widgets/quantityflagslist.hpp"
 #include "src/widgets/signaltree.hpp"
 #include "src/widgets/unitcombobox.hpp"
 
+using std::make_shared;
 using std::static_pointer_cast;
 
 Q_DECLARE_SMART_POINTER_METATYPE(std::shared_ptr)
@@ -49,12 +54,14 @@ namespace sv {
 namespace dialogs {
 
 AddMathChannelDialog::AddMathChannelDialog(const Session &session,
-		const shared_ptr<devices::HardwareDevice> device,
+		shared_ptr<devices::Device> device,
 		QWidget *parent) :
 	QDialog(parent),
 	session_(session),
 	device_(device)
 {
+	assert(device);
+
 	setup_ui();
 }
 
@@ -79,6 +86,14 @@ void AddMathChannelDialog::setup_ui()
 	form_layout->addRow(tr("Quantity Flags"), quantity_flags_list_);
 	unit_box_ = new widgets::UnitComboBox();
 	form_layout->addRow(tr("Unit"), unit_box_);
+	device_box_ = new widgets::DeviceComboBox(session_);
+	device_box_->select_device(device_);
+	form_layout->addRow(tr("Device"), device_box_);
+	channel_group_box_ = new widgets::ChannelGroupComboBox(session_, device_);
+	connect(device_box_, SIGNAL(currentIndexChanged(int)),
+		this, SLOT(on_device_changed()));
+	form_layout->addRow(tr("Channel Group"), channel_group_box_);
+
 	main_layout->addLayout(form_layout);
 
 	// Tabs
@@ -194,7 +209,8 @@ void AddMathChannelDialog::accept()
 		return;
 	}
 
-	QString channel_group_name("Math User");
+	auto device = device_box_->selected_device();
+	QString channel_group_name = channel_group_box_->selected_channel_group();
 
 	shared_ptr<channels::MathChannel> channel;
 	switch (tab_widget_->currentIndex()) {
@@ -211,7 +227,7 @@ void AddMathChannelDialog::accept()
 			signal_1 = static_pointer_cast<data::AnalogSignal>(signals_1[0]);
 
 			shared_ptr<data::AnalogSignal> signal_2;
-			auto signals_2 = m_ss_signal_1_tree_->selected_signals();
+			auto signals_2 = m_ss_signal_2_tree_->selected_signals();
 			if (signals_2.size() != 1) {
 				QMessageBox::warning(this,
 					tr("Signal 2 missing"),
@@ -221,15 +237,17 @@ void AddMathChannelDialog::accept()
 			}
 			signal_2 = static_pointer_cast<data::AnalogSignal>(signals_2[0]);
 
-			qWarning() << "----3----";
+			double start_timestamp = signal_1->signal_start_timestamp();
+			if (signal_2->signal_start_timestamp() < start_timestamp)
+				start_timestamp = signal_2->signal_start_timestamp();
+
 			channel = make_shared<channels::MultiplySSChannel>(
 				quantity_box_->selected_sr_quantity(),
 				quantity_flags_list_->selected_sr_quantity_flags(),
 				unit_box_->selected_sr_unit(),
 				signal_1, signal_2,
-				device_, channel_group_name, name_edit_->text(),
-				signal_1->signal_start_timestamp());
-			qWarning() << "----4----";
+				device, channel_group_name, name_edit_->text(),
+				start_timestamp);
 		}
 		break;
 	case 1: {
@@ -267,7 +285,7 @@ void AddMathChannelDialog::accept()
 				quantity_flags_list_->selected_sr_quantity_flags(),
 				unit_box_->selected_sr_unit(),
 				signal, factor,
-				device_, channel_group_name, name_edit_->text(),
+				device, channel_group_name, name_edit_->text(),
 				signal->signal_start_timestamp());
 		}
 		break;
@@ -284,7 +302,7 @@ void AddMathChannelDialog::accept()
 			signal_1 = static_pointer_cast<data::AnalogSignal>(signals_1[0]);
 
 			shared_ptr<data::AnalogSignal> signal_2;
-			auto signals_2 = d_ss_signal_1_tree_->selected_signals();
+			auto signals_2 = d_ss_signal_2_tree_->selected_signals();
 			if (signals_2.size() != 1) {
 				QMessageBox::warning(this,
 					tr("Signal 2 missing"),
@@ -294,13 +312,17 @@ void AddMathChannelDialog::accept()
 			}
 			signal_2 = static_pointer_cast<data::AnalogSignal>(signals_2[0]);
 
+			double start_timestamp = signal_1->signal_start_timestamp();
+			if (signal_2->signal_start_timestamp() < start_timestamp)
+				start_timestamp = signal_2->signal_start_timestamp();
+
 			channel = make_shared<channels::DivideChannel>(
 				quantity_box_->selected_sr_quantity(),
 				quantity_flags_list_->selected_sr_quantity_flags(),
 				unit_box_->selected_sr_unit(),
 				signal_1, signal_2,
-				device_, channel_group_name, name_edit_->text(),
-				signal_1->signal_start_timestamp());
+				device, channel_group_name, name_edit_->text(),
+				start_timestamp);
 		}
 		break;
 	case 3: {
@@ -320,7 +342,7 @@ void AddMathChannelDialog::accept()
 				quantity_flags_list_->selected_sr_quantity_flags(),
 				unit_box_->selected_sr_unit(),
 				signal,
-				device_, channel_group_name, name_edit_->text(),
+				device, channel_group_name, name_edit_->text(),
 				signal->signal_start_timestamp());
 		}
 		break;
@@ -332,6 +354,11 @@ void AddMathChannelDialog::accept()
 	channels_.push_back(channel);
 
 	QDialog::accept();
+}
+
+void AddMathChannelDialog::on_device_changed()
+{
+	channel_group_box_->change_device(device_box_->selected_device());
 }
 
 } // namespace dialogs

@@ -160,6 +160,7 @@ set(smuview_SOURCES
   src/devices/hardwaredevice.cpp
   src/devices/measurementdevice.cpp
   src/devices/sourcesinkdevice.cpp
+  src/devices/virtualdevice.cpp
   src/dialogs/addmathchanneldialog.cpp
   src/dialogs/addviewdialog.cpp
   src/dialogs/aboutdialog.cpp
@@ -170,7 +171,8 @@ set(smuview_SOURCES
   src/tabs/devicetab.cpp
   src/tabs/measurementtab.cpp
   src/tabs/sourcesinktab.cpp
-  src/tabs/usertab.cpp
+  src/tabs/virtualtab.cpp
+  src/tabs/welcometab.cpp
   src/views/baseview.cpp
   src/views/dataview.cpp
   src/views/demodmmcontrolview.cpp
@@ -180,7 +182,9 @@ set(smuview_SOURCES
   src/views/sinkcontrolview.cpp
   src/views/sourcecontrolview.cpp
   src/views/valuepanelview.cpp
+  src/widgets/channelgroupcombobox.cpp
   src/widgets/controlbutton.cpp
+  src/widgets/devicecombobox.cpp
   src/widgets/lcddisplay.cpp
   src/widgets/led.cpp
   src/widgets/optionalvaluecontrol.cpp

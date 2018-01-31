@@ -25,7 +25,6 @@
 #include "session.hpp"
 #include "data/basesignal.hpp"
 #include "devices/device.hpp"
-#include "devices/hardwaredevice.hpp"
 
 using std::lock_guard;
 using std::mutex;
@@ -78,7 +77,7 @@ unordered_set<shared_ptr<devices::Device>> Session::devices() const
 	return devices_;
 }
 
-void Session::add_device(shared_ptr<devices::HardwareDevice> device,
+void Session::add_device(shared_ptr<devices::Device> device,
 	function<void (const QString)> error_handler)
 {
 	assert(device);
@@ -94,7 +93,7 @@ void Session::add_device(shared_ptr<devices::HardwareDevice> device,
 	devices_.insert(device);
 }
 
-void Session::remove_device(shared_ptr<devices::HardwareDevice> device)
+void Session::remove_device(shared_ptr<devices::Device> device)
 {
 	if (device)
 		device->close();

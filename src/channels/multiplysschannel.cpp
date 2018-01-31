@@ -69,22 +69,78 @@ void MultiplySSChannel::on_sample_added()
 	// Multiply
 	size_t signal_1_sample_count = signal_1_->get_sample_count();
 	size_t signal_2_sample_count = signal_2_->get_sample_count();
-	while (next_signal_1_pos_ < signal_1_sample_count &&
+
+	while (next_signal_1_pos_ < signal_1_sample_count ||
 			next_signal_2_pos_ < signal_2_sample_count) {
 
-		data::sample_t sample_1 =
-			signal_1_->get_sample(next_signal_1_pos_, false);
-		data::sample_t sample_2 =
-			signal_2_->get_sample(next_signal_2_pos_, false);
+		bool has_sample_1 = false;
+		data::sample_t sample_1;
+		if (next_signal_1_pos_ < signal_1_sample_count) {
+			sample_1 = signal_1_->get_sample(next_signal_1_pos_, false);
+			has_sample_1 = true;
+		}
 
-		double time_1 = sample_1.first;
-		double time_2 = sample_2.first;
-		double value = sample_1.second * sample_2.second;
+		bool has_sample_2 = false;
+		data::sample_t sample_2;
+		if (next_signal_2_pos_ < signal_2_sample_count) {
+			sample_2 = signal_2_->get_sample(next_signal_2_pos_, false);
+			has_sample_2 = true;
+		}
 
-		push_sample(value, time_1>time_2 ? time_2 : time_1);
+		double time = 0;
+		if (has_sample_1 && !has_sample_2 && next_signal_2_pos_ == 0) {
+			last_signal_1_value_ = sample_1.second;
+			++next_signal_1_pos_;
+			continue;
+		}
+		else if (has_sample_2 && !has_sample_1 && next_signal_1_pos_ == 0) {
+			last_signal_2_value_ = sample_2.second;
+			++next_signal_2_pos_;
+			continue;
+		}
+		else if (has_sample_1 && !has_sample_2) {
+			time = sample_1.first;
+			last_signal_1_value_ = sample_1.second;
+			++next_signal_1_pos_;
+		}
+		else if (has_sample_2 && !has_sample_1) {
+			time = sample_2.first;
+			last_signal_2_value_ = sample_2.second;
+			++next_signal_2_pos_;
+		}
+		else if (has_sample_1 && has_sample_2) {
+			double time_1 = sample_1.first;
+			double time_2 = sample_2.first;
+			if (time_1 == time_2) {
+				time = time_1;
+				last_signal_1_value_ = sample_1.second;
+				last_signal_2_value_ = sample_2.second;
+				++next_signal_1_pos_;
+				++next_signal_2_pos_;
+			}
+			else if (time_1 < time_2) {
+				time = time_1;
+				last_signal_1_value_ = sample_1.second;
+				++next_signal_1_pos_;
+			}
+			else if (time_2 < time_1) {
+				time = time_2;
+				last_signal_2_value_ = sample_2.second;
+				++next_signal_2_pos_;
+			}
+			else {
+				// Something is wrong here...
+				qWarning() << "MultiplySSChannel::on_sample_added(): " <<
+					"Could not match the two signals!";
+			}
+		}
+		else {
+			// Something is wrong here...
+			qWarning() << "MultiplySSChannel::on_sample_added(): " <<
+				"Could not match the two signals!";
+		}
 
-		++next_signal_1_pos_;
-		++next_signal_2_pos_;
+		push_sample(last_signal_1_value_ * last_signal_2_value_, time);
 	}
 }
 

@@ -36,11 +36,13 @@
 #include "src/devices/hardwaredevice.hpp"
 #include "src/devices/measurementdevice.hpp"
 #include "src/devices/sourcesinkdevice.hpp"
+#include "src/devices/virtualdevice.hpp"
 #include "src/dialogs/connectdialog.hpp"
 #include "src/tabs/basetab.hpp"
 #include "src/tabs/measurementtab.hpp"
 #include "src/tabs/sourcesinktab.hpp"
-#include "src/tabs/usertab.hpp"
+#include "src/tabs/virtualtab.hpp"
+#include "src/tabs/welcometab.hpp"
 #include "src/widgets/signaltree.hpp"
 
 using std::make_pair;
@@ -83,12 +85,12 @@ void MainWindow::init_default_session()
 	// show up. Collapsing the tool bar to 0 is prevented in the cose_tab()
 	// function.
 	if (device_manager_.user_spec_devices().empty()) {
-		add_user_tab();
+		add_welcome_tab();
 		return;
 	}
 
 	for (auto user_device : device_manager_.user_spec_devices())
-		add_device_tab(user_device);
+		add_hw_device_tab(user_device);
 }
 
 void MainWindow::init_session_with_file(
@@ -148,19 +150,43 @@ void MainWindow::add_tab(QMainWindow *tab_window, QString title)
 	last_focused_tab_index_ = index;
 }
 
-void MainWindow::add_user_tab()
+void MainWindow::add_welcome_tab()
 {
 	QMainWindow *tab_window = new QMainWindow();
 	tab_window->setWindowFlags(Qt::Widget);  // Remove Qt::Window flag
 	tab_window->setDockNestingEnabled(true);
 
-	tabs::UserTab *tab = new tabs::UserTab(*session_, tab_window);
+	tabs::WelcomeTab *tab = new tabs::WelcomeTab(*session_, tab_window);
 	tab_window->setCentralWidget(tab);
 
-	add_tab(tab_window, QString("User Tab"));
+	add_tab(tab_window, tr("Welcome"));
 }
 
-void MainWindow::add_device_tab(
+void MainWindow::add_virtual_device_tab()
+{
+	QString vendor(tr("SmuView"));
+	QString model(tr("User Device")); // TODO: enumerate
+	QString version("0.0.1"); // TODO
+
+	auto device = make_shared<devices::VirtualDevice>(
+		session_->sr_context, vendor, model, version);
+	session_->add_device(device, [&](QString message) {
+		session_error("Aquisition failed", message);
+	});
+
+	QMainWindow *tab_window = new QMainWindow();
+	tab_window->setWindowFlags(Qt::Widget);  // Remove Qt::Window flag
+	tab_window->setDockNestingEnabled(true);
+
+	tabs::VirtualTab *tab = new tabs::VirtualTab(*session_, device, tab_window);
+	tab_window->setCentralWidget(tab);
+
+	add_tab(tab_window, device->short_name());
+
+	Q_EMIT device_added(device);
+}
+
+void MainWindow::add_hw_device_tab(
 	shared_ptr<devices::HardwareDevice> device)
 {
 	// TODO: handle in session/device. Must be called, before the device tab
@@ -218,6 +244,8 @@ void MainWindow::remove_tab(int tab_index)
 		tab_widget_->setMinimumHeight(h + 2*margin);
 		qWarning() << "MainWindow::remove_tab(): tab_widget_toolbar_ = " << tab_widget_toolbar_->height();
 		qWarning() << "MainWindow::remove_tab(): tab_widget_ = " << tab_widget_->height();
+
+		add_welcome_tab();
 	}
 }
 
@@ -255,7 +283,7 @@ void MainWindow::setup_ui()
 	add_user_tab_button_->setToolTip(tr("Add new user tab"));
 	add_user_tab_button_->setAutoRaise(true);
 	connect(add_user_tab_button_, SIGNAL(clicked(bool)),
-		this, SLOT(on_action_add_user_tab_triggered()));
+		this, SLOT(on_action_add_virtual_tab_triggered()));
 
 	QHBoxLayout* toolbar_layout = new QHBoxLayout();
 	toolbar_layout->setContentsMargins(2, 2, 2, 2);
@@ -279,8 +307,8 @@ void MainWindow::setup_ui()
 		*session_, true, false, false, nullptr);
 	signal_tree_->setSizePolicy(
 		QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);
-	connect(this, SIGNAL(device_added(shared_ptr<devices::HardwareDevice>)),
-		signal_tree_, SLOT(on_device_added(shared_ptr<devices::HardwareDevice>)));
+	connect(this, SIGNAL(device_added(shared_ptr<devices::Device>)),
+		signal_tree_, SLOT(on_device_added(shared_ptr<devices::Device>)));
 
 	// A layout must be set to the central widget of the main window
 	// before dock->setWidget() is called.
@@ -326,12 +354,12 @@ void MainWindow::on_action_add_device_tab_triggered()
 	dialogs::ConnectDialog dlg(device_manager_);
 
 	if (dlg.exec())
-		add_device_tab(dlg.get_selected_device());
+		add_hw_device_tab(dlg.get_selected_device());
 }
 
-void MainWindow::on_action_add_user_tab_triggered()
+void MainWindow::on_action_add_virtual_tab_triggered()
 {
-	this->add_user_tab();
+	this->add_virtual_device_tab();
 }
 
 void MainWindow::on_tab_close_requested(int index)

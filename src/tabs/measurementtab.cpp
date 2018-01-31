@@ -25,6 +25,8 @@
 #include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/devices/configurable.hpp"
+#include "src/devices/device.hpp"
+#include "src/devices/hardwaredevice.hpp"
 #include "src/devices/measurementdevice.hpp"
 #include "src/views/demodmmcontrolview.hpp"
 #include "src/views/measurementcontrolview.hpp"
@@ -44,9 +46,11 @@ MeasurementTab::MeasurementTab(Session &session,
 
 void MeasurementTab::setup_ui()
 {
+	auto hw_device = static_pointer_cast<devices::HardwareDevice>(device_);
+
 	// Device controls
 	size_t i = 0;
-	for (auto c : device_->configurables()) {
+	for (auto c : hw_device->configurables()) {
 		if (c->is_controllable()) {
 			if (device_->type() == devices::DeviceType::DemoDMMDevice)
 				add_view(new views::DemoDMMControlView(session_, c),

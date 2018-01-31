@@ -51,7 +51,6 @@ class SignalBase;
 
 namespace devices {
 class Device;
-class HardwareDevice;
 }
 
 class Session : public QObject
@@ -72,9 +71,9 @@ public:
 	void restore_settings(QSettings &settings);
 
 	unordered_set<shared_ptr<devices::Device>> devices() const;
-	void add_device(shared_ptr<devices::HardwareDevice> device,
+	void add_device(shared_ptr<devices::Device> device,
 		function<void (const QString)> error_handler);
-	void remove_device(shared_ptr<devices::HardwareDevice> device);
+	void remove_device(shared_ptr<devices::Device> device);
 
 	void add_signal(shared_ptr<data::SignalBase> signal);
 

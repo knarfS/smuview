@@ -18,6 +18,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <memory>
+
 #include <glib.h>
 #include <boost/version.hpp>
 
@@ -37,13 +39,16 @@
 #include "src/channels/basechannel.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/devices/configurable.hpp"
+#include "src/devices/device.hpp"
 #include "src/devices/hardwaredevice.hpp"
+
+using std::dynamic_pointer_cast;
 
 namespace sv {
 namespace dialogs {
 
 AboutDialog::AboutDialog(DeviceManager &device_manager,
-		shared_ptr<devices::HardwareDevice> device,
+		shared_ptr<devices::Device> device,
 		QWidget *parent) :
 	QDialog(parent),
 	device_manager_(device_manager),
@@ -222,7 +227,12 @@ QWidget *AboutDialog::get_device_page(QWidget *parent) const
 	icon->setPixmap(QPixmap(QString::fromUtf8(":/icons/pulseview.svg")));
 
 	// Device info
-	shared_ptr<sigrok::HardwareDevice> sr_device = device_->sr_hardware_device();
+	auto sr_device = device_->sr_device();
+	auto hw_device = dynamic_pointer_cast<devices::HardwareDevice>(device_);
+	shared_ptr<sigrok::HardwareDevice> sr_hw_device = nullptr;
+	if (hw_device)
+		sr_hw_device = hw_device->sr_hardware_device();
+
 	QString device_info_text("<b>");
 
 	if (sr_device->version().length() > 0) {
@@ -256,21 +266,25 @@ QWidget *AboutDialog::get_device_page(QWidget *parent) const
 	s.append("<tr><td colspan=\"2\"><b>" +
 		tr("Device functions:") + "</b></td></tr>");
 
-	const auto sr_keys = sr_device->driver()->config_keys();
-	for (auto sr_key : sr_keys) {
-		s.append(QString("<tr><td>%1</td><td>%2</td></tr>").arg(
-			QString::fromStdString(sr_key->description()),
-			QString::fromStdString(sr_key->identifier())));
+	if (sr_hw_device) {
+		const auto sr_keys = sr_hw_device->driver()->config_keys();
+		for (auto sr_key : sr_keys) {
+			s.append(QString("<tr><td>%1</td><td>%2</td></tr>").arg(
+				QString::fromStdString(sr_key->description()),
+				QString::fromStdString(sr_key->identifier())));
+		}
 	}
 
 	// SmuView all device configurables
-	// vector<shared_ptr<devices::Configurable>> configurables()
-	s.append("<tr><td colspan=\"2\"><b>" +
-		tr("SmuView device configurables (device->configurables()):") +
-		"</b></td></tr>");
-	const auto configurables = device_->configurables();
-	for (shared_ptr<devices::Configurable> cnf : configurables) {
-		s.append(QString("<tr><td>%1</td><td></td></tr>").arg(cnf->name()));
+	if (hw_device) {
+		// vector<shared_ptr<devices::Configurable>> configurables()
+		s.append("<tr><td colspan=\"2\"><b>" +
+			tr("SmuView device configurables (hw_device->configurables()):") +
+			"</b></td></tr>");
+		const auto configurables = hw_device->configurables();
+		for (shared_ptr<devices::Configurable> cnf : configurables) {
+			s.append(QString("<tr><td>%1</td><td></td></tr>").arg(cnf->name()));
+		}
 	}
 
 	// SmuView all device signals
