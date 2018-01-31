@@ -106,7 +106,7 @@ void SourceSinkDevice::init_channels()
 		}
 
 		// Math Channels
-		QString chg_name(tr("Math Auto")); // TODO: to voltage/curren channel group?
+		QString chg_name = chg_name_channels_pair.first;
 		shared_ptr<data::AnalogSignal> voltage_signal;
 		shared_ptr<data::AnalogSignal> current_signal;
 		shared_ptr<data::AnalogSignal> power_signal;
