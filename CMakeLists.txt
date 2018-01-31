@@ -171,8 +171,8 @@ set(smuview_SOURCES
   src/tabs/measurementtab.cpp
   src/tabs/sourcesinktab.cpp
   src/tabs/usertab.cpp
-  #src/toolbars/maintoolbar.cpp
   src/views/baseview.cpp
+  src/views/dataview.cpp
   src/views/demodmmcontrolview.cpp
   src/views/measurementcontrolview.cpp
   src/views/plotview.cpp

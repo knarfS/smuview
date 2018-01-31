@@ -28,6 +28,7 @@
 #include "src/data/analogsignal.hpp"
 #include "src/devices/device.hpp"
 #include "src/devices/hardwaredevice.hpp"
+#include "src/views/dataview.hpp"
 #include "src/views/plotview.hpp"
 #include "src/views/valuepanelview.hpp"
 #include "src/widgets/signaltree.hpp"
@@ -60,7 +61,9 @@ void AddViewDialog::setup_ui()
 	tab_widget_ = new QTabWidget();
 	this->setup_ui_control_tab();
 	this->setup_ui_panel_tab();
-	this->setup_ui_plot_tab();
+	this->setup_ui_time_plot_tab();
+	this->setup_ui_xy_plot_tab();
+	this->setup_ui_table_tab();
 	tab_widget_->setCurrentIndex(selected_view_type_);
 	main_layout->addWidget(tab_widget_);
 
@@ -97,18 +100,49 @@ void AddViewDialog::setup_ui_panel_tab()
 	tab_widget_->addTab(panel_widget, title);
 }
 
-void AddViewDialog::setup_ui_plot_tab()
+void AddViewDialog::setup_ui_time_plot_tab()
 {
 	QString title(tr("Time Plot"));
 	QWidget *plot_widget = new QWidget();
 	QVBoxLayout *layout = new QVBoxLayout();
 	plot_widget->setLayout(layout);
 
-	plot_channel_tree_ = new widgets::SignalTree(
+	time_plot_channel_tree_ = new widgets::SignalTree(
 		session_, true, true, true, device_);
-	layout->addWidget(plot_channel_tree_);
+	layout->addWidget(time_plot_channel_tree_);
 
 	tab_widget_->addTab(plot_widget, title);
+}
+
+void AddViewDialog::setup_ui_xy_plot_tab()
+{
+	QString title(tr("XY Plot"));
+	QWidget *plot_widget = new QWidget();
+	QVBoxLayout *layout = new QVBoxLayout();
+	plot_widget->setLayout(layout);
+
+	xy_plot_x_signal_tree_ = new widgets::SignalTree(
+		session_, true, true, false, device_);
+	layout->addWidget(xy_plot_x_signal_tree_);
+	xy_plot_y_signal_tree_ = new widgets::SignalTree(
+		session_, true, true, false, device_);
+	layout->addWidget(xy_plot_y_signal_tree_);
+
+	tab_widget_->addTab(plot_widget, title);
+}
+
+void AddViewDialog::setup_ui_table_tab()
+{
+	QString title(tr("Data Table"));
+	QWidget *table_widget = new QWidget();
+	QVBoxLayout *layout = new QVBoxLayout();
+	table_widget->setLayout(layout);
+
+	table_signal_tree_ = new widgets::SignalTree(
+		session_, true, true, true, device_);
+	layout->addWidget(table_signal_tree_);
+
+	tab_widget_->addTab(table_widget, title);
 }
 
 vector<views::BaseView *> AddViewDialog::views()
@@ -122,7 +156,7 @@ void AddViewDialog::accept()
 	int tab_index = tab_widget_->currentIndex();
 	switch (tab_index) {
 	case 0:
-		//view_ = nullptr;
+		// TODO: List with controlls + view
 		break;
 	case 1:
 		for (auto channel : panel_channel_tree_->selected_channels()) {
@@ -130,13 +164,33 @@ void AddViewDialog::accept()
 		}
 		break;
 	case 2:
-		for (auto channel : plot_channel_tree_->selected_channels()) {
+		for (auto channel : time_plot_channel_tree_->selected_channels()) {
 			views_.push_back(new views::PlotView(session_, channel));
 		}
-		for (auto signal : plot_channel_tree_->selected_signals()) {
-			//TODO
+		for (auto signal : time_plot_channel_tree_->selected_signals()) {
 			auto a_signal = static_pointer_cast<data::AnalogSignal>(signal);
 			views_.push_back(new views::PlotView(session_, a_signal));
+		}
+
+		break;
+	case 3: {
+			shared_ptr<data::AnalogSignal> x_signal;
+			shared_ptr<data::AnalogSignal> y_signal;
+			for (auto signal : xy_plot_x_signal_tree_->selected_signals()) {
+				x_signal = static_pointer_cast<data::AnalogSignal>(signal);
+				break;
+			}
+			for (auto signal : xy_plot_y_signal_tree_->selected_signals()) {
+				y_signal = static_pointer_cast<data::AnalogSignal>(signal);
+				break;
+			}
+			views_.push_back(new views::PlotView(session_, x_signal, y_signal));
+		}
+		break;
+	case 4:
+		for (auto signal : table_signal_tree_->selected_signals()) {
+			auto a_signal = static_pointer_cast<data::AnalogSignal>(signal);
+			views_.push_back(new views::DataView(session_, a_signal));
 		}
 
 		break;

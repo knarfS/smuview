@@ -63,7 +63,9 @@ private:
 	void setup_ui();
 	void setup_ui_control_tab();
 	void setup_ui_panel_tab();
-	void setup_ui_plot_tab();
+	void setup_ui_time_plot_tab();
+	void setup_ui_xy_plot_tab();
+	void setup_ui_table_tab();
 
 	const Session &session_;
 	const shared_ptr<devices::HardwareDevice> device_;
@@ -72,7 +74,10 @@ private:
 
 	QTabWidget *tab_widget_;
 	widgets::SignalTree *panel_channel_tree_;
-	widgets::SignalTree *plot_channel_tree_;
+	widgets::SignalTree *time_plot_channel_tree_;
+	widgets::SignalTree *xy_plot_x_signal_tree_;
+	widgets::SignalTree *xy_plot_y_signal_tree_;
+	widgets::SignalTree *table_signal_tree_;
 	QDialogButtonBox *button_box_;
 
 public Q_SLOTS:
