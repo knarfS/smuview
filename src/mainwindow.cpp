@@ -146,8 +146,7 @@ void MainWindow::add_tab(QMainWindow *tab_window, QString title)
 	int index = tab_widget_->addTab(tab_window, title);
 	tab_widget_->setCurrentIndex(index);
 
-	tab_window_map_.insert(make_pair(index, tab_window));
-	last_focused_tab_index_ = index;
+	tab_windows_.push_back(tab_window);
 }
 
 void MainWindow::add_welcome_tab()
@@ -220,31 +219,20 @@ void MainWindow::add_hw_device_tab(
 void MainWindow::remove_tab(int tab_index)
 {
 	// Determine the height of the button before it collapses
-	int h = add_device_button_->height();
+	//int h = add_device_button_->height();
 
 	tab_widget_->removeTab(tab_index);
-	tab_window_map_.erase(tab_index);
-
-	if (tab_window_map_.empty()) {
-		// TODO: not working!
-		qWarning() << "MainWindow::remove_tab(): height = " << h;
+	tab_windows_.erase(tab_windows_.begin() + tab_index);
+	if (tab_windows_.empty()) {
+		/* TODO: not working!
 		// When there are no more tabs, the height of the QTabWidget
 		// drops to zero. We must prevent this to keep the toolbar visible
-		for (QWidget *w : tab_widget_toolbar_->findChildren<QWidget*>()) {
-			qWarning() << "MainWindow::remove_tab(): w = " << w << ", " << w->height();
+		for (QWidget *w : tab_widget_toolbar_->findChildren<QWidget*>())
 			w->setMinimumHeight(h);
-			qWarning() << "MainWindow::remove_tab(): w = " << w << ", " << w->height();
-		}
-
 		int margin = tab_widget_toolbar_->layout()->contentsMargins().bottom();
-		qWarning() << "MainWindow::remove_tab(): margin = " << margin;
-		qWarning() << "MainWindow::remove_tab(): tab_widget_toolbar_ = " << tab_widget_toolbar_->height();
-		qWarning() << "MainWindow::remove_tab(): tab_widget_ = " << tab_widget_->height();
 		tab_widget_toolbar_->setMinimumHeight(h + 2*margin);
 		tab_widget_->setMinimumHeight(h + 2*margin);
-		qWarning() << "MainWindow::remove_tab(): tab_widget_toolbar_ = " << tab_widget_toolbar_->height();
-		qWarning() << "MainWindow::remove_tab(): tab_widget_ = " << tab_widget_->height();
-
+		*/
 		add_welcome_tab();
 	}
 }

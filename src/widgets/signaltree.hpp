@@ -71,6 +71,8 @@ private:
 	vector<const QTreeWidgetItem *> checked_items_recursiv(
 		const QTreeWidgetItem * item);
 
+	QTreeWidgetItem *find_item(QTreeWidgetItem *parent, QString name);
+
 	const Session &session_;
 	shared_ptr<devices::Device> selected_device_;
 
@@ -79,7 +81,6 @@ private:
 	bool multiselect_;
 
 	map<shared_ptr<devices::Device>, QTreeWidgetItem *> device_map_;
-	map<QString, QTreeWidgetItem *> channel_group_map_; // TODO: device+chg_name
 	map<shared_ptr<channels::BaseChannel>, QTreeWidgetItem *> channel_map_;
 
 public Q_SLOTS:

@@ -20,20 +20,18 @@
 #ifndef MAINWINDOW_HPP
 #define MAINWINDOW_HPP
 
-#include <list>
-#include <map>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include <QToolBar>
 #include <QToolBox>
 #include <QToolButton>
 #include <QMainWindow>
 
-using std::list;
-using std::map;
 using std::shared_ptr;
 using std::string;
+using std::vector;
 
 namespace sv {
 
@@ -84,8 +82,7 @@ private:
 	DeviceManager &device_manager_;
 	shared_ptr<Session> session_;
 
-	map<int, QMainWindow *> tab_window_map_;
-	int last_focused_tab_index_;
+	vector<QMainWindow *> tab_windows_;
 
 	QToolButton *add_device_button_;
 	QToolButton *add_user_tab_button_;

@@ -39,13 +39,8 @@ private:
 public:
 	WelcomeTab(Session &session, QMainWindow *parent);
 
-protected:
-
 private:
-
-public Q_SLOTS:
-
-private Q_SLOTS:
+	void setup_ui();
 
 };
 

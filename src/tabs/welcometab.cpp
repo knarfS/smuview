@@ -19,7 +19,9 @@
 
 #include <memory>
 
+#include <QLabel>
 #include <QMainWindow>
+#include <QVBoxLayout>
 
 #include "welcometab.hpp"
 #include "src/session.hpp"
@@ -32,6 +34,25 @@ namespace tabs {
 WelcomeTab::WelcomeTab(Session &session, QMainWindow *parent) :
 	BaseTab(session, parent)
 {
+	setup_ui();
+}
+
+void WelcomeTab::setup_ui()
+{
+	QVBoxLayout *layout = new QVBoxLayout();
+
+	QString welcome("");
+	welcome.
+		append("<center>").
+		append("<big><b>Welcome to SmuView!</b></big><br>").
+		append("Multimeters, Power Supplies and Loads<br>").
+		append("</center>");
+
+	QLabel *welcome_label = new QLabel();
+	welcome_label->setText(welcome);
+	layout->addWidget(welcome_label);
+
+	this->setLayout(layout);
 }
 
 } // namespace tabs

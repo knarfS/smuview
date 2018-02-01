@@ -154,20 +154,17 @@ void SignalTree::add_channel(shared_ptr<channels::BaseChannel> channel,
 {
 	QTreeWidgetItem *chg_item;
 	if (channel_group_name.size() > 0) {
-		if (channel_group_map_.count(channel_group_name) != 0)
-			chg_item = channel_group_map_[channel_group_name];
-		else {
+		chg_item = this->find_item(parent, channel_group_name);
+		if (!chg_item) {
 			// Channel is in a channel group, add group first
 			chg_item = new QTreeWidgetItem();
 			chg_item->setIcon(0, QIcon::fromTheme(
 				"document-open-folder", QIcon(":/icons/smuview.ico")));
 			chg_item->setText(0, channel_group_name);
 			parent->addChild(chg_item);
-
-			channel_group_map_.insert(make_pair(channel_group_name, chg_item));
 		}
 
-		parent = channel_group_map_[channel_group_name];
+		parent = chg_item;
 	}
 
 	// Channel already in the tree?
@@ -248,6 +245,16 @@ vector<const QTreeWidgetItem *> SignalTree::checked_items_recursiv(
 		items.insert(items.end(), child_items.begin(), child_items.end());
 	}
 	return items;
+}
+
+QTreeWidgetItem *SignalTree::find_item(QTreeWidgetItem *parent, QString name)
+{
+	for (int i = 0; i < parent->childCount(); ++i) {
+		auto item = parent->child(i);
+		if (item->text(0) == name)
+			return item;
+	}
+	return NULL;
 }
 
 void SignalTree::on_device_added(shared_ptr<devices::Device> device)
