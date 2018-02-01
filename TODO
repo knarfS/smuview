@@ -11,9 +11,7 @@ ToDo
 - Mutex for aquisition_state_?
 - QWT Multiaxis
 - Autoscale plot
-- Math channels (for Power, resistance, Wh, Ah)
-- Correlation between time bases (common, same count+fixed diff, "random")
-- Save session, save all data (csv, gnuplot, octave, ...)
+- Save session, save all data (gnuplot, octave, ...)
 
 ------------------------
 
@@ -34,20 +32,16 @@ Done
 	init_signal() and not afterwards when in feed_in()
 - QIcon (On/Off/Dis) -> Led: State(On/Off), Mode(En/Dis)
 - ValueControl implement is_value_setable_/is_value_getable_ and disable/enable controls
-- Save single signal as CSV
+- Save signals as CSV
+- Math channels (for Power, resistance, Wh, Ah)
+- Correlation between time bases (common, same count+fixed diff, "random")
 
 ------------------------
 
 Search for:
 
-ENABLE_DECODE
-pv
 pulse
 
-
-
-PulseView
-=========
 
 
 libsigrok
@@ -93,10 +87,12 @@ Done
 - hp3478a: acquisition doesn't stop (sigrok-cli/smuview must be killed)
 
 
+
 Doku
 ====
 
 - Link API to the psu and load wiki pages
+
 
 
 Re:load Pro Firmware
