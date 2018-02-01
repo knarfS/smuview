@@ -93,7 +93,7 @@ void AboutDialog::create_pages()
 		pages->addWidget(get_device_page(pages));
 
 		QListWidgetItem *deviceButton = new QListWidgetItem(page_list);
-		deviceButton->setIcon(QIcon(":/icons/device.svg"));
+		deviceButton->setIcon(QIcon(":/icons/smuview.svg"));
 		deviceButton->setText(tr("Device"));
 		deviceButton->setTextAlignment(Qt::AlignHCenter);
 		deviceButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
@@ -112,7 +112,7 @@ void AboutDialog::create_pages()
 QWidget *AboutDialog::get_about_page(QWidget *parent) const
 {
 	QLabel *icon = new QLabel();
-	icon->setPixmap(QPixmap(QString::fromUtf8(":/icons/pulseview.svg")));
+	icon->setPixmap(QPixmap(QString::fromUtf8(":/icons/smuview.svg")));
 
 	/* Setup the version field */
 	QLabel *version_info = new QLabel();
@@ -224,7 +224,7 @@ QWidget *AboutDialog::get_about_page(QWidget *parent) const
 QWidget *AboutDialog::get_device_page(QWidget *parent) const
 {
 	QLabel *icon = new QLabel();
-	icon->setPixmap(QPixmap(QString::fromUtf8(":/icons/pulseview.svg")));
+	icon->setPixmap(QPixmap(QString::fromUtf8(":/icons/smuview.svg")));
 
 	// Device info
 	auto sr_device = device_->sr_device();
