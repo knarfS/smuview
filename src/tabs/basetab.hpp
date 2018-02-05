@@ -66,9 +66,6 @@ protected:
 	Session &session_;
 	QMainWindow *parent_;
 
-private Q_SLOTS:
-	void on_view_closed(bool visible);
-
 };
 
 } // namespace tabs

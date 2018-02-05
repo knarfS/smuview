@@ -222,7 +222,10 @@ void MainWindow::remove_tab(int tab_index)
 	//int h = add_device_button_->height();
 
 	tab_widget_->removeTab(tab_index);
+	QMainWindow * tab_window = tab_windows_[tab_index];
 	tab_windows_.erase(tab_windows_.begin() + tab_index);
+	tab_window->deleteLater();
+
 	if (tab_windows_.empty()) {
 		/* TODO: not working!
 		// When there are no more tabs, the height of the QTabWidget

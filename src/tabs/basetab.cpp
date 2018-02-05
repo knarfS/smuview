@@ -68,6 +68,7 @@ void BaseTab::add_view(views::BaseView *view, Qt::DockWidgetArea area)
 	// Dock widget must be here, because the layout must be set to the central
 	// widget of the view main window before dock->setWidget() is called.
 	QDockWidget *dock = new QDockWidget(view->title());
+	dock->setAttribute(Qt::WA_DeleteOnClose);
 	dock->setAllowedAreas(Qt::AllDockWidgetAreas);
 	dock->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	dock->setContextMenuPolicy(Qt::PreventContextMenu);
@@ -76,28 +77,7 @@ void BaseTab::add_view(views::BaseView *view, Qt::DockWidgetArea area)
 	dock->setWidget(view);
 	parent_->addDockWidget(area, dock);
 
-	connect(dock, SIGNAL(visibilityChanged(bool)),
-		this, SLOT(on_view_closed(bool)));
-
 	view_docks_[dock] = view;
-}
-
-void BaseTab::on_view_closed(bool visible)
-{
-	if (visible)
-		return;
-
-	/*
-	// TODO: use signal mapper
-	QDockWidget *dock = (QDockWidget *)sender();
-	views::BaseView *view = view_docks_[dock];
-	//if (view) {
-		delete view;
-		// TODO: This will seg fault when closing (on application exit)
-		parent_->removeDockWidget(dock);
-		delete dock;
-	//}
-	*/
 }
 
 } // namespace tabs
