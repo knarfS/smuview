@@ -333,23 +333,24 @@ void Plot::update_curve()
 
 void Plot::increment_x_interval(QRectF boundaries)
 {
-	qWarning() << QString("Plot::increment_x_interval(): old min = %1, old max = %2").
-		arg(x_interval_.minValue()).arg(x_interval_.maxValue());
+	//qWarning() << QString("Plot::increment_x_interval(): old min = %1, old max = %2").arg(x_interval_.minValue()).arg(x_interval_.maxValue());
 	if (plot_mode_ == Plot::Additive) {
-		qWarning() << "Plot::timerEvent() for b.left < x_int.min = " << boundaries.left() << " < " << x_interval_.minValue();
+		//qWarning() << "Plot::timerEvent() for b.left < x_int.min = " << boundaries.left() << " < " << x_interval_.minValue();
 		if (boundaries.left() < x_interval_.minValue()) {
 			// TODO: Calculate proper interval_length
 			x_interval_.setMinValue(x_interval_.minValue());
 		}
-		qWarning() << "Plot::timerEvent() for b.right > x_int.max = " << boundaries.right() << " > " << x_interval_.maxValue();
+		//qWarning() << "Plot::timerEvent() for b.right > x_int.max = " << boundaries.right() << " > " << x_interval_.maxValue();
 		if (boundaries.right() > x_interval_.maxValue()) {
 			// TODO: Calculate proper interval_length
 			int interval_length = 30;
 			x_interval_.setMaxValue(x_interval_.maxValue() + interval_length);
 		}
+		/*
 		qWarning() <<
 			QString("Plot::increment_x_interval(): new min = %1, new max = %2").
 			arg(x_interval_.minValue()).arg(x_interval_.maxValue());
+		*/
 	}
 	else if (plot_mode_ == Plot::Oscilloscope) {
 		x_interval_ = QwtInterval(x_interval_.maxValue(),
