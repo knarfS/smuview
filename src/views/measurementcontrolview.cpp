@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,14 +17,26 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <set>
+#include <utility>
+
 #include <QApplication>
 #include <QDebug>
 #include <QHBoxLayout>
+#include <QPushButton>
+#include <QVariant>
 #include <QVBoxLayout>
 
 #include "measurementcontrolview.hpp"
 #include "src/session.hpp"
+#include "src/data/datautil.hpp"
 #include "src/devices/hardwaredevice.hpp"
+
+Q_DECLARE_METATYPE(sv::data::Quantity)
+Q_DECLARE_METATYPE(std::set<sv::data::QuantityFlag>)
+
+using std::make_pair;
+using std::set;
 
 namespace sv {
 namespace views {
@@ -34,10 +46,11 @@ MeasurementControlView::MeasurementControlView(const Session &session,
 	BaseView(session, parent),
 	configurable_(configurable)
 {
-	configurable_->list_measured_quantity(sr_mq_flags_list_, mq_flags_list_);
+	configurable_->list_measured_quantity(measured_quantity_list_);
+
 	setup_ui();
+	init_values(); // Must be called before connect_signals()!
 	connect_signals();
-	init_values();
 }
 
 QString MeasurementControlView::title() const
@@ -49,24 +62,23 @@ void MeasurementControlView::setup_ui()
 {
 	QHBoxLayout *layout = new QHBoxLayout();
 
-	QStringList quantity_list;
-	QStringList quantityflags_list;
+	quantity_box_ = new QComboBox();
 	if (configurable_->is_measured_quantity_getable()) {
-		for (auto pair : mq_flags_list_) {
-			quantity_list.append(pair.first);
+		for (auto pair : measured_quantity_list_) {
+			data::Quantity qunatity = pair.first;
+			quantity_box_->addItem(
+				data::quantityutil::format_quantity(qunatity),
+				QVariant::fromValue(qunatity));
 		}
 	}
+	layout->addWidget(quantity_box_, 0);
 
-	quantityBox = new QComboBox();
-	quantityBox->addItems(quantity_list);
-	layout->addWidget(quantityBox, 0);
+	quantity_flags_box_ = new QComboBox();
+	layout->addWidget(quantity_flags_box_, 0);
 
-	quantityFlagsBox = new QComboBox();
-	quantityFlagsBox->addItems(quantityflags_list);
-	layout->addWidget(quantityFlagsBox, 0);
-
-	//ctrlLayout->addWidget(regulationBox, 1, Qt::AlignLeft);
-	//layout->addLayout(quantityFlagsBox, 0);
+	set_button_ = new QPushButton();
+	set_button_->setText(tr("Set"));
+	layout->addWidget(set_button_, 0);
 
 	this->centralWidget_->setLayout(layout);
 }
@@ -74,37 +86,64 @@ void MeasurementControlView::setup_ui()
 void MeasurementControlView::connect_signals()
 {
 	// Private
-	connect(quantityBox, SIGNAL(currentIndexChanged(const QString)),
-		this, SLOT(on_quantity_changed(const QString)));
-	connect(quantityFlagsBox, SIGNAL(currentIndexChanged(const QString)),
-		this, SLOT(on_quantity_flags_changed(/*const QString*/)));
+	connect(quantity_box_, SIGNAL(currentIndexChanged(const QString)),
+		this, SLOT(on_quantity_changed()));
 
+	// Control elements -> Device
+	connect(set_button_, SIGNAL(clicked(bool)), this, SLOT(on_quantity_set()));
+
+	// Device -> control elements
 }
 
 void MeasurementControlView::init_values()
 {
-}
-
-void MeasurementControlView::on_quantity_changed(const QString index)
-{
-	quantityFlagsBox->clear();
-	shared_ptr<vector<set<QString>>> flags_vector = mq_flags_list_.at(index);
-	for (auto v : *flags_vector) {
-		bool first = true;
-		QString flags;
-		for (QString flag : v) {
-			if (!first) flags.append(" ");
-			else first = false;
-
-			flags.append(flag);
+	if (configurable_->is_measured_quantity_getable()) {
+		actual_measured_quantity_ = configurable_->get_measured_quantity();
+		for (int i = 0; i < quantity_box_->count(); ++i) {
+			QVariant data = quantity_box_->itemData(i);
+			auto item_q = data.value<data::Quantity>();
+			if (item_q == actual_measured_quantity_.first) {
+				quantity_box_->setCurrentIndex(i);
+				on_quantity_changed();
+				break;
+			}
 		}
-		quantityFlagsBox->addItem(flags);
+		for (int i = 0; i < quantity_flags_box_->count(); ++i) {
+			QVariant data = quantity_flags_box_->itemData(i);
+			auto item_qfs = data.value<set<data::QuantityFlag>>();
+			if (item_qfs == actual_measured_quantity_.second) {
+				quantity_flags_box_->setCurrentIndex(i);
+				break;
+			}
+		}
+
 	}
 }
 
-void MeasurementControlView::on_quantity_flags_changed(/*const QString index*/)
+void MeasurementControlView::on_quantity_changed()
 {
-	//auto pair = mq_flags_list_.at(index);
+	quantity_flags_box_->clear();
+
+	QVariant data = quantity_box_->currentData();
+	data::Quantity quantity = data.value<data::Quantity>();
+
+	for (auto qf_set : measured_quantity_list_[quantity]) {
+		quantity_flags_box_->addItem(
+			data::quantityutil::format_quantity_flags(qf_set),
+			QVariant::fromValue(qf_set));
+	}
+}
+
+void MeasurementControlView::on_quantity_set()
+{
+	QVariant q_data = quantity_box_->currentData();
+	data::Quantity quantity = q_data.value<data::Quantity>();
+	QVariant qf_data = quantity_flags_box_->currentData();
+	set<data::QuantityFlag> quantity_flags =
+		qf_data.value<set<data::QuantityFlag>>();
+
+	auto mq_pair = make_pair(quantity, quantity_flags);
+	configurable_->set_measured_quantity(mq_pair);
 }
 
 } // namespace views

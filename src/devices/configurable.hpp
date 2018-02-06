@@ -22,14 +22,20 @@
 
 #include <memory>
 #include <set>
+#include <tuple>
+#include <utility>
 
 #include <QObject>
 #include <QString>
 #include <QStringList>
 
+#include "src/data/datautil.hpp"
+
 using std::map;
+using std::pair;
 using std::set;
 using std::shared_ptr;
+using std::tuple;
 using std::vector;
 
 namespace sigrok {
@@ -51,11 +57,10 @@ public:
 	Configurable(const shared_ptr<sigrok::Configurable> sr_configurable,
 		const QString device_name);
 
-	// TODO: Find a better way to store/map this + rename
-	typedef map<const sigrok::Quantity *,
-				shared_ptr<vector<set<const sigrok::QuantityFlag *>>>>
-		sr_mq_flags_list_t;
-	typedef map<QString, shared_ptr<vector<set<QString>>>> mq_flags_list_t;
+	typedef pair<data::Quantity, set<data::QuantityFlag>>
+		measured_quantity_t;
+	typedef map<data::Quantity, vector<set<data::QuantityFlag>>>
+		measured_quantity_list_t;
 
 	bool has_get_config(const sigrok::ConfigKey *key) const;
 	template<typename T> T get_config(const sigrok::ConfigKey *key) const;
@@ -70,7 +75,7 @@ public:
 	void list_config_min_max_steps(const sigrok::ConfigKey *key,
 		double &min, double &max, double &step);
 	void list_config_mq(const sigrok::ConfigKey *key,
-		sr_mq_flags_list_t &sr_mq_flags_list, mq_flags_list_t &mq_flags_list);
+		measured_quantity_list_t &measured_quantity_list);
 
 	QString name() const;
 
@@ -140,10 +145,8 @@ public:
 	bool is_measured_quantity_getable() const;
 	bool is_measured_quantity_setable() const;
 	bool is_measured_quantity_listable() const;
-	void get_measured_quantity() const;
-	void set_measured_quantity(
-		const sigrok::Quantity *sr_quantity,
-		vector<const sigrok::QuantityFlag *> sr_qunatity_flags);
+	measured_quantity_t get_measured_quantity() const;
+	void set_measured_quantity(measured_quantity_t measured_quantity);
 
 	bool list_regulation(QStringList &regulation_list);
 	bool list_voltage_target(double &min, double &max, double &step);
@@ -151,8 +154,8 @@ public:
 	bool list_ovp_threshold(double &min, double &max, double &step);
 	bool list_ocp_threshold(double &min, double &max, double &step);
 	bool list_uvc_threshold(double &min, double &max, double &step);
-	bool list_measured_quantity(sr_mq_flags_list_t &sr_mq_flags_list,
-		mq_flags_list_t &mq_flags_list);
+	bool list_measured_quantity(
+		measured_quantity_list_t &measured_quantity_list);
 
 private:
 	void init_properties();
@@ -161,7 +164,7 @@ private:
 	const shared_ptr<sigrok::Configurable> sr_configurable_;
 	const QString device_name_;
 
-	/*
+	/* TODO: remove?
 	bool enabled_;
 	QString regulation_;
 	double voltage_target_;
@@ -195,9 +198,7 @@ private:
 	double uvc_threshold_min_;
 	double uvc_threshold_max_;
 	double uvc_threshold_step_;
-	// TODO: Find a better way to map MQ and MQ_FLAGS
-	sr_mq_flags_list_t sr_mq_flags_list_;
-	mq_flags_list_t mq_flags_list_;
+	measured_quantity_list_t measured_quantity_list_;
 
 	bool is_enabled_getable_;
 	bool is_enabled_setable_;

@@ -18,22 +18,25 @@
  */
 
 #include <cassert>
+#include <tuple>
 #include <type_traits>
+#include <memory>
 
 #include <glib.h>
 // Suppress warnings due to use of deprecated std::auto_ptr<> by glibmm.
-//G_GNUC_BEGIN_IGNORE_DEPRECATIONS
-//#include <glibmm.h>
-//G_GNUC_END_IGNORE_DEPRECATIONS
+G_GNUC_BEGIN_IGNORE_DEPRECATIONS
+#include <glibmm.h>
+G_GNUC_END_IGNORE_DEPRECATIONS
 
 #include <QDebug>
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
 #include "configurable.hpp"
-#include "src/util.hpp"
+#include "src/data/datautil.hpp"
 
 using std::dynamic_pointer_cast;
+using std::get;
 using std::is_base_of;
 using std::make_pair;
 using std::make_shared;
@@ -176,8 +179,9 @@ void Configurable::init_values()
 	*/
 
 	if (is_measured_quantity_listable_)
-		list_config_mq(sigrok::ConfigKey::MEASURED_QUANTITY,
-			sr_mq_flags_list_, mq_flags_list_);
+		list_config_mq(
+			sigrok::ConfigKey::MEASURED_QUANTITY,
+			measured_quantity_list_);
 }
 
 bool Configurable::has_get_config(const sigrok::ConfigKey *key)  const
@@ -194,6 +198,8 @@ bool Configurable::has_get_config(const sigrok::ConfigKey *key)  const
 template bool Configurable::get_config(const sigrok::ConfigKey*) const;
 template uint64_t Configurable::get_config(const sigrok::ConfigKey*) const;
 template double Configurable::get_config(const sigrok::ConfigKey*) const;
+// TODO: This doesn't work: with glibmm >= 2.54.1 but should
+//template tuple<uint32_t, uint64_t> Configurable::get_config(const sigrok::ConfigKey*) const;
 template<typename T> T Configurable::get_config(const sigrok::ConfigKey *key) const
 {
 	assert(key);
@@ -234,7 +240,10 @@ bool Configurable::has_set_config(const sigrok::ConfigKey *key) const
 template void Configurable::set_config(const sigrok::ConfigKey*, const bool);
 template void Configurable::set_config(const sigrok::ConfigKey*, const uint64_t);
 template void Configurable::set_config(const sigrok::ConfigKey*, const double);
+// This is working with glibmm < 2.52 (mxe uses glibmm 2.42.0), but libsigrok expects 'r' (this is '{ut}')
 template void Configurable::set_config(const sigrok::ConfigKey*, const pair<uint32_t, uint64_t>);
+// This is working with glibmm >= 2.52 (but mxe uses glibmm 2.42.0). Working with libsigrok (expects 'r')
+template void Configurable::set_config(const sigrok::ConfigKey*, const tuple<uint32_t, uint64_t>);
 template<typename T> void Configurable::set_config(
 		const sigrok::ConfigKey *key, const T value)
 {
@@ -313,7 +322,7 @@ void Configurable::list_config_min_max_steps(const sigrok::ConfigKey *key,
 }
 
 void Configurable::list_config_mq(const sigrok::ConfigKey *key,
-	sr_mq_flags_list_t &sr_mq_flags_list, mq_flags_list_t &mq_flags_list)
+	measured_quantity_list_t &measured_quantity_list)
 {
 	assert(key);
 	assert(sr_configurable_);
@@ -329,32 +338,16 @@ void Configurable::list_config_mq(const sigrok::ConfigKey *key,
 	while (iter.next_value (gvar)) {
 		uint32_t mqbits = Glib::VariantBase::cast_dynamic
 			<Glib::Variant<uint32_t>>(gvar.get_child(0)).get();
-		const sigrok::Quantity *sr_mq = sigrok::Quantity::get(mqbits);
-		QString mq = util::format_sr_quantity(sr_mq);
+		data::Quantity quantity = data::quantityutil::get_quantity(mqbits);
 
-		// TODO Das geht besser....
-		shared_ptr<vector<set<const sigrok::QuantityFlag *>>> sr_flag_vector;
-		shared_ptr<vector<set<QString>>> flag_vector;
-		if (!sr_mq_flags_list.count(sr_mq)) {
-			sr_flag_vector = make_shared<vector<set<const sigrok::QuantityFlag *>>>();
-			flag_vector = make_shared<vector<set<QString>>>();
-			sr_mq_flags_list.insert(
-				pair<const sigrok::Quantity *, shared_ptr<vector<set<const sigrok::QuantityFlag *>>>>
-				(sr_mq, sr_flag_vector));
-			mq_flags_list.insert(
-				pair<QString, shared_ptr<vector<set<QString>>>>
-				(mq, flag_vector));
-		}
-		else {
-			sr_flag_vector = sr_mq_flags_list[sr_mq];
-			flag_vector = mq_flags_list[mq];
+		if (!measured_quantity_list.count(quantity)) {
+			measured_quantity_list.insert(
+				make_pair(quantity, vector<set<data::QuantityFlag>>()));
 		}
 
 		uint64_t sr_mqflags = Glib::VariantBase::cast_dynamic
 			<Glib::Variant<uint64_t>>(gvar.get_child(1)).get();
-
-		set<const sigrok::QuantityFlag *> sr_flag_set;
-		set<QString> flag_set;
+		set<data::QuantityFlag> quantity_flag_set;
 		uint64_t mask = 1;
 		for (uint i = 0; i < 32; i++, mask <<= 1) {
 			if (!(sr_mqflags & mask))
@@ -362,13 +355,10 @@ void Configurable::list_config_mq(const sigrok::ConfigKey *key,
 
 			const sigrok::QuantityFlag *sr_mqflag =
 				sigrok::QuantityFlag::get(sr_mqflags & mask);
-			QString mqflag = util::format_sr_quantity_flag(sr_mqflag);
-
-			sr_flag_set.insert(sr_mqflag);
-			flag_set.insert(mqflag);
+			quantity_flag_set.insert(
+				data::quantityutil::get_quantity_flag(sr_mqflag));
 		}
-		sr_flag_vector->push_back(sr_flag_set);
-		flag_vector->push_back(flag_set);
+		measured_quantity_list[quantity].push_back(quantity_flag_set);
 	}
 }
 
@@ -542,23 +532,50 @@ void Configurable::set_uvc_threshold(const double threshold)
 }
 
 
-void Configurable::get_measured_quantity() const
+/**
+ * TODO: When glibmm >= 2.52 is more supported and tuple bug is fixed,
+ *       use the template function and return tuple<uint32_t, uint64_t>:
+ *
+ *       return get_config<std::tuple<uint32_t, uint64_t>>(
+ *           sigrok::ConfigKey::MEASURED_QUANTITY);
+ */
+Configurable::measured_quantity_t Configurable::get_measured_quantity() const
 {
-	//get_config<double>(sigrok::ConfigKey::MEASURED_QUANTITY);
+	if (!sr_configurable_->config_check(
+			sigrok::ConfigKey::MEASURED_QUANTITY, sigrok::Capability::GET)) {
+		qWarning() << "Configurable::read_config(): " <<
+			"No key sigrok::ConfigKey::MEASURED_QUANTITY";
+		assert(false);
+	}
+
+	auto vb = Glib::VariantBase::cast_dynamic
+		<Glib::Variant<std::tuple<uint32_t, uint64_t>>>
+		(sr_configurable_->config_get(sigrok::ConfigKey::MEASURED_QUANTITY));
+
+	uint32_t sr_q = vb.get_child<uint32_t>(0);
+	data::Quantity qunatity = data::quantityutil::get_quantity(sr_q);
+	uint64_t sr_qfs = vb.get_child<uint64_t>(1);
+	set<data::QuantityFlag> quantity_flags =
+		data::quantityutil::get_quantity_flags(sr_qfs);
+
+	return make_pair(qunatity, quantity_flags);
 }
 
-
-void Configurable::set_measured_quantity(
-		const sigrok::Quantity *sr_quantity,
-		vector<const sigrok::QuantityFlag *> sr_qunatity_flags)
+/**
+ * TODO: This only works with glibmm >= 2.52, we have to change something in
+ *       libsigrok to make it work with older distros and MXE (2.42.0)
+ */
+void Configurable::set_measured_quantity(measured_quantity_t measured_quantity)
 {
-	uint32_t q = sr_quantity->id();
-	uint64_t qf = 0;
-    for (auto sr_qunatity_flag : sr_qunatity_flags)
-		qf |= sr_qunatity_flag->id();
-	auto q_qf_pair = make_pair(q, qf);
+	uint32_t sr_q_id =
+		data::quantityutil::get_sr_quantity_id(measured_quantity.first);
+	uint64_t sr_qfs_id =
+		data::quantityutil::get_sr_quantity_flags_id(measured_quantity.second);
 
-	set_config(sigrok::ConfigKey::MEASURED_QUANTITY, q_qf_pair);
+	//auto q_qf_pair = make_pair(sr_q_id, sr_qfs_id); // TODO: Maybe this is a solution?
+	auto q_qf_tuple = make_tuple(sr_q_id, sr_qfs_id);
+
+	set_config(sigrok::ConfigKey::MEASURED_QUANTITY, q_qf_tuple);
 }
 
 
@@ -627,13 +644,12 @@ bool Configurable::list_uvc_threshold(double &min, double &max, double &step)
 }
 
 bool Configurable::list_measured_quantity(
-	sr_mq_flags_list_t &sr_mq_flags_list, mq_flags_list_t &mq_flags_list)
+	measured_quantity_list_t &measured_quantity_list)
 {
 	if (!is_measured_quantity_listable_)
 		return false;
 
-	sr_mq_flags_list = sr_mq_flags_list_;
-	mq_flags_list = mq_flags_list_;
+	measured_quantity_list = measured_quantity_list_;
 	return true;
 }
 

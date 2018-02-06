@@ -21,16 +21,15 @@
 #define VIEWS_DEMODMMCONTROLVIEW_HPP
 
 #include <memory>
-#include <set>
+#include <tuple>
 
 #include <QString>
 
 #include "src/devices/configurable.hpp"
 #include "src/views/baseview.hpp"
 
-using std::map;
-using std::set;
 using std::shared_ptr;
+using std::tuple;
 
 namespace sigrok {
 class Quantity;
@@ -61,8 +60,8 @@ public:
 
 private:
 	shared_ptr<devices::Configurable> configurable_;
-	devices::Configurable::sr_mq_flags_list_t sr_mq_flags_list_;
-	devices::Configurable::mq_flags_list_t mq_flags_list_;
+	devices::Configurable::measured_quantity_list_t measured_quantity_list_;
+	devices::Configurable::measured_quantity_t actual_measured_quantity_;
 
 	widgets::QuantityComboBox *quantity_box_;
 	widgets::QuantityFlagsList *quantity_flags_list_;

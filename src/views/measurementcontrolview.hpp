@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@
 #include <set>
 
 #include <QComboBox>
+#include <QPushButton>
 #include <QString>
 
 #include "src/devices/configurable.hpp"
@@ -57,11 +58,12 @@ public:
 
 private:
 	shared_ptr<devices::Configurable> configurable_;
-	devices::Configurable::sr_mq_flags_list_t sr_mq_flags_list_;
-	devices::Configurable::mq_flags_list_t mq_flags_list_;
+	devices::Configurable::measured_quantity_list_t measured_quantity_list_;
+	devices::Configurable::measured_quantity_t actual_measured_quantity_;
 
-	QComboBox *quantityBox;
-	QComboBox *quantityFlagsBox;
+	QComboBox *quantity_box_; // TODO widgets::
+	QComboBox *quantity_flags_box_; // TODO widgets::
+	QPushButton *set_button_;
 
 	void setup_ui();
 	void connect_signals();
@@ -72,8 +74,8 @@ protected:
 public Q_SLOTS:
 
 private Q_SLOTS:
-	void on_quantity_changed(const QString index);
-	void on_quantity_flags_changed(/*const QString index*/);
+	void on_quantity_changed();
+	void on_quantity_set();
 
 };
 

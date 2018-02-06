@@ -28,6 +28,7 @@
 
 #include "demodmmcontrolview.hpp"
 #include "src/session.hpp"
+#include "src/data/datautil.hpp"
 #include "src/devices/hardwaredevice.hpp"
 #include "src/widgets/quantitycombobox.hpp"
 #include "src/widgets/quantityflagslist.hpp"
@@ -42,7 +43,7 @@ DemoDMMControlView::DemoDMMControlView(const Session &session,
 	BaseView(session, parent),
 	configurable_(configurable)
 {
-	configurable_->list_measured_quantity(sr_mq_flags_list_, mq_flags_list_);
+	configurable_->list_measured_quantity(measured_quantity_list_);
 	setup_ui();
 	connect_signals();
 	init_values();
@@ -50,7 +51,7 @@ DemoDMMControlView::DemoDMMControlView(const Session &session,
 
 QString DemoDMMControlView::title() const
 {
-	return configurable_->name() + " " + tr("X Control");
+	return configurable_->name() + " " + tr("Control");
 }
 
 void DemoDMMControlView::setup_ui()
@@ -60,8 +61,9 @@ void DemoDMMControlView::setup_ui()
 	QStringList quantity_list;
 	QStringList quantityflags_list;
 	if (configurable_->is_measured_quantity_getable()) {
-		for (auto pair : mq_flags_list_) {
-			quantity_list.append(pair.first);
+		for (auto pair : measured_quantity_list_) {
+			quantity_list.append(
+				data::quantityutil::format_quantity(pair.first));
 		}
 	}
 
@@ -70,9 +72,6 @@ void DemoDMMControlView::setup_ui()
 
 	quantity_flags_list_ = new widgets::QuantityFlagsList();
 	layout->addWidget(quantity_flags_list_);
-
-	//ctrlLayout->addWidget(regulationBox, 1, Qt::AlignLeft);
-	//layout->addLayout(quantityFlagsBox, 0);
 
 	this->centralWidget_->setLayout(layout);
 }
@@ -91,10 +90,12 @@ void DemoDMMControlView::on_quantity_changed(int index)
 {
 	(void)index;
 
-	const sigrok::Quantity *sr_q = quantity_box_->selected_sr_quantity();
+	/*
+	data::Quantity quantity = quantity_box_->selected_sr_quantity();
 	vector<const sigrok::QuantityFlag *> sr_qfs =
 		quantity_flags_list_->selected_sr_quantity_flags();
 	configurable_->set_measured_quantity(sr_q, sr_qfs);
+	*/
 }
 
 void DemoDMMControlView::on_quantity_flags_changed()
