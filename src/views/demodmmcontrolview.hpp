@@ -23,6 +23,7 @@
 #include <memory>
 #include <tuple>
 
+#include <QPushButton>
 #include <QString>
 
 #include "src/devices/configurable.hpp"
@@ -65,18 +66,14 @@ private:
 
 	widgets::QuantityComboBox *quantity_box_;
 	widgets::QuantityFlagsList *quantity_flags_list_;
+	QPushButton *set_button_;
 
 	void setup_ui();
 	void connect_signals();
 	void init_values();
 
-protected:
-
-public Q_SLOTS:
-
 private Q_SLOTS:
-	void on_quantity_changed(int index);
-	void on_quantity_flags_changed();
+	void on_quantity_set();
 
 };
 

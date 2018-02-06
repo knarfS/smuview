@@ -63,7 +63,7 @@ void MeasurementControlView::setup_ui()
 	QHBoxLayout *layout = new QHBoxLayout();
 
 	quantity_box_ = new QComboBox();
-	if (configurable_->is_measured_quantity_getable()) {
+	if (configurable_->is_measured_quantity_listable()) {
 		for (auto pair : measured_quantity_list_) {
 			data::Quantity qunatity = pair.first;
 			quantity_box_->addItem(

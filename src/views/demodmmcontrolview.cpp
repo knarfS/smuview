@@ -22,9 +22,8 @@
 #include <QApplication>
 #include <QDebug>
 #include <QHBoxLayout>
+#include <QPushButton>
 #include <QVBoxLayout>
-
-#include <libsigrokcxx/libsigrokcxx.hpp>
 
 #include "demodmmcontrolview.hpp"
 #include "src/session.hpp"
@@ -44,6 +43,7 @@ DemoDMMControlView::DemoDMMControlView(const Session &session,
 	configurable_(configurable)
 {
 	configurable_->list_measured_quantity(measured_quantity_list_);
+
 	setup_ui();
 	connect_signals();
 	init_values();
@@ -58,48 +58,42 @@ void DemoDMMControlView::setup_ui()
 {
 	QVBoxLayout *layout = new QVBoxLayout();
 
-	QStringList quantity_list;
-	QStringList quantityflags_list;
-	if (configurable_->is_measured_quantity_getable()) {
-		for (auto pair : measured_quantity_list_) {
-			quantity_list.append(
-				data::quantityutil::format_quantity(pair.first));
-		}
-	}
-
+	// The demo dmm device has no listable measurement quantities /
+	// qunatity flags, so we use all...
 	quantity_box_ = new widgets::QuantityComboBox();
-	layout->addWidget( quantity_box_);
-
+	layout->addWidget(quantity_box_);
 	quantity_flags_list_ = new widgets::QuantityFlagsList();
 	layout->addWidget(quantity_flags_list_);
+
+	set_button_ = new QPushButton();
+	set_button_->setText(tr("Set"));
+	layout->addWidget(set_button_, 0);
 
 	this->centralWidget_->setLayout(layout);
 }
 
 void DemoDMMControlView::connect_signals()
 {
-	connect(quantity_box_, SIGNAL(currentIndexChanged(int)),
-		this, SLOT(on_quantity_changed(int)));
+	// Control elements -> Device
+	connect(set_button_, SIGNAL(clicked(bool)), this, SLOT(on_quantity_set()));
+
+	// Device -> control elements
 }
 
 void DemoDMMControlView::init_values()
 {
 }
 
-void DemoDMMControlView::on_quantity_changed(int index)
+void DemoDMMControlView::on_quantity_set()
 {
-	(void)index;
-
 	/*
 	data::Quantity quantity = quantity_box_->selected_sr_quantity();
-	vector<const sigrok::QuantityFlag *> sr_qfs =
+	set<data::QuantityFlag> quantity_flags =
 		quantity_flags_list_->selected_sr_quantity_flags();
-	configurable_->set_measured_quantity(sr_q, sr_qfs);
-	*/
-}
 
-void DemoDMMControlView::on_quantity_flags_changed()
-{
+	auto mq_pair = make_pair(quantity, quantity_flags);
+	configurable_->set_measured_quantity(mq_pair);
+	*/
 }
 
 } // namespace views
