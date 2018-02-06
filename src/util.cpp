@@ -21,7 +21,9 @@
 #include <algorithm>
 #include <cassert>
 #include <math.h>
+#include <set>
 #include <sstream>
+#include <vector>
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
@@ -35,12 +37,12 @@
 using std::fixed;
 using std::max;
 using std::ostringstream;
+using std::set;
 using std::setfill;
 using std::setprecision;
 using std::showpos;
 using std::string;
-
-using namespace Qt;
+using std::vector;
 
 namespace sv {
 namespace util {
