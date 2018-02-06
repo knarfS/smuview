@@ -71,10 +71,6 @@ ValuePanelView::ValuePanelView(const Session &session,
 	reset_display();
 
 	// Signal (aka Quantity + Flags + Unit) can change, e.g. DMM signals
-	/*
-	connect(channel_.get(), &channels::BaseChannel::signal_changed,
-			this, &ValuePanelView::on_signal_changed);
-	*/
 	connect(channel_.get(), SIGNAL(signal_added(shared_ptr<data::BaseSignal>)),
 		this, SLOT(on_signal_changed()));
 	connect(channel_.get(), SIGNAL(signal_changed(shared_ptr<data::BaseSignal>)),
