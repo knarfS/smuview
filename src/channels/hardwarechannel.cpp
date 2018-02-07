@@ -19,6 +19,7 @@
 
 #include <cassert>
 #include <memory>
+#include <set>
 
 #include <QDebug>
 
@@ -33,9 +34,9 @@
 
 using std::make_pair;
 using std::make_shared;
+using std::set;
 using std::static_pointer_cast;
 
-//Q_DECLARE_SMART_POINTER_METATYPE(std::shared_ptr)
 Q_DECLARE_METATYPE(std::shared_ptr<sv::data::BaseSignal>)
 
 namespace sv {
@@ -88,23 +89,23 @@ shared_ptr<sigrok::Channel> HardwareChannel::sr_channel() const
 
 // TODO: Call base
 shared_ptr<data::BaseSignal> HardwareChannel::init_signal(
-	const sigrok::Quantity *sr_quantity,
-	vector<const sigrok::QuantityFlag *> sr_quantity_flags,
-	const sigrok::Unit *sr_unit)
+	data::Quantity quantity,
+	set<data::QuantityFlag> quantity_flags,
+	data::Unit unit)
 {
 	// TODO: At the moment, only analog channels are supported
 	if (sr_channel_->type()->id() != SR_CHANNEL_ANALOG)
 		return nullptr;
 
 	shared_ptr<data::AnalogSignal> signal = make_shared<data::AnalogSignal>(
-		sr_quantity, sr_quantity_flags, sr_unit,
+		quantity, quantity_flags, unit,
 		shared_from_this(), channel_start_timestamp_);
 
 	connect(this, SIGNAL(channel_start_timestamp_changed(double)),
 			signal.get(), SLOT(on_channel_start_timestamp_changed(double)));
 
 	actual_signal_ = signal;
-	quantity_t q_qf = make_pair(sr_quantity, sr_quantity_flags);
+	quantity_t q_qf = make_pair(quantity, quantity_flags);
 	signal_map_.insert(make_pair(q_qf, signal));
 
 	Q_EMIT signal_added(signal);
@@ -115,11 +116,17 @@ shared_ptr<data::BaseSignal> HardwareChannel::init_signal(
 void HardwareChannel::push_sample_sr_analog(
 	void *sample, double timestamp, shared_ptr<sigrok::Analog> sr_analog)
 {
-	quantity_t q_qf = make_pair(sr_analog->mq(), sr_analog->mq_flags());
+	const sigrok::Quantity *sr_q = sr_analog->mq();
+	data::Quantity quantity = data::quantityutil::get_quantity(sr_q);
+	vector<const sigrok::QuantityFlag *> sr_qfs = sr_analog->mq_flags();
+	set<data::QuantityFlag> quantity_flags =
+		data::quantityutil::get_quantity_flags(sr_qfs);
+	quantity_t q_qf = make_pair(quantity, quantity_flags);
 	if (signal_map_.count(q_qf) == 0) {
-		init_signal(sr_analog->mq(), sr_analog->mq_flags(), sr_analog->unit());
+		data::Unit unit = data::quantityutil::get_unit(sr_analog->unit());
+		init_signal(quantity, quantity_flags, unit);
 		qWarning() << "HardwareChannel::push_sample_sr_analog(): " << name_ <<
-		" - No signal found: " << actual_signal_->name();
+			" - No signal found: " << actual_signal_->name();
 	}
 
 	auto signal = static_pointer_cast<data::AnalogSignal>(signal_map_[q_qf]);

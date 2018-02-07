@@ -23,9 +23,7 @@
 #include <QComboBox>
 #include <QWidget>
 
-namespace sigrok {
-class Unit;
-}
+#include "src/data/datautil.hpp"
 
 namespace sv {
 
@@ -38,7 +36,7 @@ class UnitComboBox : public QComboBox
 public:
 	UnitComboBox(QWidget *parent = nullptr);
 
-	const sigrok::Unit *selected_sr_unit();
+	data::Unit selected_unit();
 
 private:
 	void setup_ui();

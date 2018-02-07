@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2012 Joel Holdsworth <joel@airwebreathe.org.uk>
  * Copyright (C) 2016 Soeren Apel <soeren@apelpie.net>
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2016-2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 #define CHANNELS_BASECHANNEL_HPP
 
 #include <memory>
+#include <set>
 #include <utility>
 #include <vector>
 
@@ -30,17 +31,13 @@
 #include <QObject>
 #include <QSettings>
 
+#include "src/data/datautil.hpp"
+
 using std::map;
 using std::pair;
+using std::set;
 using std::shared_ptr;
 using std::vector;
-
-namespace sigrok {
-class Channel;
-class Quantity;
-class QuantityFlag;
-class Unit;
-}
 
 namespace sv {
 
@@ -56,7 +53,7 @@ namespace channels {
 
 enum class ChannelType {
 	/**
-	 * Channels with analog data (Power suplys, loads, DMMs)
+	 * Channels with analog data (Power supplies, loads, DMMs)
 	 */
 	AnalogChannel,
 	/**
@@ -79,7 +76,8 @@ public:
 	virtual ~BaseChannel();
 
 public:
-	typedef pair<const sigrok::Quantity *, vector<const sigrok::QuantityFlag *>> quantity_t;
+	// TODO: merge with Configurable::measured_quantity_t
+	typedef pair<data::Quantity, set<data::QuantityFlag>> quantity_t;
 
 	/**
 	 * Returns enabled status of this channel.

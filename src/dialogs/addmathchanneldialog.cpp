@@ -242,9 +242,9 @@ void AddMathChannelDialog::accept()
 				start_timestamp = signal_2->signal_start_timestamp();
 
 			channel = make_shared<channels::MultiplySSChannel>(
-				quantity_box_->selected_sr_quantity(),
-				quantity_flags_list_->selected_sr_quantity_flags(),
-				unit_box_->selected_sr_unit(),
+				quantity_box_->selected_quantity(),
+				quantity_flags_list_->selected_quantity_flags(),
+				unit_box_->selected_unit(),
 				signal_1, signal_2,
 				device, channel_group_name, name_edit_->text(),
 				start_timestamp);
@@ -281,9 +281,9 @@ void AddMathChannelDialog::accept()
 			}
 
 			channel = make_shared<channels::MultiplySFChannel>(
-				quantity_box_->selected_sr_quantity(),
-				quantity_flags_list_->selected_sr_quantity_flags(),
-				unit_box_->selected_sr_unit(),
+				quantity_box_->selected_quantity(),
+				quantity_flags_list_->selected_quantity_flags(),
+				unit_box_->selected_unit(),
 				signal, factor,
 				device, channel_group_name, name_edit_->text(),
 				signal->signal_start_timestamp());
@@ -317,9 +317,9 @@ void AddMathChannelDialog::accept()
 				start_timestamp = signal_2->signal_start_timestamp();
 
 			channel = make_shared<channels::DivideChannel>(
-				quantity_box_->selected_sr_quantity(),
-				quantity_flags_list_->selected_sr_quantity_flags(),
-				unit_box_->selected_sr_unit(),
+				quantity_box_->selected_quantity(),
+				quantity_flags_list_->selected_quantity_flags(),
+				unit_box_->selected_unit(),
 				signal_1, signal_2,
 				device, channel_group_name, name_edit_->text(),
 				start_timestamp);
@@ -338,9 +338,9 @@ void AddMathChannelDialog::accept()
 			signal = static_pointer_cast<data::AnalogSignal>(signals_i[0]);
 
 			channel = make_shared<channels::IntegrateChannel>(
-				quantity_box_->selected_sr_quantity(),
-				quantity_flags_list_->selected_sr_quantity_flags(),
-				unit_box_->selected_sr_unit(),
+				quantity_box_->selected_quantity(),
+				quantity_flags_list_->selected_quantity_flags(),
+				unit_box_->selected_unit(),
 				signal,
 				device, channel_group_name, name_edit_->text(),
 				signal->signal_start_timestamp());

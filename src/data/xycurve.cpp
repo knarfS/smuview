@@ -84,12 +84,12 @@ QString XYCurve::name() const
 
 QString XYCurve::x_data_quantity() const
 {
-	return x_signal_->quantity();
+	return x_signal_->quantity_name();
 }
 
 QString XYCurve::x_data_unit() const
 {
-	return x_signal_->unit();
+	return x_signal_->unit_name();
 }
 
 QString XYCurve::x_data_title() const
@@ -99,12 +99,12 @@ QString XYCurve::x_data_title() const
 
 QString XYCurve::y_data_quantity() const
 {
-	return y_signal_->quantity();
+	return y_signal_->quantity_name();
 }
 
 QString XYCurve::y_data_unit() const
 {
-	return y_signal_->unit();
+	return y_signal_->unit_name();
 }
 
 QString XYCurve::y_data_title() const

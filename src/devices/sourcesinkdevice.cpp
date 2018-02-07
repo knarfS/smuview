@@ -68,31 +68,31 @@ void SourceSinkDevice::init_channels()
 			// TODO: preinit with channel.meaning.mq, ...
 			//       (must be implemented in sigrok)
 			bool init = false;
-			const sigrok::Quantity *sr_quantity;
-			vector<const sigrok::QuantityFlag *> sr_quantity_flags;
-			const sigrok::Unit *sr_unit;
+			data::Quantity quantity;
+			set<data::QuantityFlag> quantity_flags;
+			data::Unit unit;
 			if (channel->name().startsWith("V")) {
-				sr_quantity = sigrok::Quantity::VOLTAGE;
+				quantity = data::Quantity::Voltage;
 				// TODO: Set AC for AC Sources
-				sr_quantity_flags.push_back(sigrok::QuantityFlag::DC);
-				sr_unit = sigrok::Unit::VOLT;
+				quantity_flags.insert(data::QuantityFlag::DC);
+				unit = data::Unit::Volt;
 				init = true;
 			}
 			else if (channel->name().startsWith("I")) {
-				sr_quantity = sigrok::Quantity::CURRENT;
+				quantity = data::Quantity::Current;
 				// TODO: Set AC for AC Sources
-				sr_quantity_flags.push_back(sigrok::QuantityFlag::DC);
-				sr_unit = sigrok::Unit::AMPERE;
+				quantity_flags.insert(data::QuantityFlag::DC);
+				unit = data::Unit::Ampere;
 				init = true;
 			}
 			else if (channel->name().startsWith("P")) {
-				sr_quantity = sigrok::Quantity::POWER;
-				sr_unit = sigrok::Unit::WATT;
+				quantity = data::Quantity::Power;
+				unit = data::Unit::Watt;
 				init = true;
 			}
 			else if (channel->name().startsWith("F")) {
-				sr_quantity = sigrok::Quantity::FREQUENCY;
-				sr_unit = sigrok::Unit::HERTZ;
+				quantity = data::Quantity::Frequency;
+				unit = data::Unit::Hertz;
 				init = true;
 			}
 
@@ -100,8 +100,7 @@ void SourceSinkDevice::init_channels()
 				auto hw_channel =
 					static_pointer_cast<channels::HardwareChannel>(channel);
 				hw_channel->set_fixed_signal(true);
-				hw_channel->init_signal(
-					sr_quantity, sr_quantity_flags, sr_unit);
+				hw_channel->init_signal(quantity, quantity_flags, unit);
 			}
 		}
 
@@ -114,11 +113,11 @@ void SourceSinkDevice::init_channels()
 			if (!channel->has_fixed_signal())
 				continue;
 			auto signal = channel->actual_signal();
-			if (signal->sr_quantity() == sigrok::Quantity::VOLTAGE)
+			if (signal->quantity() == data::Quantity::Voltage)
 				voltage_signal = static_pointer_cast<data::AnalogSignal>(signal);
-			else if (signal->sr_quantity() == sigrok::Quantity::CURRENT)
+			else if (signal->quantity() == data::Quantity::Current)
 				current_signal = static_pointer_cast<data::AnalogSignal>(signal);
-			else if (signal->sr_quantity() == sigrok::Quantity::POWER)
+			else if (signal->quantity() == data::Quantity::Power)
 				power_signal = static_pointer_cast<data::AnalogSignal>(signal);
 		}
 
@@ -126,9 +125,9 @@ void SourceSinkDevice::init_channels()
 		if (voltage_signal && current_signal && !power_signal) {
 			shared_ptr<channels::MultiplySSChannel> power_channel =
 				make_shared<channels::MultiplySSChannel>(
-					sigrok::Quantity::POWER,
-					vector<const sigrok::QuantityFlag *>(),
-					sigrok::Unit::WATT,
+					data::Quantity::Power,
+					set<data::QuantityFlag>(),
+					data::Unit::Watt,
 					voltage_signal, current_signal,
 					shared_from_this(), chg_name, tr("P"),
 					aquisition_start_timestamp_);
@@ -142,9 +141,9 @@ void SourceSinkDevice::init_channels()
 		if (voltage_signal && current_signal) {
 			shared_ptr<channels::DivideChannel> resistance_channel =
 				make_shared<channels::DivideChannel>(
-					sigrok::Quantity::RESISTANCE,
-					vector<const sigrok::QuantityFlag *>(),
-					sigrok::Unit::OHM,
+					data::Quantity::Resistance,
+					set<data::QuantityFlag>(),
+					data::Unit::Ohm,
 					voltage_signal, current_signal,
 					shared_from_this(), chg_name, tr("R"),
 					aquisition_start_timestamp_);
@@ -156,9 +155,9 @@ void SourceSinkDevice::init_channels()
 		if (power_signal) {
 			shared_ptr<channels::IntegrateChannel> wh_channel =
 				make_shared<channels::IntegrateChannel>(
-					sigrok::Quantity::PRESSURE, // TODO: WORK / ENERGIE
-					vector<const sigrok::QuantityFlag *>(),
-					sigrok::Unit::WATT_HOUR,
+					data::Quantity::Work,
+					set<data::QuantityFlag>(),
+					data::Unit::WattHour,
 					power_signal,
 					shared_from_this(), chg_name, tr("Wh"),
 					aquisition_start_timestamp_);
@@ -170,9 +169,9 @@ void SourceSinkDevice::init_channels()
 		if (current_signal) {
 			shared_ptr<channels::IntegrateChannel> ah_channel =
 				make_shared<channels::IntegrateChannel>(
-					sigrok::Quantity::MASS, // TODO: ELECTRIC_CHARGE
-					vector<const sigrok::QuantityFlag *>(),
-					sigrok::Unit::WATT_HOUR, // TODO: AMPERE_HOUR
+					data::Quantity::ElectricCharge,
+					set<data::QuantityFlag>(),
+					data::Unit::AmpereHour,
 					current_signal,
 					shared_from_this(), chg_name, tr("Ah"),
 					aquisition_start_timestamp_);

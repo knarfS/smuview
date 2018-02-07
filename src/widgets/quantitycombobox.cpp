@@ -17,15 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <utility>
-
 #include <QDebug>
 #include <QVariant>
 
 #include "quantitycombobox.hpp"
-#include "src/util.hpp"
+#include "src/data/datautil.hpp"
 
-Q_DECLARE_METATYPE(const sigrok::Quantity *)
+Q_DECLARE_METATYPE(sv::data::Quantity)
 
 namespace sv {
 namespace widgets {
@@ -37,15 +35,15 @@ QuantityComboBox::QuantityComboBox(QWidget *parent) :
 	setup_ui();
 }
 
-const sigrok::Quantity *QuantityComboBox::selected_sr_quantity()
+data::Quantity QuantityComboBox::selected_quantity()
 {
 	QVariant data = this->currentData();
-	return data.value<const sigrok::Quantity *>();
+	return data.value<data::Quantity>();
 }
 
 void QuantityComboBox::setup_ui()
 {
-	for (auto q_name_pair : util::get_quantity_name_map()) {
+	for (auto q_name_pair : data::quantityutil::get_quantity_name_map()) {
 		this->addItem(
 			q_name_pair.second, QVariant::fromValue(q_name_pair.first));
 	}

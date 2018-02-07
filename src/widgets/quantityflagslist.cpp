@@ -23,9 +23,9 @@
 #include <QVariant>
 
 #include "quantityflagslist.hpp"
-#include "src/util.hpp"
+#include "src/data/datautil.hpp"
 
-Q_DECLARE_METATYPE(const sigrok::QuantityFlag *)
+Q_DECLARE_METATYPE(sv::data::QuantityFlag)
 
 namespace sv {
 namespace widgets {
@@ -37,19 +37,16 @@ QuantityFlagsList::QuantityFlagsList(QWidget *parent) :
 	setup_ui();
 }
 
-vector<const sigrok::QuantityFlag *>
-	QuantityFlagsList::selected_sr_quantity_flags()
+set<data::QuantityFlag> QuantityFlagsList::selected_quantity_flags()
 {
-	vector<const sigrok::QuantityFlag *> flags;
+	set<data::QuantityFlag> flags;
 	auto items = this->selectedItems();
 	for (auto item : items) {
 		QVariant data = item->data(Qt::UserRole);
 		if (data.isNull())
 			continue;
 
-		auto flag = data.value<const sigrok::QuantityFlag *>();
-		if (flag)
-			flags.push_back(flag);
+		flags.insert(data.value<data::QuantityFlag>());
 	}
 	return flags;
 }
@@ -58,7 +55,7 @@ void QuantityFlagsList::setup_ui()
 {
 	this->setSelectionMode(QListView::MultiSelection);
 
-	for (auto qf_name_pair : util::get_quantity_flag_name_map()) {
+	for (auto qf_name_pair : data::quantityutil::get_quantity_flag_name_map()) {
 		QListWidgetItem *item = new QListWidgetItem();
 		item->setText(qf_name_pair.second);
 		item->setFlags(item->flags() | Qt::ItemIsUserCheckable);

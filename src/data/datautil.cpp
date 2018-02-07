@@ -29,6 +29,22 @@ namespace sv {
 namespace data {
 namespace quantityutil {
 
+
+quantity_name_map_t get_quantity_name_map()
+{
+	return quantity_name_map;
+}
+
+quantity_flag_name_map_t get_quantity_flag_name_map()
+{
+	return quantity_flag_name_map;
+}
+
+unit_name_map_t get_unit_name_map()
+{
+	return unit_name_map;
+}
+
 Quantity get_quantity(const sigrok::Quantity *sr_quantity)
 {
 	if (sr_quantity_quantity_map.count(sr_quantity) > 0)
@@ -63,6 +79,23 @@ uint64_t get_sr_quantity_flag_id(QuantityFlag quantity_flag)
 	return 0;
 }
 
+bool is_valid_sr_quantity(data::Quantity quantity)
+{
+	if (quantity_sr_quantity_map.count(quantity) > 0)
+		return true;
+	return false;
+}
+
+set<QuantityFlag> get_quantity_flags(
+	vector<const sigrok::QuantityFlag *> sr_quantity_flags)
+{
+	set<data::QuantityFlag> quantity_flag_set;
+	for (auto sr_qf : sr_quantity_flags) {
+		quantity_flag_set.insert(get_quantity_flag(sr_qf));
+	}
+	return quantity_flag_set;
+}
+
 set<QuantityFlag> get_quantity_flags(uint64_t sr_quantity_flags)
 {
 	set<data::QuantityFlag> quantity_flag_set;
@@ -75,7 +108,6 @@ set<QuantityFlag> get_quantity_flags(uint64_t sr_quantity_flags)
 			sigrok::QuantityFlag::get(sr_quantity_flags & mask);
 		quantity_flag_set.insert(get_quantity_flag(sr_qf));
 	}
-
 	return quantity_flag_set;
 }
 
@@ -86,6 +118,13 @@ uint64_t get_sr_quantity_flags_id(set<QuantityFlag> quantity_flags)
 		sr_qfs_id |= get_sr_quantity_flag_id(qunatity_flag);
 	}
 	return sr_qfs_id;
+}
+
+Unit get_unit(const sigrok::Unit *sr_unit)
+{
+	if (sr_unit_unit_map.count(sr_unit) > 0)
+		return sr_unit_unit_map[sr_unit];
+	return Unit::Unknown;
 }
 
 QString format_quantity(Quantity quantity)
@@ -139,6 +178,21 @@ QString format_quantity_flags(set<QuantityFlag> quantity_flags)
 	}
 
 	return qfs_str;
+}
+
+QString format_unit(Unit unit)
+{
+	if (unit_name_map.count(unit) > 0)
+		return unit_name_map[unit];
+	return unit_name_map[Unit::Unknown];
+}
+
+set<data::Unit> get_units_from_quantity(data::Quantity quantity)
+{
+	set<data::Unit> units;
+	if (quantity_unit_map.count(quantity) > 0)
+		units = quantity_unit_map[quantity];
+	return units;
 }
 
 } // namespace helper

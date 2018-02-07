@@ -21,21 +21,16 @@
 #define CHANNELS_MULTIPLYSFCHANNEL_HPP
 
 #include <memory>
-#include <vector>
+#include <set>
 
 #include <QObject>
 
 #include "src/channels/basechannel.hpp"
 #include "src/channels/mathchannel.hpp"
+#include "src/data/datautil.hpp"
 
+using std::set;
 using std::shared_ptr;
-using std::vector;
-
-namespace sigrok {
-class Quantity;
-class QuantityFlag;
-class Unit;
-}
 
 namespace sv {
 
@@ -55,9 +50,9 @@ class MultiplySFChannel : public MathChannel
 
 public:
 	MultiplySFChannel(
-		const sigrok::Quantity *sr_quantity,
-		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
-		const sigrok::Unit *sr_unit,
+		data::Quantity quantity,
+		set<data::QuantityFlag> quantity_flags,
+		data::Unit unit,
 		shared_ptr<data::AnalogSignal> signal,
 		double factor,
 		shared_ptr<devices::Device> parent_device,

@@ -21,21 +21,19 @@
 #define DATA_ANALOGSIGNAL_HPP
 
 #include <memory>
+#include <set>
 #include <utility>
+#include <vector>
 
 #include <QObject>
-#include <QString>
 
-#include "basesignal.hpp"
+#include "src/data/basesignal.hpp"
+#include "src/data/datautil.hpp"
 
 using std::pair;
+using std::set;
 using std::shared_ptr;
 using std::vector;
-
-namespace sigrok {
-class Quantity;
-class Unit;
-}
 
 namespace sv {
 namespace data {
@@ -48,9 +46,9 @@ class AnalogSignal : public BaseSignal
 
 public:
 	AnalogSignal(
-		const sigrok::Quantity *sr_quantity,
-		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
-		const sigrok::Unit *sr_unit,
+		data::Quantity quantity,
+		set<data::QuantityFlag> quantity_flags,
+		data::Unit unit,
 		shared_ptr<channels::BaseChannel> parent_channel,
 		double signal_start_timestamp);
 

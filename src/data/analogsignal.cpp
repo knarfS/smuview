@@ -18,31 +18,34 @@
  */
 
 #include <cassert>
-
-#include <libsigrokcxx/libsigrokcxx.hpp>
+#include <memory>
+#include <set>
 
 #include <QDebug>
 #include <QString>
 
 #include "analogsignal.hpp"
 #include "src/util.hpp"
+#include "src/channels/basechannel.hpp"
+#include "src/data/basesignal.hpp"
+#include "src/data/datautil.hpp"
 
 using std::make_pair;
 using std::make_shared;
+using std::set;
 using std::shared_ptr;
-using std::unique_ptr;
 using std::vector;
 
 namespace sv {
 namespace data {
 
 AnalogSignal::AnalogSignal(
-		const sigrok::Quantity *sr_quantity,
-		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
-		const sigrok::Unit *sr_unit,
+		data::Quantity quantity,
+		set<data::QuantityFlag> quantity_flags,
+		data::Unit unit,
 		shared_ptr<channels::BaseChannel> parent_channel,
 		double signal_start_timestamp) :
-	BaseSignal(sr_quantity, sr_quantity_flags, sr_unit, parent_channel),
+	BaseSignal(quantity, quantity_flags, unit, parent_channel),
 	sample_count_(0),
 	digits_(7), // A good start value for digits
 	decimal_places_(-1), // A good start value for decimal places

@@ -24,6 +24,7 @@
 
 #include <map>
 #include <set>
+#include <vector>
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
@@ -32,6 +33,7 @@
 
 using std::map;
 using std::set;
+using std::vector;
 
 namespace sigrok {
 class Quantity;
@@ -56,6 +58,10 @@ enum class Quantity
 	Conductance,
 	/** Electrical power, usually in W, or dBm. */
 	Power,
+	/** Also "Energy". TODO: Implement in libsigrok */
+	Work,
+	/** TODO: Implement in libsigrok */
+	ElectricCharge,
 	/** Gain (a transistor's gain, or hFE, for example). */
 	Gain,
 	/**
@@ -166,6 +172,8 @@ enum class Unit
 	Siemens,
 	DecibelMW,
 	DecibelVolt,
+	/** TODO: Implement in libsigrok */
+	Decibel,
 	Unitless,
 	DecibelSpl,
 	Concentration,
@@ -173,6 +181,12 @@ enum class Unit
 	VoltAmpere,
 	Watt,
 	WattHour,
+	/** TODO: Implement in libsigrok */
+	Joule,
+	/** TODO: Implement in libsigrok */
+	AmpereHour,
+	/** TODO: Implement in libsigrok */
+	Coulomb,
 	MeterPerSecond,
 	/** TODO: Use Pascal instead? */
 	HectoPascal,
@@ -190,16 +204,18 @@ enum class Unit
 	Tael,
 	Momme,
 	Tola,
-	Piece
+	Piece,
+	Unknown,
 };
 
 namespace quantityutil {
 
-namespace {
-
 typedef map<Quantity, QString> quantity_name_map_t;
 typedef map<QuantityFlag, QString> quantity_flag_name_map_t;
 typedef map<Unit, QString> unit_name_map_t;
+
+namespace {
+
 typedef map<Quantity, set<Unit>> quantity_unit_map_t;
 
 // TODO: Use tr(), QCoreApplication::translate(), QT_TR_NOOP() or
@@ -217,6 +233,8 @@ quantity_name_map_t quantity_name_map = {
 	{ Quantity::PulseWidth, QString("Pulse Width") },
 	{ Quantity::Conductance, QString("Conductance") },
 	{ Quantity::Power, QString("Power") },
+	{ Quantity::Work, QString("Work") },
+	{ Quantity::ElectricCharge, QString("Electric Charge") },
 	{ Quantity::Gain, QString("Gain") },
 	{ Quantity::SoundPressureLevel, QString("Sound Pressure Level") },
 	{ Quantity::CarbonMonoxide, QString("Carbon Monoxide") },
@@ -265,6 +283,7 @@ quantity_flag_name_map_t quantity_flag_name_map = {
 	{ QuantityFlag::Reference, QString("Reference") },
 	{ QuantityFlag::Unstable, QString("Unstable") },
 	{ QuantityFlag::FourWire, QString("4W") },
+	{ QuantityFlag::Unknown, QString("Unknown") },
 };
 
 unit_name_map_t unit_name_map = {
@@ -282,6 +301,7 @@ unit_name_map_t unit_name_map = {
 	{ Unit::Siemens, QString("S") },
 	{ Unit::DecibelMW, QString("dBm") },
 	{ Unit::DecibelVolt, QString("dBV") },
+	{ Unit::Decibel, QString("dB") },
 	{ Unit::Unitless, QString("") },
 	{ Unit::DecibelSpl, QString("dB") },
 	{ Unit::Concentration, QString("ppx") },
@@ -289,6 +309,9 @@ unit_name_map_t unit_name_map = {
 	{ Unit::VoltAmpere, QString("VA") },
 	{ Unit::Watt, QString("W") },
 	{ Unit::WattHour, QString("Wh") },
+	{ Unit::Joule, QString("J") },
+	{ Unit::AmpereHour, QString("Ah") },
+	{ Unit::Coulomb, QString("C") },
 	{ Unit::MeterPerSecond, QString("m/s") },
 	{ Unit::HectoPascal, QString("hPa") },
 	{ Unit::Humidity293K, QString("%") },
@@ -305,6 +328,7 @@ unit_name_map_t unit_name_map = {
 	{ Unit::Momme, QString::fromUtf8("\u5301") },
 	{ Unit::Tola, QString("tola") },
 	{ Unit::Piece, QString("pc.") },
+	{ Unit::Unknown, QString("Unknown") },
 };
 
 map<const sigrok::Quantity *, Quantity> sr_quantity_quantity_map = {
@@ -429,10 +453,151 @@ map<QuantityFlag, const sigrok::QuantityFlag *> quantity_flag_sr_quantity_flag_m
 	{ QuantityFlag::FourWire, sigrok::QuantityFlag::FOUR_WIRE },
 };
 
+map<const sigrok::Unit *, Unit> sr_unit_unit_map = {
+	{ sigrok::Unit::VOLT, Unit::Volt },
+	{ sigrok::Unit::AMPERE, Unit::Ampere },
+	{ sigrok::Unit::OHM, Unit::Ohm },
+	{ sigrok::Unit::FARAD, Unit::Farad },
+	{ sigrok::Unit::KELVIN, Unit::Kelvin },
+	{ sigrok::Unit::CELSIUS, Unit::Celsius },
+	{ sigrok::Unit::FAHRENHEIT, Unit::Fahrenheit },
+	{ sigrok::Unit::HERTZ, Unit::Hertz },
+	{ sigrok::Unit::PERCENTAGE, Unit::Percentage },
+	{ sigrok::Unit::BOOLEAN, Unit::Boolean },
+	{ sigrok::Unit::SECOND, Unit::Second },
+	{ sigrok::Unit::SIEMENS, Unit::Siemens },
+	{ sigrok::Unit::DECIBEL_MW, Unit::DecibelMW },
+	{ sigrok::Unit::DECIBEL_VOLT, Unit::DecibelVolt },
+	{ sigrok::Unit::UNITLESS, Unit::Unitless },
+	{ sigrok::Unit::DECIBEL_SPL, Unit::DecibelSpl },
+	{ sigrok::Unit::CONCENTRATION, Unit::Concentration },
+	{ sigrok::Unit::REVOLUTIONS_PER_MINUTE, Unit::RevolutionsPerMinute },
+	{ sigrok::Unit::VOLT_AMPERE, Unit::VoltAmpere },
+	{ sigrok::Unit::WATT, Unit::Watt },
+	{ sigrok::Unit::WATT_HOUR, Unit::WattHour },
+	{ sigrok::Unit::METER_SECOND, Unit::MeterPerSecond },
+	{ sigrok::Unit::HECTOPASCAL, Unit::HectoPascal },
+	{ sigrok::Unit::HUMIDITY_293K, Unit::Humidity293K },
+	{ sigrok::Unit::DEGREE, Unit::Degree },
+	{ sigrok::Unit::HENRY, Unit::Henry },
+	{ sigrok::Unit::GRAM, Unit::Gram },
+	{ sigrok::Unit::CARAT, Unit::Carat },
+	{ sigrok::Unit::OUNCE, Unit::Ounce },
+	{ sigrok::Unit::TROY_OUNCE, Unit::TroyOunce },
+	{ sigrok::Unit::POUND, Unit::Pound },
+	{ sigrok::Unit::PENNYWEIGHT, Unit::Pennyweight },
+	{ sigrok::Unit::GRAIN, Unit::Grain },
+	{ sigrok::Unit::TAEL, Unit::Tael },
+	{ sigrok::Unit::MOMME, Unit::Momme },
+	{ sigrok::Unit::TOLA, Unit::Tola },
+	{ sigrok::Unit::PIECE, Unit::Piece },
+};
+
+map<Unit, const sigrok::Unit *> unit_sr_unit_map = {
+	{ Unit::Volt, sigrok::Unit::VOLT },
+	{ Unit::Ampere, sigrok::Unit::AMPERE },
+	{ Unit::Ohm, sigrok::Unit::OHM },
+	{ Unit::Farad, sigrok::Unit::FARAD },
+	{ Unit::Kelvin, sigrok::Unit::KELVIN },
+	{ Unit::Celsius, sigrok::Unit::CELSIUS },
+	{ Unit::Fahrenheit, sigrok::Unit::FAHRENHEIT },
+	{ Unit::Hertz, sigrok::Unit::HERTZ },
+	{ Unit::Percentage, sigrok::Unit::PERCENTAGE },
+	{ Unit::Boolean, sigrok::Unit::BOOLEAN },
+	{ Unit::Second, sigrok::Unit::SECOND },
+	{ Unit::Siemens, sigrok::Unit::SIEMENS },
+	{ Unit::DecibelMW, sigrok::Unit::DECIBEL_MW },
+	{ Unit::DecibelVolt, sigrok::Unit::DECIBEL_VOLT },
+	{ Unit::Unitless, sigrok::Unit::UNITLESS },
+	{ Unit::DecibelSpl, sigrok::Unit::DECIBEL_SPL },
+	{ Unit::Concentration, sigrok::Unit::CONCENTRATION },
+	{ Unit::RevolutionsPerMinute, sigrok::Unit::REVOLUTIONS_PER_MINUTE },
+	{ Unit::VoltAmpere, sigrok::Unit::VOLT_AMPERE },
+	{ Unit::Watt, sigrok::Unit::WATT },
+	{ Unit::WattHour, sigrok::Unit::WATT_HOUR },
+	{ Unit::MeterPerSecond, sigrok::Unit::METER_SECOND },
+	{ Unit::HectoPascal, sigrok::Unit::HECTOPASCAL },
+	{ Unit::Humidity293K, sigrok::Unit::HUMIDITY_293K },
+	{ Unit::Degree, sigrok::Unit::DEGREE },
+	{ Unit::Henry, sigrok::Unit::HENRY },
+	{ Unit::Gram, sigrok::Unit::GRAM },
+	{ Unit::Carat, sigrok::Unit::CARAT },
+	{ Unit::Ounce, sigrok::Unit::OUNCE },
+	{ Unit::TroyOunce, sigrok::Unit::TROY_OUNCE },
+	{ Unit::Pound, sigrok::Unit::POUND },
+	{ Unit::Pennyweight, sigrok::Unit::PENNYWEIGHT },
+	{ Unit::Grain, sigrok::Unit::GRAIN },
+	{ Unit::Tael, sigrok::Unit::TAEL },
+	{ Unit::Momme, sigrok::Unit::MOMME },
+	{ Unit::Tola, sigrok::Unit::TOLA },
+	{ Unit::Piece, sigrok::Unit::PIECE },
+};
+
+quantity_unit_map_t quantity_unit_map = {
+	{ Quantity::Voltage, { Unit::Volt } },
+	{ Quantity::Current, { Unit::Ampere } },
+	{ Quantity::Resistance, { Unit::Ohm } },
+	{ Quantity::Capacitance, { Unit::Farad } },
+	{ Quantity::Temperature, { Unit::Kelvin, Unit::Celsius, Unit::Fahrenheit} },
+	{ Quantity::Frequency, { Unit::Hertz } },
+	{ Quantity::DutyCyle, { Unit::Percentage } },
+	{ Quantity::Continuity, { Unit::Ohm, Unit::Boolean } },
+	{ Quantity::PulseWidth, { Unit::Percentage } },
+	{ Quantity::Conductance, { Unit::Siemens } },
+	{ Quantity::Power, { Unit::Watt, Unit::VoltAmpere } },
+	{ Quantity::Work, { Unit::WattHour, Unit::Joule } },
+	{ Quantity::ElectricCharge, { Unit::AmpereHour, Unit::Coulomb } },
+	{ Quantity::Gain, { Unit::Decibel, Unit::Unitless } },
+	{ Quantity::SoundPressureLevel, { Unit::DecibelSpl } },
+	{ Quantity::CarbonMonoxide, { Unit::Concentration } },
+	{ Quantity::RelativeHumidity, { Unit::Humidity293K } },
+	{ Quantity::Time, { Unit::Second } },
+	{ Quantity::WindSpeed, { Unit::MeterPerSecond } },
+	{ Quantity::Pressure, { Unit::HectoPascal } },
+	{ Quantity::ParallelInductance, { Unit::Henry } },
+	{ Quantity::ParallelCapacitance, { Unit::Farad } },
+	{ Quantity::ParallelResistance, { Unit::Ohm } },
+	{ Quantity::SeriesInductance, { Unit::Henry } },
+	{ Quantity::SeriesCapacitance, { Unit::Farad } },
+	{ Quantity::SeriesResistance, { Unit::Ohm } },
+	{ Quantity::DissipationFactor, { Unit::Unitless } },
+	{ Quantity::QualityFactor, { Unit::Unitless } },
+	{ Quantity::PhaseAngle, { Unit::Degree } },
+	{ Quantity::Difference, { Unit::Unitless } },
+	{ Quantity::Count, { Unit::Piece, Unit::Unitless } },
+	{ Quantity::PowerFactor, { Unit::Unitless } },
+	{ Quantity::ApparentPower, { Unit::VoltAmpere } },
+	{ Quantity::Mass, { Unit::Gram, Unit::Carat, Unit::Ounce, Unit::TroyOunce,
+						Unit::Pound, Unit::Pennyweight, Unit::Grain, Unit::Tael,
+						Unit::Momme, Unit::Tola} },
+	{ Quantity::HarmonicRatio, { Unit::Unitless } },
+};
+
 } // namespace
 
 /**
- * Returns the correspondig Quantity for a sigrok Quantity
+ * Returns all known quantities
+ *
+ * @return The quantity name map
+ */
+quantity_name_map_t get_quantity_name_map();
+
+/**
+ * Returns all known quantity flags
+ *
+ * @return The quantity flags name map
+ */
+quantity_flag_name_map_t get_quantity_flag_name_map();
+
+/**
+ * Returns all known units
+ *
+ * @return The unit name map
+ */
+unit_name_map_t get_unit_name_map();
+
+/**
+ * Returns the corresponding Quantity for a sigrok Quantity
  *
  * @param sr_quantity The sigrok Quantity
  *
@@ -441,7 +606,7 @@ map<QuantityFlag, const sigrok::QuantityFlag *> quantity_flag_sr_quantity_flag_m
 Quantity get_quantity(const sigrok::Quantity *sr_quantity);
 
 /**
- * Returns the correspondig Quantity for a sigrok Quantity (unit32_t)
+ * Returns the corresponding Quantity for a sigrok Quantity (unit32_t)
  *
  * @param sr_quantity The sigrok Quantity as uint32_t
  *
@@ -450,55 +615,84 @@ Quantity get_quantity(const sigrok::Quantity *sr_quantity);
 Quantity get_quantity(uint32_t sr_quantity);
 
 /**
- * Returns the correspondig sigrok Quantity ID for a Quantity
+ * Returns the corresponding sigrok Quantity ID for a Quantity
  *
- * @param sr_quantity The Quantity
+ * @param quantity The Quantity
  *
  * @return The sigrok Quantity ID as uint32_t.
  */
 uint32_t get_sr_quantity_id(Quantity quantity);
 
 /**
- * Returns the correspondig QunatityFlag for a sigrok QuantityFlag
+ * Checks if the quantity is a known sigrok quantity
  *
- * @param sr_quantity The sigrok QuantityFlag
+ * @param quantity The quantity
+ *
+ * @return true if it is a known sigrok quantity
+ */
+bool is_valid_sr_quantity(data::Quantity quantity);
+
+/**
+ * Returns the corresponding QunatityFlag for a sigrok QuantityFlag
+ *
+ * @param sr_quantity_flag The sigrok QuantityFlag
  *
  * @return The QuantityFlag.
  */
 QuantityFlag get_quantity_flag(const sigrok::QuantityFlag *sr_quantity_flag);
 
 /**
- * Returns the correspondig sigrok QuantityFlag ID for a QuantityFlag
+ * Returns the corresponding sigrok QuantityFlag ID for a QuantityFlag
  *
- * @param sr_quantity The QuantityFlag
+ * @param quantity_flag The QuantityFlag
  *
  * @return The sigrok QuantityFlag ID as uint64_t.
  */
 uint64_t get_sr_quantity_flag_id(QuantityFlag quantity_flag);
 
 /**
- * Returns the correspondig QunatityFlags as a set for the
+ * Returns the corresponding QunatityFlags as a set for the
+ * sigrok QuantityFlags vector
+ *
+ * @param sr_quantity_flags The sigrok QuantityFlags as vector
+ *
+ * @return The QuantityFlags as set.
+ */
+set<QuantityFlag> get_quantity_flags(
+	vector<const sigrok::QuantityFlag *> sr_quantity_flags);
+
+/**
+ * Returns the corresponding QunatityFlags as a set for the
  * sigrok QuantityFlags (uint64_t)
  *
- * @param sr_quantity The sigrok QuantityFlags as uint64_t
+ * @param sr_quantity_flags The sigrok QuantityFlags as uint64_t
  *
  * @return The QuantityFlags as set.
  */
 set<QuantityFlag> get_quantity_flags(uint64_t sr_quantity_flags);
 
 /**
- * Returns the correspondig QunatityFlags as an uint64_t
+ * Returns the corresponding QunatityFlags as an uint64_t
  *
- * @param sr_quantity The QuantityFlags as set
+ * @param quantity_flags The QuantityFlags as set
  *
  * @return The sigrok QuantityFlags IDs
  */
 uint64_t get_sr_quantity_flags_id(set<QuantityFlag> quantity_flags);
 
 /**
+ * Returns the corresponding Unit for a sigrok Unit
+ *
+ * @param sr_unit The sigrok Unit
+ *
+ * @return The Unit.
+ */
+Unit get_unit(const sigrok::Unit *sr_unit);
+
+/**
  * Formats a Quantity to a string
  *
- * @param sr_quantity The Quantity to format.
+ * @param quantity The Quantity to format.
  *
  * @return The formatted quantity.
  */
@@ -521,6 +715,24 @@ QString format_quantity_flag(QuantityFlag quantity_flag);
  * @return The formatted QuantityFlags.
  */
 QString format_quantity_flags(set<QuantityFlag> quantity_flags);
+
+/**
+ * Formats a Unit to a string
+ *
+ * @param unit The Quantity to format.
+ *
+ * @return The formatted unit.
+ */
+QString format_unit(Unit unit);
+
+/**
+ * Returns the (SI) units for the given quantity
+ *
+ * @param quantity The quantity
+ *
+ * @return The units as set
+ */
+set<data::Unit> get_units_from_quantity(data::Quantity quantity);
 
 } // namespace quantityutil
 } // namespace data

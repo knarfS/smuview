@@ -21,20 +21,17 @@
 #define CHANNELS_MATHCHANNEL_HPP
 
 #include <memory>
+#include <set>
 #include <vector>
 
 #include <QObject>
 
 #include "src/channels/basechannel.hpp"
+#include "src/data/datautil.hpp"
 
+using std::set;
 using std::shared_ptr;
 using std::vector;
-
-namespace sigrok {
-class Quantity;
-class QuantityFlag;
-class Unit;
-}
 
 namespace sv {
 
@@ -60,9 +57,9 @@ class MathChannel : public BaseChannel
 
 public:
 	MathChannel(
-		const sigrok::Quantity *sr_quantity,
-		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
-		const sigrok::Unit *sr_unit,
+		data::Quantity quantity,
+		set<data::QuantityFlag> quantity_flags,
+		data::Unit unit,
 		shared_ptr<devices::Device> parent_device,
 		const QString channel_group_name,
 		QString channel_name,
@@ -79,9 +76,9 @@ public:
 	 */
 	/*
 	shared_ptr<data::BaseSignal> init_signal(
-		const sigrok::Quantity *sr_quantity,
-		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
-		const sigrok::Unit *sr_unit);
+		data::Quantity quantity,
+		set<data::QuantityFlag> quantity_flags,
+		data::Unit unit,);
 	*/
 
 	/**
@@ -103,9 +100,9 @@ protected:
 
 	int digits_;
 	int decimal_places_;
-	const sigrok::Quantity *sr_quantity_;
-	vector<const sigrok::QuantityFlag *> sr_quantity_flags_;
-	const sigrok::Unit *sr_unit_;
+	data::Quantity quantity_;
+	set<data::QuantityFlag> quantity_flags_;
+	data::Unit unit_;
 
 	static const size_t size_of_double_ = sizeof(double);
 

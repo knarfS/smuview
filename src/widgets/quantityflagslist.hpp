@@ -20,16 +20,14 @@
 #ifndef WIDGETS_QUANTITYFLAGSLIST_HPP
 #define WIDGETS_QUANTITYFLAGSLIST_HPP
 
-#include <vector>
+#include <set>
 
 #include <QListWidget>
 #include <QWidget>
 
-using std::vector;
+#include "src/data/datautil.hpp"
 
-namespace sigrok {
-class QuantityFlag;
-}
+using std::set;
 
 namespace sv {
 
@@ -42,7 +40,7 @@ class QuantityFlagsList : public QListWidget
 public:
 	QuantityFlagsList(QWidget *parent = nullptr);
 
-	vector<const sigrok::QuantityFlag *> selected_sr_quantity_flags();
+	set<data::QuantityFlag> selected_quantity_flags();
 
 private:
 	void setup_ui();

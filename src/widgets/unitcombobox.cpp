@@ -17,21 +17,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <utility>
-
-#include <libsigrokcxx/libsigrokcxx.hpp>
-
+#include <QComboBox>
 #include <QDebug>
 #include <QVariant>
 
 #include "unitcombobox.hpp"
-#include "src/util.hpp"
+#include "src/data/datautil.hpp"
 
-Q_DECLARE_METATYPE(const sigrok::Unit *)
+Q_DECLARE_METATYPE(sv::data::Unit)
 
 namespace sv {
 namespace widgets {
-
 
 UnitComboBox::UnitComboBox(QWidget *parent) :
 	QComboBox(parent)
@@ -39,16 +35,15 @@ UnitComboBox::UnitComboBox(QWidget *parent) :
 	setup_ui();
 }
 
-const sigrok::Unit *UnitComboBox::selected_sr_unit()
+data::Unit UnitComboBox::selected_unit()
 {
 	QVariant data = this->currentData();
-	return data.value<const sigrok::Unit *>();
+	return data.value<data::Unit>();
 }
 
 void UnitComboBox::setup_ui()
 {
-	for (auto u_name_pair : util::get_unit_name_map()) {
-		qWarning() << "UnitComboBox: " << u_name_pair.second << ", " << u_name_pair.first;
+	for (auto u_name_pair : data::quantityutil::get_unit_name_map()) {
 		this->addItem(
 			u_name_pair.second, QVariant::fromValue(u_name_pair.first));
 	}

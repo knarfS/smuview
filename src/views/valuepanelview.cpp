@@ -56,7 +56,7 @@ ValuePanelView::ValuePanelView(const Session &session,
 	digits_ = 7; // TODO
 	decimal_places_ = -1; // TODO
 	if (signal_) {
-		unit_ = signal_->unit();
+		unit_ = signal_->unit_name();
 		digits_ = signal_->digits();
 		decimal_places_ = signal_->decimal_places();
 	}
@@ -93,7 +93,7 @@ ValuePanelView::ValuePanelView(const Session& session,
 {
 	assert(signal_);
 
-	unit_ = signal_->unit();
+	unit_ = signal_->unit_name();
 	digits_ = signal_->digits();
 	decimal_places_ = signal_->decimal_places();
 
@@ -268,7 +268,7 @@ void ValuePanelView::on_signal_changed()
 	signal_ = dynamic_pointer_cast<data::AnalogSignal>(
 		channel_->actual_signal());
 
-	unit_ = signal_->unit();
+	unit_ = signal_->unit_name();
 	digits_ = signal_->digits();
 	decimal_places_ = signal_->decimal_places();
 	valueDisplay->set_unit(unit_);

@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2012 Joel Holdsworth <joel@airwebreathe.org.uk>
  * Copyright (C) 2016 Soeren Apel <soeren@apelpie.net>
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,51 +20,47 @@
  */
 
 #include <cassert>
-#include <utility>
 
-#include <QDateTime>
 #include <QDebug>
 #include <QString>
 
-#include <libsigrokcxx/libsigrokcxx.hpp>
-
 #include "basesignal.hpp"
-#include "src/session.hpp"
-#include "src/util.hpp"
 #include "src/channels/basechannel.hpp"
+#include "src/data/datautil.hpp"
 
-using std::dynamic_pointer_cast;
-using std::make_shared;
-using std::pair;
+using std::set;
 using std::shared_ptr;
 
 namespace sv {
 namespace data {
 
 BaseSignal::BaseSignal(
-		const sigrok::Quantity *sr_quantity,
-		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
-		const sigrok::Unit *sr_unit,
+		data::Quantity quantity,
+		set<data::QuantityFlag> quantity_flags,
+		data::Unit unit,
 		shared_ptr<channels::BaseChannel> parent_channel) :
-	sr_quantity_(sr_quantity),
-	sr_quantity_flags_(sr_quantity_flags),
-	sr_unit_(sr_unit),
+	quantity_(quantity),
+	quantity_flags_(quantity_flags),
+	unit_(unit),
 	parent_channel_(parent_channel)
 {
-	assert(sr_quantity);
-	//assert(sr_quantity_flags);
-	assert(sr_unit);
+	assert(quantity);
+	//assert(quantity_flags);
+	assert(unit);
 
+	/* TODO
 	if (!util::is_valid_sr_quantity(sr_quantity_))
 		assert("Invalide quantity for BaseSignal()");
+	*/
 
-	quantity_ = util::format_sr_quantity(sr_quantity_);
-	quantity_flags_ = util::format_sr_quantity_flags(sr_quantity_flags_);
-	unit_ = util::format_sr_unit(sr_unit_);
+	quantity_name_ = data::quantityutil::format_quantity(quantity_);
+	quantity_flags_name_ =
+		data::quantityutil::format_quantity_flags(quantity_flags_);
+	unit_name_ = data::quantityutil::format_unit(unit_);
 
-	name_ = QString(parent_channel_->name()).append(" [").append(unit_);
+	name_ = QString(parent_channel_->name()).append(" [").append(unit_name_);
 	if (quantity_flags_.size() > 0)
-		name_ = name_.append(" ").append(quantity_flags_);
+		name_ = name_.append(" ").append(quantity_flags_name_);
 	name_ = name_.append("]");
 }
 
@@ -72,34 +68,34 @@ BaseSignal::~BaseSignal()
 {
 }
 
-const sigrok::Quantity *BaseSignal::sr_quantity() const
-{
-	return sr_quantity_;
-}
-
-QString BaseSignal::quantity() const
+data::Quantity BaseSignal::quantity() const
 {
 	return quantity_;
 }
 
-vector<const sigrok::QuantityFlag *> BaseSignal::sr_quantity_flags() const
+QString BaseSignal::quantity_name() const
 {
-	return sr_quantity_flags_;
+	return quantity_name_;
 }
 
-QString BaseSignal::quantity_flags() const
+set<data::QuantityFlag> BaseSignal::quantity_flags() const
 {
 	return quantity_flags_;
 }
 
-const sigrok::Unit *BaseSignal::sr_unit() const
+QString BaseSignal::quantity_flags_name() const
 {
-	return sr_unit_;
+	return quantity_flags_name_;
 }
 
-QString BaseSignal::unit() const
+data::Unit BaseSignal::unit() const
 {
 	return unit_;
+}
+
+QString BaseSignal::unit_name() const
+{
+	return unit_name_;
 }
 
 shared_ptr<channels::BaseChannel> BaseSignal::parent_channel() const

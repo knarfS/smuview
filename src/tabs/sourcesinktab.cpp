@@ -27,6 +27,7 @@
 #include "src/channels/basechannel.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
+#include "src/data/datautil.hpp"
 #include "src/devices/configurable.hpp"
 #include "src/devices/device.hpp"
 #include "src/devices/hardwaredevice.hpp"
@@ -74,13 +75,13 @@ void SourceSinkTab::setup_ui()
 					channel->actual_signal());
 
 				// Only plot voltage and current
-				if (signal->sr_quantity() == sigrok::Quantity::VOLTAGE) {
+				if (signal->quantity() == data::Quantity::Voltage) {
 					voltage_signal = signal;
 					// Voltage plot(s)
 					add_view(new views::PlotView(session_, voltage_signal),
 						Qt::BottomDockWidgetArea);
 				}
-				if (signal->sr_quantity() == sigrok::Quantity::CURRENT) {
+				if (signal->quantity() == data::Quantity::Current) {
 					current_signal = signal;
 					// Voltage plot(s)
 					add_view(new views::PlotView(session_, current_signal),

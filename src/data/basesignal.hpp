@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2012 Joel Holdsworth <joel@airwebreathe.org.uk>
  * Copyright (C) 2016 Soeren Apel <soeren@apelpie.net>
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,32 +22,17 @@
 #ifndef DATA_BASESIGNAL_HPP
 #define DATA_BASESIGNAL_HPP
 
-#include <atomic>
-#include <condition_variable>
-#include <thread>
-#include <vector>
+#include <memory>
+#include <set>
 
 #include <QColor>
 #include <QObject>
-#include <QSettings>
 #include <QString>
-#include <QTimer>
-#include <QVariant>
 
-using std::atomic;
-using std::condition_variable;
-using std::map;
-using std::mutex;
-using std::pair;
+#include "src/data/datautil.hpp"
+
+using std::set;
 using std::shared_ptr;
-using std::vector;
-
-namespace sigrok {
-class Channel;
-class Quantity;
-class QuantityFlag;
-class Unit;
-}
 
 namespace sv {
 
@@ -63,9 +48,9 @@ class BaseSignal : public QObject
 
 public:
 	BaseSignal(
-		const sigrok::Quantity *sr_quantity,
-		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
-		const sigrok::Unit *sr_unit,
+		data::Quantity quantity,
+		set<data::QuantityFlag> quantity_flags,
+		data::Unit unit,
 		shared_ptr<channels::BaseChannel> parent_channel);
 	virtual ~BaseSignal();
 
@@ -74,34 +59,34 @@ public:
 	virtual size_t get_sample_count() const = 0;
 
 	/**
-	 * Returns the sigrok qunatity of this signal as object
+	 * Returns the qunatity of this signal
 	 */
-	const sigrok::Quantity *sr_quantity() const;
+	data::Quantity quantity() const;
 
 	/**
 	 * Returns the qunatity of this signal as string
 	 */
-	QString quantity() const;
+	QString quantity_name() const;
 
 	/**
-	 * Returns the sigrok qunatity flags of this signal as vector
+	 * Returns the quantity flags of this signal as set
 	 */
-	vector<const sigrok::QuantityFlag *> sr_quantity_flags() const;
+	set<data::QuantityFlag> quantity_flags() const;
 
 	/**
 	 * Returns the qunatity flags of this signal as string
 	 */
-	QString quantity_flags() const;
+	QString quantity_flags_name() const;
 
 	/**
-	 * Returns the sigrok unit of this signal as object
+	 * Returns the unit of this signal
 	 */
-	const sigrok::Unit *sr_unit() const;
+	data::Unit unit() const;
 
 	/**
 	 * Returns the unit of this signal as string
 	 */
-	QString unit() const;
+	QString unit_name() const;
 
 	/**
 	 * Returns the parent channel, this signal belongs to
@@ -124,15 +109,15 @@ public:
 	void set_colour(QColor colour);
 
 protected:
-	const sigrok::Quantity *sr_quantity_;
-	QString quantity_;
-	vector<const sigrok::QuantityFlag *> sr_quantity_flags_;
-	QString quantity_flags_;
-	const sigrok::Unit *sr_unit_;
-	QString unit_;
+	data::Quantity quantity_;
+	QString quantity_name_;
+	set<data::QuantityFlag> quantity_flags_;
+	QString quantity_flags_name_;
+	data::Unit unit_;
+	QString unit_name_;
 	shared_ptr<channels::BaseChannel> parent_channel_;
 
-	QString name_; // TODO: const?
+	QString name_;
 	QColor colour_;
 
 Q_SIGNALS:

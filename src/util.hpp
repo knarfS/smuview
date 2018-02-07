@@ -60,11 +60,6 @@ enum class SIPrefix {
 	zetta, yotta
 };
 
-typedef map<const sigrok::Quantity *, QString> quantity_name_map_t;
-typedef map<const sigrok::QuantityFlag *, QString> quantity_flag_name_map_t;
-typedef map<const sigrok::Unit *, QString> unit_name_map_t;
-typedef map<const sigrok::Quantity *, const sigrok::Unit *> quantity_unit_map_t;
-
 /// Returns the exponent that corresponds to a given prefix.
 int exponent(SIPrefix prefix);
 
@@ -72,85 +67,6 @@ int exponent(SIPrefix prefix);
 typedef boost::multiprecision::number<
 	boost::multiprecision::cpp_dec_float<24>,
 	boost::multiprecision::et_off> Timestamp;
-
-/**
- * Checks if the sigrok quantity is a known quantity
- *
- * @param sr_quantity The sigrok quantity (sigrok::Quantity *)
- *
- * @return true if it is a known quantity
- */
-bool is_valid_sr_quantity(const sigrok::Quantity *sr_quantity);
-
-/**
- * Returns the SI sigrok unit for the given sigrok quantity
- *
- * @param sr_quantity The sigrok quantity (sigrok::Quantity *)
- *
- * @return The sigrok unit (sigrok::Unit *)
- */
-const sigrok::Unit *get_sr_unit_from_sr_quantity(
-	const sigrok::Quantity *sr_quantity);
-
-/**
- * Returns all known quantities
- *
- * @param sr_quantity The sigrok quantity name map
- */
-quantity_name_map_t get_quantity_name_map();
-
-/**
- * Formats a sigrok quantity to a string
- *
- * @param sr_quantity The sigrok quantity (sigrok::Quantity) to format.
- *
- * @return The formatted quantity.
- */
-QString format_sr_quantity(const sigrok::Quantity *sr_quantity);
-
-/**
- * Returns all known quantity flags
- *
- * @param sr_quantity The sigrok quantity flag name map
- */
-quantity_flag_name_map_t get_quantity_flag_name_map();
-
-/**
- * Formats a sigrok quantity flag to a string
- *
- * @param sr_quantity_flag The sigrok quantity flag (sigrok::QuantityFlag)
- *        to format.
- *
- * @return The formatted quantity flag.
- */
-QString format_sr_quantity_flag(const sigrok::QuantityFlag * sr_quantity_flag);
-
-/**
- * Formats a sigrok quantity flags to a string
- *
- * @param sr_quantity_flags The sigrok quantity flags (sigrok::QuantityFlag)
- *        to format.
- *
- * @return The formatted quantity flags.
- */
-QString format_sr_quantity_flags(
-	vector<const sigrok::QuantityFlag *> sr_quantity_flags);
-
-/**
- * Returns all known units
- *
- * @param sr_quantity The sigrok unit name map
- */
-unit_name_map_t get_unit_name_map();
-
-/**
- * Formats a sigrok unit to a string
- *
- * @param sr_unit The sigrok unit (sigrok::Unit) to format.
- *
- * @return The formatted unit.
- */
-QString format_sr_unit(const sigrok::Unit *sr_unit);
 
 /**
  * Formats a given double value with the specified SI prefix.

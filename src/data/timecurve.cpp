@@ -17,11 +17,9 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <libsigrokcxx/libsigrokcxx.hpp>
-
 #include "timecurve.hpp"
-#include "src/util.hpp"
 #include "src/data/analogsignal.hpp"
+#include "src/data/datautil.hpp"
 
 namespace sv {
 namespace data {
@@ -87,12 +85,12 @@ QString TimeCurve::name() const
 
 QString TimeCurve::x_data_quantity() const
 {
-	return util::format_sr_quantity(sigrok::Quantity::TIME);
+	return data::quantityutil::format_quantity(data::Quantity::Time);
 }
 
 QString TimeCurve::x_data_unit() const
 {
-	return util::format_sr_unit(sigrok::Unit::SECOND);
+	return data::quantityutil::format_unit(data::Unit::Second);
 }
 
 QString TimeCurve::x_data_title() const
@@ -102,12 +100,12 @@ QString TimeCurve::x_data_title() const
 
 QString TimeCurve::y_data_quantity() const
 {
-	return signal_->quantity();
+	return signal_->quantity_name();
 }
 
 QString TimeCurve::y_data_unit() const
 {
-	return signal_->unit();
+	return signal_->unit_name();
 }
 
 QString TimeCurve::y_data_title() const

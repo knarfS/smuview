@@ -23,9 +23,7 @@
 #include <QComboBox>
 #include <QWidget>
 
-namespace sigrok {
-class Quantity;
-}
+#include "src/data/datautil.hpp"
 
 namespace sv {
 
@@ -38,7 +36,7 @@ class QuantityComboBox : public QComboBox
 public:
 	QuantityComboBox(QWidget *parent = nullptr);
 
-	const sigrok::Quantity *selected_sr_quantity();
+	data::Quantity selected_quantity();
 
 private:
 	void setup_ui();

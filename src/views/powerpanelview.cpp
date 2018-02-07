@@ -25,6 +25,7 @@
 #include "src/session.hpp"
 #include "src/util.hpp"
 #include "src/data/analogsignal.hpp"
+#include "src/data/datautil.hpp"
 #include "src/widgets/lcddisplay.hpp"
 
 namespace sv {
@@ -75,23 +76,23 @@ void PowerPanelView::setup_ui()
 
 	voltageDisplay = new widgets::LcdDisplay(
 		voltage_signal_->digits(), voltage_signal_->decimal_places(), false,
-		voltage_signal_->unit(), "", false);
+		voltage_signal_->unit_name(), "", false);
 	voltageMinDisplay = new widgets::LcdDisplay(
 		voltage_signal_->digits(), voltage_signal_->decimal_places(), false,
-		voltage_signal_->unit(), tr("min"), true);
+		voltage_signal_->unit_name(), tr("min"), true);
 	voltageMaxDisplay = new widgets::LcdDisplay(
 		voltage_signal_->digits(), voltage_signal_->decimal_places(), false,
-		voltage_signal_->unit(), tr("max"), true);
+		voltage_signal_->unit_name(), tr("max"), true);
 
 	currentDisplay = new widgets::LcdDisplay(
 		current_signal_->digits(), current_signal_->decimal_places(), false,
-		current_signal_->unit(), "", false);
+		current_signal_->unit_name(), "", false);
 	currentMinDisplay = new widgets::LcdDisplay(
 		current_signal_->digits(), current_signal_->decimal_places(), false,
-		current_signal_->unit(), tr("min"), true);
+		current_signal_->unit_name(), tr("min"), true);
 	currentMaxDisplay = new widgets::LcdDisplay(
 		current_signal_->digits(), current_signal_->decimal_places(), false,
-		current_signal_->unit(), tr("max"), true);
+		current_signal_->unit_name(), tr("max"), true);
 
 	int digits;
 	if (voltage_signal_->digits() > current_signal_->digits())
@@ -106,31 +107,31 @@ void PowerPanelView::setup_ui()
 
 	resistanceDisplay = new widgets::LcdDisplay(
 		digits, decimal_places, true,
-		util::format_sr_unit(sigrok::Unit::OHM), "", false);
+		data::quantityutil::format_unit(data::Unit::Ohm), "", false);
 	resistanceMinDisplay = new widgets::LcdDisplay(
 		digits, decimal_places, true,
-		util::format_sr_unit(sigrok::Unit::OHM), tr("min"), true);
+		data::quantityutil::format_unit(data::Unit::Ohm), tr("min"), true);
 	resistanceMaxDisplay = new widgets::LcdDisplay(
 		digits, decimal_places, true,
-		util::format_sr_unit(sigrok::Unit::OHM), tr("max"), true);
+		data::quantityutil::format_unit(data::Unit::Ohm), tr("max"), true);
 
 	powerDisplay = new widgets::LcdDisplay(
 		digits, decimal_places, true,
-		util::format_sr_unit(sigrok::Unit::WATT), "", false);
+		data::quantityutil::format_unit(data::Unit::Watt), "", false);
 	powerMinDisplay = new widgets::LcdDisplay(
 		digits, decimal_places, true,
-		util::format_sr_unit(sigrok::Unit::WATT), tr("min"), true);
+		data::quantityutil::format_unit(data::Unit::Watt), tr("min"), true);
 	powerMaxDisplay = new widgets::LcdDisplay(
 		digits, decimal_places, true,
-		util::format_sr_unit(sigrok::Unit::WATT), tr("max"), true);
+		data::quantityutil::format_unit(data::Unit::Watt), tr("max"), true);
 
 	// TODO: sigrok::Unit::AMP_HOUR missing!
 	ampHourDisplay = new widgets::LcdDisplay(
 		digits, decimal_places, true,
-		"Ah", "", false);
+		data::quantityutil::format_unit(data::Unit::AmpereHour), "", false);
 	wattHourDisplay = new widgets::LcdDisplay(
 		digits, decimal_places, true,
-		util::format_sr_unit(sigrok::Unit::WATT_HOUR), "", false);
+		data::quantityutil::format_unit(data::Unit::WattHour), "", false);
 
 	panelLayout->addWidget(voltageDisplay, 0, 0, 1, 2, Qt::AlignHCenter);
 	panelLayout->addWidget(voltageMinDisplay, 1, 0, 1, 1, Qt::AlignHCenter);

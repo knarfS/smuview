@@ -21,18 +21,20 @@
 #define CHANNELS_HARDWARECHANNEL_HPP
 
 #include <memory>
+#include <set>
+
 #include <QObject>
+#include <QString>
 
 #include "src/channels/basechannel.hpp"
+#include "src/data/datautil.hpp"
 
+using std::set;
 using std::shared_ptr;
 
 namespace sigrok {
 class Analog;
 class Channel;
-class Quantity;
-class QuantityFlag;
-class Unit;
 }
 
 namespace sv {
@@ -91,9 +93,9 @@ public:
 	 * TODO: Move to base!
 	 */
 	shared_ptr<data::BaseSignal> init_signal(
-		const sigrok::Quantity *sr_quantity,
-		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
-		const sigrok::Unit *sr_unit);
+		data::Quantity quantity,
+		set<data::QuantityFlag> quantity_flags,
+		data::Unit unit);
 
 	/**
 	 * Add a single sample with timestamp to the channel

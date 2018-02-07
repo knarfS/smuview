@@ -18,30 +18,31 @@
  */
 
 #include <cassert>
+#include <memory>
+#include <set>
 
 #include <QDebug>
-
-#include <libsigrokcxx/libsigrokcxx.hpp>
 
 #include "integratechannel.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/channels/mathchannel.hpp"
 #include "src/data/analogsignal.hpp"
+#include "src/data/datautil.hpp"
 #include "src/devices/device.hpp"
 
 namespace sv {
 namespace channels {
 
 IntegrateChannel::IntegrateChannel(
-		const sigrok::Quantity *sr_quantity,
-		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
-		const sigrok::Unit *sr_unit,
+		data::Quantity quantity,
+		set<data::QuantityFlag> quantity_flags,
+		data::Unit unit,
 		shared_ptr<data::AnalogSignal> int_signal,
 		shared_ptr<devices::Device> parent_device,
 		const QString channel_group_name,
 		QString channel_name,
 		double channel_start_timestamp) :
-	MathChannel(sr_quantity, sr_quantity_flags, sr_unit,
+	MathChannel(quantity, quantity_flags, unit,
 		parent_device, channel_group_name, channel_name,
 		channel_start_timestamp),
 	int_signal_(int_signal),

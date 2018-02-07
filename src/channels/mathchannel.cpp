@@ -19,10 +19,9 @@
 
 #include <cassert>
 #include <memory>
+#include <set>
 
 #include <QDebug>
-
-#include <libsigrokcxx/libsigrokcxx.hpp>
 
 #include "mathchannel.hpp"
 #include "src/channels/basechannel.hpp"
@@ -32,15 +31,16 @@
 
 using std::make_pair;
 using std::make_shared;
+using std::set;
 using std::static_pointer_cast;
 
 namespace sv {
 namespace channels {
 
 MathChannel::MathChannel(
-		const sigrok::Quantity *sr_quantity,
-		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
-		const sigrok::Unit *sr_unit,
+		data::Quantity quantity,
+		set<data::QuantityFlag> quantity_flags,
+		data::Unit unit,
 		shared_ptr<devices::Device> parent_device,
 		const QString channel_group_name,
 		QString channel_name,
@@ -48,13 +48,13 @@ MathChannel::MathChannel(
 	BaseChannel(parent_device, channel_group_name, channel_start_timestamp),
 	digits_(8),
 	decimal_places_(-1),
-	sr_quantity_(sr_quantity),
-	sr_quantity_flags_(sr_quantity_flags),
-	sr_unit_(sr_unit)
+	quantity_(quantity),
+	quantity_flags_(quantity_flags),
+	unit_(unit)
 {
-	assert(sr_quantity_);
-	//assert(sr_quantity_flags_);
-	assert(sr_unit_);
+	assert(quantity_);
+	//assert(quantity_flags_);
+	assert(unit_);
 
 	channel_type_ = ChannelType::MathChannel;
 	has_fixed_signal_ = true;
@@ -70,14 +70,14 @@ shared_ptr<data::BaseSignal> MathChannel::init_signal()
 {
 	// TODO: At the moment, only analog channels are supported
 	shared_ptr<data::AnalogSignal> signal = make_shared<data::AnalogSignal>(
-		sr_quantity_, sr_quantity_flags_, sr_unit_,
+		quantity_,quantity_flags_, unit_,
 		shared_from_this(), channel_start_timestamp_);
 
 	connect(this, SIGNAL(channel_start_timestamp_changed(double)),
 		signal.get(), SLOT(on_channel_start_timestamp_changed(double)));
 
 	actual_signal_ = signal;
-	quantity_t q_qf = make_pair(sr_quantity_, sr_quantity_flags_);
+	quantity_t q_qf = make_pair(quantity_, quantity_flags_);
 	signal_map_.insert(make_pair(q_qf, signal));
 
 	Q_EMIT signal_added(signal);

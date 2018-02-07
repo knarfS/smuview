@@ -21,21 +21,16 @@
 #define CHANNELS_INTEGRATECHANNEL_HPP
 
 #include <memory>
-#include <vector>
+#include <set>
 
 #include <QObject>
 
 #include "src/channels/basechannel.hpp"
 #include "src/channels/mathchannel.hpp"
+#include "src/data/datautil.hpp"
 
+using std::set;
 using std::shared_ptr;
-using std::vector;
-
-namespace sigrok {
-class Quantity;
-class QuantityFlag;
-class Unit;
-}
 
 namespace sv {
 
@@ -55,9 +50,9 @@ class IntegrateChannel : public MathChannel
 
 public:
 	IntegrateChannel(
-		const sigrok::Quantity *sr_quantity,
-		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
-		const sigrok::Unit *sr_unit,
+		data::Quantity quantity,
+		set<data::QuantityFlag> quantity_flags,
+		data::Unit unit,
 		shared_ptr<data::AnalogSignal> int_signal,
 		shared_ptr<devices::Device> parent_device,
 		const QString channel_group_name,
@@ -68,7 +63,7 @@ private:
 	shared_ptr<data::AnalogSignal> int_signal_;
 	size_t next_int_signal_pos_;
 	double last_timestamp_;
-	float last_value_; // TODO: double
+	double last_value_;
 
 private Q_SLOTS:
 	void on_channel_start_timestamp_changed(double);
