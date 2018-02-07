@@ -167,9 +167,9 @@ public:
 	 */
 	/*
 	virtual shared_ptr<data::BaseSignal> init_signal(
-		const sigrok::Quantity *sr_quantity,
-		vector<const sigrok::QuantityFlag *> sr_quantity_flags,
-		const sigrok::Unit *sr_unit) = 0;
+		data::Quantity quantity,
+		set<data::QuantityFlag> quantity_flags,
+		data::Unit unit) = 0;
 	*/
 
 	virtual void save_settings(QSettings &settings) const;

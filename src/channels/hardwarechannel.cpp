@@ -116,11 +116,9 @@ shared_ptr<data::BaseSignal> HardwareChannel::init_signal(
 void HardwareChannel::push_sample_sr_analog(
 	void *sample, double timestamp, shared_ptr<sigrok::Analog> sr_analog)
 {
-	const sigrok::Quantity *sr_q = sr_analog->mq();
-	data::Quantity quantity = data::quantityutil::get_quantity(sr_q);
-	vector<const sigrok::QuantityFlag *> sr_qfs = sr_analog->mq_flags();
+	data::Quantity quantity = data::quantityutil::get_quantity(sr_analog->mq());
 	set<data::QuantityFlag> quantity_flags =
-		data::quantityutil::get_quantity_flags(sr_qfs);
+		data::quantityutil::get_quantity_flags(sr_analog->mq_flags());
 	quantity_t q_qf = make_pair(quantity, quantity_flags);
 	if (signal_map_.count(q_qf) == 0) {
 		data::Unit unit = data::quantityutil::get_unit(sr_analog->unit());
