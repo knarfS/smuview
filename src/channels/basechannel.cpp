@@ -26,7 +26,6 @@
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
 #include "basechannel.hpp"
-#include "src/session.hpp"
 #include "src/util.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/data/analogsignal.hpp"
