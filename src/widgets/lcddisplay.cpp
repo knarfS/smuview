@@ -141,6 +141,12 @@ void LcdDisplay::set_unit(const QString unit)
 	update_display();
 }
 
+void LcdDisplay::set_extra_text(const QString extra_text)
+{
+	extra_text_ = extra_text;
+	lcdExtra_->setText(extra_text_);
+}
+
 void LcdDisplay::set_digits(const int digits)
 {
 	digits_ = digits;

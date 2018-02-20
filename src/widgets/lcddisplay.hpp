@@ -57,6 +57,7 @@ private:
 public Q_SLOTS:
 	void set_value(const double value);
 	void set_unit(const QString unit);
+	void set_extra_text(const QString extra_text);
 	void set_digits(const int digits);
 	void set_decimal_places(const int decimal_places);
 	void reset_value();
