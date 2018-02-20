@@ -148,6 +148,18 @@ public:
 	measured_quantity_t get_measured_quantity() const;
 	void set_measured_quantity(measured_quantity_t measured_quantity);
 
+	bool is_amplitude_getable() const;
+	bool is_amplitude_setable() const;
+	bool is_amplitude_listable() const;
+	double get_amplitude() const;
+	void set_amplitude(double amplitude);
+
+	bool is_offset_getable() const;
+	bool is_offset_setable() const;
+	bool is_offset_listable() const;
+	double get_offset() const;
+	void set_offset(double offset);
+
 	bool list_regulation(QStringList &regulation_list);
 	bool list_voltage_target(double &min, double &max, double &step);
 	bool list_current_limit(double &min, double &max, double &step);
@@ -156,6 +168,8 @@ public:
 	bool list_uvc_threshold(double &min, double &max, double &step);
 	bool list_measured_quantity(
 		measured_quantity_list_t &measured_quantity_list);
+	bool list_amplitude(double &min, double &max, double &step);
+	bool list_offset(double &min, double &max, double &step);
 
 private:
 	void init_properties();
@@ -199,6 +213,12 @@ private:
 	double uvc_threshold_max_;
 	double uvc_threshold_step_;
 	measured_quantity_list_t measured_quantity_list_;
+	double amplitude_min_;
+	double amplitude_max_;
+	double amplitude_step_;
+	double offset_min_;
+	double offset_max_;
+	double offset_step_;
 
 	bool is_enabled_getable_;
 	bool is_enabled_setable_;
@@ -239,6 +259,12 @@ private:
 	bool is_measured_quantity_getable_;
 	bool is_measured_quantity_setable_;
 	bool is_measured_quantity_listable_;
+	bool is_amplitude_getable_;
+	bool is_amplitude_setable_;
+	bool is_amplitude_listable_;
+	bool is_offset_getable_;
+	bool is_offset_setable_;
+	bool is_offset_listable_;
 
 Q_SIGNALS:
 	void enabled_changed(const bool);
@@ -255,6 +281,8 @@ Q_SIGNALS:
 	void uvc_enabled_changed(const bool);
 	void uvc_active_changed(const bool);
 	void uvc_threshold_changed(const double);
+	void amplitude_changed(const double);
+	void offset_changed(const double);
 
 };
 

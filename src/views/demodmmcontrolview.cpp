@@ -31,6 +31,7 @@
 #include "src/devices/hardwaredevice.hpp"
 #include "src/widgets/quantitycombobox.hpp"
 #include "src/widgets/quantityflagslist.hpp"
+#include "src/widgets/valuecontrol.hpp"
 
 using std::vector;
 
@@ -69,6 +70,18 @@ void DemoDMMControlView::setup_ui()
 	set_button_->setText(tr("Set"));
 	layout->addWidget(set_button_, 0);
 
+	QHBoxLayout *controls_layout = new QHBoxLayout();
+
+	amplitude_control_ = new widgets::ValueControl(
+		tr("Amplitude"), 4, tr("V"), 0, 50, 0.1);
+	controls_layout->addWidget(amplitude_control_);
+
+	offset_control_ = new widgets::ValueControl(
+		tr("Offset"), 4, tr("V"), -100, 100, 0.1);
+	controls_layout->addWidget(offset_control_);
+
+	layout->addLayout(controls_layout);
+
 	this->centralWidget_->setLayout(layout);
 }
 
@@ -76,12 +89,20 @@ void DemoDMMControlView::connect_signals()
 {
 	// Control elements -> Device
 	connect(set_button_, SIGNAL(clicked(bool)), this, SLOT(on_quantity_set()));
+	connect(amplitude_control_, SIGNAL(value_changed(const double)),
+		this, SLOT(on_amplitude_changed(const double)));
+	connect(offset_control_, SIGNAL(value_changed(const double)),
+		this, SLOT(on_offset_changed(const double)));
 
 	// Device -> control elements
 }
 
 void DemoDMMControlView::init_values()
 {
+	if (configurable_->is_amplitude_getable())
+		amplitude_control_->change_value(configurable_->get_amplitude());
+	if (configurable_->is_offset_getable())
+		offset_control_->change_value(configurable_->get_offset());
 }
 
 void DemoDMMControlView::on_quantity_set()
@@ -94,6 +115,16 @@ void DemoDMMControlView::on_quantity_set()
 	auto mq_pair = make_pair(quantity, quantity_flags);
 	configurable_->set_measured_quantity(mq_pair);
 	*/
+}
+
+void DemoDMMControlView::on_amplitude_changed(const double value)
+{
+	configurable_->set_amplitude(value);
+}
+
+void DemoDMMControlView::on_offset_changed(const double value)
+{
+	configurable_->set_offset(value);
 }
 
 } // namespace views

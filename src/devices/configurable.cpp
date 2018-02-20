@@ -145,6 +145,16 @@ void Configurable::init_properties()
 		sigrok::ConfigKey::MEASURED_QUANTITY);
 	is_measured_quantity_listable_ = has_list_config(
 		sigrok::ConfigKey::MEASURED_QUANTITY);
+
+	is_amplitude_getable_ = has_get_config(sigrok::ConfigKey::AMPLITUDE);
+	is_amplitude_setable_ = has_set_config(sigrok::ConfigKey::AMPLITUDE);
+	is_amplitude_listable_ = has_list_config(sigrok::ConfigKey::AMPLITUDE);
+
+	/*
+	is_offset_getable_ = has_get_config(sigrok::ConfigKey::OFFSET);
+	is_offset_setable_ = has_set_config(sigrok::ConfigKey::OFFSET);
+	is_offset_listable_ = has_list_config(sigrok::ConfigKey::OFFSET);
+	*/
 }
 
 void Configurable::init_values()
@@ -182,6 +192,16 @@ void Configurable::init_values()
 		list_config_mq(
 			sigrok::ConfigKey::MEASURED_QUANTITY,
 			measured_quantity_list_);
+
+	if (is_amplitude_listable_)
+		list_config_min_max_steps(sigrok::ConfigKey::AMPLITUDE,
+		amplitude_min_, amplitude_max_, amplitude_step_);
+
+	/*
+	if (is_offset_listable_)
+		list_config_min_max_steps(sigrok::ConfigKey::OFFSET,
+		offset_min_, offset_max_, offset_step_);
+	*/
 }
 
 bool Configurable::has_get_config(const sigrok::ConfigKey *key)  const
@@ -579,6 +599,34 @@ void Configurable::set_measured_quantity(measured_quantity_t measured_quantity)
 }
 
 
+double Configurable::get_amplitude() const
+{
+	return get_config<double>(sigrok::ConfigKey::AMPLITUDE);
+}
+
+void Configurable::set_amplitude(double amplitude)
+{
+	set_config(sigrok::ConfigKey::AMPLITUDE, amplitude);
+}
+
+
+double Configurable::get_offset() const
+{
+	/*
+	return get_config<double>(sigrok::ConfigKey::OFFSET);
+	*/
+	return 0;
+}
+
+void Configurable::set_offset(double offset)
+{
+	(void)offset;
+	/*
+	set_config(sigrok::ConfigKey::OFFSET, offset);
+	*/
+}
+
+
 bool Configurable::list_regulation(QStringList &regulation_list)
 {
 	if (!is_regulation_listable_)
@@ -653,6 +701,27 @@ bool Configurable::list_measured_quantity(
 	return true;
 }
 
+bool Configurable::list_amplitude(double &min, double &max, double &step)
+{
+	if (!is_amplitude_listable_)
+		return false;
+
+	min = amplitude_min_;
+	max = amplitude_max_;
+	step = amplitude_step_;
+	return true;
+}
+
+bool Configurable::list_offset(double &min, double &max, double &step)
+{
+	if (!is_offset_listable_)
+		return false;
+
+	min = offset_min_;
+	max = offset_max_;
+	step = offset_step_;
+	return true;
+}
 
 bool Configurable::is_controllable() const
 {
@@ -850,6 +919,36 @@ bool Configurable::is_measured_quantity_setable() const
 bool Configurable::is_measured_quantity_listable() const
 {
 	return is_measured_quantity_listable_;
+}
+
+bool Configurable::is_amplitude_getable() const
+{
+	return is_amplitude_getable_;
+}
+
+bool Configurable::is_amplitude_setable() const
+{
+	return is_amplitude_setable_;
+}
+
+bool Configurable::is_amplitude_listable() const
+{
+	return is_amplitude_listable_;
+}
+
+bool Configurable::is_offset_getable() const
+{
+	return is_offset_getable_;
+}
+
+bool Configurable::is_offset_setable() const
+{
+	return is_offset_setable_;
+}
+
+bool Configurable::is_offset_listable() const
+{
+	return is_offset_listable_;
 }
 
 } // namespace devices
