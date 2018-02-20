@@ -73,6 +73,8 @@ libsigrok
 	- Valid for SCPI over something something?
 - Mutex of scpi_libgpib: Add to other transport variants (serial, tcp, ...), if so is the mutex in scpi/helpers.c enough?
 - Add channel.meaning.mq, channel.meaning.mqflags, channel.meaning.unit (+channel.fixed) to PPU and load channels, to make it easy to init signals in smuview
+- Re:load Pro: Don't use "monitor 200", Instead "read" values every aquisition cycle with serial "read line blocking" and use a mutex around every read, write and write+read
+- HP3478A: Implement SPoll,
 
 Done
 ----
