@@ -59,6 +59,11 @@ MultiplySSChannel::MultiplySSChannel(
 	else
 		digits_ = signal_2_->digits();
 
+	if (signal_1_->decimal_places() >= signal_2_->decimal_places())
+		decimal_places_ = signal_1_->decimal_places();
+	else
+		decimal_places_ = signal_2_->decimal_places();
+
 	connect(signal_1_.get(), SIGNAL(sample_added()),
 		this, SLOT(on_sample_added()));
 	connect(signal_2_.get(), SIGNAL(sample_added()),

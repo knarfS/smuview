@@ -53,6 +53,7 @@ MultiplySFChannel::MultiplySFChannel(
 	assert(signal_);
 
 	digits_ = signal_->digits();
+	decimal_places_ = signal_->decimal_places();
 
 	connect(signal_.get(), SIGNAL(sample_added()),
 		this, SLOT(on_sample_added()));

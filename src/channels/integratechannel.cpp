@@ -53,6 +53,7 @@ IntegrateChannel::IntegrateChannel(
 	assert(int_signal_);
 
 	digits_ = int_signal_->digits();
+	decimal_places_ = int_signal_->decimal_places();
 
 	connect(this, SIGNAL(channel_start_timestamp_changed(double)),
 		this, SLOT(on_channel_start_timestamp_changed(double)));

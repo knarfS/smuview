@@ -46,7 +46,7 @@ MathChannel::MathChannel(
 		QString channel_name,
 		double channel_start_timestamp) :
 	BaseChannel(parent_device, channel_group_name, channel_start_timestamp),
-	digits_(8),
+	digits_(7),
 	decimal_places_(-1),
 	quantity_(quantity),
 	quantity_flags_(quantity_flags),

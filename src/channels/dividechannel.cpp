@@ -59,6 +59,11 @@ DivideChannel::DivideChannel(
 	else
 		digits_ = divisor_signal->digits();
 
+	if (dividend_signal->decimal_places() >= divisor_signal->decimal_places())
+		decimal_places_ = dividend_signal->decimal_places();
+	else
+		decimal_places_ = divisor_signal->decimal_places();
+
 	connect(dividend_signal_.get(), SIGNAL(sample_added()),
 		this, SLOT(on_sample_added()));
 	connect(divisor_signal_.get(), SIGNAL(sample_added()),
