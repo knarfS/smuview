@@ -19,6 +19,7 @@
 
 #include <cassert>
 #include <memory>
+#include <set>
 
 #include <QApplication>
 #include <QDateTime>
@@ -34,6 +35,7 @@
 #include "src/widgets/lcddisplay.hpp"
 
 using std::dynamic_pointer_cast;
+using std::set;
 
 namespace sv {
 namespace views {
@@ -43,6 +45,9 @@ ValuePanelView::ValuePanelView(const Session &session,
 		QWidget *parent) :
 	BaseView(session, parent),
 	channel_(channel),
+	unit_(""),
+	unit_suffix_(""),
+	quantity_flags_str_(""),
 	value_min_(std::numeric_limits<double>::max()),
 	value_max_(std::numeric_limits<double>::lowest()),
 	action_reset_display_(new QAction(this))
@@ -52,18 +57,11 @@ ValuePanelView::ValuePanelView(const Session &session,
 	signal_ = dynamic_pointer_cast<data::AnalogSignal>(
 		channel_->actual_signal());
 
-	unit_ = QString("");
 	digits_ = 7; // TODO
 	decimal_places_ = -1; // TODO
-	if (signal_) {
-		unit_ = signal_->unit_name();
-		digits_ = signal_->digits();
-		decimal_places_ = signal_->decimal_places();
-	}
 
-	qWarning() << "ValuePanelView::ValuePanelView(channel): unit_ = " << unit_;
-	qWarning() << "ValuePanelView::ValuePanelView(channel): digits_ = " << digits_;
-	qWarning() << "ValuePanelView::ValuePanelView(channel): decimal_places_ = " << decimal_places_;
+	if (signal_)
+		setup_unit();
 
 	setup_ui();
 	setup_toolbar();
@@ -87,20 +85,19 @@ ValuePanelView::ValuePanelView(const Session& session,
 	BaseView(session, parent),
 	channel_(nullptr),
 	signal_(signal),
+	unit_(""),
+	unit_suffix_(""),
+	quantity_flags_str_(""),
 	value_min_(std::numeric_limits<double>::max()),
 	value_max_(std::numeric_limits<double>::lowest()),
 	action_reset_display_(new QAction(this))
 {
 	assert(signal_);
 
-	unit_ = signal_->unit_name();
 	digits_ = signal_->digits();
 	decimal_places_ = signal_->decimal_places();
 
-	qWarning() << "ValuePanelView::ValuePanelView(signal): unit_ = " << unit_;
-	qWarning() << "ValuePanelView::ValuePanelView(signal): digits_ = " << digits_;
-	qWarning() << "ValuePanelView::ValuePanelView(signal): decimal_places_ = " << decimal_places_;
-
+	setup_unit();
 	setup_ui();
 	setup_toolbar();
 	connect_signals_displays();
@@ -132,18 +129,45 @@ ValuePanelView::~ValuePanelView()
 	stop_timer();
 }
 
+void ValuePanelView::setup_unit()
+{
+	unit_ = signal_->unit_name();
+	quantity_flags_ = signal_->quantity_flags();
+
+	if (quantity_flags_.count(data::QuantityFlag::AC)) {
+		//unit_suffix_ = QString::fromUtf8("\u23E6");
+		unit_suffix_ = data::quantityutil::format_quantity_flag(
+			data::QuantityFlag::AC);
+		quantity_flags_.erase(data::QuantityFlag::AC);
+	}
+	else if (quantity_flags_.count(data::QuantityFlag::DC)) {
+		//unit_suffix_ = QString::fromUtf8("\u2393");
+		unit_suffix_ = data::quantityutil::format_quantity_flag(
+			data::QuantityFlag::DC);
+		quantity_flags_.erase(data::QuantityFlag::DC);
+	}
+
+	quantity_flags_str_ = data::quantityutil::format_quantity_flags(
+		quantity_flags_, QString("\n"));
+}
+
 void ValuePanelView::setup_ui()
 {
 	QVBoxLayout *layout = new QVBoxLayout();
 
 	QGridLayout *panelLayout = new QGridLayout();
 
+	QString qf_min =
+		data::quantityutil::format_quantity_flag(data::QuantityFlag::Min);
+	QString qf_max =
+		data::quantityutil::format_quantity_flag(data::QuantityFlag::Max);
+
 	valueDisplay = new widgets::LcdDisplay(
 		digits_, decimal_places_, true, unit_, "", false);
 	valueMinDisplay = new widgets::LcdDisplay(
-		digits_, decimal_places_, true, unit_, "min", true);
+		digits_, decimal_places_, true, unit_, qf_min, true);
 	valueMaxDisplay = new widgets::LcdDisplay(
-		digits_, decimal_places_, true, unit_, "max", true);
+		digits_, decimal_places_, true, unit_, qf_max, true);
 
 	panelLayout->addWidget(valueDisplay, 0, 0, 1, 2, Qt::AlignHCenter);
 	panelLayout->addWidget(valueMinDisplay, 1, 0, 1, 1, Qt::AlignHCenter);
@@ -268,23 +292,37 @@ void ValuePanelView::on_signal_changed()
 	signal_ = dynamic_pointer_cast<data::AnalogSignal>(
 		channel_->actual_signal());
 
-	unit_ = signal_->unit_name();
 	digits_ = signal_->digits();
 	decimal_places_ = signal_->decimal_places();
+
+	setup_unit();
 	valueDisplay->set_unit(unit_);
+	valueDisplay->set_unit_suffix(unit_suffix_);
+	valueDisplay->set_extra_text(quantity_flags_str_);
 	valueDisplay->set_digits(digits_);
 	valueDisplay->set_decimal_places(decimal_places_);
+
+	set<data::QuantityFlag> qfs_min_set = quantity_flags_;
+	qfs_min_set.insert(data::QuantityFlag::Min);
+	QString qfs_min = data::quantityutil::format_quantity_flags(
+		qfs_min_set, QString("\n"));
 	valueMinDisplay->set_unit(unit_);
+	valueMinDisplay->set_unit_suffix(unit_suffix_);
+	valueMinDisplay->set_extra_text(qfs_min);
 	valueMinDisplay->set_digits(digits_);
 	valueMinDisplay->set_decimal_places(decimal_places_);
+
+	set<data::QuantityFlag> qfs_max_set = quantity_flags_;
+	qfs_max_set.insert(data::QuantityFlag::Max);
+	QString qfs_max = data::quantityutil::format_quantity_flags(
+		qfs_max_set, QString("\n"));
 	valueMaxDisplay->set_unit(unit_);
+	valueMaxDisplay->set_unit_suffix(unit_suffix_);
+	valueMaxDisplay->set_extra_text(qfs_max);
 	valueMaxDisplay->set_digits(digits_);
 	valueMaxDisplay->set_decimal_places(decimal_places_);
-	this->parentWidget()->setWindowTitle(this->title());
 
-	qWarning() << "ValuePanelView::on_signal_changed(): unit_ = " << unit_;
-	qWarning() << "ValuePanelView::on_signal_changed(): digits_ = " << digits_;
-	qWarning() << "ValuePanelView::on_signal_changed(): decimal_places_ = " << decimal_places_;
+	this->parentWidget()->setWindowTitle(this->title());
 
 	connect_signals_displays();
 }

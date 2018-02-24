@@ -43,6 +43,7 @@ private:
 	const bool auto_range_;
 	QString unit_;
 	QString unit_si_prefix_;
+	QString unit_suffix_;
 	bool update_unit_;
 	QString extra_text_;
 	const bool small_;
@@ -57,6 +58,7 @@ private:
 public Q_SLOTS:
 	void set_value(const double value);
 	void set_unit(const QString unit);
+	void set_unit_suffix(const QString unit_suffix);
 	void set_extra_text(const QString extra_text);
 	void set_digits(const int digits);
 	void set_decimal_places(const int decimal_places);

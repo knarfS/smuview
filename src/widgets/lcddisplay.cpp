@@ -17,6 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <limits>
+
 #include <QDebug>
 #include <QFont>
 #include <QSizePolicy>
@@ -41,7 +43,8 @@ LcdDisplay::LcdDisplay(
 	unit_si_prefix_(""),
 	update_unit_(true),
 	extra_text_(extra_text),
-	small_(small)
+	small_(small),
+	value_(.0)
 {
 	if (digits_ > 3)
 		// This is a workaround, b/c LCDNumber shows one digit less with
@@ -106,7 +109,7 @@ void LcdDisplay::setup_ui()
 	//extraFont.setWeight(QFont::Bold);
 	lcdExtra_->setFont(extraFont);
 	lcdExtra_->setText(extra_text_);
-	lcdExtra_->setAlignment(Qt::AlignBottom|Qt::AlignHCenter);
+	lcdExtra_->setAlignment(Qt::AlignBottom | Qt::AlignHCenter);
 	textLayout->addWidget(lcdExtra_);
 
 	// Unit
@@ -118,8 +121,9 @@ void LcdDisplay::setup_ui()
 		unitFont.setWeight(QFont::Bold);
 	}
 	lcdUnit_->setFont(unitFont);
-	lcdUnit_->setText(QString("%1%2").arg(unit_si_prefix_).arg(unit_));
-	lcdUnit_->setAlignment(Qt::AlignBottom|Qt::AlignHCenter);
+	lcdUnit_->setText(QString("%1%2<small> %3</small>").
+		arg(unit_si_prefix_).arg(unit_).arg(unit_suffix_));
+	lcdUnit_->setAlignment(Qt::AlignBottom | Qt::AlignLeft);
 	textLayout->addWidget(lcdUnit_);
 
 	layout->addLayout(textLayout);
@@ -137,6 +141,13 @@ void LcdDisplay::set_value(const double value)
 void LcdDisplay::set_unit(const QString unit)
 {
 	unit_ = unit;
+	update_unit_ = true;
+	update_display();
+}
+
+void LcdDisplay::set_unit_suffix(const QString unit_suffix)
+{
+	unit_suffix_ = unit_suffix;
 	update_unit_ = true;
 	update_display();
 }
@@ -170,25 +181,33 @@ void LcdDisplay::reset_value()
 
 void LcdDisplay::update_display()
 {
-	QString value_str;
-	if (value_ >= std::numeric_limits<double>::max())
+	QString value_str("");
+	QString si_prefix("");
+
+	if (value_ >= std::numeric_limits<double>::max() ||
+			value_ == std::numeric_limits<double>::infinity()) {
 		value_str = QString("OL");
-	else if (value_ <= std::numeric_limits<double>::lowest())
+	}
+	else if (value_ <= std::numeric_limits<double>::lowest()) {
 		value_str = QString("UL");
-	else if (!auto_range_)
-		value_str = QString("%1").
-			arg(value_, digits_, 'f', decimal_places_, QChar(' '));
+	}
+	else if (!auto_range_) {
+		value_str = QString("%1<small> %2</small>").
+			arg(value_, digits_, 'f', decimal_places_, QChar(' ')).
+			arg(unit_suffix_);
+	}
 	else {
-		QString si_prefix;
 		util::format_value_si(
 			value_, digits_, decimal_places_, value_str, si_prefix);
-		if (si_prefix != unit_si_prefix_ || update_unit_) {
-			unit_si_prefix_ = si_prefix;
-			QString text = QString("%1%2").arg(unit_si_prefix_).arg(unit_);
-			lcdUnit_->setText(text);
-		}
 	}
+
 	lcdValue_->display(value_str);
+	if (si_prefix != unit_si_prefix_ || update_unit_) {
+		unit_si_prefix_ = si_prefix;
+		QString unit_str = QString("%1%2<small> %3</small>").
+			arg(unit_si_prefix_).arg(unit_).arg(unit_suffix_);
+		lcdUnit_->setText(unit_str);
+	}
 }
 
 } // namespace widgets

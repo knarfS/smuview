@@ -20,6 +20,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <limits>
 #include <math.h>
 #include <set>
 #include <sstream>
@@ -121,8 +122,12 @@ void format_value_si(
 	QString &value_str, QString &si_prefix_str)
 {
 	SIPrefix si_prefix;
-	if (value == 0)
+	if (value == 0 || value == NAN ||
+			value == std::numeric_limits<double>::infinity() ||
+			value >= std::numeric_limits<double>::max() ||
+			value <= std::numeric_limits<double>::lowest()) {
 		si_prefix = SIPrefix::none;
+	}
 	else {
 		int exp = exponent(SIPrefix::yotta);
 		si_prefix = SIPrefix::yocto;

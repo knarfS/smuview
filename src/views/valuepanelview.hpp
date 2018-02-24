@@ -21,14 +21,17 @@
 #define VIEWS_VALUEPANELVIEW_HPP
 
 #include <memory>
+#include <set>
 
 #include <QAction>
 #include <QString>
 #include <QTimer>
 #include <QToolBar>
 
+#include "src/data/datautil.hpp"
 #include "src/views/baseview.hpp"
 
+using std::set;
 using std::shared_ptr;
 
 namespace sv {
@@ -70,6 +73,9 @@ private:
 	shared_ptr<channels::BaseChannel> channel_;
 	shared_ptr<data::AnalogSignal> signal_;
 	QString unit_;
+	QString unit_suffix_;
+	set<data::QuantityFlag> quantity_flags_;
+	QString quantity_flags_str_;
 	int digits_;
 	int decimal_places_;
 
@@ -87,6 +93,7 @@ private:
 
 	void setup_ui();
 	void setup_toolbar();
+	void setup_unit();
 	void connect_signals_displays();
 	void disconnect_signals_displays();
 	void reset_display();

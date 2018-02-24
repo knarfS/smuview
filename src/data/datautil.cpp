@@ -141,7 +141,8 @@ QString format_quantity_flag(QuantityFlag quantity_flag)
 	return quantity_flag_name_map[QuantityFlag::Unknown];
 }
 
-QString format_quantity_flags(set<QuantityFlag> quantity_flags)
+QString format_quantity_flags(set<QuantityFlag> quantity_flags,
+	const QString seperator)
 {
 	QString qfs_str("");
 	QString sep("");
@@ -149,24 +150,41 @@ QString format_quantity_flags(set<QuantityFlag> quantity_flags)
 	// Show AC/DC first
 	if (quantity_flags.count(QuantityFlag::AC) > 0) {
 		qfs_str.append(quantity_flag_name_map[QuantityFlag::AC]);
-		sep = " ";
+		sep = seperator;
 	}
 	if (quantity_flags.count(QuantityFlag::DC) > 0) {
 		qfs_str.append(sep);
 		qfs_str.append(quantity_flag_name_map[QuantityFlag::DC]);
-		sep = " ";
+		sep = seperator;
 	}
 	// 2nd is RMS
 	if (quantity_flags.count(QuantityFlag::RMS) > 0) {
 		qfs_str.append(sep);
 		qfs_str.append(quantity_flag_name_map[QuantityFlag::RMS]);
-		sep = " ";
+		sep = seperator;
+	}
+	// 3rd is min/max/avg
+	if (quantity_flags.count(QuantityFlag::Min) > 0) {
+		qfs_str.append(sep);
+		qfs_str.append(quantity_flag_name_map[QuantityFlag::Min]);
+		sep = seperator;
+	}
+	if (quantity_flags.count(QuantityFlag::Max) > 0) {
+		qfs_str.append(sep);
+		qfs_str.append(quantity_flag_name_map[QuantityFlag::Max]);
+		sep = seperator;
+	}
+	if (quantity_flags.count(QuantityFlag::Avg) > 0) {
+		qfs_str.append(sep);
+		qfs_str.append(quantity_flag_name_map[QuantityFlag::Avg]);
+		sep = seperator;
 	}
 
 	// And now the rest of the flags
 	for (auto qf : quantity_flags) {
 		if (qf == QuantityFlag::AC || qf == QuantityFlag::DC ||
-				qf == QuantityFlag::RMS)
+				qf == QuantityFlag::RMS || qf == QuantityFlag::Min ||
+				qf == QuantityFlag::Max || qf == QuantityFlag::Avg)
 			continue;
 
 		if (quantity_flag_name_map.count(qf) == 0)
@@ -174,7 +192,7 @@ QString format_quantity_flags(set<QuantityFlag> quantity_flags)
 
 		qfs_str.append(sep);
 		qfs_str.append(quantity_flag_name_map[qf]);
-		sep = " ";
+		sep = seperator;
 	}
 
 	return qfs_str;

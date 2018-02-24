@@ -129,7 +129,7 @@ void MeasurementControlView::on_quantity_changed()
 
 	for (auto qf_set : measured_quantity_list_[quantity]) {
 		quantity_flags_box_->addItem(
-			data::quantityutil::format_quantity_flags(qf_set),
+			data::quantityutil::format_quantity_flags(qf_set, QString(" ")),
 			QVariant::fromValue(qf_set));
 	}
 }

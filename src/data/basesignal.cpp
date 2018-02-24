@@ -54,8 +54,8 @@ BaseSignal::BaseSignal(
 	*/
 
 	quantity_name_ = data::quantityutil::format_quantity(quantity_);
-	quantity_flags_name_ =
-		data::quantityutil::format_quantity_flags(quantity_flags_);
+	quantity_flags_name_ = data::quantityutil::format_quantity_flags(
+		quantity_flags_, QString(" "));
 	unit_name_ = data::quantityutil::format_unit(unit_);
 
 	name_ = QString(parent_channel_->name()).append(" [").append(unit_name_);

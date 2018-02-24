@@ -711,10 +711,12 @@ QString format_quantity_flag(QuantityFlag quantity_flag);
  * Formats a QuantityFlag enum set to a string
  *
  * @param quantity_flags The QuantityFlags to format.
+ * @param seperator The seperator between the flags.
  *
  * @return The formatted QuantityFlags.
  */
-QString format_quantity_flags(set<QuantityFlag> quantity_flags);
+QString format_quantity_flags(set<QuantityFlag> quantity_flags,
+	const QString seperator);
 
 /**
  * Formats a Unit to a string
