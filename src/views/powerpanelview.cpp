@@ -17,6 +17,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <set>
+
 #include <QApplication>
 #include <QDateTime>
 #include <QVBoxLayout>
@@ -27,6 +29,8 @@
 #include "src/data/analogsignal.hpp"
 #include "src/data/datautil.hpp"
 #include "src/widgets/lcddisplay.hpp"
+
+using std::set;
 
 namespace sv {
 namespace views {
@@ -74,25 +78,69 @@ void PowerPanelView::setup_ui()
 	QVBoxLayout *layout = new QVBoxLayout();
 	QGridLayout *panelLayout = new QGridLayout();
 
+	QString voltage_unit_suffix("");
+	set<data::QuantityFlag> voltage_qfs = voltage_signal_->quantity_flags();
+	if (voltage_qfs.count(data::QuantityFlag::AC)) {
+		//voltage_unit_suffix = QString::fromUtf8("\u23E6");
+		voltage_unit_suffix = data::quantityutil::format_quantity_flag(
+			data::QuantityFlag::AC);
+		voltage_qfs.erase(data::QuantityFlag::AC);
+	}
+	else if (voltage_qfs.count(data::QuantityFlag::DC)) {
+		//voltage_unit_suffix = QString::fromUtf8("\u2393");
+		voltage_unit_suffix = data::quantityutil::format_quantity_flag(
+			data::QuantityFlag::DC);
+		voltage_qfs.erase(data::QuantityFlag::DC);
+	}
+	set<data::QuantityFlag> voltage_qfs_min = voltage_qfs;
+	voltage_qfs_min.insert(data::QuantityFlag::Min);
+	set<data::QuantityFlag> voltage_qfs_max = voltage_qfs;
+	voltage_qfs_max.insert(data::QuantityFlag::Max);
+
 	voltageDisplay = new widgets::LcdDisplay(
 		voltage_signal_->digits(), voltage_signal_->decimal_places(), false,
-		voltage_signal_->unit_name(), "", false);
+		voltage_signal_->unit_name(), voltage_unit_suffix,
+		data::quantityutil::format_quantity_flags(voltage_qfs, "\n"), false);
 	voltageMinDisplay = new widgets::LcdDisplay(
 		voltage_signal_->digits(), voltage_signal_->decimal_places(), false,
-		voltage_signal_->unit_name(), tr("min"), true);
+		voltage_signal_->unit_name(), voltage_unit_suffix,
+		data::quantityutil::format_quantity_flags(voltage_qfs_min, "\n"), true);
 	voltageMaxDisplay = new widgets::LcdDisplay(
 		voltage_signal_->digits(), voltage_signal_->decimal_places(), false,
-		voltage_signal_->unit_name(), tr("max"), true);
+		voltage_signal_->unit_name(), voltage_unit_suffix,
+		data::quantityutil::format_quantity_flags(voltage_qfs_max, "\n"), true);
+
+	QString current_unit_suffix("");
+	set<data::QuantityFlag> current_qfs = current_signal_->quantity_flags();
+	if (current_qfs.count(data::QuantityFlag::AC)) {
+		//current_unit_suffix = QString::fromUtf8("\u23E6");
+		current_unit_suffix = data::quantityutil::format_quantity_flag(
+			data::QuantityFlag::AC);
+		current_qfs.erase(data::QuantityFlag::AC);
+	}
+	else if (current_qfs.count(data::QuantityFlag::DC)) {
+		//current_unit_suffix = QString::fromUtf8("\u2393");
+		current_unit_suffix = data::quantityutil::format_quantity_flag(
+			data::QuantityFlag::DC);
+		current_qfs.erase(data::QuantityFlag::DC);
+	}
+	set<data::QuantityFlag> current_qfs_min = current_qfs;
+	current_qfs_min.insert(data::QuantityFlag::Min);
+	set<data::QuantityFlag> current_qfs_max = current_qfs;
+	current_qfs_max.insert(data::QuantityFlag::Max);
 
 	currentDisplay = new widgets::LcdDisplay(
 		current_signal_->digits(), current_signal_->decimal_places(), false,
-		current_signal_->unit_name(), "", false);
+		current_signal_->unit_name(), current_unit_suffix,
+		data::quantityutil::format_quantity_flags(current_qfs, "\n"), false);
 	currentMinDisplay = new widgets::LcdDisplay(
 		current_signal_->digits(), current_signal_->decimal_places(), false,
-		current_signal_->unit_name(), tr("min"), true);
+		current_signal_->unit_name(), current_unit_suffix,
+		data::quantityutil::format_quantity_flags(current_qfs_min, "\n"), true);
 	currentMaxDisplay = new widgets::LcdDisplay(
 		current_signal_->digits(), current_signal_->decimal_places(), false,
-		current_signal_->unit_name(), tr("max"), true);
+		current_signal_->unit_name(), current_unit_suffix,
+		data::quantityutil::format_quantity_flags(current_qfs_max, "\n"), true);
 
 	int digits;
 	if (voltage_signal_->digits() > current_signal_->digits())
@@ -107,31 +155,39 @@ void PowerPanelView::setup_ui()
 
 	resistanceDisplay = new widgets::LcdDisplay(
 		digits, decimal_places, true,
-		data::quantityutil::format_unit(data::Unit::Ohm), "", false);
+		data::quantityutil::format_unit(data::Unit::Ohm), "", "", false);
 	resistanceMinDisplay = new widgets::LcdDisplay(
 		digits, decimal_places, true,
-		data::quantityutil::format_unit(data::Unit::Ohm), tr("min"), true);
+		data::quantityutil::format_unit(data::Unit::Ohm), "",
+		data::quantityutil::format_quantity_flag(data::QuantityFlag::Min),
+		true);
 	resistanceMaxDisplay = new widgets::LcdDisplay(
 		digits, decimal_places, true,
-		data::quantityutil::format_unit(data::Unit::Ohm), tr("max"), true);
+		data::quantityutil::format_unit(data::Unit::Ohm), "",
+		data::quantityutil::format_quantity_flag(data::QuantityFlag::Max),
+		true);
 
 	powerDisplay = new widgets::LcdDisplay(
 		digits, decimal_places, true,
-		data::quantityutil::format_unit(data::Unit::Watt), "", false);
+		data::quantityutil::format_unit(data::Unit::Watt), "", "", false);
 	powerMinDisplay = new widgets::LcdDisplay(
 		digits, decimal_places, true,
-		data::quantityutil::format_unit(data::Unit::Watt), tr("min"), true);
+		data::quantityutil::format_unit(data::Unit::Watt), "",
+		data::quantityutil::format_quantity_flag(data::QuantityFlag::Min),
+		true);
 	powerMaxDisplay = new widgets::LcdDisplay(
 		digits, decimal_places, true,
-		data::quantityutil::format_unit(data::Unit::Watt), tr("max"), true);
+		data::quantityutil::format_unit(data::Unit::Watt), "",
+		data::quantityutil::format_quantity_flag(data::QuantityFlag::Max),
+		true);
 
 	// TODO: sigrok::Unit::AMP_HOUR missing!
 	ampHourDisplay = new widgets::LcdDisplay(
 		digits, decimal_places, true,
-		data::quantityutil::format_unit(data::Unit::AmpereHour), "", false);
+		data::quantityutil::format_unit(data::Unit::AmpereHour), "", "", false);
 	wattHourDisplay = new widgets::LcdDisplay(
 		digits, decimal_places, true,
-		data::quantityutil::format_unit(data::Unit::WattHour), "", false);
+		data::quantityutil::format_unit(data::Unit::WattHour), "", "", false);
 
 	panelLayout->addWidget(voltageDisplay, 0, 0, 1, 2, Qt::AlignHCenter);
 	panelLayout->addWidget(voltageMinDisplay, 1, 0, 1, 1, Qt::AlignHCenter);

@@ -75,7 +75,8 @@ private:
 	QString unit_;
 	QString unit_suffix_;
 	set<data::QuantityFlag> quantity_flags_;
-	QString quantity_flags_str_;
+	set<data::QuantityFlag> quantity_flags_min_;
+	set<data::QuantityFlag> quantity_flags_max_;
 	int digits_;
 	int decimal_places_;
 

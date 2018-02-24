@@ -47,7 +47,6 @@ ValuePanelView::ValuePanelView(const Session &session,
 	channel_(channel),
 	unit_(""),
 	unit_suffix_(""),
-	quantity_flags_str_(""),
 	value_min_(std::numeric_limits<double>::max()),
 	value_max_(std::numeric_limits<double>::lowest()),
 	action_reset_display_(new QAction(this))
@@ -87,7 +86,6 @@ ValuePanelView::ValuePanelView(const Session& session,
 	signal_(signal),
 	unit_(""),
 	unit_suffix_(""),
-	quantity_flags_str_(""),
 	value_min_(std::numeric_limits<double>::max()),
 	value_max_(std::numeric_limits<double>::lowest()),
 	action_reset_display_(new QAction(this))
@@ -147,8 +145,10 @@ void ValuePanelView::setup_unit()
 		quantity_flags_.erase(data::QuantityFlag::DC);
 	}
 
-	quantity_flags_str_ = data::quantityutil::format_quantity_flags(
-		quantity_flags_, QString("\n"));
+	quantity_flags_min_ = quantity_flags_;
+	quantity_flags_min_.insert(data::QuantityFlag::Min);
+	quantity_flags_max_ = quantity_flags_;
+	quantity_flags_max_.insert(data::QuantityFlag::Max);
 }
 
 void ValuePanelView::setup_ui()
@@ -157,17 +157,18 @@ void ValuePanelView::setup_ui()
 
 	QGridLayout *panelLayout = new QGridLayout();
 
-	QString qf_min =
-		data::quantityutil::format_quantity_flag(data::QuantityFlag::Min);
-	QString qf_max =
-		data::quantityutil::format_quantity_flag(data::QuantityFlag::Max);
-
 	valueDisplay = new widgets::LcdDisplay(
-		digits_, decimal_places_, true, unit_, "", false);
+		digits_, decimal_places_, true, unit_, unit_suffix_,
+		data::quantityutil::format_quantity_flags(quantity_flags_, "\n"),
+		false);
 	valueMinDisplay = new widgets::LcdDisplay(
-		digits_, decimal_places_, true, unit_, qf_min, true);
+		digits_, decimal_places_, true, unit_, unit_suffix_,
+		data::quantityutil::format_quantity_flags(quantity_flags_min_, "\n"),
+		true);
 	valueMaxDisplay = new widgets::LcdDisplay(
-		digits_, decimal_places_, true, unit_, qf_max, true);
+		digits_, decimal_places_, true, unit_, unit_suffix_,
+		data::quantityutil::format_quantity_flags(quantity_flags_max_, "\n"),
+		true);
 
 	panelLayout->addWidget(valueDisplay, 0, 0, 1, 2, Qt::AlignHCenter);
 	panelLayout->addWidget(valueMinDisplay, 1, 0, 1, 1, Qt::AlignHCenter);
@@ -292,33 +293,28 @@ void ValuePanelView::on_signal_changed()
 	signal_ = dynamic_pointer_cast<data::AnalogSignal>(
 		channel_->actual_signal());
 
+	setup_unit();
 	digits_ = signal_->digits();
 	decimal_places_ = signal_->decimal_places();
 
-	setup_unit();
 	valueDisplay->set_unit(unit_);
 	valueDisplay->set_unit_suffix(unit_suffix_);
-	valueDisplay->set_extra_text(quantity_flags_str_);
+	valueDisplay->set_extra_text(
+		data::quantityutil::format_quantity_flags(quantity_flags_, "\n"));
 	valueDisplay->set_digits(digits_);
 	valueDisplay->set_decimal_places(decimal_places_);
 
-	set<data::QuantityFlag> qfs_min_set = quantity_flags_;
-	qfs_min_set.insert(data::QuantityFlag::Min);
-	QString qfs_min = data::quantityutil::format_quantity_flags(
-		qfs_min_set, QString("\n"));
 	valueMinDisplay->set_unit(unit_);
 	valueMinDisplay->set_unit_suffix(unit_suffix_);
-	valueMinDisplay->set_extra_text(qfs_min);
+	valueMinDisplay->set_extra_text(
+		data::quantityutil::format_quantity_flags(quantity_flags_min_, "\n"));
 	valueMinDisplay->set_digits(digits_);
 	valueMinDisplay->set_decimal_places(decimal_places_);
 
-	set<data::QuantityFlag> qfs_max_set = quantity_flags_;
-	qfs_max_set.insert(data::QuantityFlag::Max);
-	QString qfs_max = data::quantityutil::format_quantity_flags(
-		qfs_max_set, QString("\n"));
 	valueMaxDisplay->set_unit(unit_);
 	valueMaxDisplay->set_unit_suffix(unit_suffix_);
-	valueMaxDisplay->set_extra_text(qfs_max);
+	valueMaxDisplay->set_extra_text(
+		data::quantityutil::format_quantity_flags(quantity_flags_max_, "\n"));
 	valueMaxDisplay->set_digits(digits_);
 	valueMaxDisplay->set_decimal_places(decimal_places_);
 
