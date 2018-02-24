@@ -37,6 +37,10 @@ option(ENABLE_SIGNALS "Build with UNIX signals" TRUE)
 option(ENABLE_TESTS "Enable unit tests" TRUE)
 option(STATIC_PKGDEPS_LIBS "Statically link to (pkg-config) libraries" FALSE)
 
+if(POLICY CMP0071)
+	cmake_policy(SET CMP0071 NEW)
+endif()
+
 if(WIN32)
 	# On Windows/MinGW we need to statically link to libraries.
 	# This option is user configurable, but enable it by default on win32.
