@@ -124,7 +124,7 @@ void LcdDisplay::setup_ui()
 	lcdUnit_->setFont(unitFont);
 	lcdUnit_->setText(QString("%1%2<small> %3</small>").
 		arg(unit_si_prefix_).arg(unit_).arg(unit_suffix_));
-	lcdUnit_->setAlignment(Qt::AlignBottom | Qt::AlignLeft);
+	lcdUnit_->setAlignment(Qt::AlignBottom | Qt::AlignHCenter);
 	textLayout->addWidget(lcdUnit_);
 
 	layout->addLayout(textLayout);
