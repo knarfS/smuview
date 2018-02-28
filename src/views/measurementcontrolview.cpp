@@ -60,7 +60,8 @@ QString MeasurementControlView::title() const
 
 void MeasurementControlView::setup_ui()
 {
-	QHBoxLayout *layout = new QHBoxLayout();
+	QVBoxLayout *layout = new QVBoxLayout();
+	QHBoxLayout *mq_layout = new QHBoxLayout();
 
 	quantity_box_ = new QComboBox();
 	if (configurable_->is_measured_quantity_listable()) {
@@ -71,14 +72,17 @@ void MeasurementControlView::setup_ui()
 				QVariant::fromValue(qunatity));
 		}
 	}
-	layout->addWidget(quantity_box_, 0);
+	mq_layout->addWidget(quantity_box_, 0);
 
 	quantity_flags_box_ = new QComboBox();
-	layout->addWidget(quantity_flags_box_, 0);
+	mq_layout->addWidget(quantity_flags_box_, 0);
+	layout->addItem(mq_layout);
 
 	set_button_ = new QPushButton();
 	set_button_->setText(tr("Set"));
-	layout->addWidget(set_button_, 0);
+	layout->addWidget(set_button_);
+
+	layout->addStretch(1);
 
 	this->centralWidget_->setLayout(layout);
 }

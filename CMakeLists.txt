@@ -173,6 +173,8 @@ set(smuview_SOURCES
   src/dialogs/aboutdialog.cpp
   src/dialogs/addviewdialog.cpp
   src/dialogs/connectdialog.cpp
+  src/dialogs/plotconfigdialog.cpp
+  src/dialogs/plotcurveconfigdialog.cpp
   src/dialogs/savedialog.cpp
   src/tabs/basetab.cpp
   src/tabs/devicetab.cpp
@@ -190,12 +192,14 @@ set(smuview_SOURCES
   src/views/sourcecontrolview.cpp
   src/views/valuepanelview.cpp
   src/widgets/channelgroupcombobox.cpp
+  src/widgets/colorbutton.cpp
   src/widgets/controlbutton.cpp
   src/widgets/devicecombobox.cpp
   src/widgets/lcddisplay.cpp
   src/widgets/led.cpp
   src/widgets/optionalvaluecontrol.cpp
   src/widgets/plot.cpp
+  src/widgets/plotscalepicker.cpp
   src/widgets/quantitycombobox.cpp
   src/widgets/quantityflagslist.cpp
   src/widgets/signaltree.cpp

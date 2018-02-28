@@ -75,23 +75,19 @@ private:
 	shared_ptr<channels::BaseChannel> channel_;
 	data::BaseCurve *curve_;
 
-	QAction *const action_zoom_in_;
-	QAction *const action_zoom_out_;
-	QAction *const action_zoom_fit_best_;
 	QAction *const action_add_marker_;
 	QAction *const action_add_diff_marker_;
-	QAction *const action_config_graph_;
+	QAction *const action_zoom_best_fit_;
+	QAction *const action_config_plot_;
 	QToolBar *toolbar_;
 	widgets::Plot *plot_;
 
 private Q_SLOTS:
 	void on_signal_changed();
-	void on_action_zoom_in_triggered();
-	void on_action_zoom_out_triggered();
-	void on_action_zoom_fit_best_triggered();
 	void on_action_add_marker_triggered();
 	void on_action_add_diff_marker_triggered();
-	void on_action_config_graph_triggered();
+	void on_action_zoom_best_fit_triggered();
+	void on_action_config_plot_triggered();
 
 };
 

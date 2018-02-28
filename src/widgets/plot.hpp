@@ -21,6 +21,8 @@
 #ifndef WIDGETS_PLOT_HPP
 #define WIDGETS_PLOT_HPP
 
+#include <QVariant>
+
 #include <qwt_interval.h>
 #include <qwt_plot.h>
 #include <qwt_plot_curve.h>
@@ -46,14 +48,13 @@ public:
 
 	enum PlotModes {
 		Additive = 0,
-		Oscilloscope,
 		Rolling,
-		NumItems
+		Oscilloscope
 	};
 
 	virtual void replot();
 	virtual bool eventFilter(QObject *, QEvent *);
-	void set_curve_data(data::BaseCurve *curve_data);
+	void add_curve(data::BaseCurve *curve_data);
 	void set_plot_interval(int plot_interval) { plot_interval_ = plot_interval; }
 	void set_plot_mode(Plot::PlotModes plot_mode) { plot_mode_ = plot_mode; }
 
@@ -65,8 +66,11 @@ public Q_SLOTS:
 	void init_curve();
 	void set_x_interval(double x_start, double x_end);
 	void set_y_interval(double y_start, double y_end);
+	void set_x_axis_fixed(const bool fixed);
+	void set_y_axis_fixed(const bool fixed);
 	void add_marker();
 	void on_marker_moved(QPoint p);
+	void on_legend_clicked(const QVariant &item_info, int index);
 
 protected:
 	virtual void showEvent(QShowEvent *);
@@ -85,8 +89,10 @@ private:
 
 	QwtInterval x_interval_;
 	int x_axis_id_;
+	bool x_axis_fixed_;
 	QwtInterval y_interval_;
 	int y_axis_id_;
+	bool y_axis_fixed_;
 	int plot_interval_;
 	int timer_id_;
 	PlotModes plot_mode_;

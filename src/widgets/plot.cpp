@@ -37,11 +37,13 @@
 
 #include "plot.hpp"
 #include "src/data/basecurve.hpp"
+#include "src/dialogs/plotcurveconfigdialog.hpp"
+#include "src/widgets/plotscalepicker.hpp"
 
 namespace sv {
 namespace widgets {
 
-class Canvas: public QwtPlotCanvas
+class Canvas : public QwtPlotCanvas
 {
 public:
 	Canvas(QwtPlot *plot = NULL) : QwtPlotCanvas(plot)
@@ -95,6 +97,8 @@ Plot::Plot(data::BaseCurve *curve_data, QWidget *parent) :
 		QwtPlot(parent),
 	curve_data_(curve_data),
 	painted_points_(0),
+	x_axis_fixed_(false),
+	y_axis_fixed_(false),
 	plot_interval_(200),
 	timer_id_(-1)
 {
@@ -110,8 +114,10 @@ Plot::Plot(data::BaseCurve *curve_data, QWidget *parent) :
 	this->plotLayout()->setAlignCanvasToScales(true);
 
 	QwtLegend *legend = new QwtLegend;
-	legend->setDefaultItemMode(QwtLegendData::Checkable);
+	legend->setDefaultItemMode(QwtLegendData::Clickable);
 	this->insertLegend(legend, QwtPlot::BottomLegend);
+	connect(legend, SIGNAL(clicked(const QVariant &, int)),
+		this, SLOT(on_legend_clicked(const QVariant &, int)));
 
 	init_x_axis();
 	init_y_axis();
@@ -124,8 +130,12 @@ Plot::Plot(data::BaseCurve *curve_data, QWidget *parent) :
 	grid->enableYMin(false);
 	grid->attach(this);
 
-	(void)new QwtPlotPanner(this->canvas());
-	(void)new QwtPlotMagnifier(this->canvas());
+    // Zooming and panning via the axes
+    (void)new PlotScalePicker(this);
+	// Panning via the canvas
+	//(void)new QwtPlotPanner(this->canvas());
+	// Zooming via the canvas
+	//(void)new QwtPlotMagnifier(this->canvas());
 
 	init_curve();
 }
@@ -160,7 +170,7 @@ void Plot::replot()
 	//ReLoadProData::instance().unlock();
 }
 
-void Plot::set_curve_data(data::BaseCurve *curve_data)
+void Plot::add_curve(data::BaseCurve *curve_data)
 {
 	curve_data_ = curve_data;
 	this->init_x_axis();
@@ -253,6 +263,16 @@ void Plot::set_y_interval(double y_start, double y_end)
 	}
 }
 
+void Plot::set_x_axis_fixed(const bool fixed)
+{
+	x_axis_fixed_ = fixed;
+}
+
+void Plot::set_y_axis_fixed(const bool fixed)
+{
+	y_axis_fixed_ = fixed;
+}
+
 void Plot::add_marker()
 {
 	QwtSymbol *sym = new QwtSymbol(
@@ -289,6 +309,18 @@ void Plot::on_marker_moved(QPoint p)
     marker_->setLabel(label);
 
     replot();
+}
+
+void Plot::on_legend_clicked(const QVariant &item_info, int index)
+{
+	(void)index;
+
+	QwtPlotItem *plot_item = infoToItem(item_info);
+    if (plot_item) {
+		QwtPlotCurve *plot_curve = (QwtPlotCurve *)plot_item;
+		dialogs::PlotCurveConfigDialog dlg(plot_curve);
+		dlg.exec();
+	}
 }
 
 void Plot::update_curve()
@@ -333,24 +365,27 @@ void Plot::update_curve()
 
 void Plot::increment_x_interval(QRectF boundaries)
 {
+	if (x_axis_fixed_)
+		return;
+
 	//qWarning() << QString("Plot::increment_x_interval(): old min = %1, old max = %2").arg(x_interval_.minValue()).arg(x_interval_.maxValue());
 	if (plot_mode_ == Plot::Additive) {
-		//qWarning() << "Plot::timerEvent() for b.left < x_int.min = " << boundaries.left() << " < " << x_interval_.minValue();
+		qWarning() << "Plot::timerEvent() for b.left < x_int.min = " << boundaries.left() << " < " << x_interval_.minValue();
 		if (boundaries.left() < x_interval_.minValue()) {
 			// TODO: Calculate proper interval_length
 			x_interval_.setMinValue(x_interval_.minValue());
 		}
-		//qWarning() << "Plot::timerEvent() for b.right > x_int.max = " << boundaries.right() << " > " << x_interval_.maxValue();
+		qWarning() << "Plot::timerEvent() for b.right > x_int.max = " << boundaries.right() << " > " << x_interval_.maxValue();
 		if (boundaries.right() > x_interval_.maxValue()) {
 			// TODO: Calculate proper interval_length
 			int interval_length = 30;
 			x_interval_.setMaxValue(x_interval_.maxValue() + interval_length);
 		}
-		/*
 		qWarning() <<
 			QString("Plot::increment_x_interval(): new min = %1, new max = %2").
 			arg(x_interval_.minValue()).arg(x_interval_.maxValue());
-		*/
+	}
+	else if (plot_mode_ == Plot::Rolling) {
 	}
 	else if (plot_mode_ == Plot::Oscilloscope) {
 		x_interval_ = QwtInterval(x_interval_.maxValue(),
@@ -362,6 +397,8 @@ void Plot::increment_x_interval(QRectF boundaries)
 	if (plot_mode_ == Plot::Additive) {
 		setAxisScale(QwtPlot::xBottom,
 			x_interval_.minValue(), x_interval_.maxValue());
+	}
+	else if (plot_mode_ == Plot::Rolling) {
 	}
 	else if (plot_mode_ == Plot::Oscilloscope) {
 		// To avoid, that the grid is jumping, we disable
@@ -382,12 +419,13 @@ void Plot::increment_x_interval(QRectF boundaries)
 
 		painted_points_ = 0;
 	}
-	else if (plot_mode_ == Plot::Rolling) {
-	}
 }
 
 void Plot::increment_y_interval(QRectF boundaries)
 {
+	if (y_axis_fixed_)
+		return;
+
 	// TODO: Add some percent and round to full tick
 	if (boundaries.bottom() < y_interval_.minValue())
 		y_interval_.setMinValue(boundaries.bottom() - 0.5);
@@ -407,14 +445,18 @@ void Plot::timerEvent(QTimerEvent *event)
 
 		// Check for x axis resize
 		if (boundaries.left() < x_interval_.minValue() ||
-			boundaries.right() > x_interval_.maxValue()) {
+				boundaries.right() > x_interval_.maxValue()) {
+			qWarning() << "Plot::timerEvent(): increment_x_interval()";
 			increment_x_interval(boundaries);
 			intervals_changed = true;
 		}
 
 		// Check for y axis resize
+		qWarning() << "Plot::timerEvent() for b.bottom < y_int.min = " << boundaries.bottom() << " < " << y_interval_.minValue();
+		qWarning() << "Plot::timerEvent() for b.top > y_int.max = " << boundaries.top() << " > " << y_interval_.maxValue();
 		if (boundaries.bottom() < y_interval_.minValue() ||
-			boundaries.top() > y_interval_.maxValue()) {
+				boundaries.top() > y_interval_.maxValue()) {
+			qWarning() << "Plot::timerEvent(): increment_y_interval()";
 			increment_y_interval(boundaries);
 			intervals_changed = true;
 		}

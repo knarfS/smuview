@@ -30,6 +30,7 @@
 #include "src/data/basecurve.hpp"
 #include "src/data/timecurve.hpp"
 #include "src/data/xycurve.hpp"
+#include "src/dialogs/plotconfigdialog.hpp"
 #include "src/widgets/plot.hpp"
 
 using std::dynamic_pointer_cast;
@@ -43,12 +44,10 @@ PlotView::PlotView(const Session &session,
 		QWidget *parent) :
 	BaseView(session, parent),
 	channel_(channel),
-	action_zoom_in_(new QAction(this)),
-	action_zoom_out_(new QAction(this)),
-	action_zoom_fit_best_(new QAction(this)),
 	action_add_marker_(new QAction(this)),
 	action_add_diff_marker_(new QAction(this)),
-	action_config_graph_(new QAction(this))
+	action_zoom_best_fit_(new QAction(this)),
+	action_config_plot_(new QAction(this))
 {
 	assert(channel_);
 
@@ -81,12 +80,10 @@ PlotView::PlotView(const Session& session,
 		QWidget* parent) :
 	BaseView(session, parent),
 	channel_(nullptr),
-	action_zoom_in_(new QAction(this)),
-	action_zoom_out_(new QAction(this)),
-	action_zoom_fit_best_(new QAction(this)),
 	action_add_marker_(new QAction(this)),
 	action_add_diff_marker_(new QAction(this)),
-	action_config_graph_(new QAction(this))
+	action_zoom_best_fit_(new QAction(this)),
+	action_config_plot_(new QAction(this))
 {
 	assert(signal);
 
@@ -106,12 +103,10 @@ PlotView::PlotView(const Session& session,
 		QWidget* parent) :
 	BaseView(session, parent),
 	channel_(nullptr),
-	action_zoom_in_(new QAction(this)),
-	action_zoom_out_(new QAction(this)),
-	action_zoom_fit_best_(new QAction(this)),
 	action_add_marker_(new QAction(this)),
 	action_add_diff_marker_(new QAction(this)),
-	action_config_graph_(new QAction(this))
+	action_zoom_best_fit_(new QAction(this)),
+	action_config_plot_(new QAction(this))
 {
 	assert(x_signal);
 	assert(y_signal);
@@ -157,63 +152,41 @@ void PlotView::setup_ui()
 
 void PlotView::setup_toolbar()
 {
-	action_zoom_in_->setText(tr("Zoom In..."));
-	action_zoom_in_->setIcon(
-		QIcon::fromTheme("zoom-in",
-		QIcon(":/icons/zoom-in.png")));
-	//action_zoom_in_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_O));
-	//connect(action_zoom_in_, SIGNAL(triggered(bool)),
-	//	this, SLOT(on_actionOpen_triggered()));
-
-	action_zoom_out_->setText(tr("Zoom Out..."));
-	action_zoom_out_->setIcon(
-		QIcon::fromTheme("zoom-out",
-		QIcon(":/icons/zoom-out.png")));
-	//action_zoom_out_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
-	//connect(action_zoom_out_, SIGNAL(triggered(bool)),
-	//	this, SLOT(on_actionSaveAs_triggered()));
-
-	action_zoom_fit_best_->setText(tr("Best fit"));
-	action_zoom_fit_best_->setIcon(
-		QIcon::fromTheme("zoom-fit-best",
-		QIcon(":/icons/zoom-fit-best.png")));
-	//action_zoom_fit_best_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_B));
-	//connect(action_zoom_fit_best_, SIGNAL(triggered(bool)),
-	//	this, SLOT(on_actionSaveAs_triggered()));
-
-	action_add_marker_->setText(tr("Add Marker..."));
+	action_add_marker_->setText(tr("Add Marker"));
 	action_add_marker_->setIcon(
 		QIcon::fromTheme("snap-orthogonal",
 		QIcon(":/icons/orthogonal.png")));
-	//action_add_marker_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_C));
 	connect(action_add_marker_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_add_marker_triggered()));
 
-	action_add_diff_marker_->setText(tr("Add Diff-Marker..."));
+	action_add_diff_marker_->setText(tr("Add Diff-Marker"));
 	action_add_diff_marker_->setIcon(
 		QIcon::fromTheme("snap-guideline",
 		QIcon(":/icons/snap-guideline.png")));
-	//action_add_diff_marker_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_P));
-	//connect(action_add_diff_marker_, SIGNAL(triggered(bool)),
-	//	this, SLOT(on_actionSaveAs_triggered()));
+	connect(action_add_diff_marker_, SIGNAL(triggered(bool)),
+		this, SLOT(on_action_add_diff_marker_triggered()));
 
-	action_config_graph_->setText(tr("Configure graph"));
-	action_config_graph_->setIcon(
+	action_zoom_best_fit_->setText(tr("Best fit"));
+	action_zoom_best_fit_->setIcon(
+		QIcon::fromTheme("zoom-fit-best",
+		QIcon(":/icons/zoom-fit-best.png")));
+	connect(action_zoom_best_fit_, SIGNAL(triggered(bool)),
+		this, SLOT(on_action_zoom_best_fit_triggered()));
+
+	action_config_plot_->setText(tr("Configure Plot"));
+	action_config_plot_->setIcon(
 		QIcon::fromTheme("configure",
 		QIcon(":/icons/configure.png")));
-	//action_config_graph_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_C));
-	//connect(action_config_graph_, SIGNAL(triggered(bool)),
-	//	this, SLOT(on_actionSaveAs_triggered()));
+	connect(action_config_plot_, SIGNAL(triggered(bool)),
+		this, SLOT(on_action_config_plot_triggered()));
 
 	toolbar_ = new QToolBar("Device Toolbar");
-	toolbar_->addAction(action_zoom_in_);
-	toolbar_->addAction(action_zoom_out_);
-	toolbar_->addAction(action_zoom_fit_best_);
-	toolbar_->addSeparator();
 	toolbar_->addAction(action_add_marker_);
 	toolbar_->addAction(action_add_diff_marker_);
 	toolbar_->addSeparator();
-	toolbar_->addAction(action_config_graph_);
+	toolbar_->addAction(action_zoom_best_fit_);
+	toolbar_->addSeparator();
+	toolbar_->addAction(action_config_plot_);
 	this->addToolBar(Qt::TopToolBarArea, toolbar_);
 }
 
@@ -239,22 +212,10 @@ void PlotView::on_signal_changed()
 
 	if (signal) {
 		curve_ = (data::BaseCurve *)(new data::TimeCurve(signal));
-		plot_->set_curve_data(curve_);
+		plot_->add_curve(curve_);
 	}
 	else
 		curve_ = nullptr;
-}
-
-void PlotView::on_action_zoom_in_triggered()
-{
-}
-
-void PlotView::on_action_zoom_out_triggered()
-{
-}
-
-void PlotView::on_action_zoom_fit_best_triggered()
-{
 }
 
 // TODO: connect directly to plot?
@@ -267,8 +228,16 @@ void PlotView::on_action_add_diff_marker_triggered()
 {
 }
 
-void PlotView::on_action_config_graph_triggered()
+void PlotView::on_action_zoom_best_fit_triggered()
 {
+	plot_->set_x_axis_fixed(false);
+	plot_->set_y_axis_fixed(false);
+}
+
+void PlotView::on_action_config_plot_triggered()
+{
+	dialogs::PlotConfigDialog dlg(plot_);
+	dlg.exec();
 }
 
 } // namespace views

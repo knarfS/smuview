@@ -24,7 +24,7 @@
 namespace sv {
 namespace widgets {
 
-	Led::Led(
+Led::Led(
 		const bool is_state_getable,
 		QString text, QIcon on_icon, QIcon off_icon, QIcon dis_icon,
 		QWidget *parent) :
