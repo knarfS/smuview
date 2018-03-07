@@ -273,7 +273,8 @@ void Device::aquisition_thread_proc(
 
 	try {
 		sr_session_->start();
-	} catch (sigrok::Error e) {
+	}
+	catch (sigrok::Error e) {
 		error_handler(e.what());
 		return;
 	}
@@ -291,7 +292,8 @@ void Device::aquisition_thread_proc(
 
 	try {
 		sr_session_->run();
-	} catch (sigrok::Error e) {
+	}
+	catch (sigrok::Error e) {
 		error_handler(e.what());
 		aquisition_state_ = aquisition_state::Stopped;
 		return;
