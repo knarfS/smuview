@@ -108,16 +108,5 @@ QString BaseSignal::name() const
 	return name_;
 }
 
-QColor BaseSignal::colour() const
-{
-	return colour_;
-}
-
-void BaseSignal::set_colour(QColor colour)
-{
-	colour_ = colour;
-	colour_changed(colour);
-}
-
 } // namespace data
 } // namespace sv

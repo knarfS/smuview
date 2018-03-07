@@ -98,16 +98,6 @@ public:
 	 */
 	QString name() const;
 
-	/**
-	 * Get the colour of the signal.
-	 */
-	QColor colour() const;
-
-	/**
-	 * Set the colour of the signal.
-	 */
-	void set_colour(QColor colour);
-
 protected:
 	data::Quantity quantity_;
 	QString quantity_name_;
@@ -118,10 +108,6 @@ protected:
 	shared_ptr<channels::BaseChannel> parent_channel_;
 
 	QString name_;
-	QColor colour_;
-
-Q_SIGNALS:
-	void colour_changed(const QColor &colour);
 
 };
 
