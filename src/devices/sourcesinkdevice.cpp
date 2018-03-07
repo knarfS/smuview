@@ -249,12 +249,10 @@ void SourceSinkDevice::feed_in_meta(shared_ptr<sigrok::Meta> sr_meta)
 			Q_EMIT configurable->uvc_active_changed(
 				g_variant_get_boolean(entry.second.gobj()));
 			break;
-		/*
 		case SR_CONF_UNDER_VOLTAGE_CONDITION_THRESHOLD:
-			Q_EMIT uvc_threshold_changed(
+			Q_EMIT configurable->uvc_threshold_changed(
 				g_variant_get_double(entry.second.gobj()));
 			break;
-		*/
 		default:
 			// Unknown metadata is not an error.
 			break;

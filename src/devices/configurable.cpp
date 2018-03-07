@@ -80,13 +80,7 @@ void Configurable::init_properties()
 	is_current_limit_listable_ = has_list_config(
 		sigrok::ConfigKey::CURRENT_LIMIT);
 
-	is_otp_enabled_getable_ = has_get_config(
-		sigrok::ConfigKey::OVER_TEMPERATURE_PROTECTION);
-	is_otp_enabled_setable_ = has_set_config(
-		sigrok::ConfigKey::OVER_TEMPERATURE_PROTECTION);
 	is_otp_active_getable_ = has_get_config(
-		sigrok::ConfigKey::OVER_TEMPERATURE_PROTECTION_ACTIVE);
-	is_otp_active_setable_ = has_set_config(
 		sigrok::ConfigKey::OVER_TEMPERATURE_PROTECTION_ACTIVE);
 
 	is_ovp_enabled_getable_ = has_get_config(
@@ -127,17 +121,12 @@ void Configurable::init_properties()
 		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_ACTIVE);
 	is_uvc_active_setable_ = has_set_config(
 		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_ACTIVE);
-	/*
 	is_uvc_threshold_getable_ = has_get_config(
 		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD);
 	is_uvc_threshold_setable_ = has_set_config(
 		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD);
 	is_uvc_threshold_listable_ = has_list_config(
 		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD);
-	*/
-	is_uvc_threshold_getable_ = false;
-	is_uvc_threshold_setable_ = false;
-	is_uvc_threshold_listable_ = false;
 
 	is_measured_quantity_getable_ = has_get_config(
 		sigrok::ConfigKey::MEASURED_QUANTITY);
@@ -181,12 +170,10 @@ void Configurable::init_values()
 			sigrok::ConfigKey::OVER_CURRENT_PROTECTION_THRESHOLD,
 			ocp_threshold_min_, ocp_threshold_max_, ocp_threshold_step_);
 
-	/*
 	if (is_uvc_threshold_listable_)
 		list_config_min_max_steps(
 			sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD,
 			uvc_threshold_min_, uvc_threshold_max_, uvc_threshold_step_);
-	*/
 
 	if (is_measured_quantity_listable_)
 		list_config_mq(
@@ -534,21 +521,14 @@ bool Configurable::get_uvc_active() const
 
 double Configurable::get_uvc_threshold() const
 {
-	/*
 	return get_config<double>(
 		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD);
-	*/
-	return 0;
 }
 
 void Configurable::set_uvc_threshold(const double threshold)
 {
-	(void)threshold;
-
-	/*
 	set_config(
 		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD, threshold);
-	*/
 }
 
 
@@ -808,6 +788,12 @@ bool Configurable::is_current_limit_listable() const
 }
 
 
+bool Configurable::is_otp_active_getable() const
+{
+	return is_otp_active_getable_;
+}
+
+
 bool Configurable::is_ovp_enabled_getable() const
 {
 	return is_ovp_enabled_getable_;
@@ -869,11 +855,6 @@ bool Configurable::is_ocp_threshold_listable() const
 	return is_ocp_threshold_listable_;
 }
 
-
-bool Configurable::is_otp_active_getable() const
-{
-	return is_otp_active_getable_;
-}
 
 bool Configurable::is_uvc_enabled_getable() const
 {

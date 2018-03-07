@@ -103,6 +103,9 @@ public:
 	double get_current_limit() const;
 	void set_current_limit(const double value);
 
+	bool is_otp_active_getable() const;
+	bool get_otp_active() const;
+
 	bool is_ovp_enabled_getable() const;
 	bool is_ovp_enabled_setable() const;
 	bool get_ovp_enabled() const;
@@ -126,9 +129,6 @@ public:
 	bool is_ocp_threshold_listable() const;
 	double get_ocp_threshold() const;
 	void set_ocp_threshold(const double threshold);
-
-	bool is_otp_active_getable() const;
-	bool get_otp_active() const;
 
 	bool is_uvc_enabled_getable() const;
 	bool is_uvc_enabled_setable() const;
