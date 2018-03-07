@@ -21,7 +21,9 @@
 #define WIDGETS_COLORBUTTON_HPP
 
 #include <QColor>
+#include <QPaintEvent>
 #include <QPushButton>
+#include <QWidget>
 
 namespace sv {
 namespace widgets {
@@ -37,10 +39,13 @@ public:
     const QColor &color();
 
 private:
+	static const int SwatchMargin;
 	QColor color_;
 
+private:
+	void paintEvent(QPaintEvent *event);
+
 public Q_SLOTS:
-    void update_color();
     void change_color();
 
 };

@@ -17,12 +17,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QApplication>
+#include <QBrush>
+#include <QColor>
 #include <QColorDialog>
+#include <QPainter>
+#include <QPaintEvent>
+#include <QPalette>
+#include <QPushButton>
+#include <QWidget>
 
 #include "colorbutton.hpp"
 
 namespace sv {
 namespace widgets {
+
+const int ColorButton::SwatchMargin = 7;
 
 ColorButton::ColorButton(QWidget *parent) :
 	QPushButton(parent)
@@ -33,7 +43,6 @@ ColorButton::ColorButton(QWidget *parent) :
 void ColorButton::set_color(const QColor &color)
 {
     color_ = color;
-    update_color();
 }
 
 const QColor &ColorButton::color()
@@ -41,16 +50,24 @@ const QColor &ColorButton::color()
     return color_;
 }
 
-void ColorButton::update_color()
-{
-    setStyleSheet("background-color: " + color_.name());
-}
-
 void ColorButton::change_color()
 {
     QColor new_color = QColorDialog::getColor(color_, parentWidget());
     if (new_color != color_)
         set_color(new_color);
+}
+
+void ColorButton::paintEvent(QPaintEvent *event)
+{
+	QPushButton::paintEvent(event);
+
+	const QRect r = rect().adjusted(
+		SwatchMargin, SwatchMargin, -SwatchMargin, -SwatchMargin);
+
+	QPainter painter(this);
+	painter.setPen(QApplication::palette().color(QPalette::Dark));
+	painter.setBrush(QBrush(color_));
+	painter.drawRect(r);
 }
 
 } // namespace widgets
