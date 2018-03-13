@@ -27,7 +27,9 @@
 namespace sv {
 
 namespace widgets {
+namespace plot {
 class Plot;
+}
 }
 
 namespace dialogs {
@@ -37,12 +39,12 @@ class PlotConfigDialog : public QDialog
 	Q_OBJECT
 
 public:
-	PlotConfigDialog(widgets::Plot *plot, QWidget *parent = nullptr);
+	PlotConfigDialog(widgets::plot::Plot *plot, QWidget *parent = nullptr);
 
 private:
 	void setup_ui();
 
-	widgets::Plot *plot_;
+	widgets::plot::Plot *plot_;
 	QDialogButtonBox *button_box_;
 
 public Q_SLOTS:

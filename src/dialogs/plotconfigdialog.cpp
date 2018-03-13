@@ -23,12 +23,12 @@
 #include <QWidget>
 
 #include "plotconfigdialog.hpp"
-#include "src/widgets/plot.hpp"
+#include "src/widgets/plot/plot.hpp"
 
 namespace sv {
 namespace dialogs {
 
-PlotConfigDialog::PlotConfigDialog(widgets::Plot *plot, QWidget *parent) :
+PlotConfigDialog::PlotConfigDialog(widgets::plot::Plot *plot, QWidget *parent) :
 	QDialog(parent),
 	plot_(plot)
 {

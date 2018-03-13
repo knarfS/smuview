@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,17 +17,26 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <memory>
+
+#include <QPointF>
+#include <QRectF>
+#include <QString>
+
 #include "timecurve.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/data/datautil.hpp"
+#include "src/widgets/plot/basecurve.hpp"
+
+using std::shared_ptr;
 
 namespace sv {
-namespace data {
+namespace widgets {
+namespace plot {
 
-TimeCurve::TimeCurve(shared_ptr<AnalogSignal> signal) :
+TimeCurve::TimeCurve(shared_ptr<data::AnalogSignal> signal) :
 	BaseCurve(),
-	signal_(signal),
-	relative_time_(true)
+	signal_(signal)
 {
 }
 
@@ -35,7 +44,7 @@ QPointF TimeCurve::sample(size_t i) const
 {
 	//signal_data_->lock();
 
-	sample_t sample = signal_->get_sample(i, relative_time_);
+	data::sample_t sample = signal_->get_sample(i, relative_time_);
 	QPointF sample_point(sample.first, sample.second);
 
 	//signal_data_->.unlock();
@@ -66,16 +75,6 @@ QRectF TimeCurve::boundingRect() const
 	return QRectF(
 		QPointF(signal_->first_timestamp(relative_time_), signal_->max_value()),
 		QPointF(signal_->last_timestamp(relative_time_), signal_->min_value()));
-}
-
-void TimeCurve::set_relative_time(bool is_relative_time)
-{
-	relative_time_ = is_relative_time;
-}
-
-bool TimeCurve::is_relative_time() const
-{
-	return relative_time_;
 }
 
 QString TimeCurve::name() const
@@ -113,5 +112,6 @@ QString TimeCurve::y_data_title() const
 	return QString("%1 [%2]").arg(y_data_quantity()).arg(y_data_unit());
 }
 
-} // namespace data
+} // namespace plot
+} // namespace widgets
 } // namespace sv

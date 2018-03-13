@@ -66,6 +66,7 @@ void SourceSinkTab::setup_ui()
 	// Get signals by their channel group. The signals in a channel are "fixed"
 	// for power supplys and loads.
 	for (auto chg_name_signals_pair : device_->channel_group_name_map()) {
+		views::PlotView *plot_view = NULL;
 		shared_ptr<data::AnalogSignal> voltage_signal;
 		shared_ptr<data::AnalogSignal> current_signal;
 		auto channels = chg_name_signals_pair.second;
@@ -78,27 +79,24 @@ void SourceSinkTab::setup_ui()
 				if (signal->quantity() == data::Quantity::Voltage) {
 					voltage_signal = signal;
 					// Voltage plot(s)
-					add_view(new views::PlotView(session_, voltage_signal),
-						Qt::BottomDockWidgetArea);
+					if (!plot_view) {
+						plot_view = new views::PlotView(session_, voltage_signal);
+						add_view(plot_view, Qt::BottomDockWidgetArea);
+					}
+					else
+						plot_view->add_time_curve(voltage_signal);
+
 				}
 				if (signal->quantity() == data::Quantity::Current) {
 					current_signal = signal;
-					// Voltage plot(s)
-					add_view(new views::PlotView(session_, current_signal),
-						Qt::BottomDockWidgetArea);
+					// Current plot(s)
+					if (!plot_view) {
+						plot_view = new views::PlotView(session_, current_signal);
+						add_view(plot_view, Qt::BottomDockWidgetArea);
+					}
+					else
+						plot_view->add_time_curve(current_signal);
 				}
-
-				// Plot all signals
-				/*
-				add_view(new views::PlotView(session_, signal),
-					Qt::BottomDockWidgetArea);
-				*/
-			}
-			else {
-				// Channel plot(s)
-				// TODO: Check for channels without data (Digi 35 CPU "CH1")
-				//add_view(new views::PlotView(session_, channel),
-				//	Qt::BottomDockWidgetArea);
 			}
 		}
 
@@ -109,9 +107,11 @@ void SourceSinkTab::setup_ui()
 			add_view(power_panel_view, Qt::TopDockWidgetArea);
 
 			// UI Plots
+			/*
 			views::BaseView *ui_plot_view = new views::PlotView(
 				session_, voltage_signal, current_signal);
 			add_view(ui_plot_view, Qt::BottomDockWidgetArea);
+			*/
 		}
 	}
 }

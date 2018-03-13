@@ -157,11 +157,8 @@ set(smuview_SOURCES
   src/channels/multiplysfchannel.cpp
   src/channels/multiplysschannel.cpp
   src/data/analogsignal.cpp
-  src/data/basecurve.cpp
   src/data/basesignal.cpp
   src/data/datautil.cpp
-  src/data/timecurve.cpp
-  src/data/xycurve.cpp
   src/devices/configurable.cpp
   src/devices/device.cpp
   src/devices/hardwaredevice.cpp
@@ -198,13 +195,16 @@ set(smuview_SOURCES
   src/widgets/lcddisplay.cpp
   src/widgets/led.cpp
   src/widgets/optionalvaluecontrol.cpp
-  src/widgets/plot.cpp
-  src/widgets/plotscalepicker.cpp
   src/widgets/quantitycombobox.cpp
   src/widgets/quantityflagslist.cpp
   src/widgets/signaltree.cpp
   src/widgets/unitcombobox.cpp
   src/widgets/valuecontrol.cpp
+  src/widgets/plot/basecurve.cpp
+  src/widgets/plot/plot.cpp
+  src/widgets/plot/plotscalepicker.cpp
+  src/widgets/plot/timecurve.cpp
+  src/widgets/plot/xycurve.cpp
 )
 
 if(ENABLE_SIGNALS)

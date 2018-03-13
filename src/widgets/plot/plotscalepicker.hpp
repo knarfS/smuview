@@ -26,6 +26,7 @@
 
 namespace sv {
 namespace widgets {
+namespace plot {
 
 class Plot;
 
@@ -44,6 +45,7 @@ private:
 
 };
 
+} // namespace plot
 } // namespace widgets
 } // namespace sv
 

@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,23 +17,27 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <libsigrokcxx/libsigrokcxx.hpp>
+#include <memory>
 
-#include <QDateTime>
+#include <QPointF>
+#include <QRectF>
+#include <QString>
 
 #include "xycurve.hpp"
-#include "src/util.hpp"
 #include "src/data/analogsignal.hpp"
+#include "src/widgets/plot/basecurve.hpp"
+
+using std::shared_ptr;
 
 namespace sv {
-namespace data {
+namespace widgets {
+namespace plot {
 
-XYCurve::XYCurve(shared_ptr<AnalogSignal> x_signal,
-		shared_ptr<AnalogSignal> y_signal) :
+XYCurve::XYCurve(shared_ptr<data::AnalogSignal> x_signal,
+		shared_ptr<data::AnalogSignal> y_signal) :
 	BaseCurve(),
 	x_signal_(x_signal),
-	y_signal_(y_signal),
-	relative_time_(true)
+	y_signal_(y_signal)
 {
 }
 
@@ -43,8 +47,8 @@ QPointF XYCurve::sample(size_t i) const
 
 	// TODO: synchronize timestamps between signals, that are not
 	//       from the same frame
-	sample_t x_sample = x_signal_->get_sample(i, relative_time_);
-	sample_t y_sample = y_signal_->get_sample(i, relative_time_);
+	data::sample_t x_sample = x_signal_->get_sample(i, relative_time_);
+	data::sample_t y_sample = y_signal_->get_sample(i, relative_time_);
 
 	QPointF sample_point(x_sample.second, y_sample.second);
 
@@ -65,16 +69,6 @@ QRectF XYCurve::boundingRect() const
 	return QRectF(
 		QPointF(x_signal_->min_value(), y_signal_->max_value()),
 		QPointF(x_signal_->max_value(), y_signal_->min_value()));
-}
-
-void XYCurve::set_relative_time(bool is_relative_time)
-{
-	relative_time_ = is_relative_time;
-}
-
-bool XYCurve::is_relative_time() const
-{
-	return relative_time_;
 }
 
 QString XYCurve::name() const
@@ -112,5 +106,6 @@ QString XYCurve::y_data_title() const
 	return QString("%1 [%2]").arg(y_data_quantity()).arg(y_data_unit());
 }
 
-} // namespace data
+} // namespace plot
+} // namespace widgets
 } // namespace sv

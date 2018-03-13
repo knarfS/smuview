@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,20 +17,18 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DATA_BASECURVE_HPP
-#define DATA_BASECURVE_HPP
+#ifndef WIDGETS_PLOT_BASECURVE_HPP
+#define WIDGETS_PLOT_BASECURVE_HPP
 
-#include <memory>
-#include <vector>
-
-#include <QPointer>
+#include <QColor>
+#include <QPointF>
+#include <QRectF>
+#include <QString>
 #include <qwt_series_data.h>
 
-using std::shared_ptr;
-using std::vector;
-
 namespace sv {
-namespace data {
+namespace widgets {
+namespace plot {
 
 class BaseCurve : public QwtSeriesData<QPointF>
 {
@@ -38,7 +36,7 @@ class BaseCurve : public QwtSeriesData<QPointF>
 public:
 	BaseCurve();
 
-	virtual QPointF sample( size_t i ) const = 0;
+	virtual QPointF sample(size_t i) const = 0;
 	virtual size_t size() const = 0;
 	virtual QRectF boundingRect() const = 0;
 
@@ -50,9 +48,18 @@ public:
 	virtual QString y_data_unit() const = 0;
 	virtual QString y_data_title() const = 0;
 
+	QColor color() const;
+	void set_relative_time(bool is_relative_time);
+	bool is_relative_time() const;
+
+protected:
+	QColor color_;
+	bool relative_time_;
+
 };
 
-} // namespace data
+} // namespace plot
+} // namespace widgets
 } // namespace sv
 
-#endif // DATA_BASECURVE_HPP
+#endif // WIDGETS_PLOT_BASECURVE_HPP

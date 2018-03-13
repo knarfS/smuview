@@ -39,11 +39,13 @@ class BaseChannel;
 
 namespace data {
 class AnalogSignal;
-class BaseCurve;
 }
 
 namespace widgets {
+namespace plot {
+class BaseCurve;
 class Plot;
+}
 }
 
 namespace views {
@@ -65,6 +67,9 @@ public:
 		QWidget* parent = nullptr);
 
 	QString title() const;
+	void add_time_curve(shared_ptr<data::AnalogSignal> signal);
+	void add_xy_curve(shared_ptr<data::AnalogSignal> x_signal,
+		shared_ptr<data::AnalogSignal> y_signal);
 
 private:
 	void setup_ui();
@@ -73,14 +78,14 @@ private:
 	void init_values();
 
 	shared_ptr<channels::BaseChannel> channel_;
-	data::BaseCurve *curve_;
+	widgets::plot::BaseCurve *curve_;
 
 	QAction *const action_add_marker_;
 	QAction *const action_add_diff_marker_;
 	QAction *const action_zoom_best_fit_;
 	QAction *const action_config_plot_;
 	QToolBar *toolbar_;
-	widgets::Plot *plot_;
+	widgets::plot::Plot *plot_;
 
 private Q_SLOTS:
 	void on_signal_changed();

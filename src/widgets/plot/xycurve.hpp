@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,34 +21,35 @@
 #define DATA_XYCURVE_HPP
 
 #include <memory>
-#include <vector>
 
-#include <QPointer>
-#include <qwt_series_data.h>
+#include <QPointF>
+#include <QRectF>
+#include <QString>
 
-#include "src/data/basecurve.hpp"
+#include "src/widgets/plot/basecurve.hpp"
 
 using std::shared_ptr;
-using std::vector;
 
 namespace sv {
-namespace data {
 
+namespace data {
 class AnalogSignal;
+}
+
+namespace widgets {
+namespace plot {
 
 class XYCurve : public BaseCurve
 {
 
 public:
-	XYCurve(shared_ptr<AnalogSignal> x_signal,
-		shared_ptr<AnalogSignal> y_signal);
+	XYCurve(shared_ptr<data::AnalogSignal> x_signal,
+		shared_ptr<data::AnalogSignal> y_signal);
 
-	QPointF sample( size_t i ) const;
+	QPointF sample(size_t i) const;
 	size_t size() const;
 	QRectF boundingRect() const;
 
-	void set_relative_time(bool is_relative_time);
-	bool is_relative_time() const;
 	QString name() const;
 	QString x_data_quantity() const;
 	QString x_data_unit() const;
@@ -58,13 +59,13 @@ public:
 	QString y_data_title() const;
 
 private:
-	shared_ptr<AnalogSignal> x_signal_;
-	shared_ptr<AnalogSignal> y_signal_;
-	bool relative_time_;
+	shared_ptr<data::AnalogSignal> x_signal_;
+	shared_ptr<data::AnalogSignal> y_signal_;
 
 };
 
-} // namespace data
+} // namespace plot
+} // namespace widgets
 } // namespace sv
 
 #endif // DATA_XYCURVE_HPP

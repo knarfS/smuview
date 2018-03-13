@@ -27,11 +27,11 @@
 #include "src/session.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/data/analogsignal.hpp"
-#include "src/data/basecurve.hpp"
-#include "src/data/timecurve.hpp"
-#include "src/data/xycurve.hpp"
 #include "src/dialogs/plotconfigdialog.hpp"
-#include "src/widgets/plot.hpp"
+#include "src/widgets/plot/plot.hpp"
+#include "src/widgets/plot/basecurve.hpp"
+#include "src/widgets/plot/timecurve.hpp"
+#include "src/widgets/plot/xycurve.hpp"
 
 using std::dynamic_pointer_cast;
 using std::static_pointer_cast;
@@ -57,7 +57,7 @@ PlotView::PlotView(const Session &session,
 			channel_->actual_signal());
 
 	if (signal)
-		curve_ = (data::BaseCurve *)(new data::TimeCurve(signal));
+		curve_ = new widgets::plot::TimeCurve(signal);
 	else
 		curve_ = nullptr;
 
@@ -87,7 +87,7 @@ PlotView::PlotView(const Session& session,
 {
 	assert(signal);
 
-	curve_ = (data::BaseCurve *)(new data::TimeCurve(signal));
+	curve_ = new widgets::plot::TimeCurve(signal);
 
 	setup_ui();
 	setup_toolbar();
@@ -111,7 +111,7 @@ PlotView::PlotView(const Session& session,
 	assert(x_signal);
 	assert(y_signal);
 
-	curve_ = (data::BaseCurve *)(new data::XYCurve(x_signal, y_signal));
+	curve_ = new widgets::plot::XYCurve(x_signal, y_signal);
 
 	setup_ui();
 	setup_toolbar();
@@ -138,13 +138,30 @@ QString PlotView::title() const
 	return title;
 }
 
+void PlotView::add_time_curve(shared_ptr<data::AnalogSignal> signal)
+{
+	widgets::plot::TimeCurve *curve = new widgets::plot::TimeCurve(signal);
+	plot_->add_curve(curve);
+}
+
+void PlotView::add_xy_curve(shared_ptr<data::AnalogSignal> x_signal,
+	shared_ptr<data::AnalogSignal> y_signal)
+{
+	widgets::plot::XYCurve *curve =
+		new widgets::plot::XYCurve(x_signal, y_signal);
+	plot_->add_curve(curve);
+}
+
 void PlotView::setup_ui()
 {
 	QVBoxLayout *layout = new QVBoxLayout();
 
-	plot_ = new widgets::Plot(curve_);
-	plot_->set_plot_mode(widgets::Plot::PlotModes::Additive);
+	plot_ = new widgets::plot::Plot();
+	plot_->set_plot_mode(widgets::plot::PlotModes::Additive);
 	plot_->set_plot_interval(200); // 200ms
+	if (curve_)
+		plot_->add_curve(curve_);
+
 	layout->addWidget(plot_);
 
 	this->centralWidget_->setLayout(layout);
@@ -211,7 +228,7 @@ void PlotView::on_signal_changed()
 	this->parentWidget()->setWindowTitle(this->title());
 
 	if (signal) {
-		curve_ = (data::BaseCurve *)(new data::TimeCurve(signal));
+		curve_ = new widgets::plot::TimeCurve(signal);
 		plot_->add_curve(curve_);
 	}
 	else

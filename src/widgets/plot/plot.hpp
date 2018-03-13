@@ -2,7 +2,7 @@
  * This file is part of the SmuView project.
  * This file is based on the QWT Oscilloscope Example.
  *
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,9 @@
 #ifndef WIDGETS_PLOT_HPP
 #define WIDGETS_PLOT_HPP
 
+#include <map>
+#include <vector>
+
 #include <QVariant>
 
 #include <qwt_interval.h>
@@ -30,42 +33,42 @@
 #include <qwt_plot_marker.h>
 #include <qwt_system_clock.h>
 
+using std::map;
+using std::vector;
+
 namespace sv {
-
-namespace data {
-class BaseCurve;
-}
-
 namespace widgets {
+namespace plot {
+
+class BaseCurve;
+
+enum class PlotModes {
+	Additive = 0,
+	Rolling,
+	Oscilloscope
+};
 
 class Plot : public QwtPlot
 {
 	Q_OBJECT
 
 public:
-	Plot(data::BaseCurve *curve_data, QWidget *parent = nullptr);
+	Plot(QWidget *parent = nullptr);
 	virtual ~Plot();
 
-	enum PlotModes {
-		Additive = 0,
-		Rolling,
-		Oscilloscope
-	};
-
 	virtual void replot();
-	virtual bool eventFilter(QObject *, QEvent *);
-	void add_curve(data::BaseCurve *curve_data);
+	virtual bool eventFilter(QObject * object, QEvent *event);
+	void add_curve(plot::BaseCurve *curve_data);
 	void set_plot_interval(int plot_interval) { plot_interval_ = plot_interval; }
-	void set_plot_mode(Plot::PlotModes plot_mode) { plot_mode_ = plot_mode; }
+	void set_plot_mode(PlotModes plot_mode) { plot_mode_ = plot_mode; }
 
 public Q_SLOTS:
 	void start();
 	void stop();
-	int init_x_axis();
-	int init_y_axis();
-	void init_curve();
+	int init_x_axis(widgets::plot::BaseCurve *curve);
+	int init_y_axis(widgets::plot::BaseCurve *curve);
 	void set_x_interval(double x_start, double x_end);
-	void set_y_interval(double y_start, double y_end);
+	void set_y_interval(int y_axis_id, double y_start, double y_end);
 	void set_x_axis_fixed(const bool fixed);
 	void set_y_axis_fixed(const bool fixed);
 	void add_marker();
@@ -78,20 +81,22 @@ protected:
 	virtual void timerEvent(QTimerEvent *);
 
 private:
-	void update_curve();
+	void update_curves();
+	void update_intervals();
 	void increment_x_interval(QRectF boundaries);
-	void increment_y_interval(QRectF boundaries);
+	void increment_y_interval(plot::BaseCurve *curve, QRectF boundaries);
 
-	data::BaseCurve *curve_data_;
-	QwtPlotDirectPainter *valueDirectPainter_;
-	QwtPlotCurve *value_curve_;
-	int painted_points_;
+	vector<plot::BaseCurve *> curves_;
+	map<plot::BaseCurve *, QwtPlotCurve *> plot_curve_map_;
+	map<plot::BaseCurve *, QwtPlotDirectPainter *> plot_direct_painter_map_;
+	map<plot::BaseCurve *, QwtInterval *> curve_y_interval_map_;
+	map<plot::BaseCurve *, int> curve_y_axis_id_map_;
+	map<plot::BaseCurve *, size_t> painted_points_map_;
+
+	map<int, QwtInterval *> y_axis_interval_map_;
 
 	QwtInterval x_interval_;
-	int x_axis_id_;
 	bool x_axis_fixed_;
-	QwtInterval y_interval_;
-	int y_axis_id_;
 	bool y_axis_fixed_;
 	int plot_interval_;
 	int timer_id_;
@@ -101,6 +106,7 @@ private:
 
 };
 
+} // namespace plot
 } // namespace widgets
 } // namespace sv
 

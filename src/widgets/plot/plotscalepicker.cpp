@@ -32,10 +32,11 @@
 #include <qwt_scale_widget.h>
 
 #include "plotscalepicker.hpp"
-#include "src/widgets/plot.hpp"
+#include "src/widgets/plot/plot.hpp"
 
 namespace sv {
 namespace widgets {
+namespace plot {
 
 PlotScalePicker::PlotScalePicker(Plot *plot) :
 	QObject(plot),
@@ -187,6 +188,7 @@ bool PlotScalePicker::eventFilter(QObject *object, QEvent *event)
 	return QObject::eventFilter(object, event);
 }
 
+} // namespace plot
 } // namespace widgets
 } // namespace sv
 
