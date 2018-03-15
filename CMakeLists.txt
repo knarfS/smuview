@@ -196,6 +196,7 @@ set(smuview_SOURCES
   src/widgets/lcddisplay.cpp
   src/widgets/led.cpp
   src/widgets/optionalvaluecontrol.cpp
+  src/widgets/popup.cpp
   src/widgets/quantitycombobox.cpp
   src/widgets/quantityflagslist.cpp
   src/widgets/signaltree.cpp
