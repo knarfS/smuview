@@ -188,6 +188,8 @@ void Plot::add_curve(widgets::plot::BaseCurve *curve)
 
 	// Check y axis
 	int y_axis_id = this->init_y_axis(curve);
+	if (y_axis_id < 0)
+		return;
 
 	// Check x axis
 	int x_axis_id = this->init_x_axis(curve);
@@ -246,8 +248,10 @@ int Plot::init_y_axis(widgets::plot::BaseCurve *curve)
 	int y_axis_id = -1;
 	if (curves_.size() == 0)
 		y_axis_id = QwtPlot::yLeft;
-	else
+	else if (curves_.size() == 1)
 		y_axis_id = QwtPlot::yRight;
+	else
+		return y_axis_id; // TODO: walk trough
 
 	double min = 0.;
 	double max = curve->boundingRect().top();
