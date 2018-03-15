@@ -173,6 +173,7 @@ set(smuview_SOURCES
   src/dialogs/plotconfigdialog.cpp
   src/dialogs/plotcurveconfigdialog.cpp
   src/dialogs/savedialog.cpp
+  src/dialogs/selectsignaldialog.cpp
   src/tabs/basetab.cpp
   src/tabs/devicetab.cpp
   src/tabs/measurementtab.cpp

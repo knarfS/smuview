@@ -28,6 +28,7 @@
 #include "src/channels/basechannel.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/dialogs/plotconfigdialog.hpp"
+#include "src/dialogs/selectsignaldialog.hpp"
 #include "src/widgets/plot/plot.hpp"
 #include "src/widgets/plot/basecurve.hpp"
 #include "src/widgets/plot/timecurve.hpp"
@@ -47,6 +48,7 @@ PlotView::PlotView(const Session &session,
 	action_add_marker_(new QAction(this)),
 	action_add_diff_marker_(new QAction(this)),
 	action_zoom_best_fit_(new QAction(this)),
+	action_add_signal_(new QAction(this)),
 	action_config_plot_(new QAction(this))
 {
 	assert(channel_);
@@ -83,6 +85,7 @@ PlotView::PlotView(const Session& session,
 	action_add_marker_(new QAction(this)),
 	action_add_diff_marker_(new QAction(this)),
 	action_zoom_best_fit_(new QAction(this)),
+	action_add_signal_(new QAction(this)),
 	action_config_plot_(new QAction(this))
 {
 	assert(signal);
@@ -106,6 +109,7 @@ PlotView::PlotView(const Session& session,
 	action_add_marker_(new QAction(this)),
 	action_add_diff_marker_(new QAction(this)),
 	action_zoom_best_fit_(new QAction(this)),
+	action_add_signal_(new QAction(this)),
 	action_config_plot_(new QAction(this))
 {
 	assert(x_signal);
@@ -190,6 +194,13 @@ void PlotView::setup_toolbar()
 	connect(action_zoom_best_fit_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_zoom_best_fit_triggered()));
 
+	action_add_signal_->setText(tr("Add Signal"));
+	action_add_signal_->setIcon(
+		QIcon::fromTheme("office-chart-line",
+		QIcon(":/icons/office-chart-line.png")));
+	connect(action_add_signal_, SIGNAL(triggered(bool)),
+		this, SLOT(on_action_add_signal_triggered()));
+
 	action_config_plot_->setText(tr("Configure Plot"));
 	action_config_plot_->setIcon(
 		QIcon::fromTheme("configure",
@@ -197,11 +208,13 @@ void PlotView::setup_toolbar()
 	connect(action_config_plot_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_config_plot_triggered()));
 
-	toolbar_ = new QToolBar("Device Toolbar");
+	toolbar_ = new QToolBar("Plot Toolbar");
 	toolbar_->addAction(action_add_marker_);
 	toolbar_->addAction(action_add_diff_marker_);
 	toolbar_->addSeparator();
 	toolbar_->addAction(action_zoom_best_fit_);
+	toolbar_->addSeparator();
+	toolbar_->addAction(action_add_signal_);
 	toolbar_->addSeparator();
 	toolbar_->addAction(action_config_plot_);
 	this->addToolBar(Qt::TopToolBarArea, toolbar_);
@@ -249,6 +262,15 @@ void PlotView::on_action_zoom_best_fit_triggered()
 {
 	plot_->set_x_axis_fixed(false);
 	plot_->set_y_axis_fixed(false);
+}
+
+void PlotView::on_action_add_signal_triggered()
+{
+	dialogs::SelectSignalDialog dlg(session(), nullptr);
+	dlg.exec();
+
+	for (auto signal : dlg.signals())
+		add_time_curve(dynamic_pointer_cast<data::AnalogSignal>(signal));
 }
 
 void PlotView::on_action_config_plot_triggered()
