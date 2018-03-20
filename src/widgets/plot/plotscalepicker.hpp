@@ -40,6 +40,7 @@ public:
 
 private:
 	Plot *plot_;
+	bool is_double_clicked;
 	int last_pan_p_value_;
 	double wheel_factor_;
 

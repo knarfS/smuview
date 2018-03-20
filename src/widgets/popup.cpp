@@ -23,6 +23,7 @@
 
 #include <QApplication>
 #include <QCloseEvent>
+#include <QDebug>
 #include <QDesktopWidget>
 #include <QEvent>
 #include <QLineEdit>
@@ -87,7 +88,7 @@ bool Popup::eventFilter(QObject *obj, QEvent *event)
 	if (event->type() == QEvent::KeyPress) {
 		keyEvent = static_cast<QKeyEvent*>(event);
 		if (keyEvent->key() == Qt::Key_Enter ||
-		    keyEvent->key() == Qt::Key_Return) {
+				keyEvent->key() == Qt::Key_Return) {
 			close();
 			return true;
 		}

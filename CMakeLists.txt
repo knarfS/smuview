@@ -202,6 +202,7 @@ set(smuview_SOURCES
   src/widgets/signaltree.cpp
   src/widgets/unitcombobox.cpp
   src/widgets/valuecontrol.cpp
+  src/widgets/plot/axispopup.cpp
   src/widgets/plot/basecurve.cpp
   src/widgets/plot/plot.cpp
   src/widgets/plot/plotscalepicker.cpp

@@ -235,7 +235,8 @@ int Plot::init_x_axis(widgets::plot::BaseCurve *curve)
 	this->enableAxis(x_axis_id);
 	this->setAxisTitle(x_axis_id, title);
 	this->setAxisScale(x_axis_id, min, max);
-	//setAxisAutoScale(x_axis_id, true); // TODO: Not working!?
+	//this->setAxisAutoScale(x_axis_id, true); // TODO: Not working!?
+	//this->setAxisScaleEngine(x_axis_id, new QwtDateScaleEngine);
 	this->enableAxis(x_axis_id);
 
 	return x_axis_id;

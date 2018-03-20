@@ -32,6 +32,7 @@
 #include <qwt_scale_widget.h>
 
 #include "plotscalepicker.hpp"
+#include "src/widgets/plot/axispopup.hpp"
 #include "src/widgets/plot/plot.hpp"
 
 namespace sv {
@@ -41,6 +42,7 @@ namespace plot {
 PlotScalePicker::PlotScalePicker(Plot *plot) :
 	QObject(plot),
 	plot_(plot),
+	is_double_clicked(false),
 	wheel_factor_(0.9)
 {
 	for (uint i = 0; i < QwtPlot::axisCnt; i++) {
@@ -163,7 +165,8 @@ bool PlotScalePicker::eventFilter(QObject *object, QEvent *event)
 				double v1 = scale_map.s1();
 				double v2 = scale_map.s2();
 				if (scale_map.transformation()) {
-					// the coordinate system of the paint device is always linear
+					// The coordinate system of the paint device is
+					// always linear
 					v1 = scale_map.transform(v1); // scale_map.p1()
 					v2 = scale_map.transform(v2); // scale_map.p2()
 				}
@@ -179,6 +182,55 @@ bool PlotScalePicker::eventFilter(QObject *object, QEvent *event)
 				plot_->setAxisScale(axis_id, v1, v2);
 				plot_->replot();
 				plot_->setAutoReplot(auto_replot);
+
+				return true;
+			}
+		}
+	}
+	else if (event->type() == QEvent::MouseButtonDblClick) {
+		QwtScaleWidget *scale_widget = qobject_cast<QwtScaleWidget *>(object);
+		if (scale_widget) {
+			QMouseEvent *mouse_event = static_cast<QMouseEvent *>(event);
+			if (mouse_event->buttons() & Qt::LeftButton) {
+				is_double_clicked = true;
+				return true;
+			}
+		}
+		is_double_clicked = false;
+	}
+	else if (event->type() == QEvent::MouseButtonRelease) {
+		QwtScaleWidget *scale_widget = qobject_cast<QwtScaleWidget *>(object);
+		if (scale_widget) {
+			QMouseEvent *mouse_event = static_cast<QMouseEvent *>(event);
+			if (mouse_event->button() == Qt::LeftButton && is_double_clicked) {
+				is_double_clicked = false;
+
+				int axis_id = -1;
+				PopupPosition popup_pos = PopupPosition::Right;
+				switch (scale_widget->alignment()) {
+				case QwtScaleDraw::LeftScale:
+					axis_id = QwtPlot::yLeft;
+					popup_pos = PopupPosition::Right;
+					break;
+				case QwtScaleDraw::RightScale:
+					axis_id = QwtPlot::yRight;
+					popup_pos = PopupPosition::Left;
+					break;
+				case QwtScaleDraw::BottomScale:
+					axis_id = QwtPlot::xBottom;
+					popup_pos = PopupPosition::Top;
+					break;
+				case QwtScaleDraw::TopScale:
+					axis_id = QwtPlot::xTop;
+					popup_pos = PopupPosition::Bottom;
+					break;
+				}
+
+				AxisPopup *const axis_popup =
+					new AxisPopup(plot_, axis_id, scale_widget);
+				axis_popup->set_position(scale_widget->mapToGlobal(
+					mouse_event->pos()), popup_pos);
+				axis_popup->show();
 
 				return true;
 			}
