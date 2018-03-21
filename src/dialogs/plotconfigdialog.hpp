@@ -20,17 +20,18 @@
 #ifndef DIALOGS_PLOTCONFIGDIALOG_HPP
 #define DIALOGS_PLOTCONFIGDIALOG_HPP
 
+#include <map>
+
+#include <QComboBox>
 #include <QDialog>
 #include <QDialogButtonBox>
+#include <QLineEdit>
+#include <QString>
 #include <QWidget>
 
-namespace sv {
+#include "src/widgets/plot/plot.hpp"
 
-namespace widgets {
-namespace plot {
-class Plot;
-}
-}
+namespace sv {
 
 namespace dialogs {
 
@@ -43,11 +44,18 @@ public:
 
 private:
 	void setup_ui();
+	void setup_ui_additive();
+	void setup_ui_rolling();
+	void setup_ui_oscilloscope();
 
 	widgets::plot::Plot *plot_;
+	QComboBox *plot_update_mode_combobox_;
+	QLineEdit *time_span_edit_;
+	QLineEdit *add_time_edit_;
 	QDialogButtonBox *button_box_;
 
 public Q_SLOTS:
+	void on_update_mode_changed();
 	void accept() override;
 
 };

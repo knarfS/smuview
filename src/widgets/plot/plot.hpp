@@ -42,10 +42,20 @@ namespace plot {
 
 class BaseCurve;
 
-enum class PlotModes {
+enum class PlotUpdateMode {
 	Additive = 0,
 	Rolling,
 	Oscilloscope
+};
+
+// TODO: Use tr(), QCoreApplication::translate(), QT_TR_NOOP() or
+//       QT_TRANSLATE_NOOP() for translation.
+//       See: http://doc.qt.io/qt-5/i18n-source-translation.html
+typedef map<PlotUpdateMode, QString> plot_update_mode_name_map_t;
+static plot_update_mode_name_map_t plot_update_mode_name_map = {
+	{ sv::widgets::plot::PlotUpdateMode::Additive, QString("Additive") },
+	{ sv::widgets::plot::PlotUpdateMode::Rolling, QString("Rolling") },
+	{ sv::widgets::plot::PlotUpdateMode::Oscilloscope, QString("Oscilloscope") },
 };
 
 class Plot : public QwtPlot
@@ -60,7 +70,12 @@ public:
 	virtual bool eventFilter(QObject * object, QEvent *event);
 	void add_curve(plot::BaseCurve *curve_data);
 	void set_plot_interval(int plot_interval) { plot_interval_ = plot_interval; }
-	void set_plot_mode(PlotModes plot_mode) { plot_mode_ = plot_mode; }
+	void set_update_mode(PlotUpdateMode update_mode) { update_mode_ = update_mode; }
+	PlotUpdateMode update_mode() const { return update_mode_; };
+	void set_time_span(double time_span) { time_span_ = time_span; }
+	double time_span() { return time_span_; }
+	void set_add_time(double add_time) { add_time_ = add_time; }
+	double add_time() { return add_time_; }
 
 public Q_SLOTS:
 	void start();
@@ -83,7 +98,8 @@ protected:
 private:
 	void update_curves();
 	void update_intervals();
-	void increment_x_interval(QRectF boundaries);
+	bool update_x_interval(plot::BaseCurve *curve);
+	void increment_x_interval(plot::BaseCurve *curve, QRectF boundaries);
 	void increment_y_interval(plot::BaseCurve *curve, QRectF boundaries);
 
 	vector<plot::BaseCurve *> curves_;
@@ -100,7 +116,9 @@ private:
 	bool y_axis_fixed_;
 	int plot_interval_;
 	int timer_id_;
-	PlotModes plot_mode_;
+	PlotUpdateMode update_mode_;
+	double time_span_;
+	double add_time_;
 
 	QwtPlotMarker *marker_;
 

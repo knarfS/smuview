@@ -161,7 +161,7 @@ void PlotView::setup_ui()
 	QVBoxLayout *layout = new QVBoxLayout();
 
 	plot_ = new widgets::plot::Plot();
-	plot_->set_plot_mode(widgets::plot::PlotModes::Additive);
+	plot_->set_update_mode(widgets::plot::PlotUpdateMode::Additive);
 	plot_->set_plot_interval(200); // 200ms
 	if (curve_)
 		plot_->add_curve(curve_);

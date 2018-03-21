@@ -113,7 +113,9 @@ Plot::Plot(QWidget *parent) : QwtPlot(parent),
 	x_axis_fixed_(false),
 	y_axis_fixed_(false),
 	plot_interval_(200),
-	timer_id_(-1)
+	timer_id_(-1),
+	time_span_(120.),
+	add_time_(30.)
 {
 	this->setAutoReplot(false);
 	this->setCanvas(new Canvas());
@@ -376,11 +378,12 @@ void Plot::update_curves()
 			const bool clip = !canvas()->testAttribute(Qt::WA_PaintOnScreen);
 			if (clip) {
 				/*
-					Depending on the platform setting a clip might be an
-					important performance issue. F.e. for Qt Embedded this
-					reduces the part of the backing store that has to be copied
-					out - maybe to an unaccelerated frame buffer device.
-				*/
+				 * NOTE:
+				 * Depending on the platform setting a clip might be an
+				 * important performance issue. F.e. for Qt Embedded this
+				 * reduces the part of the backing store that has to be copied
+				 * out - maybe to an unaccelerated frame buffer device.
+				 */
 
 				const QwtScaleMap x_map = canvasMap(plot_curve->xAxis());
 				const QwtScaleMap y_map = canvasMap(plot_curve->yAxis());
@@ -412,13 +415,7 @@ void Plot::update_intervals()
 		//qWarning() << "Plot::timerEvent() for " << curve->name();
 		QRectF boundaries = curve->boundingRect();
 
-		// Check for x axis resize
-		if (boundaries.left() < x_interval_.minValue() ||
-				boundaries.right() > x_interval_.maxValue()) {
-			qWarning() << "Plot::timerEvent(): increment_x_interval()";
-			increment_x_interval(boundaries);
-			intervals_changed = true;
-		}
+		intervals_changed = update_x_interval(curve);
 
 		// Check for y axis resize
 		QwtInterval *y_interval = curve_y_interval_map_[curve];
@@ -436,13 +433,18 @@ void Plot::update_intervals()
 		replot();
 }
 
-void Plot::increment_x_interval(QRectF boundaries)
+bool Plot::update_x_interval(plot::BaseCurve *curve)
 {
 	if (x_axis_fixed_)
-		return;
+		return false;
 
-	//qWarning() << QString("Plot::increment_x_interval(): old min = %1, old max = %2").arg(x_interval_.minValue()).arg(x_interval_.maxValue());
-	if (plot_mode_ == PlotModes::Additive) {
+	QRectF boundaries = curve->boundingRect();
+
+	if (update_mode_ == PlotUpdateMode::Additive) {
+		if (boundaries.left() >= x_interval_.minValue() &&
+				boundaries.right() <= x_interval_.maxValue())
+			return false;
+
 		//qWarning() << "Plot::timerEvent() for b.left < x_int.min = " << boundaries.left() << " < " << x_interval_.minValue();
 		if (boundaries.left() < x_interval_.minValue()) {
 			// TODO: Calculate proper interval_length
@@ -451,35 +453,55 @@ void Plot::increment_x_interval(QRectF boundaries)
 		//qWarning() << "Plot::timerEvent() for b.right > x_int.max = " << boundaries.right() << " > " << x_interval_.maxValue();
 		if (boundaries.right() > x_interval_.maxValue()) {
 			// TODO: Calculate proper interval_length
-			int interval_length = 30;
-			x_interval_.setMaxValue(x_interval_.maxValue() + interval_length);
+			x_interval_.setMaxValue(x_interval_.maxValue() + add_time_);
 		}
 		/*
 		qWarning() <<
 			QString("Plot::increment_x_interval(): new min = %1, new max = %2").
 			arg(x_interval_.minValue()).arg(x_interval_.maxValue());
 		*/
-	}
-	else if (plot_mode_ == PlotModes::Rolling) {
-	}
-	else if (plot_mode_ == PlotModes::Oscilloscope) {
-		x_interval_ = QwtInterval(x_interval_.maxValue(),
-			x_interval_.maxValue() + x_interval_.width());
-	}
-
-	//curve_data_->clearStaleValues(interval_.minValue()); // TODO
-
-	if (plot_mode_ == PlotModes::Additive) {
 		setAxisScale(QwtPlot::xBottom,
 			x_interval_.minValue(), x_interval_.maxValue());
-	}
-	else if (plot_mode_ == PlotModes::Rolling) {
-	}
-	else if (plot_mode_ == PlotModes::Oscilloscope) {
-		// To avoid, that the grid is jumping, we disable
-		// the autocalculation of the ticks and shift them
-		// manually instead.
 
+		return true;
+	}
+	else if (update_mode_ == PlotUpdateMode::Rolling) {
+		if (boundaries.right() <= x_interval_.maxValue())
+			return false;
+
+		//double diff = boundaries.right() - x_interval_.maxValue();
+		x_interval_.setMinValue(x_interval_.minValue() + add_time_);
+		x_interval_.setMaxValue(x_interval_.maxValue() + add_time_);
+
+		/*
+		qWarning() << "Plot::timerEvent() for x_interval_.minValue() = " <<
+			x_interval_.minValue() << ", x_interval_.maxValue() = " <<
+			x_interval_.maxValue();
+		*/
+
+		setAxisScale(QwtPlot::xBottom,
+			x_interval_.minValue(), x_interval_.maxValue());
+
+		return true;
+	}
+	else if (update_mode_ == PlotUpdateMode::Oscilloscope) {
+		if (boundaries.right() <= x_interval_.maxValue())
+			return false;
+
+		x_interval_ = QwtInterval(x_interval_.maxValue(),
+			x_interval_.maxValue() + time_span_);
+
+		/*
+		qWarning() << "Plot::timerEvent() for x_interval_.minValue() = " <<
+			x_interval_.minValue() << ", x_interval_.maxValue() = " <<
+			x_interval_.maxValue();
+		*/
+
+		/*
+		 * NOTE:
+		 * To avoid, that the grid is jumping, we disable the autocalculation
+		 * of the ticks and shift them manually instead.
+		 */
 		QwtScaleDiv scaleDiv = axisScaleDiv(QwtPlot::xBottom);
 		scaleDiv.setInterval(x_interval_);
 
@@ -491,9 +513,12 @@ void Plot::increment_x_interval(QRectF boundaries)
 			scaleDiv.setTicks(i, ticks);
 		}
 		setAxisScaleDiv(QwtPlot::xBottom, scaleDiv);
+		painted_points_map_[curve] = 0;
 
-		//painted_points_ = 0;
+		return true;
 	}
+
+	return false;
 }
 
 void Plot::increment_y_interval(plot::BaseCurve *curve, QRectF boundaries)
