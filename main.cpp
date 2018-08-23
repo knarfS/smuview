@@ -193,7 +193,7 @@ int main(int argc, char *argv[])
 			// Run the application
 			ret = app.exec();
 		}
-		catch (exception e) {
+		catch (exception &e) {
 			qDebug() << e.what();
 		}
 

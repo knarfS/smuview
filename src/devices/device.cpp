@@ -222,7 +222,7 @@ void Device::data_feed_in(shared_ptr<sigrok::Device> sr_device,
 		try {
 			feed_in_logic(
 				dynamic_pointer_cast<sigrok::Logic>(sr_packet->payload()));
-		} catch (bad_alloc) {
+		} catch (bad_alloc &) {
 			out_of_memory_ = true;
 			// TODO: sr_session->stop();
 		}
@@ -233,7 +233,7 @@ void Device::data_feed_in(shared_ptr<sigrok::Device> sr_device,
 		try {
 			feed_in_analog(
 				dynamic_pointer_cast<sigrok::Analog>(sr_packet->payload()));
-		} catch (bad_alloc) {
+		} catch (bad_alloc &) {
 			out_of_memory_ = true;
 			// TODO: sr_session->stop();
 		}
@@ -274,7 +274,7 @@ void Device::aquisition_thread_proc(
 	try {
 		sr_session_->start();
 	}
-	catch (sigrok::Error e) {
+	catch (sigrok::Error &e) {
 		error_handler(e.what());
 		return;
 	}
@@ -293,7 +293,7 @@ void Device::aquisition_thread_proc(
 	try {
 		sr_session_->run();
 	}
-	catch (sigrok::Error e) {
+	catch (sigrok::Error &e) {
 		error_handler(e.what());
 		aquisition_state_ = aquisition_state::Stopped;
 		return;
