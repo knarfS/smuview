@@ -35,7 +35,7 @@ namespace tabs {
 
 DeviceTab::DeviceTab(Session &session,
 		shared_ptr<devices::Device> device, QMainWindow *parent) :
-		BaseTab(session, parent),
+	BaseTab(session, parent),
 	device_(device),
 	action_open_(new QAction(this)),
 	action_save_as_(new QAction(this)),
