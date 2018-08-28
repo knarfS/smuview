@@ -23,10 +23,6 @@
 #include <memory>
 
 #include <glib.h>
-// Suppress warnings due to use of deprecated std::auto_ptr<> by glibmm.
-G_GNUC_BEGIN_IGNORE_DEPRECATIONS
-#include <glibmm.h>
-G_GNUC_END_IGNORE_DEPRECATIONS
 
 #include <QDebug>
 
