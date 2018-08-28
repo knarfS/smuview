@@ -44,6 +44,7 @@
 #include "src/tabs/virtualtab.hpp"
 #include "src/tabs/welcometab.hpp"
 #include "src/widgets/signaltree.hpp"
+#include "src/ui/processing/processingwidget.hpp"
 
 using std::make_pair;
 using std::make_shared;
@@ -252,13 +253,6 @@ void MainWindow::setup_ui()
 	centralWidget = new QWidget();
 	centralWidget->setLayout(centralLayout);
 
-	/*
-	// Info Widget
-	info_widget = new QToolBox();
-	info_widget->addItem(signal_tree_, tr("Devices && Signals"));
-	centralLayout->addWidget(info_widget);
-	*/
-
 	// Tab Toolbar
 	add_device_button_ = new QToolButton();
 	add_device_button_->setIcon(QIcon::fromTheme("document-new",
@@ -302,14 +296,29 @@ void MainWindow::setup_ui()
 		signal_tree_, SLOT(on_device_added(shared_ptr<devices::Device>)));
 
 	// A layout must be set to the central widget of the main window
-	// before dock->setWidget() is called.
-	QDockWidget* dock = new QDockWidget(tr("Devices && Signals"));
-	dock->setAllowedAreas(Qt::AllDockWidgetAreas);
-	dock->setContextMenuPolicy(Qt::PreventContextMenu);
-	dock->setFeatures(QDockWidget::DockWidgetMovable |
+	// before ds_dock->setWidget() is called.
+	QDockWidget* ds_dock = new QDockWidget(tr("Devices && Signals"));
+	ds_dock->setAllowedAreas(Qt::AllDockWidgetAreas);
+	ds_dock->setContextMenuPolicy(Qt::PreventContextMenu);
+	ds_dock->setFeatures(QDockWidget::DockWidgetMovable |
 		QDockWidget::DockWidgetFloatable);
-	dock->setWidget(signal_tree_);
-	this->addDockWidget(Qt::LeftDockWidgetArea, dock);
+	ds_dock->setWidget(signal_tree_);
+	this->addDockWidget(Qt::LeftDockWidgetArea, ds_dock);
+
+	// Processing Dock
+	processing_widget_ = new ui::processing::ProcessingWidget();
+
+	QDockWidget* proc_dock = new QDockWidget(tr("Processing"));
+	proc_dock->setAllowedAreas(Qt::AllDockWidgetAreas);
+	proc_dock->setContextMenuPolicy(Qt::PreventContextMenu);
+	proc_dock->setFeatures(QDockWidget::DockWidgetMovable |
+		QDockWidget::DockWidgetFloatable);
+	proc_dock->setWidget(processing_widget_);
+	this->tabifyDockWidget(ds_dock, proc_dock);
+
+	// Select devices and signal dock tab
+	ds_dock->show();
+	ds_dock->raise();
 
 	retranslate_ui();
 }

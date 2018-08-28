@@ -208,6 +208,9 @@ set(smuview_SOURCES
   src/widgets/plot/plotscalepicker.cpp
   src/widgets/plot/timecurve.cpp
   src/widgets/plot/xycurve.cpp
+
+  src/ui/processing/processingwidget.cpp
+  src/ui/processing/processthreadwidget.cpp
 )
 
 if(ENABLE_SIGNALS)

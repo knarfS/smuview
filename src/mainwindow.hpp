@@ -51,6 +51,12 @@ namespace widgets {
 class SignalTree;
 }
 
+namespace ui {
+namespace processing {
+class ProcessingWidget;
+}
+}
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -89,6 +95,7 @@ private:
 	QWidget *centralWidget;
 	QToolBox *info_widget;
 	widgets::SignalTree *signal_tree_;
+	ui::processing::ProcessingWidget * processing_widget_;
 	QTabWidget *tab_widget_;
 	QWidget *tab_widget_toolbar_;
 
