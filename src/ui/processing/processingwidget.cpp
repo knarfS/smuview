@@ -56,35 +56,41 @@ void ProcessingWidget::setup_ui()
 
 void ProcessingWidget::setup_toolbar()
 {
-	action_start_process_->setText(tr("Start Process"));
+	action_start_process_->setText(tr("Start process"));
 	action_start_process_->setIcon(
 		QIcon::fromTheme("media-playback-start",
 		QIcon(":/icons/media-playback-start.png")));
+	action_start_process_->setCheckable(true);
+	action_start_process_->setChecked(false);
 	connect(action_start_process_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_start_process_triggered()));
 
-	action_pause_process_->setText(tr("Pause Process"));
+	action_pause_process_->setText(tr("Pause process"));
 	action_pause_process_->setIcon(
 		QIcon::fromTheme("media-playback-pause",
 		QIcon(":/icons/media-playback-pause.png")));
+	action_pause_process_->setCheckable(true);
+	action_pause_process_->setChecked(false);
 	connect(action_pause_process_, SIGNAL(triggered(bool)),
-		this, SLOT(on_action_start_process_triggered()));
+		this, SLOT(on_action_pause_process_triggered()));
 
-	action_stop_process_->setText(tr("Stop Process"));
+	action_stop_process_->setText(tr("Stop process"));
 	action_stop_process_->setIcon(
 		QIcon::fromTheme("media-playback-stop",
 		QIcon(":/icons/media-playback-stop.png")));
+	action_stop_process_->setCheckable(true);
+	action_stop_process_->setChecked(true);
 	connect(action_stop_process_, SIGNAL(triggered(bool)),
-		this, SLOT(on_action_start_process_triggered()));
+		this, SLOT(on_action_stop_process_triggered()));
 
-	action_add_thread_->setText(tr("Add Thread"));
+	action_add_thread_->setText(tr("Add thread"));
 	action_add_thread_->setIcon(
 		QIcon::fromTheme("list-add",
 		QIcon(":/icons/list-add.png")));
 	connect(action_add_thread_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_add_thread_triggered()));
 
-	action_save_process_->setText(tr("Save Process"));
+	action_save_process_->setText(tr("Save process"));
 	action_save_process_->setIcon(
 		QIcon::fromTheme("document-save-as",
 		QIcon(":/icons/document-save-as.png")));
@@ -104,14 +110,26 @@ void ProcessingWidget::setup_toolbar()
 
 void ProcessingWidget::on_action_start_process_triggered()
 {
+	action_pause_process_->setChecked(false);
+	action_stop_process_->setChecked(false);
+
+	action_start_process_->setChecked(true);
 }
 
 void ProcessingWidget::on_action_pause_process_triggered()
 {
+	action_start_process_->setChecked(false);
+	action_stop_process_->setChecked(false);
+
+	action_pause_process_->setChecked(true);
 }
 
 void ProcessingWidget::on_action_stop_process_triggered()
 {
+	action_start_process_->setChecked(false);
+	action_pause_process_->setChecked(false);
+
+	action_stop_process_->setChecked(true);
 }
 
 void ProcessingWidget::on_action_add_thread_triggered()

@@ -17,49 +17,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UI_PROCESSING_PROCESSTHREADWIDGET_HPP
-#define UI_PROCESSING_PROCESSTHREADWIDGET_HPP
-
-#include <QAction>
-#include <QCheckBox>
-#include <QLineEdit>
-#include <QListWidget>
-#include <QMainWindow>
 #include <QString>
-#include <QToolBar>
+
+#include "sequencesinblock.hpp"
 
 namespace sv {
 namespace ui {
 namespace processing {
+namespace blocks {
 
-class ProcessThreadWidget : public QMainWindow
+SequenceSinBlock::SequenceSinBlock(
+		QListWidget *parent) :
+	QListWidgetItem(parent)
 {
-    Q_OBJECT
+	this->setText("Sinus Sequence");
+	this->setIcon(QIcon(":/icons/settings-views"));
+}
 
-public:
-	ProcessThreadWidget(QString name, QWidget *parent = nullptr);
-
-private:
-	QString name_;
-
-	QAction *const action_add_block_;
-	QToolBar *toolbar_;
-	QLineEdit *name_edit_;
-	QCheckBox *run_at_startup_checkbox_;
-	QListWidget *process_block_list_;
-
-	void setup_ui();
-	void setup_toolbar();
-
-
-private Q_SLOTS:
-	void on_action_add_block_triggered();
-
-};
-
+} // namespace blocks
 } // namespace processing
 } // namespace ui
 } // namespace sv
-
-#endif // UI_PROCESSING_PROCESSTHREADWIDGET_HPP
-

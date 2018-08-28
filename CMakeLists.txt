@@ -211,6 +211,7 @@ set(smuview_SOURCES
 
   src/ui/processing/processingwidget.cpp
   src/ui/processing/processthreadwidget.cpp
+  src/ui/processing/blocks/sequencesinblock.cpp
 )
 
 if(ENABLE_SIGNALS)

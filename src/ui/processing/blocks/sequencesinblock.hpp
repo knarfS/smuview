@@ -17,53 +17,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UI_PROCESSING_PROCESSINGWIDGET_HPP
-#define UI_PROCESSING_PROCESSINGWIDGET_HPP
+#ifndef UI_PROCESSING_BLOCKS_SEQUENCESINBLOCK_HPP
+#define UI_PROCESSING_BLOCKS_SEQUENCESINBLOCK_HPP
 
-#include <QAction>
-#include <QMainWindow>
-#include <QTabWidget>
-#include <QToolBar>
+#include <QListWidget>
+#include <QListWidgetItem>
 
 namespace sv {
 namespace ui {
 namespace processing {
+namespace blocks {
 
-class ProcessThreadWidget;
-
-class ProcessingWidget : public QMainWindow
+class SequenceSinBlock : public QListWidgetItem
 {
-    Q_OBJECT
 
 public:
-	ProcessingWidget(QWidget *parent = nullptr);
+	SequenceSinBlock(QListWidget *parent = nullptr);
 
 private:
-	uint thread_count_;
-
-	QAction *const action_start_process_;
-	QAction *const action_pause_process_;
-	QAction *const action_stop_process_;
-	QAction *const action_add_thread_;
-	QAction *const action_save_process_;
-	QToolBar *toolbar_;
-	QTabWidget *process_tab_widget_;
-
-	void setup_ui();
-	void setup_toolbar();
-
-private Q_SLOTS:
-	void on_action_start_process_triggered();
-	void on_action_pause_process_triggered();
-	void on_action_stop_process_triggered();
-	void on_action_add_thread_triggered();
-	void on_action_save_process_triggered();
 
 };
 
+} // namespace blocks
 } // namespace processing
 } // namespace ui
 } // namespace sv
 
-#endif // UI_PROCESSING_PROCESSINGWIDGET_HPP
-
+#endif // UI_PROCESSING_BLOCKS_SEQUENCESINBLOCK_HPP

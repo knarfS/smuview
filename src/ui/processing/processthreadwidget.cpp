@@ -22,6 +22,7 @@
 #include <QWidget>
 
 #include "processthreadwidget.hpp"
+#include "src/ui/processing/blocks/sequencesinblock.hpp"
 
 namespace sv {
 namespace ui {
@@ -53,6 +54,7 @@ void ProcessThreadWidget::setup_ui()
 	main_layout->addLayout(form_layout);
 
 	process_block_list_ = new QListWidget();
+	process_block_list_->setIconSize(QSize(32, 32));
 	main_layout->addWidget(process_block_list_);
 
 	QWidget *main_widget = new QWidget();
@@ -62,7 +64,7 @@ void ProcessThreadWidget::setup_ui()
 
 void ProcessThreadWidget::setup_toolbar()
 {
-	action_add_block_->setText(tr("Add Block"));
+	action_add_block_->setText(tr("Add block"));
 	action_add_block_->setIcon(
 		QIcon::fromTheme("list-add",
 		QIcon(":/icons/list-add.png")));
@@ -76,6 +78,10 @@ void ProcessThreadWidget::setup_toolbar()
 
 void ProcessThreadWidget::on_action_add_block_triggered()
 {
+	ui::processing::blocks::SequenceSinBlock *block =
+		new ui::processing::blocks::SequenceSinBlock();
+
+	process_block_list_->addItem(block);
 }
 
 } // namespace processing
