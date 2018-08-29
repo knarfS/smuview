@@ -39,7 +39,7 @@ class DeviceManager;
 class Session;
 
 namespace devices {
-class Device;
+class BaseDevice;
 class HardwareDevice;
 }
 
@@ -106,7 +106,7 @@ private Q_SLOTS:
 	void on_tab_close_requested(int);
 
 Q_SIGNALS:
-	void device_added(shared_ptr<devices::Device>); // TODO: Move to session?
+	void device_added(shared_ptr<devices::BaseDevice>); // TODO: Move to session?
 
 };
 

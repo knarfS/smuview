@@ -33,6 +33,7 @@
 #include "src/devicemanager.hpp"
 #include "src/session.hpp"
 #include "src/data/basesignal.hpp"
+#include "src/devices/basedevice.hpp"
 #include "src/devices/hardwaredevice.hpp"
 #include "src/devices/measurementdevice.hpp"
 #include "src/devices/sourcesinkdevice.hpp"
@@ -292,8 +293,8 @@ void MainWindow::setup_ui()
 		*session_, true, false, false, nullptr);
 	signal_tree_->setSizePolicy(
 		QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);
-	connect(this, SIGNAL(device_added(shared_ptr<devices::Device>)),
-		signal_tree_, SLOT(on_device_added(shared_ptr<devices::Device>)));
+	connect(this, SIGNAL(device_added(shared_ptr<devices::BaseDevice>)),
+		signal_tree_, SLOT(on_device_added(shared_ptr<devices::BaseDevice>)));
 
 	// A layout must be set to the central widget of the main window
 	// before ds_dock->setWidget() is called.

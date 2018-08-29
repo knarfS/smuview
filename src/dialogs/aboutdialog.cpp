@@ -38,8 +38,8 @@
 #include "src/util.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/data/analogsignal.hpp"
+#include "src/devices/basedevice.hpp"
 #include "src/devices/configurable.hpp"
-#include "src/devices/device.hpp"
 #include "src/devices/hardwaredevice.hpp"
 
 using std::dynamic_pointer_cast;
@@ -48,7 +48,7 @@ namespace sv {
 namespace dialogs {
 
 AboutDialog::AboutDialog(DeviceManager &device_manager,
-		shared_ptr<devices::Device> device,
+		shared_ptr<devices::BaseDevice> device,
 		QWidget *parent) :
 	QDialog(parent),
 	device_manager_(device_manager),

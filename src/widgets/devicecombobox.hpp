@@ -32,7 +32,7 @@ namespace sv {
 class Session;
 
 namespace devices {
-class Device;
+class BaseDevice;
 }
 
 namespace widgets {
@@ -44,8 +44,8 @@ class DeviceComboBox : public QComboBox
 public:
 	DeviceComboBox(const Session &session, QWidget *parent = nullptr);
 
-	void select_device(shared_ptr<devices::Device> device);
-	const shared_ptr<devices::Device> selected_device();
+	void select_device(shared_ptr<devices::BaseDevice> device);
+	const shared_ptr<devices::BaseDevice> selected_device();
 
 private:
 	void setup_ui();

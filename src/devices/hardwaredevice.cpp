@@ -35,8 +35,8 @@
 #include "src/session.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/channels/hardwarechannel.hpp"
+#include "src/devices/basedevice.hpp"
 #include "src/devices/configurable.hpp"
-#include "src/devices/device.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
 
@@ -61,7 +61,7 @@ namespace devices {
 HardwareDevice::HardwareDevice(
 		const shared_ptr<sigrok::Context> &sr_context,
 		shared_ptr<sigrok::HardwareDevice> sr_device) :
-	Device(sr_context, sr_device)
+	BaseDevice(sr_context, sr_device)
 {
 	// TODO
 	init_configurables();

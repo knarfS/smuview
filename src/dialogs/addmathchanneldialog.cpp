@@ -37,7 +37,7 @@
 #include "src/channels/multiplysfchannel.hpp"
 #include "src/channels/multiplysschannel.hpp"
 #include "src/data/analogsignal.hpp"
-#include "src/devices/device.hpp"
+#include "src/devices/basedevice.hpp"
 #include "src/widgets/channelgroupcombobox.hpp"
 #include "src/widgets/devicecombobox.hpp"
 #include "src/widgets/quantitycombobox.hpp"
@@ -54,7 +54,7 @@ namespace sv {
 namespace dialogs {
 
 AddMathChannelDialog::AddMathChannelDialog(const Session &session,
-		shared_ptr<devices::Device> device,
+		shared_ptr<devices::BaseDevice> device,
 		QWidget *parent) :
 	QDialog(parent),
 	session_(session),

@@ -28,7 +28,7 @@
 #include "src/channels/mathchannel.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/data/datautil.hpp"
-#include "src/devices/device.hpp"
+#include "src/devices/basedevice.hpp"
 
 namespace sv {
 namespace channels {
@@ -39,7 +39,7 @@ DivideChannel::DivideChannel(
 		data::Unit unit,
 		shared_ptr<data::AnalogSignal> dividend_signal,
 		shared_ptr<data::AnalogSignal> divisor_signal,
-		shared_ptr<devices::Device> parent_device,
+		shared_ptr<devices::BaseDevice> parent_device,
 		const QString channel_group_name,
 		QString channel_name,
 		double channel_start_timestamp) :

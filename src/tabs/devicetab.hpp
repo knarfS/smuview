@@ -27,7 +27,7 @@
 #include <QToolBar>
 
 #include "src/util.hpp"
-#include "src/devices/device.hpp"
+#include "src/devices/basedevice.hpp"
 #include "src/tabs/basetab.hpp"
 
 using std::shared_ptr;
@@ -46,12 +46,12 @@ private:
 
 public:
 	DeviceTab(Session &session,
-		shared_ptr<devices::Device> device, QMainWindow *parent);
+		shared_ptr<devices::BaseDevice> device, QMainWindow *parent);
 
 	virtual void clear_signals();
 
 protected:
-	shared_ptr<devices::Device> device_;
+	shared_ptr<devices::BaseDevice> device_;
 	util::TimeUnit time_unit_;
 
 private:

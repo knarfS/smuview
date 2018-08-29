@@ -39,7 +39,7 @@ class AnalogSignal;
 }
 
 namespace devices {
-class Device;
+class BaseDevice;
 }
 
 namespace channels {
@@ -55,7 +55,7 @@ public:
 		data::Unit unit,
 		shared_ptr<data::AnalogSignal> signal_1,
 		shared_ptr<data::AnalogSignal> signal_2,
-		shared_ptr<devices::Device> parent_device,
+		shared_ptr<devices::BaseDevice> parent_device,
 		const QString channel_group_name,
 		QString channel_name,
 		double channel_start_timestamp);

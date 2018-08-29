@@ -159,8 +159,8 @@ set(smuview_SOURCES
   src/data/analogsignal.cpp
   src/data/basesignal.cpp
   src/data/datautil.cpp
+  src/devices/basedevice.cpp
   src/devices/configurable.cpp
-  src/devices/device.cpp
   src/devices/hardwaredevice.cpp
   src/devices/measurementdevice.cpp
   src/devices/sourcesinkdevice.cpp

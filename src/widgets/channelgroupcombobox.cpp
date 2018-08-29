@@ -27,7 +27,7 @@
 #include "channelgroupcombobox.hpp"
 #include "src/session.hpp"
 #include "src/channels/basechannel.hpp"
-#include "src/devices/device.hpp"
+#include "src/devices/basedevice.hpp"
 
 using std::shared_ptr;
 
@@ -35,7 +35,7 @@ namespace sv {
 namespace widgets {
 
 ChannelGroupComboBox::ChannelGroupComboBox(const Session &session,
-		shared_ptr<devices::Device> device,  QWidget *parent) :
+		shared_ptr<devices::BaseDevice> device,  QWidget *parent) :
 	QComboBox(parent),
 	session_(session),
 	device_(device)
@@ -68,7 +68,7 @@ void ChannelGroupComboBox::setup_ui()
 	}
 }
 
-void ChannelGroupComboBox::change_device(shared_ptr<devices::Device> device)
+void ChannelGroupComboBox::change_device(shared_ptr<devices::BaseDevice> device)
 {
 	device_ = device;
 	for (int i = this->count(); i >= 0; --i)

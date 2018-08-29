@@ -24,11 +24,11 @@
 
 #include "devicecombobox.hpp"
 #include "src/session.hpp"
-#include "src/devices/device.hpp"
+#include "src/devices/basedevice.hpp"
 
 using std::shared_ptr;
 
-Q_DECLARE_METATYPE(shared_ptr<sv::devices::Device>)
+Q_DECLARE_METATYPE(shared_ptr<sv::devices::BaseDevice>)
 
 namespace sv {
 namespace widgets {
@@ -40,11 +40,11 @@ DeviceComboBox::DeviceComboBox(const Session &session, QWidget *parent) :
 	setup_ui();
 }
 
-void DeviceComboBox::select_device(shared_ptr<devices::Device> device)
+void DeviceComboBox::select_device(shared_ptr<devices::BaseDevice> device)
 {
 	for (int i = 0; i < this->count(); ++i) {
 		QVariant data = this->itemData(i, Qt::UserRole);
-		auto item_device = data.value<shared_ptr<devices::Device>>();
+		auto item_device = data.value<shared_ptr<devices::BaseDevice>>();
 		if (item_device == device) {
 			this->setCurrentIndex(i);
 			break;
@@ -52,10 +52,10 @@ void DeviceComboBox::select_device(shared_ptr<devices::Device> device)
 	}
 }
 
-const shared_ptr<devices::Device> DeviceComboBox::selected_device()
+const shared_ptr<devices::BaseDevice> DeviceComboBox::selected_device()
 {
 	QVariant data = this->currentData();
-	return data.value<shared_ptr<devices::Device>>();
+	return data.value<shared_ptr<devices::BaseDevice>>();
 }
 
 void DeviceComboBox::setup_ui()

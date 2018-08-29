@@ -26,7 +26,7 @@
 #include "addviewdialog.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/data/analogsignal.hpp"
-#include "src/devices/device.hpp"
+#include "src/devices/basedevice.hpp"
 #include "src/views/dataview.hpp"
 #include "src/views/plotview.hpp"
 #include "src/views/valuepanelview.hpp"
@@ -40,7 +40,7 @@ namespace sv {
 namespace dialogs {
 
 AddViewDialog::AddViewDialog(const Session &session,
-		const shared_ptr<devices::Device> device,
+		const shared_ptr<devices::BaseDevice> device,
 		int selected_view_type,
 		QWidget *parent) :
 	QDialog(parent),

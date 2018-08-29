@@ -27,7 +27,7 @@
 #include <QDebug>
 #include <QString>
 
-#include "device.hpp"
+#include "basedevice.hpp"
 #include "src/session.hpp"
 #include "src/util.hpp"
 #include "src/channels/basechannel.hpp"
@@ -49,8 +49,8 @@ using std::unique_ptr;
 namespace sv {
 namespace devices {
 
-Device::Device(const shared_ptr<sigrok::Context> &sr_context,
-		shared_ptr<sigrok::Device> sr_device):
+BaseDevice::BaseDevice(const shared_ptr<sigrok::Context> &sr_context,
+		shared_ptr<sigrok::Device> sr_device) :
 	sr_context_(sr_context),
 	sr_device_(sr_device),
 	device_open_(false),
@@ -64,23 +64,23 @@ Device::Device(const shared_ptr<sigrok::Context> &sr_context,
 	sr_session_ = sv::Session::sr_context->create_session();
 }
 
-Device::~Device()
+BaseDevice::~BaseDevice()
 {
 	if (sr_session_)
 		close();
 }
 
-shared_ptr<sigrok::Device> Device::sr_device() const
+shared_ptr<sigrok::Device> BaseDevice::sr_device() const
 {
 	return sr_device_;
 }
 
-DeviceType Device::type() const
+DeviceType BaseDevice::type() const
 {
 	return device_type_;
 }
 
-void Device::open(function<void (const QString)> error_handler)
+void BaseDevice::open(function<void (const QString)> error_handler)
 {
 	if (device_open_)
 		close();
@@ -107,12 +107,12 @@ void Device::open(function<void (const QString)> error_handler)
 
 	// Start aquisition
 	aquisition_thread_ = std::thread(
-		&Device::aquisition_thread_proc, this, error_handler);
+		&BaseDevice::aquisition_thread_proc, this, error_handler);
 
 	aquisition_state_ = aquisition_state::Running;
 }
 
-void Device::close()
+void BaseDevice::close()
 {
 	qWarning() << "Trying to close device " << full_name();
 
@@ -137,23 +137,24 @@ void Device::close()
 	device_open_ = false;
 }
 
-map<QString, shared_ptr<channels::BaseChannel>> Device::channel_name_map() const
+map<QString, shared_ptr<channels::BaseChannel>>
+	BaseDevice::channel_name_map() const
 {
 	return channel_name_map_;
 }
 
 map<QString, vector<shared_ptr<channels::BaseChannel>>>
-	Device::channel_group_name_map() const
+	BaseDevice::channel_group_name_map() const
 {
 	return channel_group_name_map_;
 }
 
-vector<shared_ptr<data::AnalogSignal>> Device::all_signals() const
+vector<shared_ptr<data::AnalogSignal>> BaseDevice::all_signals() const
 {
 	return all_signals_;
 }
 
-void Device::free_unused_memory()
+void BaseDevice::free_unused_memory()
 {
 	/* TODO
 	for (shared_ptr<data::BaseData> data : all_signal_data_) {
@@ -166,7 +167,7 @@ void Device::free_unused_memory()
 	*/
 }
 
-void Device::add_channel(shared_ptr<channels::BaseChannel> channel,
+void BaseDevice::add_channel(shared_ptr<channels::BaseChannel> channel,
 	QString channel_group_name)
 {
 	connect(this, SIGNAL(aquisition_start_timestamp_changed(double)),
@@ -184,7 +185,7 @@ void Device::add_channel(shared_ptr<channels::BaseChannel> channel,
 	Q_EMIT channel_added(channel);
 }
 
-void Device::data_feed_in(shared_ptr<sigrok::Device> sr_device,
+void BaseDevice::data_feed_in(shared_ptr<sigrok::Device> sr_device,
 	shared_ptr<sigrok::Packet> sr_packet)
 {
 	/*
@@ -264,7 +265,7 @@ void Device::data_feed_in(shared_ptr<sigrok::Device> sr_device,
 	}
 }
 
-void Device::aquisition_thread_proc(
+void BaseDevice::aquisition_thread_proc(
 	function<void (const QString)> error_handler)
 {
 	assert(error_handler);

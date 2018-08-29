@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,11 +46,11 @@ namespace sv {
 class DeviceManager;
 
 namespace data {
-class SignalBase;
+class BaseSignal;
 }
 
 namespace devices {
-class Device;
+class BaseDevice;
 }
 
 class Session : public QObject
@@ -70,19 +70,19 @@ public:
 	void save_settings(QSettings &settings) const;
 	void restore_settings(QSettings &settings);
 
-	unordered_set<shared_ptr<devices::Device>> devices() const;
-	void add_device(shared_ptr<devices::Device> device,
+	unordered_set<shared_ptr<devices::BaseDevice>> devices() const;
+	void add_device(shared_ptr<devices::BaseDevice> device,
 		function<void (const QString)> error_handler);
-	void remove_device(shared_ptr<devices::Device> device);
+	void remove_device(shared_ptr<devices::BaseDevice> device);
 
-	void add_signal(shared_ptr<data::SignalBase> signal);
+	void add_signal(shared_ptr<data::BaseSignal> signal);
 
 	void load_init_file(const string &file_name, const string &format);
 
 private:
 	DeviceManager &device_manager_;
-	unordered_set<shared_ptr<devices::Device>> devices_;
-	unordered_set<shared_ptr<data::SignalBase>> all_signals_;
+	unordered_set<shared_ptr<devices::BaseDevice>> devices_;
+	unordered_set<shared_ptr<data::BaseSignal>> all_signals_;
 
 	void free_unused_memory();
 

@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 
 #include "session.hpp"
 #include "data/basesignal.hpp"
-#include "devices/device.hpp"
+#include "devices/basedevice.hpp"
 
 using std::lock_guard;
 using std::mutex;
@@ -72,12 +72,12 @@ void Session::restore_settings(QSettings &settings)
 	// TODO: Restore all signal data from settings?
 }
 
-unordered_set<shared_ptr<devices::Device>> Session::devices() const
+unordered_set<shared_ptr<devices::BaseDevice>> Session::devices() const
 {
 	return devices_;
 }
 
-void Session::add_device(shared_ptr<devices::Device> device,
+void Session::add_device(shared_ptr<devices::BaseDevice> device,
 	function<void (const QString)> error_handler)
 {
 	assert(device);
@@ -93,7 +93,7 @@ void Session::add_device(shared_ptr<devices::Device> device,
 	devices_.insert(device);
 }
 
-void Session::remove_device(shared_ptr<devices::Device> device)
+void Session::remove_device(shared_ptr<devices::BaseDevice> device)
 {
 	if (device)
 		device->close();
@@ -102,7 +102,7 @@ void Session::remove_device(shared_ptr<devices::Device> device)
 }
 
 // TODO: signal/slot??
-void Session::add_signal(shared_ptr<data::SignalBase> signal)
+void Session::add_signal(shared_ptr<data::BaseSignal> signal)
 {
 	all_signals_.insert(signal);
 }

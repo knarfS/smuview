@@ -48,7 +48,7 @@ class Driver;
 namespace sv {
 
 namespace devices {
-class Device;
+class BaseDevice;
 class HardwareDevice;
 }
 
@@ -75,14 +75,14 @@ public:
 		map<const sigrok::ConfigKey *, Glib::VariantBase> drvopts);
 
 	const map<string, string> get_device_info(
-		const shared_ptr<devices::Device> device);
+		const shared_ptr<devices::BaseDevice> device);
 
 	const shared_ptr<devices::HardwareDevice> find_device_from_info(
 		const map<string, string> search_info);
 
 private:
-	bool compare_devices(shared_ptr<devices::Device> a,
-		shared_ptr<devices::Device> b);
+	bool compare_devices(shared_ptr<devices::BaseDevice> a,
+		shared_ptr<devices::BaseDevice> b);
 
 	static map<const sigrok::ConfigKey *, Glib::VariantBase>
 	driver_scan_options(vector<string> user_spec,

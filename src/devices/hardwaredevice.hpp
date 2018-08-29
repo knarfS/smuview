@@ -31,7 +31,7 @@
 #include <QString>
 #include <QStringList>
 
-#include "device.hpp"
+#include "src/devices/basedevice.hpp"
 
 using std::bad_alloc;
 using std::dynamic_pointer_cast;
@@ -76,7 +76,7 @@ namespace devices {
 
 class Configurable;
 
-class HardwareDevice : public Device
+class HardwareDevice : public BaseDevice
 {
 	Q_OBJECT
 

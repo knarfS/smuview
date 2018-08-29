@@ -134,7 +134,7 @@ void SourceSinkDevice::init_channels()
 			power_channel->init_signal();
 			power_signal = static_pointer_cast<data::AnalogSignal>(
 				power_channel->actual_signal());
-			Device::add_channel(power_channel, chg_name);
+			BaseDevice::add_channel(power_channel, chg_name);
 		}
 
 		// Create resistance channel
@@ -148,7 +148,7 @@ void SourceSinkDevice::init_channels()
 					shared_from_this(), chg_name, tr("R"),
 					aquisition_start_timestamp_);
 			resistance_channel->init_signal();
-			Device::add_channel(resistance_channel, chg_name);
+			BaseDevice::add_channel(resistance_channel, chg_name);
 		}
 
 		// Create Wh channel
@@ -162,7 +162,7 @@ void SourceSinkDevice::init_channels()
 					shared_from_this(), chg_name, tr("Wh"),
 					aquisition_start_timestamp_);
 			wh_channel->init_signal();
-			Device::add_channel(wh_channel, chg_name);
+			BaseDevice::add_channel(wh_channel, chg_name);
 		}
 
 		// Create Ah channel
@@ -176,7 +176,7 @@ void SourceSinkDevice::init_channels()
 					shared_from_this(), chg_name, tr("Ah"),
 					aquisition_start_timestamp_);
 			ah_channel->init_signal();
-			Device::add_channel(ah_channel, chg_name);
+			BaseDevice::add_channel(ah_channel, chg_name);
 		}
 	}
 }

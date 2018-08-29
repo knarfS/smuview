@@ -34,7 +34,7 @@
 #include "src/data/analogsignal.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
-#include "src/devices/device.hpp"
+#include "src/devices/basedevice.hpp"
 #include "src/devices/hardwaredevice.hpp"
 #include "src/widgets/signaltree.hpp"
 

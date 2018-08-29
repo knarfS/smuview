@@ -27,7 +27,7 @@
 #include "signaltree.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/data/basesignal.hpp"
-#include "src/devices/device.hpp"
+#include "src/devices/basedevice.hpp"
 
 using std::dynamic_pointer_cast;
 using std::make_pair;
@@ -42,7 +42,7 @@ namespace widgets {
 
 SignalTree::SignalTree(const Session &session,
 		bool show_signals, bool selectable, bool multiselect,
-		shared_ptr<devices::Device> selected_device,
+		shared_ptr<devices::BaseDevice> selected_device,
 		QWidget *parent) :
 	QTreeWidget(parent),
 	session_(session),
@@ -92,7 +92,7 @@ void SignalTree::setup_ui()
 	if (multiselect_)
 		this->setSelectionMode(QTreeView::MultiSelection);
 
-	unordered_set<shared_ptr<devices::Device>> devices;
+	unordered_set<shared_ptr<devices::BaseDevice>> devices;
 	if (!selected_device_ && &session_)
 		devices = session_.devices();
 	else if (selected_device_)
@@ -122,7 +122,7 @@ void SignalTree::setup_ui()
 	this->resizeColumnToContents(1);
 }
 
-void SignalTree::add_device(shared_ptr<devices::Device> device,
+void SignalTree::add_device(shared_ptr<devices::BaseDevice> device,
 	bool expanded)
 {
 	QTreeWidgetItem *device_item = new QTreeWidgetItem();
@@ -257,7 +257,7 @@ QTreeWidgetItem *SignalTree::find_item(QTreeWidgetItem *parent, QString name)
 	return NULL;
 }
 
-void SignalTree::on_device_added(shared_ptr<devices::Device> device)
+void SignalTree::on_device_added(shared_ptr<devices::BaseDevice> device)
 {
 	add_device(device, true);
 }

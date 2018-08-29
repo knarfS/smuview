@@ -40,7 +40,7 @@ class BaseSignal;
 }
 
 namespace devices {
-class Device;
+class BaseDevice;
 }
 
 namespace widgets {
@@ -52,7 +52,7 @@ class SignalTree : public QTreeWidget
 public:
 	SignalTree(const Session &session,
 		bool show_signals, bool selectable, bool multiselect,
-		shared_ptr<devices::Device> selected_device,
+		shared_ptr<devices::BaseDevice> selected_device,
 		QWidget *parent = nullptr);
 
 	vector<shared_ptr<channels::BaseChannel>> selected_channels();
@@ -61,7 +61,7 @@ public:
 private:
 	void setup_ui();
 
-	void add_device(shared_ptr<devices::Device> device, bool expanded);
+	void add_device(shared_ptr<devices::BaseDevice> device, bool expanded);
 	void add_channel(shared_ptr<channels::BaseChannel> channel,
 		QString channel_group_name, bool expanded, QTreeWidgetItem *parent);
 	void add_signal(shared_ptr<data::BaseSignal> signal,
@@ -74,17 +74,17 @@ private:
 	QTreeWidgetItem *find_item(QTreeWidgetItem *parent, QString name);
 
 	const Session &session_;
-	shared_ptr<devices::Device> selected_device_;
+	shared_ptr<devices::BaseDevice> selected_device_;
 
 	bool show_signals_;
 	bool selectable_;
 	bool multiselect_;
 
-	map<shared_ptr<devices::Device>, QTreeWidgetItem *> device_map_;
+	map<shared_ptr<devices::BaseDevice>, QTreeWidgetItem *> device_map_;
 	map<shared_ptr<channels::BaseChannel>, QTreeWidgetItem *> channel_map_;
 
 public Q_SLOTS:
-	void on_device_added(shared_ptr<devices::Device> device);
+	void on_device_added(shared_ptr<devices::BaseDevice> device);
 	void on_device_removed();
 
 private Q_SLOTS:

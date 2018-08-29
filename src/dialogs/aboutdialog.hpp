@@ -30,7 +30,7 @@
 namespace sv {
 
 namespace devices {
-class Device;
+class BaseDevice;
 }
 
 namespace dialogs {
@@ -41,7 +41,7 @@ class AboutDialog : public QDialog
 
 public:
 	AboutDialog(DeviceManager &device_manager,
-		shared_ptr<devices::Device> device,
+		shared_ptr<devices::BaseDevice> device,
 		QWidget *parent = nullptr);
 
 private:
@@ -50,7 +50,7 @@ private:
 	QWidget *get_device_page(QWidget *parent) const;
 
 	DeviceManager &device_manager_;
-	shared_ptr<devices::Device> device_;
+	shared_ptr<devices::BaseDevice> device_;
 
 	QListWidget *page_list;
 	QStackedWidget *pages;

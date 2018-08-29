@@ -38,7 +38,7 @@ class BaseSignal;
 }
 
 namespace devices {
-class Device;
+class BaseDevice;
 }
 
 namespace widgets {
@@ -53,7 +53,7 @@ class SelectSignalDialog : public QDialog
 
 public:
 	SelectSignalDialog(const Session &session,
-		const shared_ptr<devices::Device> device,
+		const shared_ptr<devices::BaseDevice> device,
 		QWidget *parent = nullptr);
 
 	vector<shared_ptr<data::BaseSignal>> signals();
@@ -62,7 +62,7 @@ private:
 	void setup_ui();
 
 	const Session &session_;
-	const shared_ptr<devices::Device> device_;
+	const shared_ptr<devices::BaseDevice> device_;
 	vector<shared_ptr<data::BaseSignal>> signals_;
 
 	widgets::SignalTree *signal_tree_;

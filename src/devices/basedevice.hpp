@@ -18,8 +18,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DEVICES_DEVICE_HPP
-#define DEVICES_DEVICE_HPP
+#ifndef DEVICES_BASEDEVICE_HPP
+#define DEVICES_BASEDEVICE_HPP
 
 #include <functional>
 #include <memory>
@@ -73,16 +73,16 @@ enum class DeviceType {
 	Unknown
 };
 
-class Device :
+class BaseDevice :
 	public QObject,
-	public std::enable_shared_from_this<Device>
+	public std::enable_shared_from_this<BaseDevice>
 {
 	Q_OBJECT
 
 public:
-	Device(const shared_ptr<sigrok::Context> &sr_context,
+	BaseDevice(const shared_ptr<sigrok::Context> &sr_context,
 		shared_ptr<sigrok::Device> sr_device);
-	~Device();
+	~BaseDevice();
 
 	enum aquisition_state {
 		Stopped,
@@ -194,4 +194,4 @@ Q_SIGNALS:
 } // namespace devices
 } // namespace sv
 
-#endif // DEVICES_DEVICE_HPP
+#endif // DEVICES_BASEDEVICE_HPP

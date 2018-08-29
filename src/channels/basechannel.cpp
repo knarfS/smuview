@@ -30,7 +30,7 @@
 #include "src/channels/basechannel.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
-#include "src/devices/device.hpp"
+#include "src/devices/basedevice.hpp"
 
 using std::make_pair;
 using std::make_shared;
@@ -39,7 +39,7 @@ namespace sv {
 namespace channels {
 
 BaseChannel::BaseChannel(
-		shared_ptr<devices::Device> parent_device,
+		shared_ptr<devices::BaseDevice> parent_device,
 		const QString channel_group_name,
 		double channel_start_timestamp) :
 	channel_start_timestamp_(channel_start_timestamp),
@@ -78,7 +78,7 @@ map<BaseChannel::quantity_t, shared_ptr<data::BaseSignal>> BaseChannel::signal_m
 	return signal_map_;
 }
 
-shared_ptr<devices::Device> BaseChannel::parent_device()
+shared_ptr<devices::BaseDevice> BaseChannel::parent_device()
 {
 	return parent_device_;
 }

@@ -32,7 +32,7 @@
 #include "selectsignaldialog.hpp"
 #include "src/session.hpp"
 #include "src/data/basesignal.hpp"
-#include "src/devices/device.hpp"
+#include "src/devices/basedevice.hpp"
 #include "src/widgets/signaltree.hpp"
 
 using std::shared_ptr;
@@ -42,7 +42,7 @@ namespace sv {
 namespace dialogs {
 
 SelectSignalDialog::SelectSignalDialog(const Session &session,
-		const shared_ptr<devices::Device> device,
+		const shared_ptr<devices::BaseDevice> device,
 		QWidget *parent) :
 	QDialog(parent),
 	session_(session),

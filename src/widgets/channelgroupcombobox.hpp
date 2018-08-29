@@ -33,7 +33,7 @@ namespace sv {
 class Session;
 
 namespace devices {
-class Device;
+class BaseDevice;
 }
 
 namespace widgets {
@@ -44,7 +44,7 @@ class ChannelGroupComboBox : public QComboBox
 
 public:
 	ChannelGroupComboBox(const Session &session,
-		shared_ptr<devices::Device> device, QWidget *parent = nullptr);
+		shared_ptr<devices::BaseDevice> device, QWidget *parent = nullptr);
 
 	void select_channel_group(QString channel_group);
 	const QString selected_channel_group();
@@ -53,10 +53,10 @@ private:
 	void setup_ui();
 
 	const Session &session_;
-	shared_ptr<devices::Device> device_;
+	shared_ptr<devices::BaseDevice> device_;
 
 public Q_SLOTS:
-	void change_device(shared_ptr<devices::Device> device);
+	void change_device(shared_ptr<devices::BaseDevice> device);
 
 };
 

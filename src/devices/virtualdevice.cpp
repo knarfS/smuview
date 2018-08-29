@@ -26,9 +26,9 @@
 #include "virtualdevice.hpp"
 #include "src/session.hpp"
 #include "src/channels/basechannel.hpp"
-#include "src/devices/device.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
+#include "src/devices/basedevice.hpp"
 
 using std::static_pointer_cast;
 
@@ -38,7 +38,7 @@ namespace devices {
 VirtualDevice::VirtualDevice(
 		const shared_ptr<sigrok::Context> &sr_context,
 		QString vendor, QString model, QString version) :
-	Device(sr_context, nullptr),
+	BaseDevice(sr_context, nullptr),
 	vendor_(vendor),
 	model_(model),
 	version_(version),
@@ -145,7 +145,7 @@ void VirtualDevice::add_channel(shared_ptr<channels::BaseChannel> channel,
 	sr_user_device->add_channel(
 		channel_index_, sigrok::ChannelType::ANALOG, name().toStdString());
 	channel_index_++;
-	Device::add_channel(channel, channel_group_name);
+	BaseDevice::add_channel(channel, channel_group_name);
 }
 
 void VirtualDevice::init_channels()

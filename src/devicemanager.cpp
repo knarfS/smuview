@@ -34,6 +34,7 @@
 
 #include "devicemanager.hpp"
 #include "src/util.hpp"
+#include "src/devices/basedevice.hpp"
 #include "src/devices/hardwaredevice.hpp"
 #include "src/devices/measurementdevice.hpp"
 #include "src/devices/sourcesinkdevice.hpp"
@@ -275,7 +276,7 @@ DeviceManager::driver_scan(
 }
 
 const map<string, string> DeviceManager::get_device_info(
-	shared_ptr<devices::Device> device)
+	shared_ptr<devices::BaseDevice> device)
 {
 	map<string, string> result;
 
@@ -347,8 +348,8 @@ const shared_ptr<devices::HardwareDevice> DeviceManager::find_device_from_info(
 	return last_resort_dev;
 }
 
-bool DeviceManager::compare_devices(shared_ptr<devices::Device> a,
-	shared_ptr<devices::Device> b)
+bool DeviceManager::compare_devices(shared_ptr<devices::BaseDevice> a,
+	shared_ptr<devices::BaseDevice> b)
 {
 	assert(a);
 	assert(b);

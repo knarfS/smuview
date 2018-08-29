@@ -25,7 +25,7 @@
 #include <QObject>
 #include <QString>
 
-#include "device.hpp"
+#include "src/devices/basedevice.hpp"
 
 using std::shared_ptr;
 
@@ -37,7 +37,7 @@ namespace sv {
 
 namespace devices {
 
-class VirtualDevice : public Device
+class VirtualDevice : public BaseDevice
 {
 	Q_OBJECT
 

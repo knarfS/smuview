@@ -46,7 +46,7 @@ class BaseSignal;
 }
 
 namespace devices {
-class Device;
+class BaseDevice;
 }
 
 namespace channels {
@@ -70,7 +70,7 @@ class BaseChannel :
 
 public:
 	BaseChannel(
-		shared_ptr<devices::Device> parent_device,
+		shared_ptr<devices::BaseDevice> parent_device,
 		const QString channel_group_name, // TODO: replace with ? object?
 		double channel_start_timestamp);
 	virtual ~BaseChannel();
@@ -124,7 +124,7 @@ public:
 	/**
 	 * Returns the device, this channel belongs to.
 	 */
-	shared_ptr<devices::Device> parent_device();
+	shared_ptr<devices::BaseDevice> parent_device();
 
 	/**
 	 * Get the channel group name, the channel is in. Returns "" if the channel
@@ -183,7 +183,7 @@ protected:
 	shared_ptr<data::BaseSignal> actual_signal_;
 	map<quantity_t, shared_ptr<data::BaseSignal>> signal_map_;
 
-	shared_ptr<devices::Device> parent_device_;
+	shared_ptr<devices::BaseDevice> parent_device_;
 	const QString channel_group_name_; // TODO: better way?
 	QString name_;
 	QColor colour_;

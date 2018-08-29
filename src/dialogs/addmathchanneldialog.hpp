@@ -35,7 +35,7 @@ using std::vector;
 namespace sv {
 
 namespace devices {
-class Device;
+class BaseDevice;
 }
 
 namespace channels {
@@ -59,7 +59,7 @@ class AddMathChannelDialog : public QDialog
 
 public:
 	AddMathChannelDialog(const Session &session,
-		shared_ptr<devices::Device> device,
+		shared_ptr<devices::BaseDevice> device,
 		QWidget *parent = nullptr);
 
 	vector<shared_ptr<channels::BaseChannel>> channels();
@@ -73,7 +73,7 @@ private:
 	void setup_ui_integrate_signal_tab();
 
 	const Session &session_;
-	shared_ptr<devices::Device> device_;
+	shared_ptr<devices::BaseDevice> device_;
 	vector<shared_ptr<channels::BaseChannel>> channels_;
 
 	QTabWidget *tab_widget_;

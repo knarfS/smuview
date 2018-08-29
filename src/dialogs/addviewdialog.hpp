@@ -34,7 +34,7 @@ using std::vector;
 namespace sv {
 
 namespace devices {
-class Device;
+class BaseDevice;
 }
 
 namespace views {
@@ -53,7 +53,7 @@ class AddViewDialog : public QDialog
 
 public:
 	AddViewDialog(const Session &session,
-		const shared_ptr<devices::Device> device,
+		const shared_ptr<devices::BaseDevice> device,
 		int selected_view_type,
 		QWidget *parent = nullptr);
 
@@ -68,7 +68,7 @@ private:
 	void setup_ui_table_tab();
 
 	const Session &session_;
-	const shared_ptr<devices::Device> device_;
+	const shared_ptr<devices::BaseDevice> device_;
 	int selected_view_type_; // TODO
 	vector<views::BaseView *> views_;
 

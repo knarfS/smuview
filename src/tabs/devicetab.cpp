@@ -24,7 +24,7 @@
 #include "src/channels/basechannel.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
-#include "src/devices/device.hpp"
+#include "src/devices/basedevice.hpp"
 #include "src/dialogs/addmathchanneldialog.hpp"
 #include "src/dialogs/addviewdialog.hpp"
 #include "src/dialogs/aboutdialog.hpp"
@@ -34,7 +34,7 @@ namespace sv {
 namespace tabs {
 
 DeviceTab::DeviceTab(Session &session,
-		shared_ptr<devices::Device> device, QMainWindow *parent) :
+		shared_ptr<devices::BaseDevice> device, QMainWindow *parent) :
 	BaseTab(session, parent),
 	device_(device),
 	action_open_(new QAction(this)),
@@ -146,7 +146,7 @@ void DeviceTab::on_action_save_as_triggered()
 
 void DeviceTab::on_action_add_control_view_triggered()
 {
-	shared_ptr<devices::Device> d = nullptr;
+	shared_ptr<devices::BaseDevice> d = nullptr;
 	if (device_->type() != devices::DeviceType::VirtualDevice)
 		d = device_;
 
@@ -159,7 +159,7 @@ void DeviceTab::on_action_add_control_view_triggered()
 
 void DeviceTab::on_action_add_panel_view_triggered()
 {
-	shared_ptr<devices::Device> d = nullptr;
+	shared_ptr<devices::BaseDevice> d = nullptr;
 	if (device_->type() != devices::DeviceType::VirtualDevice)
 		d = device_;
 
@@ -172,7 +172,7 @@ void DeviceTab::on_action_add_panel_view_triggered()
 
 void DeviceTab::on_action_add_plot_view_triggered()
 {
-	shared_ptr<devices::Device> d = nullptr;
+	shared_ptr<devices::BaseDevice> d = nullptr;
 	if (device_->type() != devices::DeviceType::VirtualDevice)
 		d = device_;
 
@@ -185,7 +185,7 @@ void DeviceTab::on_action_add_plot_view_triggered()
 
 void DeviceTab::on_action_add_math_channel_triggered()
 {
-	shared_ptr<devices::Device> d = nullptr;
+	shared_ptr<devices::BaseDevice> d = nullptr;
 	if (device_->type() != devices::DeviceType::VirtualDevice)
 		d = device_;
 
