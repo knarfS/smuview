@@ -17,64 +17,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UI_PROCESSING_PROCESSTHREADWIDGET_HPP
-#define UI_PROCESSING_PROCESSTHREADWIDGET_HPP
+#ifndef UI_PROCESSING_ITEMS_STEPITEM_HPP
+#define UI_PROCESSING_ITEMS_STEPITEM_HPP
 
-#include <memory>
-
-#include <QAction>
-#include <QCheckBox>
-#include <QLineEdit>
 #include <QListWidget>
-#include <QMainWindow>
-#include <QString>
-#include <QToolBar>
-
-using std::shared_ptr;
+#include <QListWidgetItem>
 
 namespace sv {
-
-class Session;
-
-namespace processing {
-class Processor;
-}
-
 namespace ui {
 namespace processing {
+namespace items {
 
-class ProcessThreadWidget : public QMainWindow
+class StepItem : public QListWidgetItem
 {
-	Q_OBJECT
 
 public:
-	ProcessThreadWidget(shared_ptr<Session> session, QString name,
-		shared_ptr<sv::processing::Processor> processor,
-		QWidget *parent = nullptr);
+	StepItem(QListWidget *parent = nullptr);
 
 private:
-	shared_ptr<Session> session_;
-	QString name_;
-	shared_ptr<sv::processing::Processor> processor_;
-
-	QAction *const action_add_block_;
-	QToolBar *toolbar_;
-	QLineEdit *name_edit_;
-	QCheckBox *run_at_startup_checkbox_;
-	QListWidget *process_block_list_;
-
-	void setup_ui();
-	void setup_toolbar();
-
-
-private Q_SLOTS:
-	void on_action_add_block_triggered();
 
 };
 
+} // namespace items
 } // namespace processing
 } // namespace ui
 } // namespace sv
 
-#endif // UI_PROCESSING_PROCESSTHREADWIDGET_HPP
-
+#endif // UI_PROCESSING_ITEMS_STEPITEM_HPP

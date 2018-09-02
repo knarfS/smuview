@@ -300,7 +300,7 @@ void MainWindow::setup_ui()
 
 	// Processing Dock
 	/*
-	processing_widget_ = new ui::processing::ProcessingWidget();
+	processing_widget_ = new ui::processing::ProcessingWidget(session_);
 
 	QDockWidget* proc_dock = new QDockWidget(tr("Processing"));
 	proc_dock->setAllowedAreas(Qt::AllDockWidgetAreas);

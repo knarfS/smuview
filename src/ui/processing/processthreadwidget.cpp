@@ -17,21 +17,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <libsigrokcxx/libsigrokcxx.hpp>
+
+#include <QDebug>
 #include <QFormLayout>
 #include <QVBoxLayout>
 #include <QWidget>
 
 #include "processthreadwidget.hpp"
-#include "src/ui/processing/blocks/sequencesinblock.hpp"
+#include "src/session.hpp"
+#include "src/devices/basedevice.hpp"
+#include "src/devices/configurable.hpp"
+#include "src/devices/hardwaredevice.hpp"
+#include "src/processing/processor.hpp"
+#include "src/processing/stepblock.hpp"
+#include "src/ui/processing/dialogs/stepblockdialog.hpp"
+#include "src/ui/processing/items/sequencesinitem.hpp"
+#include "src/ui/processing/items/stepitem.hpp"
+
+using std::dynamic_pointer_cast;
+using std::make_shared;
+using std::unordered_set;
 
 namespace sv {
 namespace ui {
 namespace processing {
 
-ProcessThreadWidget::ProcessThreadWidget(QString name,
+ProcessThreadWidget::ProcessThreadWidget(shared_ptr<Session> session,
+		QString name, shared_ptr<sv::processing::Processor> processor,
 		QWidget *parent) :
 	QMainWindow(parent),
+	session_(session),
 	name_(name),
+	processor_(processor),
 	action_add_block_(new QAction(this))
 {
 	setup_ui();
@@ -78,10 +96,39 @@ void ProcessThreadWidget::setup_toolbar()
 
 void ProcessThreadWidget::on_action_add_block_triggered()
 {
-	ui::processing::blocks::SequenceSinBlock *block =
-		new ui::processing::blocks::SequenceSinBlock();
 
-	process_block_list_->addItem(block);
+	dialogs::StepBlockDialog dlg(session_, nullptr);
+	dlg.exec();
+
+	/*
+	for (auto signal : dlg.signals())
+		add_time_curve(dynamic_pointer_cast<data::AnalogSignal>(signal));
+	*/
+
+	/*
+	ui::processing::items::StepItem *item =
+		new ui::processing::items::StepItem();
+	process_block_list_->addItem(item);
+
+	// DEMO: Get some device
+	unordered_set<shared_ptr<devices::BaseDevice>> devices =
+		session_->devices();
+	for (auto device : devices) {
+		if (auto hw_device = dynamic_pointer_cast<devices::HardwareDevice>(device)) {
+			// DEMO: Get some configurabel
+			for (auto configurable : hw_device->configurables()) {
+				shared_ptr<sv::processing::StepBlock> block =
+					make_shared<sv::processing::StepBlock>();
+				block->set_configurable(configurable);
+				block->set_config_key(sigrok::ConfigKey::AMPLITUDE);
+				processor_->add_block_to_process(block);
+
+				break;
+			}
+			break;
+		}
+	}
+	*/
 }
 
 } // namespace processing

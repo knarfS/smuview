@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UI_PROCESSING_BLOCKS_SEQUENCESINBLOCK_HPP
-#define UI_PROCESSING_BLOCKS_SEQUENCESINBLOCK_HPP
+#ifndef UI_PROCESSING_ITEMS_SEQUENCESINITEM_HPP
+#define UI_PROCESSING_ITEMS_SEQUENCESINITEM_HPP
 
 #include <QListWidget>
 #include <QListWidgetItem>
@@ -26,21 +26,21 @@
 namespace sv {
 namespace ui {
 namespace processing {
-namespace blocks {
+namespace items {
 
-class SequenceSinBlock : public QListWidgetItem
+class SequenceSinItem : public QListWidgetItem
 {
 
 public:
-	SequenceSinBlock(QListWidget *parent = nullptr);
+	SequenceSinItem(QListWidget *parent = nullptr);
 
 private:
 
 };
 
-} // namespace blocks
+} // namespace items
 } // namespace processing
 } // namespace ui
 } // namespace sv
 
-#endif // UI_PROCESSING_BLOCKS_SEQUENCESINBLOCK_HPP
+#endif // UI_PROCESSING_ITEMS_SEQUENCESINITEM_HPP

@@ -19,22 +19,22 @@
 
 #include <QString>
 
-#include "sequencesinblock.hpp"
+#include "stepitem.hpp"
 
 namespace sv {
 namespace ui {
 namespace processing {
-namespace blocks {
+namespace items {
 
-SequenceSinBlock::SequenceSinBlock(
+StepItem::StepItem(
 		QListWidget *parent) :
 	QListWidgetItem(parent)
 {
-	this->setText("Sinus Sequence");
+	this->setText("Step Sequence");
 	this->setIcon(QIcon(":/icons/settings-views"));
 }
 
-} // namespace blocks
+} // namespace items
 } // namespace processing
 } // namespace ui
 } // namespace sv

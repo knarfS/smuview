@@ -17,19 +17,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QDebug>
 #include <QInputDialog>
+#include <QMessageBox>
 #include <QString>
 
 #include "processingwidget.hpp"
+#include "src/session.hpp"
+#include "src/processing/processor.hpp"
 #include "src/ui/processing/processthreadwidget.hpp"
+
+using std::make_shared;
 
 namespace sv {
 namespace ui {
 namespace processing {
 
-ProcessingWidget::ProcessingWidget(
+ProcessingWidget::ProcessingWidget(shared_ptr<Session> session,
 		QWidget *parent) :
 	QMainWindow(parent),
+	session_(session),
 	thread_count_(0),
 	action_start_process_(new QAction(this)),
 	action_pause_process_(new QAction(this)),
@@ -37,21 +44,25 @@ ProcessingWidget::ProcessingWidget(
 	action_add_thread_(new QAction(this)),
 	action_save_process_(new QAction(this))
 {
+	processor_ = make_shared<sv::processing::Processor>();
+
 	setup_ui();
 	setup_toolbar();
 }
 
 void ProcessingWidget::setup_ui()
 {
-	process_tab_widget_ = new QTabWidget();
+	//process_tab_widget_ = new QTabWidget();
+	thread_toolbox_ = new QToolBox();
 
-	// Add main process tab
 	thread_count_++;
 	ui::processing::ProcessThreadWidget *main_thread =
-		new ui::processing::ProcessThreadWidget("main");
-	process_tab_widget_->addTab(main_thread, "main");
+		new ui::processing::ProcessThreadWidget(session_, "main", processor_);
+	//process_tab_widget_->addTab(main_thread, "main");
+	thread_toolbox_->addItem(main_thread, "main");
 
-	this->setCentralWidget(process_tab_widget_);
+	//this->setCentralWidget(process_tab_widget_);
+	this->setCentralWidget(thread_toolbox_);
 }
 
 void ProcessingWidget::setup_toolbar()
@@ -113,6 +124,10 @@ void ProcessingWidget::on_action_start_process_triggered()
 	action_pause_process_->setChecked(false);
 	action_stop_process_->setChecked(false);
 
+	processor_->start([&](QString message) {
+		processing_error(tr("Processing failed"), message);
+	});
+
 	action_start_process_->setChecked(true);
 }
 
@@ -121,6 +136,8 @@ void ProcessingWidget::on_action_pause_process_triggered()
 	action_start_process_->setChecked(false);
 	action_stop_process_->setChecked(false);
 
+	processor_->pause();
+
 	action_pause_process_->setChecked(true);
 }
 
@@ -128,6 +145,8 @@ void ProcessingWidget::on_action_stop_process_triggered()
 {
 	action_start_process_->setChecked(false);
 	action_pause_process_->setChecked(false);
+
+	processor_->stop();
 
 	action_stop_process_->setChecked(true);
 }
@@ -144,13 +163,33 @@ void ProcessingWidget::on_action_add_thread_triggered()
 	if (ok && !name.isEmpty()) {
 		thread_count_++;
 		ui::processing::ProcessThreadWidget *sub_thread =
-			new ui::processing::ProcessThreadWidget(name);
-		process_tab_widget_->addTab(sub_thread, name);
+			new ui::processing::ProcessThreadWidget(session_, name, processor_);
+		//process_tab_widget_->addTab(sub_thread, name);
+		thread_toolbox_->addItem(sub_thread, name);
 	}
 }
 
 void ProcessingWidget::on_action_save_process_triggered()
 {
+}
+
+void ProcessingWidget::processing_error(
+	const QString text, const QString info_text)
+{
+	QMetaObject::invokeMethod(this, "show_processing_error",
+		Qt::QueuedConnection, Q_ARG(QString, text),
+		Q_ARG(QString, info_text));
+}
+
+void ProcessingWidget::show_processing_error(
+	const QString text, const QString info_text)
+{
+	QMessageBox msg(this);
+	msg.setText(text);
+	msg.setInformativeText(info_text);
+	msg.setStandardButtons(QMessageBox::Ok);
+	msg.setIcon(QMessageBox::Warning);
+	msg.exec();
 }
 
 } // namespace processing

@@ -20,12 +20,24 @@
 #ifndef UI_PROCESSING_PROCESSINGWIDGET_HPP
 #define UI_PROCESSING_PROCESSINGWIDGET_HPP
 
+#include <memory>
+
 #include <QAction>
 #include <QMainWindow>
 #include <QTabWidget>
 #include <QToolBar>
+#include <QToolBox>
+
+using std::shared_ptr;
 
 namespace sv {
+
+class Session;
+
+namespace processing {
+class Processor;
+}
+
 namespace ui {
 namespace processing {
 
@@ -36,9 +48,11 @@ class ProcessingWidget : public QMainWindow
 	Q_OBJECT
 
 public:
-	ProcessingWidget(QWidget *parent = nullptr);
+	ProcessingWidget(shared_ptr<Session> session, QWidget *parent = nullptr);
 
 private:
+	shared_ptr<Session> session_;
+	shared_ptr<sv::processing::Processor> processor_;
 	uint thread_count_;
 
 	QAction *const action_start_process_;
@@ -47,10 +61,12 @@ private:
 	QAction *const action_add_thread_;
 	QAction *const action_save_process_;
 	QToolBar *toolbar_;
-	QTabWidget *process_tab_widget_;
+	//QTabWidget *process_tab_widget_;
+	QToolBox *thread_toolbox_;
 
 	void setup_ui();
 	void setup_toolbar();
+	void processing_error(const QString text, const QString info_text);
 
 private Q_SLOTS:
 	void on_action_start_process_triggered();
@@ -58,6 +74,7 @@ private Q_SLOTS:
 	void on_action_stop_process_triggered();
 	void on_action_add_thread_triggered();
 	void on_action_save_process_triggered();
+	void show_processing_error(const QString text, const QString info_text);
 
 };
 

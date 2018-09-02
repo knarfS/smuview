@@ -170,6 +170,10 @@ set(smuview_SOURCES
   src/devices/properties/measuredquantityproperty.cpp
   src/devices/properties/stringproperty.cpp
   src/devices/properties/uint64property.cpp
+  src/processing/baseblock.cpp
+  src/processing/processor.cpp
+  src/processing/sequenceblock.cpp
+  src/processing/stepblock.cpp
 
   src/ui/data/quantitycombobox.cpp
   src/ui/data/quantityflagslist.cpp
@@ -209,7 +213,9 @@ set(smuview_SOURCES
   src/ui/dialogs/selectsignaldialog.cpp
   src/ui/processing/processingwidget.cpp
   src/ui/processing/processthreadwidget.cpp
-  src/ui/processing/blocks/sequencesinblock.cpp
+  src/ui/processing/dialogs/stepblockdialog.cpp
+  src/ui/processing/items/sequencesinitem.cpp
+  src/ui/processing/items/stepitem.cpp
   src/ui/tabs/basetab.cpp
   src/ui/tabs/devicetab.cpp
   src/ui/tabs/measurementtab.cpp
