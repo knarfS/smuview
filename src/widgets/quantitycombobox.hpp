@@ -26,7 +26,6 @@
 #include "src/data/datautil.hpp"
 
 namespace sv {
-
 namespace widgets {
 
 class QuantityComboBox : public QComboBox
