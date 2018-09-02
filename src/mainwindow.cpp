@@ -65,6 +65,7 @@ MainWindow::MainWindow(DeviceManager &device_manager, QWidget *parent) :
 	qRegisterMetaType<uint64_t>("uint64_t");
 	qRegisterMetaType<shared_ptr<data::BaseSignal>>("shared_ptr<data::BaseSignal>");
 
+	init_session();
     setup_ui();
 	connect_signals();
 }
@@ -80,8 +81,6 @@ void MainWindow::init_session()
 
 void MainWindow::init_default_session()
 {
-	init_session();
-
 	// Display a "UserTab" if no "DeviceTab"s have been opend. This is because
 	// without a tab in the QTabWidget the tab tool bar (CornerWidget) doesn't
 	// show up. Collapsing the tool bar to 0 is prevented in the cose_tab()
@@ -98,8 +97,6 @@ void MainWindow::init_default_session()
 void MainWindow::init_session_with_file(
 	string open_file_name, string open_file_format)
 {
-	init_session();
-
 	open_file_name = open_file_name;
 	open_file_format = open_file_format;
 	// TODO
@@ -330,7 +327,8 @@ void MainWindow::connect_signals()
 
 void MainWindow::retranslate_ui()
 {
-	this->setWindowTitle(QApplication::translate("SmuView", "SmuView", Q_NULLPTR));
+	this->setWindowTitle(
+		QApplication::translate("SmuView", "SmuView", Q_NULLPTR));
 }
 
 void MainWindow::session_error(const QString text, const QString info_text)
