@@ -291,6 +291,7 @@ void HardwareDevice::feed_in_trigger()
 
 void HardwareDevice::feed_in_frame_begin()
 {
+	// TODO: use std::chrono / std::time
 	frame_start_timestamp_ = QDateTime::currentMSecsSinceEpoch() / (double)1000;
 	frame_began_ = true;
 }
