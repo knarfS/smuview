@@ -192,6 +192,8 @@ set(smuview_SOURCES
   src/views/valuepanelview.cpp
   src/widgets/channelgroupcombobox.cpp
   src/widgets/colorbutton.cpp
+  src/widgets/configkeycombobox.cpp
+  src/widgets/configurablecombobox.cpp
   src/widgets/controlbutton.cpp
   src/widgets/devicecombobox.cpp
   src/widgets/lcddisplay.cpp
