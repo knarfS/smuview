@@ -596,6 +596,7 @@ quantity_flag_name_map_t get_quantity_flag_name_map();
  */
 unit_name_map_t get_unit_name_map();
 
+
 /**
  * Returns the corresponding Quantity for a sigrok Quantity
  *
@@ -631,6 +632,7 @@ uint32_t get_sr_quantity_id(Quantity quantity);
  * @return true if it is a known sigrok quantity
  */
 bool is_valid_sr_quantity(data::Quantity quantity);
+
 
 /**
  * Returns the corresponding QunatityFlag for a sigrok QuantityFlag
@@ -680,6 +682,7 @@ set<QuantityFlag> get_quantity_flags(uint64_t sr_quantity_flags);
  */
 uint64_t get_sr_quantity_flags_id(set<QuantityFlag> quantity_flags);
 
+
 /**
  * Returns the corresponding Unit for a sigrok Unit
  *
@@ -688,6 +691,7 @@ uint64_t get_sr_quantity_flags_id(set<QuantityFlag> quantity_flags);
  * @return The Unit.
  */
 Unit get_unit(const sigrok::Unit *sr_unit);
+
 
 /**
  * Formats a Quantity to a string
