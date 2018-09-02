@@ -12,6 +12,7 @@ ToDo
 - QWT Multiaxis
 - Autoscale plot
 - Save session, save all data (gnuplot, octave, ...)
+- namespace src/data/datautil.hpp
 
 ------------------------
 
