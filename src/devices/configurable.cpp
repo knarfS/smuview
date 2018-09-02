@@ -56,6 +56,24 @@ Configurable::Configurable(
 
 void Configurable::init_properties()
 {
+	const auto sr_config_keys = sr_configurable_->config_keys();
+	for (auto sr_config_key : sr_config_keys) {
+		const auto sr_capabilities =
+			sr_configurable_->config_capabilities(sr_config_key);
+
+		if (sr_capabilities.count(sigrok::Capability::GET))
+			available_getable_config_keys_.insert(
+				devices::deviceutil::get_config_key(sr_config_key));
+
+		if (sr_capabilities.count(sigrok::Capability::SET))
+			available_setable_config_keys_.insert(
+				devices::deviceutil::get_config_key(sr_config_key));
+
+		if (sr_capabilities.count(sigrok::Capability::LIST))
+			available_listable_config_keys_.insert(
+				devices::deviceutil::get_config_key(sr_config_key));
+	}
+
 	is_enabled_getable_ = has_get_config(sigrok::ConfigKey::ENABLED);
 	is_enabled_setable_ = has_set_config(sigrok::ConfigKey::ENABLED);
 
@@ -376,6 +394,21 @@ QString Configurable::name() const
 			arg(QString::fromStdString(sr->name()));
 	}
 	return name;
+}
+
+set<devices::ConfigKey> Configurable::available_getable_config_keys() const
+{
+	return available_getable_config_keys_;
+}
+
+set<devices::ConfigKey> Configurable::available_setable_config_keys() const
+{
+	return available_setable_config_keys_;
+}
+
+set<devices::ConfigKey> Configurable::available_listable_config_keys() const
+{
+	return available_listable_config_keys_;
 }
 
 bool Configurable::get_enabled() const

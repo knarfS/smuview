@@ -30,6 +30,7 @@
 #include <QStringList>
 
 #include "src/data/datautil.hpp"
+#include "src/devices/deviceutil.hpp"
 
 using std::map;
 using std::pair;
@@ -78,6 +79,10 @@ public:
 		measured_quantity_list_t &measured_quantity_list);
 
 	QString name() const;
+
+	set<devices::ConfigKey> available_getable_config_keys() const;
+	set<devices::ConfigKey> available_setable_config_keys() const;
+	set<devices::ConfigKey> available_listable_config_keys() const;
 
 	bool is_controllable() const;
 
@@ -219,6 +224,10 @@ private:
 	double offset_min_;
 	double offset_max_;
 	double offset_step_;
+
+	set<devices::ConfigKey> available_getable_config_keys_;
+	set<devices::ConfigKey> available_setable_config_keys_;
+	set<devices::ConfigKey> available_listable_config_keys_;
 
 	bool is_enabled_getable_;
 	bool is_enabled_setable_;
