@@ -63,7 +63,7 @@ void ConfigKeyComboBox::fill_config_keys()
 	if (!configurable_)
 		return;
 
-	for (auto config_key : configurable_->available_setable_config_keys()) {
+	for (auto config_key : configurable_->setable_configs()) {
 		this->addItem(
 			devices::deviceutil::format_config_key(config_key),
 			QVariant::fromValue(config_key));

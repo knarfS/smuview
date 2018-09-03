@@ -40,6 +40,7 @@ using std::make_tuple;
 using std::pair;
 using std::string;
 using std::tuple;
+using sv::devices::ConfigKey;
 
 namespace sv {
 namespace devices {
@@ -62,15 +63,15 @@ void Configurable::init_properties()
 			sr_configurable_->config_capabilities(sr_config_key);
 
 		if (sr_capabilities.count(sigrok::Capability::GET))
-			available_getable_config_keys_.insert(
+			getable_configs_.insert(
 				devices::deviceutil::get_config_key(sr_config_key));
 
 		if (sr_capabilities.count(sigrok::Capability::SET))
-			available_setable_config_keys_.insert(
+			setable_configs_.insert(
 				devices::deviceutil::get_config_key(sr_config_key));
 
 		if (sr_capabilities.count(sigrok::Capability::LIST))
-			available_listable_config_keys_.insert(
+			listable_configs_.insert(
 				devices::deviceutil::get_config_key(sr_config_key));
 	}
 }
@@ -83,7 +84,7 @@ bool Configurable::has_get_config(devices::ConfigKey key)  const
 {
 	assert(key);
 
-	if (available_getable_config_keys_.count(key))
+	if (getable_configs_.count(key))
 		return true;
 	return false;
 }
@@ -93,26 +94,32 @@ template uint64_t Configurable::get_config(devices::ConfigKey) const;
 template double Configurable::get_config(devices::ConfigKey) const;
 // TODO: This doesn't work: with glibmm >= 2.54.1 but should
 //template tuple<uint32_t, uint64_t> Configurable::get_config(devices::ConfigKey) const;
+
 //template Configurable::measured_quantity_t Configurable::get_config(devices::ConfigKey) const;
+
+//template data::Quantity Configurable::get_config(devices::ConfigKey) const;
+
 template<typename T> T Configurable::get_config(devices::ConfigKey key) const
 {
 	assert(key);
 	assert(sr_configurable_);
 
-	/*
-	try {
-		auto gvar = sr_configurable_->config_get(sigrok::ConfigKey::ENABLED);
-		enable =
-			Glib::VariantBase::cast_dynamic<Glib::Variant<bool>>(gvar).get();
-	} catch (sigrok::Error error) {
-		qDebug() << "Failed to get ENABLED.";
-		return false;
-	}
-	*/
-
-	if (key == ConfigKey::MeasuredQuantity)
+	// Special cases
+	switch (key) {
+	case ConfigKey::MeasuredQuantity:
+		//return (Configurable::measured_quantity_t)get_measured_quantity();
 		return 0;
-	//	return (Configurable::measured_quantity_t)get_measured_quantity();
+		break;
+	case ConfigKey::OverVoltageProtectionActive:
+	case ConfigKey::OverCurrentProtectionActive:
+	case ConfigKey::OverTemperatureProtectionActive:
+	case ConfigKey::UnderVoltageConditionActive:
+		if (getable_configs_.count(key) == 0)
+			return false;
+		break;
+	default:
+		break;
+	}
 
 	const sigrok::ConfigKey *sr_key =
 		devices::deviceutil::get_sr_config_key(key);
@@ -131,7 +138,7 @@ bool Configurable::has_set_config(devices::ConfigKey key) const
 {
 	assert(key);
 
-	if (available_setable_config_keys_.count(key))
+	if (setable_configs_.count(key))
 		return true;
 	return false;
 }
@@ -150,17 +157,14 @@ template<typename T> void Configurable::set_config(
 	assert(key);
 	assert(sr_configurable_);
 
-	/*
-	try {
-		sr_configurable_->config_set(
-			sigrok::ConfigKey::ENABLED, Glib::Variant<bool>::create(enable));
-	} catch (sigrok::Error error) {
-		qDebug() << "Failed to set ENABLED.";
+	// Special cases
+	switch (key) {
+	case ConfigKey::MeasuredQuantity:
+		//return set_measured_quantity(value);
+		break;
+	default:
+		break;
 	}
-	*/
-
-	//if (key == ConfigKey::MeasuredQuantity)
-	//	return set_measured_quantity(value);
 
 	const sigrok::ConfigKey *sr_key =
 		devices::deviceutil::get_sr_config_key(key);
@@ -178,7 +182,7 @@ bool Configurable::has_list_config(devices::ConfigKey key) const
 {
 	assert(key);
 
-	if (available_listable_config_keys_.count(key))
+	if (listable_configs_.count(key))
 		return true;
 	return false;
 }
@@ -286,19 +290,19 @@ QString Configurable::name() const
 	return name;
 }
 
-set<devices::ConfigKey> Configurable::available_getable_config_keys() const
+set<devices::ConfigKey> Configurable::getable_configs() const
 {
-	return available_getable_config_keys_;
+	return getable_configs_;
 }
 
-set<devices::ConfigKey> Configurable::available_setable_config_keys() const
+set<devices::ConfigKey> Configurable::setable_configs() const
 {
-	return available_setable_config_keys_;
+	return setable_configs_;
 }
 
-set<devices::ConfigKey> Configurable::available_listable_config_keys() const
+set<devices::ConfigKey> Configurable::listable_configs() const
 {
-	return available_listable_config_keys_;
+	return listable_configs_;
 }
 
 
@@ -384,65 +388,6 @@ void Configurable::set_measured_quantity(measured_quantity_t measured_quantity)
 
 	set_config(ConfigKey::MeasuredQuantity, q_qf_tuple);
 }
-
-
-/* TODO special cases!
-
-bool Configurable::get_ovp_active() const
-{
-	if (is_ovp_active_getable_)
-		return get_config<bool>(
-			sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_ACTIVE);
-	else
-		return false;
-}
-
-bool Configurable::get_ocp_active() const
-{
-	if (is_ocp_active_getable_)
-		return get_config<bool>(
-			sigrok::ConfigKey::OVER_CURRENT_PROTECTION_ACTIVE);
-	else
-		return false;
-}
-
-bool Configurable::get_otp_active() const
-{
-	if (is_otp_active_getable_)
-		return get_config<bool>(
-			sigrok::ConfigKey::OVER_TEMPERATURE_PROTECTION_ACTIVE);
-	else
-		return false;
-}
-
-bool Configurable::get_uvc_active() const
-{
-	if (is_uvc_active_getable_)
-		return get_config<bool>(
-			sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_ACTIVE);
-	else
-		return false;
-}
-*/
-
-/* TODO: Missing in sigrok
-
-double Configurable::get_offset() const
-{
-	/ *
-	return get_config<double>(sigrok::ConfigKey::OFFSET);
-	* /
-	return 0;
-}
-
-void Configurable::set_offset(double offset)
-{
-	(void)offset;
-	/ *
-	set_config(sigrok::ConfigKey::OFFSET, offset);
-	* /
-}
-*/
 
 } // namespace devices
 } // namespace sv

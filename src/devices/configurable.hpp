@@ -82,9 +82,9 @@ public:
 
 	QString name() const;
 
-	set<devices::ConfigKey> available_getable_config_keys() const;
-	set<devices::ConfigKey> available_setable_config_keys() const;
-	set<devices::ConfigKey> available_listable_config_keys() const;
+	set<devices::ConfigKey> getable_configs() const;
+	set<devices::ConfigKey> setable_configs() const;
+	set<devices::ConfigKey> listable_configs() const;
 
 	bool is_controllable() const;
 
@@ -98,9 +98,9 @@ private:
 	const shared_ptr<sigrok::Configurable> sr_configurable_;
 	const QString device_name_;
 
-	set<devices::ConfigKey> available_getable_config_keys_;
-	set<devices::ConfigKey> available_setable_config_keys_;
-	set<devices::ConfigKey> available_listable_config_keys_;
+	set<devices::ConfigKey> getable_configs_;
+	set<devices::ConfigKey> setable_configs_;
+	set<devices::ConfigKey> listable_configs_;
 
 Q_SIGNALS:
 	void enabled_changed(const bool);
