@@ -30,6 +30,7 @@
 #include "measurementcontrolview.hpp"
 #include "src/session.hpp"
 #include "src/data/datautil.hpp"
+#include "src/devices/deviceutil.hpp"
 #include "src/devices/hardwaredevice.hpp"
 
 Q_DECLARE_METATYPE(sv::data::Quantity)
@@ -37,6 +38,7 @@ Q_DECLARE_METATYPE(std::set<sv::data::QuantityFlag>)
 
 using std::make_pair;
 using std::set;
+using sv::devices::ConfigKey;
 
 namespace sv {
 namespace views {
@@ -46,7 +48,9 @@ MeasurementControlView::MeasurementControlView(const Session &session,
 	BaseView(session, parent),
 	configurable_(configurable)
 {
-	configurable_->list_measured_quantity(measured_quantity_list_);
+	if (configurable_->has_list_config(ConfigKey::MeasuredQuantity))
+		configurable_->list_config_mq(
+			ConfigKey::MeasuredQuantity, measured_quantity_list_);
 
 	setup_ui();
 	init_values(); // Must be called before connect_signals()!
@@ -64,7 +68,7 @@ void MeasurementControlView::setup_ui()
 	QHBoxLayout *mq_layout = new QHBoxLayout();
 
 	quantity_box_ = new QComboBox();
-	if (configurable_->is_measured_quantity_listable()) {
+	if (configurable_->has_list_config(ConfigKey::MeasuredQuantity)) {
 		for (auto pair : measured_quantity_list_) {
 			data::Quantity qunatity = pair.first;
 			quantity_box_->addItem(
@@ -101,7 +105,7 @@ void MeasurementControlView::connect_signals()
 
 void MeasurementControlView::init_values()
 {
-	if (configurable_->is_measured_quantity_getable()) {
+	if (configurable_->has_get_config(ConfigKey::MeasuredQuantity)) {
 		actual_measured_quantity_ = configurable_->get_measured_quantity();
 		for (int i = 0; i < quantity_box_->count(); ++i) {
 			QVariant data = quantity_box_->itemData(i);

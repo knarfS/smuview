@@ -63,19 +63,18 @@ public:
 	typedef map<data::Quantity, vector<set<data::QuantityFlag>>>
 		measured_quantity_list_t;
 
-	bool has_get_config(const sigrok::ConfigKey *key) const;
-	template<typename T> T get_config(const sigrok::ConfigKey *key) const;
+	bool has_get_config(devices::ConfigKey key) const;
+	template<typename T> T get_config(devices::ConfigKey key) const;
 
-	bool has_set_config(const sigrok::ConfigKey *key) const;
-	template<typename T> void set_config(const sigrok::ConfigKey *key,
-		const T value);
+	bool has_set_config(devices::ConfigKey key) const;
+	template<typename T> void set_config(devices::ConfigKey key, const T value);
 
-	bool has_list_config(const sigrok::ConfigKey *key) const;
-	void list_config_string_array(const sigrok::ConfigKey *key,
+	bool has_list_config(devices::ConfigKey key) const;
+	void list_config_string_array(devices::ConfigKey key,
 		QStringList &string_list);
-	void list_config_min_max_steps(const sigrok::ConfigKey *key,
+	void list_config_min_max_steps(devices::ConfigKey key,
 		double &min, double &max, double &step);
-	void list_config_mq(const sigrok::ConfigKey *key,
+	void list_config_mq(devices::ConfigKey key,
 		measured_quantity_list_t &measured_quantity_list);
 
 	QString name() const;
@@ -86,6 +85,7 @@ public:
 
 	bool is_controllable() const;
 
+	/*
 	bool is_enabled_getable() const;
 	bool is_enabled_setable() const;
 	bool get_enabled() const;
@@ -150,9 +150,11 @@ public:
 	bool is_measured_quantity_getable() const;
 	bool is_measured_quantity_setable() const;
 	bool is_measured_quantity_listable() const;
+	*/
 	measured_quantity_t get_measured_quantity() const;
 	void set_measured_quantity(measured_quantity_t measured_quantity);
 
+	/*
 	bool is_amplitude_getable() const;
 	bool is_amplitude_setable() const;
 	bool is_amplitude_listable() const;
@@ -175,6 +177,7 @@ public:
 		measured_quantity_list_t &measured_quantity_list);
 	bool list_amplitude(double &min, double &max, double &step);
 	bool list_offset(double &min, double &max, double &step);
+	*/
 
 private:
 	void init_properties();

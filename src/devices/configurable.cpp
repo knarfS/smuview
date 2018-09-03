@@ -74,6 +74,7 @@ void Configurable::init_properties()
 				devices::deviceutil::get_config_key(sr_config_key));
 	}
 
+	/*
 	is_enabled_getable_ = has_get_config(sigrok::ConfigKey::ENABLED);
 	is_enabled_setable_ = has_set_config(sigrok::ConfigKey::ENABLED);
 
@@ -152,6 +153,7 @@ void Configurable::init_properties()
 	is_amplitude_getable_ = has_get_config(sigrok::ConfigKey::AMPLITUDE);
 	is_amplitude_setable_ = has_set_config(sigrok::ConfigKey::AMPLITUDE);
 	is_amplitude_listable_ = has_list_config(sigrok::ConfigKey::AMPLITUDE);
+	*/
 
 	/*
 	is_offset_getable_ = has_get_config(sigrok::ConfigKey::OFFSET);
@@ -162,6 +164,7 @@ void Configurable::init_properties()
 
 void Configurable::init_values()
 {
+	/*
 	if (is_regulation_listable_)
 		list_config_string_array(sigrok::ConfigKey::REGULATION,
 			regulation_list_);
@@ -197,6 +200,7 @@ void Configurable::init_values()
 	if (is_amplitude_listable_)
 		list_config_min_max_steps(sigrok::ConfigKey::AMPLITUDE,
 		amplitude_min_, amplitude_max_, amplitude_step_);
+	*/
 
 	/*
 	if (is_offset_listable_)
@@ -205,23 +209,21 @@ void Configurable::init_values()
 	*/
 }
 
-bool Configurable::has_get_config(const sigrok::ConfigKey *key)  const
+bool Configurable::has_get_config(devices::ConfigKey key)  const
 {
 	assert(key);
-	assert(sr_configurable_);
 
-	if (!sr_configurable_->config_check(key, sigrok::Capability::GET))
-		return false;
-
-	return true;
+	if (available_getable_config_keys_.count(key))
+		return true;
+	return false;
 }
 
-template bool Configurable::get_config(const sigrok::ConfigKey*) const;
-template uint64_t Configurable::get_config(const sigrok::ConfigKey*) const;
-template double Configurable::get_config(const sigrok::ConfigKey*) const;
+template bool Configurable::get_config(devices::ConfigKey) const;
+template uint64_t Configurable::get_config(devices::ConfigKey) const;
+template double Configurable::get_config(devices::ConfigKey) const;
 // TODO: This doesn't work: with glibmm >= 2.54.1 but should
-//template tuple<uint32_t, uint64_t> Configurable::get_config(const sigrok::ConfigKey*) const;
-template<typename T> T Configurable::get_config(const sigrok::ConfigKey *key) const
+//template tuple<uint32_t, uint64_t> Configurable::get_config(devices::ConfigKey) const;
+template<typename T> T Configurable::get_config(devices::ConfigKey key) const
 {
 	assert(key);
 	assert(sr_configurable_);
@@ -237,36 +239,37 @@ template<typename T> T Configurable::get_config(const sigrok::ConfigKey *key) co
 	}
 	*/
 
-	if (!sr_configurable_->config_check(key, sigrok::Capability::GET)) {
+	const sigrok::ConfigKey *sr_key =
+		devices::deviceutil::get_sr_config_key(key);
+
+	if (!sr_configurable_->config_check(sr_key, sigrok::Capability::GET)) {
 		qWarning() << "Configurable::read_config(): No key " <<
-			QString::fromStdString(key->name());
+			QString::fromStdString(sr_key->name());
 		assert(false);
 	}
 
 	return Glib::VariantBase::cast_dynamic<Glib::Variant<T>>(
-		sr_configurable_->config_get(key)).get();
+		sr_configurable_->config_get(sr_key)).get();
 }
 
-bool Configurable::has_set_config(const sigrok::ConfigKey *key) const
+bool Configurable::has_set_config(devices::ConfigKey key) const
 {
 	assert(key);
-	assert(sr_configurable_);
 
-	if (!sr_configurable_->config_check(key, sigrok::Capability::SET))
-		return false;
-
-	return true;
+	if (available_setable_config_keys_.count(key))
+		return true;
+	return false;
 }
 
-template void Configurable::set_config(const sigrok::ConfigKey*, const bool);
-template void Configurable::set_config(const sigrok::ConfigKey*, const uint64_t);
-template void Configurable::set_config(const sigrok::ConfigKey*, const double);
+template void Configurable::set_config(devices::ConfigKey, const bool);
+template void Configurable::set_config(devices::ConfigKey, const uint64_t);
+template void Configurable::set_config(devices::ConfigKey, const double);
 // This is working with glibmm < 2.52 (mxe uses glibmm 2.42.0), but libsigrok expects 'r' (this is '{ut}')
-template void Configurable::set_config(const sigrok::ConfigKey*, const pair<uint32_t, uint64_t>);
+template void Configurable::set_config(devices::ConfigKey, const pair<uint32_t, uint64_t>);
 // This is working with glibmm >= 2.52 (but mxe uses glibmm 2.42.0). Working with libsigrok (expects 'r')
-template void Configurable::set_config(const sigrok::ConfigKey*, const tuple<uint32_t, uint64_t>);
+template void Configurable::set_config(devices::ConfigKey, const tuple<uint32_t, uint64_t>);
 template<typename T> void Configurable::set_config(
-		const sigrok::ConfigKey *key, const T value)
+	devices::ConfigKey key, const T value)
 {
 	assert(key);
 	assert(sr_configurable_);
@@ -280,39 +283,43 @@ template<typename T> void Configurable::set_config(
 	}
 	*/
 
-	if (!sr_configurable_->config_check(key, sigrok::Capability::SET)) {
+	const sigrok::ConfigKey *sr_key =
+		devices::deviceutil::get_sr_config_key(key);
+
+	if (!sr_configurable_->config_check(sr_key, sigrok::Capability::SET)) {
 		qWarning() << "Configurable::write_config(): No key " <<
-			QString::fromStdString(key->name());
+			QString::fromStdString(sr_key->name());
 		assert(false);
 	}
 
-	sr_configurable_->config_set(key, Glib::Variant<T>::create(value));
+	sr_configurable_->config_set(sr_key, Glib::Variant<T>::create(value));
 }
 
-bool Configurable::has_list_config(const sigrok::ConfigKey *key) const
+bool Configurable::has_list_config(devices::ConfigKey key) const
 {
 	assert(key);
-	assert(sr_configurable_);
 
-	if (!sr_configurable_->config_check(key, sigrok::Capability::LIST))
-		return false;
-
-	return true;
+	if (available_listable_config_keys_.count(key))
+		return true;
+	return false;
 }
 
-void Configurable::list_config_string_array(const sigrok::ConfigKey *key,
+void Configurable::list_config_string_array(devices::ConfigKey key,
 	QStringList &string_list)
 {
 	assert(key);
 	assert(sr_configurable_);
 
-	if (!sr_configurable_->config_check(key, sigrok::Capability::LIST)) {
+	const sigrok::ConfigKey *sr_key =
+		devices::deviceutil::get_sr_config_key(key);
+
+	if (!sr_configurable_->config_check(sr_key, sigrok::Capability::LIST)) {
 		qWarning() << "Configurable::list_config_string_array(): No key " <<
-			QString::fromStdString(key->name());
+			QString::fromStdString(sr_key->name());
 		assert(false);
 	}
 
-	Glib::VariantContainerBase gvar = sr_configurable_->config_list(key);
+	Glib::VariantContainerBase gvar = sr_configurable_->config_list(sr_key);
 	Glib::VariantIter iter(gvar);
 	while (iter.next_value (gvar)) {
 		string_list.append(QString::fromStdString(
@@ -320,19 +327,22 @@ void Configurable::list_config_string_array(const sigrok::ConfigKey *key,
 	}
 }
 
-void Configurable::list_config_min_max_steps(const sigrok::ConfigKey *key,
+void Configurable::list_config_min_max_steps(devices::ConfigKey key,
 	double &min, double &max, double &step)
 {
 	assert(key);
 	assert(sr_configurable_);
 
-	if (!sr_configurable_->config_check(key, sigrok::Capability::LIST)) {
+	const sigrok::ConfigKey *sr_key =
+		devices::deviceutil::get_sr_config_key(key);
+
+	if (!sr_configurable_->config_check(sr_key, sigrok::Capability::LIST)) {
 		qWarning() << "Configurable::list_config_min_max_steps(): No key " <<
-			QString::fromStdString(key->name());
+			QString::fromStdString(sr_key->name()) << " or not listable!";
 		assert(false);
 	}
 
-	Glib::VariantContainerBase gvar = sr_configurable_->config_list(key);
+	Glib::VariantContainerBase gvar = sr_configurable_->config_list(sr_key);
 	Glib::VariantIter iter(gvar);
 	iter.next_value(gvar);
 	min = Glib::VariantBase::cast_dynamic<Glib::Variant<double>>(gvar).get();
@@ -342,19 +352,22 @@ void Configurable::list_config_min_max_steps(const sigrok::ConfigKey *key,
 	step = Glib::VariantBase::cast_dynamic<Glib::Variant<double>>(gvar).get();
 }
 
-void Configurable::list_config_mq(const sigrok::ConfigKey *key,
+void Configurable::list_config_mq(devices::ConfigKey key,
 	measured_quantity_list_t &measured_quantity_list)
 {
 	assert(key);
 	assert(sr_configurable_);
 
-	if (!sr_configurable_->config_check(key, sigrok::Capability::LIST)) {
-		qWarning() << "Configurable::list_config_mq(): No key " <<
-			QString::fromStdString(key->name());
+	const sigrok::ConfigKey *sr_key =
+		devices::deviceutil::get_sr_config_key(key);
+
+	if (!sr_configurable_->config_check(sr_key, sigrok::Capability::LIST)) {
+		qWarning() << "Configurable::list_config_mq(): No key "
+			<< QString::fromStdString(sr_key->name()) << " or not listable!";
 		assert(false);
 	}
 
-	Glib::VariantContainerBase gvar = sr_configurable_->config_list(key);
+	Glib::VariantContainerBase gvar = sr_configurable_->config_list(sr_key);
 	Glib::VariantIter iter(gvar);
 	while (iter.next_value (gvar)) {
 		uint32_t mqbits = Glib::VariantBase::cast_dynamic
@@ -411,6 +424,7 @@ set<devices::ConfigKey> Configurable::available_listable_config_keys() const
 	return available_listable_config_keys_;
 }
 
+/*
 bool Configurable::get_enabled() const
 {
 	return get_config<bool>(sigrok::ConfigKey::ENABLED);
@@ -559,6 +573,7 @@ void Configurable::set_uvc_threshold(const double threshold)
 	set_config(
 		sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD, threshold);
 }
+*/
 
 
 /**
@@ -604,10 +619,11 @@ void Configurable::set_measured_quantity(measured_quantity_t measured_quantity)
 	//auto q_qf_pair = make_pair(sr_q_id, sr_qfs_id); // TODO: Maybe this is a solution?
 	auto q_qf_tuple = make_tuple(sr_q_id, sr_qfs_id);
 
-	set_config(sigrok::ConfigKey::MEASURED_QUANTITY, q_qf_tuple);
+	set_config(ConfigKey::MeasuredQuantity, q_qf_tuple);
 }
 
 
+/*
 double Configurable::get_amplitude() const
 {
 	return get_config<double>(sigrok::ConfigKey::AMPLITUDE);
@@ -621,18 +637,18 @@ void Configurable::set_amplitude(double amplitude)
 
 double Configurable::get_offset() const
 {
-	/*
+	/ *
 	return get_config<double>(sigrok::ConfigKey::OFFSET);
-	*/
+	* /
 	return 0;
 }
 
 void Configurable::set_offset(double offset)
 {
 	(void)offset;
-	/*
+	/ *
 	set_config(sigrok::ConfigKey::OFFSET, offset);
-	*/
+	* /
 }
 
 
@@ -731,6 +747,7 @@ bool Configurable::list_offset(double &min, double &max, double &step)
 	step = offset_step_;
 	return true;
 }
+*/
 
 bool Configurable::is_controllable() const
 {
@@ -749,20 +766,27 @@ bool Configurable::is_controllable() const
 	}
 	*/
 
-	if (is_enabled_setable_ || is_regulation_setable_ ||
-			is_voltage_target_setable_ || is_current_limit_setable_ ||
-			is_ovp_enabled_setable_ || is_ovp_threshold_setable_ ||
-			is_ocp_enabled_setable_ || is_ocp_threshold_setable_ ||
-			is_uvc_enabled_setable_ || is_uvc_threshold_setable_)
+	if (has_set_config(ConfigKey::Enabled) ||
+			has_set_config(ConfigKey::Regulation) ||
+			has_set_config(ConfigKey::VoltageTarget) ||
+			has_set_config(ConfigKey::CurrentLimit) ||
+			has_set_config(ConfigKey::OverVoltageProtectionEnabled) ||
+			has_set_config(ConfigKey::OverVoltageProtectionThreshold) ||
+			has_set_config(ConfigKey::OverCurrentProtectionEnabled) ||
+			has_set_config(ConfigKey::OverCurrentProtectionThreshold) ||
+			has_set_config(ConfigKey::UnderVoltageConditionEnabled) ||
+			has_set_config(ConfigKey::UnderVoltageConditionThreshold))
 		return true;
 
-	if (is_measured_quantity_getable_ || is_measured_quantity_setable_)
+	if (has_get_config(ConfigKey::MeasuredQuantity) ||
+			has_set_config(ConfigKey::MeasuredQuantity))
 		return true;
 
 	return false;
 }
 
 
+/*
 bool Configurable::is_enabled_getable() const
 {
 	return is_enabled_getable_;
@@ -960,6 +984,7 @@ bool Configurable::is_offset_listable() const
 {
 	return is_offset_listable_;
 }
+*/
 
 } // namespace devices
 } // namespace sv

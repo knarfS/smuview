@@ -58,6 +58,11 @@ DeviceTypeKey get_device_type_key(uint32_t sr_config_key)
 	return get_device_type_key(sr_ck);
 }
 
+const sigrok::ConfigKey *get_sr_config_key(DeviceTypeKey device_type_key)
+{
+	return device_type_key_sr_config_key_map[device_type_key];
+}
+
 uint32_t get_sr_config_key_id(DeviceTypeKey device_type_key)
 {
 	if (device_type_key_sr_config_key_map.count(device_type_key) > 0)
@@ -86,6 +91,11 @@ ConnectionKey get_connection_key(uint32_t sr_config_key)
 	return get_connection_key(sr_ck);
 }
 
+const sigrok::ConfigKey *get_sr_config_key(ConnectionKey connection_key)
+{
+	return connection_key_sr_config_key_map[connection_key];
+}
+
 uint32_t get_sr_config_key_id(ConnectionKey connection_key)
 {
 	if (connection_key_sr_config_key_map.count(connection_key) > 0)
@@ -112,6 +122,11 @@ ConfigKey get_config_key(uint32_t sr_config_key)
 {
 	const sigrok::ConfigKey *sr_ck = sigrok::ConfigKey::get(sr_config_key);
 	return get_config_key(sr_ck);
+}
+
+const sigrok::ConfigKey *get_sr_config_key(ConfigKey config_key)
+{
+	return config_key_sr_config_key_map[config_key];
 }
 
 uint32_t get_sr_config_key_id(ConfigKey config_key)

@@ -28,12 +28,14 @@
 #include "demodmmcontrolview.hpp"
 #include "src/session.hpp"
 #include "src/data/datautil.hpp"
+#include "src/devices/deviceutil.hpp"
 #include "src/devices/hardwaredevice.hpp"
 #include "src/widgets/quantitycombobox.hpp"
 #include "src/widgets/quantityflagslist.hpp"
 #include "src/widgets/valuecontrol.hpp"
 
 using std::vector;
+using sv::devices::ConfigKey;
 
 namespace sv {
 namespace views {
@@ -43,7 +45,9 @@ DemoDMMControlView::DemoDMMControlView(const Session &session,
 	BaseView(session, parent),
 	configurable_(configurable)
 {
-	configurable_->list_measured_quantity(measured_quantity_list_);
+	if (configurable_->has_list_config(ConfigKey::MeasuredQuantity))
+		configurable_->list_config_mq(
+			ConfigKey::MeasuredQuantity, measured_quantity_list_);
 
 	setup_ui();
 	connect_signals();
@@ -99,10 +103,12 @@ void DemoDMMControlView::connect_signals()
 
 void DemoDMMControlView::init_values()
 {
-	if (configurable_->is_amplitude_getable())
-		amplitude_control_->change_value(configurable_->get_amplitude());
-	if (configurable_->is_offset_getable())
-		offset_control_->change_value(configurable_->get_offset());
+	if (configurable_->has_get_config(ConfigKey::Amplitude))
+		amplitude_control_->change_value(
+			configurable_->get_config<double>(ConfigKey::Amplitude));
+	if (configurable_->has_get_config(ConfigKey::Offset))
+		offset_control_->change_value(
+			configurable_->get_config<double>(ConfigKey::Offset));
 }
 
 void DemoDMMControlView::on_quantity_set()
@@ -119,12 +125,12 @@ void DemoDMMControlView::on_quantity_set()
 
 void DemoDMMControlView::on_amplitude_changed(const double value)
 {
-	configurable_->set_amplitude(value);
+	configurable_->set_config(ConfigKey::Amplitude, value);
 }
 
 void DemoDMMControlView::on_offset_changed(const double value)
 {
-	configurable_->set_offset(value);
+	configurable_->set_config(ConfigKey::Offset, value);
 }
 
 } // namespace views

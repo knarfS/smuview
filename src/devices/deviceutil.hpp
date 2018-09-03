@@ -173,11 +173,11 @@ enum class ConfigKey
 	/** Over-current protection (OCP) threshold. */
 	OverCurrentProtectionThreshold,
 	/** Over-temperature protection (OTP) */
-	OverTemperatureProtection,
+	OverTemperatureProtectionEnabled,
 	/** Over-temperature protection (OTP) active. */
 	OverTemperatureProtectionActive,
 	/** Under-voltage condition. */
-	UnderVoltageCondition,
+	UnderVoltageConditionEnabled,
 	/** Under-voltage condition active. */
 	UnderVoltageConditionActive,
 	/** Under-voltage condition threshold. */
@@ -313,9 +313,9 @@ config_key_name_map_t config_key_name_map = {
 	{ ConfigKey::OverCurrentProtectionEnabled, QString("Over Current Protection Enabled") },
 	{ ConfigKey::OverCurrentProtectionActive, QString("Over Current Protection Active") },
 	{ ConfigKey::OverCurrentProtectionThreshold, QString("Over Current Protection Threshold") },
-	{ ConfigKey::OverTemperatureProtection, QString("Over Temperature Protection Enabled") },
+	{ ConfigKey::OverTemperatureProtectionEnabled, QString("Over Temperature Protection Enabled") },
 	{ ConfigKey::OverTemperatureProtectionActive, QString("Over Temperature Protection Active") },
-	{ ConfigKey::UnderVoltageCondition, QString("Under Voltage Condition Enabled") },
+	{ ConfigKey::UnderVoltageConditionEnabled, QString("Under Voltage Condition Enabled") },
 	{ ConfigKey::UnderVoltageConditionActive, QString("Under Voltage Condition Active") },
 	{ ConfigKey::UnderVoltageConditionThreshold, QString("Under Voltage Condition Threshold") },
 	{ ConfigKey::ClockEdge, QString("Clock Edge") },
@@ -435,9 +435,9 @@ map<const sigrok::ConfigKey *, ConfigKey> sr_config_key_config_key_map = {
 	{ sigrok::ConfigKey::OVER_CURRENT_PROTECTION_ENABLED, ConfigKey::OverCurrentProtectionEnabled },
 	{ sigrok::ConfigKey::OVER_CURRENT_PROTECTION_ACTIVE, ConfigKey::OverCurrentProtectionActive },
 	{ sigrok::ConfigKey::OVER_CURRENT_PROTECTION_THRESHOLD, ConfigKey::OverCurrentProtectionThreshold },
-	{ sigrok::ConfigKey::OVER_TEMPERATURE_PROTECTION, ConfigKey::OverTemperatureProtection },
+	{ sigrok::ConfigKey::OVER_TEMPERATURE_PROTECTION, ConfigKey::OverTemperatureProtectionEnabled },
 	{ sigrok::ConfigKey::OVER_TEMPERATURE_PROTECTION_ACTIVE, ConfigKey::OverTemperatureProtectionActive },
-	{ sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION, ConfigKey::UnderVoltageCondition },
+	{ sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION, ConfigKey::UnderVoltageConditionEnabled },
 	{ sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_ACTIVE, ConfigKey::UnderVoltageConditionActive },
 	{ sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD, ConfigKey::UnderVoltageConditionThreshold },
 	{ sigrok::ConfigKey::CLOCK_EDGE, ConfigKey::ClockEdge },
@@ -508,9 +508,9 @@ map<ConfigKey, const sigrok::ConfigKey *> config_key_sr_config_key_map = {
 	{ ConfigKey::OverCurrentProtectionEnabled, sigrok::ConfigKey::OVER_CURRENT_PROTECTION_ENABLED },
 	{ ConfigKey::OverCurrentProtectionActive, sigrok::ConfigKey::OVER_CURRENT_PROTECTION_ACTIVE },
 	{ ConfigKey::OverCurrentProtectionThreshold, sigrok::ConfigKey::OVER_CURRENT_PROTECTION_THRESHOLD },
-	{ ConfigKey::OverTemperatureProtection, sigrok::ConfigKey::OVER_TEMPERATURE_PROTECTION },
+	{ ConfigKey::OverTemperatureProtectionEnabled, sigrok::ConfigKey::OVER_TEMPERATURE_PROTECTION },
 	{ ConfigKey::OverTemperatureProtectionActive, sigrok::ConfigKey::OVER_TEMPERATURE_PROTECTION_ACTIVE },
-	{ ConfigKey::UnderVoltageCondition, sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION },
+	{ ConfigKey::UnderVoltageConditionEnabled, sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION },
 	{ ConfigKey::UnderVoltageConditionActive, sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_ACTIVE },
 	{ ConfigKey::UnderVoltageConditionThreshold, sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD },
 	{ ConfigKey::ClockEdge, sigrok::ConfigKey::CLOCK_EDGE },
@@ -582,6 +582,15 @@ DeviceTypeKey get_device_type_key(const sigrok::ConfigKey *sr_config_key);
 DeviceTypeKey get_device_type_key(uint32_t sr_config_key);
 
 /**
+ * Returns the corresponding sigrok ConfigKey for a DeviceTypeKey
+ *
+ * @param device_type_key The DeviceTypeKey.
+ *
+ * @return The sigrok ConfigKeyt.
+ */
+const sigrok::ConfigKey *get_sr_config_key(DeviceTypeKey device_type_key);
+
+/**
  * Returns the corresponding sigrok ConfigKey ID for a DeviceTypeKey
  *
  * @param device_type_key The DeviceTypeKey
@@ -619,6 +628,15 @@ ConnectionKey get_connection_key(const sigrok::ConfigKey *sr_config_key);
 ConnectionKey get_connection_key(uint32_t sr_config_key);
 
 /**
+ * Returns the corresponding sigrok ConfigKey for a ConnectionKey
+ *
+ * @param connection_key The ConnectionKey.
+ *
+ * @return The sigrok ConfigKey.
+ */
+const sigrok::ConfigKey *get_sr_config_key(ConnectionKey connection_key);
+
+/**
  * Returns the corresponding sigrok ConfigKey ID for a ConnectionKey
  *
  * @param connection_key The ConnectionKey
@@ -654,6 +672,15 @@ ConfigKey get_config_key(const sigrok::ConfigKey *sr_config_key);
  * @return The ConfigKey.
  */
 ConfigKey get_config_key(uint32_t sr_config_key);
+
+/**
+ * Returns the corresponding sigrok ConfigKey for a ConfigKey
+ *
+ * @param config_key The ConfigKey.
+ *
+ * @return The sigrok ConfigKey.
+ */
+const sigrok::ConfigKey *get_sr_config_key(ConfigKey config_key);
 
 /**
  * Returns the corresponding sigrok ConfigKey ID for a ConfigKey
