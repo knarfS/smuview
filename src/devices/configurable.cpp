@@ -304,8 +304,7 @@ bool Configurable::has_list_config(devices::ConfigKey key) const
 	return false;
 }
 
-void Configurable::list_config_string_array(devices::ConfigKey key,
-	QStringList &string_list)
+Glib::VariantContainerBase Configurable::list_config(devices::ConfigKey key)
 {
 	assert(key);
 	assert(sr_configurable_);
@@ -319,7 +318,13 @@ void Configurable::list_config_string_array(devices::ConfigKey key,
 		assert(false);
 	}
 
-	Glib::VariantContainerBase gvar = sr_configurable_->config_list(sr_key);
+	return sr_configurable_->config_list(sr_key);
+}
+
+void Configurable::list_config_string_array(devices::ConfigKey key,
+	QStringList &string_list)
+{
+	Glib::VariantContainerBase gvar = list_config(key);
 	Glib::VariantIter iter(gvar);
 	while (iter.next_value (gvar)) {
 		string_list.append(QString::fromStdString(
@@ -330,19 +335,7 @@ void Configurable::list_config_string_array(devices::ConfigKey key,
 void Configurable::list_config_min_max_steps(devices::ConfigKey key,
 	double &min, double &max, double &step)
 {
-	assert(key);
-	assert(sr_configurable_);
-
-	const sigrok::ConfigKey *sr_key =
-		devices::deviceutil::get_sr_config_key(key);
-
-	if (!sr_configurable_->config_check(sr_key, sigrok::Capability::LIST)) {
-		qWarning() << "Configurable::list_config_min_max_steps(): No key " <<
-			QString::fromStdString(sr_key->name()) << " or not listable!";
-		assert(false);
-	}
-
-	Glib::VariantContainerBase gvar = sr_configurable_->config_list(sr_key);
+	Glib::VariantContainerBase gvar = list_config(key);
 	Glib::VariantIter iter(gvar);
 	iter.next_value(gvar);
 	min = Glib::VariantBase::cast_dynamic<Glib::Variant<double>>(gvar).get();
@@ -355,19 +348,7 @@ void Configurable::list_config_min_max_steps(devices::ConfigKey key,
 void Configurable::list_config_mq(devices::ConfigKey key,
 	measured_quantity_list_t &measured_quantity_list)
 {
-	assert(key);
-	assert(sr_configurable_);
-
-	const sigrok::ConfigKey *sr_key =
-		devices::deviceutil::get_sr_config_key(key);
-
-	if (!sr_configurable_->config_check(sr_key, sigrok::Capability::LIST)) {
-		qWarning() << "Configurable::list_config_mq(): No key "
-			<< QString::fromStdString(sr_key->name()) << " or not listable!";
-		assert(false);
-	}
-
-	Glib::VariantContainerBase gvar = sr_configurable_->config_list(sr_key);
+	Glib::VariantContainerBase gvar = list_config(key);
 	Glib::VariantIter iter(gvar);
 	while (iter.next_value (gvar)) {
 		uint32_t mqbits = Glib::VariantBase::cast_dynamic

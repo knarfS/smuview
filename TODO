@@ -14,7 +14,6 @@ ToDo
 - Save session, save all data (gnuplot, octave, ...)
 - namespace src/data/datautil.hpp
 - Configurable:
-	- list_config
 	- get_mq / set_mq
 	- min/max/step in views when not listable
 	- default check for listable/getable/setable in list/get/set functions without assert(false)?
@@ -43,7 +42,9 @@ Done
 - ValueControl implement is_value_setable_/is_value_getable_ and disable/enable controls
 - Save signals as CSV
 - Math channels (for Power, resistance, Wh, Ah)
-- Correlation between time bases (common, same count+fixed diff, "random")
+- Correlation between time bases (common, same count+fixed diff, "random") in (Analog)Data
+- Configurable:
+	- list_config
 
 ------------------------
 

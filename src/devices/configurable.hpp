@@ -25,6 +25,8 @@
 #include <tuple>
 #include <utility>
 
+#include <glib.h>
+
 #include <QObject>
 #include <QString>
 #include <QStringList>
@@ -47,7 +49,6 @@ class QuantityFlag;
 }
 
 namespace sv {
-
 namespace devices {
 
 class Configurable : public QObject
@@ -70,6 +71,7 @@ public:
 	template<typename T> void set_config(devices::ConfigKey key, const T value);
 
 	bool has_list_config(devices::ConfigKey key) const;
+	Glib::VariantContainerBase list_config(devices::ConfigKey key);
 	void list_config_string_array(devices::ConfigKey key,
 		QStringList &string_list);
 	void list_config_min_max_steps(devices::ConfigKey key,
