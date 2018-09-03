@@ -10,9 +10,14 @@ ToDo
 - Plot: Sampling
 - Mutex for aquisition_state_?
 - QWT Multiaxis
-- Autoscale plot
+- Autoscale plot. Plot doesn't always auto-update scale (rlp without load)
 - Save session, save all data (gnuplot, octave, ...)
 - namespace src/data/datautil.hpp
+- Configurable:
+	- list_config
+	- get_mq / set_mq
+	- min/max/step in views when not listable
+	- default check for listable/getable/setable in list/get/set functions without assert(false)?
 - Breeze icons action/labplot-* for plots?
 
 ------------------------
