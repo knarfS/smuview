@@ -58,7 +58,7 @@ namespace sv
 {
 
 MainWindow::MainWindow(DeviceManager &device_manager, QWidget *parent) :
-    QMainWindow(parent),
+	QMainWindow(parent),
 	device_manager_(device_manager)
 {
 	qRegisterMetaType<util::Timestamp>("util::Timestamp");
@@ -66,7 +66,7 @@ MainWindow::MainWindow(DeviceManager &device_manager, QWidget *parent) :
 	qRegisterMetaType<shared_ptr<data::BaseSignal>>("shared_ptr<data::BaseSignal>");
 
 	init_session();
-    setup_ui();
+	setup_ui();
 	connect_signals();
 }
 
