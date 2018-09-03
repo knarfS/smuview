@@ -18,6 +18,8 @@ ToDo
 	- get_mq / set_mq
 	- min/max/step in views when not listable
 	- default check for listable/getable/setable in list/get/set functions without assert(false)?
+	- Add functions for datatypes -> determin what list_* function to use
+	- make the sink/source/demodmm/measurement-ControlViews more generic
 - Breeze icons action/labplot-* for plots?
 
 ------------------------
