@@ -12,13 +12,18 @@ ToDo
 - QWT Multiaxis
 - Autoscale plot. Plot doesn't always auto-update scale (rlp without load)
 - Save session, save all data (gnuplot, octave, ...)
+	- saveutil.cpp
 - namespace src/data/datautil.hpp
 - Configurable:
 	- get_mq / set_mq
 	- min/max/step in views when not listable
-	- default check for listable/getable/setable in list/get/set functions without assert(false)?
+	- default check for getable/setable in get/set functions without assert(false)?
 	- Add functions for datatypes -> determin what list_* function to use
 	- make the sink/source/demodmm/measurement-ControlViews more generic
+	- signals for controls (views) to work with processing
+	- Cache stuff?
+	- Move is_controllable() to tab/view? Make more generic...
+	- Missing sigok::ConfigKey::OFFSET
 - Breeze icons action/labplot-* for plots?
 
 ------------------------
@@ -45,6 +50,8 @@ Done
 - Correlation between time bases (common, same count+fixed diff, "random") in (Analog)Data
 - Configurable:
 	- list_config
+	- default check for listable in list function without assert(false)?
+	- Remove unused specific functions
 
 ------------------------
 

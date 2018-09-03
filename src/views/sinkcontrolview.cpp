@@ -98,17 +98,15 @@ void SinkControlView::setup_ui()
 
 	// TODO: generic (CV, CC, CP, CR)
 	min = max = step = 0;
-	if (configurable_->has_list_config(ConfigKey::CurrentLimit))
-		configurable_->list_config_min_max_steps(
-			ConfigKey::CurrentLimit, min, max, step);
+	configurable_->list_config_min_max_steps(
+		ConfigKey::CurrentLimit, min, max, step);
 	setValueControl = new widgets::ValueControl(
 		tr("Current"), 5, tr("A"), min, max, step);
 	ctrlLayout->addWidget(setValueControl);
 
 	QStringList regulation_list;
-	if (configurable_->has_list_config(ConfigKey::Regulation))
-		configurable_->list_config_string_array(
-			ConfigKey::Regulation, regulation_list);
+	configurable_->list_config_string_array(
+		ConfigKey::Regulation, regulation_list);
 	regulationBox = new QComboBox();
 	regulationBox->addItems(regulation_list);
 	/*
@@ -123,9 +121,8 @@ void SinkControlView::setup_ui()
 	QHBoxLayout *optCtrlLayout = new QHBoxLayout();
 
 	min = max = step = 0;
-	if (configurable_->has_list_config(ConfigKey::OverVoltageProtectionThreshold))
-		configurable_->list_config_min_max_steps(
-			ConfigKey::OverVoltageProtectionThreshold, min, max, step);
+	configurable_->list_config_min_max_steps(
+		ConfigKey::OverVoltageProtectionThreshold, min, max, step);
 	ovpControl = new widgets::OptionalValueControl(
 		configurable_->has_get_config(ConfigKey::OverVoltageProtectionEnabled),
 		configurable_->has_set_config(ConfigKey::OverVoltageProtectionEnabled),
@@ -135,9 +132,8 @@ void SinkControlView::setup_ui()
 	optCtrlLayout->addWidget(ovpControl);
 
 	min = max = step = 0;
-	if (configurable_->has_list_config(ConfigKey::OverCurrentProtectionThreshold))
-		configurable_->list_config_min_max_steps(
-			ConfigKey::OverCurrentProtectionThreshold, min, max, step);
+	configurable_->list_config_min_max_steps(
+		ConfigKey::OverCurrentProtectionThreshold, min, max, step);
 	ocpControl = new widgets::OptionalValueControl(
 		configurable_->has_get_config(ConfigKey::OverCurrentProtectionEnabled),
 		configurable_->has_set_config(ConfigKey::OverCurrentProtectionEnabled),
@@ -147,9 +143,8 @@ void SinkControlView::setup_ui()
 	optCtrlLayout->addWidget(ocpControl);
 
 	min = max = step = 0;
-	if (configurable_->has_list_config(ConfigKey::UnderVoltageConditionThreshold))
-		configurable_->list_config_min_max_steps(
-			ConfigKey::UnderVoltageConditionThreshold, min, max, step);
+	configurable_->list_config_min_max_steps(
+		ConfigKey::UnderVoltageConditionThreshold, min, max, step);
 	uvcControl = new widgets::OptionalValueControl(
 		configurable_->has_get_config(ConfigKey::UnderVoltageConditionEnabled),
 		configurable_->has_set_config(ConfigKey::UnderVoltageConditionEnabled),

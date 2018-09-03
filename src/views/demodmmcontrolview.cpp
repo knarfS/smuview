@@ -45,9 +45,8 @@ DemoDMMControlView::DemoDMMControlView(const Session &session,
 	BaseView(session, parent),
 	configurable_(configurable)
 {
-	if (configurable_->has_list_config(ConfigKey::MeasuredQuantity))
-		configurable_->list_config_mq(
-			ConfigKey::MeasuredQuantity, measured_quantity_list_);
+	configurable_->list_config_mq(
+		ConfigKey::MeasuredQuantity, measured_quantity_list_);
 
 	setup_ui();
 	connect_signals();

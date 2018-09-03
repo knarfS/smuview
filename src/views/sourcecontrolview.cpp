@@ -95,17 +95,15 @@ void SourceControlView::setup_ui()
 	QHBoxLayout *ctrlLayout = new QHBoxLayout();
 
 	min = max = step = 0;
-	if (configurable_->has_list_config(ConfigKey::VoltageTarget))
-		configurable_->list_config_min_max_steps(
-			ConfigKey::VoltageTarget, min, max, step);
+	configurable_->list_config_min_max_steps(
+		ConfigKey::VoltageTarget, min, max, step);
 	setVoltageControl = new widgets::ValueControl(
 		tr("Voltage"), 3, tr("V"), min, max, step);
 	ctrlLayout->addWidget(setVoltageControl);
 
 	min = max = step = 0;
-	if (configurable_->has_list_config(ConfigKey::CurrentLimit))
-		configurable_->list_config_min_max_steps(
-			ConfigKey::CurrentLimit, min, max, step);
+	configurable_->list_config_min_max_steps(
+		ConfigKey::CurrentLimit, min, max, step);
 	setCurrentControl = new widgets::ValueControl(
 		tr("Current"), 3, tr("A"), min, max, step);
 	ctrlLayout->addWidget(setCurrentControl, 1, Qt::AlignLeft);
@@ -114,9 +112,8 @@ void SourceControlView::setup_ui()
 	QHBoxLayout *optCtrlLayout = new QHBoxLayout();
 
 	min = max = step = 0;
-	if (configurable_->has_list_config(ConfigKey::OverVoltageProtectionThreshold))
-		configurable_->list_config_min_max_steps(
-			ConfigKey::OverVoltageProtectionThreshold, min, max, step);
+	configurable_->list_config_min_max_steps(
+		ConfigKey::OverVoltageProtectionThreshold, min, max, step);
 	ovpControl = new widgets::OptionalValueControl(
 		configurable_->has_get_config(ConfigKey::OverVoltageProtectionEnabled),
 		configurable_->has_set_config(ConfigKey::OverVoltageProtectionEnabled),
@@ -126,9 +123,8 @@ void SourceControlView::setup_ui()
 	optCtrlLayout->addWidget(ovpControl);
 
 	min = max = step = 0;
-	if (configurable_->has_list_config(ConfigKey::OverCurrentProtectionThreshold))
-		configurable_->list_config_min_max_steps(
-			ConfigKey::OverCurrentProtectionThreshold, min, max, step);
+	configurable_->list_config_min_max_steps(
+		ConfigKey::OverCurrentProtectionThreshold, min, max, step);
 	ocpControl = new widgets::OptionalValueControl(
 		configurable_->has_get_config(ConfigKey::OverCurrentProtectionEnabled),
 		configurable_->has_set_config(ConfigKey::OverCurrentProtectionEnabled),
@@ -138,9 +134,8 @@ void SourceControlView::setup_ui()
 	optCtrlLayout->addWidget(ocpControl);
 
 	min = max = step = 0;
-	if (configurable_->has_list_config(ConfigKey::UnderVoltageConditionThreshold))
-		configurable_->list_config_min_max_steps(
-			ConfigKey::UnderVoltageConditionThreshold, min, max, step);
+	configurable_->list_config_min_max_steps(
+		ConfigKey::UnderVoltageConditionThreshold, min, max, step);
 	uvcControl = new widgets::OptionalValueControl(
 		configurable_->has_get_config(ConfigKey::UnderVoltageConditionEnabled),
 		configurable_->has_set_config(ConfigKey::UnderVoltageConditionEnabled),
