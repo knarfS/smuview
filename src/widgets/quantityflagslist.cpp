@@ -55,7 +55,7 @@ void QuantityFlagsList::setup_ui()
 {
 	this->setSelectionMode(QListView::MultiSelection);
 
-	for (auto qf_name_pair : data::quantityutil::get_quantity_flag_name_map()) {
+	for (auto qf_name_pair : data::datautil::get_quantity_flag_name_map()) {
 		QListWidgetItem *item = new QListWidgetItem();
 		item->setText(qf_name_pair.second);
 		item->setFlags(item->flags() | Qt::ItemIsUserCheckable);

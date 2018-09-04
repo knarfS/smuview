@@ -94,11 +94,7 @@ template uint64_t Configurable::get_config(devices::ConfigKey) const;
 template double Configurable::get_config(devices::ConfigKey) const;
 // TODO: This doesn't work: with glibmm >= 2.54.1 but should
 //template tuple<uint32_t, uint64_t> Configurable::get_config(devices::ConfigKey) const;
-
 //template Configurable::measured_quantity_t Configurable::get_config(devices::ConfigKey) const;
-
-//template data::Quantity Configurable::get_config(devices::ConfigKey) const;
-
 template<typename T> T Configurable::get_config(devices::ConfigKey key) const
 {
 	assert(key);
@@ -150,6 +146,7 @@ template void Configurable::set_config(devices::ConfigKey, const double);
 template void Configurable::set_config(devices::ConfigKey, const pair<uint32_t, uint64_t>);
 // This is working with glibmm >= 2.52 (but mxe uses glibmm 2.42.0). Working with libsigrok (expects 'r')
 template void Configurable::set_config(devices::ConfigKey, const tuple<uint32_t, uint64_t>);
+// This is for special get/set for measured quantity
 //template void Configurable::set_config(devices::ConfigKey, const measured_quantity_t);
 template<typename T> void Configurable::set_config(
 	devices::ConfigKey key, const T value)
@@ -251,7 +248,7 @@ bool Configurable::list_config_mq(devices::ConfigKey key,
 	while (iter.next_value (gvar)) {
 		uint32_t mqbits = Glib::VariantBase::cast_dynamic
 			<Glib::Variant<uint32_t>>(gvar.get_child(0)).get();
-		data::Quantity quantity = data::quantityutil::get_quantity(mqbits);
+		data::Quantity quantity = data::datautil::get_quantity(mqbits);
 
 		if (!measured_quantity_list.count(quantity)) {
 			measured_quantity_list.insert(
@@ -269,7 +266,7 @@ bool Configurable::list_config_mq(devices::ConfigKey key,
 			const sigrok::QuantityFlag *sr_mqflag =
 				sigrok::QuantityFlag::get(sr_mqflags & mask);
 			quantity_flag_set.insert(
-				data::quantityutil::get_quantity_flag(sr_mqflag));
+				data::datautil::get_quantity_flag(sr_mqflag));
 		}
 		measured_quantity_list[quantity].push_back(quantity_flag_set);
 	}
@@ -364,10 +361,10 @@ Configurable::measured_quantity_t Configurable::get_measured_quantity() const
 		(sr_configurable_->config_get(sigrok::ConfigKey::MEASURED_QUANTITY));
 
 	uint32_t sr_q = vb.get_child<uint32_t>(0);
-	data::Quantity qunatity = data::quantityutil::get_quantity(sr_q);
+	data::Quantity qunatity = data::datautil::get_quantity(sr_q);
 	uint64_t sr_qfs = vb.get_child<uint64_t>(1);
 	set<data::QuantityFlag> quantity_flags =
-		data::quantityutil::get_quantity_flags(sr_qfs);
+		data::datautil::get_quantity_flags(sr_qfs);
 
 	return make_pair(qunatity, quantity_flags);
 }
@@ -379,9 +376,9 @@ Configurable::measured_quantity_t Configurable::get_measured_quantity() const
 void Configurable::set_measured_quantity(measured_quantity_t measured_quantity)
 {
 	uint32_t sr_q_id =
-		data::quantityutil::get_sr_quantity_id(measured_quantity.first);
+		data::datautil::get_sr_quantity_id(measured_quantity.first);
 	uint64_t sr_qfs_id =
-		data::quantityutil::get_sr_quantity_flags_id(measured_quantity.second);
+		data::datautil::get_sr_quantity_flags_id(measured_quantity.second);
 
 	//auto q_qf_pair = make_pair(sr_q_id, sr_qfs_id); // TODO: Maybe this is a solution?
 	auto q_qf_tuple = make_tuple(sr_q_id, sr_qfs_id);

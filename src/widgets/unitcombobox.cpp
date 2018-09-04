@@ -43,7 +43,7 @@ data::Unit UnitComboBox::selected_unit()
 
 void UnitComboBox::setup_ui()
 {
-	for (auto u_name_pair : data::quantityutil::get_unit_name_map()) {
+	for (auto u_name_pair : data::datautil::get_unit_name_map()) {
 		this->addItem(
 			u_name_pair.second, QVariant::fromValue(u_name_pair.first));
 	}

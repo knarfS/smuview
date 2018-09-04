@@ -27,7 +27,7 @@ using std::set;
 
 namespace sv {
 namespace data {
-namespace quantityutil {
+namespace datautil {
 
 
 quantity_name_map_t get_quantity_name_map()
@@ -213,6 +213,6 @@ set<data::Unit> get_units_from_quantity(data::Quantity quantity)
 	return units;
 }
 
-} // namespace helper
+} // namespace datautil
 } // namespace data
 } // namespace sv

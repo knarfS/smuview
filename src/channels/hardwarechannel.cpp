@@ -116,12 +116,12 @@ shared_ptr<data::BaseSignal> HardwareChannel::init_signal(
 void HardwareChannel::push_sample_sr_analog(
 	void *sample, double timestamp, shared_ptr<sigrok::Analog> sr_analog)
 {
-	data::Quantity quantity = data::quantityutil::get_quantity(sr_analog->mq());
+	data::Quantity quantity = data::datautil::get_quantity(sr_analog->mq());
 	set<data::QuantityFlag> quantity_flags =
-		data::quantityutil::get_quantity_flags(sr_analog->mq_flags());
+		data::datautil::get_quantity_flags(sr_analog->mq_flags());
 	quantity_t q_qf = make_pair(quantity, quantity_flags);
 	if (signal_map_.count(q_qf) == 0) {
-		data::Unit unit = data::quantityutil::get_unit(sr_analog->unit());
+		data::Unit unit = data::datautil::get_unit(sr_analog->unit());
 		init_signal(quantity, quantity_flags, unit);
 		qWarning() << "HardwareChannel::push_sample_sr_analog(): " << name_ <<
 			" - No signal found: " << actual_signal_->name();

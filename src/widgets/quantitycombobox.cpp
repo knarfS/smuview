@@ -43,7 +43,7 @@ data::Quantity QuantityComboBox::selected_quantity()
 
 void QuantityComboBox::setup_ui()
 {
-	for (auto q_name_pair : data::quantityutil::get_quantity_name_map()) {
+	for (auto q_name_pair : data::datautil::get_quantity_name_map()) {
 		this->addItem(
 			q_name_pair.second, QVariant::fromValue(q_name_pair.first));
 	}

@@ -13,7 +13,6 @@ ToDo
 - Autoscale plot. Plot doesn't always auto-update scale (rlp without load)
 - Save session, save all data (gnuplot, octave, ...)
 	- saveutil.cpp
-- namespace src/data/datautil.hpp
 - Configurable:
 	- get_mq / set_mq
 	- min/max/step in views when not listable
@@ -52,6 +51,7 @@ Done
 	- list_config
 	- default check for listable in list function without assert(false)?
 	- Remove unused specific functions
+- namespace src/data/datautil.hpp
 
 ------------------------
 

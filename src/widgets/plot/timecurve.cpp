@@ -84,12 +84,12 @@ QString TimeCurve::name() const
 
 QString TimeCurve::x_data_quantity() const
 {
-	return data::quantityutil::format_quantity(data::Quantity::Time);
+	return data::datautil::format_quantity(data::Quantity::Time);
 }
 
 QString TimeCurve::x_data_unit() const
 {
-	return data::quantityutil::format_unit(data::Unit::Second);
+	return data::datautil::format_unit(data::Unit::Second);
 }
 
 QString TimeCurve::x_data_title() const

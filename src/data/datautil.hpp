@@ -208,7 +208,7 @@ enum class Unit
 	Unknown,
 };
 
-namespace quantityutil {
+namespace datautil {
 
 typedef map<Quantity, QString> quantity_name_map_t;
 typedef map<QuantityFlag, QString> quantity_flag_name_map_t;
@@ -740,7 +740,7 @@ QString format_unit(Unit unit);
  */
 set<data::Unit> get_units_from_quantity(data::Quantity quantity);
 
-} // namespace quantityutil
+} // namespace datautil
 } // namespace data
 } // namespace sv
 

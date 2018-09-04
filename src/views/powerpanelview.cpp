@@ -82,13 +82,13 @@ void PowerPanelView::setup_ui()
 	set<data::QuantityFlag> voltage_qfs = voltage_signal_->quantity_flags();
 	if (voltage_qfs.count(data::QuantityFlag::AC)) {
 		//voltage_unit_suffix = QString::fromUtf8("\u23E6");
-		voltage_unit_suffix = data::quantityutil::format_quantity_flag(
+		voltage_unit_suffix = data::datautil::format_quantity_flag(
 			data::QuantityFlag::AC);
 		voltage_qfs.erase(data::QuantityFlag::AC);
 	}
 	else if (voltage_qfs.count(data::QuantityFlag::DC)) {
 		//voltage_unit_suffix = QString::fromUtf8("\u2393");
-		voltage_unit_suffix = data::quantityutil::format_quantity_flag(
+		voltage_unit_suffix = data::datautil::format_quantity_flag(
 			data::QuantityFlag::DC);
 		voltage_qfs.erase(data::QuantityFlag::DC);
 	}
@@ -100,27 +100,27 @@ void PowerPanelView::setup_ui()
 	voltageDisplay = new widgets::LcdDisplay(
 		voltage_signal_->digits(), voltage_signal_->decimal_places(), false,
 		voltage_signal_->unit_name(), voltage_unit_suffix,
-		data::quantityutil::format_quantity_flags(voltage_qfs, "\n"), false);
+		data::datautil::format_quantity_flags(voltage_qfs, "\n"), false);
 	voltageMinDisplay = new widgets::LcdDisplay(
 		voltage_signal_->digits(), voltage_signal_->decimal_places(), false,
 		voltage_signal_->unit_name(), voltage_unit_suffix,
-		data::quantityutil::format_quantity_flags(voltage_qfs_min, "\n"), true);
+		data::datautil::format_quantity_flags(voltage_qfs_min, "\n"), true);
 	voltageMaxDisplay = new widgets::LcdDisplay(
 		voltage_signal_->digits(), voltage_signal_->decimal_places(), false,
 		voltage_signal_->unit_name(), voltage_unit_suffix,
-		data::quantityutil::format_quantity_flags(voltage_qfs_max, "\n"), true);
+		data::datautil::format_quantity_flags(voltage_qfs_max, "\n"), true);
 
 	QString current_unit_suffix("");
 	set<data::QuantityFlag> current_qfs = current_signal_->quantity_flags();
 	if (current_qfs.count(data::QuantityFlag::AC)) {
 		//current_unit_suffix = QString::fromUtf8("\u23E6");
-		current_unit_suffix = data::quantityutil::format_quantity_flag(
+		current_unit_suffix = data::datautil::format_quantity_flag(
 			data::QuantityFlag::AC);
 		current_qfs.erase(data::QuantityFlag::AC);
 	}
 	else if (current_qfs.count(data::QuantityFlag::DC)) {
 		//current_unit_suffix = QString::fromUtf8("\u2393");
-		current_unit_suffix = data::quantityutil::format_quantity_flag(
+		current_unit_suffix = data::datautil::format_quantity_flag(
 			data::QuantityFlag::DC);
 		current_qfs.erase(data::QuantityFlag::DC);
 	}
@@ -132,15 +132,15 @@ void PowerPanelView::setup_ui()
 	currentDisplay = new widgets::LcdDisplay(
 		current_signal_->digits(), current_signal_->decimal_places(), false,
 		current_signal_->unit_name(), current_unit_suffix,
-		data::quantityutil::format_quantity_flags(current_qfs, "\n"), false);
+		data::datautil::format_quantity_flags(current_qfs, "\n"), false);
 	currentMinDisplay = new widgets::LcdDisplay(
 		current_signal_->digits(), current_signal_->decimal_places(), false,
 		current_signal_->unit_name(), current_unit_suffix,
-		data::quantityutil::format_quantity_flags(current_qfs_min, "\n"), true);
+		data::datautil::format_quantity_flags(current_qfs_min, "\n"), true);
 	currentMaxDisplay = new widgets::LcdDisplay(
 		current_signal_->digits(), current_signal_->decimal_places(), false,
 		current_signal_->unit_name(), current_unit_suffix,
-		data::quantityutil::format_quantity_flags(current_qfs_max, "\n"), true);
+		data::datautil::format_quantity_flags(current_qfs_max, "\n"), true);
 
 	int digits;
 	if (voltage_signal_->digits() > current_signal_->digits())
@@ -155,39 +155,39 @@ void PowerPanelView::setup_ui()
 
 	resistanceDisplay = new widgets::LcdDisplay(
 		digits, decimal_places, true,
-		data::quantityutil::format_unit(data::Unit::Ohm), "", "", false);
+		data::datautil::format_unit(data::Unit::Ohm), "", "", false);
 	resistanceMinDisplay = new widgets::LcdDisplay(
 		digits, decimal_places, true,
-		data::quantityutil::format_unit(data::Unit::Ohm), "",
-		data::quantityutil::format_quantity_flag(data::QuantityFlag::Min),
+		data::datautil::format_unit(data::Unit::Ohm), "",
+		data::datautil::format_quantity_flag(data::QuantityFlag::Min),
 		true);
 	resistanceMaxDisplay = new widgets::LcdDisplay(
 		digits, decimal_places, true,
-		data::quantityutil::format_unit(data::Unit::Ohm), "",
-		data::quantityutil::format_quantity_flag(data::QuantityFlag::Max),
+		data::datautil::format_unit(data::Unit::Ohm), "",
+		data::datautil::format_quantity_flag(data::QuantityFlag::Max),
 		true);
 
 	powerDisplay = new widgets::LcdDisplay(
 		digits, decimal_places, true,
-		data::quantityutil::format_unit(data::Unit::Watt), "", "", false);
+		data::datautil::format_unit(data::Unit::Watt), "", "", false);
 	powerMinDisplay = new widgets::LcdDisplay(
 		digits, decimal_places, true,
-		data::quantityutil::format_unit(data::Unit::Watt), "",
-		data::quantityutil::format_quantity_flag(data::QuantityFlag::Min),
+		data::datautil::format_unit(data::Unit::Watt), "",
+		data::datautil::format_quantity_flag(data::QuantityFlag::Min),
 		true);
 	powerMaxDisplay = new widgets::LcdDisplay(
 		digits, decimal_places, true,
-		data::quantityutil::format_unit(data::Unit::Watt), "",
-		data::quantityutil::format_quantity_flag(data::QuantityFlag::Max),
+		data::datautil::format_unit(data::Unit::Watt), "",
+		data::datautil::format_quantity_flag(data::QuantityFlag::Max),
 		true);
 
 	// TODO: sigrok::Unit::AMP_HOUR missing!
 	ampHourDisplay = new widgets::LcdDisplay(
 		digits, decimal_places, true,
-		data::quantityutil::format_unit(data::Unit::AmpereHour), "", "", false);
+		data::datautil::format_unit(data::Unit::AmpereHour), "", "", false);
 	wattHourDisplay = new widgets::LcdDisplay(
 		digits, decimal_places, true,
-		data::quantityutil::format_unit(data::Unit::WattHour), "", "", false);
+		data::datautil::format_unit(data::Unit::WattHour), "", "", false);
 
 	panelLayout->addWidget(voltageDisplay, 0, 0, 1, 2, Qt::AlignHCenter);
 	panelLayout->addWidget(voltageMinDisplay, 1, 0, 1, 1, Qt::AlignHCenter);

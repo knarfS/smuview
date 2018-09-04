@@ -71,7 +71,7 @@ void MeasurementControlView::setup_ui()
 		for (auto pair : measured_quantity_list_) {
 			data::Quantity qunatity = pair.first;
 			quantity_box_->addItem(
-				data::quantityutil::format_quantity(qunatity),
+				data::datautil::format_quantity(qunatity),
 				QVariant::fromValue(qunatity));
 		}
 	}
@@ -136,7 +136,7 @@ void MeasurementControlView::on_quantity_changed()
 
 	for (auto qf_set : measured_quantity_list_[quantity]) {
 		quantity_flags_box_->addItem(
-			data::quantityutil::format_quantity_flags(qf_set, QString(" ")),
+			data::datautil::format_quantity_flags(qf_set, QString(" ")),
 			QVariant::fromValue(qf_set));
 	}
 }

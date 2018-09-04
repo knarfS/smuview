@@ -134,13 +134,13 @@ void ValuePanelView::setup_unit()
 
 	if (quantity_flags_.count(data::QuantityFlag::AC)) {
 		//unit_suffix_ = QString::fromUtf8("\u23E6");
-		unit_suffix_ = data::quantityutil::format_quantity_flag(
+		unit_suffix_ = data::datautil::format_quantity_flag(
 			data::QuantityFlag::AC);
 		quantity_flags_.erase(data::QuantityFlag::AC);
 	}
 	else if (quantity_flags_.count(data::QuantityFlag::DC)) {
 		//unit_suffix_ = QString::fromUtf8("\u2393");
-		unit_suffix_ = data::quantityutil::format_quantity_flag(
+		unit_suffix_ = data::datautil::format_quantity_flag(
 			data::QuantityFlag::DC);
 		quantity_flags_.erase(data::QuantityFlag::DC);
 	}
@@ -159,15 +159,15 @@ void ValuePanelView::setup_ui()
 
 	valueDisplay = new widgets::LcdDisplay(
 		digits_, decimal_places_, true, unit_, unit_suffix_,
-		data::quantityutil::format_quantity_flags(quantity_flags_, "\n"),
+		data::datautil::format_quantity_flags(quantity_flags_, "\n"),
 		false);
 	valueMinDisplay = new widgets::LcdDisplay(
 		digits_, decimal_places_, true, unit_, unit_suffix_,
-		data::quantityutil::format_quantity_flags(quantity_flags_min_, "\n"),
+		data::datautil::format_quantity_flags(quantity_flags_min_, "\n"),
 		true);
 	valueMaxDisplay = new widgets::LcdDisplay(
 		digits_, decimal_places_, true, unit_, unit_suffix_,
-		data::quantityutil::format_quantity_flags(quantity_flags_max_, "\n"),
+		data::datautil::format_quantity_flags(quantity_flags_max_, "\n"),
 		true);
 
 	panelLayout->addWidget(valueDisplay, 0, 0, 1, 2, Qt::AlignHCenter);
@@ -300,21 +300,21 @@ void ValuePanelView::on_signal_changed()
 	valueDisplay->set_unit(unit_);
 	valueDisplay->set_unit_suffix(unit_suffix_);
 	valueDisplay->set_extra_text(
-		data::quantityutil::format_quantity_flags(quantity_flags_, "\n"));
+		data::datautil::format_quantity_flags(quantity_flags_, "\n"));
 	valueDisplay->set_digits(digits_);
 	valueDisplay->set_decimal_places(decimal_places_);
 
 	valueMinDisplay->set_unit(unit_);
 	valueMinDisplay->set_unit_suffix(unit_suffix_);
 	valueMinDisplay->set_extra_text(
-		data::quantityutil::format_quantity_flags(quantity_flags_min_, "\n"));
+		data::datautil::format_quantity_flags(quantity_flags_min_, "\n"));
 	valueMinDisplay->set_digits(digits_);
 	valueMinDisplay->set_decimal_places(decimal_places_);
 
 	valueMaxDisplay->set_unit(unit_);
 	valueMaxDisplay->set_unit_suffix(unit_suffix_);
 	valueMaxDisplay->set_extra_text(
-		data::quantityutil::format_quantity_flags(quantity_flags_max_, "\n"));
+		data::datautil::format_quantity_flags(quantity_flags_max_, "\n"));
 	valueMaxDisplay->set_digits(digits_);
 	valueMaxDisplay->set_decimal_places(decimal_places_);
 
