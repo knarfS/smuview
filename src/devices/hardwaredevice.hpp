@@ -134,6 +134,7 @@ protected:
 
 	void feed_in_header();
 	void feed_in_trigger();
+	void feed_in_meta(shared_ptr<sigrok::Meta> sr_meta);
 	void feed_in_frame_begin();
 	void feed_in_frame_end();
 	void feed_in_logic(shared_ptr<sigrok::Logic> sr_logic);

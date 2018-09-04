@@ -46,24 +46,5 @@ MeasurementDevice::MeasurementDevice(
 		assert("Unknown device");
 }
 
-void MeasurementDevice::feed_in_meta(shared_ptr<sigrok::Meta> sr_meta)
-{
-	// TODO: Move to devices::Configurable and implement device specific signals
-
-	// TODO: The meta packet is missing the information, to which
-	// channel group the config key belongs.
-	shared_ptr<devices::Configurable> configurable;
-	if (configurables_.size() > 0)
-		configurable = configurables_.at(0);
-
-	for (auto entry : sr_meta->config()) {
-		switch (entry.first->id()) {
-		default:
-			// Unknown metadata is not an error.
-			break;
-		}
-	}
-}
-
 } // namespace devices
 } // namespace sv

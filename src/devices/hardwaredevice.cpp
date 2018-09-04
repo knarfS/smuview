@@ -289,6 +289,14 @@ void HardwareDevice::feed_in_trigger()
 {
 }
 
+void HardwareDevice::feed_in_meta(shared_ptr<sigrok::Meta> sr_meta)
+{
+	// TODO: The meta packet is missing the information, to which
+	// channel group the config key belongs.
+	if (configurables_.size() > 0)
+		configurables_.front()->feed_in_meta(sr_meta);
+}
+
 void HardwareDevice::feed_in_frame_begin()
 {
 	// TODO: use std::chrono / std::time

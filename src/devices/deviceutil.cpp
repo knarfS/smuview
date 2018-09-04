@@ -144,6 +144,39 @@ bool is_valid_sr_config_key(ConfigKey config_key)
 }
 
 
+DataType get_data_type(const sigrok::DataType *sr_data_type)
+{
+	if (sr_data_type_data_type_map.count(sr_data_type) > 0)
+		return sr_data_type_data_type_map[sr_data_type];
+	return DataType::Unknown;
+}
+
+DataType get_data_type(uint32_t sr_data_type)
+{
+	const sigrok::DataType *sr_dt = sigrok::DataType::get(sr_data_type);
+	return get_data_type(sr_dt);
+}
+
+const sigrok::DataType *get_sr_data_type(DataType data_type)
+{
+	return data_type_sr_data_type_map[data_type];
+}
+
+uint32_t get_sr_data_type_id(DataType data_type)
+{
+	if (data_type_sr_data_type_map.count(data_type) > 0)
+		return data_type_sr_data_type_map[data_type]->id();
+	return 0;
+}
+
+bool is_valid_sr_data_type(DataType data_type)
+{
+	if (data_type_sr_data_type_map.count(data_type) > 0)
+		return true;
+	return false;
+}
+
+
 QString format_device_type_key(DeviceTypeKey device_type_key)
 {
 	if (device_type_key_name_map.count(device_type_key) > 0)
@@ -163,6 +196,16 @@ QString format_config_key(ConfigKey config_key)
 	if (config_key_name_map.count(config_key) > 0)
 		return config_key_name_map[config_key];
 	return config_key_name_map[ConfigKey::Unknown];
+}
+
+
+DataType get_data_type_for_config_key(ConfigKey config_key)
+{
+	const sigrok::ConfigKey *sr_ck = get_sr_config_key(config_key);
+	if (!sr_ck)
+		return DataType::Unknown;
+
+	return get_data_type(sr_ck->data_type());
 }
 
 } // namespace deviceutil

@@ -24,9 +24,9 @@
 
 #include <glib.h>
 
-#include <QDebug>
-
 #include <libsigrokcxx/libsigrokcxx.hpp>
+
+#include <QDebug>
 
 #include "configurable.hpp"
 #include "src/data/datautil.hpp"
@@ -384,6 +384,53 @@ void Configurable::set_measured_quantity(measured_quantity_t measured_quantity)
 	auto q_qf_tuple = make_tuple(sr_q_id, sr_qfs_id);
 
 	set_config(ConfigKey::MeasuredQuantity, q_qf_tuple);
+}
+
+void Configurable::feed_in_meta(shared_ptr<sigrok::Meta> sr_meta)
+{
+	for (auto entry : sr_meta->config()) {
+		devices::ConfigKey key =
+			devices::deviceutil::get_config_key(entry.first);
+		devices::DataType data_type =
+			devices::deviceutil::get_data_type_for_config_key(key);
+
+		QVariant qvar;
+		switch (data_type) {
+		case devices::DataType::Int32:
+			qvar = QVariant(g_variant_get_int32(entry.second.gobj()));
+			break;
+		case devices::DataType::UInt64:
+			qvar = QVariant::fromValue(
+				g_variant_get_uint64(entry.second.gobj()));
+			break;
+		case devices::DataType::Float:
+			qvar = QVariant(g_variant_get_double(entry.second.gobj()));
+			break;
+		case devices::DataType::Sting:
+			qvar = QVariant(g_variant_get_string(entry.second.gobj(), NULL));
+			break;
+		case devices::DataType::Bool:
+			qvar = QVariant(g_variant_get_boolean(entry.second.gobj()));
+			break;
+		case devices::DataType::RationalPeriod:
+		case devices::DataType::RationalVolt:
+		case devices::DataType::Uint64Range:
+		case devices::DataType::DoubleRange:
+			//qvar = QVariant(g_variant_get_tuple(entry.second.gobj()));
+			//break;
+		case devices::DataType::MQ:
+			//qvar = QVariant(g_variant_get_tuple(entry.second.gobj()));
+			//break;
+		case devices::DataType::KeyValue:
+			//qvar = QVariant(g_variant_get_dictionary(entry.second.gobj()));
+			//break;
+		case devices::DataType::Unknown:
+		default:
+			return;
+		}
+
+		Q_EMIT config_changed(key, qvar);
+	}
 }
 
 } // namespace devices

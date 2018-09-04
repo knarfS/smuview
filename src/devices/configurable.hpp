@@ -30,6 +30,7 @@
 #include <QObject>
 #include <QString>
 #include <QStringList>
+#include <QVariant>
 
 #include "src/data/datautil.hpp"
 #include "src/devices/deviceutil.hpp"
@@ -46,6 +47,7 @@ class ConfigKey;
 class Configurable;
 class Quantity;
 class QuantityFlag;
+class Meta;
 }
 
 namespace sv {
@@ -90,6 +92,7 @@ public:
 
 	measured_quantity_t get_measured_quantity() const;
 	void set_measured_quantity(measured_quantity_t measured_quantity);
+	void feed_in_meta(shared_ptr<sigrok::Meta> sr_meta);
 
 private:
 	void init_properties();
@@ -103,22 +106,7 @@ private:
 	set<devices::ConfigKey> listable_configs_;
 
 Q_SIGNALS:
-	void enabled_changed(const bool);
-	void voltage_target_changed(const double);
-	void current_limit_changed(const double);
-	void otp_enabled_changed(const bool);
-	void otp_active_changed(const bool);
-	void ovp_enabled_changed(const bool);
-	void ovp_active_changed(const bool);
-	void ovp_threshold_changed(const double);
-	void ocp_enabled_changed(const bool);
-	void ocp_active_changed(const bool);
-	void ocp_threshold_changed(const double);
-	void uvc_enabled_changed(const bool);
-	void uvc_active_changed(const bool);
-	void uvc_threshold_changed(const double);
-	void amplitude_changed(const double);
-	void offset_changed(const double);
+	void config_changed(const devices::ConfigKey, const QVariant);
 
 };
 

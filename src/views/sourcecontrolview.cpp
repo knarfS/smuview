@@ -172,34 +172,8 @@ void SourceControlView::connect_signals()
 		this, SLOT(on_uvc_threshold_changed(const double)));;
 
 	// Device -> Control elements
-	connect(configurable_.get(), SIGNAL(enabled_changed(const bool)),
-		enableButton, SLOT(change_state(const bool)));
-	connect(configurable_.get(), SIGNAL(voltage_target_changed(const double)),
-		setVoltageControl, SLOT(change_value(const double)));
-	connect(configurable_.get(), SIGNAL(current_limit_changed(const double)),
-		setCurrentControl, SLOT(change_value(const double)));
-	connect(configurable_.get(), SIGNAL(ovp_enabled_changed(const bool)),
-		ovpControl, SLOT(change_state(const bool)));
-	connect(configurable_.get(), SIGNAL(ovp_threshold_changed(const double)),
-		ovpControl, SLOT(change_value(const double)));
-	connect(configurable_.get(), SIGNAL(ocp_enabled_changed(const bool)),
-		ocpControl, SLOT(change_state(const bool)));
-	connect(configurable_.get(), SIGNAL(ocp_threshold_changed(const double)),
-		ocpControl, SLOT(change_value(const double)));
-	connect(configurable_.get(), SIGNAL(uvc_enabled_changed(const bool)),
-		uvcControl, SLOT(change_state(const bool)));
-	connect(configurable_.get(), SIGNAL(uvc_threshold_changed(const double)),
-		uvcControl, SLOT(change_value(const double)));
-
-	// Device -> LEDs
-	connect(configurable_.get(), SIGNAL(ovp_active_changed(const bool)),
-		ovpLed, SLOT(change_state(const bool)));
-	connect(configurable_.get(), SIGNAL(ocp_active_changed(const bool)),
-		ocpLed, SLOT(change_state(const bool)));
-	connect(configurable_.get(), SIGNAL(uvc_active_changed(const bool)),
-		uvcLed, SLOT(change_state(const bool)));
-	connect(configurable_.get(), SIGNAL(otp_active_changed(const bool)),
-		otpLed, SLOT(change_state(const bool)));
+	connect(configurable_.get(), SIGNAL(config_changed(const devices::ConfigKey, const QVariant)),
+		this, SLOT(on_config_changed(const devices::ConfigKey, const QVariant)));
 }
 
 void SourceControlView::init_values()
@@ -291,6 +265,57 @@ void SourceControlView::on_uvc_threshold_changed(const double value)
 {
 	configurable_->set_config(ConfigKey::UnderVoltageConditionThreshold, value);
 }
+
+void SourceControlView::on_config_changed(
+	const devices::ConfigKey key, const QVariant qvar)
+{
+	switch (key) {
+	// Device -> Control elements
+	case devices::ConfigKey::Enabled:
+		enableButton->change_state(qvar.toBool());
+		break;
+	case devices::ConfigKey::VoltageTarget:
+		setVoltageControl->change_value(qvar.toDouble());
+		break;
+	case devices::ConfigKey::CurrentLimit:
+		setCurrentControl->change_value(qvar.toDouble());
+		break;
+	case devices::ConfigKey::OverVoltageProtectionEnabled:
+		ovpControl->change_state(qvar.toBool());
+		break;
+	case devices::ConfigKey::OverVoltageProtectionThreshold:
+		ovpControl->change_value(qvar.toDouble());
+		break;
+	case devices::ConfigKey::OverCurrentProtectionEnabled:
+		ocpControl->change_state(qvar.toBool());
+		break;
+	case devices::ConfigKey::OverCurrentProtectionThreshold:
+		ocpControl->change_value(qvar.toDouble());
+		break;
+	case devices::ConfigKey::UnderVoltageConditionEnabled:
+		uvcControl->change_state(qvar.toBool());
+		break;
+	case devices::ConfigKey::UnderVoltageConditionThreshold:
+		uvcControl->change_value(qvar.toDouble());
+		break;
+	// Device -> LEDs
+	case devices::ConfigKey::OverVoltageProtectionActive:
+		ovpLed->change_state(qvar.toBool());
+		break;
+	case devices::ConfigKey::OverCurrentProtectionActive:
+		ocpLed->change_state(qvar.toBool());
+		break;
+	case devices::ConfigKey::UnderVoltageConditionActive:
+		uvcLed->change_state(qvar.toBool());
+		break;
+	case devices::ConfigKey::OverTemperatureProtectionActive:
+		otpLed->change_state(qvar.toBool());
+		break;
+	default:
+		break;
+	}
+}
+
 
 } // namespace views
 } // namespace sv

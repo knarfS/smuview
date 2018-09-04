@@ -53,9 +53,6 @@ public:
 		const shared_ptr<sigrok::Context> &sr_context,
 		shared_ptr<sigrok::HardwareDevice> sr_device);
 
-protected:
-	void feed_in_meta(shared_ptr<sigrok::Meta> sr_meta);
-
 private:
 
 };

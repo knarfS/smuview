@@ -54,7 +54,6 @@ public:
 
 protected:
 	void init_channels();
-	void feed_in_meta(shared_ptr<sigrok::Meta> sr_meta);
 
 private:
 

@@ -22,6 +22,9 @@
 
 #include <memory>
 
+#include <QVariant>
+
+#include "src/devices/deviceutil.hpp"
 #include "src/views/baseview.hpp"
 
 using std::shared_ptr;
@@ -79,15 +82,16 @@ protected:
 public Q_SLOTS:
 
 private Q_SLOTS:
-	void on_enabled_changed(const bool enabled);
-	void on_voltage_changed(const double value);
-	void on_current_changed(const double value);
-	void on_ovp_enabled_changed(const bool enabled);
-	void on_ovp_threshold_changed(const double enabled);
-	void on_ocp_enabled_changed(const bool value);
-	void on_ocp_threshold_changed(const double enabled);
-	void on_uvc_enabled_changed(const bool value);
-	void on_uvc_threshold_changed(const double enabled);
+	void on_enabled_changed(const bool);
+	void on_voltage_changed(const double);
+	void on_current_changed(const double);
+	void on_ovp_enabled_changed(const bool);
+	void on_ovp_threshold_changed(const double);
+	void on_ocp_enabled_changed(const bool);
+	void on_ocp_threshold_changed(const double);
+	void on_uvc_enabled_changed(const bool);
+	void on_uvc_threshold_changed(const double);
+	void on_config_changed(const devices::ConfigKey, const QVariant);
 
 };
 
@@ -95,4 +99,3 @@ private Q_SLOTS:
 } // namespace sv
 
 #endif // VIEWS_SOURCECONTROLVIEW_HPP
-

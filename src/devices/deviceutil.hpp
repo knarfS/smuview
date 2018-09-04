@@ -234,6 +234,22 @@ enum class ConfigKey
 	Unknown,
 };
 
+enum class DataType
+{
+	UInt64,
+	Sting,
+	Bool,
+	Float,
+	RationalPeriod,
+	RationalVolt,
+	KeyValue,
+	Uint64Range,
+	DoubleRange,
+	Int32,
+	MQ,
+	Unknown,
+};
+
 namespace deviceutil {
 
 typedef map<DeviceTypeKey, QString> device_type_key_name_map_t;
@@ -539,6 +555,34 @@ map<ConfigKey, const sigrok::ConfigKey *> config_key_sr_config_key_map = {
 	{ ConfigKey::TestMode, sigrok::ConfigKey::TEST_MODE },
 };
 
+map<const sigrok::DataType *, DataType> sr_data_type_data_type_map = {
+	{ sigrok::DataType::UINT64, DataType::UInt64 },
+	{ sigrok::DataType::STRING, DataType::Sting },
+	{ sigrok::DataType::BOOL, DataType::Bool },
+	{ sigrok::DataType::FLOAT, DataType::Float },
+	{ sigrok::DataType::RATIONAL_PERIOD, DataType::RationalPeriod },
+	{ sigrok::DataType::RATIONAL_VOLT, DataType::RationalVolt },
+	{ sigrok::DataType::KEYVALUE, DataType::KeyValue },
+	{ sigrok::DataType::UINT64_RANGE, DataType::Uint64Range },
+	{ sigrok::DataType::DOUBLE_RANGE, DataType::DoubleRange },
+	{ sigrok::DataType::INT32, DataType::Int32 },
+	{ sigrok::DataType::MQ, DataType::MQ },
+};
+
+map<DataType, const sigrok::DataType *> data_type_sr_data_type_map = {
+	{ DataType::UInt64, sigrok::DataType::UINT64 },
+	{ DataType::Sting, sigrok::DataType::STRING },
+	{ DataType::Bool, sigrok::DataType::BOOL },
+	{ DataType::Float, sigrok::DataType::FLOAT },
+	{ DataType::RationalPeriod, sigrok::DataType::RATIONAL_PERIOD },
+	{ DataType::RationalVolt, sigrok::DataType::RATIONAL_VOLT },
+	{ DataType::KeyValue, sigrok::DataType::KEYVALUE },
+	{ DataType::Uint64Range, sigrok::DataType::UINT64_RANGE },
+	{ DataType::DoubleRange, sigrok::DataType::DOUBLE_RANGE },
+	{ DataType::Int32, sigrok::DataType::INT32 },
+	{ DataType::MQ, sigrok::DataType::MQ },
+};
+
 } // namespace
 
 /**
@@ -702,6 +746,52 @@ bool is_valid_sr_config_key(ConfigKey config_key);
 
 
 /**
+ * Returns the corresponding DataType for a sigrok DataType
+ *
+ * @param sr_data_type The sigrok DataType
+ *
+ * @return The DataType.
+ */
+DataType get_data_type(const sigrok::DataType *sr_data_type);
+
+/**
+ * Returns the corresponding DataType for a sigrok DataType (unit32_t)
+ *
+ * @param sr_data_type The sigrok DataType as uint32_t
+ *
+ * @return The DataType.
+ */
+DataType get_data_type(uint32_t sr_data_type);
+
+/**
+ * Returns the corresponding sigrok DataType for a DataType
+ *
+ * @param data_type The DataType.
+ *
+ * @return The sigrok DataType.
+ */
+const sigrok::DataType *get_sr_data_type(DataType data_type);
+
+/**
+ * Returns the corresponding sigrok DataType ID for a DataType
+ *
+ * @param data_type The DataType
+ *
+ * @return The sigrok DataType ID as uint32_t.
+ */
+uint32_t get_sr_data_type_id(DataType data_type);
+
+/**
+ * Checks if the DataType is a known sigrok DataType
+ *
+ * @param data_type The DataType
+ *
+ * @return true if it is a known sigrok DataType
+ */
+bool is_valid_sr_data_type(DataType data_type);
+
+
+/**
  * Formats a DeviceTypeKey to a string
  *
  * @param device_type_key The DeviceTypeKey to format.
@@ -727,6 +817,16 @@ QString format_connection_key(ConnectionKey connection_key);
  * @return The formatted ConfigKey.
  */
 QString format_config_key(ConfigKey config_key);
+
+
+/**
+ * Gets the DataType for a ConfigKey
+ *
+ * @param config_key The ConfigKey.
+ *
+ * @return The DataType for the ConfigKey.
+ */
+DataType get_data_type_for_config_key(ConfigKey config_key);
 
 } // namespace deviceutil
 } // namespace devices
