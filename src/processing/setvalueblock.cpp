@@ -17,27 +17,49 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "baseblock.hpp"
+#include <cassert>
+
+#include <QDebug>
+
+#include "setvalueblock.hpp"
+#include "src/devices/configurable.hpp"
+#include "src/devices/deviceutil.hpp"
 
 namespace sv {
 namespace processing {
 
-BaseBlock::BaseBlock()
+SetValueBlock::SetValueBlock() : BaseBlock()
 {
 }
 
-BaseBlock::~BaseBlock()
+void SetValueBlock::init()
 {
 }
 
-void BaseBlock::set_name(QString name)
+void SetValueBlock::run()
 {
-	name_ = name;
+	assert(configurable_);
+	assert(config_key_);
+
+	qWarning() << "SetValueBlock: value = " << value_;
+
+	configurable_->set_config(config_key_, value_);
+	configurable_->config_changed(config_key_, value_);
 }
 
-QString BaseBlock::name()
+void SetValueBlock::set_configurable(shared_ptr<devices::Configurable> configurable)
 {
-	return name_;
+	configurable_ = configurable;
+}
+
+void SetValueBlock::set_config_key(devices::ConfigKey key)
+{
+	config_key_ = key;
+}
+
+void SetValueBlock::set_value(double value)
+{
+	value_ = value;
 }
 
 } // namespace processing

@@ -28,6 +28,7 @@
 #include <QListWidget>
 #include <QMainWindow>
 #include <QString>
+#include <QToolButton>
 #include <QToolBar>
 
 using std::shared_ptr;
@@ -57,7 +58,15 @@ private:
 	QString name_;
 	shared_ptr<sv::processing::Processor> processor_;
 
-	QAction *const action_add_block_;
+	QToolButton *add_button_;
+	QAction *const action_add_set_value_block_;
+	QAction *const action_add_get_value_block_;
+	QAction *const action_add_step_block_;
+	QAction *const action_add_sequence_block_;
+	QAction *const action_add_wait_block_;
+	QAction *const action_add_user_input_block_;
+	QAction *const action_add_create_signal_block_;
+	QAction *const action_remove_block_;
 	QToolBar *toolbar_;
 	QLineEdit *name_edit_;
 	QCheckBox *run_at_startup_checkbox_;
@@ -66,9 +75,15 @@ private:
 	void setup_ui();
 	void setup_toolbar();
 
-
 private Q_SLOTS:
-	void on_action_add_block_triggered();
+	void on_action_add_set_value_block_triggered();
+	void on_action_add_get_value_block_triggered();
+	void on_action_add_step_block_triggered();
+	void on_action_add_sequence_block_triggered();
+	void on_action_add_wait_block_triggered();
+	void on_action_add_user_input_block_triggered();
+	void on_action_add_create_signal_block_triggered();
+	void on_action_remove_block_triggered();
 
 };
 

@@ -21,6 +21,7 @@
 #define PROCESSING_BASEBLOCK_HPP
 
 #include <QObject>
+#include <QString>
 
 namespace sv {
 namespace processing {
@@ -37,7 +38,11 @@ public:
 	virtual void init() = 0;
 	virtual void run() = 0;
 
+	void set_name(QString);
+	QString name();
+
 protected:
+	QString name_;
 
 };
 

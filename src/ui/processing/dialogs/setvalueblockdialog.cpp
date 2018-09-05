@@ -29,7 +29,7 @@
 #include <QVBoxLayout>
 #include <QWidget>
 
-#include "stepblockdialog.hpp"
+#include "setvalueblockdialog.hpp"
 #include "src/devices/configurable.hpp"
 #include "src/widgets/configkeycombobox.hpp"
 #include "src/widgets/configurablecombobox.hpp"
@@ -44,26 +44,22 @@ namespace ui {
 namespace processing {
 namespace dialogs {
 
-StepBlockDialog::StepBlockDialog(shared_ptr<Session> session,
-		shared_ptr<devices::Configurable> configurable,
+SetValueBlockDialog::SetValueBlockDialog(shared_ptr<Session> session,
 		QWidget *parent) :
 	QDialog(parent),
-	session_(session),
-	configurable_(configurable)
+	session_(session)
 {
-	assert(configurable);
-
 	setup_ui();
 	connect_signals();
 }
 
-void StepBlockDialog::setup_ui()
+void SetValueBlockDialog::setup_ui()
 {
 	QIcon mainIcon;
 	mainIcon.addFile(QStringLiteral(":/icons/smuview.ico"),
 		QSize(), QIcon::Normal, QIcon::Off);
 	this->setWindowIcon(mainIcon);
-	this->setWindowTitle(tr("Step Sequence Block"));
+	this->setWindowTitle(tr("Set Value Block"));
 	this->setMinimumWidth(550);
 
 	QVBoxLayout *main_layout = new QVBoxLayout();
@@ -73,37 +69,21 @@ void StepBlockDialog::setup_ui()
 	name_edit_ = new QLineEdit();
 	form_layout->addRow(tr("Name"), name_edit_);
 	configurable_box_ = new widgets::ConfigurableComboBox(session_);
-	form_layout->addRow(tr("Channel (?)"), configurable_box_);
+	form_layout->addRow(tr("Channel"), configurable_box_);
 	config_key_box_ = new widgets::ConfigKeyComboBox(
 		configurable_box_->selected_configurable());
-	form_layout->addRow(tr("Control (?)"), config_key_box_);
-	start_value_ = new QDoubleSpinBox();
-	start_value_->setSuffix(QString(" %1").arg("V"));
-	start_value_->setDecimals(3);
-	start_value_->setMinimum(0);
-	start_value_->setMaximum(100);
-	start_value_->setSingleStep(0.01);
-	form_layout->addRow(tr("Start value"), start_value_);
-	end_value_ = new QDoubleSpinBox();
-	//end_value_->setSuffix(QString(" %1").arg("V"));
-	end_value_->setDecimals(3);
-	end_value_->setMinimum(0);
-	end_value_->setMaximum(100);
-	end_value_->setSingleStep(0.01);
-	form_layout->addRow(tr("End value"), end_value_);
-	step_size_ = new QDoubleSpinBox();
-	//step_size_->setSuffix(QString(" %1").arg("V"));
-	step_size_->setDecimals(3);
-	step_size_->setMinimum(0);
-	step_size_->setMaximum(100);
-	step_size_->setSingleStep(0.01);
-	form_layout->addRow(tr("Step size"), step_size_);
-	delay_ms_ = new QSpinBox();
-	delay_ms_->setSuffix(QString(" %1").arg("ms"));
-	delay_ms_->setMinimum(0);
-	delay_ms_->setMaximum(10000);
-	delay_ms_->setSingleStep(1);
-	form_layout->addRow(tr("Delay"), delay_ms_);
+	form_layout->addRow(tr("Control"), config_key_box_);
+	// Values (controlled by SLOT)
+	value_double_ = new QDoubleSpinBox();
+	value_double_->setHidden(true);
+	form_layout->addRow(tr("Double Value"), value_double_);
+	value_int_ = new QSpinBox();
+	value_int_->setHidden(true);
+	form_layout->addRow(tr("Integer Value"), value_int_);
+	value_string_ = new QLineEdit();
+	value_string_->setHidden(true);
+	form_layout->addRow(tr("String Value"), value_string_);
+
 	main_layout->addLayout(form_layout);
 
 	// Buttons
@@ -116,13 +96,15 @@ void StepBlockDialog::setup_ui()
 	this->setLayout(main_layout);
 }
 
-void StepBlockDialog::connect_signals()
+void SetValueBlockDialog::connect_signals()
 {
 	connect(configurable_box_, SIGNAL(currentIndexChanged(int)),
-		this, SLOT(configurable_changed()));
+		this, SLOT(on_configurable_changed()));
+	connect(config_key_box_, SIGNAL(currentIndexChanged(int)),
+		this, SLOT(on_config_key_changed()));
 }
 
-void StepBlockDialog::accept()
+void SetValueBlockDialog::accept()
 {
 	if (name_edit_->text().size() == 0) {
 		QMessageBox::warning(this,
@@ -135,40 +117,71 @@ void StepBlockDialog::accept()
 	QDialog::accept();
 }
 
-shared_ptr<devices::Configurable> StepBlockDialog::configurable() const
+shared_ptr<devices::Configurable> SetValueBlockDialog::configurable() const
 {
 	return configurable_box_->selected_configurable();
 }
 
-devices::ConfigKey StepBlockDialog::config_key() const
+devices::ConfigKey SetValueBlockDialog::config_key() const
 {
 	return config_key_box_->selected_config_key();
 }
 
-double StepBlockDialog::start_value() const
+double SetValueBlockDialog::value_double() const
 {
-	return start_value_->value();
+	return value_double_->value();
 }
 
-double StepBlockDialog::end_value() const
+int SetValueBlockDialog::value_int()
 {
-	return end_value_->value();
+	return value_int_->value();
 }
 
-double StepBlockDialog::step_size() const
+QString SetValueBlockDialog::value_string()
 {
-	return step_size_->value();
+	return value_string_->text();
 }
 
-int StepBlockDialog::delay_ms() const
-{
-	return delay_ms_->value();
-}
-
-void StepBlockDialog::configurable_changed()
+void SetValueBlockDialog::on_configurable_changed()
 {
 	config_key_box_->set_configurable(
 		configurable_box_->selected_configurable());
+}
+
+void SetValueBlockDialog::on_config_key_changed()
+{
+	devices::ConfigKey ck = config_key_box_->selected_config_key();
+	devices::DataType dt =
+		devices::deviceutil::get_data_type_for_config_key(ck);
+
+	switch (dt) {
+	case devices::DataType::Float:
+		//value_double_->setSuffix(QString(" %1").arg("V"));
+		value_double_->setDecimals(3);
+		value_double_->setMinimum(0);
+		value_double_->setMaximum(100);
+		value_double_->setSingleStep(0.01);
+		value_double_->setHidden(false);
+		value_int_->setHidden(true);
+		value_string_->setHidden(true);
+		break;
+	case devices::DataType::Int32:
+		//value_int_->setSuffix(QString(" %1").arg("V"));
+		value_int_->setMinimum(0);
+		value_int_->setMaximum(100);
+		value_int_->setSingleStep(1);
+		value_int_->setHidden(false);
+		value_double_->setHidden(true);
+		value_string_->setHidden(true);
+		break;
+	case devices::DataType::Sting:
+		value_string_->setHidden(false);
+		value_double_->setHidden(true);
+		value_int_->setHidden(true);
+		break;
+	default:
+		return;
+	}
 }
 
 } // namespace dialogs

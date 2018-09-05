@@ -17,27 +17,33 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "baseblock.hpp"
+#include <chrono>
+#include <thread>
+
+#include <QDebug>
+
+#include "waitblock.hpp"
 
 namespace sv {
 namespace processing {
 
-BaseBlock::BaseBlock()
+WaitBlock::WaitBlock() : BaseBlock(),
+	wait_ms_(0)
 {
 }
 
-BaseBlock::~BaseBlock()
+void WaitBlock::init()
 {
 }
 
-void BaseBlock::set_name(QString name)
+void WaitBlock::run()
 {
-	name_ = name;
+	std::this_thread::sleep_for(std::chrono::milliseconds(wait_ms_));
 }
 
-QString BaseBlock::name()
+void WaitBlock::set_wait_ms(int wait_ms)
 {
-	return name_;
+	wait_ms_ = wait_ms;
 }
 
 } // namespace processing

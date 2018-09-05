@@ -17,6 +17,8 @@ ToDo
 	- Check getable/setable/listable also in the properties
 	- Enhance ThresholdControl widget (e.g for re:load pro). Maybe a dedicated property?
 		- Dedicated SvDoubleSpinBox and SvBoolButton?
+	- Check return value of all dlg.exec()
+	- Implement a QSpinBox with int64/uint64 from QAbstractSpinBox. (QSpinBox only supports int32)
 - Refactore:
 	- src/data -> src/signals
 	- src/data/datautil.cpp -> src/data/

@@ -3,9 +3,9 @@
  *
  * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
  *
- * This program is free software: you can redistribute it and/or modify
+ * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -14,35 +14,43 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QString>
+#ifndef PROCESSING_WAITBLOCK_HPP
+#define PROCESSING_WAITBLOCK_HPP
 
-#include "stepitem.hpp"
+#include <QObject>
+
 #include "src/processing/baseblock.hpp"
 
+using std::shared_ptr;
+using std::vector;
+
 namespace sv {
-namespace ui {
+
 namespace processing {
-namespace items {
 
-StepItem::StepItem(
-		QListWidget *parent) :
-	QListWidgetItem(parent)
+class WaitBlock :
+	public BaseBlock
 {
-	//this->setText(QString("%1 (Step Sequence)").arg(block_->name()));
-	this->setIcon(QIcon(":/icons/settings-views"));
-}
+	Q_OBJECT
 
+public:
+	WaitBlock();
 
-void StepItem::set_block(shared_ptr<sv::processing::BaseBlock> block)
-{
-	block_ = block;
-	this->setText(QString("%1 (Step Sequence)").arg(block_->name()));
-}
+public:
+	void init();
+	void run();
 
-} // namespace items
+	void set_wait_ms(int wait_ms);
+
+private:
+	int wait_ms_;
+
+};
+
 } // namespace processing
-} // namespace ui
 } // namespace sv
+
+#endif // PROCESSING_WAITBLOCK_HPP

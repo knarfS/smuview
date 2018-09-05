@@ -17,10 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <libsigrokcxx/libsigrokcxx.hpp>
-
 #include <QDebug>
 #include <QFormLayout>
+#include <QMenu>
+#include <QToolButton>
 #include <QVBoxLayout>
 #include <QWidget>
 
@@ -30,8 +30,12 @@
 #include "src/devices/configurable.hpp"
 #include "src/devices/hardwaredevice.hpp"
 #include "src/processing/processor.hpp"
+#include "src/processing/setvalueblock.hpp"
 #include "src/processing/stepblock.hpp"
+#include "src/processing/waitblock.hpp"
+#include "src/ui/processing/dialogs/setvalueblockdialog.hpp"
 #include "src/ui/processing/dialogs/stepblockdialog.hpp"
+#include "src/ui/processing/dialogs/waitblockdialog.hpp"
 #include "src/ui/processing/items/sequencesinitem.hpp"
 #include "src/ui/processing/items/stepitem.hpp"
 
@@ -50,7 +54,14 @@ ProcessThreadWidget::ProcessThreadWidget(shared_ptr<Session> session,
 	session_(session),
 	name_(name),
 	processor_(processor),
-	action_add_block_(new QAction(this))
+	action_add_set_value_block_(new QAction(this)),
+	action_add_get_value_block_(new QAction(this)),
+	action_add_step_block_(new QAction(this)),
+	action_add_sequence_block_(new QAction(this)),
+	action_add_wait_block_(new QAction(this)),
+	action_add_user_input_block_(new QAction(this)),
+	action_add_create_signal_block_(new QAction(this)),
+	action_remove_block_(new QAction(this))
 {
 	setup_ui();
 	setup_toolbar();
@@ -82,53 +93,141 @@ void ProcessThreadWidget::setup_ui()
 
 void ProcessThreadWidget::setup_toolbar()
 {
-	action_add_block_->setText(tr("Add block"));
-	action_add_block_->setIcon(
+	QMenu *add_menu = new QMenu();
+
+	action_add_set_value_block_->setText(tr("Add Set Value block"));
+	connect(action_add_set_value_block_, SIGNAL(triggered(bool)),
+		this, SLOT(on_action_add_set_value_block_triggered()));
+	add_menu->addAction(action_add_set_value_block_);
+
+	action_add_get_value_block_->setText(tr("Add Get Value block"));
+	connect(action_add_get_value_block_, SIGNAL(triggered(bool)),
+		this, SLOT(on_action_add_get_value_block_triggered()));
+	add_menu->addAction(action_add_get_value_block_);
+
+	action_add_step_block_->setText(tr("Add Step block"));
+	connect(action_add_step_block_, SIGNAL(triggered(bool)),
+		this, SLOT(on_action_add_step_block_triggered()));
+	add_menu->addAction(action_add_step_block_);
+
+	action_add_sequence_block_->setText(tr("Add Sequence block"));
+	connect(action_add_sequence_block_, SIGNAL(triggered(bool)),
+		this, SLOT(on_action_add_sequence_block_triggered()));
+	add_menu->addAction(action_add_sequence_block_);
+
+	action_add_wait_block_->setText(tr("Add Wait block"));
+	connect(action_add_wait_block_, SIGNAL(triggered(bool)),
+		this, SLOT(on_action_add_wait_block_triggered()));
+	add_menu->addAction(action_add_wait_block_);
+
+	action_add_user_input_block_->setText(tr("Add User Input block"));
+	connect(action_add_user_input_block_, SIGNAL(triggered(bool)),
+		this, SLOT(on_action_add_user_input_block_triggered()));
+	add_menu->addAction(action_add_user_input_block_);
+
+	action_add_create_signal_block_->setText(tr("Add Create Signal block"));
+	connect(action_add_create_signal_block_, SIGNAL(triggered(bool)),
+		this, SLOT(on_action_add_create_signal_block_triggered()));
+	add_menu->addAction(action_add_create_signal_block_);
+
+	add_button_ = new QToolButton();
+	add_button_->setText(tr("Add block"));
+	add_button_->setIcon(
 		QIcon::fromTheme("list-add",
 		QIcon(":/icons/list-add.png")));
-	connect(action_add_block_, SIGNAL(triggered(bool)),
-		this, SLOT(on_action_add_block_triggered()));
+	add_button_->setMenu(add_menu);
+	add_button_->setPopupMode(QToolButton::MenuButtonPopup);
+
+	action_remove_block_->setText(tr("Remove block"));
+	action_remove_block_->setIcon(
+		QIcon::fromTheme("list-remove",
+		QIcon(":/icons/list-remove.png")));
+	connect(action_remove_block_, SIGNAL(triggered(bool)),
+		this, SLOT(on_action_remove_block_triggered()));
 
 	toolbar_ = new QToolBar("Thread Toolbar");
-	toolbar_->addAction(action_add_block_);
+	toolbar_->addWidget(add_button_);
+	toolbar_->addAction(action_remove_block_);
 	this->addToolBar(Qt::TopToolBarArea, toolbar_);
 }
 
-void ProcessThreadWidget::on_action_add_block_triggered()
+void ProcessThreadWidget::on_action_add_set_value_block_triggered()
 {
+	dialogs::SetValueBlockDialog dlg(session_);
+	if (!dlg.exec())
+		return;
 
-	dialogs::StepBlockDialog dlg(session_, nullptr);
-	dlg.exec();
+	shared_ptr<sv::processing::SetValueBlock> block =
+		make_shared<sv::processing::SetValueBlock>();
+	block->set_configurable(dlg.configurable());
+	block->set_config_key(dlg.config_key());
+	block->set_value(dlg.value_double());
+	processor_->add_block_to_process(block);
 
-	/*
-	for (auto signal : dlg.signals())
-		add_time_curve(dynamic_pointer_cast<data::AnalogSignal>(signal));
-	*/
-
-	/*
 	ui::processing::items::StepItem *item =
 		new ui::processing::items::StepItem();
+	item->set_block(block);
 	process_block_list_->addItem(item);
+}
 
-	// DEMO: Get some device
-	unordered_set<shared_ptr<devices::BaseDevice>> devices =
-		session_->devices();
-	for (auto device : devices) {
-		if (auto hw_device = dynamic_pointer_cast<devices::HardwareDevice>(device)) {
-			// DEMO: Get some configurabel
-			for (auto configurable : hw_device->configurables()) {
-				shared_ptr<sv::processing::StepBlock> block =
-					make_shared<sv::processing::StepBlock>();
-				block->set_configurable(configurable);
-				block->set_config_key(sigrok::ConfigKey::AMPLITUDE);
-				processor_->add_block_to_process(block);
+void ProcessThreadWidget::on_action_add_get_value_block_triggered()
+{
 
-				break;
-			}
-			break;
-		}
-	}
-	*/
+}
+
+void ProcessThreadWidget::on_action_add_step_block_triggered()
+{
+	dialogs::StepBlockDialog dlg(session_, nullptr);
+	if (!dlg.exec())
+		return;
+
+	shared_ptr<sv::processing::StepBlock> block =
+		make_shared<sv::processing::StepBlock>();
+	block->set_configurable(dlg.configurable());
+	block->set_config_key(dlg.config_key());
+	block->set_start_value(dlg.start_value());
+	block->set_end_value(dlg.end_value());
+	block->set_step_size(dlg.step_size());
+	block->set_delay_ms(dlg.delay_ms());
+	processor_->add_block_to_process(block);
+
+	ui::processing::items::StepItem *item =
+		new ui::processing::items::StepItem();
+	item->set_block(block);
+	process_block_list_->addItem(item);
+}
+
+void ProcessThreadWidget::on_action_add_sequence_block_triggered()
+{
+}
+
+void ProcessThreadWidget::on_action_add_wait_block_triggered()
+{
+	dialogs::WaitBlockDialog dlg(session_);
+	if (!dlg.exec())
+		return;
+
+	shared_ptr<sv::processing::WaitBlock> block =
+		make_shared<sv::processing::WaitBlock>();
+	block->set_wait_ms(dlg.wait_ms());
+	processor_->add_block_to_process(block);
+
+	ui::processing::items::StepItem *item =
+		new ui::processing::items::StepItem();
+	item->set_block(block);
+	process_block_list_->addItem(item);
+}
+
+void ProcessThreadWidget::on_action_add_user_input_block_triggered()
+{
+}
+
+void ProcessThreadWidget::on_action_add_create_signal_block_triggered()
+{
+}
+
+void ProcessThreadWidget::on_action_remove_block_triggered()
+{
 }
 
 } // namespace processing

@@ -17,28 +17,50 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "baseblock.hpp"
+#ifndef UI_PROCESSING_DIALOGS_WAITBLOCKDIALOG_HPP
+#define UI_PROCESSING_DIALOGS_WAITBLOCKDIALOG_HPP
+
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QLineEdit>
+#include <QSpinBox>
+
+#include "src/session.hpp"
 
 namespace sv {
+namespace ui {
 namespace processing {
+namespace dialogs {
 
-BaseBlock::BaseBlock()
+class WaitBlockDialog : public QDialog
 {
-}
+	Q_OBJECT
 
-BaseBlock::~BaseBlock()
-{
-}
+public:
+	WaitBlockDialog(shared_ptr<Session> session,
+		QWidget *parent = nullptr);
 
-void BaseBlock::set_name(QString name)
-{
-	name_ = name;
-}
+	QString name();
+	int wait_ms() const;
 
-QString BaseBlock::name()
-{
-	return name_;
-}
+private:
+	shared_ptr<Session> session_;
 
+	QLineEdit *name_edit_;
+	QSpinBox *wait_ms_;
+	QDialogButtonBox *button_box_;
+
+	void setup_ui();
+	void connect_signals();
+
+public Q_SLOTS:
+	void accept() override;
+
+};
+
+} // namespace dialogs
 } // namespace processing
+} // namespace ui
 } // namespace sv
+
+#endif // UI_PROCESSING_DIALOGS_WAITBLOCKDIALOG_HPP

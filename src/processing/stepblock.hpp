@@ -25,14 +25,11 @@
 
 #include <QObject>
 
+#include "src/devices/deviceutil.hpp"
 #include "src/processing/baseblock.hpp"
 
 using std::shared_ptr;
 using std::vector;
-
-namespace sigrok {
-class ConfigKey;
-}
 
 namespace sv {
 
@@ -55,15 +52,26 @@ public:
 	void run();
 
 	void set_configurable(shared_ptr<devices::Configurable>);
-	void set_config_key(const sigrok::ConfigKey *);
+	void set_config_key(devices::ConfigKey);
+	void set_start_value(double start_value);
+	void set_end_value(double end_value);
+	void set_step_size(double step_size);
+	void set_delay_ms(int delay_ms);
 
 private:
 	shared_ptr<devices::Configurable> configurable_;
-	const sigrok::ConfigKey *config_key_;
+	devices::ConfigKey config_key_;
 
+	double start_value_;
+	double end_value_;
+	double step_size_;
+	int delay_ms_;
 	long step_cnt_;
+
+	/*
 	vector<double> values_;
 	vector<long> delays_;
+	*/
 
 };
 

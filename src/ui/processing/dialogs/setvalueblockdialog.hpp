@@ -17,10 +17,11 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UI_PROCESSING_DIALOGS_STEPBLOCKDIALOG_HPP
-#define UI_PROCESSING_DIALOGS_STEPBLOCKDIALOG_HPP
+#ifndef UI_PROCESSING_DIALOGS_SETVALUEBLOCKDIALOG_HPP
+#define UI_PROCESSING_DIALOGS_SETVALUEBLOCKDIALOG_HPP
 
 #include <memory>
+#include <vector>
 
 #include <QDialog>
 #include <QDialogButtonBox>
@@ -32,6 +33,7 @@
 #include "src/devices/deviceutil.hpp"
 
 using std::shared_ptr;
+using std::vector;
 
 namespace sv {
 
@@ -48,21 +50,19 @@ namespace ui {
 namespace processing {
 namespace dialogs {
 
-class StepBlockDialog : public QDialog
+class SetValueBlockDialog : public QDialog
 {
 	Q_OBJECT
 
 public:
-	StepBlockDialog(shared_ptr<Session> session,
-		shared_ptr<devices::Configurable> configurable,
+	SetValueBlockDialog(shared_ptr<Session> session,
 		QWidget *parent = nullptr);
 
 	shared_ptr<devices::Configurable> configurable() const;
 	devices::ConfigKey config_key() const;
-	double start_value() const;
-	double end_value() const;
-	double step_size() const;
-	int delay_ms() const;
+	double value_double() const;
+	int value_int();
+	QString value_string();
 
 private:
 	shared_ptr<Session> session_;
@@ -71,10 +71,9 @@ private:
 	QLineEdit *name_edit_;
 	widgets::ConfigurableComboBox *configurable_box_;
 	widgets::ConfigKeyComboBox *config_key_box_;
-	QDoubleSpinBox *start_value_;
-	QDoubleSpinBox *end_value_;
-	QDoubleSpinBox *step_size_;
-	QSpinBox *delay_ms_;
+	QDoubleSpinBox *value_double_;
+	QSpinBox *value_int_;
+	QLineEdit *value_string_;
 	QDialogButtonBox *button_box_;
 
 	void setup_ui();
@@ -84,7 +83,8 @@ public Q_SLOTS:
 	void accept() override;
 
 private Q_SLOTS:
-	void configurable_changed();
+	void on_configurable_changed();
+	void on_config_key_changed();
 
 };
 
@@ -93,4 +93,4 @@ private Q_SLOTS:
 } // namespace ui
 } // namespace sv
 
-#endif // UI_PROCESSING_DIALOGS_STEPBLOCKDIALOG_HPP
+#endif // UI_PROCESSING_DIALOGS_SETVALUEBLOCKDIALOG_HPP

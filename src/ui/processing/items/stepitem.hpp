@@ -20,10 +20,19 @@
 #ifndef UI_PROCESSING_ITEMS_STEPITEM_HPP
 #define UI_PROCESSING_ITEMS_STEPITEM_HPP
 
+#include <memory>
+
 #include <QListWidget>
 #include <QListWidgetItem>
 
+using std::shared_ptr;
+
 namespace sv {
+
+namespace processing {
+class BaseBlock;
+}
+
 namespace ui {
 namespace processing {
 namespace items {
@@ -34,7 +43,10 @@ class StepItem : public QListWidgetItem
 public:
 	StepItem(QListWidget *parent = nullptr);
 
+	void set_block(shared_ptr<sv::processing::BaseBlock>);
+
 private:
+	shared_ptr<sv::processing::BaseBlock> block_;
 
 };
 

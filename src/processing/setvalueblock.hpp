@@ -17,28 +17,50 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "baseblock.hpp"
+#ifndef PROCESSING_SETVALUEBLOCK_HPP
+#define PROCESSING_SETVALUEBLOCK_HPP
+
+#include <memory>
+
+#include <QObject>
+
+#include "src/devices/deviceutil.hpp"
+#include "src/processing/baseblock.hpp"
+
+using std::shared_ptr;
 
 namespace sv {
+
+namespace devices {
+class Configurable;
+}
+
 namespace processing {
 
-BaseBlock::BaseBlock()
+class SetValueBlock :
+	public BaseBlock
 {
-}
+	Q_OBJECT
 
-BaseBlock::~BaseBlock()
-{
-}
+public:
+	SetValueBlock();
 
-void BaseBlock::set_name(QString name)
-{
-	name_ = name;
-}
+public:
+	void init();
+	void run();
 
-QString BaseBlock::name()
-{
-	return name_;
-}
+	void set_configurable(shared_ptr<devices::Configurable>);
+	void set_config_key(devices::ConfigKey);
+	void set_value(double value);
+
+private:
+	shared_ptr<devices::Configurable> configurable_;
+	devices::ConfigKey config_key_;
+	double value_;
+
+};
 
 } // namespace processing
 } // namespace sv
+
+#endif // PROCESSING_SETVALUEBLOCK_HPP

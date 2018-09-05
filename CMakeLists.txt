@@ -173,7 +173,9 @@ set(smuview_SOURCES
   src/processing/baseblock.cpp
   src/processing/processor.cpp
   src/processing/sequenceblock.cpp
+  src/processing/setvalueblock.cpp
   src/processing/stepblock.cpp
+  src/processing/waitblock.cpp
 
   src/ui/data/quantitycombobox.cpp
   src/ui/data/quantityflagslist.cpp
@@ -213,7 +215,9 @@ set(smuview_SOURCES
   src/ui/dialogs/selectsignaldialog.cpp
   src/ui/processing/processingwidget.cpp
   src/ui/processing/processthreadwidget.cpp
+  src/ui/processing/dialogs/setvalueblockdialog.cpp
   src/ui/processing/dialogs/stepblockdialog.cpp
+  src/ui/processing/dialogs/waitblockdialog.cpp
   src/ui/processing/items/sequencesinitem.cpp
   src/ui/processing/items/stepitem.cpp
   src/ui/tabs/basetab.cpp
