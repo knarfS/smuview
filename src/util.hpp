@@ -171,6 +171,15 @@ vector<string> split_string(string text, string separator);
  */
 uint count_int_digits(int number);
 
+/**
+ * Get the number decimal places (number of digits after the decimal point)
+ *
+ * @param[in] double Decimal places to count
+ *
+ * @return Number of decimal places
+ */
+uint get_decimal_places(double dp);
+
 } // namespace util
 } // namespace sv
 

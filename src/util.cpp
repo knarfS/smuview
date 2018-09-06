@@ -297,5 +297,12 @@ uint count_int_digits(int number)
 	return digits;
 }
 
+uint get_decimal_places(double dp)
+{
+	int d = (int)ceil(1/dp) - 1;
+	uint cnt = util::count_int_digits(d);
+	return cnt;
+}
+
 } // namespace util
 } // namespace sv
