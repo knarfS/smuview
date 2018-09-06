@@ -212,6 +212,11 @@ set(smuview_SOURCES
   src/widgets/plot/timecurve.cpp
   src/widgets/plot/xycurve.cpp
 
+  src/ui/datatypes/boolbutton.cpp
+  src/ui/datatypes/boolcheckbox.cpp
+  src/ui/datatypes/datatypehelper.cpp
+  src/ui/datatypes/floatspinbox.cpp
+  src/ui/datatypes/int32spinbox.cpp
   src/ui/processing/processingwidget.cpp
   src/ui/processing/processthreadwidget.cpp
   src/ui/processing/blocks/sequencesinblock.cpp
