@@ -30,6 +30,8 @@
 #include <QObject>
 #include <QString>
 
+#include "src/devices/deviceutil.hpp"
+
 using std::function;
 using std::map;
 using std::mutex;
@@ -63,15 +65,6 @@ class BaseSignal;
 }
 
 namespace devices {
-
-enum class DeviceType {
-	PowerSupply,
-	ElectronicLoad,
-	Multimeter,
-	DemoDMMDevice,
-	VirtualDevice,
-	Unknown
-};
 
 class BaseDevice :
 	public QObject,

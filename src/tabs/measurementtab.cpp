@@ -26,6 +26,7 @@
 #include "src/data/basesignal.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/devices/configurable.hpp"
+#include "src/devices/deviceutil.hpp"
 #include "src/devices/hardwaredevice.hpp"
 #include "src/devices/measurementdevice.hpp"
 #include "src/views/demodmmcontrolview.hpp"
@@ -52,7 +53,7 @@ void MeasurementTab::setup_ui()
 	size_t i = 0;
 	for (auto c : hw_device->configurables()) {
 		if (c->is_controllable()) {
-			if (device_->type() == devices::DeviceType::DemoDMMDevice)
+			if (device_->type() == devices::DeviceType::DemoDev)
 				add_view(new views::DemoDMMControlView(session_, c),
 					Qt::TopDockWidgetArea);
 			else if (device_->type() == devices::DeviceType::Multimeter)

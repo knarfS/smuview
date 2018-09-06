@@ -25,6 +25,7 @@
 #include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/devices/basedevice.hpp"
+#include "src/devices/deviceutil.hpp"
 #include "src/dialogs/addmathchanneldialog.hpp"
 #include "src/dialogs/addviewdialog.hpp"
 #include "src/dialogs/aboutdialog.hpp"

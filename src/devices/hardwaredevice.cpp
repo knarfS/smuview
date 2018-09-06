@@ -37,6 +37,7 @@
 #include "src/channels/hardwarechannel.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/devices/configurable.hpp"
+#include "src/devices/deviceutil.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
 
@@ -63,8 +64,26 @@ HardwareDevice::HardwareDevice(
 		shared_ptr<sigrok::HardwareDevice> sr_device) :
 	BaseDevice(sr_context, sr_device)
 {
-	// TODO
 	init_configurables();
+
+	// Set options for different device types
+	// TODO: Multiple DeviceTypes per HardwareDevice
+	device_type_ = DeviceType::Unknown;
+	const auto sr_keys = sr_device->driver()->config_keys();
+	for (auto sr_key : sr_keys) {
+		DeviceType dt = deviceutil::get_device_type(sr_key);
+		if (dt == DeviceType::PowerSupply ||
+				dt == DeviceType::ElectronicLoad ||
+				dt == DeviceType::DemoDev ||
+				dt == DeviceType::Multimeter ||
+				dt == DeviceType::LcrMeter ||
+				dt == DeviceType::SoundLevelMeter) {
+			device_type_ = dt;
+			break;
+		}
+	}
+	if (device_type_ == DeviceType::Unknown)
+		assert("Unknown device");
 }
 
 QString HardwareDevice::name() const

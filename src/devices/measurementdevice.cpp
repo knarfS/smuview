@@ -36,14 +36,6 @@ MeasurementDevice::MeasurementDevice(
 		shared_ptr<sigrok::HardwareDevice> sr_device) :
 	HardwareDevice(sr_context, sr_device)
 {
-	// Set options for different device types
-	const auto sr_keys = sr_device->driver()->config_keys();
-	if (sr_keys.count(sigrok::ConfigKey::DEMO_DEV))
-		device_type_ = DeviceType::DemoDMMDevice;
-	else if (sr_keys.count(sigrok::ConfigKey::MULTIMETER))
-		device_type_ = DeviceType::Multimeter;
-	else
-		assert("Unknown device");
 }
 
 } // namespace devices

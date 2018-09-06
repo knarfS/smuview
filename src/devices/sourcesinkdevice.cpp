@@ -45,14 +45,6 @@ SourceSinkDevice::SourceSinkDevice(
 		shared_ptr<sigrok::HardwareDevice> sr_device) :
 	HardwareDevice(sr_context, sr_device)
 {
-	// Set options for different device types
-	const auto sr_keys = sr_device->driver()->config_keys();
-	if (sr_keys.count(sigrok::ConfigKey::POWER_SUPPLY))
-		device_type_ = DeviceType::PowerSupply;
-	else if (sr_keys.count(sigrok::ConfigKey::ELECTRONIC_LOAD))
-		device_type_ = DeviceType::ElectronicLoad;
-	else
-		assert("Unknown device");
 }
 
 void SourceSinkDevice::init_channels()

@@ -29,6 +29,7 @@
 #include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/devices/basedevice.hpp"
+#include "src/devices/deviceutil.hpp"
 
 using std::static_pointer_cast;
 

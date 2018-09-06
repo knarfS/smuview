@@ -40,7 +40,7 @@ class ConfigKey;
 namespace sv {
 namespace devices {
 
-enum class DeviceTypeKey
+enum class DeviceType
 {
 	/** The device can act as logic analyzer. */
 	LogicAnalyzer,
@@ -72,6 +72,8 @@ enum class DeviceTypeKey
 	SignalGenerator,
 	/** The device can measure power. */
 	Powermeter,
+	/** Virtual (SmuView) device */
+	VirtualDevice,
 	/** Unknown device. */
 	Unknown,
 };
@@ -252,32 +254,34 @@ enum class DataType
 
 namespace deviceutil {
 
-typedef map<DeviceTypeKey, QString> device_type_key_name_map_t;
+typedef map<DeviceType, QString> device_type_name_map_t;
 typedef map<ConnectionKey, QString> connection_key_name_map_t;
 typedef map<ConfigKey, QString> config_key_name_map_t;
+typedef map<DataType, QString> data_type_name_map_t;
 
 namespace {
 
 // TODO: Use tr(), QCoreApplication::translate(), QT_TR_NOOP() or
 //       QT_TRANSLATE_NOOP() for translation.
 //       See: http://doc.qt.io/qt-5/i18n-source-translation.html
-device_type_key_name_map_t device_type_key_name_map = {
-	{ DeviceTypeKey::LogicAnalyzer, QString("Logic Analyzer") },
-	{ DeviceTypeKey::Oscilloscope, QString("Oscilloscope") },
-	{ DeviceTypeKey::Multimeter, QString("Multimeter") },
-	{ DeviceTypeKey::DemoDev, QString("Demo Device") },
-	{ DeviceTypeKey::SoundLevelMeter, QString("Soundlevelmeter") },
-	{ DeviceTypeKey::Thermometer, QString("Thermometer") },
-	{ DeviceTypeKey::Hygrometer, QString("Hygrometer") },
-	{ DeviceTypeKey::Energymeter, QString("Energymeter") },
-	{ DeviceTypeKey::Demodulator, QString("Demodulator") },
-	{ DeviceTypeKey::PowerSupply, QString("Power Supply") },
-	{ DeviceTypeKey::LcrMeter, QString("LCR Meter") },
-	{ DeviceTypeKey::ElectronicLoad, QString("Electronic Load") },
-	{ DeviceTypeKey::Scale, QString("Scale") },
-	{ DeviceTypeKey::SignalGenerator, QString("Signal Generator") },
-	{ DeviceTypeKey::Powermeter, QString("Power Meter") },
-	{ DeviceTypeKey::Unknown, QString("Unknown") },
+device_type_name_map_t device_type_name_map = {
+	{ DeviceType::LogicAnalyzer, QString("Logic Analyzer") },
+	{ DeviceType::Oscilloscope, QString("Oscilloscope") },
+	{ DeviceType::Multimeter, QString("Multimeter") },
+	{ DeviceType::DemoDev, QString("Demo Device") },
+	{ DeviceType::SoundLevelMeter, QString("Soundlevelmeter") },
+	{ DeviceType::Thermometer, QString("Thermometer") },
+	{ DeviceType::Hygrometer, QString("Hygrometer") },
+	{ DeviceType::Energymeter, QString("Energymeter") },
+	{ DeviceType::Demodulator, QString("Demodulator") },
+	{ DeviceType::PowerSupply, QString("Power Supply") },
+	{ DeviceType::LcrMeter, QString("LCR Meter") },
+	{ DeviceType::ElectronicLoad, QString("Electronic Load") },
+	{ DeviceType::Scale, QString("Scale") },
+	{ DeviceType::SignalGenerator, QString("Signal Generator") },
+	{ DeviceType::Powermeter, QString("Power Meter") },
+	{ DeviceType::VirtualDevice, QString("Virtual SmuView Device") },
+	{ DeviceType::Unknown, QString("Unknown") },
 };
 
 connection_key_name_map_t connection_key_name_map = {
@@ -361,40 +365,55 @@ config_key_name_map_t config_key_name_map = {
 	{ ConfigKey::Unknown, QString("Unknown") },
 };
 
-map<const sigrok::ConfigKey *, DeviceTypeKey> sr_config_key_device_type_key_map = {
-	{ sigrok::ConfigKey::LOGIC_ANALYZER, DeviceTypeKey::LogicAnalyzer },
-	{ sigrok::ConfigKey::OSCILLOSCOPE, DeviceTypeKey::Oscilloscope },
-	{ sigrok::ConfigKey::MULTIMETER, DeviceTypeKey::Multimeter },
-	{ sigrok::ConfigKey::DEMO_DEV, DeviceTypeKey::DemoDev },
-	{ sigrok::ConfigKey::SOUNDLEVELMETER, DeviceTypeKey::SoundLevelMeter },
-	{ sigrok::ConfigKey::THERMOMETER, DeviceTypeKey::Thermometer },
-	{ sigrok::ConfigKey::HYGROMETER, DeviceTypeKey::Hygrometer },
-	{ sigrok::ConfigKey::ENERGYMETER, DeviceTypeKey::Energymeter },
-	{ sigrok::ConfigKey::DEMODULATOR, DeviceTypeKey::Demodulator },
-	{ sigrok::ConfigKey::POWER_SUPPLY, DeviceTypeKey::PowerSupply },
-	{ sigrok::ConfigKey::LCRMETER, DeviceTypeKey::LcrMeter },
-	{ sigrok::ConfigKey::ELECTRONIC_LOAD, DeviceTypeKey::ElectronicLoad },
-	{ sigrok::ConfigKey::SCALE, DeviceTypeKey::Scale },
-	{ sigrok::ConfigKey::SIGNAL_GENERATOR, DeviceTypeKey::SignalGenerator },
-	{ sigrok::ConfigKey::POWERMETER, DeviceTypeKey::Powermeter },
+data_type_name_map_t data_type_name_map = {
+	{ DataType::UInt64, QString("UInt64") },
+	{ DataType::Sting, QString("String") },
+	{ DataType::Bool, QString("Boolean") },
+	{ DataType::Float, QString("Float/Double") },
+	{ DataType::RationalPeriod, QString("Rational Period") },
+	{ DataType::RationalVolt, QString("Rational Volt") },
+	{ DataType::KeyValue, QString("Key Value") },
+	{ DataType::Uint64Range, QString("Uint64 Range") },
+	{ DataType::DoubleRange, QString("Double Range") },
+	{ DataType::Int32, QString("Int32") },
+	{ DataType::MQ, QString("Measured Quantity") },
+	{ DataType::Unknown, QString("Unknown") },
 };
 
-map<DeviceTypeKey, const sigrok::ConfigKey *> device_type_key_sr_config_key_map = {
-	{ DeviceTypeKey::LogicAnalyzer, sigrok::ConfigKey::LOGIC_ANALYZER },
-	{ DeviceTypeKey::Oscilloscope, sigrok::ConfigKey::OSCILLOSCOPE },
-	{ DeviceTypeKey::Multimeter, sigrok::ConfigKey::MULTIMETER },
-	{ DeviceTypeKey::DemoDev, sigrok::ConfigKey::DEMO_DEV },
-	{ DeviceTypeKey::SoundLevelMeter, sigrok::ConfigKey::SOUNDLEVELMETER },
-	{ DeviceTypeKey::Thermometer, sigrok::ConfigKey::THERMOMETER },
-	{ DeviceTypeKey::Hygrometer, sigrok::ConfigKey::HYGROMETER },
-	{ DeviceTypeKey::Energymeter, sigrok::ConfigKey::ENERGYMETER },
-	{ DeviceTypeKey::Demodulator, sigrok::ConfigKey::DEMODULATOR },
-	{ DeviceTypeKey::PowerSupply, sigrok::ConfigKey::POWER_SUPPLY },
-	{ DeviceTypeKey::LcrMeter, sigrok::ConfigKey::LCRMETER },
-	{ DeviceTypeKey::ElectronicLoad, sigrok::ConfigKey::ELECTRONIC_LOAD },
-	{ DeviceTypeKey::Scale, sigrok::ConfigKey::SCALE },
-	{ DeviceTypeKey::SignalGenerator, sigrok::ConfigKey::SIGNAL_GENERATOR },
-	{ DeviceTypeKey::Powermeter, sigrok::ConfigKey::POWERMETER },
+map<const sigrok::ConfigKey *, DeviceType> sr_config_key_device_type_map = {
+	{ sigrok::ConfigKey::LOGIC_ANALYZER, DeviceType::LogicAnalyzer },
+	{ sigrok::ConfigKey::OSCILLOSCOPE, DeviceType::Oscilloscope },
+	{ sigrok::ConfigKey::MULTIMETER, DeviceType::Multimeter },
+	{ sigrok::ConfigKey::DEMO_DEV, DeviceType::DemoDev },
+	{ sigrok::ConfigKey::SOUNDLEVELMETER, DeviceType::SoundLevelMeter },
+	{ sigrok::ConfigKey::THERMOMETER, DeviceType::Thermometer },
+	{ sigrok::ConfigKey::HYGROMETER, DeviceType::Hygrometer },
+	{ sigrok::ConfigKey::ENERGYMETER, DeviceType::Energymeter },
+	{ sigrok::ConfigKey::DEMODULATOR, DeviceType::Demodulator },
+	{ sigrok::ConfigKey::POWER_SUPPLY, DeviceType::PowerSupply },
+	{ sigrok::ConfigKey::LCRMETER, DeviceType::LcrMeter },
+	{ sigrok::ConfigKey::ELECTRONIC_LOAD, DeviceType::ElectronicLoad },
+	{ sigrok::ConfigKey::SCALE, DeviceType::Scale },
+	{ sigrok::ConfigKey::SIGNAL_GENERATOR, DeviceType::SignalGenerator },
+	{ sigrok::ConfigKey::POWERMETER, DeviceType::Powermeter },
+};
+
+map<DeviceType, const sigrok::ConfigKey *> device_type_sr_config_key_map = {
+	{ DeviceType::LogicAnalyzer, sigrok::ConfigKey::LOGIC_ANALYZER },
+	{ DeviceType::Oscilloscope, sigrok::ConfigKey::OSCILLOSCOPE },
+	{ DeviceType::Multimeter, sigrok::ConfigKey::MULTIMETER },
+	{ DeviceType::DemoDev, sigrok::ConfigKey::DEMO_DEV },
+	{ DeviceType::SoundLevelMeter, sigrok::ConfigKey::SOUNDLEVELMETER },
+	{ DeviceType::Thermometer, sigrok::ConfigKey::THERMOMETER },
+	{ DeviceType::Hygrometer, sigrok::ConfigKey::HYGROMETER },
+	{ DeviceType::Energymeter, sigrok::ConfigKey::ENERGYMETER },
+	{ DeviceType::Demodulator, sigrok::ConfigKey::DEMODULATOR },
+	{ DeviceType::PowerSupply, sigrok::ConfigKey::POWER_SUPPLY },
+	{ DeviceType::LcrMeter, sigrok::ConfigKey::LCRMETER },
+	{ DeviceType::ElectronicLoad, sigrok::ConfigKey::ELECTRONIC_LOAD },
+	{ DeviceType::Scale, sigrok::ConfigKey::SCALE },
+	{ DeviceType::SignalGenerator, sigrok::ConfigKey::SIGNAL_GENERATOR },
+	{ DeviceType::Powermeter, sigrok::ConfigKey::POWERMETER },
 };
 
 map<const sigrok::ConfigKey *, ConnectionKey> sr_config_key_connection_key_map = {
@@ -586,11 +605,11 @@ map<DataType, const sigrok::DataType *> data_type_sr_data_type_map = {
 } // namespace
 
 /**
- * Returns all known device type keys
+ * Returns all known device type
  *
- * @return The device type key name map
+ * @return The device type name map
  */
-device_type_key_name_map_t get_device_type_key_name_map();
+device_type_name_map_t get_device_type_name_map();
 
 /**
  * Returns all known connection keys
@@ -606,51 +625,58 @@ connection_key_name_map_t get_connection_key_name_map();
  */
 config_key_name_map_t get_config_key_name_map();
 
+/**
+ * Returns all known data types
+ *
+ * @return The data type name map
+ */
+data_type_name_map_t get_data_type_name_map();
+
 
 /**
- * Returns the corresponding DeviceTypeKey for a sigrok ConfigKey
+ * Returns the corresponding DeviceType for a sigrok ConfigKey
  *
  * @param sr_config_key The sigrok ConfigKey
  *
- * @return The DeviceTypeKey.
+ * @return The DeviceType.
  */
-DeviceTypeKey get_device_type_key(const sigrok::ConfigKey *sr_config_key);
+DeviceType get_device_type(const sigrok::ConfigKey *sr_config_key);
 
 /**
- * Returns the corresponding DeviceTypeKey for a sigrok ConfigKey (unit32_t)
+ * Returns the corresponding DeviceType for a sigrok ConfigKey (unit32_t)
  *
  * @param sr_config_key The sigrok ConfigKey as uint32_t
  *
- * @return The DeviceTypeKey.
+ * @return The DeviceType.
  */
-DeviceTypeKey get_device_type_key(uint32_t sr_config_key);
+DeviceType get_device_type(uint32_t sr_config_key);
 
 /**
- * Returns the corresponding sigrok ConfigKey for a DeviceTypeKey
+ * Returns the corresponding sigrok ConfigKey for a DeviceType
  *
- * @param device_type_key The DeviceTypeKey.
+ * @param device_type The DeviceType.
  *
  * @return The sigrok ConfigKeyt.
  */
-const sigrok::ConfigKey *get_sr_config_key(DeviceTypeKey device_type_key);
+const sigrok::ConfigKey *get_sr_config_key(DeviceType device_type);
 
 /**
- * Returns the corresponding sigrok ConfigKey ID for a DeviceTypeKey
+ * Returns the corresponding sigrok ConfigKey ID for a DeviceType
  *
- * @param device_type_key The DeviceTypeKey
+ * @param device_type The DeviceType
  *
  * @return The sigrok ConfigKey ID as uint32_t.
  */
-uint32_t get_sr_config_key_id(DeviceTypeKey device_type_key);
+uint32_t get_sr_config_key_id(DeviceType device_type);
 
 /**
- * Checks if the DeviceTypeKey is a known sigrok DeviceTypeKey / ConfigKey
+ * Checks if the DeviceType is a known sigrok DeviceType / ConfigKey
  *
- * @param device_type_key The DeviceTypeKey
+ * @param device_type The DeviceType
  *
- * @return true if it is a known sigrok DeviceTypeKey / ConfigKey
+ * @return true if it is a known sigrok DeviceType / ConfigKey
  */
-bool is_valid_sr_config_key(DeviceTypeKey device_type_key);
+bool is_valid_sr_config_key(DeviceType device_type);
 
 
 /**
@@ -792,13 +818,13 @@ bool is_valid_sr_data_type(DataType data_type);
 
 
 /**
- * Formats a DeviceTypeKey to a string
+ * Formats a DeviceType to a string
  *
- * @param device_type_key The DeviceTypeKey to format.
+ * @param device_type The DeviceType to format.
  *
  * @return The formatted device type.
  */
-QString format_device_type_key(DeviceTypeKey device_type_key);
+QString format_device_type(DeviceType device_type);
 
 /**
  * Formats a ConnectionKey to a string
@@ -817,6 +843,15 @@ QString format_connection_key(ConnectionKey connection_key);
  * @return The formatted ConfigKey.
  */
 QString format_config_key(ConfigKey config_key);
+
+/**
+ * Formats a DataType to a string
+ *
+ * @param data_type The DataType to format.
+ *
+ * @return The formatted DataType.
+ */
+QString format_data_type(DataType data_type);
 
 
 /**

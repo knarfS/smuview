@@ -29,9 +29,9 @@ namespace sv {
 namespace devices {
 namespace deviceutil {
 
-device_type_key_name_map_t get_device_type_key_name_map()
+device_type_name_map_t get_device_type_name_map()
 {
-	return device_type_key_name_map;
+	return device_type_name_map;
 }
 
 connection_key_name_map_t get_connection_key_name_map()
@@ -44,35 +44,40 @@ config_key_name_map_t get_config_key_name_map()
 	return config_key_name_map;
 }
 
-
-DeviceTypeKey get_device_type_key(const sigrok::ConfigKey *sr_config_key)
+data_type_name_map_t get_data_type_name_map()
 {
-	if (sr_config_key_device_type_key_map.count(sr_config_key) > 0)
-		return sr_config_key_device_type_key_map[sr_config_key];
-	return DeviceTypeKey::Unknown;
+	return data_type_name_map;
 }
 
-DeviceTypeKey get_device_type_key(uint32_t sr_config_key)
+
+DeviceType get_device_type(const sigrok::ConfigKey *sr_config_key)
+{
+	if (sr_config_key_device_type_map.count(sr_config_key) > 0)
+		return sr_config_key_device_type_map[sr_config_key];
+	return DeviceType::Unknown;
+}
+
+DeviceType get_device_type(uint32_t sr_config_key)
 {
 	const sigrok::ConfigKey *sr_ck = sigrok::ConfigKey::get(sr_config_key);
-	return get_device_type_key(sr_ck);
+	return get_device_type(sr_ck);
 }
 
-const sigrok::ConfigKey *get_sr_config_key(DeviceTypeKey device_type_key)
+const sigrok::ConfigKey *get_sr_config_key(DeviceType device_type)
 {
-	return device_type_key_sr_config_key_map[device_type_key];
+	return device_type_sr_config_key_map[device_type];
 }
 
-uint32_t get_sr_config_key_id(DeviceTypeKey device_type_key)
+uint32_t get_sr_config_key_id(DeviceType device_type)
 {
-	if (device_type_key_sr_config_key_map.count(device_type_key) > 0)
-		return device_type_key_sr_config_key_map[device_type_key]->id();
+	if (device_type_sr_config_key_map.count(device_type) > 0)
+		return device_type_sr_config_key_map[device_type]->id();
 	return 0;
 }
 
-bool is_valid_sr_config_key(DeviceTypeKey device_type_key)
+bool is_valid_sr_config_key(DeviceType device_type)
 {
-	if (device_type_key_sr_config_key_map.count(device_type_key) > 0)
+	if (device_type_sr_config_key_map.count(device_type) > 0)
 		return true;
 	return false;
 }
@@ -177,11 +182,11 @@ bool is_valid_sr_data_type(DataType data_type)
 }
 
 
-QString format_device_type_key(DeviceTypeKey device_type_key)
+QString format_device_type(DeviceType device_type)
 {
-	if (device_type_key_name_map.count(device_type_key) > 0)
-		return device_type_key_name_map[device_type_key];
-	return device_type_key_name_map[DeviceTypeKey::Unknown];
+	if (device_type_name_map.count(device_type) > 0)
+		return device_type_name_map[device_type];
+	return device_type_name_map[DeviceType::Unknown];
 }
 
 QString format_connection_key(ConnectionKey connection_key)
@@ -196,6 +201,13 @@ QString format_config_key(ConfigKey config_key)
 	if (config_key_name_map.count(config_key) > 0)
 		return config_key_name_map[config_key];
 	return config_key_name_map[ConfigKey::Unknown];
+}
+
+QString format_data_type(DataType data_type)
+{
+	if (data_type_name_map.count(data_type) > 0)
+		return data_type_name_map[data_type];
+	return data_type_name_map[DataType::Unknown];
 }
 
 
