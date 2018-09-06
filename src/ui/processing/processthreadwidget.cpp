@@ -161,7 +161,7 @@ void ProcessThreadWidget::on_action_add_set_value_block_triggered()
 		make_shared<sv::processing::SetValueBlock>();
 	block->set_configurable(dlg.configurable());
 	block->set_config_key(dlg.config_key());
-	block->set_value(dlg.value_double());
+	block->set_value(dlg.value());
 	processor_->add_block_to_process(block);
 
 	ui::processing::items::StepItem *item =

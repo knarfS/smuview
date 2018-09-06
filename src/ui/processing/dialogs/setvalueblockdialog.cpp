@@ -31,6 +31,7 @@
 
 #include "setvalueblockdialog.hpp"
 #include "src/devices/configurable.hpp"
+#include "src/ui/datatypes/datatypehelper.hpp"
 #include "src/widgets/configkeycombobox.hpp"
 #include "src/widgets/configurablecombobox.hpp"
 
@@ -73,17 +74,12 @@ void SetValueBlockDialog::setup_ui()
 	config_key_box_ = new widgets::ConfigKeyComboBox(
 		configurable_box_->selected_configurable());
 	form_layout->addRow(tr("Control"), config_key_box_);
-	// Values (controlled by SLOT)
-	value_double_ = new QDoubleSpinBox();
-	value_double_->setHidden(true);
-	form_layout->addRow(tr("Double Value"), value_double_);
-	value_int_ = new QSpinBox();
-	value_int_->setHidden(true);
-	form_layout->addRow(tr("Integer Value"), value_int_);
-	value_string_ = new QLineEdit();
-	value_string_->setHidden(true);
-	form_layout->addRow(tr("String Value"), value_string_);
 
+	value_widget_ = datatypes::datatypehelper::get_widget_for_config_key(
+		configurable_box_->selected_configurable(),
+		config_key_box_->selected_config_key(),
+		data::Unit::Unknown, false);
+	form_layout->addRow(tr("Value"), value_widget_);
 	main_layout->addLayout(form_layout);
 
 	// Buttons
@@ -127,19 +123,9 @@ devices::ConfigKey SetValueBlockDialog::config_key() const
 	return config_key_box_->selected_config_key();
 }
 
-double SetValueBlockDialog::value_double() const
+double SetValueBlockDialog::value() const
 {
-	return value_double_->value();
-}
-
-int SetValueBlockDialog::value_int()
-{
-	return value_int_->value();
-}
-
-QString SetValueBlockDialog::value_string()
-{
-	return value_string_->text();
+	return .0; //value_widget_->value();
 }
 
 void SetValueBlockDialog::on_configurable_changed()
@@ -150,38 +136,19 @@ void SetValueBlockDialog::on_configurable_changed()
 
 void SetValueBlockDialog::on_config_key_changed()
 {
+	/*
 	devices::ConfigKey ck = config_key_box_->selected_config_key();
-	devices::DataType dt =
-		devices::deviceutil::get_data_type_for_config_key(ck);
+	devices::DataType dt = sv::devices::deviceutil::get_data_type_for_config_key(ck);
+	qWarning() << "SetValueBlockDialog::on_config_key_changed(): config_key = "
+		<< devices::deviceutil::format_config_key(ck)
+		//<< ", data_type = "
+		//<< devices::deviceutil::format_data_type(dt);
+	*/
 
-	switch (dt) {
-	case devices::DataType::Float:
-		//value_double_->setSuffix(QString(" %1").arg("V"));
-		value_double_->setDecimals(3);
-		value_double_->setMinimum(0);
-		value_double_->setMaximum(100);
-		value_double_->setSingleStep(0.01);
-		value_double_->setHidden(false);
-		value_int_->setHidden(true);
-		value_string_->setHidden(true);
-		break;
-	case devices::DataType::Int32:
-		//value_int_->setSuffix(QString(" %1").arg("V"));
-		value_int_->setMinimum(0);
-		value_int_->setMaximum(100);
-		value_int_->setSingleStep(1);
-		value_int_->setHidden(false);
-		value_double_->setHidden(true);
-		value_string_->setHidden(true);
-		break;
-	case devices::DataType::Sting:
-		value_string_->setHidden(false);
-		value_double_->setHidden(true);
-		value_int_->setHidden(true);
-		break;
-	default:
-		return;
-	}
+	value_widget_ = datatypes::datatypehelper::get_widget_for_config_key(
+		configurable_box_->selected_configurable(),
+		config_key_box_->selected_config_key(),
+		data::Unit::Unknown, false);
 }
 
 } // namespace dialogs

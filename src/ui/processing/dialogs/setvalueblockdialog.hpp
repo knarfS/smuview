@@ -28,6 +28,7 @@
 #include <QDoubleSpinBox>
 #include <QLineEdit>
 #include <QSpinBox>
+#include <QWidget>
 
 #include "src/session.hpp"
 #include "src/devices/deviceutil.hpp"
@@ -60,9 +61,7 @@ public:
 
 	shared_ptr<devices::Configurable> configurable() const;
 	devices::ConfigKey config_key() const;
-	double value_double() const;
-	int value_int();
-	QString value_string();
+	double value() const;
 
 private:
 	shared_ptr<Session> session_;
@@ -71,9 +70,7 @@ private:
 	QLineEdit *name_edit_;
 	widgets::ConfigurableComboBox *configurable_box_;
 	widgets::ConfigKeyComboBox *config_key_box_;
-	QDoubleSpinBox *value_double_;
-	QSpinBox *value_int_;
-	QLineEdit *value_string_;
+	QWidget *value_widget_;
 	QDialogButtonBox *button_box_;
 
 	void setup_ui();
