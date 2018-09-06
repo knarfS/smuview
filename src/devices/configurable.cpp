@@ -90,6 +90,7 @@ bool Configurable::has_get_config(devices::ConfigKey key)  const
 }
 
 template bool Configurable::get_config(devices::ConfigKey) const;
+template int32_t Configurable::get_config(devices::ConfigKey) const;
 template uint64_t Configurable::get_config(devices::ConfigKey) const;
 template double Configurable::get_config(devices::ConfigKey) const;
 // TODO: This doesn't work: with glibmm >= 2.54.1 but should
@@ -140,6 +141,7 @@ bool Configurable::has_set_config(devices::ConfigKey key) const
 }
 
 template void Configurable::set_config(devices::ConfigKey, const bool);
+template void Configurable::set_config(devices::ConfigKey, const int32_t);
 template void Configurable::set_config(devices::ConfigKey, const uint64_t);
 template void Configurable::set_config(devices::ConfigKey, const double);
 // This is working with glibmm < 2.52 (mxe uses glibmm 2.42.0), but libsigrok expects 'r' (this is '{ut}')
@@ -219,7 +221,7 @@ bool Configurable::list_config_string_array(devices::ConfigKey key,
 	return true;
 }
 
-bool Configurable::list_config_min_max_steps(devices::ConfigKey key,
+bool Configurable::list_config_min_max_step(devices::ConfigKey key,
 	double &min, double &max, double &step)
 {
 	Glib::VariantContainerBase gvar;

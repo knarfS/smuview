@@ -77,7 +77,7 @@ public:
 		Glib::VariantContainerBase &gvariant);
 	bool list_config_string_array(devices::ConfigKey key,
 		QStringList &string_list);
-	bool list_config_min_max_steps(devices::ConfigKey key,
+	bool list_config_min_max_step(devices::ConfigKey key,
 		double &min, double &max, double &step);
 	bool list_config_mq(devices::ConfigKey key,
 		measured_quantity_list_t &measured_quantity_list);
