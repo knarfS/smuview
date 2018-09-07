@@ -56,7 +56,15 @@ void MeasurementTab::setup_ui()
 			if (device_->type() == devices::DeviceType::DemoDev)
 				add_view(new views::DemoDMMControlView(session_, c),
 					Qt::TopDockWidgetArea);
-			else if (device_->type() == devices::DeviceType::Multimeter)
+			else if (device_->type() == devices::DeviceType::Multimeter ||
+					device_->type() == devices::DeviceType::Multimeter ||
+					device_->type() == devices::DeviceType::SoundLevelMeter ||
+					device_->type() == devices::DeviceType::Thermometer ||
+					device_->type() == devices::DeviceType::Hygrometer ||
+					device_->type() == devices::DeviceType::Energymeter ||
+					device_->type() == devices::DeviceType::LcrMeter ||
+					device_->type() == devices::DeviceType::Scale ||
+					device_->type() == devices::DeviceType::Powermeter)
 				add_view(new views::MeasurementControlView(session_, c),
 					Qt::TopDockWidgetArea);
 

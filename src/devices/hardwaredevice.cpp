@@ -76,8 +76,13 @@ HardwareDevice::HardwareDevice(
 				dt == DeviceType::ElectronicLoad ||
 				dt == DeviceType::DemoDev ||
 				dt == DeviceType::Multimeter ||
+				dt == DeviceType::SoundLevelMeter ||
+				dt == DeviceType::Thermometer ||
+				dt == DeviceType::Hygrometer ||
+				dt == DeviceType::Energymeter ||
 				dt == DeviceType::LcrMeter ||
-				dt == DeviceType::SoundLevelMeter) {
+				dt == DeviceType::Scale ||
+				dt == DeviceType::Powermeter) {
 			device_type_ = dt;
 			break;
 		}
