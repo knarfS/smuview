@@ -306,6 +306,7 @@ bool Configurable::list_config_string_array(devices::ConfigKey key,
 	return true;
 }
 
+// TODO: remove
 bool Configurable::list_config_min_max_step(devices::ConfigKey key,
 	double &min, double &max, double &step)
 {

@@ -61,6 +61,8 @@ private:
 	double step_;
 	int decimal_places_;
 
+	bool list_config();
+
 public Q_SLOTS:
 	void change_value(const QVariant);
 	void on_value_changed(Glib::VariantBase);

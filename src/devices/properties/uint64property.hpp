@@ -59,6 +59,8 @@ private:
 	uint64_t max_;
 	uint64_t step_;
 
+	bool list_config();
+
 public Q_SLOTS:
 	void change_value(const QVariant);
 	void on_value_changed(Glib::VariantBase);

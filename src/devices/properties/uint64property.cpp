@@ -30,20 +30,13 @@ namespace properties {
 
 UInt64Property::UInt64Property(shared_ptr<devices::Configurable> configurable,
 		devices::ConfigKey config_key) :
-	BaseProperty(configurable, config_key)
+	BaseProperty(configurable, config_key),
+	min_(std::numeric_limits<uint64_t>::lowest()),
+	max_(std::numeric_limits<uint64_t>::max()),
+	step_(1)
 {
-	if (is_listable_) {
-		// TODO: Add templeate for list_config_min_max_step<uint64_t>
-		//configurable_->list_config_min_max_step(config_key_, min_, max_, step_);
-		min_ = std::numeric_limits<uint64_t>::lowest();
-		max_ = std::numeric_limits<uint64_t>::max();
-		step_ = 1;
-	}
-	else {
-		min_ = std::numeric_limits<uint64_t>::lowest();
-		max_ = std::numeric_limits<uint64_t>::max();
-		step_ = 1;
-	}
+	if (is_listable_)
+		list_config();
 
 	/*
 	if (unit_ != data::Unit::Unknown && unit_ != data::Unit::Unitless) {
@@ -75,6 +68,23 @@ uint64_t UInt64Property::max() const
 uint64_t UInt64Property::step() const
 {
 	return step_;
+}
+
+bool UInt64Property::list_config()
+{
+	Glib::VariantContainerBase gvar;
+	if (!configurable_->list_config(config_key_, gvar))
+		return false;
+
+	Glib::VariantIter iter(gvar);
+	iter.next_value(gvar);
+	min_ = Glib::VariantBase::cast_dynamic<Glib::Variant<uint64_t>>(gvar).get();
+	iter.next_value(gvar);
+	max_ = Glib::VariantBase::cast_dynamic<Glib::Variant<uint64_t>>(gvar).get();
+	iter.next_value(gvar);
+	step_ = Glib::VariantBase::cast_dynamic<Glib::Variant<uint64_t>>(gvar).get();
+
+	return true;
 }
 
 void UInt64Property::change_value(const QVariant qvar)

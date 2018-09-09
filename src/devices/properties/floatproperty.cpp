@@ -31,17 +31,15 @@ namespace properties {
 
 FloatProperty::FloatProperty(shared_ptr<devices::Configurable> configurable,
 		devices::ConfigKey config_key) :
-	BaseProperty(configurable, config_key)
+	BaseProperty(configurable, config_key),
+	min_(std::numeric_limits<double>::lowest()),
+	max_(std::numeric_limits<double>::max()),
+	step_(0.001), //std::numeric_limits<double>::epsilon()
+	decimal_places_(3)
 {
 	if (is_listable_) {
-		configurable_->list_config_min_max_step(config_key_, min_, max_, step_);
-		decimal_places_ = util::get_decimal_places(step_);
-	}
-	else {
-		min_ = std::numeric_limits<double>::lowest();
-		max_ = std::numeric_limits<double>::max();
-		step_ = 0.001; //std::numeric_limits<double>::epsilon();
-		decimal_places_ = 3;
+		if (list_config())
+			decimal_places_ = util::get_decimal_places(step_);
 	}
 
 	/*
@@ -79,6 +77,23 @@ double FloatProperty::step() const
 int FloatProperty::decimal_places() const
 {
 	return decimal_places_;
+}
+
+bool FloatProperty::list_config()
+{
+	Glib::VariantContainerBase gvar;
+	if (!configurable_->list_config(config_key_, gvar))
+		return false;
+
+	Glib::VariantIter iter(gvar);
+	iter.next_value(gvar);
+	min_ = Glib::VariantBase::cast_dynamic<Glib::Variant<double>>(gvar).get();
+	iter.next_value(gvar);
+	max_ = Glib::VariantBase::cast_dynamic<Glib::Variant<double>>(gvar).get();
+	iter.next_value(gvar);
+	step_ = Glib::VariantBase::cast_dynamic<Glib::Variant<double>>(gvar).get();
+
+	return true;
 }
 
 void FloatProperty::change_value(const QVariant qvar)
