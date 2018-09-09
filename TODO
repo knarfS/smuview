@@ -23,6 +23,11 @@ ToDo
 	- Cache stuff?
 	- Move is_controllable() to tab/view? Make more generic...
 	- Missing sigok::ConfigKey::OFFSET
+	- Refactore:
+		- src/data -> src/signals
+		- src/data/datautil.cpp -> src/data/
+		- src/devices/deviceutil.cpp -> src/data/
+		- src/devices/properties/ -> src/data/
 - Breeze icons action/labplot-* for plots?
 
 ------------------------
