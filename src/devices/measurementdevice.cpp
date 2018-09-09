@@ -32,7 +32,7 @@ namespace sv {
 namespace devices {
 
 MeasurementDevice::MeasurementDevice(
-		const shared_ptr<sigrok::Context> &sr_context,
+		const shared_ptr<sigrok::Context> sr_context,
 		shared_ptr<sigrok::HardwareDevice> sr_device) :
 	HardwareDevice(sr_context, sr_device)
 {

@@ -22,19 +22,20 @@
 #include "floatspinbox.hpp"
 #include "src/util.hpp"
 #include "src/devices/configurable.hpp"
+#include "src/devices/properties/floatproperty.hpp"
 
 namespace sv {
 namespace ui {
 namespace datatypes {
 
-FloatSpinBox::FloatSpinBox(shared_ptr<devices::Configurable> configurable,
-		devices::ConfigKey config_key, data::Unit unit, bool auto_commit,
+FloatSpinBox::FloatSpinBox(
+		shared_ptr<devices::properties::FloatProperty> float_prop,
+		const bool auto_commit, const bool auto_update,
 		QWidget *parent) :
 	QDoubleSpinBox(parent),
-	configurable_(configurable),
-	config_key_(config_key),
-	unit_(unit),
-	auto_commit_(auto_commit)
+	auto_commit_(auto_commit),
+	auto_update_(auto_update),
+	float_prop_(float_prop)
 {
 	setup_ui();
 	connect_signals();
@@ -43,36 +44,45 @@ FloatSpinBox::FloatSpinBox(shared_ptr<devices::Configurable> configurable,
 void FloatSpinBox::setup_ui()
 {
 	this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
-	if (configurable_->has_list_config(config_key_)) {
-		configurable_->list_config_min_max_step(config_key_, min_, max_, step_);
-		this->setRange(min_, max_);
-		this->setSingleStep(step_);
-		this->setDecimals(util::get_decimal_places(step_));
+	if (float_prop_->is_listable()) {
+		this->setRange(float_prop_->min(), float_prop_->max());
+		this->setSingleStep(float_prop_->step());
+		this->setDecimals(float_prop_->decimal_places());
 	}
 	else {
 		this->setDecimals(3);
 	}
+	/*
 	if (unit_ != data::Unit::Unknown && unit_ != data::Unit::Unitless) {
 		this->setSuffix(QString(" %1").arg(data::datautil::format_unit(unit_)));
 	}
-	this->setDisabled(!configurable_->has_set_config(config_key_));
+	*/
+	this->setDisabled(!float_prop_->is_setable());
 }
 
 void FloatSpinBox::connect_signals()
 {
-	if (auto_commit_ && configurable_->has_set_config(config_key_))
+	// Widget -> Property
+	if (auto_commit_ && float_prop_->is_setable()) {
 		connect(this, SIGNAL(valueChanged(double)),
-			this, SLOT(on_value_changed(double)));
+			this, SLOT(value_changed(const double)));
+	}
+
+	// Property -> Widget
+	if (auto_update_) {
+		connect(float_prop_.get(), SIGNAL(value_changed(const QVariant)),
+			this, SLOT(on_value_changed(const QVariant)));
+	}
 }
 
-void FloatSpinBox::change_value(double value)
+void FloatSpinBox::value_changed(const double value)
 {
-	this->setValue(value);
+	float_prop_->value_changed(QVariant(value));
 }
 
-void FloatSpinBox::on_value_changed(double value)
+void FloatSpinBox::on_value_changed(const QVariant value)
 {
-	configurable_->set_config<double>(config_key_, value);
+	this->setValue(value.toDouble());
 }
 
 } // namespace datatypes

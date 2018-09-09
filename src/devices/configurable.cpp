@@ -20,7 +20,10 @@
 #include <cassert>
 #include <tuple>
 #include <type_traits>
+#include <map>
 #include <memory>
+#include <string>
+#include <utility>
 
 #include <glib.h>
 
@@ -30,8 +33,16 @@
 
 #include "configurable.hpp"
 #include "src/data/datautil.hpp"
+#include "src/devices/properties/baseproperty.hpp"
+#include "src/devices/properties/boolproperty.hpp"
+#include "src/devices/properties/floatproperty.hpp"
+#include "src/devices/properties/int32property.hpp"
+#include "src/devices/properties/measuredquantityproperty.hpp"
+#include "src/devices/properties/stringproperty.hpp"
+#include "src/devices/properties/uint64property.hpp"
 
 using std::dynamic_pointer_cast;
+using std::forward;
 using std::get;
 using std::is_base_of;
 using std::make_pair;
@@ -51,33 +62,88 @@ Configurable::Configurable(
 	sr_configurable_(sr_configurable),
 	device_name_(device_name)
 {
-	init_properties();
-	init_values();
 }
 
-void Configurable::init_properties()
+/*
+template<typename ...Arg>
+shared_ptr<Configurable> Configurable::create(Arg&&...arg)
+{
+    struct make_shared_enabler : public Configurable {
+      make_shared_enabler(Arg&&...arg) : Configurable(forward<Arg>(arg)...) {}
+    };
+
+    shared_ptr<Configurable> configurable =
+		make_shared<make_shared_enabler>(forward<Arg>(arg)...);
+	configurable->init();
+
+	return configurable;
+}
+*/
+
+void Configurable::init()
 {
 	const auto sr_config_keys = sr_configurable_->config_keys();
 	for (auto sr_config_key : sr_config_keys) {
+		ConfigKey config_key = deviceutil::get_config_key(sr_config_key);
+		if (config_key == ConfigKey::Unknown)
+			continue;
+
+		qWarning() << "Configurable::init(): Init " << name() << " - key " <<
+			deviceutil::format_config_key(config_key);
+
 		const auto sr_capabilities =
 			sr_configurable_->config_capabilities(sr_config_key);
-
 		if (sr_capabilities.count(sigrok::Capability::GET))
-			getable_configs_.insert(
-				devices::deviceutil::get_config_key(sr_config_key));
-
+			getable_configs_.insert(config_key);
 		if (sr_capabilities.count(sigrok::Capability::SET))
-			setable_configs_.insert(
-				devices::deviceutil::get_config_key(sr_config_key));
-
+			setable_configs_.insert(config_key);
 		if (sr_capabilities.count(sigrok::Capability::LIST))
-			listable_configs_.insert(
-				devices::deviceutil::get_config_key(sr_config_key));
-	}
-}
+			listable_configs_.insert(config_key);
 
-void Configurable::init_values()
-{
+		shared_ptr<properties::BaseProperty> property;
+		const DataType data_type =
+			deviceutil::get_data_type_for_config_key(config_key);
+		switch (data_type) {
+		case devices::DataType::Int32:
+			property = make_shared<properties::Int32Property>(
+				shared_from_this(), config_key);
+			break;
+		case devices::DataType::UInt64:
+			property = make_shared<properties::UInt64Property>(
+				shared_from_this(), config_key);
+			break;
+		case devices::DataType::Float:
+			property = make_shared<properties::FloatProperty>(
+				shared_from_this(), config_key);
+			break;
+		case devices::DataType::Sting:
+			property = make_shared<properties::StringProperty>(
+				shared_from_this(), config_key);
+			break;
+		case devices::DataType::Bool:
+			property = make_shared<properties::BoolProperty>(
+				shared_from_this(), config_key);
+			break;
+		case devices::DataType::MQ:
+			property = make_shared<properties::MeasuredQuantityProperty>(
+				shared_from_this(), config_key);
+			break;
+		case devices::DataType::RationalPeriod:
+		case devices::DataType::RationalVolt:
+		case devices::DataType::Uint64Range:
+		case devices::DataType::DoubleRange:
+			//qvar = QVariant(g_variant_get_tuple(entry.second.gobj()));
+			//break;
+		case devices::DataType::KeyValue:
+			//qvar = QVariant(g_variant_get_dictionary(entry.second.gobj()));
+			//break;
+		case devices::DataType::Unknown:
+		default:
+			assert("Unknown DataType");
+		}
+
+		properties_.insert(make_pair(config_key, property));
+	}
 }
 
 bool Configurable::has_get_config(devices::ConfigKey key)  const
@@ -93,8 +159,9 @@ template bool Configurable::get_config(devices::ConfigKey) const;
 template int32_t Configurable::get_config(devices::ConfigKey) const;
 template uint64_t Configurable::get_config(devices::ConfigKey) const;
 template double Configurable::get_config(devices::ConfigKey) const;
+//template std::string Configurable::get_config(devices::ConfigKey) const;
 // TODO: This doesn't work: with glibmm >= 2.54.1 but should
-//template tuple<uint32_t, uint64_t> Configurable::get_config(devices::ConfigKey) const;
+template tuple<uint32_t, uint64_t> Configurable::get_config(devices::ConfigKey) const;
 //template Configurable::measured_quantity_t Configurable::get_config(devices::ConfigKey) const;
 template<typename T> T Configurable::get_config(devices::ConfigKey key) const
 {
@@ -102,11 +169,8 @@ template<typename T> T Configurable::get_config(devices::ConfigKey key) const
 	assert(sr_configurable_);
 
 	// Special cases
+	/* TODO: move to properties?? Here?? And MQ?
 	switch (key) {
-	case ConfigKey::MeasuredQuantity:
-		//return (Configurable::measured_quantity_t)get_measured_quantity();
-		return 0;
-		break;
 	case ConfigKey::OverVoltageProtectionActive:
 	case ConfigKey::OverCurrentProtectionActive:
 	case ConfigKey::OverTemperatureProtectionActive:
@@ -117,18 +181,33 @@ template<typename T> T Configurable::get_config(devices::ConfigKey key) const
 	default:
 		break;
 	}
+	*/
 
 	const sigrok::ConfigKey *sr_key =
 		devices::deviceutil::get_sr_config_key(key);
 
 	if (!sr_configurable_->config_check(sr_key, sigrok::Capability::GET)) {
-		qWarning() << "Configurable::read_config(): No key " <<
-			QString::fromStdString(sr_key->name());
+		qWarning() << "Configurable::read_config(): No key / no getable key " <<
+			devices::deviceutil::format_config_key(key);
 		assert(false);
 	}
 
-	return Glib::VariantBase::cast_dynamic<Glib::Variant<T>>(
-		sr_configurable_->config_get(sr_key)).get();
+	// TODO: implement like get_list
+	/*
+	try {
+	*/
+		return Glib::VariantBase::cast_dynamic<Glib::Variant<T>>(
+			sr_configurable_->config_get(sr_key)).get();
+	/*
+	}
+	catch (sigrok::Error &error) {
+		qWarning() << "Configurable::list_config(): Failed to get key " <<
+			devices::deviceutil::format_config_key(key) << ". " << error.what();
+		assert(false);
+	}
+
+	return ;
+	*/
 }
 
 bool Configurable::has_set_config(devices::ConfigKey key) const
@@ -144,6 +223,7 @@ template void Configurable::set_config(devices::ConfigKey, const bool);
 template void Configurable::set_config(devices::ConfigKey, const int32_t);
 template void Configurable::set_config(devices::ConfigKey, const uint64_t);
 template void Configurable::set_config(devices::ConfigKey, const double);
+//template void Configurable::set_config(devices::ConfigKey, const std::string);
 // This is working with glibmm < 2.52 (mxe uses glibmm 2.42.0), but libsigrok expects 'r' (this is '{ut}')
 template void Configurable::set_config(devices::ConfigKey, const pair<uint32_t, uint64_t>);
 // This is working with glibmm >= 2.52 (but mxe uses glibmm 2.42.0). Working with libsigrok (expects 'r')
@@ -156,25 +236,22 @@ template<typename T> void Configurable::set_config(
 	assert(key);
 	assert(sr_configurable_);
 
-	// Special cases
-	switch (key) {
-	case ConfigKey::MeasuredQuantity:
-		//return set_measured_quantity(value);
-		break;
-	default:
-		break;
-	}
-
 	const sigrok::ConfigKey *sr_key =
 		devices::deviceutil::get_sr_config_key(key);
 
 	if (!sr_configurable_->config_check(sr_key, sigrok::Capability::SET)) {
-		qWarning() << "Configurable::write_config(): No key " <<
-			QString::fromStdString(sr_key->name());
+		qWarning() << "Configurable::write_config(): No key / no setable key  " <<
+			devices::deviceutil::format_config_key(key);
 		assert(false);
 	}
 
-	sr_configurable_->config_set(sr_key, Glib::Variant<T>::create(value));
+	try {
+		sr_configurable_->config_set(sr_key, Glib::Variant<T>::create(value));
+	}
+	catch (sigrok::Error &error) {
+		qWarning() << "Configurable::list_config(): Failed to set key " <<
+			devices::deviceutil::format_config_key(key) << ". " << error.what();
+	}
 }
 
 bool Configurable::has_list_config(devices::ConfigKey key) const
@@ -196,12 +273,20 @@ bool Configurable::list_config(devices::ConfigKey key,
 		devices::deviceutil::get_sr_config_key(key);
 
 	if (!sr_configurable_->config_check(sr_key, sigrok::Capability::LIST)) {
-		qWarning() << "Configurable::list_config_string_array(): No key " <<
-			QString::fromStdString(sr_key->name());
+		qWarning() << "Configurable::list_config(): No key / no listable key " <<
+			devices::deviceutil::format_config_key(key);
 		return false;
 	}
 
-	gvariant = sr_configurable_->config_list(sr_key);
+	try {
+		gvariant = sr_configurable_->config_list(sr_key);
+	}
+	catch (sigrok::Error &error) {
+		qWarning() << "Configurable::list_config(): Failed to list key " <<
+			devices::deviceutil::format_config_key(key) << ". " << error.what();
+		return false;
+	}
+
 	return true;
 }
 
@@ -239,6 +324,9 @@ bool Configurable::list_config_min_max_step(devices::ConfigKey key,
 	return true;
 }
 
+/*
+ * TODO: Moved to MeasuredQuantityProperty, delete here
+ */
 bool Configurable::list_config_mq(devices::ConfigKey key,
 	measured_quantity_list_t &measured_quantity_list)
 {
@@ -304,23 +392,9 @@ set<devices::ConfigKey> Configurable::listable_configs() const
 	return listable_configs_;
 }
 
-
 bool Configurable::is_controllable() const
 {
-	/* TODO: device types
-	if (type_ == Type::POWER_SUPPLY || type_ == Type::ELECTRONIC_LOAD) {
-		if (is_enabled_setable_ || is_regulation_setable_ ||
-				is_voltage_target_setable_ || is_current_limit_setable_ ||
-				is_ovp_enabled_setable_ || is_ovp_threshold_setable_ ||
-				is_ocp_enabled_setable_ || is_ocp_threshold_setable_ ||
-				is_uvc_enabled_setable_ || is_uvc_threshold_setable_)
-			return true;
-	}
-	else if (type_ == Type::MULTIMETER) {
-		if (is_measured_quantity_getable_ || is_measured_quantity_setable_)
-			return true;
-	}
-	*/
+	// TODO: Also check for device types?
 
 	if (has_set_config(ConfigKey::Enabled) ||
 			has_set_config(ConfigKey::Regulation) ||
@@ -391,47 +465,17 @@ void Configurable::set_measured_quantity(measured_quantity_t measured_quantity)
 void Configurable::feed_in_meta(shared_ptr<sigrok::Meta> sr_meta)
 {
 	for (auto entry : sr_meta->config()) {
-		devices::ConfigKey key =
+		devices::ConfigKey config_key =
 			devices::deviceutil::get_config_key(entry.first);
-		devices::DataType data_type =
-			devices::deviceutil::get_data_type_for_config_key(key);
 
-		QVariant qvar;
-		switch (data_type) {
-		case devices::DataType::Int32:
-			qvar = QVariant(g_variant_get_int32(entry.second.gobj()));
-			break;
-		case devices::DataType::UInt64:
-			qvar = QVariant::fromValue(
-				g_variant_get_uint64(entry.second.gobj()));
-			break;
-		case devices::DataType::Float:
-			qvar = QVariant(g_variant_get_double(entry.second.gobj()));
-			break;
-		case devices::DataType::Sting:
-			qvar = QVariant(g_variant_get_string(entry.second.gobj(), NULL));
-			break;
-		case devices::DataType::Bool:
-			qvar = QVariant(g_variant_get_boolean(entry.second.gobj()));
-			break;
-		case devices::DataType::RationalPeriod:
-		case devices::DataType::RationalVolt:
-		case devices::DataType::Uint64Range:
-		case devices::DataType::DoubleRange:
-			//qvar = QVariant(g_variant_get_tuple(entry.second.gobj()));
-			//break;
-		case devices::DataType::MQ:
-			//qvar = QVariant(g_variant_get_tuple(entry.second.gobj()));
-			//break;
-		case devices::DataType::KeyValue:
-			//qvar = QVariant(g_variant_get_dictionary(entry.second.gobj()));
-			//break;
-		case devices::DataType::Unknown:
-		default:
-			return;
-		}
+		if (!properties_.count(config_key))
+			assert("Unknown config key " <<
+				QString::fromStdString(entry.first->name()) << " received");
 
-		Q_EMIT config_changed(key, qvar);
+		properties_[config_key]->on_value_changed(entry.second);
+
+		// TODO: return QVariant from prop->on_value_changed(); and emit
+		//Q_EMIT config_changed(config_key, qvar);
 	}
 }
 

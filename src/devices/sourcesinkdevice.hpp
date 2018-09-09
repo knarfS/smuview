@@ -21,10 +21,12 @@
 #define DEVICES_SOURCESINKDEVICE_HPP
 
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "src/devices/hardwaredevice.hpp"
 
+using std::forward;
 using std::shared_ptr;
 using std::vector;
 
@@ -44,18 +46,30 @@ class BaseSignal;
 
 namespace devices {
 
-class SourceSinkDevice final : public HardwareDevice
+class SourceSinkDevice : public HardwareDevice
 {
 	Q_OBJECT
 
-public:
+private:
 	explicit SourceSinkDevice(const shared_ptr<sigrok::Context> &sr_context,
 		shared_ptr<sigrok::HardwareDevice> sr_device);
 
-protected:
-	void init_channels();
+public:
+	template<typename ...Arg>
+	shared_ptr<SourceSinkDevice> static create(Arg&&...arg)
+	{
+		struct make_shared_enabler : public SourceSinkDevice {
+			make_shared_enabler(Arg&&...arg) : SourceSinkDevice(forward<Arg>(arg)...) {}
+		};
 
-private:
+		shared_ptr<SourceSinkDevice> device =
+			make_shared<make_shared_enabler>(forward<Arg>(arg)...);
+		device->init();
+
+		return device;
+	}
+
+	void init_channels();
 
 };
 

@@ -73,15 +73,21 @@ class BaseDevice :
 	Q_OBJECT
 
 public:
-	BaseDevice(const shared_ptr<sigrok::Context> &sr_context,
+	BaseDevice(const shared_ptr<sigrok::Context> sr_context,
 		shared_ptr<sigrok::Device> sr_device);
-	~BaseDevice();
+	virtual ~BaseDevice();
 
 	enum aquisition_state {
 		Stopped,
 		AwaitingTrigger,
 		Running
 	};
+
+	/**
+	 * Inits all configurables for this device. Implemented in the
+	 * specific device.
+	 */
+	virtual void init() = 0;
 
 	/**
 	 *
@@ -96,17 +102,17 @@ public:
 	/**
 	 * Builds the name
 	 */
-	virtual QString name() const = 0;
+	virtual QString name() const;
 
 	/**
 	 * Builds the full name. It only contains all the fields.
 	 */
-	virtual QString full_name() const = 0;
+	virtual QString full_name() const;
 
 	/**
 	 * Builds the short name.
 	 */
-	virtual QString short_name() const = 0;
+	virtual QString short_name() const;
 
 	/**
 	 * Builds the display name. It only contains fields as required.
@@ -135,12 +141,6 @@ protected:
 	 * Inits all channles for this device. Implemented in the specific device.
 	 */
 	virtual void init_channels() = 0;
-
-	/**
-	 * Inits all configurables for this device. Implemented in the
-	 * specific device.
-	 */
-	virtual void init_configurables() = 0;
 
 	virtual void feed_in_header() = 0;
 	virtual void feed_in_trigger() = 0;

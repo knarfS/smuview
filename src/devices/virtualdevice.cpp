@@ -51,27 +51,13 @@ VirtualDevice::VirtualDevice(
 	device_type_ = DeviceType::VirtualDevice;
 }
 
+void VirtualDevice::init()
+{
+}
+
 QString VirtualDevice::name() const
 {
 	return short_name();
-}
-
-QString VirtualDevice::short_name() const
-{
-	QString sep("");
-	QString name("");
-
-	if (sr_device_->vendor().length() > 0) {
-		name.append(QString::fromStdString(sr_device_->vendor()));
-		sep = QString(" ");
-	}
-
-	if (sr_device_->model().length() > 0) {
-		name.append(sep);
-		name.append(QString::fromStdString(sr_device_->model()));
-	}
-
-	return name;
 }
 
 QString VirtualDevice::full_name() const
@@ -94,6 +80,24 @@ QString VirtualDevice::full_name() const
 		name.append(sep);
 		name.append(QString::fromStdString(sr_device_->version()));
 		sep = QString(" ");
+	}
+
+	return name;
+}
+
+QString VirtualDevice::short_name() const
+{
+	QString sep("");
+	QString name("");
+
+	if (sr_device_->vendor().length() > 0) {
+		name.append(QString::fromStdString(sr_device_->vendor()));
+		sep = QString(" ");
+	}
+
+	if (sr_device_->model().length() > 0) {
+		name.append(sep);
+		name.append(QString::fromStdString(sr_device_->model()));
 	}
 
 	return name;
@@ -150,10 +154,6 @@ void VirtualDevice::add_channel(shared_ptr<channels::BaseChannel> channel,
 }
 
 void VirtualDevice::init_channels()
-{
-}
-
-void VirtualDevice::init_configurables()
 {
 }
 

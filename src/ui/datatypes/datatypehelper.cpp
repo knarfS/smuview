@@ -17,40 +17,53 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <memory>
+
 #include "datatypehelper.hpp"
-#include "src/data/datautil.hpp"
-#include "src/devices/configurable.hpp"
 #include "src/devices/deviceutil.hpp"
+#include "src/devices/properties/baseproperty.hpp"
+#include "src/devices/properties/boolproperty.hpp"
+#include "src/devices/properties/floatproperty.hpp"
 #include "src/ui/datatypes/boolcheckbox.hpp"
 #include "src/ui/datatypes/floatspinbox.hpp"
 #include "src/ui/datatypes/int32spinbox.hpp"
+
+using std::dynamic_pointer_cast;
 
 namespace sv {
 namespace ui {
 namespace datatypes {
 namespace datatypehelper {
 
-QWidget *get_widget_for_config_key(
-	shared_ptr<devices::Configurable> configurable,
-	devices::ConfigKey config_key, data::Unit unit, bool auto_commit)
+QWidget *get_widget_for_property(
+	shared_ptr<devices::properties::BaseProperty> property,
+	bool auto_commit, bool auto_update)
 {
 	devices::DataType data_type =
-		devices::deviceutil::get_data_type_for_config_key(config_key);
+		devices::deviceutil::get_data_type_for_config_key(
+			property->config_key());
 
 	switch (data_type) {
 	case devices::DataType::Int32:
-		return new Int32SpinBox(configurable, config_key, unit, auto_commit);
+		//return new Int32SpinBox(
+		//	dynamic_pointer_cast<devices::properties::Int32Property>(property),
+		//	auto_commit, auto_update);
 		break;
 	case devices::DataType::Float:
-		return new FloatSpinBox(configurable, config_key, unit, auto_commit);
+		return new FloatSpinBox(
+			dynamic_pointer_cast<devices::properties::FloatProperty>(property),
+			auto_commit, auto_update);
 		break;
 	case devices::DataType::Bool:
-		return new BoolCheckBox(configurable, config_key, auto_commit);
+		return new BoolCheckBox(
+			dynamic_pointer_cast<devices::properties::BoolProperty>(property),
+			auto_commit, auto_update);
 		break;
 	default:
 		return NULL;
 		break;
 	}
+	return NULL;
 }
 
 } // namespace datatypehelper

@@ -23,17 +23,16 @@
 #include <memory>
 
 #include <QSpinBox>
-#include <QWidget>
-
-#include "src/devices/deviceutil.hpp"
-#include "src/data/datautil.hpp"
+#include <QVariant>
 
 using std::shared_ptr;
 
 namespace sv {
 
 namespace devices {
-class Configurable;
+namespace properties {
+class Int32Property;
+}
 }
 
 namespace ui {
@@ -44,27 +43,28 @@ class Int32SpinBox : public QSpinBox
     Q_OBJECT
 
 public:
-	Int32SpinBox(shared_ptr<devices::Configurable> configurable,
-		devices::ConfigKey config_key, data::Unit unit, bool auto_commit,
+	Int32SpinBox(
+		shared_ptr<devices::properties::Int32Property> int32_prop,
+		const bool auto_commit, const bool auto_update,
 		QWidget *parent = nullptr);
 
 private:
-	shared_ptr<devices::Configurable> configurable_;
-	devices::ConfigKey config_key_;
-	data::Unit unit_;
-	bool auto_commit_;
-	double min_; // TODO: int32_t
-	double max_; // TODO: int32_t
-	double step_; // TODO: int32_t
+	const bool auto_commit_;
+	const bool auto_update_;
+	shared_ptr<devices::properties::Int32Property> int32_prop_;
 
 	void setup_ui();
 	void connect_signals();
 
-public Q_SLOT:
-	void change_value(int32_t);
-
 private Q_SLOTS:
-	void on_value_changed(int32_t);
+	/**
+	 * Signal handling for Widget -> BoolProperty
+	 */
+	void value_changed(const int32_t);
+	/**
+	 * Signal handling for Property -> Widget
+	 */
+	void on_value_changed(const QVariant);
 
 };
 
@@ -73,4 +73,3 @@ private Q_SLOTS:
 } // namespece sv
 
 #endif // UI_DATATYPES_INT32SPINBOX_HPP
-

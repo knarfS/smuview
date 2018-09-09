@@ -80,29 +80,20 @@ class HardwareDevice : public BaseDevice
 {
 	Q_OBJECT
 
-public:
-	HardwareDevice(const shared_ptr<sigrok::Context> &sr_context,
+protected:
+	HardwareDevice(const shared_ptr<sigrok::Context> sr_context,
 		shared_ptr<sigrok::HardwareDevice> sr_device);
+
+public:
+	/**
+	 * Inits all configurables for this hardware device.
+	 */
+	void init();
 
 	/**
 	 * Returns the sigrok hardware device
 	 */
 	shared_ptr<sigrok::HardwareDevice> sr_hardware_device() const;
-
-	/**
-	 * Builds the name
-	 */
-	QString name() const;
-
-	/**
-	 * Builds the full name. It only contains all the fields.
-	 */
-	QString full_name() const;
-
-	/**
-	 * Builds the short name.
-	 */
-	QString short_name() const;
 
 	/**
 	 * Builds the display name. It only contains fields as required.
@@ -120,11 +111,6 @@ protected:
 	 * Inits all channles of this hardware device
 	 */
 	void init_channels();
-
-	/**
-	 * Inits all configurables for this hardware device.
-	 */
-	void init_configurables();
 
 	/**
 	 * Adds a channel to the device

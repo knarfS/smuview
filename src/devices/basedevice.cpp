@@ -49,7 +49,7 @@ using std::unique_ptr;
 namespace sv {
 namespace devices {
 
-BaseDevice::BaseDevice(const shared_ptr<sigrok::Context> &sr_context,
+BaseDevice::BaseDevice(const shared_ptr<sigrok::Context> sr_context,
 		shared_ptr<sigrok::Device> sr_device) :
 	sr_context_(sr_context),
 	sr_device_(sr_device),
@@ -135,6 +135,88 @@ void BaseDevice::close()
 	sr_session_->remove_devices();
 	sr_device_->close();
 	device_open_ = false;
+}
+
+QString BaseDevice::name() const
+{
+	QString sep("");
+	QString name("");
+
+	if (sr_device_->vendor().length() > 0) {
+		name.append(QString::fromStdString(sr_device_->vendor()));
+		sep = QString(" ");
+	}
+
+	if (sr_device_->model().length() > 0) {
+		name.append(sep);
+		name.append(QString::fromStdString(sr_device_->model()));
+		sep = QString(" ");
+	}
+
+	if (sr_device_->connection_id().length() > 0) {
+		name.append(sep);
+		name.append("(");
+		name.append(QString::fromStdString(sr_device_->connection_id()));
+		name.append(")");
+	}
+
+	return name;
+}
+
+QString BaseDevice::full_name() const
+{
+	QString sep("");
+	QString name("");
+
+	if (sr_device_->vendor().length() > 0) {
+		name.append(QString::fromStdString(sr_device_->vendor()));
+		sep = QString(" ");
+	}
+
+	if (sr_device_->model().length() > 0) {
+		name.append(sep);
+		name.append(QString::fromStdString(sr_device_->model()));
+		sep = QString(" ");
+	}
+
+	if (sr_device_->version().length() > 0) {
+		name.append(sep);
+		name.append(QString::fromStdString(sr_device_->version()));
+		sep = QString(" ");
+	}
+
+	if (sr_device_->serial_number().length() > 0) {
+		name.append(sep);
+		name.append(QString::fromStdString(sr_device_->serial_number()));
+		sep = QString(" ");
+	}
+
+	if (sr_device_->connection_id().length() > 0) {
+		name.append(sep);
+		name.append("(");
+		name.append(QString::fromStdString(sr_device_->connection_id()));
+		name.append(")");
+	}
+
+	return name;
+}
+
+QString BaseDevice::short_name() const
+{
+	QString sep("");
+	QString name("");
+
+	if (sr_device_->vendor().length() > 0) {
+		name.append(QString::fromStdString(sr_device_->vendor()));
+		sep = QString(" ");
+	}
+
+	if (sr_device_->model().length() > 0) {
+		name.append(sep);
+		name.append(QString::fromStdString(sr_device_->model()));
+	}
+
+	return name;
 }
 
 map<QString, shared_ptr<channels::BaseChannel>>

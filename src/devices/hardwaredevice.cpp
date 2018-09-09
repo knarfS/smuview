@@ -60,12 +60,10 @@ namespace sv {
 namespace devices {
 
 HardwareDevice::HardwareDevice(
-		const shared_ptr<sigrok::Context> &sr_context,
+		const shared_ptr<sigrok::Context> sr_context,
 		shared_ptr<sigrok::HardwareDevice> sr_device) :
 	BaseDevice(sr_context, sr_device)
 {
-	init_configurables();
-
 	// Set options for different device types
 	// TODO: Multiple DeviceTypes per HardwareDevice
 	device_type_ = DeviceType::Unknown;
@@ -91,86 +89,23 @@ HardwareDevice::HardwareDevice(
 		assert("Unknown device");
 }
 
-QString HardwareDevice::name() const
+void HardwareDevice::init()
 {
-	QString sep("");
-	QString name("");
-
-	if (sr_device_->vendor().length() > 0) {
-		name.append(QString::fromStdString(sr_device_->vendor()));
-		sep = QString(" ");
+	// Init Configurables from Channel Groups
+	map<string, shared_ptr<sigrok::ChannelGroup>> sr_channel_groups =
+		sr_device_->channel_groups();
+	if (sr_channel_groups.size() > 0) {
+		for (auto sr_cg_pair : sr_channel_groups) {
+			auto sr_cg = sr_cg_pair.second;
+			auto cg_c = Configurable::create(sr_cg, short_name());
+			configurables_.push_back(cg_c);
+		}
 	}
 
-	if (sr_device_->model().length() > 0) {
-		name.append(sep);
-		name.append(QString::fromStdString(sr_device_->model()));
-		sep = QString(" ");
-	}
-
-	if (sr_device_->connection_id().length() > 0) {
-		name.append(sep);
-		name.append("(");
-		name.append(QString::fromStdString(sr_device_->connection_id()));
-		name.append(")");
-	}
-
-	return name;
-}
-
-QString HardwareDevice::short_name() const
-{
-	QString sep("");
-	QString name("");
-
-	if (sr_device_->vendor().length() > 0) {
-		name.append(QString::fromStdString(sr_device_->vendor()));
-		sep = QString(" ");
-	}
-
-	if (sr_device_->model().length() > 0) {
-		name.append(sep);
-		name.append(QString::fromStdString(sr_device_->model()));
-	}
-
-	return name;
-}
-
-QString HardwareDevice::full_name() const
-{
-	QString sep("");
-	QString name("");
-
-	if (sr_device_->vendor().length() > 0) {
-		name.append(QString::fromStdString(sr_device_->vendor()));
-		sep = QString(" ");
-	}
-
-	if (sr_device_->model().length() > 0) {
-		name.append(sep);
-		name.append(QString::fromStdString(sr_device_->model()));
-		sep = QString(" ");
-	}
-
-	if (sr_device_->version().length() > 0) {
-		name.append(sep);
-		name.append(QString::fromStdString(sr_device_->version()));
-		sep = QString(" ");
-	}
-
-	if (sr_device_->serial_number().length() > 0) {
-		name.append(sep);
-		name.append(QString::fromStdString(sr_device_->serial_number()));
-		sep = QString(" ");
-	}
-
-	if (sr_device_->connection_id().length() > 0) {
-		name.append(sep);
-		name.append("(");
-		name.append(QString::fromStdString(sr_device_->connection_id()));
-		name.append(")");
-	}
-
-	return name;
+	// Init Configurable from Device
+	// TODO: Only if there are no channel groups?
+	auto d_c = Configurable::create(sr_device_, short_name());
+	configurables_.push_back(d_c);
 }
 
 QString HardwareDevice::display_name(
@@ -268,25 +203,6 @@ void HardwareDevice::init_channels()
 		if (sr_channel_map_.count(sr_channel) > 0)
 			continue;
 		init_channel(sr_channel, QString(""));
-	}
-}
-
-void HardwareDevice::init_configurables()
-{
-	map<string, shared_ptr<sigrok::ChannelGroup>> sr_channel_groups =
-		sr_device_->channel_groups();
-
-	// Init Configurables from Channel Groups and Device
-	if (sr_channel_groups.size() > 0) {
-		for (auto sr_cg_pair : sr_channel_groups) {
-			shared_ptr<sigrok::ChannelGroup> sr_cg = sr_cg_pair.second;
-			configurables_.push_back(
-				make_shared<devices::Configurable>(sr_cg, short_name()));
-		}
-	}
-	else {
-		configurables_.push_back(
-			make_shared<Configurable>(sr_device_, short_name()));
 	}
 }
 

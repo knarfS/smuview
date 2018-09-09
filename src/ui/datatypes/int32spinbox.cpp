@@ -22,19 +22,20 @@
 #include "int32spinbox.hpp"
 #include "src/util.hpp"
 #include "src/devices/configurable.hpp"
+#include "src/devices/properties/int32property.hpp"
 
 namespace sv {
 namespace ui {
 namespace datatypes {
 
-Int32SpinBox::Int32SpinBox(shared_ptr<devices::Configurable> configurable,
-		devices::ConfigKey config_key, data::Unit unit, bool auto_commit,
+Int32SpinBox::Int32SpinBox(
+		shared_ptr<devices::properties::Int32Property> int32_prop,
+		const bool auto_commit, const bool auto_update,
 		QWidget *parent) :
 	QSpinBox(parent),
-	configurable_(configurable),
-	config_key_(config_key),
-	unit_(unit),
-	auto_commit_(auto_commit)
+	auto_commit_(auto_commit),
+	auto_update_(auto_update),
+	int32_prop_(int32_prop)
 {
 	setup_ui();
 	connect_signals();
@@ -43,32 +44,41 @@ Int32SpinBox::Int32SpinBox(shared_ptr<devices::Configurable> configurable,
 void Int32SpinBox::setup_ui()
 {
 	this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
-	if (configurable_->has_list_config(config_key_)) {
-		configurable_->list_config_min_max_step(config_key_, min_, max_, step_);
-		this->setRange(min_, max_);
-		this->setSingleStep(step_);
+	if (int32_prop_->is_listable()) {
+		this->setRange(int32_prop_->min(), int32_prop_->max());
+		this->setSingleStep(int32_prop_->step());
 	}
+	/*
 	if (unit_ != data::Unit::Unknown && unit_ != data::Unit::Unitless) {
 		this->setSuffix(QString(" %1").arg(data::datautil::format_unit(unit_)));
 	}
-	this->setDisabled(!configurable_->has_set_config(config_key_));
+	*/
+	this->setDisabled(!int32_prop_->is_setable());
 }
 
 void Int32SpinBox::connect_signals()
 {
-	if (auto_commit_ && configurable_->has_set_config(config_key_))
-		connect(this, SIGNAL(valueChanged(int32_t)),
-			this, SLOT(on_value_changed(int32_t)));
+	// Widget -> Property
+	if (auto_commit_ && int32_prop_->is_setable()) {
+		connect(this, SIGNAL(valueChanged(double)),
+			this, SLOT(value_changed(const double)));
+	}
+
+	// Property -> Widget
+	if (auto_update_) {
+		connect(int32_prop_.get(), SIGNAL(value_changed(const QVariant)),
+			this, SLOT(on_value_changed(const QVariant)));
+	}
 }
 
-void Int32SpinBox::change_value(int32_t value)
+void Int32SpinBox::value_changed(const int32_t value)
 {
-	this->setValue(value);
+	int32_prop_->value_changed(QVariant(value));
 }
 
-void Int32SpinBox::on_value_changed(int32_t value)
+void Int32SpinBox::on_value_changed(const QVariant value)
 {
-	configurable_->set_config<int32_t>(config_key_, value);
+	this->setValue(value.toInt());
 }
 
 } // namespace datatypes

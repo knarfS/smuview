@@ -23,15 +23,16 @@
 #include <memory>
 
 #include <QPushButton>
-
-#include "src/devices/deviceutil.hpp"
+#include <QVariant>
 
 using std::shared_ptr;
 
 namespace sv {
 
 namespace devices {
-class Configurable;
+namespace properties {
+class BoolProperty;
+}
 }
 
 namespace ui {
@@ -42,29 +43,31 @@ class BoolButton : public QPushButton
     Q_OBJECT
 
 public:
-	BoolButton(shared_ptr<devices::Configurable> configurable,
-		devices::ConfigKey config_key, bool auto_commit,
+	BoolButton(
+		shared_ptr<devices::properties::BoolProperty> bool_prop,
+		const bool auto_commit, const bool auto_update,
 		QWidget *parent = nullptr);
 
 private:
+	const bool auto_commit_;
+	const bool auto_update_;
 	const QIcon on_icon_;
 	const QIcon off_icon_;
 	const QIcon dis_icon_;
-	shared_ptr<devices::Configurable> configurable_;
-	devices::ConfigKey config_key_;
-	bool auto_commit_;
+	shared_ptr<devices::properties::BoolProperty> bool_prop_;
 
 	void setup_ui();
 	void connect_signals();
 
-public Q_SLOTS:
-	void change_state(const bool);
-
 private Q_SLOTS:
-	void on_state_changed(const bool);
-
-Q_SIGNALS:
-	void state_changed(const bool);
+	/**
+	 * Signal handling for Widget -> BoolProperty
+	 */
+	void value_changed(const bool);
+	/**
+	 * Signal handling for Property -> Widget
+	 */
+	void on_value_changed(const QVariant);
 
 };
 

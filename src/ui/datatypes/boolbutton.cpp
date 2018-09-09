@@ -21,21 +21,23 @@
 
 #include "boolbutton.hpp"
 #include "src/devices/configurable.hpp"
+#include "src/devices/properties/boolproperty.hpp"
 
 namespace sv {
 namespace ui {
 namespace datatypes {
 
-BoolButton::BoolButton(shared_ptr<devices::Configurable> configurable,
-		devices::ConfigKey config_key, bool auto_commit,
+BoolButton::BoolButton(
+		shared_ptr<devices::properties::BoolProperty> bool_prop,
+		const bool auto_commit, const bool auto_update,
 		QWidget *parent) :
 	QPushButton(parent),
+	auto_commit_(auto_commit),
+	auto_update_(auto_update),
 	on_icon_(":/icons/status-green.svg"),
 	off_icon_(":/icons/status-red.svg"),
 	dis_icon_(":/icons/status-grey.svg"),
-	configurable_(configurable),
-	config_key_(config_key),
-	auto_commit_(auto_commit)
+	bool_prop_(bool_prop)
 {
 	setup_ui();
 	connect_signals();
@@ -45,27 +47,40 @@ void BoolButton::setup_ui()
 {
 	this->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	this->setIconSize(QSize(8, 8));
-	this->setDisabled(!configurable_->has_set_config(config_key_));
-	if (!configurable_->has_get_config(config_key_)) {
+	this->setDisabled(!bool_prop_->is_setable());
+	if (bool_prop_->is_getable()) {
+		on_value_changed(bool_prop_->value());
+	}
+	else {
 		this->setIcon(dis_icon_);
 		this->setText(tr("On/Off"));
 		this->setChecked(false);
-	}
-	else {
-		change_state(configurable_->get_config<bool>(config_key_));
 	}
 }
 
 void BoolButton::connect_signals()
 {
-	if (auto_commit_ && configurable_->has_set_config(config_key_))
+	// Widget -> Property
+	if (auto_commit_ && bool_prop_->is_setable()) {
 		connect(this, SIGNAL(clicked(bool)),
-			this, SLOT(on_state_changed(bool)));
+			this, SLOT(value_changed(const bool)));
+	}
+
+	// Property -> Widget
+	if (auto_update_) {
+		connect(bool_prop_.get(), SIGNAL(value_changed(const QVariant)),
+			this, SLOT(on_value_changed(const QVariant)));
+	}
 }
 
-void BoolButton::change_state(const bool value)
+void BoolButton::value_changed(const bool value)
 {
-	if (value) {
+	bool_prop_->value_changed(QVariant(value));
+}
+
+void BoolButton::on_value_changed(const QVariant value)
+{
+	if (value.toBool()) {
 		this->setIcon(on_icon_);
 		this->setText(tr("On"));
 		this->setChecked(true);
@@ -75,12 +90,6 @@ void BoolButton::change_state(const bool value)
 		this->setText(tr("Off"));
 		this->setChecked(false);
 	}
-}
-
-void BoolButton::on_state_changed(const bool value)
-{
-	change_state(!value);
-	Q_EMIT state_changed(value);
 }
 
 } // namespace datatypes

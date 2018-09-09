@@ -17,59 +17,58 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UI_DATATYPES_BOOLCHECKBOX_HPP
-#define UI_DATATYPES_BOOLCHECKBOX_HPP
+#ifndef DEVICES_PROPERTIES_FLOATPROPERTY_HPP
+#define DEVICES_PROPERTIES_FLOATPROPERTY_HPP
 
 #include <memory>
 
-#include <QCheckBox>
+#include <glib.h>
+
+#include <QObject>
+#include <QVariant>
+
+#include "src/devices/properties/baseproperty.hpp"
+#include "src/devices/deviceutil.hpp"
 
 using std::shared_ptr;
 
 namespace sv {
-
 namespace devices {
+
+class Configurable;
+
 namespace properties {
-class BoolProperty;
-}
-}
 
-namespace ui {
-namespace datatypes {
-
-class BoolCheckBox : public QCheckBox
+class FloatProperty : public BaseProperty
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-	BoolCheckBox(
-		shared_ptr<devices::properties::BoolProperty> bool_prop,
-		const bool auto_commit, const bool auto_update,
-		QWidget *parent = nullptr);
+	FloatProperty(shared_ptr<devices::Configurable> configurable,
+		devices::ConfigKey config_key /*, data::Unit unit*/);
+
+public:
+	QVariant value() const;
+	double float_value() const;
+	double min() const;
+	double max() const;
+	double step() const;
+	int decimal_places() const;
 
 private:
-	const bool auto_commit_;
-	const bool auto_update_;
-	shared_ptr<devices::properties::BoolProperty> bool_prop_;
+	double min_;
+	double max_;
+	double step_;
+	int decimal_places_;
 
-	void setup_ui();
-	void connect_signals();
-
-private Q_SLOTS:
-	/**
-	 * Signal handling for Widget -> BoolProperty
-	 */
-	void value_changed(const bool);
-	/**
-	 * Signal handling for Property -> Widget
-	 */
-	void on_value_changed(const QVariant);
+public Q_SLOTS:
+	void change_value(const QVariant);
+	void on_value_changed(Glib::VariantBase);
 
 };
 
-} // namespace datatypes
-} // namespace ui
+} // namespace properties
+} // namespace devices
 } // namespece sv
 
-#endif // UI_DATATYPES_BOOLCHECKBOX_HPP
-
+#endif // DEVICES_PROPERTIES_FLOATPROPERTY_HPP

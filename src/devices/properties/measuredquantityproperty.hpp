@@ -17,59 +17,53 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UI_DATATYPES_FLOATSPINBOX_HPP
-#define UI_DATATYPES_FLOATSPINBOX_HPP
+#ifndef DEVICES_PROPERTIES_MEASUREDQUANTITYPROPERTY_HPP
+#define DEVICES_PROPERTIES_MEASUREDQUANTITYPROPERTY_HPP
 
+#include <map>
 #include <memory>
 
-#include <QDoubleSpinBox>
+#include <glib.h>
+
+#include <QObject>
+#include <QStringList>
 #include <QVariant>
 
+#include "src/devices/properties/baseproperty.hpp"
+#include "src/devices/configurable.hpp"
+#include "src/devices/deviceutil.hpp"
+
+using std::map;
 using std::shared_ptr;
 
 namespace sv {
-
 namespace devices {
 namespace properties {
-class FloatProperty;
-}
-}
 
-namespace ui {
-namespace datatypes {
-
-class FloatSpinBox : public QDoubleSpinBox
+class MeasuredQuantityProperty : public BaseProperty
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-	FloatSpinBox(
-		shared_ptr<devices::properties::FloatProperty> float_prop,
-		const bool auto_commit, const bool auto_update,
-		QWidget *parent = nullptr);
+	MeasuredQuantityProperty(shared_ptr<devices::Configurable> configurable,
+		devices::ConfigKey config_key);
+
+public:
+	QVariant value() const;
+	Configurable::measured_quantity_t measured_quantity_value() const;
+	Configurable::measured_quantity_list_t list_values() const;
 
 private:
-	const bool auto_commit_;
-	const bool auto_update_;
-	shared_ptr<devices::properties::FloatProperty> float_prop_;
+	QStringList list_values_;
 
-	void setup_ui();
-	void connect_signals();
-
-private Q_SLOTS:
-	/**
-	 * Signal handling for Widget -> BoolProperty
-	 */
-	void value_changed(const double);
-	/**
-	 * Signal handling for Property -> Widget
-	 */
-	void on_value_changed(const QVariant);
+public Q_SLOTS:
+	void change_value(const QVariant);
+	void on_value_changed(Glib::VariantBase);
 
 };
 
-} // namespace datatypes
-} // namespace ui
+} // namespace properties
+} // namespace devices
 } // namespece sv
 
-#endif // UI_DATATYPES_FLOATSPINBOX_HPP
+#endif // DEVICES_PROPERTIES_MEASUREDQUANTITYPROPERTY_HPP

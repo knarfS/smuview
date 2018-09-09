@@ -21,40 +21,56 @@
 
 #include "boolcheckbox.hpp"
 #include "src/devices/configurable.hpp"
+#include "src/devices/properties/boolproperty.hpp"
 
 namespace sv {
 namespace ui {
 namespace datatypes {
 
-BoolCheckBox::BoolCheckBox(shared_ptr<devices::Configurable> configurable,
-		devices::ConfigKey config_key, bool auto_commit, QWidget *parent) :
+BoolCheckBox::BoolCheckBox(
+		shared_ptr<devices::properties::BoolProperty> bool_prop,
+		const bool auto_commit, const bool auto_update,
+		QWidget *parent) :
 	QCheckBox(parent),
-	configurable_(configurable),
-	config_key_(config_key),
-	auto_commit_(auto_commit)
+	auto_commit_(auto_commit),
+	auto_update_(auto_update),
+	bool_prop_(bool_prop)
 {
+	setup_ui();
+	connect_signals();
 }
 
 void BoolCheckBox::setup_ui()
 {
-	this->setDisabled(!configurable_->has_set_config(config_key_));
+	this->setDisabled(!bool_prop_->is_setable());
+	if (bool_prop_->is_getable()) {
+		on_value_changed(bool_prop_->value());
+	}
 }
 
 void BoolCheckBox::connect_signals()
 {
-	if (auto_commit_ && configurable_->has_set_config(config_key_))
+	// Widget -> Property
+	if (auto_commit_ && bool_prop_->is_setable()) {
 		connect(this, SIGNAL(stateChanged(bool)),
-			this, SLOT(on_value_changed(bool)));
+			this, SLOT(value_changed(const bool)));
+	}
+
+	// Property -> Widget
+	if (auto_update_) {
+		connect(bool_prop_.get(), SIGNAL(value_changed(const QVariant)),
+			this, SLOT(on_value_changed(const QVariant)));
+	}
 }
 
-void BoolCheckBox::change_value(const bool value)
+void BoolCheckBox::value_changed(const bool value)
 {
-	this->setChecked(value);
+	bool_prop_->value_changed(QVariant(value));
 }
 
-void BoolCheckBox::on_value_changed(const bool value)
+void BoolCheckBox::on_value_changed(const QVariant value)
 {
-	configurable_->set_config<bool>(config_key_, value);
+	this->setChecked(value.toBool());
 }
 
 } // namespace datatypes

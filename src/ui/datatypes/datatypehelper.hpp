@@ -24,15 +24,14 @@
 
 #include <QWidget>
 
-#include "src/data/datautil.hpp"
-#include "src/devices/deviceutil.hpp"
-
 using std::shared_ptr;
 
 namespace sv {
 
 namespace devices {
-class Configurable;
+namespace properties {
+class BaseProperty;
+}
 }
 
 namespace ui {
@@ -40,17 +39,16 @@ namespace datatypes {
 namespace datatypehelper {
 
 /**
- * Returns the generic datatype widget for the given config key.
+ * Returns the generic datatype widget for the given property type.
  *
- * @param[in] configurable The Configurable
- * @param[in] config_key The ConfigKey
- * @param[in] unit The Unit
- * @param[in] auto_commit Auto commit when widget is changed
+ * @param[in] property The Property
+ * @param[in] auto_commit Widget is making auto commits
+ * @param[in] auto_update Widget is auto updated
  *
- * @return The generic widget for the config key
+ * @return The generic widget for the property type
  */
-QWidget *get_widget_for_config_key(shared_ptr<devices::Configurable>,
-	devices::ConfigKey, data::Unit, bool);
+QWidget *get_widget_for_property(
+	shared_ptr<devices::properties::BaseProperty>, bool, bool);
 
 } // namespace datatypehelper
 } // namespace datatypes

@@ -263,8 +263,8 @@ DeviceManager::driver_scan(
 	for (shared_ptr<sigrok::HardwareDevice> sr_device : sr_devices) {
 		if (keys.count(sigrok::ConfigKey::POWER_SUPPLY) |
 				keys.count(sigrok::ConfigKey::ELECTRONIC_LOAD)) {
-			const shared_ptr<devices::SourceSinkDevice> d(
-				new devices::SourceSinkDevice(context_, sr_device));
+			const shared_ptr<devices::SourceSinkDevice> d =
+				devices::SourceSinkDevice::create(context_, sr_device);
 			driver_devices.push_back(d);
 		}
 		else if (keys.count(sigrok::ConfigKey::MULTIMETER) |
@@ -275,8 +275,8 @@ DeviceManager::driver_scan(
 				keys.count(sigrok::ConfigKey::LCRMETER) |
 				keys.count(sigrok::ConfigKey::SCALE) |
 				keys.count(sigrok::ConfigKey::POWERMETER)) {
-			const shared_ptr<devices::MeasurementDevice> d(
-				new devices::MeasurementDevice(context_, sr_device));
+			const shared_ptr<devices::MeasurementDevice> d =
+				devices::MeasurementDevice::create(context_, sr_device);
 			driver_devices.push_back(d);
 		}
 	}

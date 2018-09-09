@@ -46,6 +46,11 @@ public:
 		QString vendor, QString model, QString version);
 
 	/**
+	 * Inits all configurables for this hardware device. Not used in here!
+	 */
+	void init();
+
+	/**
 	 * Builds the name
 	 */
 	QString name() const;
@@ -77,10 +82,6 @@ protected:
 	 * Inits all channles of this hardware device
 	 */
 	void init_channels();
-	/**
-	 * Inits all configurables for this hardware device. Not used in here!
-	 */
-	void init_configurables();
 	void feed_in_header();
 	void feed_in_trigger();
 	void feed_in_meta(shared_ptr<sigrok::Meta> sr_meta);
