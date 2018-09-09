@@ -287,8 +287,8 @@ vector<string> split_string(string text, string separator)
 
 uint count_int_digits(int number)
 {
-	uint n = abs(number);
-	int digits = 1;
+	int n = abs(number);
+	uint digits = 1;
 	while (n >= 10) {
 		n /= 10;
 		digits++;
