@@ -72,7 +72,7 @@ void usage()
 		"  %s --driver voltcraft-k204:conn=/dev/ttyUSB0 \\\n"
 		"     --driver uni-t-ut61d:conn=1a86.e008 \\\n"
 		"     --driver uni-t-ut61e-ser:conn=/dev/ttyUSB1\n",
-		 SV_BIN_NAME, SV_BIN_NAME, SV_BIN_NAME, SV_BIN_NAME);
+		SV_BIN_NAME, SV_BIN_NAME, SV_BIN_NAME, SV_BIN_NAME);
 }
 
 int main(int argc, char *argv[])
@@ -83,19 +83,19 @@ int main(int argc, char *argv[])
 	string open_file, open_file_format;
 	bool restore_session = true;
 
-    Application app(argc, argv);
+	Application app(argc, argv);
 
 	// Parse arguments
 	while (true) {
 		static const struct option long_options[] = {
-			{"help", no_argument, nullptr, 'h'},
-			{"version", no_argument, nullptr, 'V'},
-			{"loglevel", required_argument, nullptr, 'l'},
-			{"driver", required_argument, nullptr, 'd'},
-			{"input-file", required_argument, nullptr, 'i'},
-			{"input-format", required_argument, nullptr, 'I'},
-			{"clean", no_argument, nullptr, 'c'},
-			{nullptr, 0, nullptr, 0}
+			{ "help", no_argument, nullptr, 'h' },
+			{ "version", no_argument, nullptr, 'V' },
+			{ "loglevel", required_argument, nullptr, 'l' },
+			{ "driver", required_argument, nullptr, 'd' },
+			{ "input-file", required_argument, nullptr, 'i' },
+			{ "input-format", required_argument, nullptr, 'I' },
+			{ "clean", no_argument, nullptr, 'c' },
+			{ nullptr, 0, nullptr, 0 }
 		};
 
 		const int c = getopt_long(argc, argv,
@@ -184,9 +184,9 @@ int main(int argc, char *argv[])
 				QObject::connect(handler,
 					SIGNAL(term_received()),
 					&w, SLOT(close()));
-			} else {
-				qWarning() <<
-					"Could not prepare signal handler.";
+			}
+			else {
+				qWarning() << "Could not prepare signal handler.";
 			}
 #endif
 
@@ -194,10 +194,11 @@ int main(int argc, char *argv[])
 			ret = app.exec();
 		}
 		catch (exception &e) {
-			qDebug() << e.what();
+			 qCritical() << "main() failed: " << e.what();
 		}
 
-	} while (false);
+	}
+	while (false);
 
 	return ret;
 }
