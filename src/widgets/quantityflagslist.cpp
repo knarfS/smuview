@@ -30,7 +30,6 @@ Q_DECLARE_METATYPE(sv::data::QuantityFlag)
 namespace sv {
 namespace widgets {
 
-
 QuantityFlagsList::QuantityFlagsList(QWidget *parent) :
 	QListWidget(parent)
 {
