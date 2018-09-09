@@ -41,9 +41,8 @@ MeasuredQuantityProperty::MeasuredQuantityProperty(
 		devices::ConfigKey config_key) :
 	BaseProperty(configurable, config_key)
 {
-	if (is_listable_) {
-		configurable_->list_config_string_array(config_key_, list_values_);
-	}
+	if (is_listable_)
+		list_config();
 }
 
 QVariant MeasuredQuantityProperty::value() const
@@ -76,11 +75,14 @@ MeasuredQuantityProperty::measured_quantity_value() const
 Configurable::measured_quantity_list_t
 MeasuredQuantityProperty::list_values() const
 {
-	Configurable::measured_quantity_list_t measured_quantity_list;
+	return measured_quantity_list_;
+}
 
+bool MeasuredQuantityProperty::list_config()
+{
 	Glib::VariantContainerBase gvar;
 	if (!configurable_->list_config(config_key_, gvar))
-		return measured_quantity_list;
+		return false;
 
 	Glib::VariantIter iter(gvar);
 	while (iter.next_value (gvar)) {
@@ -88,8 +90,8 @@ MeasuredQuantityProperty::list_values() const
 			<Glib::Variant<uint32_t>>(gvar.get_child(0)).get();
 		data::Quantity quantity = data::datautil::get_quantity(mqbits);
 
-		if (!measured_quantity_list.count(quantity)) {
-			measured_quantity_list.insert(
+		if (!measured_quantity_list_.count(quantity)) {
+			measured_quantity_list_.insert(
 				make_pair(quantity, vector<set<data::QuantityFlag>>()));
 		}
 
@@ -106,10 +108,10 @@ MeasuredQuantityProperty::list_values() const
 			quantity_flag_set.insert(
 				data::datautil::get_quantity_flag(sr_mqflag));
 		}
-		measured_quantity_list[quantity].push_back(quantity_flag_set);
+		measured_quantity_list_[quantity].push_back(quantity_flag_set);
 	}
 
-	return measured_quantity_list;
+	return true;
 }
 
 /**

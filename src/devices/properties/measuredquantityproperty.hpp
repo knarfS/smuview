@@ -54,7 +54,9 @@ public:
 	Configurable::measured_quantity_list_t list_values() const;
 
 private:
-	QStringList list_values_;
+	Configurable::measured_quantity_list_t measured_quantity_list_;
+
+	bool list_config();
 
 public Q_SLOTS:
 	void change_value(const QVariant);

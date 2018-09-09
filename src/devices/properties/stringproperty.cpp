@@ -33,10 +33,10 @@ namespace properties {
 StringProperty::StringProperty(shared_ptr<devices::Configurable> configurable,
 		devices::ConfigKey config_key) :
 	BaseProperty(configurable, config_key),
-	list_values_(QStringList())
+	string_list_(QStringList())
 {
 	if (is_listable_)
-		configurable_->list_config_string_array(config_key_, list_values_);
+		list_config();
 }
 
 QVariant StringProperty::value() const
@@ -46,18 +46,33 @@ QVariant StringProperty::value() const
 
 QString StringProperty::string_value() const
 {
-	return QString("TODO"); //configurable_->get_config<string>(config_key_);
+	return QString::fromStdString(
+		configurable_->get_config<string>(config_key_));
 }
 
 QStringList StringProperty::list_values() const
 {
-	return list_values_;
+	return string_list_;
+}
+
+bool StringProperty::list_config()
+{
+	Glib::VariantContainerBase gvar;
+	if (!configurable_->list_config(config_key_, gvar))
+		return false;
+
+	Glib::VariantIter iter(gvar);
+	while (iter.next_value (gvar)) {
+		string_list_.append(QString::fromStdString(
+			Glib::VariantBase::cast_dynamic<Glib::Variant<string>>(gvar).get()));
+	}
+
+	return true;
 }
 
 void StringProperty::change_value(const QVariant qvar)
 {
-	qvar.toString().toStdString();
-	//configurable_->set_config(config_key_, qvar.toString().toStdString());
+	configurable_->set_config(config_key_, qvar.toString().toStdString());
 }
 
 void StringProperty::on_value_changed(Glib::VariantBase g_var)

@@ -159,7 +159,7 @@ template bool Configurable::get_config(devices::ConfigKey) const;
 template int32_t Configurable::get_config(devices::ConfigKey) const;
 template uint64_t Configurable::get_config(devices::ConfigKey) const;
 template double Configurable::get_config(devices::ConfigKey) const;
-//template std::string Configurable::get_config(devices::ConfigKey) const;
+template std::string Configurable::get_config(devices::ConfigKey) const;
 // TODO: This doesn't work: with glibmm >= 2.54.1 but should
 template tuple<uint32_t, uint64_t> Configurable::get_config(devices::ConfigKey) const;
 //template Configurable::measured_quantity_t Configurable::get_config(devices::ConfigKey) const;
@@ -223,7 +223,7 @@ template void Configurable::set_config(devices::ConfigKey, const bool);
 template void Configurable::set_config(devices::ConfigKey, const int32_t);
 template void Configurable::set_config(devices::ConfigKey, const uint64_t);
 template void Configurable::set_config(devices::ConfigKey, const double);
-//template void Configurable::set_config(devices::ConfigKey, const std::string);
+template void Configurable::set_config(devices::ConfigKey, const std::string);
 // This is working with glibmm < 2.52 (mxe uses glibmm 2.42.0), but libsigrok expects 'r' (this is '{ut}')
 template void Configurable::set_config(devices::ConfigKey, const pair<uint32_t, uint64_t>);
 // This is working with glibmm >= 2.52 (but mxe uses glibmm 2.42.0). Working with libsigrok (expects 'r')
@@ -290,6 +290,7 @@ bool Configurable::list_config(devices::ConfigKey key,
 	return true;
 }
 
+// TODO: Remove from here
 bool Configurable::list_config_string_array(devices::ConfigKey key,
 	QStringList &string_list)
 {
@@ -306,7 +307,7 @@ bool Configurable::list_config_string_array(devices::ConfigKey key,
 	return true;
 }
 
-// TODO: remove
+// TODO: Remove from here, or template for Float, Int32 and UInt64?
 bool Configurable::list_config_min_max_step(devices::ConfigKey key,
 	double &min, double &max, double &step)
 {
@@ -325,9 +326,8 @@ bool Configurable::list_config_min_max_step(devices::ConfigKey key,
 	return true;
 }
 
-/*
- * TODO: Moved to MeasuredQuantityProperty, delete here
- */
+
+// TODO: Remove from here
 bool Configurable::list_config_mq(devices::ConfigKey key,
 	measured_quantity_list_t &measured_quantity_list)
 {
@@ -418,6 +418,7 @@ bool Configurable::is_controllable() const
 
 
 /**
+ * TODO: Remove from here
  * TODO: When glibmm >= 2.52 is more supported and tuple bug is fixed,
  *       use the template function and return tuple<uint32_t, uint64_t>:
  *
@@ -447,6 +448,7 @@ Configurable::measured_quantity_t Configurable::get_measured_quantity() const
 }
 
 /**
+ * TODO: Remove from here
  * TODO: This only works with glibmm >= 2.52, we have to change something in
  *       libsigrok to make it work with older distros and MXE (2.42.0)
  */

@@ -57,7 +57,9 @@ public:
 	QStringList list_values() const;
 
 private:
-	QStringList list_values_;
+	QStringList string_list_;
+
+	bool list_config();
 
 public Q_SLOTS:
 	void change_value(const QVariant);
