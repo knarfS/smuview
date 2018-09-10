@@ -54,14 +54,25 @@ QVariant MeasuredQuantityProperty::value() const
  * TODO: When glibmm >= 2.52 is more supported and tuple bug is fixed,
  *       use the template function and return tuple<uint32_t, uint64_t>:
  *
- *       return get_config<std::tuple<uint32_t, uint64_t>>(
- *           sigrok::ConfigKey::MEASURED_QUANTITY);
+ *       return get_config<std::tuple<uint32_t, uint64_t>>(sigrok::ConfigKey);
  */
 Configurable::measured_quantity_t
 MeasuredQuantityProperty::measured_quantity_value() const
 {
-	tuple<uint32_t, uint64_t> sr_mq = configurable_->
-		get_config<tuple<uint32_t, uint64_t>>(config_key_);
+	/* Old:
+	auto vb = Glib::VariantBase::cast_dynamic
+		<Glib::Variant<std::tuple<uint32_t, uint64_t>>>
+		(sr_configurable_->config_get(sigrok::ConfigKey::MEASURED_QUANTITY));
+
+	uint32_t sr_q = vb.get_child<uint32_t>(0);
+	data::Quantity qunatity = data::datautil::get_quantity(sr_q);
+	uint64_t sr_qfs = vb.get_child<uint64_t>(1);
+	set<data::QuantityFlag> quantity_flags =
+		data::datautil::get_quantity_flags(sr_qfs);
+	*/
+
+	tuple<uint32_t, uint64_t> sr_mq =
+		configurable_->get_config<tuple<uint32_t, uint64_t>>(config_key_);
 
 	uint32_t sr_q = std::get<0>(sr_mq);
 	data::Quantity quantity = data::datautil::get_quantity(sr_q);

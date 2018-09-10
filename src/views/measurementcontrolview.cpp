@@ -48,8 +48,9 @@ MeasurementControlView::MeasurementControlView(const Session &session,
 	BaseView(session, parent),
 	configurable_(configurable)
 {
-	configurable_->list_config_mq(
-		ConfigKey::MeasuredQuantity, measured_quantity_list_);
+	// TODO: Use Property!
+	//configurable_->list_config_mq(
+	//	ConfigKey::MeasuredQuantity, measured_quantity_list_);
 
 	setup_ui();
 	init_values(); // Must be called before connect_signals()!
@@ -104,6 +105,8 @@ void MeasurementControlView::connect_signals()
 
 void MeasurementControlView::init_values()
 {
+	// TODO: Use Property!
+	/*
 	if (configurable_->has_get_config(ConfigKey::MeasuredQuantity)) {
 		actual_measured_quantity_ = configurable_->get_measured_quantity();
 		for (int i = 0; i < quantity_box_->count(); ++i) {
@@ -125,6 +128,7 @@ void MeasurementControlView::init_values()
 		}
 
 	}
+	*/
 }
 
 void MeasurementControlView::on_quantity_changed()
@@ -150,7 +154,9 @@ void MeasurementControlView::on_quantity_set()
 		qf_data.value<set<data::QuantityFlag>>();
 
 	auto mq_pair = make_pair(quantity, quantity_flags);
-	configurable_->set_measured_quantity(mq_pair);
+	(void)mq_pair;
+	//TODO: Use Property!
+	//configurable_->set_measured_quantity(mq_pair);
 }
 
 } // namespace views

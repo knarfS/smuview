@@ -26,7 +26,6 @@
 #include <QPushButton>
 #include <QString>
 
-#include "src/devices/configurable.hpp"
 #include "src/views/baseview.hpp"
 
 using std::shared_ptr;
@@ -40,6 +39,10 @@ class QuantityFlag;
 namespace sv {
 
 class Session;
+
+namespace devices {
+class Configurable;
+}
 
 namespace widgets {
 class QuantityComboBox;
@@ -62,8 +65,6 @@ public:
 
 private:
 	shared_ptr<devices::Configurable> configurable_;
-	devices::Configurable::measured_quantity_list_t measured_quantity_list_;
-	devices::Configurable::measured_quantity_t actual_measured_quantity_;
 
 	widgets::QuantityComboBox *quantity_box_;
 	widgets::QuantityFlagsList *quantity_flags_list_;

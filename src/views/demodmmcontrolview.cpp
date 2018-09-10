@@ -28,6 +28,7 @@
 #include "demodmmcontrolview.hpp"
 #include "src/session.hpp"
 #include "src/data/datautil.hpp"
+#include "src/devices/configurable.hpp"
 #include "src/devices/deviceutil.hpp"
 #include "src/devices/hardwaredevice.hpp"
 #include "src/widgets/quantitycombobox.hpp"
@@ -45,9 +46,6 @@ DemoDMMControlView::DemoDMMControlView(const Session &session,
 	BaseView(session, parent),
 	configurable_(configurable)
 {
-	configurable_->list_config_mq(
-		ConfigKey::MeasuredQuantity, measured_quantity_list_);
-
 	setup_ui();
 	connect_signals();
 	init_values();

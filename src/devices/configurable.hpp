@@ -110,8 +110,6 @@ public:
 		QStringList &string_list);
 	bool list_config_min_max_step(devices::ConfigKey key,
 		double &min, double &max, double &step);
-	bool list_config_mq(devices::ConfigKey key,
-		measured_quantity_list_t &measured_quantity_list);
 
 	QString name() const;
 
@@ -124,8 +122,6 @@ public:
 
 	bool is_controllable() const;
 
-	measured_quantity_t get_measured_quantity() const;
-	void set_measured_quantity(measured_quantity_t measured_quantity);
 	void feed_in_meta(shared_ptr<sigrok::Meta> sr_meta);
 
 private:

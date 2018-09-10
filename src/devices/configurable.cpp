@@ -326,45 +326,6 @@ bool Configurable::list_config_min_max_step(devices::ConfigKey key,
 	return true;
 }
 
-
-// TODO: Remove from here
-bool Configurable::list_config_mq(devices::ConfigKey key,
-	measured_quantity_list_t &measured_quantity_list)
-{
-	Glib::VariantContainerBase gvar;
-	if (!list_config(key, gvar))
-		return false;
-
-	Glib::VariantIter iter(gvar);
-	while (iter.next_value (gvar)) {
-		uint32_t mqbits = Glib::VariantBase::cast_dynamic
-			<Glib::Variant<uint32_t>>(gvar.get_child(0)).get();
-		data::Quantity quantity = data::datautil::get_quantity(mqbits);
-
-		if (!measured_quantity_list.count(quantity)) {
-			measured_quantity_list.insert(
-				make_pair(quantity, vector<set<data::QuantityFlag>>()));
-		}
-
-		uint64_t sr_mqflags = Glib::VariantBase::cast_dynamic
-			<Glib::Variant<uint64_t>>(gvar.get_child(1)).get();
-		set<data::QuantityFlag> quantity_flag_set;
-		uint64_t mask = 1;
-		for (uint i = 0; i < 32; i++, mask <<= 1) {
-			if (!(sr_mqflags & mask))
-				continue;
-
-			const sigrok::QuantityFlag *sr_mqflag =
-				sigrok::QuantityFlag::get(sr_mqflags & mask);
-			quantity_flag_set.insert(
-				data::datautil::get_quantity_flag(sr_mqflag));
-		}
-		measured_quantity_list[quantity].push_back(quantity_flag_set);
-	}
-
-	return true;
-}
-
 QString Configurable::name() const
 {
 	QString name("?");
@@ -428,55 +389,6 @@ bool Configurable::is_controllable() const
 		return true;
 
 	return false;
-}
-
-
-/**
- * TODO: Remove from here
- * TODO: When glibmm >= 2.52 is more supported and tuple bug is fixed,
- *       use the template function and return tuple<uint32_t, uint64_t>:
- *
- *       return get_config<std::tuple<uint32_t, uint64_t>>(
- *           sigrok::ConfigKey::MEASURED_QUANTITY);
- */
-Configurable::measured_quantity_t Configurable::get_measured_quantity() const
-{
-	if (!sr_configurable_->config_check(
-			sigrok::ConfigKey::MEASURED_QUANTITY, sigrok::Capability::GET)) {
-		qWarning() << "Configurable::read_config(): " <<
-			"No key sigrok::ConfigKey::MEASURED_QUANTITY";
-		assert(false);
-	}
-
-	auto vb = Glib::VariantBase::cast_dynamic
-		<Glib::Variant<std::tuple<uint32_t, uint64_t>>>
-		(sr_configurable_->config_get(sigrok::ConfigKey::MEASURED_QUANTITY));
-
-	uint32_t sr_q = vb.get_child<uint32_t>(0);
-	data::Quantity qunatity = data::datautil::get_quantity(sr_q);
-	uint64_t sr_qfs = vb.get_child<uint64_t>(1);
-	set<data::QuantityFlag> quantity_flags =
-		data::datautil::get_quantity_flags(sr_qfs);
-
-	return make_pair(qunatity, quantity_flags);
-}
-
-/**
- * TODO: Remove from here
- * TODO: This only works with glibmm >= 2.52, we have to change something in
- *       libsigrok to make it work with older distros and MXE (2.42.0)
- */
-void Configurable::set_measured_quantity(measured_quantity_t measured_quantity)
-{
-	uint32_t sr_q_id =
-		data::datautil::get_sr_quantity_id(measured_quantity.first);
-	uint64_t sr_qfs_id =
-		data::datautil::get_sr_quantity_flags_id(measured_quantity.second);
-
-	//auto q_qf_pair = make_pair(sr_q_id, sr_qfs_id); // TODO: Maybe this is a solution?
-	auto q_qf_tuple = make_tuple(sr_q_id, sr_qfs_id);
-
-	set_config(ConfigKey::MeasuredQuantity, q_qf_tuple);
 }
 
 void Configurable::feed_in_meta(shared_ptr<sigrok::Meta> sr_meta)
