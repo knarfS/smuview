@@ -119,6 +119,9 @@ public:
 	set<devices::ConfigKey> setable_configs() const;
 	set<devices::ConfigKey> listable_configs() const;
 
+	map<devices::ConfigKey, shared_ptr<properties::BaseProperty>> properties() const;
+	shared_ptr<properties::BaseProperty> get_property(devices::ConfigKey) const;
+
 	bool is_controllable() const;
 
 	measured_quantity_t get_measured_quantity() const;

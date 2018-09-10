@@ -393,6 +393,20 @@ set<devices::ConfigKey> Configurable::listable_configs() const
 	return listable_configs_;
 }
 
+map<devices::ConfigKey, shared_ptr<properties::BaseProperty>>
+	Configurable::properties() const
+{
+	return properties_;
+}
+
+shared_ptr<properties::BaseProperty>
+	Configurable::get_property(devices::ConfigKey config_key) const
+{
+	if (!properties_.count(config_key))
+			return nullptr;
+	return properties_.at(config_key);
+}
+
 bool Configurable::is_controllable() const
 {
 	// TODO: Also check for device types?
