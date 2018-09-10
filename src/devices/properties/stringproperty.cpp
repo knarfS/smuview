@@ -35,8 +35,10 @@ StringProperty::StringProperty(shared_ptr<devices::Configurable> configurable,
 	BaseProperty(configurable, config_key),
 	string_list_(QStringList())
 {
-	if (is_listable_)
-		list_config();
+	if (is_listable_) {
+		if (!list_config())
+			is_listable_ = false;
+	}
 }
 
 QVariant StringProperty::value() const
