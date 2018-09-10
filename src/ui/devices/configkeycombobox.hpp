@@ -44,13 +44,17 @@ class ConfigKeyComboBox : public QComboBox
 
 public:
 	ConfigKeyComboBox(shared_ptr<sv::devices::Configurable> configurable,
-		QWidget *parent = nullptr);
+		const bool show_getable, const bool show_setable,
+		const bool show_listable, QWidget *parent = nullptr);
 
 	void set_configurable(shared_ptr<sv::devices::Configurable> configurable);
-	sv::devices::ConfigKey selected_config_key();
+	sv::devices::ConfigKey selected_config_key() const;
 
 private:
 	shared_ptr<sv::devices::Configurable> configurable_;
+	const bool show_getable_;
+	const bool show_setable_;
+	const bool show_listable_;
 
 	void setup_ui();
 	void fill_config_keys();

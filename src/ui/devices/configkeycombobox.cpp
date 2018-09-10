@@ -23,6 +23,7 @@
 #include "configkeycombobox.hpp"
 #include "src/devices/deviceutil.hpp"
 #include "src/devices/configurable.hpp"
+#include "src/devices/properties/baseproperty.hpp"
 
 Q_DECLARE_METATYPE(sv::devices::ConfigKey)
 
@@ -32,9 +33,13 @@ namespace devices {
 
 ConfigKeyComboBox::ConfigKeyComboBox(
 		shared_ptr<sv::devices::Configurable> configurable,
-		QWidget *parent) :
+		const bool show_getable, const bool show_setable,
+		const bool show_listable,  QWidget *parent) :
 	QComboBox(parent),
-	configurable_(configurable)
+	configurable_(configurable),
+	show_getable_(show_getable),
+	show_setable_(show_setable),
+	show_listable_(show_listable)
 {
 	setup_ui();
 }
@@ -46,9 +51,11 @@ void ConfigKeyComboBox::set_configurable(
 	fill_config_keys();
 }
 
-sv::devices::ConfigKey ConfigKeyComboBox::selected_config_key()
+sv::devices::ConfigKey ConfigKeyComboBox::selected_config_key() const
 {
 	QVariant data = this->currentData();
+	if (!data.isValid())
+		return sv::devices::ConfigKey::Unknown;
 	return data.value<sv::devices::ConfigKey>();
 }
 
@@ -61,13 +68,18 @@ void ConfigKeyComboBox::fill_config_keys()
 {
 	this->clear();
 
-	if (!configurable_)
+	if (configurable_ == nullptr)
 		return;
 
-	for (auto config_key : configurable_->setable_configs()) {
+	for (auto prop : configurable_->properties()) {
+		if (!(show_getable_ && prop.second->is_getable()) &&
+				!(show_setable_ && prop.second->is_setable()) &&
+				!(show_listable_ && prop.second->is_listable()))
+			continue;
+
 		this->addItem(
-			sv::devices::deviceutil::format_config_key(config_key),
-			QVariant::fromValue(config_key));
+			sv::devices::deviceutil::format_config_key(prop.first),
+			QVariant::fromValue(prop.first));
 	}
 }
 

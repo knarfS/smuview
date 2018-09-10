@@ -75,7 +75,7 @@ void StepBlockDialog::setup_ui()
 	configurable_box_ = new widgets::ConfigurableComboBox(session_);
 	form_layout->addRow(tr("Channel (?)"), configurable_box_);
 	config_key_box_ = new widgets::ConfigKeyComboBox(
-		configurable_box_->selected_configurable());
+		configurable_box_->selected_configurable(), false, true, false);
 	form_layout->addRow(tr("Control (?)"), config_key_box_);
 	start_value_ = new QDoubleSpinBox();
 	start_value_->setSuffix(QString(" %1").arg("V"));

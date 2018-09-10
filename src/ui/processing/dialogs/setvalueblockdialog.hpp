@@ -26,8 +26,10 @@
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QDoubleSpinBox>
+#include <QFormLayout>
 #include <QLineEdit>
 #include <QSpinBox>
+#include <QVariant>
 #include <QWidget>
 
 #include "src/session.hpp"
@@ -61,12 +63,13 @@ public:
 
 	shared_ptr<devices::Configurable> configurable() const;
 	devices::ConfigKey config_key() const;
-	double value() const;
+	QVariant value() const;
 
 private:
 	shared_ptr<Session> session_;
 	shared_ptr<devices::Configurable> configurable_;
 
+	QFormLayout *form_layout_;
 	QLineEdit *name_edit_;
 	widgets::ConfigurableComboBox *configurable_box_;
 	widgets::ConfigKeyComboBox *config_key_box_;

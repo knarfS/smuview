@@ -161,7 +161,8 @@ void ProcessThreadWidget::on_action_add_set_value_block_triggered()
 		make_shared<sv::processing::SetValueBlock>();
 	block->set_configurable(dlg.configurable());
 	block->set_config_key(dlg.config_key());
-	block->set_value(dlg.value());
+	 // TODO: property instead of QVariant? But Property is directly connected. Both?!?!
+	block->set_value(dlg.value().toDouble());
 	processor_->add_block_to_process(block);
 
 	ui::processing::items::StepItem *item =
@@ -172,7 +173,6 @@ void ProcessThreadWidget::on_action_add_set_value_block_triggered()
 
 void ProcessThreadWidget::on_action_add_get_value_block_triggered()
 {
-
 }
 
 void ProcessThreadWidget::on_action_add_step_block_triggered()

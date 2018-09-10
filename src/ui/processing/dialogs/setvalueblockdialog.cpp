@@ -31,11 +31,13 @@
 
 #include "setvalueblockdialog.hpp"
 #include "src/devices/configurable.hpp"
+#include "src/devices/properties/baseproperty.hpp"
 #include "src/ui/datatypes/datatypehelper.hpp"
 #include "src/widgets/configkeycombobox.hpp"
 #include "src/widgets/configurablecombobox.hpp"
 
 using std::make_shared;
+using std::shared_ptr;
 using std::static_pointer_cast;
 
 Q_DECLARE_SMART_POINTER_METATYPE(std::shared_ptr)
@@ -66,21 +68,23 @@ void SetValueBlockDialog::setup_ui()
 	QVBoxLayout *main_layout = new QVBoxLayout();
 
 	// General stuff
-	QFormLayout *form_layout = new QFormLayout();
+	form_layout_ = new QFormLayout();
 	name_edit_ = new QLineEdit();
-	form_layout->addRow(tr("Name"), name_edit_);
+	form_layout_->addRow(tr("Name"), name_edit_);
 	configurable_box_ = new widgets::ConfigurableComboBox(session_);
-	form_layout->addRow(tr("Channel"), configurable_box_);
+	form_layout_->addRow(tr("Channel"), configurable_box_);
 	config_key_box_ = new widgets::ConfigKeyComboBox(
-		configurable_box_->selected_configurable());
-	form_layout->addRow(tr("Control"), config_key_box_);
+		configurable_box_->selected_configurable(), false, true, false);
+	form_layout_->addRow(tr("Control"), config_key_box_);
 
-	value_widget_ = datatypes::datatypehelper::get_widget_for_config_key(
-		configurable_box_->selected_configurable(),
-		config_key_box_->selected_config_key(),
-		data::Unit::Unknown, false);
-	form_layout->addRow(tr("Value"), value_widget_);
-	main_layout->addLayout(form_layout);
+	shared_ptr<devices::properties::BaseProperty> property =
+		configurable_box_->selected_configurable()->get_property(
+			config_key_box_->selected_config_key());
+	value_widget_ = datatypes::datatypehelper::get_widget_for_property(
+		property, false, false);
+	form_layout_->addRow(tr("Value"), value_widget_);
+
+	main_layout->addLayout(form_layout_);
 
 	// Buttons
 	button_box_ = new QDialogButtonBox(
@@ -96,7 +100,8 @@ void SetValueBlockDialog::connect_signals()
 {
 	connect(configurable_box_, SIGNAL(currentIndexChanged(int)),
 		this, SLOT(on_configurable_changed()));
-	connect(config_key_box_, SIGNAL(currentIndexChanged(int)),
+	connect(config_key_box_,
+		SIGNAL(current_config_key_changed(const devices::ConfigKey)),
 		this, SLOT(on_config_key_changed()));
 }
 
@@ -123,9 +128,9 @@ devices::ConfigKey SetValueBlockDialog::config_key() const
 	return config_key_box_->selected_config_key();
 }
 
-double SetValueBlockDialog::value() const
+QVariant SetValueBlockDialog::value() const
 {
-	return .0; //value_widget_->value();
+	return QVariant((double)0.5); //value_widget_->value();
 }
 
 void SetValueBlockDialog::on_configurable_changed()
@@ -136,19 +141,23 @@ void SetValueBlockDialog::on_configurable_changed()
 
 void SetValueBlockDialog::on_config_key_changed()
 {
-	/*
+	shared_ptr<devices::Configurable> c =
+		configurable_box_->selected_configurable();
 	devices::ConfigKey ck = config_key_box_->selected_config_key();
-	devices::DataType dt = sv::devices::deviceutil::get_data_type_for_config_key(ck);
-	qWarning() << "SetValueBlockDialog::on_config_key_changed(): config_key = "
-		<< devices::deviceutil::format_config_key(ck)
-		//<< ", data_type = "
-		//<< devices::deviceutil::format_data_type(dt);
-	*/
+	shared_ptr<devices::properties::BaseProperty> property =
+		c->get_property(ck);
 
-	value_widget_ = datatypes::datatypehelper::get_widget_for_config_key(
-		configurable_box_->selected_configurable(),
-		config_key_box_->selected_config_key(),
-		data::Unit::Unknown, false);
+	// Dummy widget if there is no widget for this property. Otherwise the NULL
+	// widget can't be replaced with another property widget.
+	QWidget *new_value_widget = new QWidget();
+	if (property != nullptr) {
+		new_value_widget = datatypes::datatypehelper::get_widget_for_property(
+			property, false, false);
+	}
+
+	form_layout_->replaceWidget(value_widget_, new_value_widget);
+	delete value_widget_;
+	value_widget_ = new_value_widget;
 }
 
 } // namespace dialogs
