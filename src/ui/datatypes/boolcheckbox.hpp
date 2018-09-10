@@ -57,7 +57,7 @@ private:
 
 private Q_SLOTS:
 	/**
-	 * Signal handling for Widget -> BoolProperty
+	 * Signal handling for Widget -> Property
 	 */
 	void value_changed(const bool);
 	/**

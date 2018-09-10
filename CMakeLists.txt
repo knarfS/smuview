@@ -224,6 +224,8 @@ set(smuview_SOURCES
   src/ui/datatypes/datatypehelper.cpp
   src/ui/datatypes/floatspinbox.cpp
   src/ui/datatypes/int32spinbox.cpp
+  src/ui/datatypes/stringcombobox.cpp
+  src/ui/datatypes/uint64spinbox.cpp
   src/ui/processing/processingwidget.cpp
   src/ui/processing/processthreadwidget.cpp
   src/ui/processing/blocks/sequencesinblock.cpp

@@ -24,9 +24,14 @@
 #include "src/devices/properties/baseproperty.hpp"
 #include "src/devices/properties/boolproperty.hpp"
 #include "src/devices/properties/floatproperty.hpp"
+#include "src/devices/properties/int32property.hpp"
+#include "src/devices/properties/stringproperty.hpp"
+#include "src/devices/properties/uint64property.hpp"
 #include "src/ui/datatypes/boolcheckbox.hpp"
 #include "src/ui/datatypes/floatspinbox.hpp"
 #include "src/ui/datatypes/int32spinbox.hpp"
+#include "src/ui/datatypes/stringcombobox.hpp"
+#include "src/ui/datatypes/uint64spinbox.hpp"
 
 using std::dynamic_pointer_cast;
 
@@ -45,13 +50,23 @@ QWidget *get_widget_for_property(
 
 	switch (data_type) {
 	case devices::DataType::Int32:
-		//return new Int32SpinBox(
-		//	dynamic_pointer_cast<devices::properties::Int32Property>(property),
-		//	auto_commit, auto_update);
+		return new Int32SpinBox(
+			dynamic_pointer_cast<devices::properties::Int32Property>(property),
+			auto_commit, auto_update);
+		break;
+	case devices::DataType::UInt64:
+		return new UInt64SpinBox(
+			dynamic_pointer_cast<devices::properties::UInt64Property>(property),
+			auto_commit, auto_update);
 		break;
 	case devices::DataType::Float:
 		return new FloatSpinBox(
 			dynamic_pointer_cast<devices::properties::FloatProperty>(property),
+			auto_commit, auto_update);
+		break;
+	case devices::DataType::String:
+		return new StringComboBox(
+			dynamic_pointer_cast<devices::properties::StringProperty>(property),
 			auto_commit, auto_update);
 		break;
 	case devices::DataType::Bool:

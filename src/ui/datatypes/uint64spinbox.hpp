@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,12 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UI_DATATYPES_BOOLBUTTON_HPP
-#define UI_DATATYPES_BOOLBUTTON_HPP
+#ifndef UI_DATATYPES_UINT64SPINBOX_HPP
+#define UI_DATATYPES_UINT64SPINBOX_HPP
 
 #include <memory>
 
-#include <QPushButton>
+#include <QSpinBox>
 #include <QVariant>
 
 using std::shared_ptr;
@@ -31,30 +31,27 @@ namespace sv {
 
 namespace devices {
 namespace properties {
-class BoolProperty;
+class UInt64Property;
 }
 }
 
 namespace ui {
 namespace datatypes {
 
-class BoolButton : public QPushButton
+class UInt64SpinBox : public QSpinBox
 {
     Q_OBJECT
 
 public:
-	BoolButton(
-		shared_ptr<devices::properties::BoolProperty> bool_prop,
+	UInt64SpinBox(
+		shared_ptr<devices::properties::UInt64Property> uint64_prop,
 		const bool auto_commit, const bool auto_update,
 		QWidget *parent = nullptr);
 
 private:
 	const bool auto_commit_;
 	const bool auto_update_;
-	const QIcon on_icon_;
-	const QIcon off_icon_;
-	const QIcon dis_icon_;
-	shared_ptr<devices::properties::BoolProperty> bool_prop_;
+	shared_ptr<devices::properties::UInt64Property> uint64_prop_;
 
 	void setup_ui();
 	void connect_signals();
@@ -63,7 +60,7 @@ private Q_SLOTS:
 	/**
 	 * Signal handling for Widget -> Property
 	 */
-	void value_changed(const bool);
+	void value_changed(const uint64_t);
 	/**
 	 * Signal handling for Property -> Widget
 	 */
@@ -73,6 +70,6 @@ private Q_SLOTS:
 
 } // namespace datatypes
 } // namespace ui
-} // namespace sv
+} // namespece sv
 
-#endif // UI_DATATYPES_BOOLBUTTON_HPP
+#endif // UI_DATATYPES_UINT64SPINBOX_HPP
