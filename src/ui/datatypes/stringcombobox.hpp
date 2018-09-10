@@ -22,7 +22,6 @@
 
 #include <memory>
 
-
 #include <QComboBox>
 #include <QString>
 #include <QVariant>
