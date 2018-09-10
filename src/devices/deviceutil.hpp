@@ -239,7 +239,7 @@ enum class ConfigKey
 enum class DataType
 {
 	UInt64,
-	Sting,
+	String,
 	Bool,
 	Float,
 	RationalPeriod,
@@ -367,7 +367,7 @@ config_key_name_map_t config_key_name_map = {
 
 data_type_name_map_t data_type_name_map = {
 	{ DataType::UInt64, QString("UInt64") },
-	{ DataType::Sting, QString("String") },
+	{ DataType::String, QString("String") },
 	{ DataType::Bool, QString("Boolean") },
 	{ DataType::Float, QString("Float/Double") },
 	{ DataType::RationalPeriod, QString("Rational Period") },
@@ -576,7 +576,7 @@ map<ConfigKey, const sigrok::ConfigKey *> config_key_sr_config_key_map = {
 
 map<const sigrok::DataType *, DataType> sr_data_type_data_type_map = {
 	{ sigrok::DataType::UINT64, DataType::UInt64 },
-	{ sigrok::DataType::STRING, DataType::Sting },
+	{ sigrok::DataType::STRING, DataType::String },
 	{ sigrok::DataType::BOOL, DataType::Bool },
 	{ sigrok::DataType::FLOAT, DataType::Float },
 	{ sigrok::DataType::RATIONAL_PERIOD, DataType::RationalPeriod },
@@ -590,7 +590,7 @@ map<const sigrok::DataType *, DataType> sr_data_type_data_type_map = {
 
 map<DataType, const sigrok::DataType *> data_type_sr_data_type_map = {
 	{ DataType::UInt64, sigrok::DataType::UINT64 },
-	{ DataType::Sting, sigrok::DataType::STRING },
+	{ DataType::String, sigrok::DataType::STRING },
 	{ DataType::Bool, sigrok::DataType::BOOL },
 	{ DataType::Float, sigrok::DataType::FLOAT },
 	{ DataType::RationalPeriod, sigrok::DataType::RATIONAL_PERIOD },

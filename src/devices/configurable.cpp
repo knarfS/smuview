@@ -116,7 +116,7 @@ void Configurable::init()
 			property = make_shared<properties::FloatProperty>(
 				shared_from_this(), config_key);
 			break;
-		case devices::DataType::Sting:
+		case devices::DataType::String:
 			property = make_shared<properties::StringProperty>(
 				shared_from_this(), config_key);
 			break;
