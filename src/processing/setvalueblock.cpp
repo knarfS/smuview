@@ -24,6 +24,7 @@
 #include "setvalueblock.hpp"
 #include "src/devices/configurable.hpp"
 #include "src/devices/deviceutil.hpp"
+#include "src/devices/properties/baseproperty.hpp"
 
 namespace sv {
 namespace processing {
@@ -38,26 +39,31 @@ void SetValueBlock::init()
 
 void SetValueBlock::run()
 {
-	assert(configurable_);
-	assert(config_key_);
+	assert(property_);
+	assert(value_);
 
-	qWarning() << "SetValueBlock: value = " << value_;
+	//qWarning() << "SetValueBlock: value = " << value_;
 
-	configurable_->set_config(config_key_, value_);
-	configurable_->config_changed(config_key_, value_);
+	property_->change_value(value_);
 }
 
-void SetValueBlock::set_configurable(shared_ptr<devices::Configurable> configurable)
+shared_ptr<devices::properties::BaseProperty> SetValueBlock::property() const
 {
-	configurable_ = configurable;
+	return property_;
 }
 
-void SetValueBlock::set_config_key(devices::ConfigKey key)
+void SetValueBlock::set_property(
+	shared_ptr<devices::properties::BaseProperty> property)
 {
-	config_key_ = key;
+	property_ = property;
 }
 
-void SetValueBlock::set_value(double value)
+QVariant SetValueBlock::value() const
+{
+	return value_;
+}
+
+void SetValueBlock::set_value(QVariant value)
 {
 	value_ = value;
 }

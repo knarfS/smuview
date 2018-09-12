@@ -77,11 +77,10 @@ void SetValueBlockDialog::setup_ui()
 		configurable_box_->selected_configurable(), false, true, false);
 	form_layout_->addRow(tr("Control"), config_key_box_);
 
-	shared_ptr<devices::properties::BaseProperty> property =
-		configurable_box_->selected_configurable()->get_property(
-			config_key_box_->selected_config_key());
+	property_ = configurable_box_->selected_configurable()->get_property(
+		config_key_box_->selected_config_key());
 	value_widget_ = datatypes::datatypehelper::get_widget_for_property(
-		property, false, false);
+		property_, false, false);
 	form_layout_->addRow(tr("Value"), value_widget_);
 
 	main_layout->addLayout(form_layout_);
@@ -118,6 +117,12 @@ void SetValueBlockDialog::accept()
 	QDialog::accept();
 }
 
+shared_ptr<devices::properties::BaseProperty>
+	SetValueBlockDialog::property() const
+{
+	return property_;
+}
+
 shared_ptr<devices::Configurable> SetValueBlockDialog::configurable() const
 {
 	return configurable_box_->selected_configurable();
@@ -141,18 +146,16 @@ void SetValueBlockDialog::on_configurable_changed()
 
 void SetValueBlockDialog::on_config_key_changed()
 {
-	shared_ptr<devices::Configurable> c =
-		configurable_box_->selected_configurable();
-	devices::ConfigKey ck = config_key_box_->selected_config_key();
-	shared_ptr<devices::properties::BaseProperty> property =
-		c->get_property(ck);
+	auto c = configurable_box_->selected_configurable();
+	auto ck = config_key_box_->selected_config_key();
+	property_ = c->get_property(ck);
 
 	// Dummy widget if there is no widget for this property. Otherwise the NULL
 	// widget can't be replaced with another property widget.
 	QWidget *new_value_widget = new QWidget();
-	if (property != nullptr) {
+	if (property_ != nullptr) {
 		new_value_widget = datatypes::datatypehelper::get_widget_for_property(
-			property, false, false);
+			property_, false, false);
 	}
 
 	form_layout_->replaceWidget(value_widget_, new_value_widget);

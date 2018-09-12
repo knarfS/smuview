@@ -42,6 +42,9 @@ namespace sv {
 
 namespace devices {
 class Configurable;
+namespace properties {
+class BaseProperty;
+}
 }
 
 namespace widgets {
@@ -61,13 +64,14 @@ public:
 	SetValueBlockDialog(shared_ptr<Session> session,
 		QWidget *parent = nullptr);
 
+	shared_ptr<devices::properties::BaseProperty> property() const;
 	shared_ptr<devices::Configurable> configurable() const;
 	devices::ConfigKey config_key() const;
 	QVariant value() const;
 
 private:
 	shared_ptr<Session> session_;
-	shared_ptr<devices::Configurable> configurable_;
+	shared_ptr<devices::properties::BaseProperty> property_;
 
 	QFormLayout *form_layout_;
 	QLineEdit *name_edit_;

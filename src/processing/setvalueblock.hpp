@@ -23,6 +23,7 @@
 #include <memory>
 
 #include <QObject>
+#include <QVariant>
 
 #include "src/devices/deviceutil.hpp"
 #include "src/processing/baseblock.hpp"
@@ -33,6 +34,9 @@ namespace sv {
 
 namespace devices {
 class Configurable;
+namespace properties {
+class BaseProperty;
+}
 }
 
 namespace processing {
@@ -49,14 +53,14 @@ public:
 	void init();
 	void run();
 
-	void set_configurable(shared_ptr<devices::Configurable>);
-	void set_config_key(devices::ConfigKey);
-	void set_value(double value);
+	shared_ptr<devices::properties::BaseProperty> property() const;
+	void set_property(shared_ptr<devices::properties::BaseProperty>);
+	QVariant value() const;
+	void set_value(QVariant);
 
 private:
-	shared_ptr<devices::Configurable> configurable_;
-	devices::ConfigKey config_key_;
-	double value_;
+	shared_ptr<devices::properties::BaseProperty> property_;
+	QVariant value_;
 
 };
 
