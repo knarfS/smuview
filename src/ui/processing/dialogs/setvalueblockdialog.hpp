@@ -71,8 +71,8 @@ private:
 
 	QFormLayout *form_layout_;
 	QLineEdit *name_edit_;
-	widgets::ConfigurableComboBox *configurable_box_;
-	widgets::ConfigKeyComboBox *config_key_box_;
+	sv::widgets::ConfigurableComboBox *configurable_box_;
+	sv::widgets::ConfigKeyComboBox *config_key_box_;
 	QWidget *value_widget_;
 	QDialogButtonBox *button_box_;
 

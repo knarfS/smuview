@@ -69,8 +69,8 @@ private:
 	shared_ptr<devices::Configurable> configurable_;
 
 	QLineEdit *name_edit_;
-	widgets::ConfigurableComboBox *configurable_box_;
-	widgets::ConfigKeyComboBox *config_key_box_;
+	sv::widgets::ConfigurableComboBox *configurable_box_;
+	sv::widgets::ConfigKeyComboBox *config_key_box_;
 	QDoubleSpinBox *start_value_;
 	QDoubleSpinBox *end_value_;
 	QDoubleSpinBox *step_size_;
