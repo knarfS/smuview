@@ -32,10 +32,12 @@
 #include "setvalueblockdialog.hpp"
 #include "src/devices/configurable.hpp"
 #include "src/devices/properties/baseproperty.hpp"
+#include "src/ui/datatypes/basewidget.hpp"
 #include "src/ui/datatypes/datatypehelper.hpp"
 #include "src/widgets/configkeycombobox.hpp"
 #include "src/widgets/configurablecombobox.hpp"
 
+using std::dynamic_pointer_cast;
 using std::make_shared;
 using std::shared_ptr;
 using std::static_pointer_cast;
@@ -135,7 +137,9 @@ devices::ConfigKey SetValueBlockDialog::config_key() const
 
 QVariant SetValueBlockDialog::value() const
 {
-	return QVariant((double)0.5); //value_widget_->value();
+	const datatypes::BaseWidget *base_widget =
+		dynamic_cast<datatypes::BaseWidget *>(value_widget_);
+	return base_widget->variant_value();
 }
 
 void SetValueBlockDialog::on_configurable_changed()
