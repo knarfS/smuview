@@ -30,14 +30,12 @@ namespace ui {
 namespace datatypes {
 
 ThresholdControl::ThresholdControl(
-		shared_ptr<devices::properties::BaseProperty> double_prop,
+		shared_ptr<devices::properties::BaseProperty> property,
 		shared_ptr<devices::properties::BaseProperty> bool_prop,
 		const bool auto_commit, const bool auto_update,
 		QString title, QWidget *parent) :
 	QGroupBox(parent),
-	auto_commit_(auto_commit),
-	auto_update_(auto_update),
-	double_prop_(double_prop),
+	BaseWidget(property, auto_commit, auto_update),
 	bool_prop_(bool_prop),
 	title_(title)
 {
@@ -60,12 +58,17 @@ void ThresholdControl::setup_ui()
 		QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
 	layout->addWidget(button_);
 
-	spin_box_ = new DoubleSpinBox(double_prop_, true, true);
+	spin_box_ = new DoubleSpinBox(property_, true, true);
 	spin_box_->setSizePolicy(
 		QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
 	layout->addWidget(spin_box_);
 
 	this->setLayout(layout);
+}
+
+QVariant ThresholdControl::variant_value() const
+{
+	return QVariant(spin_box_->value());
 }
 
 } // namespace widgets

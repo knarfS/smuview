@@ -35,12 +35,10 @@ BoolButton::BoolButton(
 		const bool auto_commit, const bool auto_update,
 		QWidget *parent) :
 	QPushButton(parent),
-	auto_commit_(auto_commit),
-	auto_update_(auto_update),
+	BaseWidget(property, auto_commit, auto_update),
 	on_icon_(":/icons/status-green.svg"),
 	off_icon_(":/icons/status-red.svg"),
-	dis_icon_(":/icons/status-grey.svg"),
-	property_(property)
+	dis_icon_(":/icons/status-grey.svg")
 {
 	// Check property
 	if (property_ != nullptr &&
@@ -98,6 +96,11 @@ void BoolButton::disconnect_widget_2_prop_signals()
 		disconnect(this, SIGNAL(toggled(bool)),
 			this, SLOT(value_changed(const bool)));
 	}
+}
+
+QVariant BoolButton::variant_value() const
+{
+	return QVariant(this->isChecked());
 }
 
 void BoolButton::value_changed(const bool value)

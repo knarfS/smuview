@@ -24,6 +24,8 @@
 
 #include <QGroupBox>
 
+#include "src/ui/datatypes/basewidget.hpp"
+
 using std::shared_ptr;
 
 namespace sv {
@@ -41,7 +43,7 @@ class DoubleKnob;
 class DoubleLcdDisplay;
 class DoubleSpinBox;
 
-class DoubleControl : public QGroupBox
+class DoubleControl : public QGroupBox, public BaseWidget
 {
     Q_OBJECT
 
@@ -51,10 +53,9 @@ public:
 		const bool auto_commit, const bool auto_update,
 		QString title, QWidget *parent = nullptr);
 
+	QVariant variant_value() const;
+
 private:
-	const bool auto_commit_;
-	const bool auto_update_;
-	shared_ptr<devices::properties::BaseProperty> property_;
 	QString title_;
 
 	DoubleSpinBox *spin_box_;

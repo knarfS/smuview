@@ -34,9 +34,7 @@ BoolCheckBox::BoolCheckBox(
 		const bool auto_commit, const bool auto_update,
 		QWidget *parent) :
 	QCheckBox(parent),
-	auto_commit_(auto_commit),
-	auto_update_(auto_update),
-	property_(property)
+	BaseWidget(property, auto_commit, auto_update)
 {
 	// Check property
 	if (property_ != nullptr &&
@@ -87,6 +85,11 @@ void BoolCheckBox::disconnect_widget_2_prop_signals()
 		disconnect(this, SIGNAL(stateChanged(bool)),
 			this, SLOT(value_changed(const bool)));
 	}
+}
+
+QVariant BoolCheckBox::variant_value() const
+{
+	return QVariant(this->isChecked());
 }
 
 void BoolCheckBox::value_changed(const bool value)

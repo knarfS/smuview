@@ -27,6 +27,8 @@
 
 #include "src/devices/configurable.hpp"
 
+#include "src/ui/datatypes/basewidget.hpp"
+
 using std::shared_ptr;
 
 namespace sv {
@@ -40,7 +42,7 @@ class BaseProperty;
 namespace ui {
 namespace datatypes {
 
-class MeasuredQuantityComboBox : public QComboBox
+class MeasuredQuantityComboBox : public QComboBox, public BaseWidget
 {
     Q_OBJECT
 
@@ -50,11 +52,9 @@ public:
 		const bool auto_commit, const bool auto_update,
 		QWidget *parent = nullptr);
 
-private:
-	const bool auto_commit_;
-	const bool auto_update_;
-	shared_ptr<devices::properties::BaseProperty> property_;
+	QVariant variant_value() const;
 
+private:
 	void setup_ui();
 	void connect_signals();
 	void connect_widget_2_prop_signals();

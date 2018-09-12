@@ -25,6 +25,8 @@
 #include <QPushButton>
 #include <QVariant>
 
+#include "src/ui/datatypes/basewidget.hpp"
+
 using std::shared_ptr;
 
 namespace sv {
@@ -38,7 +40,7 @@ class BaseProperty;
 namespace ui {
 namespace datatypes {
 
-class BoolButton : public QPushButton
+class BoolButton : public QPushButton, public BaseWidget
 {
     Q_OBJECT
 
@@ -48,13 +50,12 @@ public:
 		const bool auto_commit, const bool auto_update,
 		QWidget *parent = nullptr);
 
+	QVariant variant_value() const;
+
 private:
-	const bool auto_commit_;
-	const bool auto_update_;
 	const QIcon on_icon_;
 	const QIcon off_icon_;
 	const QIcon dis_icon_;
-	shared_ptr<devices::properties::BaseProperty> property_;
 
 	void setup_ui();
 	void connect_signals();

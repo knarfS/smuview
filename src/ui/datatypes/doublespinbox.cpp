@@ -38,9 +38,7 @@ DoubleSpinBox::DoubleSpinBox(
 		const bool auto_commit, const bool auto_update,
 		QWidget *parent) :
 	QDoubleSpinBox(parent),
-	auto_commit_(auto_commit),
-	auto_update_(auto_update),
-	property_(property)
+	BaseWidget(property, auto_commit, auto_update)
 {
 	// Check property
 	if (property_ != nullptr &&
@@ -108,6 +106,11 @@ void DoubleSpinBox::disconnect_widget_2_prop_signals()
 		disconnect(this, SIGNAL(valueChanged(double)),
 			this, SLOT(value_changed(const double)));
 	}
+}
+
+QVariant DoubleSpinBox::variant_value() const
+{
+	return QVariant(this->value());
 }
 
 void DoubleSpinBox::value_changed(const double value)

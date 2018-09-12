@@ -24,6 +24,7 @@
 
 #include <QVariant>
 
+#include "src/ui/datatypes/basewidget.hpp"
 #include "src/ui/widgets/lcddisplay.hpp"
 
 using std::shared_ptr;
@@ -39,7 +40,7 @@ class BaseProperty;
 namespace ui {
 namespace datatypes {
 
-class DoubleLcdDisplay : public widgets::LcdDisplay
+class DoubleLcdDisplay : public widgets::LcdDisplay, public BaseWidget
 {
     Q_OBJECT
 
@@ -48,10 +49,9 @@ public:
 		shared_ptr<devices::properties::BaseProperty> property,
 		const bool auto_update, QWidget *parent = nullptr);
 
-private:
-	const bool auto_update_;
-	shared_ptr<devices::properties::BaseProperty> property_;
+	QVariant variant_value() const;
 
+private:
 	void setup_ui();
 	void connect_signals();
 

@@ -38,9 +38,7 @@ StringComboBox::StringComboBox(
 		const bool auto_commit, const bool auto_update,
 		QWidget *parent) :
 	QComboBox(parent),
-	auto_commit_(auto_commit),
-	auto_update_(auto_update),
-	property_(property)
+	BaseWidget(property, auto_commit, auto_update)
 {
 	// Check property
 	if (property_ != nullptr &&
@@ -111,6 +109,11 @@ void StringComboBox::disconnect_widget_2_prop_signals()
 				this, SLOT(value_changed(const QString)));
 		}
 	}
+}
+
+QVariant StringComboBox::variant_value() const
+{
+	return QVariant(this->currentText());
 }
 
 void StringComboBox::value_changed(const QString value)

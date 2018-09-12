@@ -27,6 +27,8 @@
 #include <QVariant>
 #include <QWidget>
 
+#include "src/ui/datatypes/basewidget.hpp"
+
 using std::shared_ptr;
 
 namespace sv {
@@ -40,7 +42,7 @@ class BaseProperty;
 namespace ui {
 namespace datatypes {
 
-class BoolLed : public QWidget
+class BoolLed : public QWidget, public BaseWidget
 {
     Q_OBJECT
 
@@ -50,13 +52,13 @@ public:
 		const QIcon on_icon, const QIcon off_icon, const QIcon dis_icon,
 		QString text = nullptr, QWidget *parent = nullptr);
 
+	QVariant variant_value() const;
+
 private:
-	const bool auto_update_;
 	const QIcon on_icon_;
 	const QIcon off_icon_;
 	const QIcon dis_icon_;
 	QString text_;
-	shared_ptr<devices::properties::BaseProperty> property_;
 
 	QLabel *led_label_;
 	QLabel *text_label_;

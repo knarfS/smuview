@@ -24,6 +24,8 @@
 
 #include <QGroupBox>
 
+#include "src/ui/datatypes/basewidget.hpp"
+
 using std::shared_ptr;
 
 namespace sv {
@@ -40,21 +42,20 @@ namespace datatypes {
 class BoolButton;
 class DoubleSpinBox;
 
-class ThresholdControl : public QGroupBox
+class ThresholdControl : public QGroupBox, public BaseWidget
 {
     Q_OBJECT
 
 public:
 	ThresholdControl(
-		shared_ptr<devices::properties::BaseProperty> double_prop,
+		shared_ptr<devices::properties::BaseProperty> property,
 		shared_ptr<devices::properties::BaseProperty> bool_prop,
 		const bool auto_commit, const bool auto_update,
 		QString title, QWidget *parent = nullptr);
 
+	QVariant variant_value() const;
+
 private:
-	const bool auto_commit_;
-	const bool auto_update_;
-	shared_ptr<devices::properties::BaseProperty> double_prop_;
 	shared_ptr<devices::properties::BaseProperty> bool_prop_;
 	QString title_;
 

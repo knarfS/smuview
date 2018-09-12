@@ -26,6 +26,8 @@
 #include <QVariant>
 #include <qwt_knob.h>
 
+#include "src/ui/datatypes/basewidget.hpp"
+
 using std::shared_ptr;
 
 namespace sv {
@@ -39,7 +41,7 @@ class BaseProperty;
 namespace ui {
 namespace datatypes {
 
-class DoubleKnob : public QwtKnob
+class DoubleKnob : public QwtKnob, public BaseWidget
 {
     Q_OBJECT
 
@@ -49,11 +51,9 @@ public:
 		const bool auto_commit, const bool auto_update,
 		QWidget *parent = nullptr);
 
-private:
-	const bool auto_commit_;
-	const bool auto_update_;
-	shared_ptr<devices::properties::BaseProperty> property_;
+	QVariant variant_value() const;
 
+private:
 	void setup_ui();
 	void connect_signals();
 	void connect_widget_2_prop_signals();

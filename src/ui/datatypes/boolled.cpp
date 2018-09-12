@@ -36,12 +36,11 @@ BoolLed::BoolLed(
 		const QIcon on_icon, const QIcon off_icon, const QIcon dis_icon,
 		QString text, QWidget *parent) :
 	QWidget(parent),
-	auto_update_(auto_update),
+	BaseWidget(property, false, auto_update),
 	on_icon_(on_icon),
 	off_icon_(off_icon),
 	dis_icon_(dis_icon),
-	text_(text),
-	property_(property)
+	text_(text)
 {
 	// Check property
 	if (property_ != nullptr &&
@@ -95,6 +94,12 @@ void BoolLed::connect_signals()
 		connect(property_.get(), SIGNAL(value_changed(const QVariant)),
 			this, SLOT(on_value_changed(const QVariant)));
 	}
+}
+
+QVariant BoolLed::variant_value() const
+{
+	// TODO: Member variable with actual state!
+	return QVariant(false);
 }
 
 void BoolLed::value_changed(const bool value)

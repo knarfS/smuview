@@ -35,9 +35,7 @@ DoubleControl::DoubleControl(
 		const bool auto_commit, const bool auto_update,
 		QString title, QWidget *parent) :
 	QGroupBox(parent),
-	auto_commit_(auto_commit),
-	auto_update_(auto_update),
-	property_(property),
+	BaseWidget(property, auto_commit, auto_update),
 	title_(title)
 {
 	setup_ui();
@@ -71,8 +69,13 @@ void DoubleControl::setup_ui()
 	this->setLayout(layout);
 }
 
+QVariant DoubleControl::variant_value() const
+{
+	return QVariant(spin_box_->value());
+}
+
 /*
-void ValueControl::change_value(const double value)
+void DoubleControl::change_value(const double value)
 {
 	if (value == value_)
 		return;
@@ -94,7 +97,7 @@ void ValueControl::change_value(const double value)
 		this, SLOT(on_value_changed(const double)));
 }
 
-void ValueControl::on_value_changed(const double value)
+void DoubleControl::on_value_changed(const double value)
 {
 	if (value == value_)
 		return;

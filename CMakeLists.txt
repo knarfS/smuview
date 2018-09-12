@@ -218,6 +218,7 @@ set(smuview_SOURCES
   src/widgets/plot/timecurve.cpp
   src/widgets/plot/xycurve.cpp
 
+  src/ui/datatypes/basewidget.cpp
   src/ui/datatypes/boolbutton.cpp
   src/ui/datatypes/boolcheckbox.cpp
   src/ui/datatypes/boolled.cpp

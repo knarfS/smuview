@@ -38,8 +38,7 @@ DoubleLcdDisplay::DoubleLcdDisplay(
 		 const bool auto_update, QWidget *parent) :
 	widgets::LcdDisplay(5/*Dummy*/, 3/*Dummy*/, false,
 		QString("Dummy"), QString(""), QString(""), false, parent),
-	auto_update_(auto_update),
-	property_(property)
+	BaseWidget(property, false, auto_update)
 {
 	// Check property
 	if (property_ != nullptr &&
@@ -81,6 +80,11 @@ void DoubleLcdDisplay::connect_signals()
 		connect(property_.get(), SIGNAL(value_changed(const QVariant)),
 			this, SLOT(on_value_changed(const QVariant)));
 	}
+}
+
+QVariant DoubleLcdDisplay::variant_value() const
+{
+	return QVariant(this->value());
 }
 
 void DoubleLcdDisplay::value_changed(const double value)

@@ -17,15 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UI_DATATYPES_INT32SPINBOX_HPP
-#define UI_DATATYPES_INT32SPINBOX_HPP
+#ifndef UI_DATATYPES_BASEWIDEGT_HPP
+#define UI_DATATYPES_BASEWIDEGT_HPP
 
 #include <memory>
 
-#include <QSpinBox>
 #include <QVariant>
-
-#include "src/ui/datatypes/basewidget.hpp"
 
 using std::shared_ptr;
 
@@ -40,33 +37,30 @@ class BaseProperty;
 namespace ui {
 namespace datatypes {
 
-class Int32SpinBox : public QSpinBox, public BaseWidget
+class BaseWidget
 {
-    Q_OBJECT
 
 public:
-	Int32SpinBox(
+	BaseWidget(
 		shared_ptr<devices::properties::BaseProperty> property,
-		const bool auto_commit, const bool auto_update,
-		QWidget *parent = nullptr);
+		const bool auto_commit, const bool auto_update);
 
-	QVariant variant_value() const;
+	virtual QVariant variant_value() const = 0;
 
-private:
-	void setup_ui();
-	void connect_signals();
-	void connect_widget_2_prop_signals();
-	void disconnect_widget_2_prop_signals();
+protected:
+	const bool auto_commit_;
+	const bool auto_update_;
+	shared_ptr<devices::properties::BaseProperty> property_;
 
-private Q_SLOTS:
+protected: // Q_SLOTS
 	/**
 	 * Signal handling for Widget -> Property
+	virtual void value_changed(const double) = 0;
 	 */
-	void value_changed(const int32_t);
 	/**
 	 * Signal handling for Property -> Widget
+	virtual void on_value_changed(const QVariant) = 0;
 	 */
-	void on_value_changed(const QVariant);
 
 };
 
@@ -74,4 +68,4 @@ private Q_SLOTS:
 } // namespace ui
 } // namespece sv
 
-#endif // UI_DATATYPES_INT32SPINBOX_HPP
+#endif // UI_DATATYPES_BASEWIDEGT_HPP

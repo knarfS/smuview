@@ -38,9 +38,7 @@ Int32SpinBox::Int32SpinBox(
 		const bool auto_commit, const bool auto_update,
 		QWidget *parent) :
 	QSpinBox(parent),
-	auto_commit_(auto_commit),
-	auto_update_(auto_update),
-	property_(property)
+	BaseWidget(property, auto_commit, auto_update)
 {
 	// Check property
 	if (property_ != nullptr &&
@@ -104,6 +102,11 @@ void Int32SpinBox::disconnect_widget_2_prop_signals()
 		disconnect(this, SIGNAL(valueChanged(double)),
 			this, SLOT(value_changed(const double)));
 	}
+}
+
+QVariant Int32SpinBox::variant_value() const
+{
+	return QVariant(this->value());
 }
 
 void Int32SpinBox::value_changed(const int32_t value)

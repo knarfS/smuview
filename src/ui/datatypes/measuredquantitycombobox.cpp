@@ -43,9 +43,7 @@ MeasuredQuantityComboBox::MeasuredQuantityComboBox(
 		const bool auto_commit, const bool auto_update,
 		QWidget *parent) :
 	QComboBox(parent),
-	auto_commit_(auto_commit),
-	auto_update_(auto_update),
-	property_(property)
+	BaseWidget(property, auto_commit, auto_update)
 {
 	// Check property
 	if (property_ != nullptr &&
@@ -116,6 +114,11 @@ void MeasuredQuantityComboBox::disconnect_widget_2_prop_signals()
 		disconnect(this, SIGNAL(currentIndexChanged(const QString)),
 			this, SLOT(value_changed(const QString)));
 	}
+}
+
+QVariant MeasuredQuantityComboBox::variant_value() const
+{
+	return QVariant(this->currentData());
 }
 
 void MeasuredQuantityComboBox::value_changed(

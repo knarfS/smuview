@@ -38,9 +38,7 @@ DoubleKnob::DoubleKnob(
 		const bool auto_commit, const bool auto_update,
 		QWidget *parent) :
 	QwtKnob(parent),
-	auto_commit_(auto_commit),
-	auto_update_(auto_update),
-	property_(property)
+	BaseWidget(property, auto_commit, auto_update)
 {
 	// Check property
 	if (property_ != nullptr &&
@@ -104,6 +102,11 @@ void DoubleKnob::disconnect_widget_2_prop_signals()
 		disconnect(this, SIGNAL(valueChanged(double)),
 			this, SLOT(value_changed(const double)));
 	}
+}
+
+QVariant DoubleKnob::variant_value() const
+{
+	return QVariant(this->value());
 }
 
 void DoubleKnob::value_changed(const double value)

@@ -38,9 +38,7 @@ UInt64SpinBox::UInt64SpinBox(
 		const bool auto_commit, const bool auto_update,
 		QWidget *parent) :
 	QSpinBox(parent),
-	auto_commit_(auto_commit),
-	auto_update_(auto_update),
-	property_(property)
+	BaseWidget(property, auto_commit, auto_update)
 {
 	// Check property
 	if (property_ != nullptr &&
@@ -99,6 +97,11 @@ void UInt64SpinBox::disconnect_widget_2_prop_signals()
 		disconnect(this, SIGNAL(valueChanged(double)),
 			this, SLOT(value_changed(const double)));
 	}
+}
+
+QVariant UInt64SpinBox::variant_value() const
+{
+	return QVariant(this->value());
 }
 
 void UInt64SpinBox::value_changed(const uint64_t value)

@@ -17,61 +17,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UI_DATATYPES_INT32SPINBOX_HPP
-#define UI_DATATYPES_INT32SPINBOX_HPP
-
-#include <memory>
-
-#include <QSpinBox>
-#include <QVariant>
-
-#include "src/ui/datatypes/basewidget.hpp"
-
-using std::shared_ptr;
+#include "basewidget.hpp"
+#include "src/devices/properties/baseproperty.hpp"
 
 namespace sv {
-
-namespace devices {
-namespace properties {
-class BaseProperty;
-}
-}
-
 namespace ui {
 namespace datatypes {
 
-class Int32SpinBox : public QSpinBox, public BaseWidget
-{
-    Q_OBJECT
-
-public:
-	Int32SpinBox(
+BaseWidget::BaseWidget(
 		shared_ptr<devices::properties::BaseProperty> property,
-		const bool auto_commit, const bool auto_update,
-		QWidget *parent = nullptr);
-
-	QVariant variant_value() const;
-
-private:
-	void setup_ui();
-	void connect_signals();
-	void connect_widget_2_prop_signals();
-	void disconnect_widget_2_prop_signals();
-
-private Q_SLOTS:
-	/**
-	 * Signal handling for Widget -> Property
-	 */
-	void value_changed(const int32_t);
-	/**
-	 * Signal handling for Property -> Widget
-	 */
-	void on_value_changed(const QVariant);
-
-};
+		const bool auto_commit, const bool auto_update) :
+	auto_commit_(auto_commit),
+	auto_update_(auto_update),
+	property_(property)
+{
+}
 
 } // namespace datatypes
 } // namespace ui
-} // namespece sv
-
-#endif // UI_DATATYPES_INT32SPINBOX_HPP
+} // namespace sv
