@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,49 +17,68 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WIDGETS_LED_HPP
-#define WIDGETS_LED_HPP
+#ifndef UI_DATATYPES_BOOLLED_HPP
+#define UI_DATATYPES_BOOLLED_HPP
+
+#include <memory>
 
 #include <QIcon>
 #include <QLabel>
+#include <QVariant>
 #include <QWidget>
+
+using std::shared_ptr;
 
 namespace sv {
 
 namespace devices {
-class HardwareDevice;
+namespace properties {
+class BaseProperty;
+}
 }
 
-namespace widgets {
+namespace ui {
+namespace datatypes {
 
-class Led : public QWidget
+class BoolLed : public QWidget
 {
     Q_OBJECT
 
 public:
-	Led(const bool is_state_getable,
-		QString text, QIcon on_icon, QIcon off_icon, QIcon dis_icon,
-		QWidget *parent = nullptr);
+	BoolLed(shared_ptr<devices::properties::BaseProperty> property,
+		const bool auto_update,
+		const QIcon on_icon, const QIcon off_icon, const QIcon dis_icon,
+		QString text = nullptr, QWidget *parent = nullptr);
 
 private:
-	const bool is_state_getable_;
-	const QString text_;
+	const bool auto_update_;
 	const QIcon on_icon_;
 	const QIcon off_icon_;
 	const QIcon dis_icon_;
+	QString text_;
+	shared_ptr<devices::properties::BaseProperty> property_;
 
 	QLabel *led_label_;
 	QLabel *text_label_;
 
 	void setup_ui();
+	void connect_signals();
 
-public Q_SLOTS:
-	void change_state(const bool state);
+private Q_SLOTS:
+	/**
+	 * Signal handling for Widget -> Property. Nothing to do here.
+	 */
+	void value_changed(const bool);
+	/**
+	 * Signal handling for Property -> Widget
+	 */
+	void on_value_changed(const QVariant);
 
 };
 
-} // namespace widgets
+} // namespace datatypes
+} // namespace ui
 } // namespace sv
 
-#endif // WIDGETS_LED_HPP
+#endif // UI_DATATYPES_BOOLLED_HPP
 

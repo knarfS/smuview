@@ -22,14 +22,10 @@
 #include "datatypehelper.hpp"
 #include "src/devices/deviceutil.hpp"
 #include "src/devices/properties/baseproperty.hpp"
-#include "src/devices/properties/boolproperty.hpp"
-#include "src/devices/properties/floatproperty.hpp"
-#include "src/devices/properties/int32property.hpp"
-#include "src/devices/properties/stringproperty.hpp"
-#include "src/devices/properties/uint64property.hpp"
 #include "src/ui/datatypes/boolcheckbox.hpp"
-#include "src/ui/datatypes/floatspinbox.hpp"
+#include "src/ui/datatypes/doublespinbox.hpp"
 #include "src/ui/datatypes/int32spinbox.hpp"
+#include "src/ui/datatypes/measuredquantitycombobox.hpp"
 #include "src/ui/datatypes/stringcombobox.hpp"
 #include "src/ui/datatypes/uint64spinbox.hpp"
 
@@ -50,29 +46,22 @@ QWidget *get_widget_for_property(
 
 	switch (data_type) {
 	case devices::DataType::Int32:
-		return new Int32SpinBox(
-			dynamic_pointer_cast<devices::properties::Int32Property>(property),
-			auto_commit, auto_update);
+		return new Int32SpinBox(property, auto_commit, auto_update);
 		break;
 	case devices::DataType::UInt64:
-		return new UInt64SpinBox(
-			dynamic_pointer_cast<devices::properties::UInt64Property>(property),
-			auto_commit, auto_update);
+		return new UInt64SpinBox(property, auto_commit, auto_update);
 		break;
-	case devices::DataType::Float:
-		return new FloatSpinBox(
-			dynamic_pointer_cast<devices::properties::FloatProperty>(property),
-			auto_commit, auto_update);
+	case devices::DataType::Double:
+		return new DoubleSpinBox(property, auto_commit, auto_update);
 		break;
 	case devices::DataType::String:
-		return new StringComboBox(
-			dynamic_pointer_cast<devices::properties::StringProperty>(property),
-			auto_commit, auto_update);
+		return new StringComboBox(property, auto_commit, auto_update);
 		break;
 	case devices::DataType::Bool:
-		return new BoolCheckBox(
-			dynamic_pointer_cast<devices::properties::BoolProperty>(property),
-			auto_commit, auto_update);
+		return new BoolCheckBox(property, auto_commit, auto_update);
+		break;
+	case devices::DataType::MQ:
+		return new MeasuredQuantityComboBox(property, auto_commit, auto_update);
 		break;
 	default:
 		return NULL;

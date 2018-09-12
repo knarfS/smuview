@@ -29,6 +29,8 @@
 #include <QObject>
 #include <QString>
 
+#include "src/data/datautil.hpp"
+
 using std::map;
 using std::set;
 using std::vector;
@@ -86,6 +88,14 @@ enum class ConnectionKey
 	SerialComm,
 	/** Modbus slave address specification. */
 	ModbusAddr,
+	/** The device supports setting a sample time limit (how long the sample acquisition should run, in ms). */
+	LimitMsec,
+	/** The device supports setting a sample number limit (how many samples should be acquired). */
+	LimitSamples,
+	/** The device supports setting a frame limit (how many frames should be acquired). */
+	LimitFrames,
+	/** The device supports continuous sampling. */
+	Continuous,
 	/** Unknown connection key. */
 	Unknown,
 };
@@ -218,14 +228,6 @@ enum class ConfigKey
 	ProbeFactor,
 	/** Number of powerline cycles for ADC integration time. */
 	ADCPowerlineCycles,
-	/** The device supports setting a sample time limit (how long the sample acquisition should run, in ms). */
-	LimitMsec,
-	/** The device supports setting a sample number limit (how many samples should be acquired). */
-	LimitSamples,
-	/** The device supports setting a frame limit (how many frames should be acquired). */
-	LimitFrames,
-	/** The device supports continuous sampling. */
-	Continuous,
 	/** The device has internal storage, into which data is logged. */
 	DataLog,
 	/** Device mode for multi-function devices. */
@@ -241,7 +243,7 @@ enum class DataType
 	UInt64,
 	String,
 	Bool,
-	Float,
+	Double,
 	RationalPeriod,
 	RationalVolt,
 	KeyValue,
@@ -288,6 +290,10 @@ connection_key_name_map_t connection_key_name_map = {
 	{ ConnectionKey::Conn, QString("Connection String") },
 	{ ConnectionKey::SerialComm, QString("Serial Command") },
 	{ ConnectionKey::ModbusAddr, QString("ModBus Address") },
+	{ ConnectionKey::LimitMsec, QString("Limit Milliseconds") },
+	{ ConnectionKey::LimitSamples, QString("Limit Samples") },
+	{ ConnectionKey::LimitFrames, QString("Limit Frames") },
+	{ ConnectionKey::Continuous, QString("Continuous") },
 	{ ConnectionKey::Unknown, QString("Unknown") },
 };
 
@@ -355,10 +361,6 @@ config_key_name_map_t config_key_name_map = {
 	{ ConfigKey::DataSource, QString("Data Source") },
 	{ ConfigKey::ProbeFactor, QString("Probe Factor") },
 	{ ConfigKey::ADCPowerlineCycles, QString("ADC Powerline Cycles") },
-	{ ConfigKey::LimitMsec, QString("Limit Milliseconds") },
-	{ ConfigKey::LimitSamples, QString("Limit Samples") },
-	{ ConfigKey::LimitFrames, QString("Limit Frames") },
-	{ ConfigKey::Continuous, QString("Continuous") },
 	{ ConfigKey::DataLog, QString("Data Log") },
 	{ ConfigKey::DeviceMode, QString("Device Mode") },
 	{ ConfigKey::TestMode, QString("Test Mode") },
@@ -369,7 +371,7 @@ data_type_name_map_t data_type_name_map = {
 	{ DataType::UInt64, QString("UInt64") },
 	{ DataType::String, QString("String") },
 	{ DataType::Bool, QString("Boolean") },
-	{ DataType::Float, QString("Float/Double") },
+	{ DataType::Double, QString("Double") },
 	{ DataType::RationalPeriod, QString("Rational Period") },
 	{ DataType::RationalVolt, QString("Rational Volt") },
 	{ DataType::KeyValue, QString("Key Value") },
@@ -420,12 +422,20 @@ map<const sigrok::ConfigKey *, ConnectionKey> sr_config_key_connection_key_map =
 	{ sigrok::ConfigKey::CONN, ConnectionKey::Conn },
 	{ sigrok::ConfigKey::SERIALCOMM, ConnectionKey::SerialComm },
 	{ sigrok::ConfigKey::MODBUSADDR, ConnectionKey::ModbusAddr },
+	{ sigrok::ConfigKey::LIMIT_MSEC, ConnectionKey::LimitMsec },
+	{ sigrok::ConfigKey::LIMIT_SAMPLES, ConnectionKey::LimitSamples },
+	{ sigrok::ConfigKey::LIMIT_FRAMES, ConnectionKey::LimitFrames },
+	{ sigrok::ConfigKey::CONTINUOUS, ConnectionKey::Continuous },
 };
 
 map<ConnectionKey, const sigrok::ConfigKey *> connection_key_sr_config_key_map = {
 	{ ConnectionKey::Conn, sigrok::ConfigKey::CONN },
 	{ ConnectionKey::SerialComm, sigrok::ConfigKey::SERIALCOMM },
 	{ ConnectionKey::ModbusAddr, sigrok::ConfigKey::MODBUSADDR },
+	{ ConnectionKey::LimitMsec, sigrok::ConfigKey::LIMIT_MSEC },
+	{ ConnectionKey::LimitSamples, sigrok::ConfigKey::LIMIT_SAMPLES },
+	{ ConnectionKey::LimitFrames, sigrok::ConfigKey::LIMIT_FRAMES },
+	{ ConnectionKey::Continuous, sigrok::ConfigKey::CONTINUOUS },
 };
 
 map<const sigrok::ConfigKey *, ConfigKey> sr_config_key_config_key_map = {
@@ -492,10 +502,6 @@ map<const sigrok::ConfigKey *, ConfigKey> sr_config_key_config_key_map = {
 	{ sigrok::ConfigKey::DATA_SOURCE, ConfigKey::DataSource },
 	{ sigrok::ConfigKey::PROBE_FACTOR, ConfigKey::ProbeFactor },
 	{ sigrok::ConfigKey::ADC_POWERLINE_CYCLES, ConfigKey::ADCPowerlineCycles },
-	{ sigrok::ConfigKey::LIMIT_MSEC, ConfigKey::LimitMsec },
-	{ sigrok::ConfigKey::LIMIT_SAMPLES, ConfigKey::LimitSamples },
-	{ sigrok::ConfigKey::LIMIT_FRAMES, ConfigKey::LimitFrames },
-	{ sigrok::ConfigKey::CONTINUOUS, ConfigKey::Continuous },
 	{ sigrok::ConfigKey::DATALOG, ConfigKey::DataLog },
 	{ sigrok::ConfigKey::DEVICE_MODE, ConfigKey::DeviceMode },
 	{ sigrok::ConfigKey::TEST_MODE, ConfigKey::TestMode },
@@ -565,10 +571,6 @@ map<ConfigKey, const sigrok::ConfigKey *> config_key_sr_config_key_map = {
 	{ ConfigKey::DataSource, sigrok::ConfigKey::DATA_SOURCE },
 	{ ConfigKey::ProbeFactor, sigrok::ConfigKey::PROBE_FACTOR },
 	{ ConfigKey::ADCPowerlineCycles, sigrok::ConfigKey::ADC_POWERLINE_CYCLES },
-	{ ConfigKey::LimitMsec, sigrok::ConfigKey::LIMIT_MSEC },
-	{ ConfigKey::LimitSamples, sigrok::ConfigKey::LIMIT_SAMPLES },
-	{ ConfigKey::LimitFrames, sigrok::ConfigKey::LIMIT_FRAMES },
-	{ ConfigKey::Continuous, sigrok::ConfigKey::CONTINUOUS },
 	{ ConfigKey::DataLog, sigrok::ConfigKey::DATALOG },
 	{ ConfigKey::DeviceMode, sigrok::ConfigKey::DEVICE_MODE },
 	{ ConfigKey::TestMode, sigrok::ConfigKey::TEST_MODE },
@@ -578,7 +580,7 @@ map<const sigrok::DataType *, DataType> sr_data_type_data_type_map = {
 	{ sigrok::DataType::UINT64, DataType::UInt64 },
 	{ sigrok::DataType::STRING, DataType::String },
 	{ sigrok::DataType::BOOL, DataType::Bool },
-	{ sigrok::DataType::FLOAT, DataType::Float },
+	{ sigrok::DataType::FLOAT, DataType::Double },
 	{ sigrok::DataType::RATIONAL_PERIOD, DataType::RationalPeriod },
 	{ sigrok::DataType::RATIONAL_VOLT, DataType::RationalVolt },
 	{ sigrok::DataType::KEYVALUE, DataType::KeyValue },
@@ -592,7 +594,7 @@ map<DataType, const sigrok::DataType *> data_type_sr_data_type_map = {
 	{ DataType::UInt64, sigrok::DataType::UINT64 },
 	{ DataType::String, sigrok::DataType::STRING },
 	{ DataType::Bool, sigrok::DataType::BOOL },
-	{ DataType::Float, sigrok::DataType::FLOAT },
+	{ DataType::Double, sigrok::DataType::FLOAT },
 	{ DataType::RationalPeriod, sigrok::DataType::RATIONAL_PERIOD },
 	{ DataType::RationalVolt, sigrok::DataType::RATIONAL_VOLT },
 	{ DataType::KeyValue, sigrok::DataType::KEYVALUE },
@@ -600,6 +602,76 @@ map<DataType, const sigrok::DataType *> data_type_sr_data_type_map = {
 	{ DataType::DoubleRange, sigrok::DataType::DOUBLE_RANGE },
 	{ DataType::Int32, sigrok::DataType::INT32 },
 	{ DataType::MQ, sigrok::DataType::MQ },
+};
+
+// TODO: Find a better way...
+map<ConfigKey, data::Unit> config_key_unit_map = {
+	{ ConfigKey::Samplerate, data::Unit::Hertz },
+	{ ConfigKey::CaptureRatio, data::Unit::Unitless },
+	{ ConfigKey::PatternMode, data::Unit::Unitless },
+	{ ConfigKey::RLE, data::Unit::Boolean },
+	{ ConfigKey::TriggerSlope, data::Unit::Unitless },
+	{ ConfigKey::Averaging, data::Unit::Boolean },
+	{ ConfigKey::AvgSamples, data::Unit::Unitless },
+	{ ConfigKey::TriggerSource, data::Unit::Unitless },
+	{ ConfigKey::HorizTriggerPos, data::Unit::Unknown },
+	{ ConfigKey::BufferSize, data::Unit::Unknown },
+	{ ConfigKey::TimeBase, data::Unit::Second },
+	{ ConfigKey::Filter, data::Unit::Boolean },
+	{ ConfigKey::VDiv, data::Unit::Volt },
+	{ ConfigKey::Coupling, data::Unit::Unitless },
+	{ ConfigKey::TriggerMatch, data::Unit::Unknown },
+	{ ConfigKey::SampleInterval, data::Unit::Second },
+	{ ConfigKey::NumHDiv, data::Unit::Unitless },
+	{ ConfigKey::NumVDiv, data::Unit::Unitless },
+	{ ConfigKey::SplWeightFreq, data::Unit::Unitless },
+	{ ConfigKey::SplWeightTime, data::Unit::Unitless },
+	{ ConfigKey::SplMeasurementRange, data::Unit::Unknown },
+	{ ConfigKey::HoldMax, data::Unit::Boolean },
+	{ ConfigKey::HoldMin, data::Unit::Boolean },
+	{ ConfigKey::VoltageThreshold, data::Unit::Volt },
+	{ ConfigKey::ExternalClock, data::Unit::Boolean },
+	{ ConfigKey::Swap, data::Unit::Boolean },
+	{ ConfigKey::CenterFrequency, data::Unit::Hertz },
+	{ ConfigKey::NumLogicChannels, data::Unit::Unitless },
+	{ ConfigKey::NumAnalogChannels, data::Unit::Unitless },
+	{ ConfigKey::Voltage, data::Unit::Volt },
+	{ ConfigKey::VoltageTarget, data::Unit::Volt },
+	{ ConfigKey::Current, data::Unit::Ampere },
+	{ ConfigKey::CurrentLimit, data::Unit::Ampere },
+	{ ConfigKey::Enabled, data::Unit::Boolean },
+	{ ConfigKey::ChannelConfig, data::Unit::Unitless },
+	{ ConfigKey::OverVoltageProtectionEnabled, data::Unit::Boolean },
+	{ ConfigKey::OverVoltageProtectionActive, data::Unit::Boolean },
+	{ ConfigKey::OverVoltageProtectionThreshold, data::Unit::Volt },
+	{ ConfigKey::OverCurrentProtectionEnabled, data::Unit::Boolean },
+	{ ConfigKey::OverCurrentProtectionActive, data::Unit::Boolean },
+	{ ConfigKey::OverCurrentProtectionThreshold, data::Unit::Ampere },
+	{ ConfigKey::OverTemperatureProtectionEnabled, data::Unit::Boolean },
+	{ ConfigKey::OverTemperatureProtectionActive, data::Unit::Boolean },
+	{ ConfigKey::UnderVoltageConditionEnabled, data::Unit::Boolean },
+	{ ConfigKey::UnderVoltageConditionActive, data::Unit::Boolean },
+	{ ConfigKey::UnderVoltageConditionThreshold, data::Unit::Volt },
+	{ ConfigKey::ClockEdge, data::Unit::Unitless },
+	{ ConfigKey::Amplitude, data::Unit::Unknown },
+	{ ConfigKey::Offset, data::Unit::Unknown },
+	{ ConfigKey::Regulation, data::Unit::Unitless },
+	{ ConfigKey::OutputFrequency, data::Unit::Hertz },
+	{ ConfigKey::OutputFrequencyTarget, data::Unit::Hertz },
+	{ ConfigKey::MeasuredQuantity, data::Unit::Unitless },
+	{ ConfigKey::EquivCircuitModel, data::Unit::Unitless },
+	{ ConfigKey::TriggerLevel, data::Unit::Volt },
+	{ ConfigKey::ExternalClockSource, data::Unit::Unitless },
+	{ ConfigKey::SessionFile, data::Unit::Unitless },
+	{ ConfigKey::CaptureFile, data::Unit::Unitless },
+	{ ConfigKey::CaptureUnitSize, data::Unit::Unknown },
+	{ ConfigKey::PowerOff, data::Unit::Boolean },
+	{ ConfigKey::DataSource, data::Unit::Unitless },
+	{ ConfigKey::ProbeFactor, data::Unit::Unitless },
+	{ ConfigKey::ADCPowerlineCycles, data::Unit::Unitless },
+	{ ConfigKey::DataLog, data::Unit::Boolean },
+	{ ConfigKey::DeviceMode, data::Unit::Unitless },
+	{ ConfigKey::TestMode, data::Unit::Unitless },
 };
 
 } // namespace
@@ -862,6 +934,15 @@ QString format_data_type(DataType data_type);
  * @return The DataType for the ConfigKey.
  */
 DataType get_data_type_for_config_key(ConfigKey config_key);
+
+/**
+ * Gets the Unit for a ConfigKey
+ *
+ * @param config_key The ConfigKey.
+ *
+ * @return The Unit for the ConfigKey.
+ */
+data::Unit get_unit_for_config_key(ConfigKey config_key);
 
 } // namespace deviceutil
 } // namespace devices

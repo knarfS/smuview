@@ -168,7 +168,7 @@ set(smuview_SOURCES
   src/devices/virtualdevice.cpp
   src/devices/properties/baseproperty.cpp
   src/devices/properties/boolproperty.cpp
-  src/devices/properties/floatproperty.cpp
+  src/devices/properties/doubleproperty.cpp
   src/devices/properties/int32property.cpp
   src/devices/properties/measuredquantityproperty.cpp
   src/devices/properties/stringproperty.cpp
@@ -204,7 +204,6 @@ set(smuview_SOURCES
   src/widgets/controlbutton.cpp
   src/widgets/devicecombobox.cpp
   src/widgets/lcddisplay.cpp
-  src/widgets/led.cpp
   src/widgets/optionalvaluecontrol.cpp
   src/widgets/popup.cpp
   src/widgets/quantitycombobox.cpp
@@ -221,15 +220,21 @@ set(smuview_SOURCES
 
   src/ui/datatypes/boolbutton.cpp
   src/ui/datatypes/boolcheckbox.cpp
+  src/ui/datatypes/boolled.cpp
   src/ui/datatypes/datatypehelper.cpp
-  src/ui/datatypes/floatspinbox.cpp
+  src/ui/datatypes/doublecontrol.cpp
+  src/ui/datatypes/doubleknob.cpp
+  src/ui/datatypes/doublelcddisplay.cpp
+  src/ui/datatypes/doublespinbox.cpp
   src/ui/datatypes/int32spinbox.cpp
   src/ui/datatypes/measuredquantitycombobox.cpp
   src/ui/datatypes/stringcombobox.cpp
+  src/ui/datatypes/thresholdcontrol.cpp
   src/ui/datatypes/uint64spinbox.cpp
   src/ui/processing/processingwidget.cpp
   src/ui/processing/processthreadwidget.cpp
   src/ui/processing/blocks/sequencesinblock.cpp
+  src/ui/widgets/lcddisplay.cpp
 )
 
 if(ENABLE_SIGNALS)

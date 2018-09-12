@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UI_DATATYPES_FLOATSPINBOX_HPP
-#define UI_DATATYPES_FLOATSPINBOX_HPP
+#ifndef UI_DATATYPES_DOUBLESPINBOX_HPP
+#define UI_DATATYPES_DOUBLESPINBOX_HPP
 
 #include <memory>
 
@@ -31,30 +31,32 @@ namespace sv {
 
 namespace devices {
 namespace properties {
-class FloatProperty;
+class BaseProperty;
 }
 }
 
 namespace ui {
 namespace datatypes {
 
-class FloatSpinBox : public QDoubleSpinBox
+class DoubleSpinBox : public QDoubleSpinBox
 {
     Q_OBJECT
 
 public:
-	FloatSpinBox(
-		shared_ptr<devices::properties::FloatProperty> float_prop,
+	DoubleSpinBox(
+		shared_ptr<devices::properties::BaseProperty> property,
 		const bool auto_commit, const bool auto_update,
 		QWidget *parent = nullptr);
 
 private:
 	const bool auto_commit_;
 	const bool auto_update_;
-	shared_ptr<devices::properties::FloatProperty> float_prop_;
+	shared_ptr<devices::properties::BaseProperty> property_;
 
 	void setup_ui();
 	void connect_signals();
+	void connect_widget_2_prop_signals();
+	void disconnect_widget_2_prop_signals();
 
 private Q_SLOTS:
 	/**
@@ -72,4 +74,4 @@ private Q_SLOTS:
 } // namespace ui
 } // namespece sv
 
-#endif // UI_DATATYPES_FLOATSPINBOX_HPP
+#endif // UI_DATATYPES_DOUBLESPINBOX_HPP

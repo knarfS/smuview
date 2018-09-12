@@ -17,18 +17,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <stdexcept>
+
 #include <QApplication>
+#include <QDebug>
 
 #include "boolbutton.hpp"
 #include "src/devices/configurable.hpp"
-#include "src/devices/properties/boolproperty.hpp"
+#include "src/devices/properties/baseproperty.hpp"
 
 namespace sv {
 namespace ui {
 namespace datatypes {
 
 BoolButton::BoolButton(
-		shared_ptr<devices::properties::BoolProperty> bool_prop,
+		shared_ptr<devices::properties::BaseProperty> property,
 		const bool auto_commit, const bool auto_update,
 		QWidget *parent) :
 	QPushButton(parent),
@@ -37,8 +40,17 @@ BoolButton::BoolButton(
 	on_icon_(":/icons/status-green.svg"),
 	off_icon_(":/icons/status-red.svg"),
 	dis_icon_(":/icons/status-grey.svg"),
-	bool_prop_(bool_prop)
+	property_(property)
 {
+	// Check property
+	if (property_ != nullptr &&
+			property_->data_type() != devices::DataType::Bool) {
+
+		QString msg = QString("BoolButton with property of type ").append(
+			devices::deviceutil::format_data_type(property_->data_type()));
+		throw std::runtime_error(msg.toStdString());
+	}
+
 	setup_ui();
 	connect_signals();
 }
@@ -47,9 +59,11 @@ void BoolButton::setup_ui()
 {
 	this->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	this->setIconSize(QSize(8, 8));
-	this->setDisabled(!bool_prop_->is_setable());
-	if (bool_prop_->is_getable()) {
-		on_value_changed(bool_prop_->value());
+	this->setCheckable(true);
+	if (property_ == nullptr || !property_->is_setable())
+		this->setDisabled(true);
+	if (property_ != nullptr && property_->is_getable()) {
+		on_value_changed(property_->value());
 	}
 	else {
 		this->setIcon(dis_icon_);
@@ -61,25 +75,42 @@ void BoolButton::setup_ui()
 void BoolButton::connect_signals()
 {
 	// Widget -> Property
-	if (auto_commit_ && bool_prop_->is_setable()) {
-		connect(this, SIGNAL(clicked(bool)),
+	connect_widget_2_prop_signals();
+
+	// Property -> Widget (no ckeck for getable, comes via meta package!)
+	if (auto_update_ && property_ != nullptr) {
+		connect(property_.get(), SIGNAL(value_changed(const QVariant)),
+			this, SLOT(on_value_changed(const QVariant)));
+	}
+}
+
+void BoolButton::connect_widget_2_prop_signals()
+{
+	if (auto_commit_ && property_ != nullptr && property_->is_setable()) {
+		connect(this, SIGNAL(toggled(bool)),
 			this, SLOT(value_changed(const bool)));
 	}
+}
 
-	// Property -> Widget
-	if (auto_update_) {
-		connect(bool_prop_.get(), SIGNAL(value_changed(const QVariant)),
-			this, SLOT(on_value_changed(const QVariant)));
+void BoolButton::disconnect_widget_2_prop_signals()
+{
+	if (auto_commit_ && property_ != nullptr && property_->is_setable()) {
+		disconnect(this, SIGNAL(toggled(bool)),
+			this, SLOT(value_changed(const bool)));
 	}
 }
 
 void BoolButton::value_changed(const bool value)
 {
-	bool_prop_->value_changed(QVariant(value));
+	if (property_ != nullptr)
+		property_->change_value(QVariant(value));
 }
 
 void BoolButton::on_value_changed(const QVariant value)
 {
+	// Disconnect Widget -> Property signal to prevent echoing
+	disconnect_widget_2_prop_signals();
+
 	if (value.toBool()) {
 		this->setIcon(on_icon_);
 		this->setText(tr("On"));
@@ -90,6 +121,8 @@ void BoolButton::on_value_changed(const QVariant value)
 		this->setText(tr("Off"));
 		this->setChecked(false);
 	}
+
+	connect_widget_2_prop_signals();
 }
 
 } // namespace datatypes

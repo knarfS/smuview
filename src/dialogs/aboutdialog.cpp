@@ -40,7 +40,9 @@
 #include "src/data/analogsignal.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/devices/configurable.hpp"
+#include "src/devices/deviceutil.hpp"
 #include "src/devices/hardwaredevice.hpp"
+#include "src/devices/properties/baseproperty.hpp"
 
 using std::dynamic_pointer_cast;
 
@@ -260,31 +262,67 @@ QWidget *AboutDialog::get_device_page(QWidget *parent) const
 
 	QString s;
 	s.append("<style type=\"text/css\"> tr .id { white-space: pre; padding-right: 5px; } </style>");
-	s.append("<table>");
+	s.append("<table width=\"100%\" border=\"1\">");
 
 	/* Device functions */
-	s.append("<tr><td colspan=\"2\"><b>" +
-		tr("Device functions:") + "</b></td></tr>");
-
+	s.append("<tr><td colspan=\"7\"><b>" +
+		tr("Sigrok device functions:") + "</b></td></tr>");
+	s.append(QString("<tr><td>&nbsp;</td><td colspan=\"6\">"));
 	if (sr_hw_device) {
 		const auto sr_keys = sr_hw_device->driver()->config_keys();
+		QString sep("");
 		for (auto sr_key : sr_keys) {
-			s.append(QString("<tr><td>%1</td><td>%2</td></tr>").arg(
-				QString::fromStdString(sr_key->description()),
-				QString::fromStdString(sr_key->identifier())));
+				s.append(sep).append(
+					QString::fromStdString(sr_key->description()));
+				sep = QString(", ");
 		}
 	}
+	s.append(QString("</td></tr>"));
+	s.append("<tr><td colspan=\"7\"><b>" +
+		tr("SmuView device functions") + "</b></td></tr>");
+	s.append(QString("<tr><td>&nbsp;</td><td colspan=\"6\">%1</td></tr>").arg(
+		devices::deviceutil::format_device_type(device_->type())));
+	s.append("<tr><td colspan=\"7\">&nbsp;</td></tr>");
 
-	// SmuView all device configurables
+	/* SmuView device configurables and config keys */
 	if (hw_device) {
-		// vector<shared_ptr<devices::Configurable>> configurables()
-		s.append("<tr><td colspan=\"2\"><b>" +
-			tr("SmuView device configurables (hw_device->configurables()):") +
+		s.append("<tr><td colspan=\"7\"><b>" +
+			tr("SmuView device configurables and properties:") +
 			"</b></td></tr>");
 		const auto configurables = hw_device->configurables();
-		for (shared_ptr<devices::Configurable> cnf : configurables) {
-			s.append(QString("<tr><td>%1</td><td></td></tr>").arg(cnf->name()));
+		for (auto cnf : configurables) {
+			s.append(QString("<tr><td>&nbsp;</td><td>%1</td>").
+				arg(cnf->name()));
+			s.append(QString("<td>GET</td><td>Value</td><td>SET</td>"));
+			s.append(QString("<td>LIST</td><td>Values</td></tr>"));
+			auto props = cnf->properties();
+			for (auto prop : props) {
+				s.append(QString("<tr><td>&nbsp;</td>"));
+				s.append(QString("<td><i>%1</i></td>").arg(
+					devices::deviceutil::format_config_key(prop.first)));
+				if (prop.second->is_getable()) {
+					s.append(QString("<td>X</td>"));
+					//if (prop.second->value().canConvert<QString>())
+					//	s.append(QString("<td>%1</td>").arg(
+					//		prop.second->value().toString()));
+					//else
+						s.append(QString("<td>?</td>"));
+				}
+				else
+					s.append(QString("<td>&nbsp;</td><td>&nbsp;</td>"));
+				if (prop.second->is_setable())
+					s.append(QString("<td>X</td>"));
+				else
+					s.append(QString("<td>&nbsp;</td>"));
+				if (prop.second->is_listable())
+					s.append(QString("<td>X</td><td>&nbsp;</td>"));
+				else
+					s.append(QString("<td>&nbsp;</td><td>&nbsp;</td>"));
+
+				s.append(QString("</tr>"));
+			}
 		}
+		s.append("<tr><td colspan=\"7\">&nbsp;</td></tr>");
 	}
 
 	// SmuView all device signals

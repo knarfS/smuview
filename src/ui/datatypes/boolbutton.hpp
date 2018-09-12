@@ -31,7 +31,7 @@ namespace sv {
 
 namespace devices {
 namespace properties {
-class BoolProperty;
+class BaseProperty;
 }
 }
 
@@ -44,7 +44,7 @@ class BoolButton : public QPushButton
 
 public:
 	BoolButton(
-		shared_ptr<devices::properties::BoolProperty> bool_prop,
+		shared_ptr<devices::properties::BaseProperty> property,
 		const bool auto_commit, const bool auto_update,
 		QWidget *parent = nullptr);
 
@@ -54,10 +54,12 @@ private:
 	const QIcon on_icon_;
 	const QIcon off_icon_;
 	const QIcon dis_icon_;
-	shared_ptr<devices::properties::BoolProperty> bool_prop_;
+	shared_ptr<devices::properties::BaseProperty> property_;
 
 	void setup_ui();
 	void connect_signals();
+	void connect_widget_2_prop_signals();
+	void disconnect_widget_2_prop_signals();
 
 private Q_SLOTS:
 	/**

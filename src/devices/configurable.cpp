@@ -35,7 +35,7 @@
 #include "src/data/datautil.hpp"
 #include "src/devices/properties/baseproperty.hpp"
 #include "src/devices/properties/boolproperty.hpp"
-#include "src/devices/properties/floatproperty.hpp"
+#include "src/devices/properties/doubleproperty.hpp"
 #include "src/devices/properties/int32property.hpp"
 #include "src/devices/properties/measuredquantityproperty.hpp"
 #include "src/devices/properties/stringproperty.hpp"
@@ -112,8 +112,8 @@ void Configurable::init()
 			property = make_shared<properties::UInt64Property>(
 				shared_from_this(), config_key);
 			break;
-		case devices::DataType::Float:
-			property = make_shared<properties::FloatProperty>(
+		case devices::DataType::Double:
+			property = make_shared<properties::DoubleProperty>(
 				shared_from_this(), config_key);
 			break;
 		case devices::DataType::String:
@@ -167,21 +167,6 @@ template<typename T> T Configurable::get_config(devices::ConfigKey key) const
 {
 	assert(key);
 	assert(sr_configurable_);
-
-	// Special cases
-	/* TODO: move to properties?? Here?? And MQ?
-	switch (key) {
-	case ConfigKey::OverVoltageProtectionActive:
-	case ConfigKey::OverCurrentProtectionActive:
-	case ConfigKey::OverTemperatureProtectionActive:
-	case ConfigKey::UnderVoltageConditionActive:
-		if (getable_configs_.count(key) == 0)
-			return false;
-		break;
-	default:
-		break;
-	}
-	*/
 
 	const sigrok::ConfigKey *sr_key =
 		devices::deviceutil::get_sr_config_key(key);
@@ -290,42 +275,6 @@ bool Configurable::list_config(devices::ConfigKey key,
 	return true;
 }
 
-// TODO: Remove from here
-bool Configurable::list_config_string_array(devices::ConfigKey key,
-	QStringList &string_list)
-{
-	Glib::VariantContainerBase gvar;
-	if (!list_config(key, gvar))
-		return false;
-
-	Glib::VariantIter iter(gvar);
-	while (iter.next_value (gvar)) {
-		string_list.append(QString::fromStdString(
-			Glib::VariantBase::cast_dynamic<Glib::Variant<string>>(gvar).get()));
-	}
-
-	return true;
-}
-
-// TODO: Remove from here, or template for Float, Int32 and UInt64?
-bool Configurable::list_config_min_max_step(devices::ConfigKey key,
-	double &min, double &max, double &step)
-{
-	Glib::VariantContainerBase gvar;
-	if (!list_config(key, gvar))
-		return false;
-
-	Glib::VariantIter iter(gvar);
-	iter.next_value(gvar);
-	min = Glib::VariantBase::cast_dynamic<Glib::Variant<double>>(gvar).get();
-	iter.next_value(gvar);
-	max = Glib::VariantBase::cast_dynamic<Glib::Variant<double>>(gvar).get();
-	iter.next_value(gvar);
-	step = Glib::VariantBase::cast_dynamic<Glib::Variant<double>>(gvar).get();
-
-	return true;
-}
-
 QString Configurable::name() const
 {
 	QString name("?");
@@ -364,7 +313,7 @@ shared_ptr<properties::BaseProperty>
 	Configurable::get_property(devices::ConfigKey config_key) const
 {
 	if (!properties_.count(config_key))
-			return nullptr;
+		return nullptr;
 	return properties_.at(config_key);
 }
 

@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,12 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UI_DATATYPES_BOOLCHECKBOX_HPP
-#define UI_DATATYPES_BOOLCHECKBOX_HPP
+#ifndef UI_DATATYPES_DOUBLECONTROL_HPP
+#define UI_DATATYPES_DOUBLECONTROL_HPP
 
 #include <memory>
 
-#include <QCheckBox>
+#include <QGroupBox>
 
 using std::shared_ptr;
 
@@ -37,41 +37,36 @@ class BaseProperty;
 namespace ui {
 namespace datatypes {
 
-class BoolCheckBox : public QCheckBox
+class DoubleKnob;
+class DoubleLcdDisplay;
+class DoubleSpinBox;
+
+class DoubleControl : public QGroupBox
 {
     Q_OBJECT
 
 public:
-	BoolCheckBox(
+	DoubleControl(
 		shared_ptr<devices::properties::BaseProperty> property,
 		const bool auto_commit, const bool auto_update,
-		QWidget *parent = nullptr);
+		QString title, QWidget *parent = nullptr);
 
 private:
 	const bool auto_commit_;
 	const bool auto_update_;
 	shared_ptr<devices::properties::BaseProperty> property_;
+	QString title_;
+
+	DoubleSpinBox *spin_box_;
+	DoubleKnob *knob_;
+	DoubleLcdDisplay *lcd_display_;
 
 	void setup_ui();
-	void connect_signals();
-	void connect_widget_2_prop_signals();
-	void disconnect_widget_2_prop_signals();
-
-private Q_SLOTS:
-	/**
-	 * Signal handling for Widget -> Property
-	 */
-	void value_changed(const bool);
-	/**
-	 * Signal handling for Property -> Widget
-	 */
-	void on_value_changed(const QVariant);
 
 };
 
 } // namespace datatypes
 } // namespace ui
-} // namespece sv
+} // namespace sv
 
-#endif // UI_DATATYPES_BOOLCHECKBOX_HPP
-
+#endif // UI_DATATYPES_DOUBLECONTROL_HPP

@@ -45,6 +45,7 @@ bool BoolProperty::bool_value() const
 void BoolProperty::change_value(const QVariant qvar)
 {
 	configurable_->set_config(config_key_, qvar.toBool());
+	Q_EMIT value_changed(qvar);
 }
 
 void BoolProperty::on_value_changed(Glib::VariantBase g_var)

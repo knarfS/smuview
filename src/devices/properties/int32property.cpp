@@ -90,6 +90,7 @@ bool Int32Property::list_config()
 void Int32Property::change_value(const QVariant qvar)
 {
 	configurable_->set_config(config_key_, qvar.toInt());
+	Q_EMIT value_changed(qvar);
 }
 
 void Int32Property::on_value_changed(Glib::VariantBase g_var)

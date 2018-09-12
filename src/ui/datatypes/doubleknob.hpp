@@ -17,60 +17,62 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DEVICES_PROPERTIES_FLOATPROPERTY_HPP
-#define DEVICES_PROPERTIES_FLOATPROPERTY_HPP
+#ifndef UI_DATATYPES_DOUBLEKNOB_HPP
+#define UI_DATATYPES_DOUBLEKNOB_HPP
 
 #include <memory>
 
-#include <glib.h>
-
-#include <QObject>
+#include <QDoubleSpinBox>
 #include <QVariant>
-
-#include "src/devices/properties/baseproperty.hpp"
-#include "src/devices/deviceutil.hpp"
+#include <qwt_knob.h>
 
 using std::shared_ptr;
 
 namespace sv {
+
 namespace devices {
-
-class Configurable;
-
 namespace properties {
+class BaseProperty;
+}
+}
 
-class FloatProperty : public BaseProperty
+namespace ui {
+namespace datatypes {
+
+class DoubleKnob : public QwtKnob
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	FloatProperty(shared_ptr<devices::Configurable> configurable,
-		devices::ConfigKey config_key /*, data::Unit unit*/);
-
-public:
-	QVariant value() const;
-	double float_value() const;
-	double min() const;
-	double max() const;
-	double step() const;
-	int decimal_places() const;
+	DoubleKnob(
+		shared_ptr<devices::properties::BaseProperty> property,
+		const bool auto_commit, const bool auto_update,
+		QWidget *parent = nullptr);
 
 private:
-	double min_;
-	double max_;
-	double step_;
-	int decimal_places_;
+	const bool auto_commit_;
+	const bool auto_update_;
+	shared_ptr<devices::properties::BaseProperty> property_;
 
-	bool list_config();
+	void setup_ui();
+	void connect_signals();
+	void connect_widget_2_prop_signals();
+	void disconnect_widget_2_prop_signals();
 
-public Q_SLOTS:
-	void change_value(const QVariant);
-	void on_value_changed(Glib::VariantBase);
+private Q_SLOTS:
+	/**
+	 * Signal handling for Widget -> Property
+	 */
+	void value_changed(const double);
+	/**
+	 * Signal handling for Property -> Widget
+	 */
+	void on_value_changed(const QVariant);
 
 };
 
-} // namespace properties
-} // namespace devices
+} // namespace datatypes
+} // namespace ui
 } // namespece sv
 
-#endif // DEVICES_PROPERTIES_FLOATPROPERTY_HPP
+#endif // UI_DATATYPES_DOUBLEKNOB_HPP

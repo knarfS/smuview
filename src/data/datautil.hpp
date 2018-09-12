@@ -328,7 +328,7 @@ unit_name_map_t unit_name_map = {
 	{ Unit::Momme, QString::fromUtf8("\u5301") },
 	{ Unit::Tola, QString("tola") },
 	{ Unit::Piece, QString("pc.") },
-	{ Unit::Unknown, QString("Unknown") },
+	{ Unit::Unknown, QString("??") },
 };
 
 map<const sigrok::Quantity *, Quantity> sr_quantity_quantity_map = {

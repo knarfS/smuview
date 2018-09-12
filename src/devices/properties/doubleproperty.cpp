@@ -21,7 +21,7 @@
 
 #include <QDebug>
 
-#include "floatproperty.hpp"
+#include "doubleproperty.hpp"
 #include "src/util.hpp"
 #include "src/devices/configurable.hpp"
 
@@ -29,7 +29,7 @@ namespace sv {
 namespace devices {
 namespace properties {
 
-FloatProperty::FloatProperty(shared_ptr<devices::Configurable> configurable,
+DoubleProperty::DoubleProperty(shared_ptr<devices::Configurable> configurable,
 		devices::ConfigKey config_key) :
 	BaseProperty(configurable, config_key),
 	min_(std::numeric_limits<double>::lowest()),
@@ -38,48 +38,49 @@ FloatProperty::FloatProperty(shared_ptr<devices::Configurable> configurable,
 	decimal_places_(3)
 {
 	if (is_listable_) {
-		if (list_config())
+		if (list_config()) {
+			digits_ = util::count_double_digits(max_, step_);
 			decimal_places_ = util::get_decimal_places(step_);
+		}
 	}
-
-	/*
-	if (unit_ != data::Unit::Unknown && unit_ != data::Unit::Unitless) {
-		this->setSuffix(QString(" %1").arg(data::datautil::format_unit(unit_)));
-	}
-	*/
 }
 
-QVariant FloatProperty::value() const
+QVariant DoubleProperty::value() const
 {
 	return QVariant(float_value());
 }
 
-double FloatProperty::float_value() const
+double DoubleProperty::float_value() const
 {
 	return configurable_->get_config<double>(config_key_);
 }
 
-double FloatProperty::min() const
+double DoubleProperty::min() const
 {
 	return min_;
 }
 
-double FloatProperty::max() const
+double DoubleProperty::max() const
 {
 	return max_;
 }
 
-double FloatProperty::step() const
+double DoubleProperty::step() const
 {
 	return step_;
 }
 
-int FloatProperty::decimal_places() const
+uint DoubleProperty::digits() const
+{
+	return digits_;
+}
+
+uint DoubleProperty::decimal_places() const
 {
 	return decimal_places_;
 }
 
-bool FloatProperty::list_config()
+bool DoubleProperty::list_config()
 {
 	Glib::VariantContainerBase gvar;
 	if (!configurable_->list_config(config_key_, gvar))
@@ -96,12 +97,13 @@ bool FloatProperty::list_config()
 	return true;
 }
 
-void FloatProperty::change_value(const QVariant qvar)
+void DoubleProperty::change_value(const QVariant qvar)
 {
 	configurable_->set_config(config_key_, qvar.toDouble());
+	Q_EMIT value_changed(qvar);
 }
 
-void FloatProperty::on_value_changed(Glib::VariantBase g_var)
+void DoubleProperty::on_value_changed(Glib::VariantBase g_var)
 {
 	Q_EMIT value_changed(QVariant(g_variant_get_double(g_var.gobj())));
 }

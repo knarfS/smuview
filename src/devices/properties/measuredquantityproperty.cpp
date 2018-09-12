@@ -141,6 +141,7 @@ void MeasuredQuantityProperty::change_value(const QVariant qvar)
 	auto q_qf_tuple = make_tuple(sr_q_id, sr_qfs_id);
 
 	configurable_->set_config(config_key_, q_qf_tuple);
+	Q_EMIT value_changed(qvar);
 }
 
 void MeasuredQuantityProperty::on_value_changed(Glib::VariantBase g_var)

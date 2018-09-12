@@ -17,48 +17,78 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <stdexcept>
+
 #include <QDebug>
 
 #include "stringcombobox.hpp"
 #include "src/util.hpp"
 #include "src/devices/configurable.hpp"
+#include "src/devices/properties/baseproperty.hpp"
 #include "src/devices/properties/stringproperty.hpp"
+
+using std::dynamic_pointer_cast;
 
 namespace sv {
 namespace ui {
 namespace datatypes {
 
 StringComboBox::StringComboBox(
-		shared_ptr<devices::properties::StringProperty> string_prop,
+		shared_ptr<devices::properties::BaseProperty> property,
 		const bool auto_commit, const bool auto_update,
 		QWidget *parent) :
 	QComboBox(parent),
 	auto_commit_(auto_commit),
 	auto_update_(auto_update),
-	string_prop_(string_prop)
+	property_(property)
 {
+	// Check property
+	if (property_ != nullptr &&
+			property_->data_type() != devices::DataType::String) {
+
+		QString msg = QString("StringComboBox with property of type ").append(
+			devices::deviceutil::format_data_type(property_->data_type()));
+		throw std::runtime_error(msg.toStdString());
+	}
+
 	setup_ui();
 	connect_signals();
 }
 
 void StringComboBox::setup_ui()
 {
-	this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
-	if (string_prop_->is_listable()) {
-		this->addItems(string_prop_->list_values());
+	//this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
+	if (property_ != nullptr && property_->is_listable()) {
+		shared_ptr<devices::properties::StringProperty> string_prop =
+			dynamic_pointer_cast<devices::properties::StringProperty>(property_);
+
+		this->addItems(string_prop->list_values());
 	}
 	else {
 		this->setEditable(true);
 	}
-	this->setCurrentText(string_prop_->string_value());
-	this->setDisabled(!string_prop_->is_setable());
+	if (property_ == nullptr || !property_->is_setable())
+		this->setDisabled(true);
+	if (property_ != nullptr && property_->is_getable())
+		on_value_changed(property_->value());
 }
 
 void StringComboBox::connect_signals()
 {
 	// Widget -> Property
-	if (auto_commit_ && string_prop_->is_setable()) {
-		if (string_prop_->is_listable()) {
+	connect_widget_2_prop_signals();
+
+	// Property -> Widget
+	if (auto_update_ && property_ != nullptr) {
+		connect(property_.get(), SIGNAL(value_changed(const QVariant)),
+			this, SLOT(on_value_changed(const QVariant)));
+	}
+}
+
+void StringComboBox::connect_widget_2_prop_signals()
+{
+	if (auto_commit_ && property_ != nullptr && property_->is_setable()) {
+		if (property_->is_listable()) {
 			connect(this, SIGNAL(currentIndexChanged(const QString)),
 				this, SLOT(value_changed(const QString)));
 		}
@@ -67,22 +97,36 @@ void StringComboBox::connect_signals()
 				this, SLOT(value_changed(const QString)));
 		}
 	}
+}
 
-	// Property -> Widget
-	if (auto_update_) {
-		connect(string_prop_.get(), SIGNAL(value_changed(const QVariant)),
-			this, SLOT(on_value_changed(const QVariant)));
+void StringComboBox::disconnect_widget_2_prop_signals()
+{
+	if (auto_commit_ && property_ != nullptr && property_->is_setable()) {
+		if (property_->is_listable()) {
+			disconnect(this, SIGNAL(currentIndexChanged(const QString)),
+				this, SLOT(value_changed(const QString)));
+		}
+		else {
+			disconnect(this, SIGNAL(editTextChanged(const QString)),
+				this, SLOT(value_changed(const QString)));
+		}
 	}
 }
 
 void StringComboBox::value_changed(const QString value)
 {
-	string_prop_->value_changed(QVariant(value));
+	if (property_ != nullptr)
+		property_->change_value(QVariant(value));
 }
 
 void StringComboBox::on_value_changed(const QVariant value)
 {
+	// Disconnect Widget -> Property signal to prevent echoing
+	disconnect_widget_2_prop_signals();
+
 	this->setCurrentText(value.toString());
+
+	connect_widget_2_prop_signals();
 }
 
 } // namespace datatypes

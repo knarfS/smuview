@@ -220,6 +220,13 @@ DataType get_data_type_for_config_key(ConfigKey config_key)
 	return get_data_type(sr_ck->data_type());
 }
 
+data::Unit get_unit_for_config_key(ConfigKey config_key)
+{
+	if (config_key_unit_map.count(config_key) > 0)
+		return config_key_unit_map[config_key];
+	return data::Unit::Unknown;
+}
+
 } // namespace deviceutil
 } // namespace devices
 } // namespace sv

@@ -26,10 +26,11 @@
 #include "src/session.hpp"
 #include "src/devices/configurable.hpp"
 #include "src/devices/deviceutil.hpp"
-#include "src/widgets/controlbutton.hpp"
-#include "src/widgets/led.hpp"
-#include "src/widgets/optionalvaluecontrol.hpp"
-#include "src/widgets/valuecontrol.hpp"
+#include "src/ui/datatypes/boolbutton.hpp"
+#include "src/ui/datatypes/boolled.hpp"
+#include "src/ui/datatypes/doublecontrol.hpp"
+#include "src/ui/datatypes/stringcombobox.hpp"
+#include "src/ui/datatypes/thresholdcontrol.hpp"
 
 using sv::devices::ConfigKey;
 
@@ -42,8 +43,6 @@ SinkControlView::SinkControlView(const Session &session,
 	configurable_(configurable)
 {
 	setup_ui();
-	connect_signals();
-	init_values();
 }
 
 QString SinkControlView::title() const
@@ -53,22 +52,18 @@ QString SinkControlView::title() const
 
 void SinkControlView::setup_ui()
 {
-	double min;
-	double max;
-	double step;
 	QIcon red_icon(":/icons/status-red.svg");
 	QIcon green_icon(":/icons/status-green.svg");
 	QIcon grey_icon(":/icons/status-grey.svg");
 
 	QVBoxLayout *layout = new QVBoxLayout();
 
-	QGridLayout *infoLayout = new QGridLayout();
+	QGridLayout *info_layout = new QGridLayout();
 
 	// Enable button
-	enableButton = new widgets::ControlButton(
-		configurable_->has_get_config(ConfigKey::Enabled),
-		configurable_->has_set_config(ConfigKey::Enabled));
-	infoLayout->addWidget(enableButton, 0, 0, 2, 1,  Qt::AlignLeft);
+	enable_button_ = new ui::datatypes::BoolButton(
+		configurable_->get_property(ConfigKey::Enabled), true, true);
+	info_layout->addWidget(enable_button_, 0, 0, 2, 1,  Qt::AlignLeft);
 
 	// Regulation Leds
 	//cvLed = new widgets::Led(false, false, tr("CV"));
@@ -76,245 +71,60 @@ void SinkControlView::setup_ui()
 	//ccLed = new widgets::Led(true, false, tr("CC"));
 	//ledLayout->addWidget(ccLed, 1, 1, Qt::AlignLeft);
 
-	ovpLed = new widgets::Led(
-		configurable_->has_get_config(ConfigKey::OverVoltageProtectionActive),
-		tr("OVP"), red_icon, grey_icon, grey_icon);
-	infoLayout->addWidget(ovpLed, 0, 2, Qt::AlignLeft);
-	ocpLed = new widgets::Led(
-		configurable_->has_get_config(ConfigKey::OverCurrentProtectionActive),
-		tr("OCP"), red_icon, grey_icon, grey_icon);
-	infoLayout->addWidget(ocpLed, 1, 2, Qt::AlignLeft);
-	otpLed = new widgets::Led(
-		configurable_->has_get_config(ConfigKey::OverTemperatureProtectionActive),
-		tr("OTP"), red_icon, grey_icon, grey_icon);
-	infoLayout->addWidget(otpLed, 0, 3, Qt::AlignLeft);
-	uvcLed = new widgets::Led(
-		configurable_->has_get_config(ConfigKey::UnderVoltageConditionActive),
-		tr("UVC"), red_icon, grey_icon, grey_icon);
-	infoLayout->addWidget(uvcLed, 1, 3, Qt::AlignLeft);
-	layout->addLayout(infoLayout, 0);
+	ovp_led_ = new ui::datatypes::BoolLed(
+		configurable_->get_property(ConfigKey::OverVoltageProtectionActive),
+		true, red_icon, grey_icon, grey_icon, tr("OVP"));
+	info_layout->addWidget(ovp_led_, 0, 2, Qt::AlignLeft);
+	ocp_led_ = new ui::datatypes::BoolLed(
+		configurable_->get_property(ConfigKey::OverCurrentProtectionActive),
+		true, red_icon, grey_icon, grey_icon, tr("OCP"));
+	info_layout->addWidget(ocp_led_, 1, 2, Qt::AlignLeft);
+	otp_led_ = new ui::datatypes::BoolLed(
+		configurable_->get_property(ConfigKey::OverTemperatureProtectionActive),
+		true, red_icon, grey_icon, grey_icon, tr("OTP"));
+	info_layout->addWidget(otp_led_, 0, 3, Qt::AlignLeft);
+	uvc_led_ = new ui::datatypes::BoolLed(
+		configurable_->get_property(ConfigKey::UnderVoltageConditionActive),
+		true, red_icon, grey_icon, grey_icon, tr("UVC"));
+	info_layout->addWidget(uvc_led_, 1, 3, Qt::AlignLeft);
+	layout->addLayout(info_layout, 0);
 
-	QHBoxLayout *ctrlLayout = new QHBoxLayout();
+	QHBoxLayout *ctrl_layout = new QHBoxLayout();
 
-	// TODO: generic (CV, CC, CP, CR)
-	min = max = step = 0;
-	configurable_->list_config_min_max_step(
-		ConfigKey::CurrentLimit, min, max, step);
-	setValueControl = new widgets::ValueControl(
-		tr("Current"), 5, tr("A"), min, max, step);
-	ctrlLayout->addWidget(setValueControl);
+	// TODO: Change control for regulation mode (CV, CC, CP, CR)
+	current_control_ = new ui::datatypes::DoubleControl(
+		configurable_->get_property(ConfigKey::CurrentLimit),
+		true, true, tr("Current"));
+	ctrl_layout->addWidget(current_control_);
 
-	QStringList regulation_list;
-	configurable_->list_config_string_array(
-		ConfigKey::Regulation, regulation_list);
-	regulationBox = new QComboBox();
-	regulationBox->addItems(regulation_list);
-	/*
-	regulationBox->addItem("CV");
-	regulationBox->addItem("CC");
-	regulationBox->addItem("CR");
-	regulationBox->addItem("CP");
-	*/
-	ctrlLayout->addWidget(regulationBox, 1, Qt::AlignLeft);
-	layout->addLayout(ctrlLayout, 0);
+	regulation_box_ = new ui::datatypes::StringComboBox(
+		configurable_->get_property(ConfigKey::Regulation), true, true);
+	ctrl_layout->addWidget(regulation_box_, 1, Qt::AlignLeft);
+	layout->addLayout(ctrl_layout, 0);
 
-	QHBoxLayout *optCtrlLayout = new QHBoxLayout();
+	QHBoxLayout *opt_ctrl_layout = new QHBoxLayout();
 
-	min = max = step = 0;
-	configurable_->list_config_min_max_step(
-		ConfigKey::OverVoltageProtectionThreshold, min, max, step);
-	ovpControl = new widgets::OptionalValueControl(
-		configurable_->has_get_config(ConfigKey::OverVoltageProtectionEnabled),
-		configurable_->has_set_config(ConfigKey::OverVoltageProtectionEnabled),
-		configurable_->has_get_config(ConfigKey::OverVoltageProtectionThreshold),
-		configurable_->has_set_config(ConfigKey::OverVoltageProtectionThreshold),
-		tr("OVP"), tr("V"), min, max, step);
-	optCtrlLayout->addWidget(ovpControl);
+	ovp_control_ = new ui::datatypes::ThresholdControl(
+		configurable_->get_property(ConfigKey::OverVoltageProtectionThreshold),
+		configurable_->get_property(ConfigKey::OverVoltageProtectionEnabled),
+		true, true, tr("OVP"));
+	opt_ctrl_layout->addWidget(ovp_control_);
 
-	min = max = step = 0;
-	configurable_->list_config_min_max_step(
-		ConfigKey::OverCurrentProtectionThreshold, min, max, step);
-	ocpControl = new widgets::OptionalValueControl(
-		configurable_->has_get_config(ConfigKey::OverCurrentProtectionEnabled),
-		configurable_->has_set_config(ConfigKey::OverCurrentProtectionEnabled),
-		configurable_->has_get_config(ConfigKey::OverCurrentProtectionThreshold),
-		configurable_->has_set_config(ConfigKey::OverCurrentProtectionThreshold),
-		tr("OCP"), tr("A"), min, max, step);
-	optCtrlLayout->addWidget(ocpControl);
+	ocp_control_ = new ui::datatypes::ThresholdControl(
+		configurable_->get_property(ConfigKey::OverCurrentProtectionThreshold),
+		configurable_->get_property(ConfigKey::OverCurrentProtectionEnabled),
+		true, true, tr("OCP"));
+	opt_ctrl_layout->addWidget(ocp_control_);
 
-	min = max = step = 0;
-	configurable_->list_config_min_max_step(
-		ConfigKey::UnderVoltageConditionThreshold, min, max, step);
-	uvcControl = new widgets::OptionalValueControl(
-		configurable_->has_get_config(ConfigKey::UnderVoltageConditionEnabled),
-		configurable_->has_set_config(ConfigKey::UnderVoltageConditionEnabled),
-		configurable_->has_get_config(ConfigKey::UnderVoltageConditionThreshold),
-		configurable_->has_set_config(ConfigKey::UnderVoltageConditionThreshold),
-		tr("UVC"), tr("V"), min, max, step);
-	optCtrlLayout->addWidget(uvcControl, 1, Qt::AlignLeft);
-	layout->addLayout(optCtrlLayout, 0);
+	uvc_control_ = new ui::datatypes::ThresholdControl(
+		configurable_->get_property(ConfigKey::UnderVoltageConditionThreshold),
+		configurable_->get_property(ConfigKey::UnderVoltageConditionEnabled),
+		true, true, tr("UVC"));
+	opt_ctrl_layout->addWidget(uvc_control_, 1, Qt::AlignLeft);
+	layout->addLayout(opt_ctrl_layout, 0);
 	layout->addStretch(1);
 
 	this->centralWidget_->setLayout(layout);
-}
-
-void SinkControlView::connect_signals()
-{
-	// Control elements -> Device
-	connect(enableButton, SIGNAL(state_changed(const bool)),
-		this, SLOT(on_enabled_changed(const bool)));
-	connect(setValueControl, SIGNAL(value_changed(const double)),
-		this, SLOT(on_value_changed(const double)));
-	connect(ovpControl, SIGNAL(state_changed(const bool)),
-		this, SLOT(on_ovp_enabled_changed(const bool)));
-	connect(ovpControl, SIGNAL(value_changed(const double)),
-		this, SLOT(on_ovp_threshold_changed(const double)));
-	connect(ocpControl, SIGNAL(state_changed(const bool)),
-		this, SLOT(on_ocp_enabled_changed(const bool)));
-	connect(ocpControl, SIGNAL(value_changed(const double)),
-		this, SLOT(on_ocp_threshold_changed(const double)));
-	connect(uvcControl, SIGNAL(state_changed(const bool)),
-		this, SLOT(on_uvc_enabled_changed(const bool)));
-	connect(uvcControl, SIGNAL(value_changed(const double)),
-		this, SLOT(on_uvc_threshold_changed(const double)));
-
-	// Device -> Control elements
-	connect(configurable_.get(), SIGNAL(config_changed(const devices::ConfigKey, const QVariant)),
-		this, SLOT(on_config_changed(const devices::ConfigKey, const QVariant)));
-}
-
-void SinkControlView::init_values()
-{
-	if (configurable_->has_get_config(ConfigKey::Enabled))
-		enableButton->change_state(
-			configurable_->get_config<bool>(ConfigKey::Enabled));
-
-	//if (configurable_->is_regulation_getable())
-	//	qWarning() << "SinkControlView::init_values(): Regulation = " << configurable_->get_regulation();
-
-	if (configurable_->has_get_config(ConfigKey::CurrentLimit))
-		setValueControl->change_value(
-			configurable_->get_config<double>(ConfigKey::CurrentLimit));
-	if (configurable_->has_get_config(ConfigKey::OverVoltageProtectionEnabled))
-		ovpControl->change_state(
-			configurable_->get_config<bool>(ConfigKey::OverVoltageProtectionEnabled));
-	if (configurable_->has_get_config(ConfigKey::OverVoltageProtectionThreshold))
-		ovpControl->change_value(
-			configurable_->get_config<double>(ConfigKey::OverVoltageProtectionThreshold));
-	if (configurable_->has_get_config(ConfigKey::OverCurrentProtectionEnabled))
-		ocpControl->change_state(
-			configurable_->get_config<bool>(ConfigKey::OverCurrentProtectionEnabled));
-	if (configurable_->has_get_config(ConfigKey::OverCurrentProtectionThreshold))
-		ocpControl->change_value(
-			configurable_->get_config<double>(ConfigKey::OverCurrentProtectionThreshold));
-	if (configurable_->has_get_config(ConfigKey::UnderVoltageConditionEnabled))
-		uvcControl->change_state(
-			configurable_->get_config<bool>(ConfigKey::UnderVoltageConditionEnabled));
-	if (configurable_->has_get_config(ConfigKey::UnderVoltageConditionThreshold))
-		uvcControl->change_value(
-			configurable_->get_config<double>(ConfigKey::UnderVoltageConditionThreshold));
-
-	// LEDs
-	if (configurable_->has_get_config(ConfigKey::OverVoltageProtectionActive))
-		ovpLed->change_state(
-			configurable_->get_config<bool>(ConfigKey::OverVoltageProtectionActive));
-	if (configurable_->has_get_config(ConfigKey::OverCurrentProtectionActive))
-		ocpLed->change_state(
-			configurable_->get_config<bool>(ConfigKey::OverCurrentProtectionActive));
-	if (configurable_->has_get_config(ConfigKey::OverTemperatureProtectionActive))
-		otpLed->change_state(
-			configurable_->get_config<bool>(ConfigKey::OverTemperatureProtectionActive));
-	if (configurable_->has_get_config(ConfigKey::UnderVoltageConditionActive))
-		uvcLed->change_state(
-			configurable_->get_config<bool>(ConfigKey::UnderVoltageConditionActive));
-}
-
-void SinkControlView::on_enabled_changed(const bool enabled)
-{
-	configurable_->set_config(ConfigKey::Enabled, enabled);
-}
-
-void SinkControlView::on_value_changed(const double value)
-{
-	configurable_->set_config(ConfigKey::CurrentLimit, value);
-}
-
-void SinkControlView::on_ovp_enabled_changed(const bool enabled)
-{
-	configurable_->set_config(ConfigKey::OverVoltageProtectionEnabled, enabled);
-}
-
-void SinkControlView::on_ovp_threshold_changed(const double value)
-{
-	configurable_->set_config(ConfigKey::OverVoltageProtectionThreshold, value);
-}
-
-void SinkControlView::on_ocp_enabled_changed(const bool enabled)
-{
-	configurable_->set_config(ConfigKey::OverCurrentProtectionEnabled, enabled);
-}
-
-void SinkControlView::on_ocp_threshold_changed(const double value)
-{
-	configurable_->set_config(ConfigKey::OverCurrentProtectionThreshold, value);
-}
-
-void SinkControlView::on_uvc_enabled_changed(const bool enabled)
-{
-	configurable_->set_config(ConfigKey::UnderVoltageConditionEnabled, enabled);
-}
-
-void SinkControlView::on_uvc_threshold_changed(const double value)
-{
-	configurable_->set_config(ConfigKey::UnderVoltageConditionThreshold, value);
-}
-
-void SinkControlView::on_config_changed(
-	const devices::ConfigKey key, const QVariant qvar)
-{
-	// TODO: Regulation
-	switch (key) {
-	// Device -> Control elements
-	case devices::ConfigKey::Enabled:
-		enableButton->change_state(qvar.toBool());
-		break;
-	case devices::ConfigKey::CurrentLimit:
-		setValueControl->change_value(qvar.toDouble());
-		break;
-	case devices::ConfigKey::OverVoltageProtectionEnabled:
-		ovpControl->change_state(qvar.toBool());
-		break;
-	case devices::ConfigKey::OverVoltageProtectionThreshold:
-		ovpControl->change_value(qvar.toDouble());
-		break;
-	case devices::ConfigKey::OverCurrentProtectionEnabled:
-		ocpControl->change_state(qvar.toBool());
-		break;
-	case devices::ConfigKey::OverCurrentProtectionThreshold:
-		ocpControl->change_value(qvar.toDouble());
-		break;
-	case devices::ConfigKey::UnderVoltageConditionEnabled:
-		uvcControl->change_state(qvar.toBool());
-		break;
-	case devices::ConfigKey::UnderVoltageConditionThreshold:
-		uvcControl->change_value(qvar.toDouble());
-		break;
-	// Device -> LEDs
-	case devices::ConfigKey::OverVoltageProtectionActive:
-		ovpLed->change_state(qvar.toBool());
-		break;
-	case devices::ConfigKey::OverCurrentProtectionActive:
-		ocpLed->change_state(qvar.toBool());
-		break;
-	case devices::ConfigKey::UnderVoltageConditionActive:
-		uvcLed->change_state(qvar.toBool());
-		break;
-	case devices::ConfigKey::OverTemperatureProtectionActive:
-		otpLed->change_state(qvar.toBool());
-		break;
-	default:
-		break;
-	}
 }
 
 } // namespace views

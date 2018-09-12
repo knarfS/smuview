@@ -20,40 +20,34 @@
 #include <stdexcept>
 
 #include <QDebug>
-#include <QVariant>
 
-#include "measuredquantitycombobox.hpp"
+#include "doubleknob.hpp"
 #include "src/util.hpp"
-#include "src/data/datautil.hpp"
 #include "src/devices/configurable.hpp"
 #include "src/devices/properties/baseproperty.hpp"
-#include "src/devices/properties/measuredquantityproperty.hpp"
+#include "src/devices/properties/doubleproperty.hpp"
 
 using std::dynamic_pointer_cast;
-
-Q_DECLARE_METATYPE(sv::data::Quantity)
-Q_DECLARE_METATYPE(sv::devices::Configurable::measured_quantity_t)
 
 namespace sv {
 namespace ui {
 namespace datatypes {
 
-MeasuredQuantityComboBox::MeasuredQuantityComboBox(
+DoubleKnob::DoubleKnob(
 		shared_ptr<devices::properties::BaseProperty> property,
 		const bool auto_commit, const bool auto_update,
 		QWidget *parent) :
-	QComboBox(parent),
+	QwtKnob(parent),
 	auto_commit_(auto_commit),
 	auto_update_(auto_update),
 	property_(property)
 {
 	// Check property
 	if (property_ != nullptr &&
-			property_->data_type() != devices::DataType::MQ) {
+			property_->data_type() != devices::DataType::Double) {
 
-		QString msg =
-			QString("MeasuredQuantityComboBox with property of type ").append(
-				devices::deviceutil::format_data_type(property_->data_type()));
+		QString msg = QString("DoubleKnob with property of type ").append(
+			devices::deviceutil::format_data_type(property_->data_type()));
 		throw std::runtime_error(msg.toStdString());
 	}
 
@@ -61,36 +55,30 @@ MeasuredQuantityComboBox::MeasuredQuantityComboBox(
 	connect_signals();
 }
 
-void MeasuredQuantityComboBox::setup_ui()
+void DoubleKnob::setup_ui()
 {
-	//this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
+	this->knobRect().setSize(QSize(100, 100));
+	this->setNumTurns(1);
 	if (property_ != nullptr && property_->is_listable()) {
-		shared_ptr<devices::properties::MeasuredQuantityProperty> mq_prop =
-			dynamic_pointer_cast<devices::properties::MeasuredQuantityProperty>(
-				property_);
+		shared_ptr<devices::properties::DoubleProperty> double_prop =
+			dynamic_pointer_cast<devices::properties::DoubleProperty>(property_);
 
-		auto mq_list = mq_prop->list_values();
-		for (auto pair : mq_list) {
-			data::Quantity qunatity = pair.first;
-			this->addItem(
-				data::datautil::format_quantity(qunatity),
-				QVariant::fromValue(qunatity));
-		}
-	}
-	else if (property_ != nullptr && property_->is_getable()) {
-		data::Quantity qunatity = property_->value().
-			value<devices::Configurable::measured_quantity_t>().first;
-		this->addItem(
-			data::datautil::format_quantity(qunatity),
-			QVariant::fromValue(qunatity));
+		this->setLowerBound(double_prop->min());
+		this->setUpperBound(double_prop->max());
+		// setSingleSteps(uint), setPageSteps(uint)
+		this->setTotalSteps(
+			(double_prop->max() - double_prop->min()) / double_prop->step());
+		//setScaleStepSize(double), setScaleMaxMajor(int), setScaleMaxMinor(int)
 	}
 	if (property_ == nullptr || !property_->is_setable())
 		this->setDisabled(true);
 	if (property_ != nullptr && property_->is_getable())
 		on_value_changed(property_->value());
+	else
+		on_value_changed(QVariant(.0));
 }
 
-void MeasuredQuantityComboBox::connect_signals()
+void DoubleKnob::connect_signals()
 {
 	// Widget -> Property
 	connect_widget_2_prop_signals();
@@ -102,40 +90,38 @@ void MeasuredQuantityComboBox::connect_signals()
 	}
 }
 
-void MeasuredQuantityComboBox::connect_widget_2_prop_signals()
+void DoubleKnob::connect_widget_2_prop_signals()
 {
 	if (auto_commit_ && property_ != nullptr && property_->is_setable()) {
-		connect(this, SIGNAL(currentIndexChanged(const QString)),
-			this, SLOT(value_changed(const QString)));
+		connect(this, SIGNAL(valueChanged(double)),
+			this, SLOT(value_changed(const double)));
 	}
 }
 
-void MeasuredQuantityComboBox::disconnect_widget_2_prop_signals()
+void DoubleKnob::disconnect_widget_2_prop_signals()
 {
 	if (auto_commit_ && property_ != nullptr && property_->is_setable()) {
-		disconnect(this, SIGNAL(currentIndexChanged(const QString)),
-			this, SLOT(value_changed(const QString)));
+		disconnect(this, SIGNAL(valueChanged(double)),
+			this, SLOT(value_changed(const double)));
 	}
 }
 
-void MeasuredQuantityComboBox::value_changed(
-	const devices::Configurable::measured_quantity_t value)
+void DoubleKnob::value_changed(const double value)
 {
 	if (property_ != nullptr)
-		property_->change_value(QVariant().fromValue(value));
+		property_->change_value(QVariant(value));
 }
 
-void MeasuredQuantityComboBox::on_value_changed(const QVariant value)
+void DoubleKnob::on_value_changed(const QVariant qvar)
 {
 	// Disconnect Widget -> Property signal to prevent echoing
 	disconnect_widget_2_prop_signals();
 
-	this->setCurrentText(data::datautil::format_quantity(
-		value.value<devices::Configurable::measured_quantity_t>().first));
+	this->setValue(qvar.toDouble());
 
 	connect_widget_2_prop_signals();
 }
 
 } // namespace datatypes
 } // namespace ui
-} // namespece sv
+} // namespace sv

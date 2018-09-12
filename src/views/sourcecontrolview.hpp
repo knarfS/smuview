@@ -37,11 +37,13 @@ namespace devices {
 class Configurable;
 }
 
-namespace widgets {
-class ControlButton;
-class Led;
-class OptionalValueControl;
-class ValueControl;
+namespace ui {
+namespace datatypes {
+class BoolButton;
+class BoolLed;
+class DoubleControl;
+class ThresholdControl;
+}
 }
 
 namespace views {
@@ -60,38 +62,20 @@ public:
 private:
 	shared_ptr<devices::Configurable> configurable_;
 
-	widgets::Led *ccLed;
-	widgets::Led *cvLed;
-	widgets::Led *ovpLed;
-	widgets::Led *ocpLed;
-	widgets::Led *otpLed;
-	widgets::Led *uvcLed;
-	widgets::ControlButton *enableButton;
-	widgets::ValueControl *setVoltageControl;
-	widgets::ValueControl *setCurrentControl;
-	widgets::OptionalValueControl *ovpControl;
-	widgets::OptionalValueControl *ocpControl;
-	widgets::OptionalValueControl *uvcControl;
+	ui::datatypes::BoolLed *cc_led_;
+	ui::datatypes::BoolLed *cv_led_;
+	ui::datatypes::BoolLed *ovp_led_;
+	ui::datatypes::BoolLed *ocp_led_;
+	ui::datatypes::BoolLed *otp_led_;
+	ui::datatypes::BoolLed *uvc_led_;
+	ui::datatypes::BoolButton *enable_button_;
+	ui::datatypes::DoubleControl *voltage_control_;
+	ui::datatypes::DoubleControl *current_control_;
+	ui::datatypes::ThresholdControl *ovp_control_;
+	ui::datatypes::ThresholdControl *ocp_control_;
+	ui::datatypes::ThresholdControl *uvc_control_;
 
 	void setup_ui();
-	void connect_signals();
-	void init_values();
-
-protected:
-
-public Q_SLOTS:
-
-private Q_SLOTS:
-	void on_enabled_changed(const bool);
-	void on_voltage_changed(const double);
-	void on_current_changed(const double);
-	void on_ovp_enabled_changed(const bool);
-	void on_ovp_threshold_changed(const double);
-	void on_ocp_enabled_changed(const bool);
-	void on_ocp_threshold_changed(const double);
-	void on_uvc_enabled_changed(const bool);
-	void on_uvc_threshold_changed(const double);
-	void on_config_changed(const devices::ConfigKey, const QVariant);
 
 };
 

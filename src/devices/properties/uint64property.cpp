@@ -90,6 +90,7 @@ bool UInt64Property::list_config()
 void UInt64Property::change_value(const QVariant qvar)
 {
 	configurable_->set_config(config_key_, (uint64_t)qvar.toULongLong());
+	Q_EMIT value_changed(qvar);
 }
 
 void UInt64Property::on_value_changed(Glib::VariantBase g_var)

@@ -21,11 +21,11 @@
 
 #include <QDebug>
 
-#include "int32spinbox.hpp"
+#include "doublelcddisplay.hpp"
 #include "src/util.hpp"
 #include "src/devices/configurable.hpp"
 #include "src/devices/properties/baseproperty.hpp"
-#include "src/devices/properties/int32property.hpp"
+#include "src/devices/properties/doubleproperty.hpp"
 
 using std::dynamic_pointer_cast;
 
@@ -33,20 +33,19 @@ namespace sv {
 namespace ui {
 namespace datatypes {
 
-Int32SpinBox::Int32SpinBox(
+DoubleLcdDisplay::DoubleLcdDisplay(
 		shared_ptr<devices::properties::BaseProperty> property,
-		const bool auto_commit, const bool auto_update,
-		QWidget *parent) :
-	QSpinBox(parent),
-	auto_commit_(auto_commit),
+		 const bool auto_update, QWidget *parent) :
+	widgets::LcdDisplay(5/*Dummy*/, 3/*Dummy*/, false,
+		QString("Dummy"), QString(""), QString(""), false, parent),
 	auto_update_(auto_update),
 	property_(property)
 {
 	// Check property
 	if (property_ != nullptr &&
-			property_->data_type() != devices::DataType::Int32) {
+			property_->data_type() != devices::DataType::Double) {
 
-		QString msg = QString("Int32SpinBox with property of type ").append(
+		QString msg = QString("DoubleLcdDisplay with property of type ").append(
 			devices::deviceutil::format_data_type(property_->data_type()));
 		throw std::runtime_error(msg.toStdString());
 	}
@@ -55,34 +54,28 @@ Int32SpinBox::Int32SpinBox(
 	connect_signals();
 }
 
-void Int32SpinBox::setup_ui()
+void DoubleLcdDisplay::setup_ui()
 {
 	this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
 	if (property_ != nullptr && property_->is_listable()) {
-		shared_ptr<devices::properties::Int32Property> int32_prop =
-			dynamic_pointer_cast<devices::properties::Int32Property>(property_);
+		shared_ptr<devices::properties::DoubleProperty> double_prop =
+			dynamic_pointer_cast<devices::properties::DoubleProperty>(property_);
 
-		this->setRange(int32_prop->min(), int32_prop->max());
-		this->setSingleStep(int32_prop->step());
+		this->set_digits(double_prop->digits(), double_prop->decimal_places());
 	}
-	/*
-	if (unit_ != data::Unit::Unknown && unit_ != data::Unit::Unitless) {
-		this->setSuffix(QString(" %1").arg(data::datautil::format_unit(unit_)));
+	if (property_ != nullptr && property_->unit() != data::Unit::Unknown &&
+			property_->unit() != data::Unit::Unitless) {
+		this->set_unit(
+			QString(" %1").arg(data::datautil::format_unit(property_->unit())));
 	}
-	*/
-	if (property_ == nullptr || !property_->is_setable())
-		this->setDisabled(true);
 	if (property_ != nullptr && property_->is_getable())
 		on_value_changed(property_->value());
 	else
-		on_value_changed(QVariant(0));
+		on_value_changed(QVariant(.0));
 }
 
-void Int32SpinBox::connect_signals()
+void DoubleLcdDisplay::connect_signals()
 {
-	// Widget -> Property
-	connect_widget_2_prop_signals();
-
 	// Property -> Widget
 	if (auto_update_ && property_ != nullptr) {
 		connect(property_.get(), SIGNAL(value_changed(const QVariant)),
@@ -90,36 +83,14 @@ void Int32SpinBox::connect_signals()
 	}
 }
 
-void Int32SpinBox::connect_widget_2_prop_signals()
+void DoubleLcdDisplay::value_changed(const double value)
 {
-	if (auto_commit_ && property_ != nullptr && property_->is_setable()) {
-		connect(this, SIGNAL(valueChanged(double)),
-			this, SLOT(value_changed(const double)));
-	}
+	(void)value;
 }
 
-void Int32SpinBox::disconnect_widget_2_prop_signals()
+void DoubleLcdDisplay::on_value_changed(const QVariant qvar)
 {
-	if (auto_commit_ && property_ != nullptr && property_->is_setable()) {
-		disconnect(this, SIGNAL(valueChanged(double)),
-			this, SLOT(value_changed(const double)));
-	}
-}
-
-void Int32SpinBox::value_changed(const int32_t value)
-{
-	if (property_ != nullptr)
-		property_->change_value(QVariant(value));
-}
-
-void Int32SpinBox::on_value_changed(const QVariant value)
-{
-	// Disconnect Widget -> Property signal to prevent echoing
-	disconnect_widget_2_prop_signals();
-
-	this->setValue(value.toInt());
-
-	connect_widget_2_prop_signals();
+	this->set_value(qvar.toDouble());
 }
 
 } // namespace datatypes

@@ -75,6 +75,7 @@ bool StringProperty::list_config()
 void StringProperty::change_value(const QVariant qvar)
 {
 	configurable_->set_config(config_key_, qvar.toString().toStdString());
+	Q_EMIT value_changed(qvar);
 }
 
 void StringProperty::on_value_changed(Glib::VariantBase g_var)

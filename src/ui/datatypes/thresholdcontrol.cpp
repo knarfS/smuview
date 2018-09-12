@@ -1,0 +1,73 @@
+/*
+ * This file is part of the SmuView project.
+ *
+ * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#include <QDebug>
+#include <QVBoxLayout>
+
+#include "thresholdcontrol.hpp"
+#include "src/devices/properties/baseproperty.hpp"
+#include "src/ui/datatypes/boolbutton.hpp"
+#include "src/ui/datatypes/doublespinbox.hpp"
+
+namespace sv {
+namespace ui {
+namespace datatypes {
+
+ThresholdControl::ThresholdControl(
+		shared_ptr<devices::properties::BaseProperty> double_prop,
+		shared_ptr<devices::properties::BaseProperty> bool_prop,
+		const bool auto_commit, const bool auto_update,
+		QString title, QWidget *parent) :
+	QGroupBox(parent),
+	auto_commit_(auto_commit),
+	auto_update_(auto_update),
+	double_prop_(double_prop),
+	bool_prop_(bool_prop),
+	title_(title)
+{
+	setup_ui();
+}
+
+void ThresholdControl::setup_ui()
+{
+	this->setTitle(title_);
+
+	QSizePolicy size_policy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+	size_policy.setHorizontalStretch(0);
+	size_policy.setVerticalStretch(0);
+	this->setSizePolicy(size_policy);
+
+	QVBoxLayout *layout = new QVBoxLayout();
+
+	button_ = new BoolButton(bool_prop_, true, true);
+	button_->setSizePolicy(
+		QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
+	layout->addWidget(button_);
+
+	spin_box_ = new DoubleSpinBox(double_prop_, true, true);
+	spin_box_->setSizePolicy(
+		QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
+	layout->addWidget(spin_box_);
+
+	this->setLayout(layout);
+}
+
+} // namespace widgets
+} // namespace ui
+} // namespace sv

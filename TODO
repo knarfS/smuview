@@ -13,6 +13,7 @@ ToDo
 - Autoscale plot. Plot doesn't always auto-update scale (rlp without load)
 - Save session, save all data (gnuplot, octave, ...)
 	- saveutil.cpp
+- Refactor ui class members CamelCase -> _ _ _
 - Configurable:
 	- get_mq / set_mq -> special case in get/set, but problem with template
 	- min/max/step in views when not listable

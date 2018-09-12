@@ -106,10 +106,6 @@ public:
 	bool has_list_config(devices::ConfigKey key) const;
 	bool list_config(devices::ConfigKey key,
 		Glib::VariantContainerBase &gvariant);
-	bool list_config_string_array(devices::ConfigKey key,
-		QStringList &string_list);
-	bool list_config_min_max_step(devices::ConfigKey key,
-		double &min, double &max, double &step);
 
 	QString name() const;
 

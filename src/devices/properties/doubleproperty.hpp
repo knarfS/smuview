@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DEVICES_PROPERTIES_BASEPROPERTY_HPP
-#define DEVICES_PROPERTIES_BASEPROPERTY_HPP
+#ifndef DEVICES_PROPERTIES_DOUBLEPROPERTY_HPP
+#define DEVICES_PROPERTIES_DOUBLEPROPERTY_HPP
 
 #include <memory>
 
@@ -27,6 +27,8 @@
 #include <QObject>
 #include <QVariant>
 
+#include "src/data/datautil.hpp"
+#include "src/devices/properties/baseproperty.hpp"
 #include "src/devices/deviceutil.hpp"
 
 using std::shared_ptr;
@@ -38,44 +40,35 @@ class Configurable;
 
 namespace properties {
 
-class BaseProperty : public QObject
+class DoubleProperty : public BaseProperty
 {
 	Q_OBJECT
 
 public:
-	BaseProperty(shared_ptr<devices::Configurable> configurable,
+	DoubleProperty(shared_ptr<devices::Configurable> configurable,
 		devices::ConfigKey config_key);
 
-	shared_ptr<devices::Configurable> configurable() const;
-	devices::ConfigKey config_key() const;
-	devices::DataType data_type() const;
-	data::Unit unit() const;
-	bool is_getable() const;
-	bool is_setable() const;
-	bool is_listable() const;
-	virtual QVariant value() const = 0;
+public:
+	QVariant value() const;
+	double float_value() const;
+	double min() const;
+	double max() const;
+	double step() const;
+	uint digits() const;
+	uint decimal_places() const;
 
-protected:
-	shared_ptr<devices::Configurable> configurable_;
-	devices::ConfigKey config_key_;
-	devices::DataType data_type_;
-	data::Unit unit_;
-	bool is_getable_;
-	bool is_setable_;
-	bool is_listable_;
+private:
+	double min_;
+	double max_;
+	double step_;
+	uint digits_;
+	uint decimal_places_;
+
+	bool list_config();
 
 public Q_SLOTS:
-	/**
-	 * Value has changes within SmuView and should be send to the device
-	 */
-	virtual void change_value(const QVariant) = 0;
-	/**
-	 * Devices has sended a changed value via a meta package
-	 */
-	virtual void on_value_changed(Glib::VariantBase) = 0;
-
-Q_SIGNALS:
-	void value_changed(const QVariant);
+	void change_value(const QVariant);
+	void on_value_changed(Glib::VariantBase);
 
 };
 
@@ -83,4 +76,4 @@ Q_SIGNALS:
 } // namespace devices
 } // namespece sv
 
-#endif // DEVICES_PROPERTIES_BASEPROPERTY_HPP
+#endif // DEVICES_PROPERTIES_DOUBLEPROPERTY_HPP

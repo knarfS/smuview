@@ -297,6 +297,12 @@ uint count_int_digits(int number)
 	return digits;
 }
 
+uint count_double_digits(double max, double step)
+{
+	int i = (int)floor(max);
+	return util::count_int_digits(i) + util::get_decimal_places(step);
+}
+
 uint get_decimal_places(double dp)
 {
 	int d = (int)ceil(1/dp) - 1;
