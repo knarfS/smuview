@@ -18,11 +18,15 @@
  */
 
 #include "sequenceblock.hpp"
+#include "src/processing/processor.hpp"
+
+using std::shared_ptr;
 
 namespace sv {
 namespace processing {
 
-SequenceBlock::SequenceBlock() : BaseBlock()
+SequenceBlock::SequenceBlock(const shared_ptr<Processor> processor) :
+	BaseBlock(processor)
 {
 }
 

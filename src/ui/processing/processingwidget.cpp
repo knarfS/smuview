@@ -82,6 +82,7 @@ void ProcessingWidget::setup_toolbar()
 		QIcon(":/icons/media-playback-pause.png")));
 	action_pause_process_->setCheckable(true);
 	action_pause_process_->setChecked(false);
+	action_pause_process_->setDisabled(true);
 	connect(action_pause_process_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_pause_process_triggered()));
 
@@ -117,18 +118,23 @@ void ProcessingWidget::setup_toolbar()
 	toolbar_->addSeparator();
 	toolbar_->addAction(action_save_process_);
 	this->addToolBar(Qt::TopToolBarArea, toolbar_);
+
+	connect(processor_.get(), SIGNAL(processor_started()),
+		this, SLOT(on_processor_started()));
+	connect(processor_.get(), SIGNAL(processor_finished()),
+		this, SLOT(on_processor_finished()));
 }
 
 void ProcessingWidget::on_action_start_process_triggered()
 {
-	action_pause_process_->setChecked(false);
-	action_stop_process_->setChecked(false);
+	if (processor_->is_running()) {
+		action_start_process_->setChecked(true);
+		return;
+	}
 
 	processor_->start([&](QString message) {
 		processing_error(tr("Processing failed"), message);
 	});
-
-	action_start_process_->setChecked(true);
 }
 
 void ProcessingWidget::on_action_pause_process_triggered()
@@ -143,12 +149,12 @@ void ProcessingWidget::on_action_pause_process_triggered()
 
 void ProcessingWidget::on_action_stop_process_triggered()
 {
-	action_start_process_->setChecked(false);
-	action_pause_process_->setChecked(false);
+	if (!processor_->is_running()) {
+		action_stop_process_->setChecked(true);
+		return;
+	}
 
 	processor_->stop();
-
-	action_stop_process_->setChecked(true);
 }
 
 void ProcessingWidget::on_action_add_thread_triggered()
@@ -171,6 +177,21 @@ void ProcessingWidget::on_action_add_thread_triggered()
 
 void ProcessingWidget::on_action_save_process_triggered()
 {
+}
+
+void ProcessingWidget::on_processor_started()
+{
+	action_pause_process_->setChecked(false);
+	action_stop_process_->setChecked(false);
+
+	action_start_process_->setChecked(true);
+}
+
+void ProcessingWidget::on_processor_finished()
+{
+	action_start_process_->setChecked(false);
+	action_pause_process_->setChecked(false);
+	action_stop_process_->setChecked(true);
 }
 
 void ProcessingWidget::processing_error(

@@ -23,11 +23,15 @@
 #include <QDebug>
 
 #include "waitblock.hpp"
+#include "src/processing/processor.hpp"
+
+using std::shared_ptr;
 
 namespace sv {
 namespace processing {
 
-WaitBlock::WaitBlock() : BaseBlock(),
+WaitBlock::WaitBlock(const shared_ptr<Processor> processor) :
+		BaseBlock(processor),
 	wait_ms_(0)
 {
 }

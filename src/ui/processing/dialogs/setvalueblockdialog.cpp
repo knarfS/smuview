@@ -125,16 +125,6 @@ shared_ptr<devices::properties::BaseProperty>
 	return property_;
 }
 
-shared_ptr<devices::Configurable> SetValueBlockDialog::configurable() const
-{
-	return configurable_box_->selected_configurable();
-}
-
-devices::ConfigKey SetValueBlockDialog::config_key() const
-{
-	return config_key_box_->selected_config_key();
-}
-
 QVariant SetValueBlockDialog::value() const
 {
 	const datatypes::BaseWidget *base_widget =

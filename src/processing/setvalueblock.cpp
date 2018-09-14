@@ -25,11 +25,15 @@
 #include "src/devices/configurable.hpp"
 #include "src/devices/deviceutil.hpp"
 #include "src/devices/properties/baseproperty.hpp"
+#include "src/processing/processor.hpp"
+
+using std::shared_ptr;
 
 namespace sv {
 namespace processing {
 
-SetValueBlock::SetValueBlock() : BaseBlock()
+SetValueBlock::SetValueBlock(const shared_ptr<Processor> processor) :
+	BaseBlock(processor)
 {
 }
 

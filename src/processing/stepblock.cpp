@@ -17,7 +17,6 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cassert>
 #include <chrono>
 #include <thread>
 
@@ -26,11 +25,16 @@
 #include "stepblock.hpp"
 #include "src/devices/configurable.hpp"
 #include "src/devices/deviceutil.hpp"
+#include "src/devices/properties/baseproperty.hpp"
+#include "src/processing/processor.hpp"
+
+using std::shared_ptr;
 
 namespace sv {
 namespace processing {
 
-StepBlock::StepBlock() : BaseBlock(),
+StepBlock::StepBlock(const shared_ptr<Processor> processor) :
+		BaseBlock(processor),
 	step_cnt_(0)
 {
 }
@@ -40,7 +44,7 @@ void StepBlock::init()
 	// Create a linear step sequence 0..10 with 0.1 step size every 100ms
 	step_cnt_ = 100;
 
-	for (long i=0; i<step_cnt_; i++) {
+	for (ulong i=0; i<step_cnt_; i++) {
 		/*
 		values_.push_back((double)0.1 * i);
 		delays_.push_back(delay);
@@ -53,47 +57,66 @@ void StepBlock::init()
 
 void StepBlock::run()
 {
-	assert(configurable_);
-	assert(config_key_);
-
-	double act_value = start_value_;
-	while (act_value <= end_value_) {
+	//QVariant::Type type = start_value_.type();
+	QVariant act_value = start_value_;
+	while (act_value <= end_value_ && processor_->is_running()) {
 		qWarning() << "StepBlock: value = " << act_value <<
 			", delay = " << delay_ms_ << " ms.";
 
-		configurable_->set_config(config_key_, act_value);
-		configurable_->config_changed(config_key_, act_value);
-		act_value += step_size_;
+		property_->change_value(act_value);
+		double d_val = act_value.toDouble() + step_size_.toDouble();
+		act_value = QVariant(d_val);
 		std::this_thread::sleep_for(std::chrono::milliseconds(delay_ms_));
 	}
 }
 
-void StepBlock::set_configurable(shared_ptr<devices::Configurable> configurable)
+shared_ptr<devices::properties::BaseProperty> StepBlock::property() const
 {
-	configurable_ = configurable;
+	return property_;
 }
 
-void StepBlock::set_config_key(devices::ConfigKey key)
+void StepBlock::set_property(
+	shared_ptr<devices::properties::BaseProperty> property)
 {
-	config_key_ = key;
+	property_ = property;
 }
 
-void StepBlock::set_start_value(double start_value)
+QVariant StepBlock::start_value() const
+{
+	return start_value_;
+}
+
+void StepBlock::set_start_value(QVariant start_value)
 {
 	start_value_ = start_value;
 }
 
-void StepBlock::set_end_value(double end_value)
+QVariant StepBlock::end_value() const
+{
+	return end_value_;
+}
+
+void StepBlock::set_end_value(QVariant end_value)
 {
 	end_value_ = end_value;
 }
 
-void StepBlock::set_step_size(double step_size)
+QVariant StepBlock::step_size() const
+{
+	return start_value_;
+}
+
+void StepBlock::set_step_size(QVariant step_size)
 {
 	step_size_ = step_size;
 }
 
-void StepBlock::set_delay_ms(int delay_ms)
+uint StepBlock::delay_ms() const
+{
+	return delay_ms_;
+}
+
+void StepBlock::set_delay_ms(uint delay_ms)
 {
 	delay_ms_ = delay_ms;
 }

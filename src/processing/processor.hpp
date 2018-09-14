@@ -51,6 +51,7 @@ public:
 	enum processor_state {
 		Started,
 		Paused,
+		Stop,
 		Stopped
 	};
 
@@ -58,6 +59,7 @@ public:
 	void pause();
 	void stop();
 	void add_block_to_process(shared_ptr<BaseBlock>);
+	bool is_running() const;
 
 private:
 	std::thread processor_thread_;

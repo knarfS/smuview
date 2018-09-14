@@ -31,6 +31,9 @@
 
 #include "stepblockdialog.hpp"
 #include "src/devices/configurable.hpp"
+#include "src/devices/properties/baseproperty.hpp"
+#include "src/ui/datatypes/basewidget.hpp"
+#include "src/ui/datatypes/datatypehelper.hpp"
 #include "src/widgets/configkeycombobox.hpp"
 #include "src/widgets/configurablecombobox.hpp"
 
@@ -44,12 +47,9 @@ namespace ui {
 namespace processing {
 namespace dialogs {
 
-StepBlockDialog::StepBlockDialog(shared_ptr<Session> session,
-		shared_ptr<devices::Configurable> configurable,
-		QWidget *parent) :
+StepBlockDialog::StepBlockDialog(shared_ptr<Session> session, QWidget *parent) :
 	QDialog(parent),
-	session_(session),
-	configurable_(configurable)
+	session_(session)
 {
 	assert(configurable);
 
@@ -69,42 +69,33 @@ void StepBlockDialog::setup_ui()
 	QVBoxLayout *main_layout = new QVBoxLayout();
 
 	// General stuff
-	QFormLayout *form_layout = new QFormLayout();
+	form_layout_ = new QFormLayout();
 	name_edit_ = new QLineEdit();
-	form_layout->addRow(tr("Name"), name_edit_);
+	form_layout_->addRow(tr("Name"), name_edit_);
 	configurable_box_ = new widgets::ConfigurableComboBox(session_);
-	form_layout->addRow(tr("Channel (?)"), configurable_box_);
+	form_layout_->addRow(tr("Channel (?)"), configurable_box_);
 	config_key_box_ = new widgets::ConfigKeyComboBox(
 		configurable_box_->selected_configurable(), false, true, false);
-	form_layout->addRow(tr("Control (?)"), config_key_box_);
-	start_value_ = new QDoubleSpinBox();
-	start_value_->setSuffix(QString(" %1").arg("V"));
-	start_value_->setDecimals(3);
-	start_value_->setMinimum(0);
-	start_value_->setMaximum(100);
-	start_value_->setSingleStep(0.01);
-	form_layout->addRow(tr("Start value"), start_value_);
-	end_value_ = new QDoubleSpinBox();
-	//end_value_->setSuffix(QString(" %1").arg("V"));
-	end_value_->setDecimals(3);
-	end_value_->setMinimum(0);
-	end_value_->setMaximum(100);
-	end_value_->setSingleStep(0.01);
-	form_layout->addRow(tr("End value"), end_value_);
-	step_size_ = new QDoubleSpinBox();
-	//step_size_->setSuffix(QString(" %1").arg("V"));
-	step_size_->setDecimals(3);
-	step_size_->setMinimum(0);
-	step_size_->setMaximum(100);
-	step_size_->setSingleStep(0.01);
-	form_layout->addRow(tr("Step size"), step_size_);
-	delay_ms_ = new QSpinBox();
-	delay_ms_->setSuffix(QString(" %1").arg("ms"));
-	delay_ms_->setMinimum(0);
-	delay_ms_->setMaximum(10000);
-	delay_ms_->setSingleStep(1);
-	form_layout->addRow(tr("Delay"), delay_ms_);
-	main_layout->addLayout(form_layout);
+	form_layout_->addRow(tr("Control (?)"), config_key_box_);
+
+	property_ = configurable_box_->selected_configurable()->get_property(
+		config_key_box_->selected_config_key());
+
+	start_value_box_ = datatypes::datatypehelper::get_widget_for_property(
+		property_, false, false);
+	form_layout_->addRow(tr("Start value"), start_value_box_);
+	end_value_box_ = datatypes::datatypehelper::get_widget_for_property(
+		property_, false, false);
+	form_layout_->addRow(tr("End value"), end_value_box_);
+	step_size_box_ = datatypes::datatypehelper::get_widget_for_property(
+		property_, false, false);
+	form_layout_->addRow(tr("Step size"), step_size_box_);
+
+	delay_ms_box_ = new QSpinBox();
+	delay_ms_box_->setSuffix(QString(" %1").arg("ms"));
+	delay_ms_box_->setMinimum(0);
+	form_layout_->addRow(tr("Delay"), delay_ms_box_);
+	main_layout->addLayout(form_layout_);
 
 	// Buttons
 	button_box_ = new QDialogButtonBox(
@@ -119,7 +110,10 @@ void StepBlockDialog::setup_ui()
 void StepBlockDialog::connect_signals()
 {
 	connect(configurable_box_, SIGNAL(currentIndexChanged(int)),
-		this, SLOT(configurable_changed()));
+		this, SLOT(on_configurable_changed()));
+	connect(config_key_box_,
+		SIGNAL(current_config_key_changed(const devices::ConfigKey)),
+		this, SLOT(on_config_key_changed()));
 }
 
 void StepBlockDialog::accept()
@@ -135,40 +129,73 @@ void StepBlockDialog::accept()
 	QDialog::accept();
 }
 
-shared_ptr<devices::Configurable> StepBlockDialog::configurable() const
+
+shared_ptr<devices::properties::BaseProperty> StepBlockDialog::property() const
 {
-	return configurable_box_->selected_configurable();
+	return property_;
 }
 
-devices::ConfigKey StepBlockDialog::config_key() const
+QVariant StepBlockDialog::start_value() const
 {
-	return config_key_box_->selected_config_key();
+	const datatypes::BaseWidget *base_widget =
+		dynamic_cast<datatypes::BaseWidget *>(start_value_box_);
+	return base_widget->variant_value();
 }
 
-double StepBlockDialog::start_value() const
+QVariant StepBlockDialog::end_value() const
 {
-	return start_value_->value();
+	const datatypes::BaseWidget *base_widget =
+		dynamic_cast<datatypes::BaseWidget *>(end_value_box_);
+	return base_widget->variant_value();
 }
 
-double StepBlockDialog::end_value() const
+QVariant StepBlockDialog::step_size() const
 {
-	return end_value_->value();
+	const datatypes::BaseWidget *base_widget =
+		dynamic_cast<datatypes::BaseWidget *>(step_size_box_);
+	return base_widget->variant_value();
 }
 
-double StepBlockDialog::step_size() const
+uint StepBlockDialog::delay_ms() const
 {
-	return step_size_->value();
+	return delay_ms_box_->value();
 }
 
-int StepBlockDialog::delay_ms() const
-{
-	return delay_ms_->value();
-}
-
-void StepBlockDialog::configurable_changed()
+void StepBlockDialog::on_configurable_changed()
 {
 	config_key_box_->set_configurable(
 		configurable_box_->selected_configurable());
+}
+
+void StepBlockDialog::on_config_key_changed()
+{
+	auto c = configurable_box_->selected_configurable();
+	auto ck = config_key_box_->selected_config_key();
+	property_ = c->get_property(ck);
+
+	// Dummy widgets if there is no widget for this property. Otherwise the NULL
+	// widget can't be replaced with another property widget.
+	QWidget *new_start_value_box = new QWidget();
+	QWidget *new_end_value_box = new QWidget();
+	QWidget *new_step_size_box = new QWidget();
+	if (property_ != nullptr) {
+		new_start_value_box = datatypes::datatypehelper::get_widget_for_property(
+			property_, false, false);
+		new_end_value_box = datatypes::datatypehelper::get_widget_for_property(
+			property_, false, false);
+		new_step_size_box = datatypes::datatypehelper::get_widget_for_property(
+			property_, false, false);
+	}
+
+	form_layout_->replaceWidget(start_value_box_, new_start_value_box);
+	form_layout_->replaceWidget(end_value_box_, new_end_value_box);
+	form_layout_->replaceWidget(step_size_box_, new_step_size_box);
+	delete start_value_box_;
+	delete end_value_box_;
+	delete step_size_box_;
+	start_value_box_ = new_start_value_box;
+	end_value_box_ = new_end_value_box;
+	step_size_box_ = new_step_size_box;
 }
 
 } // namespace dialogs

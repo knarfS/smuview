@@ -41,7 +41,6 @@ using std::vector;
 namespace sv {
 
 namespace devices {
-class Configurable;
 namespace properties {
 class BaseProperty;
 }
@@ -61,12 +60,9 @@ class SetValueBlockDialog : public QDialog
 	Q_OBJECT
 
 public:
-	SetValueBlockDialog(shared_ptr<Session> session,
-		QWidget *parent = nullptr);
+	SetValueBlockDialog(shared_ptr<Session> session, QWidget *parent = nullptr);
 
 	shared_ptr<devices::properties::BaseProperty> property() const;
-	shared_ptr<devices::Configurable> configurable() const;
-	devices::ConfigKey config_key() const;
 	QVariant value() const;
 
 private:

@@ -24,6 +24,7 @@
 #include <vector>
 
 #include <QObject>
+#include <QVariant>
 
 #include "src/devices/deviceutil.hpp"
 #include "src/processing/baseblock.hpp"
@@ -34,7 +35,9 @@ using std::vector;
 namespace sv {
 
 namespace devices {
-class Configurable;
+namespace properties {
+class BaseProperty;
+}
 }
 
 namespace processing {
@@ -45,28 +48,30 @@ class StepBlock :
 	Q_OBJECT
 
 public:
-	StepBlock();
+	StepBlock(const shared_ptr<Processor> processor);
 
 public:
 	void init();
 	void run();
 
-	void set_configurable(shared_ptr<devices::Configurable>);
-	void set_config_key(devices::ConfigKey);
-	void set_start_value(double start_value);
-	void set_end_value(double end_value);
-	void set_step_size(double step_size);
-	void set_delay_ms(int delay_ms);
+	shared_ptr<devices::properties::BaseProperty> property() const;
+	void set_property(shared_ptr<devices::properties::BaseProperty>);
+	QVariant start_value() const;
+	void set_start_value(QVariant);
+	QVariant end_value() const;
+	void set_end_value(QVariant);
+	QVariant step_size() const;
+	void set_step_size(QVariant);
+	uint delay_ms() const;
+	void set_delay_ms(uint);
 
 private:
-	shared_ptr<devices::Configurable> configurable_;
-	devices::ConfigKey config_key_;
-
-	double start_value_;
-	double end_value_;
-	double step_size_;
-	int delay_ms_;
-	long step_cnt_;
+	shared_ptr<devices::properties::BaseProperty> property_;
+	QVariant start_value_;
+	QVariant end_value_;
+	QVariant step_size_;
+	uint delay_ms_;
+	ulong step_cnt_;
 
 	/*
 	vector<double> values_;

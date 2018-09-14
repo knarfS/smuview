@@ -33,7 +33,6 @@ using std::shared_ptr;
 namespace sv {
 
 namespace devices {
-class Configurable;
 namespace properties {
 class BaseProperty;
 }
@@ -47,7 +46,7 @@ class SetValueBlock :
 	Q_OBJECT
 
 public:
-	SetValueBlock();
+	SetValueBlock(const shared_ptr<Processor> processor);
 
 public:
 	void init();

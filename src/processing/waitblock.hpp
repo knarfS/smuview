@@ -20,12 +20,13 @@
 #ifndef PROCESSING_WAITBLOCK_HPP
 #define PROCESSING_WAITBLOCK_HPP
 
+#include <memory>
+
 #include <QObject>
 
 #include "src/processing/baseblock.hpp"
 
 using std::shared_ptr;
-using std::vector;
 
 namespace sv {
 
@@ -37,7 +38,7 @@ class WaitBlock :
 	Q_OBJECT
 
 public:
-	WaitBlock();
+	WaitBlock(const shared_ptr<Processor> processor);
 
 public:
 	void init();

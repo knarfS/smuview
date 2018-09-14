@@ -18,11 +18,15 @@
  */
 
 #include "baseblock.hpp"
+#include "src/processing/processor.hpp"
+
+using std::shared_ptr;
 
 namespace sv {
 namespace processing {
 
-BaseBlock::BaseBlock()
+BaseBlock::BaseBlock(const shared_ptr<Processor> processor) :
+	processor_(processor)
 {
 }
 
@@ -30,14 +34,14 @@ BaseBlock::~BaseBlock()
 {
 }
 
-void BaseBlock::set_name(QString name)
-{
-	name_ = name;
-}
-
 QString BaseBlock::name()
 {
 	return name_;
+}
+
+void BaseBlock::set_name(QString name)
+{
+	name_ = name;
 }
 
 } // namespace processing

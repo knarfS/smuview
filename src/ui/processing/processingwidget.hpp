@@ -74,6 +74,8 @@ private Q_SLOTS:
 	void on_action_stop_process_triggered();
 	void on_action_add_thread_triggered();
 	void on_action_save_process_triggered();
+	void on_processor_started();
+	void on_processor_finished();
 	void show_processing_error(const QString text, const QString info_text);
 
 };

@@ -158,7 +158,7 @@ void ProcessThreadWidget::on_action_add_set_value_block_triggered()
 		return;
 
 	shared_ptr<sv::processing::SetValueBlock> block =
-		make_shared<sv::processing::SetValueBlock>();
+		make_shared<sv::processing::SetValueBlock>(processor_);
 	block->set_property(dlg.property());
 	block->set_value(dlg.value());
 	processor_->add_block_to_process(block);
@@ -175,14 +175,13 @@ void ProcessThreadWidget::on_action_add_get_value_block_triggered()
 
 void ProcessThreadWidget::on_action_add_step_block_triggered()
 {
-	dialogs::StepBlockDialog dlg(session_, nullptr);
+	dialogs::StepBlockDialog dlg(session_);
 	if (!dlg.exec())
 		return;
 
 	shared_ptr<sv::processing::StepBlock> block =
-		make_shared<sv::processing::StepBlock>();
-	block->set_configurable(dlg.configurable());
-	block->set_config_key(dlg.config_key());
+		make_shared<sv::processing::StepBlock>(processor_);
+	block->set_property(dlg.property());
 	block->set_start_value(dlg.start_value());
 	block->set_end_value(dlg.end_value());
 	block->set_step_size(dlg.step_size());
@@ -206,7 +205,7 @@ void ProcessThreadWidget::on_action_add_wait_block_triggered()
 		return;
 
 	shared_ptr<sv::processing::WaitBlock> block =
-		make_shared<sv::processing::WaitBlock>();
+		make_shared<sv::processing::WaitBlock>(processor_);
 	block->set_wait_ms(dlg.wait_ms());
 	processor_->add_block_to_process(block);
 

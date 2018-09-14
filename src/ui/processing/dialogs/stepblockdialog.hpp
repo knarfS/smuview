@@ -24,9 +24,10 @@
 
 #include <QDialog>
 #include <QDialogButtonBox>
-#include <QDoubleSpinBox>
+#include <QFormLayout>
 #include <QLineEdit>
 #include <QSpinBox>
+#include <QVariant>
 
 #include "src/session.hpp"
 #include "src/devices/deviceutil.hpp"
@@ -36,7 +37,9 @@ using std::shared_ptr;
 namespace sv {
 
 namespace devices {
-class Configurable;
+namespace properties {
+class BaseProperty;
+}
 }
 
 namespace widgets {
@@ -53,28 +56,26 @@ class StepBlockDialog : public QDialog
 	Q_OBJECT
 
 public:
-	StepBlockDialog(shared_ptr<Session> session,
-		shared_ptr<devices::Configurable> configurable,
-		QWidget *parent = nullptr);
+	StepBlockDialog(shared_ptr<Session> session, QWidget *parent = nullptr);
 
-	shared_ptr<devices::Configurable> configurable() const;
-	devices::ConfigKey config_key() const;
-	double start_value() const;
-	double end_value() const;
-	double step_size() const;
-	int delay_ms() const;
+	shared_ptr<devices::properties::BaseProperty> property() const;
+	QVariant start_value() const;
+	QVariant end_value() const;
+	QVariant step_size() const;
+	uint delay_ms() const;
 
 private:
 	shared_ptr<Session> session_;
-	shared_ptr<devices::Configurable> configurable_;
+	shared_ptr<devices::properties::BaseProperty> property_;
 
+	QFormLayout *form_layout_;
 	QLineEdit *name_edit_;
 	sv::widgets::ConfigurableComboBox *configurable_box_;
 	sv::widgets::ConfigKeyComboBox *config_key_box_;
-	QDoubleSpinBox *start_value_;
-	QDoubleSpinBox *end_value_;
-	QDoubleSpinBox *step_size_;
-	QSpinBox *delay_ms_;
+	QWidget *start_value_box_;
+	QWidget *end_value_box_;
+	QWidget *step_size_box_;
+	QSpinBox *delay_ms_box_;
 	QDialogButtonBox *button_box_;
 
 	void setup_ui();
@@ -84,7 +85,8 @@ public Q_SLOTS:
 	void accept() override;
 
 private Q_SLOTS:
-	void configurable_changed();
+	void on_configurable_changed();
+	void on_config_key_changed();
 
 };
 

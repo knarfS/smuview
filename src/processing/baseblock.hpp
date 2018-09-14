@@ -20,28 +20,36 @@
 #ifndef PROCESSING_BASEBLOCK_HPP
 #define PROCESSING_BASEBLOCK_HPP
 
+#include <memory>
+
 #include <QObject>
 #include <QString>
 
+using std::shared_ptr;
+
 namespace sv {
 namespace processing {
+
+class Processor;
 
 class BaseBlock : public QObject
 {
 	Q_OBJECT
 
 public:
-	BaseBlock();
+	BaseBlock(const shared_ptr<Processor> processor);
 	virtual ~BaseBlock();
 
 public:
 	virtual void init() = 0;
 	virtual void run() = 0;
 
-	void set_name(QString);
 	QString name();
+	void set_name(QString);
 
 protected:
+	// TODO: Circular reference.... Is it ok?
+	const shared_ptr<Processor> processor_;
 	QString name_;
 
 };

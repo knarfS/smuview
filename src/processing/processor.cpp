@@ -38,7 +38,8 @@ using std::vector;
 namespace sv {
 namespace processing {
 
-Processor::Processor()
+Processor::Processor() :
+	processor_state_(processor_state::Stopped)
 {
 }
 
@@ -48,7 +49,7 @@ Processor::~Processor()
 
 void Processor::start(function<void (const QString)> error_handler)
 {
-	if (processor_state_ != processor_state::Started)
+	if (processor_state_ == processor_state::Started)
 		stop();
 
 	processor_start_timestamp_ =
@@ -59,6 +60,8 @@ void Processor::start(function<void (const QString)> error_handler)
 		&Processor::processor_thread_proc, this, error_handler);
 
 	processor_state_ = processor_state::Started;
+
+	processor_thread_.detach();
 }
 
 void Processor::pause()
@@ -71,12 +74,11 @@ void Processor::pause()
 
 void Processor::stop()
 {
-	if (processor_state_ == processor_state::Stopped)
+	if (processor_state_ == processor_state::Stop ||
+			processor_state_ == processor_state::Stopped)
 		return;
 
-	if (processor_state_ != processor_state::Stopped) {
-		//sr_session_->stop();
-	}
+	processor_state_ = processor_state::Stop;
 
 	// Check that processing stopped
 	if (processor_thread_.joinable())
@@ -89,6 +91,11 @@ void Processor::add_block_to_process(shared_ptr<BaseBlock> block)
 {
 	// TODO: sync and/or lock modification in gui
 	processing_blocks_.push_back(block);
+}
+
+bool Processor::is_running() const
+{
+	return processor_state_ == processor_state::Started;
 }
 
 void Processor::processor_thread_proc(
@@ -115,6 +122,7 @@ void Processor::processor_thread_proc(
 		}
 		catch (sigrok::Error &e) {
 			processor_state_ = processor_state::Stopped;
+			Q_EMIT processor_finished();
 			error_handler(e.what());
 			return;
 		}
@@ -123,11 +131,6 @@ void Processor::processor_thread_proc(
 	processor_state_ = processor_state::Stopped;
 	Q_EMIT processor_finished();
 	qWarning() << "Processor finished";
-
-	/*
-	if (out_of_memory_)
-		error_handler(tr("Out of memory, acquisition stopped."));
-	*/
 }
 
 } // namespace processing

@@ -20,9 +20,13 @@
 #ifndef PROCESSING_SEQUENCEBLOCK_HPP
 #define PROCESSING_SEQUENCEBLOCK_HPP
 
+#include <memory>
+
 #include <QObject>
 
 #include "src/processing/baseblock.hpp"
+
+using std::shared_ptr;
 
 namespace sv {
 namespace processing {
@@ -33,7 +37,7 @@ class SequenceBlock :
 	Q_OBJECT
 
 public:
-	SequenceBlock();
+	SequenceBlock(const shared_ptr<Processor> processor);
 
 public:
 	virtual void init() = 0;
