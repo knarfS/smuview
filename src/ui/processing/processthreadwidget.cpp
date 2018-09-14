@@ -20,6 +20,7 @@
 #include <QDebug>
 #include <QFormLayout>
 #include <QMenu>
+#include <QMessageBox>
 #include <QToolButton>
 #include <QVBoxLayout>
 #include <QWidget>
@@ -32,9 +33,11 @@
 #include "src/processing/processor.hpp"
 #include "src/processing/setvalueblock.hpp"
 #include "src/processing/stepblock.hpp"
+#include "src/processing/userinputblock.hpp"
 #include "src/processing/waitblock.hpp"
 #include "src/ui/processing/dialogs/setvalueblockdialog.hpp"
 #include "src/ui/processing/dialogs/stepblockdialog.hpp"
+#include "src/ui/processing/dialogs/userinputblockdialog.hpp"
 #include "src/ui/processing/dialogs/waitblockdialog.hpp"
 #include "src/ui/processing/items/sequencesinitem.hpp"
 #include "src/ui/processing/items/stepitem.hpp"
@@ -217,6 +220,24 @@ void ProcessThreadWidget::on_action_add_wait_block_triggered()
 
 void ProcessThreadWidget::on_action_add_user_input_block_triggered()
 {
+	dialogs::UserInputBlockDialog dlg(session_);
+	if (!dlg.exec())
+		return;
+
+	shared_ptr<sv::processing::UserInputBlock> block =
+		make_shared<sv::processing::UserInputBlock>(processor_);
+	block->set_message(dlg.message());
+	processor_->add_block_to_process(block);
+
+	connect(block.get(), SIGNAL(show_message(QString)),
+		this, SLOT(on_show_user_message(const QString)));
+	connect(this, SIGNAL(user_message_closed()),
+		block.get(), SLOT(on_message_closed()));
+
+	ui::processing::items::StepItem *item =
+		new ui::processing::items::StepItem();
+	item->set_block(block);
+	process_block_list_->addItem(item);
 }
 
 void ProcessThreadWidget::on_action_add_create_signal_block_triggered()
@@ -225,6 +246,18 @@ void ProcessThreadWidget::on_action_add_create_signal_block_triggered()
 
 void ProcessThreadWidget::on_action_remove_block_triggered()
 {
+}
+
+void ProcessThreadWidget::on_show_user_message(const QString message)
+{
+	QMessageBox msg(this);
+	msg.setText(tr("User Input Block"));
+	msg.setInformativeText(message);
+	msg.setStandardButtons(QMessageBox::Ok);
+	msg.setIcon(QMessageBox::Question);
+	msg.exec();
+
+	Q_EMIT user_message_closed();
 }
 
 } // namespace processing

@@ -66,7 +66,7 @@ private:
 
 	void setup_ui();
 	void setup_toolbar();
-	void processing_error(const QString text, const QString info_text);
+	void processing_error(const QString, const QString);
 
 private Q_SLOTS:
 	void on_action_start_process_triggered();
@@ -76,7 +76,7 @@ private Q_SLOTS:
 	void on_action_save_process_triggered();
 	void on_processor_started();
 	void on_processor_finished();
-	void show_processing_error(const QString text, const QString info_text);
+	void show_processing_error(const QString, const QString);
 
 };
 

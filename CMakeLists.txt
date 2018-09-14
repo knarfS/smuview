@@ -175,6 +175,7 @@ set(smuview_SOURCES
   src/processing/sequenceblock.cpp
   src/processing/setvalueblock.cpp
   src/processing/stepblock.cpp
+  src/processing/userinputblock.cpp
   src/processing/waitblock.cpp
 
   src/ui/data/quantitycombobox.cpp
@@ -217,6 +218,7 @@ set(smuview_SOURCES
   src/ui/processing/processthreadwidget.cpp
   src/ui/processing/dialogs/setvalueblockdialog.cpp
   src/ui/processing/dialogs/stepblockdialog.cpp
+  src/ui/processing/dialogs/userinputblockdialog.cpp
   src/ui/processing/dialogs/waitblockdialog.cpp
   src/ui/processing/items/sequencesinitem.cpp
   src/ui/processing/items/stepitem.cpp

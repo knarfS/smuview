@@ -191,6 +191,7 @@ void ProcessingWidget::on_processor_finished()
 {
 	action_start_process_->setChecked(false);
 	action_pause_process_->setChecked(false);
+
 	action_stop_process_->setChecked(true);
 }
 

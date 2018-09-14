@@ -85,6 +85,20 @@ private Q_SLOTS:
 	void on_action_add_create_signal_block_triggered();
 	void on_action_remove_block_triggered();
 
+public Q_SLOTS:
+	/**
+	 * This slot is for the user input block, because the block runs in a
+	 * seperate thread and thou cannot handle/show any GUI stuff.
+	 */
+	void on_show_user_message(const QString);
+
+Q_SIGNALS:
+	/**
+	 * This signal is for the user input block, because the block runs in a
+	 * seperate thread and thou cannot handle/show any GUI stuff.
+	 */
+	void user_message_closed();
+
 };
 
 } // namespace processing
