@@ -28,12 +28,7 @@
 #include "src/util.hpp"
 #include "src/processing/baseblock.hpp"
 
-using std::bad_alloc;
-using std::dynamic_pointer_cast;
-using std::lock_guard;
-using std::make_shared;
 using std::shared_ptr;
-using std::vector;
 
 namespace sv {
 namespace processing {
@@ -116,6 +111,9 @@ void Processor::processor_thread_proc(
 	// Run each block of each "run at startup" sub process
 	for (auto block : processing_blocks_) {
 		try {
+			if (processor_state_ == processor_state::Stop)
+				break;
+
 			// TODO: central preinit?
 			block->init();
 			block->run();
