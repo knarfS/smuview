@@ -19,7 +19,6 @@ ToDo
 	- default check for getable/setable in get/set functions without assert(false)?
 	- add button to sink/source/demodmm/measurement-ControlViews to control non default config keys.
 	- Move is_controllable() to tab/view? Make more generic...
-	- Missing sigok::ConfigKey::OFFSET
 	- Refactore:
 		- src/data -> src/signals
 		- src/data/datautil.cpp -> src/data/
@@ -61,6 +60,7 @@ Done
 	- make the sink/source/demodmm/measurement-ControlViews more generic
 	- signals for controls (views) to work with processing
 	- Cache stuff
+	- Missing sigok::ConfigKey::OFFSET
 - namespace src/data/datautil.hpp
 
 ------------------------
@@ -101,6 +101,7 @@ libsigrok
 - Add channel.meaning.mq, channel.meaning.mqflags, channel.meaning.unit (+channel.fixed) to PPU and load channels, to make it easy to init signals in smuview
 - Re:load Pro: Don't use "monitor 200", Instead "read" values every aquisition cycle with serial "read line blocking" and use a mutex around every read, write and write+read
 - HP3478A: Implement SPoll,
+- Add missing confg key sigok::ConfigKey::OFFSET
 
 Done
 ----

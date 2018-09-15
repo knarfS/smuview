@@ -103,9 +103,11 @@ void DemoDMMControlView::init_values()
 	if (configurable_->has_get_config(ConfigKey::Amplitude))
 		amplitude_control_->change_value(
 			configurable_->get_config<double>(ConfigKey::Amplitude));
+	/*
 	if (configurable_->has_get_config(ConfigKey::Offset))
 		offset_control_->change_value(
 			configurable_->get_config<double>(ConfigKey::Offset));
+	*/
 }
 
 void DemoDMMControlView::on_quantity_set()
@@ -127,7 +129,8 @@ void DemoDMMControlView::on_amplitude_changed(const double value)
 
 void DemoDMMControlView::on_offset_changed(const double value)
 {
-	configurable_->set_config(ConfigKey::Offset, value);
+	(void)value;
+	//configurable_->set_config(ConfigKey::Offset, value);
 }
 
 } // namespace views
