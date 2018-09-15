@@ -35,7 +35,7 @@ namespace widgets {
 namespace plot {
 
 TimeCurve::TimeCurve(shared_ptr<data::AnalogSignal> signal) :
-	BaseCurve(),
+	BaseCurve(CurveType::TimeCurve),
 	signal_(signal)
 {
 }

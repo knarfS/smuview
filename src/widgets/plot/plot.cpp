@@ -230,9 +230,23 @@ int Plot::init_x_axis(widgets::plot::BaseCurve *curve)
 	assert(curve);
 
 	int x_axis_id = QwtPlot::xBottom;
-	double min = curve->boundingRect().left();
-	double max = curve->boundingRect().right();
 	QString title = curve->x_data_title();
+	double min;
+	double max;
+	if (curve->curve_type() == CurveType::TimeCurve &&
+			curve->is_relative_time()) {
+		min = 0.;
+		max = add_time_;
+	}
+	else {
+		min = curve->boundingRect().left();
+		max = curve->boundingRect().right();
+	}
+
+	/*
+	qWarning() << "Plot::init_x_axis(): title = " << title << ", x_axis_id = "
+		<< x_axis_id << ", min = " << min << ", max = " << max;
+	*/
 
 	this->enableAxis(x_axis_id);
 	this->setAxisTitle(x_axis_id, title);
@@ -412,18 +426,18 @@ void Plot::update_intervals()
 	bool intervals_changed = false;
 
 	for (plot::BaseCurve *curve : curves_) {
-		//qWarning() << "Plot::timerEvent() for " << curve->name();
+		qWarning() << "Plot::update_intervals() for " << curve->name();
 		QRectF boundaries = curve->boundingRect();
 
 		intervals_changed = update_x_interval(curve);
 
 		// Check for y axis resize
 		QwtInterval *y_interval = curve_y_interval_map_[curve];
-		//qWarning() << "Plot::timerEvent() for " << curve->name() << " b.bottom < y_int.min = " << boundaries.bottom() << " < " << y_interval->minValue();
-		//qWarning() << "Plot::timerEvent() for " << curve->name() << " b.top > y_int.max = " << boundaries.top() << " > " << y_interval->maxValue();
+		//qWarning() << "Plot::update_intervals() for " << curve->name() << " b.bottom < y_int.min = " << boundaries.bottom() << " < " << y_interval->minValue();
+		//qWarning() << "Plot::update_intervals() for " << curve->name() << " b.top > y_int.max = " << boundaries.top() << " > " << y_interval->maxValue();
 		if (boundaries.bottom() < y_interval->minValue() ||
 				boundaries.top() > y_interval->maxValue()) {
-			qWarning() << "Plot::timerEvent(): increment_y_interval()";
+			qWarning() << "Plot::update_intervals(): increment_y_interval()";
 			increment_y_interval(curve, boundaries);
 			intervals_changed = true;
 		}
@@ -439,18 +453,30 @@ bool Plot::update_x_interval(plot::BaseCurve *curve)
 		return false;
 
 	QRectF boundaries = curve->boundingRect();
-
 	if (update_mode_ == PlotUpdateMode::Additive) {
+		/*
+		 * TODO: Why is x_interval_.maxValue() == 29 in the beginning??
+		qWarning() << "Plot::update_x_interval() for b.left >= x_int.min = " <<
+			boundaries.left() << " >= " << x_interval_.minValue();
+		qWarning() << "Plot::update_x_interval() for b.right <= x_int.max = " <<
+			boundaries.right() << " <= " << x_interval_.maxValue();
+		*/
 		if (boundaries.left() >= x_interval_.minValue() &&
 				boundaries.right() <= x_interval_.maxValue())
 			return false;
 
-		//qWarning() << "Plot::timerEvent() for b.left < x_int.min = " << boundaries.left() << " < " << x_interval_.minValue();
+		/*
+		qWarning() << "Plot::timerEvent() for b.left < x_int.min = " <<
+			boundaries.left() << " < " << x_interval_.minValue();
+		*/
 		if (boundaries.left() < x_interval_.minValue()) {
 			// TODO: Calculate proper interval_length
 			x_interval_.setMinValue(x_interval_.minValue());
 		}
-		//qWarning() << "Plot::timerEvent() for b.right > x_int.max = " << boundaries.right() << " > " << x_interval_.maxValue();
+		/*
+		qWarning() << "Plot::timerEvent() for b.right > x_int.max = " <<
+			boundaries.right() << " > " << x_interval_.maxValue();
+		*/
 		if (boundaries.right() > x_interval_.maxValue()) {
 			// TODO: Calculate proper interval_length
 			x_interval_.setMaxValue(x_interval_.maxValue() + add_time_);

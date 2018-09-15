@@ -26,10 +26,16 @@ namespace sv {
 namespace widgets {
 namespace plot {
 
-BaseCurve::BaseCurve() :
+BaseCurve::BaseCurve(CurveType curve_type) :
 	QwtSeriesData<QPointF>(),
+	curve_type_(curve_type),
 	relative_time_(true)
 {
+}
+
+CurveType BaseCurve::curve_type() const
+{
+	return curve_type_;
 }
 
 QColor BaseCurve::color() const

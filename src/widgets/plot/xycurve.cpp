@@ -35,7 +35,7 @@ namespace plot {
 
 XYCurve::XYCurve(shared_ptr<data::AnalogSignal> x_signal,
 		shared_ptr<data::AnalogSignal> y_signal) :
-	BaseCurve(),
+	BaseCurve(CurveType::XYCurve),
 	x_signal_(x_signal),
 	y_signal_(y_signal)
 {

@@ -30,11 +30,22 @@ namespace sv {
 namespace widgets {
 namespace plot {
 
+enum class CurveType {
+	TimeCurve,
+	XYCurve
+};
+
 class BaseCurve : public QwtSeriesData<QPointF>
 {
 
 public:
-	BaseCurve();
+	BaseCurve(CurveType curve_type);
+	virtual ~BaseCurve() = default;
+
+	CurveType curve_type() const;
+	QColor color() const;
+	void set_relative_time(bool is_relative_time);
+	bool is_relative_time() const;
 
 	virtual QPointF sample(size_t i) const = 0;
 	virtual size_t size() const = 0;
@@ -48,11 +59,8 @@ public:
 	virtual QString y_data_unit() const = 0;
 	virtual QString y_data_title() const = 0;
 
-	QColor color() const;
-	void set_relative_time(bool is_relative_time);
-	bool is_relative_time() const;
-
 protected:
+	const CurveType curve_type_;
 	QColor color_;
 	bool relative_time_;
 
