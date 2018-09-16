@@ -99,8 +99,7 @@ private:
 	void update_curves();
 	void update_intervals();
 	bool update_x_interval(plot::BaseCurve *curve);
-	void increment_x_interval(plot::BaseCurve *curve, QRectF boundaries);
-	void increment_y_interval(plot::BaseCurve *curve, QRectF boundaries);
+	bool update_y_interval(plot::BaseCurve *curve);
 
 	vector<plot::BaseCurve *> curves_;
 	map<plot::BaseCurve *, QwtPlotCurve *> plot_curve_map_;
