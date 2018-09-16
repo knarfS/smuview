@@ -44,10 +44,6 @@ BaseSignal::BaseSignal(
 	unit_(unit),
 	parent_channel_(parent_channel)
 {
-	assert(quantity);
-	//assert(quantity_flags);
-	assert(unit);
-
 	/* TODO
 	if (!util::is_valid_sr_quantity(sr_quantity_))
 		assert("Invalide quantity for BaseSignal()");

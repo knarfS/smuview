@@ -97,15 +97,26 @@ public:
 	typedef map<data::Quantity, vector<set<data::QuantityFlag>>>
 		measured_quantity_list_t;
 
-	bool has_get_config(devices::ConfigKey key) const;
-	template<typename T> T get_config(devices::ConfigKey key) const;
+	bool has_get_config(devices::ConfigKey) const;
+	template<typename T> T get_config(devices::ConfigKey) const;
+	/**
+	 * Special handling for Conatiner Variants (especially std::tuple).
+	 * Tuple types are only supported with version >= 2.52 of glibmm, but we
+	 * need to use version 2.42, because of mxe.
+	 */
+	Glib::VariantContainerBase get_container_config(devices::ConfigKey) const;
 
-	bool has_set_config(devices::ConfigKey key) const;
-	template<typename T> void set_config(devices::ConfigKey key, const T value);
+	bool has_set_config(devices::ConfigKey) const;
+	template<typename T> void set_config(devices::ConfigKey, const T);
+	/**
+	 * Special handling for Conatiner Variants (especially std::tuple).
+	 * Tuple types are only supported with version >= 2.52 of glibmm, but we
+	 * need to use version 2.42, because of mxe.
+	 */
+	void set_container_config(devices::ConfigKey, vector<Glib::VariantBase>);
 
-	bool has_list_config(devices::ConfigKey key) const;
-	bool list_config(devices::ConfigKey key,
-		Glib::VariantContainerBase &gvariant);
+	bool has_list_config(devices::ConfigKey) const;
+	bool list_config(devices::ConfigKey, Glib::VariantContainerBase &);
 
 	QString name() const;
 
@@ -118,7 +129,7 @@ public:
 
 	bool is_controllable() const;
 
-	void feed_in_meta(shared_ptr<sigrok::Meta> sr_meta);
+	void feed_in_meta(shared_ptr<sigrok::Meta>);
 
 private:
 	const shared_ptr<sigrok::Configurable> sr_configurable_;

@@ -148,8 +148,6 @@ void Configurable::init()
 
 bool Configurable::has_get_config(devices::ConfigKey key)  const
 {
-	assert(key);
-
 	if (getable_configs_.count(key))
 		return true;
 	return false;
@@ -160,19 +158,15 @@ template int32_t Configurable::get_config(devices::ConfigKey) const;
 template uint64_t Configurable::get_config(devices::ConfigKey) const;
 template double Configurable::get_config(devices::ConfigKey) const;
 template std::string Configurable::get_config(devices::ConfigKey) const;
-// TODO: This doesn't work: with glibmm >= 2.54.1 but should
-template tuple<uint32_t, uint64_t> Configurable::get_config(devices::ConfigKey) const;
-//template Configurable::measured_quantity_t Configurable::get_config(devices::ConfigKey) const;
 template<typename T> T Configurable::get_config(devices::ConfigKey key) const
 {
-	assert(key);
 	assert(sr_configurable_);
 
 	const sigrok::ConfigKey *sr_key =
 		devices::deviceutil::get_sr_config_key(key);
 
 	if (!sr_configurable_->config_check(sr_key, sigrok::Capability::GET)) {
-		qWarning() << "Configurable::read_config(): No key / no getable key " <<
+		qWarning() << "Configurable::get_config(): No key / no getable key " <<
 			devices::deviceutil::format_config_key(key);
 		assert(false);
 	}
@@ -195,10 +189,46 @@ template<typename T> T Configurable::get_config(devices::ConfigKey key) const
 	*/
 }
 
+Glib::VariantContainerBase Configurable::get_container_config(
+	devices::ConfigKey key) const
+{
+	assert(sr_configurable_);
+
+	const sigrok::ConfigKey *sr_key =
+		devices::deviceutil::get_sr_config_key(key);
+
+	if (!sr_configurable_->config_check(sr_key, sigrok::Capability::GET)) {
+		qWarning() <<
+			"Configurable::get_container_config(): No key / no getable key " <<
+			devices::deviceutil::format_config_key(key);
+		assert(false);
+	}
+
+	// TODO: implement like get_list
+	/*
+	try {
+	*/
+	Glib::VariantBase gvar = sr_configurable_->config_get(sr_key);
+	if (gvar.is_container()) {
+		Glib::VariantContainerBase gcontainer =
+			Glib::VariantBase::cast_dynamic<Glib::VariantContainerBase>(gvar);
+		return gcontainer;
+	}
+	return Glib::VariantContainerBase();
+	/*
+	}
+	catch (sigrok::Error &error) {
+		qWarning() << "Configurable::list_config(): Failed to get key " <<
+			devices::deviceutil::format_config_key(key) << ". " << error.what();
+		assert(false);
+	}
+
+	return ;
+	*/
+}
+
 bool Configurable::has_set_config(devices::ConfigKey key) const
 {
-	assert(key);
-
 	if (setable_configs_.count(key))
 		return true;
 	return false;
@@ -209,23 +239,16 @@ template void Configurable::set_config(devices::ConfigKey, const int32_t);
 template void Configurable::set_config(devices::ConfigKey, const uint64_t);
 template void Configurable::set_config(devices::ConfigKey, const double);
 template void Configurable::set_config(devices::ConfigKey, const std::string);
-// This is working with glibmm < 2.52 (mxe uses glibmm 2.42.0), but libsigrok expects 'r' (this is '{ut}')
-template void Configurable::set_config(devices::ConfigKey, const pair<uint32_t, uint64_t>);
-// This is working with glibmm >= 2.52 (but mxe uses glibmm 2.42.0). Working with libsigrok (expects 'r')
-template void Configurable::set_config(devices::ConfigKey, const tuple<uint32_t, uint64_t>);
-// This is for special get/set for measured quantity
-//template void Configurable::set_config(devices::ConfigKey, const measured_quantity_t);
 template<typename T> void Configurable::set_config(
 	devices::ConfigKey key, const T value)
 {
-	assert(key);
 	assert(sr_configurable_);
 
 	const sigrok::ConfigKey *sr_key =
 		devices::deviceutil::get_sr_config_key(key);
 
 	if (!sr_configurable_->config_check(sr_key, sigrok::Capability::SET)) {
-		qWarning() << "Configurable::write_config(): No key / no setable key  " <<
+		qWarning() << "Configurable::set_config(): No key / no setable key  " <<
 			devices::deviceutil::format_config_key(key);
 		assert(false);
 	}
@@ -234,15 +257,39 @@ template<typename T> void Configurable::set_config(
 		sr_configurable_->config_set(sr_key, Glib::Variant<T>::create(value));
 	}
 	catch (sigrok::Error &error) {
-		qWarning() << "Configurable::list_config(): Failed to set key " <<
+		qWarning() << "Configurable::set_config(): Failed to set key " <<
+			devices::deviceutil::format_config_key(key) << ". " << error.what();
+	}
+}
+
+void Configurable::set_container_config(
+	devices::ConfigKey key, vector<Glib::VariantBase> childs)
+{
+	assert(sr_configurable_);
+
+	const sigrok::ConfigKey *sr_key =
+		devices::deviceutil::get_sr_config_key(key);
+
+	if (!sr_configurable_->config_check(sr_key, sigrok::Capability::SET)) {
+		qWarning() <<
+			"Configurable::set_container_config(): No key / no setable key  " <<
+			devices::deviceutil::format_config_key(key);
+		assert(false);
+	}
+
+	try {
+		sr_configurable_->config_set(
+			sr_key, Glib::VariantContainerBase::create_tuple(childs));
+	}
+	catch (sigrok::Error &error) {
+		qWarning() <<
+			"Configurable::set_container_config(): Failed to set key " <<
 			devices::deviceutil::format_config_key(key) << ". " << error.what();
 	}
 }
 
 bool Configurable::has_list_config(devices::ConfigKey key) const
 {
-	assert(key);
-
 	if (listable_configs_.count(key))
 		return true;
 	return false;
@@ -251,14 +298,14 @@ bool Configurable::has_list_config(devices::ConfigKey key) const
 bool Configurable::list_config(devices::ConfigKey key,
 	Glib::VariantContainerBase &gvariant)
 {
-	assert(key);
 	assert(sr_configurable_);
 
 	const sigrok::ConfigKey *sr_key =
 		devices::deviceutil::get_sr_config_key(key);
 
 	if (!sr_configurable_->config_check(sr_key, sigrok::Capability::LIST)) {
-		qWarning() << "Configurable::list_config(): No key / no listable key " <<
+		qWarning() <<
+			"Configurable::list_config(): No key / no listable key " <<
 			devices::deviceutil::format_config_key(key);
 		return false;
 	}

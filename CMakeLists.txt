@@ -62,10 +62,7 @@ endif()
 #-------------------------------------------------------------------------------
 
 list(APPEND PKGDEPS glib-2.0>=2.28.0)
-# TODO: glibmm must be >=2.52.0 until we find a solution for
-#       SR_CONF_MEASURED_QUANTITY in configurable.cpp
-#list(APPEND PKGDEPS glibmm-2.4>=2.28.0)
-list(APPEND PKGDEPS glibmm-2.4>=2.52.0)
+list(APPEND PKGDEPS glibmm-2.4>=2.42.0)
 
 list(APPEND PKGDEPS libsigrokcxx>=0.6.0)
 

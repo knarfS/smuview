@@ -22,6 +22,7 @@
 
 #include <map>
 #include <memory>
+#include <set>
 
 #include <glib.h>
 
@@ -34,6 +35,7 @@
 #include "src/devices/deviceutil.hpp"
 
 using std::map;
+using std::set;
 using std::shared_ptr;
 
 namespace sv {

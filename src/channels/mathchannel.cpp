@@ -52,10 +52,6 @@ MathChannel::MathChannel(
 	quantity_flags_(quantity_flags),
 	unit_(unit)
 {
-	assert(quantity_);
-	//assert(quantity_flags_);
-	assert(unit_);
-
 	channel_type_ = ChannelType::MathChannel;
 	has_fixed_signal_ = true;
 	name_ = channel_name;
