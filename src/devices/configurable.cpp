@@ -393,9 +393,11 @@ void Configurable::feed_in_meta(shared_ptr<sigrok::Meta> sr_meta)
 		devices::ConfigKey config_key =
 			devices::deviceutil::get_config_key(entry.first);
 
-		if (!properties_.count(config_key))
-			assert("Unknown config key " <<
-				QString::fromStdString(entry.first->name()) << " received");
+		if (!properties_.count(config_key)) {
+			qWarning() << "Configurable::feed_in_meta(): Unknown config key " <<
+				QString::fromStdString(entry.first->name()) << " received";
+			return;
+		}
 
 		properties_[config_key]->on_value_changed(entry.second);
 
