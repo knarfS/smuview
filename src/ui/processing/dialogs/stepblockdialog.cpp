@@ -17,7 +17,6 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cassert>
 #include <memory>
 
 #include <QComboBox>
@@ -51,8 +50,6 @@ StepBlockDialog::StepBlockDialog(shared_ptr<Session> session, QWidget *parent) :
 	QDialog(parent),
 	session_(session)
 {
-	assert(configurable);
-
 	setup_ui();
 	connect_signals();
 }

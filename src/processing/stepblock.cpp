@@ -17,6 +17,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <cassert>
 #include <chrono>
 #include <thread>
 
@@ -57,6 +58,8 @@ void StepBlock::init()
 
 void StepBlock::run()
 {
+	assert(property_);
+
 	//QVariant::Type type = start_value_.type();
 	QVariant act_value = start_value_;
 	while (act_value <= end_value_ && processor_->is_running()) {

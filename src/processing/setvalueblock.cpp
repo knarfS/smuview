@@ -44,7 +44,7 @@ void SetValueBlock::init()
 void SetValueBlock::run()
 {
 	assert(property_);
-	assert(value_);
+	assert(!value_.isNull() && value_.isValid());
 
 	//qWarning() << "SetValueBlock: value = " << value_;
 
