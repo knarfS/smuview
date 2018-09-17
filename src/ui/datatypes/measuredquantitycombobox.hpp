@@ -25,8 +25,7 @@
 #include <QComboBox>
 #include <QVariant>
 
-#include "src/devices/configurable.hpp"
-
+#include "src/data/datautil.hpp"
 #include "src/ui/datatypes/basewidget.hpp"
 
 using std::shared_ptr;
@@ -64,7 +63,7 @@ private Q_SLOTS:
 	/**
 	 * Signal handling for Widget -> Property
 	 */
-	void value_changed(const devices::Configurable::measured_quantity_t);
+	void value_changed(const data::measured_quantity_t);
 	/**
 	 * Signal handling for Property -> Widget
 	 */

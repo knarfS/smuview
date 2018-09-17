@@ -38,8 +38,8 @@ namespace sv {
 namespace views {
 
 SinkControlView::SinkControlView(const Session &session,
-	shared_ptr<devices::Configurable> configurable, QWidget *parent) :
-		BaseView(session, parent),
+		shared_ptr<devices::Configurable> configurable, QWidget *parent) :
+	BaseView(session, parent),
 	configurable_(configurable)
 {
 	setup_ui();

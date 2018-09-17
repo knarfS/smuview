@@ -17,9 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <set>
 #include <stdexcept>
+#include <vector>
 
 #include <QDebug>
+#include <QString>
 #include <QVariant>
 
 #include "measuredquantitycombobox.hpp"
@@ -30,9 +33,9 @@
 #include "src/devices/properties/measuredquantityproperty.hpp"
 
 using std::dynamic_pointer_cast;
+using std::set;
 
-Q_DECLARE_METATYPE(sv::data::Quantity)
-Q_DECLARE_METATYPE(sv::devices::Configurable::measured_quantity_t)
+Q_DECLARE_METATYPE(sv::data::measured_quantity_t)
 
 namespace sv {
 namespace ui {
@@ -68,19 +71,17 @@ void MeasuredQuantityComboBox::setup_ui()
 				property_);
 
 		auto mq_list = mq_prop->list_values();
-		for (auto pair : mq_list) {
-			data::Quantity qunatity = pair.first;
+		for (auto mq : mq_list) {
 			this->addItem(
-				data::datautil::format_quantity(qunatity),
-				QVariant::fromValue(qunatity));
+				data::datautil::format_measured_quantity(mq),
+				QVariant::fromValue(mq));
 		}
 	}
 	else if (property_ != nullptr && property_->is_getable()) {
-		data::Quantity qunatity = property_->value().
-			value<devices::Configurable::measured_quantity_t>().first;
+		auto mq = property_->value().value<data::measured_quantity_t>();
 		this->addItem(
-			data::datautil::format_quantity(qunatity),
-			QVariant::fromValue(qunatity));
+			data::datautil::format_measured_quantity(mq),
+			QVariant::fromValue(mq));
 	}
 	if (property_ == nullptr || !property_->is_setable())
 		this->setDisabled(true);
@@ -122,19 +123,19 @@ QVariant MeasuredQuantityComboBox::variant_value() const
 }
 
 void MeasuredQuantityComboBox::value_changed(
-	const devices::Configurable::measured_quantity_t value)
+	const data::measured_quantity_t value)
 {
 	if (property_ != nullptr)
 		property_->change_value(QVariant().fromValue(value));
 }
 
-void MeasuredQuantityComboBox::on_value_changed(const QVariant value)
+void MeasuredQuantityComboBox::on_value_changed(const QVariant qvar)
 {
 	// Disconnect Widget -> Property signal to prevent echoing
 	disconnect_widget_2_prop_signals();
 
-	this->setCurrentText(data::datautil::format_quantity(
-		value.value<devices::Configurable::measured_quantity_t>().first));
+	this->setCurrentText(data::datautil::format_measured_quantity(
+		qvar.value<data::measured_quantity_t>()));
 
 	connect_widget_2_prop_signals();
 }

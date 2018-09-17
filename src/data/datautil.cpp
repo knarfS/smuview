@@ -198,6 +198,17 @@ QString format_quantity_flags(set<QuantityFlag> quantity_flags,
 	return qfs_str;
 }
 
+QString format_measured_quantity(measured_quantity_t measured_quantity)
+{
+	Quantity q = measured_quantity.first;
+	set<QuantityFlag> qfs = measured_quantity.second;
+	QString q_qfs_str = format_quantity(q);
+	if (!qfs.empty())
+		q_qfs_str.append(" ").append(format_quantity_flags(qfs, " "));
+
+	return q_qfs_str;
+}
+
 QString format_unit(Unit unit)
 {
 	if (unit_name_map.count(unit) > 0)

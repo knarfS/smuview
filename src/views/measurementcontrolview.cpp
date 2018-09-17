@@ -17,27 +17,15 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <set>
-#include <utility>
-
-#include <QApplication>
 #include <QDebug>
-#include <QHBoxLayout>
-#include <QPushButton>
-#include <QVariant>
 #include <QVBoxLayout>
 
 #include "measurementcontrolview.hpp"
 #include "src/session.hpp"
-#include "src/data/datautil.hpp"
+#include "src/devices/configurable.hpp"
 #include "src/devices/deviceutil.hpp"
-#include "src/devices/hardwaredevice.hpp"
+#include "src/ui/datatypes/measuredquantitycombobox.hpp"
 
-Q_DECLARE_METATYPE(sv::data::Quantity)
-Q_DECLARE_METATYPE(std::set<sv::data::QuantityFlag>)
-
-using std::make_pair;
-using std::set;
 using sv::devices::ConfigKey;
 
 namespace sv {
@@ -48,13 +36,7 @@ MeasurementControlView::MeasurementControlView(const Session &session,
 	BaseView(session, parent),
 	configurable_(configurable)
 {
-	// TODO: Use Property!
-	//configurable_->list_config_mq(
-	//	ConfigKey::MeasuredQuantity, measured_quantity_list_);
-
 	setup_ui();
-	init_values(); // Must be called before connect_signals()!
-	connect_signals();
 }
 
 QString MeasurementControlView::title() const
@@ -64,101 +46,14 @@ QString MeasurementControlView::title() const
 
 void MeasurementControlView::setup_ui()
 {
-	QVBoxLayout *layout = new QVBoxLayout();
-	QHBoxLayout *mq_layout = new QHBoxLayout();
+	QHBoxLayout *layout = new QHBoxLayout();
 
-	quantity_box_ = new QComboBox();
-	if (configurable_->has_list_config(ConfigKey::MeasuredQuantity)) {
-		for (auto pair : measured_quantity_list_) {
-			data::Quantity qunatity = pair.first;
-			quantity_box_->addItem(
-				data::datautil::format_quantity(qunatity),
-				QVariant::fromValue(qunatity));
-		}
-	}
-	mq_layout->addWidget(quantity_box_, 0);
-
-	quantity_flags_box_ = new QComboBox();
-	mq_layout->addWidget(quantity_flags_box_, 0);
-	layout->addItem(mq_layout);
-
-	set_button_ = new QPushButton();
-	set_button_->setText(tr("Set"));
-	layout->addWidget(set_button_);
-
-	layout->addStretch(1);
+	measured_quantity_box_ = new ui::datatypes::MeasuredQuantityComboBox(
+		configurable_->get_property(ConfigKey::MeasuredQuantity), true, true);
+	layout->addWidget(measured_quantity_box_);
 
 	this->centralWidget_->setLayout(layout);
 }
 
-void MeasurementControlView::connect_signals()
-{
-	// Private
-	connect(quantity_box_, SIGNAL(currentIndexChanged(const QString)),
-		this, SLOT(on_quantity_changed()));
-
-	// Control elements -> Device
-	connect(set_button_, SIGNAL(clicked(bool)), this, SLOT(on_quantity_set()));
-
-	// Device -> control elements
-}
-
-void MeasurementControlView::init_values()
-{
-	// TODO: Use Property!
-	/*
-	if (configurable_->has_get_config(ConfigKey::MeasuredQuantity)) {
-		actual_measured_quantity_ = configurable_->get_measured_quantity();
-		for (int i = 0; i < quantity_box_->count(); ++i) {
-			QVariant data = quantity_box_->itemData(i);
-			auto item_q = data.value<data::Quantity>();
-			if (item_q == actual_measured_quantity_.first) {
-				quantity_box_->setCurrentIndex(i);
-				on_quantity_changed();
-				break;
-			}
-		}
-		for (int i = 0; i < quantity_flags_box_->count(); ++i) {
-			QVariant data = quantity_flags_box_->itemData(i);
-			auto item_qfs = data.value<set<data::QuantityFlag>>();
-			if (item_qfs == actual_measured_quantity_.second) {
-				quantity_flags_box_->setCurrentIndex(i);
-				break;
-			}
-		}
-
-	}
-	*/
-}
-
-void MeasurementControlView::on_quantity_changed()
-{
-	quantity_flags_box_->clear();
-
-	QVariant data = quantity_box_->currentData();
-	data::Quantity quantity = data.value<data::Quantity>();
-
-	for (auto qf_set : measured_quantity_list_[quantity]) {
-		quantity_flags_box_->addItem(
-			data::datautil::format_quantity_flags(qf_set, QString(" ")),
-			QVariant::fromValue(qf_set));
-	}
-}
-
-void MeasurementControlView::on_quantity_set()
-{
-	QVariant q_data = quantity_box_->currentData();
-	data::Quantity quantity = q_data.value<data::Quantity>();
-	QVariant qf_data = quantity_flags_box_->currentData();
-	set<data::QuantityFlag> quantity_flags =
-		qf_data.value<set<data::QuantityFlag>>();
-
-	auto mq_pair = make_pair(quantity, quantity_flags);
-	(void)mq_pair;
-	//TODO: Use Property!
-	//configurable_->set_measured_quantity(mq_pair);
-}
-
 } // namespace views
 } // namespace sv
-

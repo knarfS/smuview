@@ -25,6 +25,7 @@
 #include <map>
 #include <set>
 #include <vector>
+#include <utility>
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
@@ -32,6 +33,7 @@
 #include <QString>
 
 using std::map;
+using std::pair;
 using std::set;
 using std::vector;
 
@@ -207,6 +209,8 @@ enum class Unit
 	Piece,
 	Unknown,
 };
+
+typedef pair<Quantity, set<QuantityFlag>> measured_quantity_t;
 
 namespace datautil {
 
@@ -721,6 +725,15 @@ QString format_quantity_flag(QuantityFlag quantity_flag);
  */
 QString format_quantity_flags(set<QuantityFlag> quantity_flags,
 	const QString seperator);
+
+/**
+ * Formats a measured_quantity_t (pair<Quantity, set<QunatityFlag>>) to a string
+ *
+ * @param measured_quantity The measured_quantity.
+ *
+ * @return The formated measured_quantity.
+ */
+QString format_measured_quantity(measured_quantity_t measured_quantity);
 
 /**
  * Formats a Unit to a string

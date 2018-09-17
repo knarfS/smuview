@@ -20,23 +20,18 @@
 #ifndef DEVICES_PROPERTIES_MEASUREDQUANTITYPROPERTY_HPP
 #define DEVICES_PROPERTIES_MEASUREDQUANTITYPROPERTY_HPP
 
-#include <map>
 #include <memory>
-#include <set>
-
-#include <glib.h>
+#include <vector>
 
 #include <QObject>
-#include <QStringList>
 #include <QVariant>
 
+#include "src/data/datautil.hpp"
 #include "src/devices/properties/baseproperty.hpp"
 #include "src/devices/configurable.hpp"
-#include "src/devices/deviceutil.hpp"
 
-using std::map;
-using std::set;
 using std::shared_ptr;
+using std::vector;
 
 namespace sv {
 namespace devices {
@@ -52,11 +47,11 @@ public:
 
 public:
 	QVariant value() const;
-	Configurable::measured_quantity_t measured_quantity_value() const;
-	Configurable::measured_quantity_list_t list_values() const;
+	data::measured_quantity_t measured_quantity_value() const;
+	vector<data::measured_quantity_t> list_values() const;
 
 private:
-	Configurable::measured_quantity_list_t measured_quantity_list_;
+	vector<data::measured_quantity_t> measured_quantity_list_;
 
 	bool list_config();
 

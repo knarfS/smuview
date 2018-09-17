@@ -21,27 +21,24 @@
 #define VIEWS_MEASUREMENTCONTROLVIEW_HPP
 
 #include <memory>
-#include <set>
 
-#include <QComboBox>
-#include <QPushButton>
-#include <QString>
-
-#include "src/devices/configurable.hpp"
 #include "src/views/baseview.hpp"
 
-using std::map;
-using std::set;
 using std::shared_ptr;
-
-namespace sigrok {
-class Quantity;
-class QuantityFlag;
-}
 
 namespace sv {
 
 class Session;
+
+namespace devices {
+class Configurable;
+}
+
+namespace ui {
+namespace datatypes {
+class MeasuredQuantityComboBox;
+}
+}
 
 namespace views {
 
@@ -58,24 +55,10 @@ public:
 
 private:
 	shared_ptr<devices::Configurable> configurable_;
-	devices::Configurable::measured_quantity_list_t measured_quantity_list_;
-	devices::Configurable::measured_quantity_t actual_measured_quantity_;
 
-	QComboBox *quantity_box_; // TODO widgets::
-	QComboBox *quantity_flags_box_; // TODO widgets::
-	QPushButton *set_button_;
+	ui::datatypes::MeasuredQuantityComboBox *measured_quantity_box_;
 
 	void setup_ui();
-	void connect_signals();
-	void init_values();
-
-protected:
-
-public Q_SLOTS:
-
-private Q_SLOTS:
-	void on_quantity_changed();
-	void on_quantity_set();
 
 };
 
@@ -83,4 +66,3 @@ private Q_SLOTS:
 } // namespace sv
 
 #endif // VIEWS_MEASUREMENTCONTROLVIEW_HPP
-

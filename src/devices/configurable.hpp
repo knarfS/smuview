@@ -23,14 +23,13 @@
 #include <map>
 #include <memory>
 #include <set>
-#include <tuple>
 #include <utility>
+#include <vector>
 
 #include <glib.h>
 
 #include <QObject>
 #include <QString>
-#include <QStringList>
 #include <QVariant>
 
 #include "src/data/datautil.hpp"
@@ -42,7 +41,6 @@ using std::map;
 using std::pair;
 using std::set;
 using std::shared_ptr;
-using std::tuple;
 using std::vector;
 
 namespace sigrok {
@@ -91,11 +89,6 @@ public:
 	 * Must be called after instantiation and not from the ctor.
 	 */
 	void init();
-
-	typedef pair<data::Quantity, set<data::QuantityFlag>>
-		measured_quantity_t;
-	typedef map<data::Quantity, vector<set<data::QuantityFlag>>>
-		measured_quantity_list_t;
 
 	bool has_get_config(devices::ConfigKey) const;
 	template<typename T> T get_config(devices::ConfigKey) const;

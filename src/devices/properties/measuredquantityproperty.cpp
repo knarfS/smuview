@@ -17,8 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <set>
 #include <stdexcept>
 #include <utility>
+#include <vector>
+
+#include <glib.h>
 
 #include <QDebug>
 
@@ -27,8 +31,10 @@
 #include "src/devices/configurable.hpp"
 
 using std::make_pair;
+using std::set;
+using std::vector;
 
-Q_DECLARE_METATYPE(sv::devices::Configurable::measured_quantity_t)
+Q_DECLARE_METATYPE(sv::data::measured_quantity_t)
 
 namespace sv {
 namespace devices {
@@ -54,7 +60,7 @@ QVariant MeasuredQuantityProperty::value() const
  *
  *       return get_config<std::tuple<uint32_t, uint64_t>>(sigrok::ConfigKey);
  */
-Configurable::measured_quantity_t
+data::measured_quantity_t
 MeasuredQuantityProperty::measured_quantity_value() const
 {
 	Glib::VariantContainerBase gvar =
@@ -82,8 +88,7 @@ MeasuredQuantityProperty::measured_quantity_value() const
 	return make_pair(quantity, quantity_flags);
 }
 
-Configurable::measured_quantity_list_t
-MeasuredQuantityProperty::list_values() const
+vector<data::measured_quantity_t> MeasuredQuantityProperty::list_values() const
 {
 	return measured_quantity_list_;
 }
@@ -99,16 +104,12 @@ bool MeasuredQuantityProperty::list_config()
 		uint32_t sr_q = Glib::VariantBase::cast_dynamic
 			<Glib::Variant<uint32_t>>(gvar.get_child(0)).get();
 		data::Quantity quantity = data::datautil::get_quantity(sr_q);
-
-		if (!measured_quantity_list_.count(quantity)) {
-			measured_quantity_list_.insert(
-				make_pair(quantity, vector<set<data::QuantityFlag>>()));
-		}
-
 		uint64_t sr_qflags = Glib::VariantBase::cast_dynamic
 			<Glib::Variant<uint64_t>>(gvar.get_child(1)).get();
-		measured_quantity_list_[quantity].push_back(
-			data::datautil::get_quantity_flags(sr_qflags));
+		set<data::QuantityFlag> quantity_flags =
+			data::datautil::get_quantity_flags(sr_qflags);
+
+		measured_quantity_list_.push_back(make_pair(quantity, quantity_flags));
 	}
 
 	return true;
@@ -122,8 +123,7 @@ bool MeasuredQuantityProperty::list_config()
  */
 void MeasuredQuantityProperty::change_value(const QVariant qvar)
 {
-	Configurable::measured_quantity_t mq =
-		qvar.value<Configurable::measured_quantity_t>();
+	data::measured_quantity_t mq = qvar.value<data::measured_quantity_t>();
 
 	uint32_t sr_q_id = data::datautil::get_sr_quantity_id(mq.first);
 	Glib::VariantBase gvar_q = Glib::Variant<uint32_t>::create(sr_q_id);

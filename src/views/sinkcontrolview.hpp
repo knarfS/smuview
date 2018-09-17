@@ -22,9 +22,6 @@
 
 #include <memory>
 
-#include <QComboBox>
-#include <QVariant>
-
 #include "src/devices/deviceutil.hpp"
 #include "src/views/baseview.hpp"
 

@@ -22,8 +22,6 @@
 
 #include <memory>
 
-#include <QVariant>
-
 #include "src/devices/deviceutil.hpp"
 #include "src/views/baseview.hpp"
 
