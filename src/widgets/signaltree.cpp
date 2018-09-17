@@ -126,7 +126,7 @@ void SignalTree::add_device(shared_ptr<devices::BaseDevice> device,
 	bool expanded)
 {
 	QTreeWidgetItem *device_item = new QTreeWidgetItem();
-	device_item->setIcon(0, QIcon(":/icons/smuview.ico"));
+	device_item->setIcon(0, QIcon(":/icons/smuview.png"));
 	device_item->setText(0, device->full_name());
 	this->addTopLevelItem(device_item);
 	this->setFirstItemColumnSpanned(device_item, true);
@@ -158,8 +158,9 @@ void SignalTree::add_channel(shared_ptr<channels::BaseChannel> channel,
 		if (!chg_item) {
 			// Channel is in a channel group, add group first
 			chg_item = new QTreeWidgetItem();
-			chg_item->setIcon(0, QIcon::fromTheme(
-				"document-open-folder", QIcon(":/icons/smuview.ico")));
+			chg_item->setIcon(0,
+				QIcon::fromTheme("document-open-folder",
+				QIcon(":/icons/document-open-folder.png")));
 			chg_item->setText(0, channel_group_name);
 			parent->addChild(chg_item);
 		}
@@ -190,7 +191,8 @@ void SignalTree::add_channel(shared_ptr<channels::BaseChannel> channel,
 			this, SLOT(on_signal_added(shared_ptr<data::BaseSignal>)));
 	}
 	ch_item->setIcon(0,
-		QIcon::fromTheme("office-chart-area", QIcon(":/icons/smuview.ico")));
+		QIcon::fromTheme("office-chart-area",
+		QIcon(":/icons/office-chart-area.png")));
 	ch_item->setText(0, channel->name());
 	ch_item->setData(0, Qt::UserRole, QVariant::fromValue(channel));
 	parent->addChild(ch_item);
@@ -209,7 +211,8 @@ void SignalTree::add_signal(shared_ptr<data::BaseSignal> signal,
 		signal_item->setCheckState(0, Qt::Unchecked);
 	}
 	signal_item->setIcon(0,
-		QIcon::fromTheme("office-chart-line", QIcon(":/icons/smuview.ico")));
+		QIcon::fromTheme("office-chart-line",
+		QIcon(":/icons/office-chart-line.png")));
 	signal_item->setText(0, signal->name());
 	signal_item->setData(0, Qt::UserRole, QVariant::fromValue(signal));
 	parent->addChild(signal_item);

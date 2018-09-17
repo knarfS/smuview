@@ -13,6 +13,7 @@ ToDo
 - Autoscale plot
 - Save session, save all data (gnuplot, octave, ...)
 - namespace src/data/datautil.hpp
+- Breeze icons action/labplot-* for plots?
 
 ------------------------
 

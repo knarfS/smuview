@@ -92,8 +92,8 @@ void ProcessingWidget::setup_toolbar()
 
 	action_save_process_->setText(tr("Save process"));
 	action_save_process_->setIcon(
-		QIcon::fromTheme("document-save-as",
-		QIcon(":/icons/document-save-as.png")));
+		QIcon::fromTheme("document-save",
+		QIcon(":/icons/document-save.png")));
 	connect(action_save_process_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_start_process_triggered()));
 

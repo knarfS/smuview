@@ -253,7 +253,8 @@ void MainWindow::setup_ui()
 
 	// Tab Toolbar
 	add_device_button_ = new QToolButton();
-	add_device_button_->setIcon(QIcon::fromTheme("document-new",
+	add_device_button_->setIcon(
+		QIcon::fromTheme("document-new",
 		QIcon(":/icons/document-new.png")));
 	add_device_button_->setToolTip(tr("Add new device"));
 	add_device_button_->setAutoRaise(true);
@@ -261,8 +262,9 @@ void MainWindow::setup_ui()
 		this, SLOT(on_action_add_device_tab_triggered()));
 
 	add_user_tab_button_ = new QToolButton();
-	add_user_tab_button_->setIcon(QIcon::fromTheme("tab-new",
-		QIcon(":/icons/tab-new.png")));
+	add_user_tab_button_->setIcon(
+		QIcon::fromTheme("tab-new-background",
+		QIcon(":/icons/tab-new-background.png")));
 	add_user_tab_button_->setToolTip(tr("Add new user tab"));
 	add_user_tab_button_->setAutoRaise(true);
 	connect(add_user_tab_button_, SIGNAL(clicked(bool)),

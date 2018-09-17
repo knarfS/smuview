@@ -176,7 +176,7 @@ void PlotView::setup_toolbar()
 	action_add_marker_->setText(tr("Add Marker"));
 	action_add_marker_->setIcon(
 		QIcon::fromTheme("snap-orthogonal",
-		QIcon(":/icons/orthogonal.png")));
+		QIcon(":/icons/snap-orthogonal.png")));
 	connect(action_add_marker_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_add_marker_triggered()));
 

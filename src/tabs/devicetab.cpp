@@ -64,8 +64,9 @@ void DeviceTab::setup_toolbar()
 		this, SLOT(on_action_open_triggered()));
 
 	action_save_as_->setText(tr("&Save As..."));
-	action_save_as_->setIcon(QIcon::fromTheme("document-save-as",
-		QIcon(":/icons/document-save-as.png")));
+	action_save_as_->setIcon(
+		QIcon::fromTheme("document-save",
+		QIcon(":/icons/document-save.png")));
 	action_save_as_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
 	connect(action_save_as_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_save_as_triggered()));
@@ -80,16 +81,16 @@ void DeviceTab::setup_toolbar()
 
 	action_add_control_view_->setText(tr("Add &Control..."));
 	action_add_control_view_->setIcon(
-		QIcon::fromTheme("multimedia-volume-control",
-		QIcon(":/icons/multimedia-volume-control.png")));
+		QIcon::fromTheme("mixer-front",
+		QIcon(":/icons/mixer-front.png")));
 	action_add_control_view_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_C));
 	connect(action_add_control_view_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_add_control_view_triggered()));
 
 	action_add_panel_view_->setText(tr("Add &Panel..."));
 	action_add_panel_view_->setIcon(
-		QIcon::fromTheme("video-display",
-		QIcon(":/icons/video-display.png")));
+		QIcon::fromTheme("chronometer",
+		QIcon(":/icons/chronometer.png")));
 	action_add_panel_view_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_P));
 	connect(action_add_panel_view_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_add_panel_view_triggered()));
@@ -104,8 +105,8 @@ void DeviceTab::setup_toolbar()
 
 	action_add_math_channel_->setText(tr("Add &Math Channel..."));
 	action_add_math_channel_->setIcon(
-		QIcon::fromTheme("accessories-calculator",
-		QIcon(":/icons/accessories-calculator.png")));
+		QIcon::fromTheme("office-chart-line-percentage",
+		QIcon(":/icons/office-chart-line-percentage.png")));
 	action_add_math_channel_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_M));
 	connect(action_add_math_channel_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_add_math_channel_triggered()));
