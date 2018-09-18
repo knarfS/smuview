@@ -21,7 +21,6 @@
 #define VIEWS_DEMODMMCONTROLVIEW_HPP
 
 #include <memory>
-#include <tuple>
 
 #include <QPushButton>
 #include <QString>
@@ -29,12 +28,6 @@
 #include "src/views/baseview.hpp"
 
 using std::shared_ptr;
-using std::tuple;
-
-namespace sigrok {
-class Quantity;
-class QuantityFlag;
-}
 
 namespace sv {
 
@@ -44,10 +37,15 @@ namespace devices {
 class Configurable;
 }
 
+namespace ui {
+namespace datatypes {
+class DoubleControl;
+}
+}
+
 namespace widgets {
 class QuantityComboBox;
 class QuantityFlagsList;
-class ValueControl;
 }
 
 namespace views {
@@ -69,8 +67,8 @@ private:
 	widgets::QuantityComboBox *quantity_box_;
 	widgets::QuantityFlagsList *quantity_flags_list_;
 	QPushButton *set_button_;
-	widgets::ValueControl *amplitude_control_;
-	widgets::ValueControl *offset_control_;
+	ui::datatypes::DoubleControl *amplitude_control_;
+	ui::datatypes::DoubleControl *offset_control_;
 
 	void setup_ui();
 	void connect_signals();
@@ -78,8 +76,6 @@ private:
 
 private Q_SLOTS:
 	void on_quantity_set();
-	void on_amplitude_changed(const double);
-	void on_offset_changed(const double);
 
 };
 

@@ -17,26 +17,25 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <vector>
-
-#include <QApplication>
 #include <QDebug>
 #include <QHBoxLayout>
 #include <QPushButton>
 #include <QVBoxLayout>
+#include <QVariant>
 
 #include "demodmmcontrolview.hpp"
 #include "src/session.hpp"
 #include "src/data/datautil.hpp"
 #include "src/devices/configurable.hpp"
 #include "src/devices/deviceutil.hpp"
-#include "src/devices/hardwaredevice.hpp"
+#include "src/devices/properties/baseproperty.hpp"
+#include "src/ui/datatypes/doublecontrol.hpp"
 #include "src/widgets/quantitycombobox.hpp"
 #include "src/widgets/quantityflagslist.hpp"
-#include "src/widgets/valuecontrol.hpp"
 
-using std::vector;
 using sv::devices::ConfigKey;
+
+Q_DECLARE_METATYPE(sv::data::measured_quantity_t)
 
 namespace sv {
 namespace views {
@@ -73,13 +72,17 @@ void DemoDMMControlView::setup_ui()
 
 	QHBoxLayout *controls_layout = new QHBoxLayout();
 
-	amplitude_control_ = new widgets::ValueControl(
-		tr("Amplitude"), 4, tr("V"), 0, 50, 0.1);
+	amplitude_control_ = new ui::datatypes::DoubleControl(
+		configurable_->get_property(ConfigKey::Amplitude),
+		true, true, tr("Amplitude"));
 	controls_layout->addWidget(amplitude_control_);
 
-	offset_control_ = new widgets::ValueControl(
-		tr("Offset"), 4, tr("V"), -100, 100, 0.1);
+	/*
+	offset_control_ = new ui::datatypes::DoubleControl(
+		configurable_->get_property(ConfigKey::Offset),
+		true, true, tr("Offset"));
 	controls_layout->addWidget(offset_control_);
+	*/
 
 	layout->addLayout(controls_layout);
 
@@ -90,47 +93,23 @@ void DemoDMMControlView::connect_signals()
 {
 	// Control elements -> Device
 	connect(set_button_, SIGNAL(clicked(bool)), this, SLOT(on_quantity_set()));
-	connect(amplitude_control_, SIGNAL(value_changed(const double)),
-		this, SLOT(on_amplitude_changed(const double)));
-	connect(offset_control_, SIGNAL(value_changed(const double)),
-		this, SLOT(on_offset_changed(const double)));
 
 	// Device -> control elements
 }
 
 void DemoDMMControlView::init_values()
 {
-	if (configurable_->has_get_config(ConfigKey::Amplitude))
-		amplitude_control_->change_value(
-			configurable_->get_config<double>(ConfigKey::Amplitude));
-	/*
-	if (configurable_->has_get_config(ConfigKey::Offset))
-		offset_control_->change_value(
-			configurable_->get_config<double>(ConfigKey::Offset));
-	*/
 }
 
 void DemoDMMControlView::on_quantity_set()
 {
-	/*
-	data::Quantity quantity = quantity_box_->selected_sr_quantity();
+	data::Quantity quantity = quantity_box_->selected_quantity();
 	set<data::QuantityFlag> quantity_flags =
-		quantity_flags_list_->selected_sr_quantity_flags();
+		quantity_flags_list_->selected_quantity_flags();
 
-	auto mq_pair = make_pair(quantity, quantity_flags);
-	configurable_->set_measured_quantity(mq_pair);
-	*/
-}
-
-void DemoDMMControlView::on_amplitude_changed(const double value)
-{
-	configurable_->set_config(ConfigKey::Amplitude, value);
-}
-
-void DemoDMMControlView::on_offset_changed(const double value)
-{
-	(void)value;
-	//configurable_->set_config(ConfigKey::Offset, value);
+	auto mq = make_pair(quantity, quantity_flags);
+	auto prop = configurable_->get_property(ConfigKey::MeasuredQuantity);
+	prop->change_value(QVariant().fromValue(mq));
 }
 
 } // namespace views

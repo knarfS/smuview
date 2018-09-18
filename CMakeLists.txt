@@ -198,16 +198,13 @@ set(smuview_SOURCES
   src/widgets/colorbutton.cpp
   src/widgets/configkeycombobox.cpp
   src/widgets/configurablecombobox.cpp
-  src/widgets/controlbutton.cpp
   src/widgets/devicecombobox.cpp
   src/widgets/lcddisplay.cpp
-  src/widgets/optionalvaluecontrol.cpp
   src/widgets/popup.cpp
   src/widgets/quantitycombobox.cpp
   src/widgets/quantityflagslist.cpp
   src/widgets/signaltree.cpp
   src/widgets/unitcombobox.cpp
-  src/widgets/valuecontrol.cpp
   src/widgets/plot/axispopup.cpp
   src/widgets/plot/basecurve.cpp
   src/widgets/plot/plot.cpp
