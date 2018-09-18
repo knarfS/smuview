@@ -60,15 +60,35 @@ void StepBlock::run()
 {
 	assert(property_);
 
-	//QVariant::Type type = start_value_.type();
-	QVariant act_value = start_value_;
-	while (act_value <= end_value_ && processor_->is_running()) {
-		qWarning() << "StepBlock: value = " << act_value <<
+	// TODO: Use only double for now. Maybe int/uint later? String (no/how)?
+	// TODO: Only show Double Keys in dlg! Doublecheck here:
+	//		QVariant::Type type = start_value_.type();
+
+	double act_value = start_value_.toDouble();
+	double start_value = start_value_.toDouble();
+	double end_value = end_value_.toDouble();
+	double step_size = step_size_.toDouble();
+	if (start_value_ > end_value_) {
+		step_size *= -1;
+	}
+
+	bool finished = false;
+	while (!finished && processor_->is_running()) {
+		qWarning() << "StepBlock: act_value = " << act_value <<
 			", delay = " << delay_ms_ << " ms.";
 
-		property_->change_value(act_value);
-		double d_val = act_value.toDouble() + step_size_.toDouble();
-		act_value = QVariant(d_val);
+		property_->change_value(QVariant(act_value));
+		act_value = act_value + step_size;
+
+		if (start_value > end_value) {
+			if (act_value < end_value)
+				finished = true;
+		}
+		else {
+			if (act_value > end_value)
+				finished = true;
+		}
+
 		std::this_thread::sleep_for(std::chrono::milliseconds(delay_ms_));
 	}
 }
