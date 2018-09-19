@@ -194,17 +194,10 @@ set(smuview_SOURCES
   src/views/sinkcontrolview.cpp
   src/views/sourcecontrolview.cpp
   src/views/valuepanelview.cpp
-  src/widgets/channelgroupcombobox.cpp
   src/widgets/colorbutton.cpp
-  src/widgets/configkeycombobox.cpp
-  src/widgets/configurablecombobox.cpp
-  src/widgets/devicecombobox.cpp
   src/widgets/lcddisplay.cpp
   src/widgets/popup.cpp
-  src/widgets/quantitycombobox.cpp
-  src/widgets/quantityflagslist.cpp
   src/widgets/signaltree.cpp
-  src/widgets/unitcombobox.cpp
   src/widgets/plot/axispopup.cpp
   src/widgets/plot/basecurve.cpp
   src/widgets/plot/plot.cpp
@@ -212,6 +205,9 @@ set(smuview_SOURCES
   src/widgets/plot/timecurve.cpp
   src/widgets/plot/xycurve.cpp
 
+  src/ui/data/quantitycombobox.cpp
+  src/ui/data/quantityflagslist.cpp
+  src/ui/data/unitcombobox.cpp
   src/ui/datatypes/basewidget.cpp
   src/ui/datatypes/boolbutton.cpp
   src/ui/datatypes/boolcheckbox.cpp
@@ -226,6 +222,11 @@ set(smuview_SOURCES
   src/ui/datatypes/stringcombobox.cpp
   src/ui/datatypes/thresholdcontrol.cpp
   src/ui/datatypes/uint64spinbox.cpp
+  src/ui/devices/channelcombobox.cpp
+  src/ui/devices/channelgroupcombobox.cpp
+  src/ui/devices/configkeycombobox.cpp
+  src/ui/devices/configurablecombobox.cpp
+  src/ui/devices/devicecombobox.cpp
   src/ui/processing/processingwidget.cpp
   src/ui/processing/processthreadwidget.cpp
   src/ui/processing/blocks/sequencesinblock.cpp

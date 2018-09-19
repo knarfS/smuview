@@ -17,62 +17,54 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UI_DATATYPES_STRINGCOMBOBOX_HPP
-#define UI_DATATYPES_STRINGCOMBOBOX_HPP
+#ifndef UI_DEVICES_SIGNALCOMBOBOX_HPP
+#define UI_DEVICES_SIGNALCOMBOBOX_HPP
 
 #include <memory>
 
 #include <QComboBox>
 #include <QString>
-#include <QVariant>
-
-#include "src/ui/datatypes/basewidget.hpp"
+#include <QWidget>
 
 using std::shared_ptr;
 
 namespace sv {
 
-namespace devices {
-namespace properties {
-class BaseProperty;
+class Session;
+
+namespace channels {
+class BaseChannel;
 }
+
+namespace data {
+class BaseSignal;
 }
 
 namespace ui {
-namespace datatypes {
+namespace devices {
 
-class StringComboBox : public QComboBox, public BaseWidget
+class SignalComboBox : public QComboBox
 {
     Q_OBJECT
 
 public:
-	StringComboBox(
-		shared_ptr<sv::devices::properties::BaseProperty> property,
-		const bool auto_commit, const bool auto_update,
+	SignalComboBox(
+		const Session &session, shared_ptr<sv::channels::BaseChannel> channel,
 		QWidget *parent = nullptr);
 
-	QVariant variant_value() const;
+	void select_signal(shared_ptr<sv::data::BaseSignal> signal);
+	shared_ptr<sv::data::BaseSignal> selected_signal() const;
 
 private:
-	void setup_ui();
-	void connect_signals();
-	void connect_widget_2_prop_signals();
-	void disconnect_widget_2_prop_signals();
+	const Session &session_;
+	shared_ptr<sv::channels::BaseChannel> channel_;
 
-private Q_SLOTS:
-	/**
-	 * Signal handling for Widget -> Property
-	 */
-	void value_changed(const QString);
-	/**
-	 * Signal handling for Property -> Widget
-	 */
-	void on_value_changed(const QVariant);
+	void setup_ui();
 
 };
 
-} // namespace datatypes
+} // namespace devices
 } // namespace ui
-} // namespece sv
+} // namespace sv
 
-#endif // UI_DATATYPES_STRINGCOMBOBOX_HPP
+#endif // UI_DEVICES_SIGNALCOMBOBOX_HPP

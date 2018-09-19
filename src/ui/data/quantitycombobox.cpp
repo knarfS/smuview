@@ -17,45 +17,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WIDGETS_CONFIGURABLECOMBOBOX_HPP
-#define WIDGETS_CONFIGURABLECOMBOBOX_HPP
+#include <QDebug>
+#include <QVariant>
 
-#include <memory>
+#include "quantitycombobox.hpp"
+#include "src/data/datautil.hpp"
 
-#include <QComboBox>
-#include <QWidget>
-
-using std::shared_ptr;
+Q_DECLARE_METATYPE(sv::data::Quantity)
 
 namespace sv {
+namespace ui {
+namespace data {
 
-class Session;
 
-namespace devices {
-class Configurable;
+QuantityComboBox::QuantityComboBox(QWidget *parent) :
+	QComboBox(parent)
+{
+	setup_ui();
 }
 
-namespace widgets {
-
-class ConfigurableComboBox : public QComboBox
+sv::data::Quantity QuantityComboBox::selected_quantity()
 {
-    Q_OBJECT
+	QVariant data = this->currentData();
+	return data.value<sv::data::Quantity>();
+}
 
-public:
-	ConfigurableComboBox(shared_ptr<Session> session,
-		QWidget *parent = nullptr);
+void QuantityComboBox::setup_ui()
+{
+	for (auto q_name_pair : sv::data::datautil::get_quantity_name_map()) {
+		this->addItem(
+			q_name_pair.second, QVariant::fromValue(q_name_pair.first));
+	}
+}
 
-	shared_ptr<devices::Configurable> selected_configurable();
-
-private:
-	shared_ptr<Session> session_;
-
-	void setup_ui();
-
-};
-
-} // namespace widgets
+} // namespace data
+} // namespace ui
 } // namespace sv
-
-#endif // WIDGETS_CONFIGURABLECOMBOBOX_HPP
-

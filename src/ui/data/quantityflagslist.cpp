@@ -28,7 +28,8 @@
 Q_DECLARE_METATYPE(sv::data::QuantityFlag)
 
 namespace sv {
-namespace widgets {
+namespace ui {
+namespace data {
 
 QuantityFlagsList::QuantityFlagsList(QWidget *parent) :
 	QListWidget(parent)
@@ -36,16 +37,16 @@ QuantityFlagsList::QuantityFlagsList(QWidget *parent) :
 	setup_ui();
 }
 
-set<data::QuantityFlag> QuantityFlagsList::selected_quantity_flags()
+set<sv::data::QuantityFlag> QuantityFlagsList::selected_quantity_flags()
 {
-	set<data::QuantityFlag> flags;
+	set<sv::data::QuantityFlag> flags;
 	auto items = this->selectedItems();
 	for (auto item : items) {
 		QVariant data = item->data(Qt::UserRole);
 		if (data.isNull())
 			continue;
 
-		flags.insert(data.value<data::QuantityFlag>());
+		flags.insert(data.value<sv::data::QuantityFlag>());
 	}
 	return flags;
 }
@@ -54,7 +55,7 @@ void QuantityFlagsList::setup_ui()
 {
 	this->setSelectionMode(QListView::MultiSelection);
 
-	for (auto qf_name_pair : data::datautil::get_quantity_flag_name_map()) {
+	for (auto qf_name_pair : sv::data::datautil::get_quantity_flag_name_map()) {
 		QListWidgetItem *item = new QListWidgetItem();
 		item->setText(qf_name_pair.second);
 		item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
@@ -63,6 +64,7 @@ void QuantityFlagsList::setup_ui()
 	}
 }
 
-} // namespace widgets
+} // namespace data
+} // namespace ui
 } // namespace sv
 

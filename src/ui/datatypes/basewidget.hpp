@@ -42,7 +42,7 @@ class BaseWidget
 
 public:
 	BaseWidget(
-		shared_ptr<devices::properties::BaseProperty> property,
+		shared_ptr<sv::devices::properties::BaseProperty> property,
 		const bool auto_commit, const bool auto_update);
 
 	virtual QVariant variant_value() const = 0;
@@ -50,7 +50,7 @@ public:
 protected:
 	const bool auto_commit_;
 	const bool auto_update_;
-	shared_ptr<devices::properties::BaseProperty> property_;
+	shared_ptr<sv::devices::properties::BaseProperty> property_;
 
 protected: // Q_SLOTS
 	/**

@@ -48,15 +48,15 @@ class ThresholdControl : public QGroupBox, public BaseWidget
 
 public:
 	ThresholdControl(
-		shared_ptr<devices::properties::BaseProperty> property,
-		shared_ptr<devices::properties::BaseProperty> bool_prop,
+		shared_ptr<sv::devices::properties::BaseProperty> property,
+		shared_ptr<sv::devices::properties::BaseProperty> bool_prop,
 		const bool auto_commit, const bool auto_update,
 		QString title, QWidget *parent = nullptr);
 
 	QVariant variant_value() const;
 
 private:
-	shared_ptr<devices::properties::BaseProperty> bool_prop_;
+	shared_ptr<sv::devices::properties::BaseProperty> bool_prop_;
 	QString title_;
 
 	BoolButton *button_;

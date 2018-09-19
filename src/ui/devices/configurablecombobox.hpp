@@ -17,34 +17,46 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WIDGETS_UNITCOMBOBOX_HPP
-#define WIDGETS_UNITCOMBOBOX_HPP
+#ifndef UI_DEVICES_CONFIGURABLECOMBOBOX_HPP
+#define UI_DEVICES_CONFIGURABLECOMBOBOX_HPP
+
+#include <memory>
 
 #include <QComboBox>
 #include <QWidget>
 
-#include "src/data/datautil.hpp"
+using std::shared_ptr;
 
 namespace sv {
 
-namespace widgets {
+class Session;
 
-class UnitComboBox : public QComboBox
+namespace devices {
+class Configurable;
+}
+
+namespace ui {
+namespace devices {
+
+class ConfigurableComboBox : public QComboBox
 {
     Q_OBJECT
 
 public:
-	UnitComboBox(QWidget *parent = nullptr);
+	ConfigurableComboBox(shared_ptr<Session> session,
+		QWidget *parent = nullptr);
 
-	data::Unit selected_unit();
+	shared_ptr<sv::devices::Configurable> selected_configurable();
 
 private:
+	shared_ptr<Session> session_;
+
 	void setup_ui();
 
 };
 
-} // namespace widgets
+} // namespace devices
+} // namespace ui
 } // namespace sv
 
-#endif // WIDGETS_UNITCOMBOBOX_HPP
-
+#endif // UI_DEVICES_CONFIGURABLECOMBOBOX_HPP

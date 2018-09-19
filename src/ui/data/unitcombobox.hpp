@@ -17,38 +17,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QComboBox>
-#include <QDebug>
-#include <QVariant>
+#ifndef UI_DATA_UNITCOMBOBOX_HPP
+#define UI_DATA_UNITCOMBOBOX_HPP
 
-#include "unitcombobox.hpp"
+#include <QComboBox>
+#include <QWidget>
+
 #include "src/data/datautil.hpp"
 
-Q_DECLARE_METATYPE(sv::data::Unit)
-
 namespace sv {
-namespace widgets {
+namespace ui {
+namespace data {
 
-UnitComboBox::UnitComboBox(QWidget *parent) :
-	QComboBox(parent)
+class UnitComboBox : public QComboBox
 {
-	setup_ui();
-}
+    Q_OBJECT
 
-data::Unit UnitComboBox::selected_unit()
-{
-	QVariant data = this->currentData();
-	return data.value<data::Unit>();
-}
+public:
+	UnitComboBox(QWidget *parent = nullptr);
 
-void UnitComboBox::setup_ui()
-{
-	for (auto u_name_pair : data::datautil::get_unit_name_map()) {
-		this->addItem(
-			u_name_pair.second, QVariant::fromValue(u_name_pair.first));
-	}
-}
+	sv::data::Unit selected_unit();
 
-} // namespace widgets
+private:
+	void setup_ui();
+
+};
+
+} // namespace data
+} // namespace ui
 } // namespace sv
 
+#endif // UI_DATA_UNITCOMBOBOX_HPP

@@ -17,38 +17,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QDebug>
-#include <QVariant>
+#ifndef UI_DATA_QUANTITYFLAGSLIST_HPP
+#define UI_DATA_QUANTITYFLAGSLIST_HPP
 
-#include "quantitycombobox.hpp"
+#include <set>
+
+#include <QListWidget>
+#include <QWidget>
+
 #include "src/data/datautil.hpp"
 
-Q_DECLARE_METATYPE(sv::data::Quantity)
+using std::set;
 
 namespace sv {
-namespace widgets {
+namespace ui {
+namespace data {
 
-
-QuantityComboBox::QuantityComboBox(QWidget *parent) :
-	QComboBox(parent)
+class QuantityFlagsList : public QListWidget
 {
-	setup_ui();
-}
+    Q_OBJECT
 
-data::Quantity QuantityComboBox::selected_quantity()
-{
-	QVariant data = this->currentData();
-	return data.value<data::Quantity>();
-}
+public:
+	QuantityFlagsList(QWidget *parent = nullptr);
 
-void QuantityComboBox::setup_ui()
-{
-	for (auto q_name_pair : data::datautil::get_quantity_name_map()) {
-		this->addItem(
-			q_name_pair.second, QVariant::fromValue(q_name_pair.first));
-	}
-}
+	set<sv::data::QuantityFlag> selected_quantity_flags();
 
-} // namespace widgets
+private:
+	void setup_ui();
+
+};
+
+} // namespace data
+} // namespace ui
 } // namespace sv
+
+#endif // UI_DATA_QUANTITYFLAGSLIST_HPP
 

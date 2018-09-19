@@ -49,7 +49,7 @@ class DoubleControl : public QGroupBox, public BaseWidget
 
 public:
 	DoubleControl(
-		shared_ptr<devices::properties::BaseProperty> property,
+		shared_ptr<sv::devices::properties::BaseProperty> property,
 		const bool auto_commit, const bool auto_update,
 		QString title, QWidget *parent = nullptr);
 

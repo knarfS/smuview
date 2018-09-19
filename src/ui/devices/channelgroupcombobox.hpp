@@ -17,47 +17,52 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WIDGETS_CONFIGKEYCOMBOBOX_HPP
-#define WIDGETS_CONFIGKEYCOMBOBOX_HPP
+#ifndef UI_DEVICES_CHANNELGROUPCOMBOBOX_HPP
+#define UI_DEVICES_CHANNELGROUPCOMBOBOX_HPP
 
 #include <memory>
 
 #include <QComboBox>
+#include <QString>
 #include <QWidget>
-
-#include "src/devices/deviceutil.hpp"
 
 using std::shared_ptr;
 
 namespace sv {
 
+class Session;
+
 namespace devices {
-class Configurable;
+class BaseDevice;
 }
 
-namespace widgets {
+namespace ui {
+namespace devices {
 
-class ConfigKeyComboBox : public QComboBox
+class ChannelGroupComboBox : public QComboBox
 {
     Q_OBJECT
 
 public:
-	ConfigKeyComboBox(shared_ptr<devices::Configurable> configurable,
-		QWidget *parent = nullptr);
+	ChannelGroupComboBox(const Session &session,
+		shared_ptr<sv::devices::BaseDevice> device, QWidget *parent = nullptr);
 
-	void set_configurable(shared_ptr<devices::Configurable> configurable);
-	devices::ConfigKey selected_config_key();
+	void select_channel_group(QString channel_group);
+	const QString selected_channel_group();
 
 private:
-	shared_ptr<devices::Configurable> configurable_;
-
 	void setup_ui();
-	void fill_config_keys();
+
+	const Session &session_;
+	shared_ptr<sv::devices::BaseDevice> device_;
+
+public Q_SLOTS:
+	void change_device(shared_ptr<sv::devices::BaseDevice> device);
 
 };
 
-} // namespace widgets
+} // namespace devices
+} // namespace ui
 } // namespace sv
 
-#endif // WIDGETS_CONFIGKEYCOMBOBOX_HPP
-
+#endif // UI_DEVICES_CHANNELGROUPCOMBOBOX_HPP

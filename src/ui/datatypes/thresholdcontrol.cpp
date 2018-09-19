@@ -30,8 +30,8 @@ namespace ui {
 namespace datatypes {
 
 ThresholdControl::ThresholdControl(
-		shared_ptr<devices::properties::BaseProperty> property,
-		shared_ptr<devices::properties::BaseProperty> bool_prop,
+		shared_ptr<sv::devices::properties::BaseProperty> property,
+		shared_ptr<sv::devices::properties::BaseProperty> bool_prop,
 		const bool auto_commit, const bool auto_update,
 		QString title, QWidget *parent) :
 	QGroupBox(parent),

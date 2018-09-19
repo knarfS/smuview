@@ -17,33 +17,46 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WIDGETS_QUANTITYCOMBOBOX_HPP
-#define WIDGETS_QUANTITYCOMBOBOX_HPP
+#ifndef UI_DEVICES_DEVICECOMBOBOX_HPP
+#define UI_DEVICES_DEVICECOMBOBOX_HPP
+
+#include <memory>
 
 #include <QComboBox>
 #include <QWidget>
 
-#include "src/data/datautil.hpp"
+using std::shared_ptr;
 
 namespace sv {
-namespace widgets {
 
-class QuantityComboBox : public QComboBox
+class Session;
+
+namespace devices {
+class BaseDevice;
+}
+
+namespace ui {
+namespace devices {
+
+class DeviceComboBox : public QComboBox
 {
     Q_OBJECT
 
 public:
-	QuantityComboBox(QWidget *parent = nullptr);
+	DeviceComboBox(const Session &session, QWidget *parent = nullptr);
 
-	data::Quantity selected_quantity();
+	void select_device(shared_ptr<sv::devices::BaseDevice> device);
+	shared_ptr<sv::devices::BaseDevice> selected_device() const;
 
 private:
 	void setup_ui();
 
+	const Session &session_;
+
 };
 
-} // namespace widgets
+} // namespace devices
+} // namespace ui
 } // namespace sv
 
-#endif // WIDGETS_QUANTITYCOMBOBOX_HPP
-
+#endif // UI_DEVICES_DEVICECOMBOBOX_HPP

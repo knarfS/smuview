@@ -48,7 +48,7 @@ namespace datatypehelper {
  * @return The generic widget for the property type
  */
 QWidget *get_widget_for_property(
-	shared_ptr<devices::properties::BaseProperty>, bool, bool);
+	shared_ptr<sv::devices::properties::BaseProperty>, bool, bool);
 
 } // namespace datatypehelper
 } // namespace datatypes

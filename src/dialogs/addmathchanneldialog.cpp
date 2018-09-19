@@ -38,12 +38,12 @@
 #include "src/channels/multiplysschannel.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/devices/basedevice.hpp"
-#include "src/widgets/channelgroupcombobox.hpp"
-#include "src/widgets/devicecombobox.hpp"
-#include "src/widgets/quantitycombobox.hpp"
-#include "src/widgets/quantityflagslist.hpp"
+#include "src/ui/data/quantitycombobox.hpp"
+#include "src/ui/data/quantityflagslist.hpp"
+#include "src/ui/data/unitcombobox.hpp"
+#include "src/ui/devices/channelgroupcombobox.hpp"
+#include "src/ui/devices/devicecombobox.hpp"
 #include "src/widgets/signaltree.hpp"
-#include "src/widgets/unitcombobox.hpp"
 
 using std::make_shared;
 using std::static_pointer_cast;
@@ -80,16 +80,17 @@ void AddMathChannelDialog::setup_ui()
 	QFormLayout *form_layout = new QFormLayout();
 	name_edit_ = new QLineEdit();
 	form_layout->addRow(tr("Name"), name_edit_);
-	quantity_box_ = new widgets::QuantityComboBox();
+	quantity_box_ = new ui::data::QuantityComboBox();
 	form_layout->addRow(tr("Quantity"), quantity_box_);
-	quantity_flags_list_ = new widgets::QuantityFlagsList();
+	quantity_flags_list_ = new ui::data::QuantityFlagsList();
 	form_layout->addRow(tr("Quantity Flags"), quantity_flags_list_);
-	unit_box_ = new widgets::UnitComboBox();
+	unit_box_ = new ui::data::UnitComboBox();
 	form_layout->addRow(tr("Unit"), unit_box_);
-	device_box_ = new widgets::DeviceComboBox(session_);
+	device_box_ = new ui::devices::DeviceComboBox(session_);
 	device_box_->select_device(device_);
 	form_layout->addRow(tr("Device"), device_box_);
-	channel_group_box_ = new widgets::ChannelGroupComboBox(session_, device_);
+	channel_group_box_ =
+		new ui::devices::ChannelGroupComboBox(session_, device_);
 	connect(device_box_, SIGNAL(currentIndexChanged(int)),
 		this, SLOT(on_device_changed()));
 	form_layout->addRow(tr("Channel Group"), channel_group_box_);

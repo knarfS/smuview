@@ -42,13 +42,20 @@ namespace channels {
 class BaseChannel;
 }
 
-namespace widgets {
-class ChannelGroupComboBox;
-class DeviceComboBox;
+namespace ui {
+namespace data {
 class QuantityComboBox;
 class QuantityFlagsList;
-class SignalTree;
 class UnitComboBox;
+}
+namespace devices {
+class ChannelGroupComboBox;
+class DeviceComboBox;
+}
+}
+
+namespace widgets {
+class SignalTree;
 }
 
 namespace dialogs {
@@ -78,11 +85,11 @@ private:
 
 	QTabWidget *tab_widget_;
 	QLineEdit *name_edit_;
-	widgets::QuantityComboBox *quantity_box_;
-	widgets::QuantityFlagsList *quantity_flags_list_;
-	widgets::UnitComboBox *unit_box_;
-	widgets::DeviceComboBox *device_box_;
-	widgets::ChannelGroupComboBox *channel_group_box_;
+	ui::data::QuantityComboBox *quantity_box_;
+	ui::data::QuantityFlagsList *quantity_flags_list_;
+	ui::data::UnitComboBox *unit_box_;
+	ui::devices::DeviceComboBox *device_box_;
+	ui::devices::ChannelGroupComboBox *channel_group_box_;
 	widgets::SignalTree *m_ss_signal_1_tree_;
 	widgets::SignalTree *m_ss_signal_2_tree_;
 	widgets::SignalTree *m_sf_signal_tree_;

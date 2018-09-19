@@ -42,7 +42,7 @@ namespace ui {
 namespace datatypes {
 
 MeasuredQuantityComboBox::MeasuredQuantityComboBox(
-		shared_ptr<devices::properties::BaseProperty> property,
+		shared_ptr<sv::devices::properties::BaseProperty> property,
 		const bool auto_commit, const bool auto_update,
 		QWidget *parent) :
 	QComboBox(parent),

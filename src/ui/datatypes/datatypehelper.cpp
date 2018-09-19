@@ -37,7 +37,7 @@ namespace datatypes {
 namespace datatypehelper {
 
 QWidget *get_widget_for_property(
-	shared_ptr<devices::properties::BaseProperty> property,
+	shared_ptr<sv::devices::properties::BaseProperty> property,
 	bool auto_commit, bool auto_update)
 {
 	devices::DataType data_type =

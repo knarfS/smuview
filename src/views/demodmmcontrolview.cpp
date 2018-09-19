@@ -29,9 +29,9 @@
 #include "src/devices/configurable.hpp"
 #include "src/devices/deviceutil.hpp"
 #include "src/devices/properties/baseproperty.hpp"
+#include "src/ui/data/quantitycombobox.hpp"
+#include "src/ui/data/quantityflagslist.hpp"
 #include "src/ui/datatypes/doublecontrol.hpp"
-#include "src/widgets/quantitycombobox.hpp"
-#include "src/widgets/quantityflagslist.hpp"
 
 using sv::devices::ConfigKey;
 
@@ -61,9 +61,9 @@ void DemoDMMControlView::setup_ui()
 
 	// The demo dmm device has no listable measurement quantities /
 	// qunatity flags, so we use all...
-	quantity_box_ = new widgets::QuantityComboBox();
+	quantity_box_ = new ui::data::QuantityComboBox();
 	layout->addWidget(quantity_box_);
-	quantity_flags_list_ = new widgets::QuantityFlagsList();
+	quantity_flags_list_ = new ui::data::QuantityFlagsList();
 	layout->addWidget(quantity_flags_list_);
 
 	set_button_ = new QPushButton();

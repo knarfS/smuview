@@ -31,7 +31,8 @@ using std::dynamic_pointer_cast;
 Q_DECLARE_SMART_POINTER_METATYPE(std::shared_ptr)
 
 namespace sv {
-namespace widgets {
+namespace ui {
+namespace devices {
 
 ConfigurableComboBox::ConfigurableComboBox(shared_ptr<Session> session,
 		QWidget *parent) :
@@ -41,16 +42,18 @@ ConfigurableComboBox::ConfigurableComboBox(shared_ptr<Session> session,
 	setup_ui();
 }
 
-shared_ptr<devices::Configurable> ConfigurableComboBox::selected_configurable()
+shared_ptr<sv::devices::Configurable>
+	ConfigurableComboBox::selected_configurable()
 {
 	QVariant data = this->currentData();
-	return data.value<shared_ptr<devices::Configurable>>();
+	return data.value<shared_ptr<sv::devices::Configurable>>();
 }
 
 void ConfigurableComboBox::setup_ui()
 {
 	for (auto device : session_->devices()) {
-		auto hw_device = dynamic_pointer_cast<devices::HardwareDevice>(device);
+		auto hw_device =
+			dynamic_pointer_cast<sv::devices::HardwareDevice>(device);
 		if (!hw_device)
 			continue;
 
@@ -63,6 +66,6 @@ void ConfigurableComboBox::setup_ui()
 	}
 }
 
-} // namespace widgets
+} // namespace devices
+} // namespace ui
 } // namespace sv
-

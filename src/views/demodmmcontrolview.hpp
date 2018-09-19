@@ -38,14 +38,13 @@ class Configurable;
 }
 
 namespace ui {
+namespace data {
+class QuantityComboBox;
+class QuantityFlagsList;
+}
 namespace datatypes {
 class DoubleControl;
 }
-}
-
-namespace widgets {
-class QuantityComboBox;
-class QuantityFlagsList;
 }
 
 namespace views {
@@ -64,8 +63,8 @@ public:
 private:
 	shared_ptr<devices::Configurable> configurable_;
 
-	widgets::QuantityComboBox *quantity_box_;
-	widgets::QuantityFlagsList *quantity_flags_list_;
+	ui::data::QuantityComboBox *quantity_box_;
+	ui::data::QuantityFlagsList *quantity_flags_list_;
 	QPushButton *set_button_;
 	ui::datatypes::DoubleControl *amplitude_control_;
 	ui::datatypes::DoubleControl *offset_control_;

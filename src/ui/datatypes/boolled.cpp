@@ -31,7 +31,7 @@ namespace ui {
 namespace datatypes {
 
 BoolLed::BoolLed(
-		shared_ptr<devices::properties::BaseProperty> property,
+		shared_ptr<sv::devices::properties::BaseProperty> property,
 		const bool auto_update,
 		const QIcon on_icon, const QIcon off_icon, const QIcon dis_icon,
 		QString text, QWidget *parent) :

@@ -34,7 +34,7 @@ namespace ui {
 namespace datatypes {
 
 DoubleSpinBox::DoubleSpinBox(
-		shared_ptr<devices::properties::BaseProperty> property,
+		shared_ptr<sv::devices::properties::BaseProperty> property,
 		const bool auto_commit, const bool auto_update,
 		QWidget *parent) :
 	QDoubleSpinBox(parent),

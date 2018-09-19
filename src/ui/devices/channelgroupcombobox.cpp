@@ -19,7 +19,6 @@
 
 #include <map>
 #include <memory>
-#include <vector>
 
 #include <QDebug>
 #include <QString>
@@ -32,10 +31,11 @@
 using std::shared_ptr;
 
 namespace sv {
-namespace widgets {
+namespace ui {
+namespace devices {
 
 ChannelGroupComboBox::ChannelGroupComboBox(const Session &session,
-		shared_ptr<devices::BaseDevice> device,  QWidget *parent) :
+		shared_ptr<sv::devices::BaseDevice> device,  QWidget *parent) :
 	QComboBox(parent),
 	session_(session),
 	device_(device)
@@ -68,7 +68,8 @@ void ChannelGroupComboBox::setup_ui()
 	}
 }
 
-void ChannelGroupComboBox::change_device(shared_ptr<devices::BaseDevice> device)
+void ChannelGroupComboBox::change_device(
+	shared_ptr<sv::devices::BaseDevice> device)
 {
 	device_ = device;
 	for (int i = this->count(); i >= 0; --i)
@@ -76,6 +77,6 @@ void ChannelGroupComboBox::change_device(shared_ptr<devices::BaseDevice> device)
 	this->setup_ui();
 }
 
-} // namespace widgets
+} // namespace devices
+} // namespace ui
 } // namespace sv
-

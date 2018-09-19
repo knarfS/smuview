@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WIDGETS_CHANNELGROUPCOMBOBOX_HPP
-#define WIDGETS_CHANNELGROUPCOMBOBOX_HPP
+#ifndef UI_DEVICES_CHANNELCOMBOBOX_HPP
+#define UI_DEVICES_CHANNELCOMBOBOX_HPP
 
 #include <memory>
 
@@ -32,36 +32,41 @@ namespace sv {
 
 class Session;
 
+namespace channels {
+class BaseChannel;
+}
+
 namespace devices {
 class BaseDevice;
 }
 
-namespace widgets {
+namespace ui {
+namespace devices {
 
-class ChannelGroupComboBox : public QComboBox
+class ChannelComboBox : public QComboBox
 {
     Q_OBJECT
 
 public:
-	ChannelGroupComboBox(const Session &session,
-		shared_ptr<devices::BaseDevice> device, QWidget *parent = nullptr);
+	ChannelComboBox(
+		const Session &session,
+		shared_ptr<sv::devices::BaseDevice> device,
+		QString channel_group = nullptr, QWidget *parent = nullptr);
 
-	void select_channel_group(QString channel_group);
-	const QString selected_channel_group();
+	void select_channel(shared_ptr<sv::channels::BaseChannel> channel);
+	shared_ptr<sv::channels::BaseChannel> selected_channel() const;
 
 private:
-	void setup_ui();
-
 	const Session &session_;
-	shared_ptr<devices::BaseDevice> device_;
+	shared_ptr<sv::devices::BaseDevice> device_;
+	QString channel_group_;
 
-public Q_SLOTS:
-	void change_device(shared_ptr<devices::BaseDevice> device);
+	void setup_ui();
 
 };
 
-} // namespace widgets
+} // namespace devices
+} // namespace ui
 } // namespace sv
 
-#endif // WIDGETS_CHANNELGROUPCOMBOBOX_HPP
-
+#endif // UI_DEVICES_CHANNELCOMBOBOX_HPP

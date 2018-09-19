@@ -17,55 +17,60 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <memory>
-
 #include <QDebug>
 #include <QVariant>
 
-#include "devicecombobox.hpp"
-#include "src/session.hpp"
-#include "src/devices/basedevice.hpp"
+#include "configkeycombobox.hpp"
+#include "src/devices/deviceutil.hpp"
+#include "src/devices/configurable.hpp"
 
-using std::shared_ptr;
-
-Q_DECLARE_METATYPE(shared_ptr<sv::devices::BaseDevice>)
+Q_DECLARE_METATYPE(sv::devices::ConfigKey)
 
 namespace sv {
-namespace widgets {
+namespace ui {
+namespace devices {
 
-DeviceComboBox::DeviceComboBox(const Session &session, QWidget *parent) :
+ConfigKeyComboBox::ConfigKeyComboBox(
+		shared_ptr<sv::devices::Configurable> configurable,
+		QWidget *parent) :
 	QComboBox(parent),
-	session_(session)
+	configurable_(configurable)
 {
 	setup_ui();
 }
 
-void DeviceComboBox::select_device(shared_ptr<devices::BaseDevice> device)
+void ConfigKeyComboBox::set_configurable(
+	shared_ptr<sv::devices::Configurable> configurable)
 {
-	for (int i = 0; i < this->count(); ++i) {
-		QVariant data = this->itemData(i, Qt::UserRole);
-		auto item_device = data.value<shared_ptr<devices::BaseDevice>>();
-		if (item_device == device) {
-			this->setCurrentIndex(i);
-			break;
-		}
-	}
+	configurable_ = configurable;
+	fill_config_keys();
 }
 
-const shared_ptr<devices::BaseDevice> DeviceComboBox::selected_device()
+sv::devices::ConfigKey ConfigKeyComboBox::selected_config_key()
 {
 	QVariant data = this->currentData();
-	return data.value<shared_ptr<devices::BaseDevice>>();
+	return data.value<sv::devices::ConfigKey>();
 }
 
-void DeviceComboBox::setup_ui()
+void ConfigKeyComboBox::setup_ui()
 {
-	for (auto device : session_.devices()) {
+	fill_config_keys();
+}
+
+void ConfigKeyComboBox::fill_config_keys()
+{
+	this->clear();
+
+	if (!configurable_)
+		return;
+
+	for (auto config_key : configurable_->setable_configs()) {
 		this->addItem(
-			device->full_name(), QVariant::fromValue(device));
+			sv::devices::deviceutil::format_config_key(config_key),
+			QVariant::fromValue(config_key));
 	}
 }
 
-} // namespace widgets
+} // namespace devices
+} // namespace ui
 } // namespace sv
-

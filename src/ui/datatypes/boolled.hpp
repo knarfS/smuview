@@ -47,7 +47,7 @@ class BoolLed : public QWidget, public BaseWidget
     Q_OBJECT
 
 public:
-	BoolLed(shared_ptr<devices::properties::BaseProperty> property,
+	BoolLed(shared_ptr<sv::devices::properties::BaseProperty> property,
 		const bool auto_update,
 		const QIcon on_icon, const QIcon off_icon, const QIcon dis_icon,
 		QString text = nullptr, QWidget *parent = nullptr);

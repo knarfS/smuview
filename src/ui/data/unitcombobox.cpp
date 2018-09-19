@@ -17,22 +17,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "basewidget.hpp"
-#include "src/devices/properties/baseproperty.hpp"
+#include <QComboBox>
+#include <QDebug>
+#include <QVariant>
+
+#include "unitcombobox.hpp"
+#include "src/data/datautil.hpp"
+
+Q_DECLARE_METATYPE(sv::data::Unit)
 
 namespace sv {
 namespace ui {
-namespace datatypes {
+namespace data {
 
-BaseWidget::BaseWidget(
-		shared_ptr<sv::devices::properties::BaseProperty> property,
-		const bool auto_commit, const bool auto_update) :
-	auto_commit_(auto_commit),
-	auto_update_(auto_update),
-	property_(property)
+UnitComboBox::UnitComboBox(QWidget *parent) :
+	QComboBox(parent)
 {
+	setup_ui();
 }
 
-} // namespace datatypes
+sv::data::Unit UnitComboBox::selected_unit()
+{
+	QVariant data = this->currentData();
+	return data.value<sv::data::Unit>();
+}
+
+void UnitComboBox::setup_ui()
+{
+	for (auto u_name_pair : sv::data::datautil::get_unit_name_map()) {
+		this->addItem(
+			u_name_pair.second, QVariant::fromValue(u_name_pair.first));
+	}
+}
+
+} // namespace data
 } // namespace ui
 } // namespace sv
+
