@@ -17,34 +17,47 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TABS_WELCOMETAB_HPP
-#define TABS_WELCOMETAB_HPP
+#ifndef UI_DIALOGS_PLOTCURVECONFIGDIALOG_HPP
+#define UI_DIALOGS_PLOTCURVECONFIGDIALOG_HPP
 
-#include <QMainWindow>
-
-#include "src/tabs/basetab.hpp"
+#include <QCheckBox>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QWidget>
+#include <qwt_plot_curve.h>
 
 namespace sv {
 
-class Session;
+namespace widgets {
+class ColorButton;
+}
 
-namespace tabs {
+namespace ui {
+namespace dialogs {
 
-class WelcomeTab : public BaseTab
+class PlotCurveConfigDialog : public QDialog
 {
 	Q_OBJECT
 
-private:
-
 public:
-	WelcomeTab(Session &session, QMainWindow *parent);
+	PlotCurveConfigDialog(QwtPlotCurve *plot_curve, QWidget *parent = nullptr);
 
 private:
 	void setup_ui();
 
+	QwtPlotCurve *plot_curve_;
+	QCheckBox *visible_checkbox_;
+	widgets::ColorButton *color_button_;
+	QCheckBox *sample_points_checkbox_;
+	QDialogButtonBox *button_box_;
+
+public Q_SLOTS:
+	void accept() override;
+
 };
 
-} // namespace tabs
+} // namespace dialogs
+} // namespace ui
 } // namespace sv
 
-#endif // TABS_WELCOMETAB_HPP
+#endif // UI_DIALOGS_PLOTCURVECONFIGDIALOG_HPP

@@ -17,43 +17,36 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <memory>
+#ifndef UI_TABS_WELCOMETAB_HPP
+#define UI_TABS_WELCOMETAB_HPP
 
-#include <QLabel>
 #include <QMainWindow>
-#include <QVBoxLayout>
 
-#include "welcometab.hpp"
-#include "src/session.hpp"
-
-using std::shared_ptr;
+#include "src/ui/tabs/basetab.hpp"
 
 namespace sv {
+
+class Session;
+
+namespace ui {
 namespace tabs {
 
-WelcomeTab::WelcomeTab(Session &session, QMainWindow *parent) :
-	BaseTab(session, parent)
+class WelcomeTab : public BaseTab
 {
-	setup_ui();
-}
+	Q_OBJECT
 
-void WelcomeTab::setup_ui()
-{
-	QVBoxLayout *layout = new QVBoxLayout();
+private:
 
-	QString welcome("");
-	welcome.
-		append("<center>").
-		append("<big><b>Welcome to SmuView!</b></big><br>").
-		append("Multimeters, Power Supplies and Loads<br>").
-		append("</center>");
+public:
+	WelcomeTab(Session &session, QMainWindow *parent);
 
-	QLabel *welcome_label = new QLabel();
-	welcome_label->setText(welcome);
-	layout->addWidget(welcome_label);
+private:
+	void setup_ui();
 
-	this->setLayout(layout);
-}
+};
 
 } // namespace tabs
+} // namespace ui
 } // namespace sv
+
+#endif // UI_TABS_WELCOMETAB_HPP

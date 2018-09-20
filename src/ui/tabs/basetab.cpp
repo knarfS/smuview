@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2012 Joel Holdsworth <joel@airwebreathe.org.uk>
  * Copyright (C) 2016 Soeren Apel <soeren@apelpie.net>
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@
 using std::shared_ptr;
 
 namespace sv {
+namespace ui {
 namespace tabs {
 
 BaseTab::BaseTab(Session &session, QMainWindow *parent) :
@@ -58,7 +59,7 @@ void BaseTab::restore_settings(QSettings &settings)
 	(void)settings;
 }
 
-void BaseTab::add_view(ui::views::BaseView *view, Qt::DockWidgetArea area)
+void BaseTab::add_view(views::BaseView *view, Qt::DockWidgetArea area)
 {
 	if (!view)
 		return;
@@ -81,4 +82,5 @@ void BaseTab::add_view(ui::views::BaseView *view, Qt::DockWidgetArea area)
 }
 
 } // namespace tabs
+} // namespace ui
 } // namespace sv

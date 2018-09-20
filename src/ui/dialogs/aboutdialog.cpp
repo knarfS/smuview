@@ -2,7 +2,7 @@
  * This file is part of the SmuView project.
  *
  * Copyright (C) 2017 Soeren Apel <soeren@apelpie.net>
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,10 +47,11 @@
 using std::dynamic_pointer_cast;
 
 namespace sv {
+namespace ui {
 namespace dialogs {
 
 AboutDialog::AboutDialog(DeviceManager &device_manager,
-		shared_ptr<devices::BaseDevice> device,
+		shared_ptr<sv::devices::BaseDevice> device,
 		QWidget *parent) :
 	QDialog(parent),
 	device_manager_(device_manager),
@@ -420,4 +421,5 @@ void AboutDialog::on_page_changed(
 }
 
 } // namespace dialogs
+} // namespace ui
 } // namespace sv

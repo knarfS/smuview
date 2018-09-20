@@ -20,16 +20,18 @@
 #include "virtualtab.hpp"
 #include "src/session.hpp"
 #include "src/devices/virtualdevice.hpp"
-#include "src/tabs/devicetab.hpp"
+#include "src/ui/tabs/devicetab.hpp"
 
 namespace sv {
+namespace ui {
 namespace tabs {
 
 VirtualTab::VirtualTab(Session &session,
-		shared_ptr<devices::VirtualDevice> device, QMainWindow *parent) :
+		shared_ptr<sv::devices::VirtualDevice> device, QMainWindow *parent) :
 	DeviceTab(session, device, parent)
 {
 }
 
 } // namespace tabs
+} // namespace ui
 } // namespace sv

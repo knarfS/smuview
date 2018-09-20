@@ -170,21 +170,6 @@ set(smuview_SOURCES
   src/devices/properties/measuredquantityproperty.cpp
   src/devices/properties/stringproperty.cpp
   src/devices/properties/uint64property.cpp
-  src/dialogs/addmathchanneldialog.cpp
-  src/dialogs/addviewdialog.cpp
-  src/dialogs/aboutdialog.cpp
-  src/dialogs/addviewdialog.cpp
-  src/dialogs/connectdialog.cpp
-  src/dialogs/plotconfigdialog.cpp
-  src/dialogs/plotcurveconfigdialog.cpp
-  src/dialogs/savedialog.cpp
-  src/dialogs/selectsignaldialog.cpp
-  src/tabs/basetab.cpp
-  src/tabs/devicetab.cpp
-  src/tabs/measurementtab.cpp
-  src/tabs/sourcesinktab.cpp
-  src/tabs/virtualtab.cpp
-  src/tabs/welcometab.cpp
   src/widgets/colorbutton.cpp
   src/widgets/lcddisplay.cpp
   src/widgets/popup.cpp
@@ -221,9 +206,24 @@ set(smuview_SOURCES
   src/ui/devices/selectconfigurableform.cpp
   src/ui/devices/selectsignalwidget.cpp
   src/ui/devices/signalcombobox.cpp
+  src/ui/dialogs/aboutdialog.cpp
+  src/ui/dialogs/addmathchanneldialog.cpp
+  src/ui/dialogs/addviewdialog.cpp
+  src/ui/dialogs/addviewdialog.cpp
+  src/ui/dialogs/connectdialog.cpp
+  src/ui/dialogs/plotconfigdialog.cpp
+  src/ui/dialogs/plotcurveconfigdialog.cpp
+  src/ui/dialogs/savedialog.cpp
+  src/ui/dialogs/selectsignaldialog.cpp
   src/ui/processing/processingwidget.cpp
   src/ui/processing/processthreadwidget.cpp
   src/ui/processing/blocks/sequencesinblock.cpp
+  src/ui/tabs/basetab.cpp
+  src/ui/tabs/devicetab.cpp
+  src/ui/tabs/measurementtab.cpp
+  src/ui/tabs/sourcesinktab.cpp
+  src/ui/tabs/virtualtab.cpp
+  src/ui/tabs/welcometab.cpp
   src/ui/views/baseview.cpp
   src/ui/views/dataview.cpp
   src/ui/views/demodmmcontrolview.cpp

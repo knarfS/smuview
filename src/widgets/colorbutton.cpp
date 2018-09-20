@@ -72,5 +72,3 @@ void ColorButton::paintEvent(QPaintEvent *event)
 
 } // namespace widgets
 } // namespace sv
-
-

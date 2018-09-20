@@ -17,45 +17,36 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DIALOGS_PLOTCURVECONFIGDIALOG_HPP
-#define DIALOGS_PLOTCURVECONFIGDIALOG_HPP
+#ifndef UI_TABS_VIRTUALTAB_HPP
+#define UI_TABS_VIRTUALTAB_HPP
 
-#include <QCheckBox>
-#include <QDialog>
-#include <QDialogButtonBox>
-#include <QWidget>
-#include <qwt_plot_curve.h>
+#include <QObject>
+
+#include "src/ui/tabs/devicetab.hpp"
 
 namespace sv {
 
-namespace widgets {
-class ColorButton;
+class Session;
+
+namespace devices {
+class VirtualDevice;
 }
 
-namespace dialogs {
+namespace ui {
+namespace tabs {
 
-class PlotCurveConfigDialog : public QDialog
+class VirtualTab : public DeviceTab
 {
 	Q_OBJECT
 
 public:
-	PlotCurveConfigDialog(QwtPlotCurve *plot_curve, QWidget *parent = nullptr);
-
-private:
-	void setup_ui();
-
-	QwtPlotCurve *plot_curve_;
-	QCheckBox *visible_checkbox_;
-	widgets::ColorButton *color_button_;
-	QCheckBox *sample_points_checkbox_;
-	QDialogButtonBox *button_box_;
-
-public Q_SLOTS:
-	void accept() override;
+	VirtualTab(Session &session,
+ 		shared_ptr<sv::devices::VirtualDevice> device,  QMainWindow *parent);
 
 };
 
-} // namespace dialogs
+} // namespace tabs
+} // namespace ui
 } // namespace sv
 
-#endif // DIALOGS_PLOTCURVECONFIGDIALOG_HPP
+#endif // UI_TABS_VIRTUALTAB_HPP

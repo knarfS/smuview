@@ -37,6 +37,7 @@
 Q_DECLARE_METATYPE(sv::widgets::plot::PlotUpdateMode)
 
 namespace sv {
+namespace ui {
 namespace dialogs {
 
 PlotConfigDialog::PlotConfigDialog(widgets::plot::Plot *plot, QWidget *parent) :
@@ -152,4 +153,5 @@ void PlotConfigDialog::accept()
 }
 
 } // namespace dialogs
+} // namespace ui
 } // namespace sv

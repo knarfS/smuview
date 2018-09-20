@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,41 +17,45 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TABS_MEASUREMENTTAB_HPP
-#define TABS_MEASUREMENTTAB_HPP
+#ifndef UI_TABS_SOURCESINKTAB_HPP
+#define UI_TABS_SOURCESINKTAB_HPP
 
 #include <memory>
 
 #include <QMainWindow>
 
-#include "src/tabs/devicetab.hpp"
+#include "src/ui/tabs/devicetab.hpp"
 
 using std::shared_ptr;
 
 namespace sv {
 
+class Session;
+
 namespace devices {
-class MeasurementDevice;
+class HardwareDevice;
 }
 
+namespace ui {
 namespace tabs {
 
-class MeasurementTab : public DeviceTab
+class SourceSinkTab : public DeviceTab
 {
     Q_OBJECT
 
 public:
-	MeasurementTab(Session &session,
- 		shared_ptr<devices::MeasurementDevice> device, QMainWindow *parent);
+	SourceSinkTab(Session &session,
+ 		shared_ptr<sv::devices::HardwareDevice> device, QMainWindow *parent);
 
 private:
 	void setup_ui();
 
-	shared_ptr<devices::MeasurementDevice> measurement_device_; // TODO: remove, generic solution in hw_device
+public Q_SLOTS:
 
 };
 
 } // namespace tabs
+} // namespace ui
 } // namespace sv
 
-#endif // TABS_MEASUREMENTTAB_HPP
+#endif // UI_TABS_SOURCESINKTAB_HPP

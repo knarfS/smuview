@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,50 +17,66 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DIALOGS_PLOTCONFIGDIALOG_HPP
-#define DIALOGS_PLOTCONFIGDIALOG_HPP
+#ifndef UI_DIALOGS_SAVEDIALOG_HPP
+#define UI_DIALOGS_SAVEDIALOG_HPP
 
-#include <map>
+#include <memory>
+#include <vector>
 
-#include <QComboBox>
+#include <QCheckBox>
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QLineEdit>
 #include <QString>
-#include <QWidget>
+#include <QTreeWidget>
 
-#include "src/widgets/plot/plot.hpp"
+#include "src/session.hpp"
+
+using std::shared_ptr;
+using std::vector;
 
 namespace sv {
 
+namespace data {
+class AnalogSignal;
+}
+namespace widgets {
+class SignalTree;
+}
+
+namespace ui {
 namespace dialogs {
 
-class PlotConfigDialog : public QDialog
+class SaveDialog : public QDialog
 {
 	Q_OBJECT
 
 public:
-	PlotConfigDialog(widgets::plot::Plot *plot, QWidget *parent = nullptr);
+	SaveDialog(const Session &session,
+		const vector<shared_ptr<sv::data::AnalogSignal>> selected_signals,
+		QWidget *parent = nullptr);
 
 private:
 	void setup_ui();
-	void setup_ui_additive();
-	void setup_ui_rolling();
-	void setup_ui_oscilloscope();
+	void save(QString file_name);
+	void save_combined(QString file_name);
 
-	widgets::plot::Plot *plot_;
-	QComboBox *plot_update_mode_combobox_;
-	QLineEdit *time_span_edit_;
-	QLineEdit *add_time_edit_;
+	const Session &session_;
+	const vector<shared_ptr<sv::data::AnalogSignal>> selected_signals_;
+
+	widgets::SignalTree *signal_tree_;
+	QCheckBox *timestamps_combined_;
+	QCheckBox *time_absolut_;
+	QLineEdit *separator_edit_;
 	QDialogButtonBox *button_box_;
 
 public Q_SLOTS:
-	void on_update_mode_changed();
 	void accept() override;
 
 };
 
 } // namespace dialogs
+} // namespace ui
 } // namespace sv
 
-#endif // DIALOGS_PLOTCONFIGDIALOG_HPP
+#endif // UI_DIALOGS_SAVEDIALOG_HPP

@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,17 +31,20 @@
 #include "src/devices/basedevice.hpp"
 #include "src/devices/configurable.hpp"
 #include "src/devices/hardwaredevice.hpp"
-#include "src/tabs/devicetab.hpp"
+#include "src/ui/tabs/devicetab.hpp"
 #include "src/ui/views/sinkcontrolview.hpp"
 #include "src/ui/views/sourcecontrolview.hpp"
 #include "src/ui/views/plotview.hpp"
 #include "src/ui/views/powerpanelview.hpp"
 
+using sv::devices::DeviceType;
+
 namespace sv {
+namespace ui {
 namespace tabs {
 
 SourceSinkTab::SourceSinkTab(Session &session,
-		shared_ptr<devices::HardwareDevice> device, QMainWindow *parent) :
+		shared_ptr<sv::devices::HardwareDevice> device, QMainWindow *parent) :
 	DeviceTab(session, device, parent)
 {
 	setup_ui();
@@ -49,15 +52,15 @@ SourceSinkTab::SourceSinkTab(Session &session,
 
 void SourceSinkTab::setup_ui()
 {
-	auto hw_device = static_pointer_cast<devices::HardwareDevice>(device_);
+	auto hw_device = static_pointer_cast<sv::devices::HardwareDevice>(device_);
 
 	// Device control(s)
 	for (auto c : hw_device->configurables()) {
 		if (c->is_controllable()) {
-			if (device_->type() == devices::DeviceType::PowerSupply)
+			if (device_->type() == DeviceType::PowerSupply)
 				add_view(new ui::views::SourceControlView(session_, c),
 					Qt::TopDockWidgetArea);
-			else if (device_->type() == devices::DeviceType::ElectronicLoad)
+			else if (device_->type() == DeviceType::ElectronicLoad)
 				add_view(new ui::views::SinkControlView(session_, c),
 					Qt::TopDockWidgetArea);
 		}
@@ -110,4 +113,5 @@ void SourceSinkTab::setup_ui()
 }
 
 } // namespace tabs
+} // namespace ui
 } // namespace sv

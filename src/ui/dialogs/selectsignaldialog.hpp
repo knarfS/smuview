@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,14 +17,14 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DIALOGS_ADDVIEWDIALOG_HPP
-#define DIALOGS_ADDVIEWDIALOG_HPP
+#ifndef UI_DIALOGS_SELECTSIGNALDIALOG_HPP
+#define UI_DIALOGS_SELECTSIGNALDIALOG_HPP
 
 #include <memory>
+#include <vector>
 
 #include <QDialog>
 #include <QDialogButtonBox>
-#include <QTabWidget>
 
 #include "src/session.hpp"
 
@@ -33,57 +33,38 @@ using std::vector;
 
 namespace sv {
 
+namespace data {
+class BaseSignal;
+}
 namespace devices {
 class BaseDevice;
 }
-
-namespace ui {
-namespace devices {
-class SelectConfigurableForm;
-}
-namespace views {
-class BaseView;
-}
-}
-
 namespace widgets {
 class SignalTree;
 }
 
+namespace ui {
 namespace dialogs {
 
-class AddViewDialog : public QDialog
+class SelectSignalDialog : public QDialog
 {
 	Q_OBJECT
 
 public:
-	AddViewDialog(const Session &session,
-		const shared_ptr<devices::BaseDevice> device,
-		int selected_view_type,
+	SelectSignalDialog(const Session &session,
+		const shared_ptr<sv::devices::BaseDevice> device,
 		QWidget *parent = nullptr);
 
-	vector<ui::views::BaseView *> views();
+	vector<shared_ptr<sv::data::BaseSignal>> signals();
 
 private:
 	void setup_ui();
-	void setup_ui_control_tab();
-	void setup_ui_panel_tab();
-	void setup_ui_time_plot_tab();
-	void setup_ui_xy_plot_tab();
-	void setup_ui_table_tab();
 
 	const Session &session_;
-	const shared_ptr<devices::BaseDevice> device_;
-	int selected_view_type_; // TODO
-	vector<ui::views::BaseView *> views_;
+	const shared_ptr<sv::devices::BaseDevice> device_;
+	vector<shared_ptr<sv::data::BaseSignal>> signals_;
 
-	QTabWidget *tab_widget_;
-	ui::devices::SelectConfigurableForm *configurable_configurable_form_;
-	widgets::SignalTree *panel_channel_tree_;
-	widgets::SignalTree *time_plot_channel_tree_;
-	widgets::SignalTree *xy_plot_x_signal_tree_;
-	widgets::SignalTree *xy_plot_y_signal_tree_;
-	widgets::SignalTree *table_signal_tree_;
+	widgets::SignalTree *signal_tree_;
 	QDialogButtonBox *button_box_;
 
 public Q_SLOTS:
@@ -92,6 +73,7 @@ public Q_SLOTS:
 };
 
 } // namespace dialogs
+} // namespace ui
 } // namespace sv
 
-#endif // DIALOGS_ADDVIEWDIALOG_HPP
+#endif // UI_DIALOGS_SELECTSIGNALDIALOG_HPP

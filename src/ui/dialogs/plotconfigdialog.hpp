@@ -1,8 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017 Soeren Apel <soeren@apelpie.net>
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,49 +17,51 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DIALOGS_ABOUTDIALOG_HPP
-#define DIALOGS_ABOUTDIALOG_HPP
+#ifndef UI_DIALOGS_PLOTCONFIGDIALOG_HPP
+#define UI_DIALOGS_PLOTCONFIGDIALOG_HPP
 
+#include <map>
+
+#include <QComboBox>
 #include <QDialog>
-#include <QListWidget>
-#include <QStackedWidget>
+#include <QDialogButtonBox>
+#include <QLineEdit>
+#include <QString>
+#include <QWidget>
 
-#include "src/devicemanager.hpp"
+#include "src/widgets/plot/plot.hpp"
 
 namespace sv {
-
-namespace devices {
-class BaseDevice;
-}
-
+namespace ui {
 namespace dialogs {
 
-class AboutDialog : public QDialog
+class PlotConfigDialog : public QDialog
 {
 	Q_OBJECT
 
 public:
-	AboutDialog(DeviceManager &device_manager,
-		shared_ptr<devices::BaseDevice> device,
-		QWidget *parent = nullptr);
+	PlotConfigDialog(widgets::plot::Plot *plot, QWidget *parent = nullptr);
 
 private:
-	void create_pages();
-	QWidget *get_about_page(QWidget *parent) const;
-	QWidget *get_device_page(QWidget *parent) const;
+	void setup_ui();
+	void setup_ui_additive();
+	void setup_ui_rolling();
+	void setup_ui_oscilloscope();
 
-	DeviceManager &device_manager_;
-	shared_ptr<devices::BaseDevice> device_;
+	widgets::plot::Plot *plot_;
+	QComboBox *plot_update_mode_combobox_;
+	QLineEdit *time_span_edit_;
+	QLineEdit *add_time_edit_;
+	QDialogButtonBox *button_box_;
 
-	QListWidget *page_list;
-	QStackedWidget *pages;
-
-private Q_SLOTS:
-	void on_page_changed(QListWidgetItem *current, QListWidgetItem *previous);
+public Q_SLOTS:
+	void on_update_mode_changed();
+	void accept() override;
 
 };
 
 } // namespace dialogs
+} // namespace ui
 } // namespace sv
 
-#endif // DIALOGS_ABOUTDIALOG_HPP
+#endif // UI_DIALOGS_PLOTCONFIGDIALOG_HPP

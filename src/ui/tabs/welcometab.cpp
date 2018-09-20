@@ -17,34 +17,45 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TABS_VIRTUALTAB_HPP
-#define TABS_VIRTUALTAB_HPP
+#include <memory>
 
-#include <QObject>
+#include <QLabel>
+#include <QMainWindow>
+#include <QVBoxLayout>
 
-#include "src/tabs/devicetab.hpp"
+#include "welcometab.hpp"
+#include "src/session.hpp"
+
+using std::shared_ptr;
 
 namespace sv {
-
-class Session;
-
-namespace devices {
-class VirtualDevice;
-}
-
+namespace ui {
 namespace tabs {
 
-class VirtualTab : public DeviceTab
+WelcomeTab::WelcomeTab(Session &session, QMainWindow *parent) :
+	BaseTab(session, parent)
 {
-	Q_OBJECT
+	setup_ui();
+}
 
-public:
-	VirtualTab(Session &session,
- 		shared_ptr<devices::VirtualDevice> device,  QMainWindow *parent);
+void WelcomeTab::setup_ui()
+{
+	QVBoxLayout *layout = new QVBoxLayout();
 
-};
+	QString welcome("");
+	welcome.
+		append("<center>").
+		append("<big><b>Welcome to SmuView!</b></big><br>").
+		append("Multimeters, Power Supplies and Loads<br>").
+		append("</center>");
+
+	QLabel *welcome_label = new QLabel();
+	welcome_label->setText(welcome);
+	layout->addWidget(welcome_label);
+
+	this->setLayout(layout);
+}
 
 } // namespace tabs
+} // namespace ui
 } // namespace sv
-
-#endif // TABS_VIRTUALTAB_HPP

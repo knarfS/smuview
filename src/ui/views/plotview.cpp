@@ -27,8 +27,8 @@
 #include "src/session.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/data/analogsignal.hpp"
-#include "src/dialogs/plotconfigdialog.hpp"
-#include "src/dialogs/selectsignaldialog.hpp"
+#include "src/ui/dialogs/plotconfigdialog.hpp"
+#include "src/ui/dialogs/selectsignaldialog.hpp"
 #include "src/widgets/plot/plot.hpp"
 #include "src/widgets/plot/basecurve.hpp"
 #include "src/widgets/plot/timecurve.hpp"
@@ -267,8 +267,9 @@ void PlotView::on_action_zoom_best_fit_triggered()
 
 void PlotView::on_action_add_signal_triggered()
 {
-	dialogs::SelectSignalDialog dlg(session(), nullptr);
-	dlg.exec();
+	ui::dialogs::SelectSignalDialog dlg(session(), nullptr);
+	if (!dlg.exec())
+		return;
 
 	for (auto signal : dlg.signals())
 		add_time_curve(dynamic_pointer_cast<sv::data::AnalogSignal>(signal));
@@ -276,7 +277,7 @@ void PlotView::on_action_add_signal_triggered()
 
 void PlotView::on_action_config_plot_triggered()
 {
-	dialogs::PlotConfigDialog dlg(plot_);
+	ui::dialogs::PlotConfigDialog dlg(plot_);
 	dlg.exec();
 }
 

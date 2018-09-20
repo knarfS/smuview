@@ -2,7 +2,7 @@
  * This file is part of the SmuView project.
  *
  * Copyright (C) 2012-2013 Joel Holdsworth <joel@airwebreathe.org.uk>
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,6 +44,7 @@ using sigrok::Driver;
 using sv::devices::HardwareDevice;
 
 namespace sv {
+namespace ui {
 namespace dialogs {
 
 ConnectDialog::ConnectDialog(sv::DeviceManager &device_manager,
@@ -310,4 +311,5 @@ void ConnectDialog::driver_selected(int index)
 }
 
 } // namespace dialogs
+} // namespace ui
 } // namespace sv

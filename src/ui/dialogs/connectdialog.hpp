@@ -2,7 +2,7 @@
  * This file is part of the SmuView project.
  *
  * Copyright (C) 2012-2013 Joel Holdsworth <joel@airwebreathe.org.uk>
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DIALOGS_CONNECTDIALOG_HPP
-#define DIALOGS_CONNECTDIALOG_HPP
+#ifndef UI_DIALOGS_CONNECTDIALOG_HPP
+#define UI_DIALOGS_CONNECTDIALOG_HPP
 
 #include <memory>
 
@@ -54,6 +54,7 @@ namespace devices {
 class HardwareDevice;
 }
 
+namespace ui {
 namespace dialogs {
 
 class ConnectDialog : public QDialog
@@ -63,7 +64,7 @@ class ConnectDialog : public QDialog
 public:
 	ConnectDialog(sv::DeviceManager &device_manager, QWidget *parent = nullptr);
 
-	shared_ptr<devices::HardwareDevice> get_selected_device() const;
+	shared_ptr<sv::devices::HardwareDevice> get_selected_device() const;
 
 private:
 	void populate_drivers();
@@ -107,6 +108,7 @@ private:
 };
 
 } // namespace dialogs
+} // namespace ui
 } // namespace sv
 
-#endif // DIALOGS_CONNECTDIALOG_HPP
+#endif // UI_DIALOGS_CONNECTDIALOG_HPP

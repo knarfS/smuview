@@ -53,10 +53,11 @@ using std::static_pointer_cast;
 Q_DECLARE_SMART_POINTER_METATYPE(std::shared_ptr)
 
 namespace sv {
+namespace ui {
 namespace dialogs {
 
 AddMathChannelDialog::AddMathChannelDialog(const Session &session,
-		shared_ptr<devices::BaseDevice> device,
+		shared_ptr<sv::devices::BaseDevice> device,
 		QWidget *parent) :
 	QDialog(parent),
 	session_(session),
@@ -255,7 +256,7 @@ void AddMathChannelDialog::accept()
 				return;
 			}
 			// TODO: Try to use BaseSignal without cast.
-			auto signal_1 = static_pointer_cast<data::AnalogSignal>(
+			auto signal_1 = static_pointer_cast<sv::data::AnalogSignal>(
 				m_ss_signal1_->selected_signal());
 
 			if (m_ss_signal2_->selected_signal() == nullptr) {
@@ -265,7 +266,7 @@ void AddMathChannelDialog::accept()
 					QMessageBox::Ok);
 				return;
 			}
-			auto signal_2 = static_pointer_cast<data::AnalogSignal>(
+			auto signal_2 = static_pointer_cast<sv::data::AnalogSignal>(
 				m_ss_signal2_->selected_signal());
 
 			double start_timestamp = signal_1->signal_start_timestamp();
@@ -290,7 +291,7 @@ void AddMathChannelDialog::accept()
 					QMessageBox::Ok);
 				return;
 			}
-			auto signal = static_pointer_cast<data::AnalogSignal>(
+			auto signal = static_pointer_cast<sv::data::AnalogSignal>(
 				m_sf_signal_->selected_signal());
 
 			if (m_sf_factor_edit_->text().size() == 0) {
@@ -328,7 +329,7 @@ void AddMathChannelDialog::accept()
 					QMessageBox::Ok);
 				return;
 			}
-			auto signal1 = static_pointer_cast<data::AnalogSignal>(
+			auto signal1 = static_pointer_cast<sv::data::AnalogSignal>(
 				d_ss_signal1_->selected_signal());
 
 			if (d_ss_signal2_->selected_signal() == nullptr) {
@@ -338,7 +339,7 @@ void AddMathChannelDialog::accept()
 					QMessageBox::Ok);
 				return;
 			}
-			auto signal2 = static_pointer_cast<data::AnalogSignal>(
+			auto signal2 = static_pointer_cast<sv::data::AnalogSignal>(
 				d_ss_signal2_->selected_signal());
 
 			double start_timestamp = signal1->signal_start_timestamp();
@@ -362,7 +363,7 @@ void AddMathChannelDialog::accept()
 					QMessageBox::Ok);
 				return;
 			}
-			auto signal = static_pointer_cast<data::AnalogSignal>(
+			auto signal = static_pointer_cast<sv::data::AnalogSignal>(
 				i_s_signal_->selected_signal());
 
 			channel_ = make_shared<channels::IntegrateChannel>(
@@ -389,4 +390,5 @@ void AddMathChannelDialog::on_device_changed()
 }
 
 } // namespace dialogs
+} // namespace ui
 } // namespace sv

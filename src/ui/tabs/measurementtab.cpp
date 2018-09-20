@@ -34,11 +34,14 @@
 #include "src/ui/views/plotview.hpp"
 #include "src/ui/views/valuepanelview.hpp"
 
+using sv::devices::DeviceType;
+
 namespace sv {
+namespace ui {
 namespace tabs {
 
 MeasurementTab::MeasurementTab(Session &session,
-		shared_ptr<devices::MeasurementDevice> device, QMainWindow *parent) :
+		shared_ptr<sv::devices::MeasurementDevice> device, QMainWindow *parent) :
 	DeviceTab(session, device, parent),
 	measurement_device_(device)
 {
@@ -47,24 +50,24 @@ MeasurementTab::MeasurementTab(Session &session,
 
 void MeasurementTab::setup_ui()
 {
-	auto hw_device = static_pointer_cast<devices::HardwareDevice>(device_);
+	auto hw_device = static_pointer_cast<sv::devices::HardwareDevice>(device_);
 
 	// Device controls
 	size_t i = 0;
 	for (auto c : hw_device->configurables()) {
 		if (c->is_controllable()) {
-			if (device_->type() == devices::DeviceType::DemoDev)
+			if (device_->type() == DeviceType::DemoDev)
 				add_view(new ui::views::DemoDMMControlView(session_, c),
 					Qt::TopDockWidgetArea);
-			else if (device_->type() == devices::DeviceType::Multimeter ||
-					device_->type() == devices::DeviceType::Multimeter ||
-					device_->type() == devices::DeviceType::SoundLevelMeter ||
-					device_->type() == devices::DeviceType::Thermometer ||
-					device_->type() == devices::DeviceType::Hygrometer ||
-					device_->type() == devices::DeviceType::Energymeter ||
-					device_->type() == devices::DeviceType::LcrMeter ||
-					device_->type() == devices::DeviceType::Scale ||
-					device_->type() == devices::DeviceType::Powermeter)
+			else if (device_->type() == DeviceType::Multimeter ||
+					device_->type() == DeviceType::Multimeter ||
+					device_->type() == DeviceType::SoundLevelMeter ||
+					device_->type() == DeviceType::Thermometer ||
+					device_->type() == DeviceType::Hygrometer ||
+					device_->type() == DeviceType::Energymeter ||
+					device_->type() == DeviceType::LcrMeter ||
+					device_->type() == DeviceType::Scale ||
+					device_->type() == DeviceType::Powermeter)
 				add_view(new ui::views::MeasurementControlView(session_, c),
 					Qt::TopDockWidgetArea);
 
@@ -97,5 +100,5 @@ void MeasurementTab::setup_ui()
 }
 
 } // namespace tabs
+} // namespace ui
 } // namespace sv
-

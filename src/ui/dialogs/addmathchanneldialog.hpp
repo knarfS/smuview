@@ -17,8 +17,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DIALOGS_ADDMATHCHANNELDIALOG_HPP
-#define DIALOGS_ADDMATHCHANNELDIALOG_HPP
+#ifndef UI_DIALOGS_ADDMATHCHANNELDIALOG_HPP
+#define UI_DIALOGS_ADDMATHCHANNELDIALOG_HPP
 
 #include <memory>
 
@@ -36,12 +36,12 @@ namespace sv {
 namespace devices {
 class BaseDevice;
 }
-
 namespace channels {
 class MathChannel;
 }
 
 namespace ui {
+
 namespace data {
 class QuantityComboBox;
 class QuantityFlagsList;
@@ -52,7 +52,6 @@ class ChannelGroupComboBox;
 class DeviceComboBox;
 class SelectSignalWidget;
 }
-}
 
 namespace dialogs {
 
@@ -62,7 +61,7 @@ class AddMathChannelDialog : public QDialog
 
 public:
 	AddMathChannelDialog(const Session &session,
-		shared_ptr<devices::BaseDevice> device,
+		shared_ptr<sv::devices::BaseDevice> device,
 		QWidget *parent = nullptr);
 
 	shared_ptr<channels::MathChannel> channel();
@@ -76,7 +75,7 @@ private:
 	void setup_ui_integrate_signal_tab();
 
 	const Session &session_;
-	shared_ptr<devices::BaseDevice> device_;
+	shared_ptr<sv::devices::BaseDevice> device_;
 	shared_ptr<channels::MathChannel> channel_;
 
 	QTabWidget *tab_widget_;
@@ -104,6 +103,7 @@ private Q_SLOTS:
 };
 
 } // namespace dialogs
+} // namespace ui
 } // namespace sv
 
-#endif // DIALOGS_ADDMATHCHANNELDIALOG_HPP
+#endif // UI_DIALOGS_ADDMATHCHANNELDIALOG_HPP

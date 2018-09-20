@@ -17,53 +17,54 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QCheckBox>
-#include <QBrush>
-#include <QDebug>
-#include <QFormLayout>
-#include <QIcon>
-#include <QPen>
-#include <QSize>
-#include <QWidget>
-#include <qwt_plot_curve.h>
-#include <qwt_symbol.h>
+#include <memory>
+#include <vector>
 
-#include "plotcurveconfigdialog.hpp"
-#include "src/widgets/colorbutton.hpp"
+#include <QDebug>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QIcon>
+#include <QSize>
+#include <QString>
+#include <QVBoxLayout>
+#include <QWidget>
+
+#include "selectsignaldialog.hpp"
+#include "src/session.hpp"
+#include "src/data/basesignal.hpp"
+#include "src/devices/basedevice.hpp"
+#include "src/widgets/signaltree.hpp"
+
+using std::shared_ptr;
+using std::vector;
 
 namespace sv {
+namespace ui {
 namespace dialogs {
 
-PlotCurveConfigDialog::PlotCurveConfigDialog(QwtPlotCurve *plot_curve,
+SelectSignalDialog::SelectSignalDialog(const Session &session,
+		const shared_ptr<sv::devices::BaseDevice> device,
 		QWidget *parent) :
 	QDialog(parent),
-	plot_curve_(plot_curve)
+	session_(session),
+	device_(device)
 {
 	setup_ui();
 }
 
-void PlotCurveConfigDialog::setup_ui()
+void SelectSignalDialog::setup_ui()
 {
 	QIcon mainIcon;
 	mainIcon.addFile(QStringLiteral(":/icons/smuview.ico"),
 		QSize(), QIcon::Normal, QIcon::Off);
 	this->setWindowIcon(mainIcon);
-	this->setWindowTitle(tr("Plot Config"));
+	this->setWindowTitle(tr("Select Signal"));
 	this->setMinimumWidth(500);
 
-	QFormLayout *main_layout = new QFormLayout;
+	QVBoxLayout *main_layout = new QVBoxLayout;
 
-	visible_checkbox_ = new QCheckBox();
-	visible_checkbox_->setChecked(plot_curve_->isVisible());
-	main_layout->addRow(tr("Visible"), visible_checkbox_);
-
-	color_button_ = new widgets::ColorButton();
-	color_button_->set_color(plot_curve_->pen().color());
-	main_layout->addRow(tr("Color"), color_button_);
-
-	sample_points_checkbox_ = new QCheckBox();
-	sample_points_checkbox_->setChecked(plot_curve_->symbol() != NULL);
-	main_layout->addRow(tr("Show sample points"), sample_points_checkbox_);
+	signal_tree_ = new widgets::SignalTree(session_, true, true, true, device_);
+	main_layout->addWidget(signal_tree_);
 
 	button_box_ = new QDialogButtonBox(
 		QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
@@ -74,25 +75,20 @@ void PlotCurveConfigDialog::setup_ui()
 	this->setLayout(main_layout);
 }
 
-void PlotCurveConfigDialog::accept()
+vector<shared_ptr<sv::data::BaseSignal>> SelectSignalDialog::signals()
 {
-	plot_curve_->setVisible(visible_checkbox_->isChecked());
+	return signals_;
+}
 
-	QPen pen = plot_curve_->pen();
-	pen.setColor(color_button_->color());
-	plot_curve_->setPen(pen);
-
-	QwtSymbol *symbol = NULL;
-	if (sample_points_checkbox_->isChecked()) {
-		symbol = new QwtSymbol(QwtSymbol::Ellipse);
-		symbol->setBrush(QBrush(color_button_->color()));
-		symbol->setPen(QPen(color_button_->color(), 2));
-		symbol->setSize(QSize(3, 3));
+void SelectSignalDialog::accept()
+{
+	for (auto signal : signal_tree_->selected_signals()) {
+		signals_.push_back(signal);
 	}
-	plot_curve_->setSymbol(symbol);
 
 	QDialog::accept();
 }
 
 } // namespace dialogs
+} // namespace ui
 } // namespace sv

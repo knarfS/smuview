@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TABS_DEVICETAB_HPP
-#define TABS_DEVICETAB_HPP
+#ifndef UI_TABS_DEVICETAB_HPP
+#define UI_TABS_DEVICETAB_HPP
 
 #include <memory>
 
@@ -28,7 +28,7 @@
 
 #include "src/util.hpp"
 #include "src/devices/basedevice.hpp"
-#include "src/tabs/basetab.hpp"
+#include "src/ui/tabs/basetab.hpp"
 
 using std::shared_ptr;
 
@@ -36,6 +36,7 @@ namespace sv {
 
 class Session;
 
+namespace ui {
 namespace tabs {
 
 class DeviceTab : public BaseTab
@@ -46,12 +47,12 @@ private:
 
 public:
 	DeviceTab(Session &session,
-		shared_ptr<devices::BaseDevice> device, QMainWindow *parent);
+		shared_ptr<sv::devices::BaseDevice> device, QMainWindow *parent);
 
 	virtual void clear_signals();
 
 protected:
-	shared_ptr<devices::BaseDevice> device_;
+	shared_ptr<sv::devices::BaseDevice> device_;
 	util::TimeUnit time_unit_;
 
 private:
@@ -82,6 +83,7 @@ private Q_SLOTS:
 };
 
 } // namespace tabs
+} // namespace ui
 } // namespace sv
 
-#endif // TABS_DEVICETAB_HPP
+#endif // UI_TABS_DEVICETAB_HPP

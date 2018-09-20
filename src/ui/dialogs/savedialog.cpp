@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,10 +44,11 @@ using std::string;
 Q_DECLARE_SMART_POINTER_METATYPE(std::shared_ptr)
 
 namespace sv {
+namespace ui {
 namespace dialogs {
 
 SaveDialog::SaveDialog(const Session &session,
-		const vector<shared_ptr<data::AnalogSignal>> selected_signals,
+		const vector<shared_ptr<sv::data::AnalogSignal>> selected_signals,
 		QWidget *parent) :
 	QDialog(parent),
 	session_(session),
@@ -121,8 +122,10 @@ void SaveDialog::save(QString file_name)
 		sample_counts.push_back(sample_count);
 
 		qWarning() << "SaveDialog::save(): signal.name() = " << signal->name();
-		qWarning() << "SaveDialog::save(): signal.parent_channel().name() = " << signal->parent_channel()->name();
-		qWarning() << "SaveDialog::save(): signal.parent_channel().parent_device().name() = " << signal->parent_channel()->parent_device()->name();
+		qWarning() << "SaveDialog::save(): signal.parent_channel().name() = " <<
+			signal->parent_channel()->name();
+		qWarning() << "SaveDialog::save(): signal.parent_channel().parent_device().name() = " <<
+			signal->parent_channel()->parent_device()->name();
 
 		device_header_line.append(start_sep).append(
 			signal->parent_channel()->parent_device()->name()); // Time
@@ -277,4 +280,5 @@ void SaveDialog::accept()
 }
 
 } // namespace dialogs
+} // namespace ui
 } // namespace sv

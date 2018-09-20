@@ -42,7 +42,7 @@
 #include <qwt_symbol.h>
 
 #include "plot.hpp"
-#include "src/dialogs/plotcurveconfigdialog.hpp"
+#include "src/ui/dialogs/plotcurveconfigdialog.hpp"
 #include "src/widgets/plot/basecurve.hpp"
 #include "src/widgets/plot/plotscalepicker.hpp"
 
@@ -372,7 +372,7 @@ void Plot::on_legend_clicked(const QVariant &item_info, int index)
 	QwtPlotItem *plot_item = infoToItem(item_info);
     if (plot_item) {
 		QwtPlotCurve *plot_curve = (QwtPlotCurve *)plot_item;
-		dialogs::PlotCurveConfigDialog dlg(plot_curve);
+		ui::dialogs::PlotCurveConfigDialog dlg(plot_curve);
 		dlg.exec();
 	}
 }

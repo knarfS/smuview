@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,16 +26,17 @@
 #include "src/data/basesignal.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/devices/deviceutil.hpp"
-#include "src/dialogs/addmathchanneldialog.hpp"
-#include "src/dialogs/addviewdialog.hpp"
-#include "src/dialogs/aboutdialog.hpp"
-#include "src/dialogs/savedialog.hpp"
+#include "src/ui/dialogs/aboutdialog.hpp"
+#include "src/ui/dialogs/addmathchanneldialog.hpp"
+#include "src/ui/dialogs/addviewdialog.hpp"
+#include "src/ui/dialogs/savedialog.hpp"
 
 namespace sv {
+namespace ui {
 namespace tabs {
 
 DeviceTab::DeviceTab(Session &session,
-		shared_ptr<devices::BaseDevice> device, QMainWindow *parent) :
+		shared_ptr<sv::devices::BaseDevice> device, QMainWindow *parent) :
 	BaseTab(session, parent),
 	device_(device),
 	action_open_(new QAction(this)),
@@ -142,18 +143,19 @@ void DeviceTab::on_action_open_triggered()
 
 void DeviceTab::on_action_save_as_triggered()
 {
-	dialogs::SaveDialog dlg(session(), device_->all_signals());
+	ui::dialogs::SaveDialog dlg(session(), device_->all_signals());
 	dlg.exec();
 }
 
 void DeviceTab::on_action_add_control_view_triggered()
 {
-	shared_ptr<devices::BaseDevice> d = nullptr;
-	if (device_->type() != devices::DeviceType::VirtualDevice)
+	shared_ptr<sv::devices::BaseDevice> d = nullptr;
+	if (device_->type() != sv::devices::DeviceType::VirtualDevice)
 		d = device_;
 
-	dialogs::AddViewDialog dlg(session(), d, 0);
-	dlg.exec();
+	ui::dialogs::AddViewDialog dlg(session(), d, 0);
+	if (!dlg.exec())
+		return;
 
 	for (auto view : dlg.views())
 		add_view(view, Qt::TopDockWidgetArea);
@@ -161,12 +163,13 @@ void DeviceTab::on_action_add_control_view_triggered()
 
 void DeviceTab::on_action_add_panel_view_triggered()
 {
-	shared_ptr<devices::BaseDevice> d = nullptr;
-	if (device_->type() != devices::DeviceType::VirtualDevice)
+	shared_ptr<sv::devices::BaseDevice> d = nullptr;
+	if (device_->type() != sv::devices::DeviceType::VirtualDevice)
 		d = device_;
 
-	dialogs::AddViewDialog dlg(session(), d, 1);
-	dlg.exec();
+	ui::dialogs::AddViewDialog dlg(session(), d, 1);
+	if (!dlg.exec())
+		return;
 
 	for (auto view : dlg.views())
 		add_view(view, Qt::TopDockWidgetArea);
@@ -174,12 +177,13 @@ void DeviceTab::on_action_add_panel_view_triggered()
 
 void DeviceTab::on_action_add_plot_view_triggered()
 {
-	shared_ptr<devices::BaseDevice> d = nullptr;
-	if (device_->type() != devices::DeviceType::VirtualDevice)
+	shared_ptr<sv::devices::BaseDevice> d = nullptr;
+	if (device_->type() != sv::devices::DeviceType::VirtualDevice)
 		d = device_;
 
-	dialogs::AddViewDialog dlg(session(), d, 2);
-	dlg.exec();
+	ui::dialogs::AddViewDialog dlg(session(), d, 2);
+	if (!dlg.exec())
+		return;
 
 	for (auto view : dlg.views())
 		add_view(view, Qt::BottomDockWidgetArea);
@@ -187,11 +191,11 @@ void DeviceTab::on_action_add_plot_view_triggered()
 
 void DeviceTab::on_action_add_math_channel_triggered()
 {
-	shared_ptr<devices::BaseDevice> d = nullptr;
-	if (device_->type() != devices::DeviceType::VirtualDevice)
+	shared_ptr<sv::devices::BaseDevice> d = nullptr;
+	if (device_->type() != sv::devices::DeviceType::VirtualDevice)
 		d = device_;
 
-	dialogs::AddMathChannelDialog dlg(session(), d);
+	ui::dialogs::AddMathChannelDialog dlg(session(), d);
 	if (!dlg.exec())
 		return;
 
@@ -206,9 +210,10 @@ void DeviceTab::on_action_reset_data_triggered()
 
 void DeviceTab::on_action_about_triggered()
 {
-	dialogs::AboutDialog dlg(this->session().device_manager(), device_);
+	ui::dialogs::AboutDialog dlg(this->session().device_manager(), device_);
 	dlg.exec();
 }
 
 } // namespace tabs
+} // namespace ui
 } // namespace sv

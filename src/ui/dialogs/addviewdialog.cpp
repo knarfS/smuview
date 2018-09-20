@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,10 +43,11 @@ using std::static_pointer_cast;
 Q_DECLARE_SMART_POINTER_METATYPE(std::shared_ptr)
 
 namespace sv {
+namespace ui {
 namespace dialogs {
 
 AddViewDialog::AddViewDialog(const Session &session,
-		const shared_ptr<devices::BaseDevice> device,
+		const shared_ptr<sv::devices::BaseDevice> device,
 		int selected_view_type,
 		QWidget *parent) :
 	QDialog(parent),
@@ -229,4 +230,5 @@ void AddViewDialog::accept()
 }
 
 } // namespace dialogs
+} // namespace ui
 } // namespace sv

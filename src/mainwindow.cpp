@@ -39,14 +39,14 @@
 #include "src/devices/measurementdevice.hpp"
 #include "src/devices/sourcesinkdevice.hpp"
 #include "src/devices/virtualdevice.hpp"
-#include "src/dialogs/connectdialog.hpp"
-#include "src/tabs/basetab.hpp"
-#include "src/tabs/measurementtab.hpp"
-#include "src/tabs/sourcesinktab.hpp"
-#include "src/tabs/virtualtab.hpp"
-#include "src/tabs/welcometab.hpp"
-#include "src/widgets/signaltree.hpp"
+#include "src/ui/dialogs/connectdialog.hpp"
 #include "src/ui/processing/processingwidget.hpp"
+#include "src/ui/tabs/basetab.hpp"
+#include "src/ui/tabs/measurementtab.hpp"
+#include "src/ui/tabs/sourcesinktab.hpp"
+#include "src/ui/tabs/virtualtab.hpp"
+#include "src/ui/tabs/welcometab.hpp"
+#include "src/widgets/signaltree.hpp"
 
 using std::make_pair;
 using std::make_shared;
@@ -156,7 +156,7 @@ void MainWindow::add_welcome_tab()
 	tab_window->setWindowFlags(Qt::Widget);  // Remove Qt::Window flag
 	tab_window->setDockNestingEnabled(true);
 
-	tabs::WelcomeTab *tab = new tabs::WelcomeTab(*session_, tab_window);
+	ui::tabs::WelcomeTab *tab = new ui::tabs::WelcomeTab(*session_, tab_window);
 	tab_window->setCentralWidget(tab);
 
 	add_tab(tab_window, tr("Welcome"));
@@ -178,7 +178,8 @@ void MainWindow::add_virtual_device_tab()
 	tab_window->setWindowFlags(Qt::Widget);  // Remove Qt::Window flag
 	tab_window->setDockNestingEnabled(true);
 
-	tabs::VirtualTab *tab = new tabs::VirtualTab(*session_, device, tab_window);
+	ui::tabs::VirtualTab *tab =
+		new ui::tabs::VirtualTab(*session_, device, tab_window);
 	tab_window->setCentralWidget(tab);
 
 	add_tab(tab_window, device->short_name());
@@ -200,17 +201,17 @@ void MainWindow::add_hw_device_tab(
 	tab_window->setWindowFlags(Qt::Widget);  // Remove Qt::Window flag
 	tab_window->setDockNestingEnabled(true);
 
-	tabs::BaseTab *tab;
+	ui::tabs::BaseTab *tab;
 	// TODO: Use Tyoe enum
 	// TODO: Handle in devicehelper/tabhelper and return tab
 	const auto keys = device->sr_hardware_device()->driver()->config_keys();
 	if (keys.count(sigrok::ConfigKey::POWER_SUPPLY) ||
 			keys.count(sigrok::ConfigKey::ELECTRONIC_LOAD)) {
-		tab = new tabs::SourceSinkTab(*session_,
+		tab = new ui::tabs::SourceSinkTab(*session_,
 			static_pointer_cast<devices::SourceSinkDevice>(device), tab_window);
 	}
 	else {
-		tab = new tabs::MeasurementTab(*session_,
+		tab = new ui::tabs::MeasurementTab(*session_,
 			static_pointer_cast<devices::MeasurementDevice>(device), tab_window);
 	}
 	tab_window->setCentralWidget(tab);
@@ -357,7 +358,7 @@ void MainWindow::show_session_error(const QString text, const QString info_text)
 
 void MainWindow::on_action_add_device_tab_triggered()
 {
-	dialogs::ConnectDialog dlg(device_manager_);
+	ui::dialogs::ConnectDialog dlg(device_manager_);
 
 	if (dlg.exec())
 		add_hw_device_tab(dlg.get_selected_device());

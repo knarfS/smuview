@@ -1,7 +1,8 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017 Soeren Apel <soeren@apelpie.net>
+ * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,63 +18,51 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DIALOGS_SELECTSIGNALDIALOG_HPP
-#define DIALOGS_SELECTSIGNALDIALOG_HPP
-
-#include <memory>
-#include <vector>
+#ifndef UI_DIALOGS_ABOUTDIALOG_HPP
+#define UI_DIALOGS_ABOUTDIALOG_HPP
 
 #include <QDialog>
-#include <QDialogButtonBox>
+#include <QListWidget>
+#include <QStackedWidget>
 
-#include "src/session.hpp"
-
-using std::shared_ptr;
-using std::vector;
+#include "src/devicemanager.hpp"
 
 namespace sv {
-
-namespace data {
-class BaseSignal;
-}
 
 namespace devices {
 class BaseDevice;
 }
 
-namespace widgets {
-class SignalTree;
-}
-
+namespace ui {
 namespace dialogs {
 
-class SelectSignalDialog : public QDialog
+class AboutDialog : public QDialog
 {
 	Q_OBJECT
 
 public:
-	SelectSignalDialog(const Session &session,
-		const shared_ptr<devices::BaseDevice> device,
+	AboutDialog(DeviceManager &device_manager,
+		shared_ptr<sv::devices::BaseDevice> device,
 		QWidget *parent = nullptr);
 
-	vector<shared_ptr<data::BaseSignal>> signals();
-
 private:
-	void setup_ui();
+	void create_pages();
+	QWidget *get_about_page(QWidget *parent) const;
+	QWidget *get_device_page(QWidget *parent) const;
 
-	const Session &session_;
-	const shared_ptr<devices::BaseDevice> device_;
-	vector<shared_ptr<data::BaseSignal>> signals_;
+	DeviceManager &device_manager_;
+	shared_ptr<sv::devices::BaseDevice> device_;
 
-	widgets::SignalTree *signal_tree_;
-	QDialogButtonBox *button_box_;
+	QListWidget *page_list;
+	QStackedWidget *pages;
 
-public Q_SLOTS:
-	void accept() override;
+private Q_SLOTS:
+	void on_page_changed(QListWidgetItem *current, QListWidgetItem *previous);
 
 };
 
 } // namespace dialogs
+} // namespace ui
 } // namespace sv
 
-#endif // DIALOGS_SELECTSIGNALDIALOG_HPP
+#endif // UI_DIALOGS_ABOUTDIALOG_HPP
