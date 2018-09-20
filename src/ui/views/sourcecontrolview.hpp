@@ -17,13 +17,13 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VIEWS_SOURCECONTROLVIEW_HPP
-#define VIEWS_SOURCECONTROLVIEW_HPP
+#ifndef UI_VIEWS_SOURCECONTROLVIEW_HPP
+#define UI_VIEWS_SOURCECONTROLVIEW_HPP
 
 #include <memory>
 
 #include "src/devices/deviceutil.hpp"
-#include "src/views/baseview.hpp"
+#include "src/ui/views/baseview.hpp"
 
 using std::shared_ptr;
 
@@ -36,12 +36,12 @@ class Configurable;
 }
 
 namespace ui {
+
 namespace datatypes {
 class BoolButton;
 class BoolLed;
 class DoubleControl;
 class ThresholdControl;
-}
 }
 
 namespace views {
@@ -52,13 +52,13 @@ class SourceControlView : public BaseView
 
 public:
 	SourceControlView(const Session& session,
-		std::shared_ptr<devices::Configurable> configurable,
+		std::shared_ptr<sv::devices::Configurable> configurable,
 		QWidget* parent = nullptr);
 
 	QString title() const;
 
 private:
-	shared_ptr<devices::Configurable> configurable_;
+	shared_ptr<sv::devices::Configurable> configurable_;
 
 	ui::datatypes::BoolLed *cc_led_;
 	ui::datatypes::BoolLed *cv_led_;
@@ -78,6 +78,7 @@ private:
 };
 
 } // namespace views
+} // namespace ui
 } // namespace sv
 
-#endif // VIEWS_SOURCECONTROLVIEW_HPP
+#endif // UI_VIEWS_SOURCECONTROLVIEW_HPP

@@ -29,10 +29,11 @@
 using sv::devices::ConfigKey;
 
 namespace sv {
+namespace ui {
 namespace views {
 
 MeasurementControlView::MeasurementControlView(const Session &session,
-		shared_ptr<devices::Configurable> configurable, QWidget *parent) :
+		shared_ptr<sv::devices::Configurable> configurable, QWidget *parent) :
 	BaseView(session, parent),
 	configurable_(configurable)
 {
@@ -56,4 +57,5 @@ void MeasurementControlView::setup_ui()
 }
 
 } // namespace views
+} // namespace ui
 } // namespace sv

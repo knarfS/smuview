@@ -37,8 +37,13 @@ namespace devices {
 class BaseDevice;
 }
 
+namespace ui {
+namespace devices {
+class SelectConfigurableForm;
+}
 namespace views {
 class BaseView;
+}
 }
 
 namespace widgets {
@@ -57,7 +62,7 @@ public:
 		int selected_view_type,
 		QWidget *parent = nullptr);
 
-	vector<views::BaseView *> views();
+	vector<ui::views::BaseView *> views();
 
 private:
 	void setup_ui();
@@ -70,9 +75,10 @@ private:
 	const Session &session_;
 	const shared_ptr<devices::BaseDevice> device_;
 	int selected_view_type_; // TODO
-	vector<views::BaseView *> views_;
+	vector<ui::views::BaseView *> views_;
 
 	QTabWidget *tab_widget_;
+	ui::devices::SelectConfigurableForm *configurable_configurable_form_;
 	widgets::SignalTree *panel_channel_tree_;
 	widgets::SignalTree *time_plot_channel_tree_;
 	widgets::SignalTree *xy_plot_x_signal_tree_;

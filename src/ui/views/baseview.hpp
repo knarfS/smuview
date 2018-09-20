@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VIEWS_BASEVIEW_HPP
-#define VIEWS_BASEVIEW_HPP
+#ifndef UI_VIEWS_BASEVIEW_HPP
+#define UI_VIEWS_BASEVIEW_HPP
 
 #include <QMainWindow>
 #include <QSettings>
@@ -28,9 +28,10 @@ namespace sv {
 
 class Session;
 
+namespace ui {
 namespace views {
 
-enum ViewType {
+enum class ViewType {
 	ViewTypeMeasurementControl,
 	ViewTypeSinkControl,
 	ViewTypeSourceControl,
@@ -62,6 +63,7 @@ private:
 };
 
 } // namespace views
+} // namespace ui
 } // namespace sv
 
-#endif // VIEWS_BASEVIEW_HPP
+#endif // UI_VIEWS_BASEVIEW_HPP

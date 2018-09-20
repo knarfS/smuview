@@ -185,15 +185,6 @@ set(smuview_SOURCES
   src/tabs/sourcesinktab.cpp
   src/tabs/virtualtab.cpp
   src/tabs/welcometab.cpp
-  src/views/baseview.cpp
-  src/views/dataview.cpp
-  src/views/demodmmcontrolview.cpp
-  src/views/measurementcontrolview.cpp
-  src/views/plotview.cpp
-  src/views/powerpanelview.cpp
-  src/views/sinkcontrolview.cpp
-  src/views/sourcecontrolview.cpp
-  src/views/valuepanelview.cpp
   src/widgets/colorbutton.cpp
   src/widgets/lcddisplay.cpp
   src/widgets/popup.cpp
@@ -227,9 +218,21 @@ set(smuview_SOURCES
   src/ui/devices/configkeycombobox.cpp
   src/ui/devices/configurablecombobox.cpp
   src/ui/devices/devicecombobox.cpp
+  src/ui/devices/selectconfigurableform.cpp
+  src/ui/devices/selectsignalwidget.cpp
+  src/ui/devices/signalcombobox.cpp
   src/ui/processing/processingwidget.cpp
   src/ui/processing/processthreadwidget.cpp
   src/ui/processing/blocks/sequencesinblock.cpp
+  src/ui/views/baseview.cpp
+  src/ui/views/dataview.cpp
+  src/ui/views/demodmmcontrolview.cpp
+  src/ui/views/measurementcontrolview.cpp
+  src/ui/views/plotview.cpp
+  src/ui/views/powerpanelview.cpp
+  src/ui/views/sinkcontrolview.cpp
+  src/ui/views/sourcecontrolview.cpp
+  src/ui/views/valuepanelview.cpp
   src/ui/widgets/lcddisplay.cpp
 )
 

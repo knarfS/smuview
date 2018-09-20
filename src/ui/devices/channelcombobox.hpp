@@ -63,6 +63,10 @@ private:
 
 	void setup_ui();
 
+public Q_SLOTS:
+	void change_device_channel_group(
+		shared_ptr<sv::devices::BaseDevice>, QString);
+
 };
 
 } // namespace devices

@@ -34,16 +34,31 @@ namespace sv {
 namespace ui {
 namespace devices {
 
-ConfigurableComboBox::ConfigurableComboBox(shared_ptr<Session> session,
+ConfigurableComboBox::ConfigurableComboBox(const Session &session,
+		shared_ptr<sv::devices::BaseDevice> device,
 		QWidget *parent) :
 	QComboBox(parent),
-	session_(session)
+	session_(session),
+	device_(device)
 {
 	setup_ui();
 }
 
+void ConfigurableComboBox::select_configurable(
+	shared_ptr<sv::devices::Configurable> configuable)
+{
+	for (int i = 0; i < this->count(); ++i) {
+		QVariant data = this->itemData(i, Qt::UserRole);
+		auto item_config = data.value<shared_ptr<sv::devices::Configurable>>();
+		if (item_config == configuable) {
+			this->setCurrentIndex(i);
+			break;
+		}
+	}
+}
+
 shared_ptr<sv::devices::Configurable>
-	ConfigurableComboBox::selected_configurable()
+	ConfigurableComboBox::selected_configurable() const
 {
 	QVariant data = this->currentData();
 	return data.value<shared_ptr<sv::devices::Configurable>>();
@@ -51,19 +66,26 @@ shared_ptr<sv::devices::Configurable>
 
 void ConfigurableComboBox::setup_ui()
 {
-	for (auto device : session_->devices()) {
-		auto hw_device =
-			dynamic_pointer_cast<sv::devices::HardwareDevice>(device);
-		if (!hw_device)
-			continue;
+	if (device_ == nullptr)
+		return;
 
-		for (auto configurable : hw_device->configurables()) {
-			//QString name = QString("%1 / %2").
-			//	arg(device->name()).arg(configurable->name());
-			this->addItem(
-				configurable->name(), QVariant::fromValue(configurable));
-		}
+	auto hw_device = dynamic_pointer_cast<sv::devices::HardwareDevice>(device_);
+	if (!hw_device)
+		return;
+
+	for (auto configurable : hw_device->configurables()) {
+		this->addItem(configurable->name(), QVariant::fromValue(configurable));
 	}
+
+}
+
+void ConfigurableComboBox::change_device(
+	shared_ptr<sv::devices::BaseDevice> device)
+{
+	device_ = device;
+	for (int i = this->count(); i >= 0; --i)
+		this->removeItem(i);
+	this->setup_ui();
 }
 
 } // namespace devices

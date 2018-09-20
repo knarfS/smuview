@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VIEWS_POWERPANELVIEW_HPP
-#define VIEWS_POWERPANELVIEW_HPP
+#ifndef UI_VIEWS_POWERPANELVIEW_HPP
+#define UI_VIEWS_POWERPANELVIEW_HPP
 
 #include <memory>
 
@@ -26,7 +26,7 @@
 #include <QTimer>
 #include <QToolBar>
 
-#include "src/views/baseview.hpp"
+#include "src/ui/views/baseview.hpp"
 
 using std::shared_ptr;
 
@@ -42,6 +42,7 @@ namespace widgets {
 class LcdDisplay;
 }
 
+namespace ui {
 namespace views {
 
 class PowerPanelView : public BaseView
@@ -50,16 +51,16 @@ class PowerPanelView : public BaseView
 
 public:
 	PowerPanelView(const Session& session,
-		shared_ptr<data::AnalogSignal> voltage_signal,
-		shared_ptr<data::AnalogSignal> current_signal,
+		shared_ptr<sv::data::AnalogSignal> voltage_signal,
+		shared_ptr<sv::data::AnalogSignal> current_signal,
 		QWidget* parent = nullptr);
 	~PowerPanelView();
 
 	QString title() const;
 
 private:
-	shared_ptr<data::AnalogSignal> voltage_signal_;
-	shared_ptr<data::AnalogSignal> current_signal_;
+	shared_ptr<sv::data::AnalogSignal> voltage_signal_;
+	shared_ptr<sv::data::AnalogSignal> current_signal_;
 
 	QTimer *timer_;
 	qint64 start_time_;
@@ -108,7 +109,7 @@ private Q_SLOTS:
 };
 
 } // namespace views
+} // namespace ui
 } // namespace sv
 
-#endif // VIEWS_POWERPANELVIEW_HPP
-
+#endif // UI_VIEWS_POWERPANELVIEW_HPP

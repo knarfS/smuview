@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,6 +38,7 @@ using std::dynamic_pointer_cast;
 using std::static_pointer_cast;
 
 namespace sv {
+namespace ui {
 namespace views {
 
 PlotView::PlotView(const Session &session,
@@ -78,7 +79,7 @@ PlotView::PlotView(const Session &session,
 }
 
 PlotView::PlotView(const Session& session,
-		shared_ptr<data::AnalogSignal> signal,
+		shared_ptr<sv::data::AnalogSignal> signal,
 		QWidget* parent) :
 	BaseView(session, parent),
 	channel_(nullptr),
@@ -101,8 +102,8 @@ PlotView::PlotView(const Session& session,
 }
 
 PlotView::PlotView(const Session& session,
-		shared_ptr<data::AnalogSignal> x_signal,
-		shared_ptr<data::AnalogSignal> y_signal,
+		shared_ptr<sv::data::AnalogSignal> x_signal,
+		shared_ptr<sv::data::AnalogSignal> y_signal,
 		QWidget* parent) :
 	BaseView(session, parent),
 	channel_(nullptr),
@@ -142,14 +143,14 @@ QString PlotView::title() const
 	return title;
 }
 
-void PlotView::add_time_curve(shared_ptr<data::AnalogSignal> signal)
+void PlotView::add_time_curve(shared_ptr<sv::data::AnalogSignal> signal)
 {
 	widgets::plot::TimeCurve *curve = new widgets::plot::TimeCurve(signal);
 	plot_->add_curve(curve);
 }
 
-void PlotView::add_xy_curve(shared_ptr<data::AnalogSignal> x_signal,
-	shared_ptr<data::AnalogSignal> y_signal)
+void PlotView::add_xy_curve(shared_ptr<sv::data::AnalogSignal> x_signal,
+	shared_ptr<sv::data::AnalogSignal> y_signal)
 {
 	widgets::plot::XYCurve *curve =
 		new widgets::plot::XYCurve(x_signal, y_signal);
@@ -233,9 +234,9 @@ void PlotView::on_signal_changed()
 	if (!channel_)
 		return;
 
-	shared_ptr<data::AnalogSignal> signal;
+	shared_ptr<sv::data::AnalogSignal> signal;
 	if (channel_->actual_signal())
-		signal = dynamic_pointer_cast<data::AnalogSignal>(
+		signal = dynamic_pointer_cast<sv::data::AnalogSignal>(
 			channel_->actual_signal());
 
 	this->parentWidget()->setWindowTitle(this->title());
@@ -270,7 +271,7 @@ void PlotView::on_action_add_signal_triggered()
 	dlg.exec();
 
 	for (auto signal : dlg.signals())
-		add_time_curve(dynamic_pointer_cast<data::AnalogSignal>(signal));
+		add_time_curve(dynamic_pointer_cast<sv::data::AnalogSignal>(signal));
 }
 
 void PlotView::on_action_config_plot_triggered()
@@ -280,5 +281,5 @@ void PlotView::on_action_config_plot_triggered()
 }
 
 } // namespace views
+} // namespace ui
 } // namespace sv
-

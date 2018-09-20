@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VIEWS_VALUEPANELVIEW_HPP
-#define VIEWS_VALUEPANELVIEW_HPP
+#ifndef UI_VIEWS_VALUEPANELVIEW_HPP
+#define UI_VIEWS_VALUEPANELVIEW_HPP
 
 #include <memory>
 #include <set>
@@ -29,7 +29,7 @@
 #include <QToolBar>
 
 #include "src/data/datautil.hpp"
-#include "src/views/baseview.hpp"
+#include "src/ui/views/baseview.hpp"
 
 using std::set;
 using std::shared_ptr;
@@ -50,6 +50,7 @@ namespace widgets {
 class LcdDisplay;
 }
 
+namespace ui {
 namespace views {
 
 class ValuePanelView : public BaseView
@@ -62,7 +63,7 @@ public:
 		QWidget* parent = nullptr);
 
 	ValuePanelView(const Session& session,
-		shared_ptr<data::AnalogSignal> signal,
+		shared_ptr<sv::data::AnalogSignal> signal,
 		QWidget* parent = nullptr);
 
 	~ValuePanelView();
@@ -71,12 +72,12 @@ public:
 
 private:
 	shared_ptr<channels::BaseChannel> channel_;
-	shared_ptr<data::AnalogSignal> signal_;
+	shared_ptr<sv::data::AnalogSignal> signal_;
 	QString unit_;
 	QString unit_suffix_;
-	set<data::QuantityFlag> quantity_flags_;
-	set<data::QuantityFlag> quantity_flags_min_;
-	set<data::QuantityFlag> quantity_flags_max_;
+	set<sv::data::QuantityFlag> quantity_flags_;
+	set<sv::data::QuantityFlag> quantity_flags_min_;
+	set<sv::data::QuantityFlag> quantity_flags_max_;
 	int digits_;
 	int decimal_places_;
 
@@ -109,7 +110,7 @@ private Q_SLOTS:
 };
 
 } // namespace views
+} // namespace ui
 } // namespace sv
 
-#endif // VIEWS_VALUEPANELVIEW_HPP
-
+#endif // UI_VIEWS_VALUEPANELVIEW_HPP

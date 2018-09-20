@@ -21,7 +21,7 @@
 
 #include "devicetab.hpp"
 #include "src/session.hpp"
-#include "src/channels/basechannel.hpp"
+#include "src/channels/mathchannel.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/devices/basedevice.hpp"
@@ -192,9 +192,11 @@ void DeviceTab::on_action_add_math_channel_triggered()
 		d = device_;
 
 	dialogs::AddMathChannelDialog dlg(session(), d);
-	dlg.exec();
+	if (!dlg.exec())
+		return;
 
-	for (auto channel : dlg.channels())
+	auto channel = dlg.channel();
+	if (channel != nullptr)
 		device_->add_channel(channel, channel->channel_group_name());
 }
 

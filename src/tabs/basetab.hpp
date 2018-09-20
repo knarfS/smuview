@@ -27,7 +27,7 @@
 #include <QSettings>
 #include <QWidget>
 
-#include "src/views/baseview.hpp"
+#include "src/ui/views/baseview.hpp"
 
 using std::map;
 
@@ -58,10 +58,10 @@ public:
 	virtual void restore_settings(QSettings &settings);
 
 private:
-	map<QDockWidget *, views::BaseView *> view_docks_;
+	map<QDockWidget *, ui::views::BaseView *> view_docks_;
 
 protected:
-	void add_view(views::BaseView *view, Qt::DockWidgetArea area);
+	void add_view(ui::views::BaseView *view, Qt::DockWidgetArea area);
 
 	Session &session_;
 	QMainWindow *parent_;

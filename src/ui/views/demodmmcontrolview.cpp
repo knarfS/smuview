@@ -38,16 +38,16 @@ using sv::devices::ConfigKey;
 Q_DECLARE_METATYPE(sv::data::measured_quantity_t)
 
 namespace sv {
+namespace ui {
 namespace views {
 
 DemoDMMControlView::DemoDMMControlView(const Session &session,
-		shared_ptr<devices::Configurable> configurable, QWidget *parent) :
+		shared_ptr<sv::devices::Configurable> configurable, QWidget *parent) :
 	BaseView(session, parent),
 	configurable_(configurable)
 {
 	setup_ui();
 	connect_signals();
-	init_values();
 }
 
 QString DemoDMMControlView::title() const
@@ -97,14 +97,10 @@ void DemoDMMControlView::connect_signals()
 	// Device -> control elements
 }
 
-void DemoDMMControlView::init_values()
-{
-}
-
 void DemoDMMControlView::on_quantity_set()
 {
-	data::Quantity quantity = quantity_box_->selected_quantity();
-	set<data::QuantityFlag> quantity_flags =
+	sv::data::Quantity quantity = quantity_box_->selected_quantity();
+	set<sv::data::QuantityFlag> quantity_flags =
 		quantity_flags_list_->selected_quantity_flags();
 
 	auto mq = make_pair(quantity, quantity_flags);
@@ -113,5 +109,5 @@ void DemoDMMControlView::on_quantity_set()
 }
 
 } // namespace views
+} // namespace ui
 } // namespace sv
-

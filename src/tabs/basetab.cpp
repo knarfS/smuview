@@ -32,7 +32,7 @@ namespace sv {
 namespace tabs {
 
 BaseTab::BaseTab(Session &session, QMainWindow *parent) :
-		QWidget(parent),
+	QWidget(parent),
 	session_(session),
 	parent_(parent)
 {
@@ -58,7 +58,7 @@ void BaseTab::restore_settings(QSettings &settings)
 	(void)settings;
 }
 
-void BaseTab::add_view(views::BaseView *view, Qt::DockWidgetArea area)
+void BaseTab::add_view(ui::views::BaseView *view, Qt::DockWidgetArea area)
 {
 	if (!view)
 		return;

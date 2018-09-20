@@ -201,15 +201,18 @@ void MainWindow::add_hw_device_tab(
 	tab_window->setDockNestingEnabled(true);
 
 	tabs::BaseTab *tab;
+	// TODO: Use Tyoe enum
+	// TODO: Handle in devicehelper/tabhelper and return tab
 	const auto keys = device->sr_hardware_device()->driver()->config_keys();
 	if (keys.count(sigrok::ConfigKey::POWER_SUPPLY) ||
 			keys.count(sigrok::ConfigKey::ELECTRONIC_LOAD)) {
 		tab = new tabs::SourceSinkTab(*session_,
 			static_pointer_cast<devices::SourceSinkDevice>(device), tab_window);
 	}
-	else
+	else {
 		tab = new tabs::MeasurementTab(*session_,
 			static_pointer_cast<devices::MeasurementDevice>(device), tab_window);
+	}
 	tab_window->setCentralWidget(tab);
 
 	add_tab(tab_window, device->short_name());

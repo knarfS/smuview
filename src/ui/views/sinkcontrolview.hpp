@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,15 +17,13 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VIEWS_DEMODMMCONTROLVIEW_HPP
-#define VIEWS_DEMODMMCONTROLVIEW_HPP
+#ifndef UI_VIEWS_SINKCONTROLVIEW_HPP
+#define UI_VIEWS_SINKCONTROLVIEW_HPP
 
 #include <memory>
 
-#include <QPushButton>
-#include <QString>
-
-#include "src/views/baseview.hpp"
+#include "src/devices/deviceutil.hpp"
+#include "src/ui/views/baseview.hpp"
 
 using std::shared_ptr;
 
@@ -38,48 +36,50 @@ class Configurable;
 }
 
 namespace ui {
-namespace data {
-class QuantityComboBox;
-class QuantityFlagsList;
-}
+
 namespace datatypes {
+class BoolButton;
+class BoolLed;
 class DoubleControl;
-}
+class StringComboBox;
+class ThresholdControl;
 }
 
 namespace views {
 
-class DemoDMMControlView : public BaseView
+class SinkControlView : public BaseView
 {
 	Q_OBJECT
 
 public:
-	DemoDMMControlView(const Session& session,
-		shared_ptr<devices::Configurable> configurable,
+	SinkControlView(const Session& session,
+		shared_ptr<sv::devices::Configurable> configurable,
 		QWidget* parent = nullptr);
 
 	QString title() const;
 
 private:
-	shared_ptr<devices::Configurable> configurable_;
+	shared_ptr<sv::devices::Configurable> configurable_;
 
-	ui::data::QuantityComboBox *quantity_box_;
-	ui::data::QuantityFlagsList *quantity_flags_list_;
-	QPushButton *set_button_;
-	ui::datatypes::DoubleControl *amplitude_control_;
-	ui::datatypes::DoubleControl *offset_control_;
+	ui::datatypes::BoolLed *cc_led_;
+	ui::datatypes::BoolLed *cv_led_;
+	ui::datatypes::BoolLed *ovp_led_;
+	ui::datatypes::BoolLed *ocp_led_;
+	ui::datatypes::BoolLed *otp_led_;
+	ui::datatypes::BoolLed *uvc_led_;
+	ui::datatypes::BoolButton *enable_button_;
+	ui::datatypes::StringComboBox *regulation_box_;
+	ui::datatypes::DoubleControl *current_control_;
+	ui::datatypes::ThresholdControl *ovp_control_;
+	ui::datatypes::ThresholdControl *ocp_control_;
+	ui::datatypes::ThresholdControl *uvc_control_;
 
 	void setup_ui();
-	void connect_signals();
-	void init_values();
-
-private Q_SLOTS:
-	void on_quantity_set();
 
 };
 
 } // namespace views
+} // namespace ui
 } // namespace sv
 
-#endif // VIEWS_DEMODMMCONTROLVIEW_HPP
-
+#endif // UI_VIEWS_SINKCONTROLVIEW_HPP

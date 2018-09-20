@@ -17,13 +17,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UI_DEVICES_CHANNELGROUPCOMBOBOX_HPP
-#define UI_DEVICES_CHANNELGROUPCOMBOBOX_HPP
+#ifndef UI_DEVICES_SELECTSIGNALWIDGET_HPP
+#define UI_DEVICES_SELECTSIGNALWIDGET_HPP
 
 #include <memory>
 
-#include <QComboBox>
-#include <QString>
 #include <QWidget>
 
 using std::shared_ptr;
@@ -32,6 +30,10 @@ namespace sv {
 
 class Session;
 
+namespace data {
+class BaseSignal;
+}
+
 namespace devices {
 class BaseDevice;
 }
@@ -39,26 +41,36 @@ class BaseDevice;
 namespace ui {
 namespace devices {
 
-class ChannelGroupComboBox : public QComboBox
+class ChannelComboBox;
+class ChannelGroupComboBox;
+class DeviceComboBox;
+class SignalComboBox;
+
+class SelectSignalWidget : public QWidget
 {
     Q_OBJECT
 
 public:
-	ChannelGroupComboBox(const Session &session,
-		shared_ptr<sv::devices::BaseDevice> device = nullptr,
-		QWidget *parent = nullptr);
+	SelectSignalWidget(const Session &session, QWidget *parent = nullptr);
 
-	void select_channel_group(QString);
-	const QString selected_channel_group();
+	void select_device(shared_ptr<sv::devices::BaseDevice>);
+	shared_ptr<sv::data::BaseSignal> selected_signal() const;
 
 private:
-	void setup_ui();
-
 	const Session &session_;
-	shared_ptr<sv::devices::BaseDevice> device_;
 
-public Q_SLOTS:
-	void change_device(shared_ptr<sv::devices::BaseDevice>);
+	DeviceComboBox *device_box_;
+	ChannelGroupComboBox *channel_group_box_;
+	ChannelComboBox *channel_box_;
+	SignalComboBox *signal_box_;
+
+	void setup_ui();
+	void connect_signals();
+
+private Q_SLOTS:
+	void on_device_changed();
+	void on_channel_group_changed();
+	void on_channel_changed();
 
 };
 
@@ -66,4 +78,5 @@ public Q_SLOTS:
 } // namespace ui
 } // namespace sv
 
-#endif // UI_DEVICES_CHANNELGROUPCOMBOBOX_HPP
+#endif // UI_DEVICES_SELECTSIGNALWIDGET_HPP
+

@@ -27,10 +27,11 @@
 #include "src/data/analogsignal.hpp"
 
 namespace sv {
+namespace ui {
 namespace views {
 
 DataView::DataView(const Session &session,
-		shared_ptr<data::AnalogSignal> signal,
+		shared_ptr<sv::data::AnalogSignal> signal,
 		QWidget *parent) :
 	BaseView(session, parent),
 	signal_(signal),
@@ -70,7 +71,7 @@ void DataView::populate_table()
 		int row  = data_table_->rowCount();
 		data_table_->insertRow(row);
 
-		data::sample_t sample = signal_->get_sample(next_signal_pos_, true);
+		sv::data::sample_t sample = signal_->get_sample(next_signal_pos_, true);
 		QTableWidgetItem *time_item =
 			new QTableWidgetItem(tr("%1").arg(sample.first));
 		data_table_->setItem(row, 0, time_item);
@@ -91,5 +92,6 @@ void DataView::connect_signals()
 }
 
 } // namespace views
+} // namespace ui
 } // namespace sv
 

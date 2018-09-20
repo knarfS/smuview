@@ -29,10 +29,10 @@
 #include "src/devices/deviceutil.hpp"
 #include "src/devices/hardwaredevice.hpp"
 #include "src/devices/measurementdevice.hpp"
-#include "src/views/demodmmcontrolview.hpp"
-#include "src/views/measurementcontrolview.hpp"
-#include "src/views/plotview.hpp"
-#include "src/views/valuepanelview.hpp"
+#include "src/ui/views/demodmmcontrolview.hpp"
+#include "src/ui/views/measurementcontrolview.hpp"
+#include "src/ui/views/plotview.hpp"
+#include "src/ui/views/valuepanelview.hpp"
 
 namespace sv {
 namespace tabs {
@@ -54,7 +54,7 @@ void MeasurementTab::setup_ui()
 	for (auto c : hw_device->configurables()) {
 		if (c->is_controllable()) {
 			if (device_->type() == devices::DeviceType::DemoDev)
-				add_view(new views::DemoDMMControlView(session_, c),
+				add_view(new ui::views::DemoDMMControlView(session_, c),
 					Qt::TopDockWidgetArea);
 			else if (device_->type() == devices::DeviceType::Multimeter ||
 					device_->type() == devices::DeviceType::Multimeter ||
@@ -65,7 +65,7 @@ void MeasurementTab::setup_ui()
 					device_->type() == devices::DeviceType::LcrMeter ||
 					device_->type() == devices::DeviceType::Scale ||
 					device_->type() == devices::DeviceType::Powermeter)
-				add_view(new views::MeasurementControlView(session_, c),
+				add_view(new ui::views::MeasurementControlView(session_, c),
 					Qt::TopDockWidgetArea);
 
 			// Shown only 2 configurables
@@ -80,13 +80,13 @@ void MeasurementTab::setup_ui()
 		auto channel = ch_name_channel_pair.second;
 
 		// Value panel(s)
-		views::BaseView *value_panel_view =
-			new views::ValuePanelView(session_, channel);
+		ui::views::BaseView *value_panel_view =
+			new ui::views::ValuePanelView(session_, channel);
 		add_view(value_panel_view, Qt::TopDockWidgetArea);
 
 		// Value plot(s)
-		views::BaseView *value_plot_view =
-			new views::PlotView(session_, channel);
+		ui::views::BaseView *value_plot_view =
+			new ui::views::PlotView(session_, channel);
 		add_view(value_plot_view, Qt::BottomDockWidgetArea);
 
 		// Shown only 2 panles/plots

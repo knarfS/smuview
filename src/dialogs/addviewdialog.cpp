@@ -27,9 +27,15 @@
 #include "src/channels/basechannel.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/devices/basedevice.hpp"
-#include "src/views/dataview.hpp"
-#include "src/views/plotview.hpp"
-#include "src/views/valuepanelview.hpp"
+#include "src/devices/configurable.hpp"
+#include "src/devices/deviceutil.hpp"
+#include "src/ui/devices/selectconfigurableform.hpp"
+#include "src/ui/views/dataview.hpp"
+#include "src/ui/views/measurementcontrolview.hpp"
+#include "src/ui/views/plotview.hpp"
+#include "src/ui/views/sinkcontrolview.hpp"
+#include "src/ui/views/sourcecontrolview.hpp"
+#include "src/ui/views/valuepanelview.hpp"
 #include "src/widgets/signaltree.hpp"
 
 using std::static_pointer_cast;
@@ -84,8 +90,10 @@ void AddViewDialog::setup_ui_control_tab()
 {
 	QString title(tr("Control"));
 	QWidget *control_widget = new QWidget();
-	QFormLayout *form_layout = new QFormLayout();
-	control_widget->setLayout(form_layout);
+
+	configurable_configurable_form_ =
+		new ui::devices::SelectConfigurableForm(session_);
+	control_widget->setLayout(configurable_configurable_form_);
 
 	tab_widget_->addTab(control_widget, title);
 }
@@ -149,7 +157,7 @@ void AddViewDialog::setup_ui_table_tab()
 	tab_widget_->addTab(table_widget, title);
 }
 
-vector<views::BaseView *> AddViewDialog::views()
+vector<ui::views::BaseView *> AddViewDialog::views()
 {
 	return views_;
 }
@@ -158,21 +166,37 @@ void AddViewDialog::accept()
 {
 	int tab_index = tab_widget_->currentIndex();
 	switch (tab_index) {
-	case 0:
-		// TODO: List with controlls + view
+	case 0: {
+			/*
+			auto configurable =
+				configurable_configurable_form_->selected_configurable();
+			if (configurable->device_type() == devices::DeviceType::ElectronicLoad) {
+				views_.push_back(
+					new views::SinkControlView(session_, configurable));
+			}
+			else if (configurable->device_type() == devices::DeviceType::PowerSupply) {
+				views_.push_back(
+					new views::SourceControlView(session_, configurable));
+			}
+			else { // TODO: Check for DMM, LCR, Scale....
+				views_.push_back(
+					new views::MeasurementControlView(session_, configurable));
+			}
+			*/
+		}
 		break;
 	case 1:
 		for (auto channel : panel_channel_tree_->selected_channels()) {
-			views_.push_back(new views::ValuePanelView(session_, channel));
+			views_.push_back(new ui::views::ValuePanelView(session_, channel));
 		}
 		break;
 	case 2:
 		for (auto channel : time_plot_channel_tree_->selected_channels()) {
-			views_.push_back(new views::PlotView(session_, channel));
+			views_.push_back(new ui::views::PlotView(session_, channel));
 		}
 		for (auto signal : time_plot_channel_tree_->selected_signals()) {
 			auto a_signal = static_pointer_cast<data::AnalogSignal>(signal);
-			views_.push_back(new views::PlotView(session_, a_signal));
+			views_.push_back(new ui::views::PlotView(session_, a_signal));
 		}
 
 		break;
@@ -187,13 +211,13 @@ void AddViewDialog::accept()
 				y_signal = static_pointer_cast<data::AnalogSignal>(signal);
 				break;
 			}
-			views_.push_back(new views::PlotView(session_, x_signal, y_signal));
+			views_.push_back(new ui::views::PlotView(session_, x_signal, y_signal));
 		}
 		break;
 	case 4:
 		for (auto signal : table_signal_tree_->selected_signals()) {
 			auto a_signal = static_pointer_cast<data::AnalogSignal>(signal);
-			views_.push_back(new views::DataView(session_, a_signal));
+			views_.push_back(new ui::views::DataView(session_, a_signal));
 		}
 
 		break;

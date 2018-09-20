@@ -52,7 +52,7 @@ public:
 		const Session &session, shared_ptr<sv::channels::BaseChannel> channel,
 		QWidget *parent = nullptr);
 
-	void select_signal(shared_ptr<sv::data::BaseSignal> signal);
+	void select_signal(shared_ptr<sv::data::BaseSignal>);
 	shared_ptr<sv::data::BaseSignal> selected_signal() const;
 
 private:
@@ -61,6 +61,8 @@ private:
 
 	void setup_ui();
 
+public Q_SLOTS:
+	void change_channel(shared_ptr<sv::channels::BaseChannel>);
 };
 
 } // namespace devices

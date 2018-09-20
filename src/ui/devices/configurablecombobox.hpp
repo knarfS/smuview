@@ -32,6 +32,7 @@ namespace sv {
 class Session;
 
 namespace devices {
+class BaseDevice;
 class Configurable;
 }
 
@@ -43,15 +44,22 @@ class ConfigurableComboBox : public QComboBox
     Q_OBJECT
 
 public:
-	ConfigurableComboBox(shared_ptr<Session> session,
+	ConfigurableComboBox(const Session &session,
+		shared_ptr<sv::devices::BaseDevice> device = nullptr,
 		QWidget *parent = nullptr);
 
-	shared_ptr<sv::devices::Configurable> selected_configurable();
+	void select_configurable(shared_ptr<sv::devices::Configurable>);
+	shared_ptr<sv::devices::Configurable> selected_configurable() const;
 
 private:
-	shared_ptr<Session> session_;
+	const Session &session_;
+	shared_ptr<sv::devices::BaseDevice> device_;
 
 	void setup_ui();
+
+
+public Q_SLOTS:
+	void change_device(shared_ptr<sv::devices::BaseDevice>);
 
 };
 

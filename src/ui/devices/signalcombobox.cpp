@@ -17,10 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cassert>
 #include <map>
 #include <memory>
-#include <vector>
 
 #include <QDebug>
 #include <QVariant>
@@ -31,7 +29,6 @@
 #include "src/channels/basechannel.hpp"
 
 using std::shared_ptr;
-using std::vector;
 
 Q_DECLARE_METATYPE(shared_ptr<sv::data::BaseSignal>)
 
@@ -70,13 +67,22 @@ shared_ptr<sv::data::BaseSignal> SignalComboBox::selected_signal() const
 
 void SignalComboBox::setup_ui()
 {
-	assert(channel_);
+	if (channel_ == nullptr)
+		return;
 
 	for (auto signal_pair : channel_->signal_map()) {
 		auto signal = signal_pair.second;
-		this->addItem(
-			signal->name(), QVariant::fromValue(signal));
+		this->addItem(signal->name(), QVariant::fromValue(signal));
 	}
+}
+
+void SignalComboBox::change_channel(
+	shared_ptr<sv::channels::BaseChannel> channel)
+{
+	channel_ = channel;
+	for (int i = this->count(); i >= 0; --i)
+		this->removeItem(i);
+	this->setup_ui();
 }
 
 } // namespace devices

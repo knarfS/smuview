@@ -17,52 +17,42 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VIEWS_MEASUREMENTCONTROLVIEW_HPP
-#define VIEWS_MEASUREMENTCONTROLVIEW_HPP
-
-#include <memory>
-
-#include "src/views/baseview.hpp"
-
-using std::shared_ptr;
+#include "baseview.hpp"
+#include "src/session.hpp"
 
 namespace sv {
-
-class Session;
-
-namespace devices {
-class Configurable;
-}
-
 namespace ui {
-namespace datatypes {
-class MeasuredQuantityComboBox;
-}
-}
-
 namespace views {
 
-class MeasurementControlView : public BaseView
+const int BaseView::MaxViewAutoUpdateRate = 25; // No more than 25 Hz
+
+BaseView::BaseView(const Session &session, QWidget *parent) :
+		QMainWindow(parent),
+	session_(session)
 {
-	Q_OBJECT
+	// Remove Qt::Window flag
+	this->setWindowFlags(Qt::Widget);
 
-public:
-	MeasurementControlView(const Session& session,
-		shared_ptr<devices::Configurable> configurable,
-		QWidget* parent = nullptr);
+	// Use a QMainWindow (in the dock widget) to allow for a tool bar
+	centralWidget_ = new QWidget();
+	this->setCentralWidget(centralWidget_);
+}
 
-	QString title() const;
+const Session& BaseView::session() const
+{
+	return session_;
+}
 
-private:
-	shared_ptr<devices::Configurable> configurable_;
+void BaseView::save_settings(QSettings &settings) const
+{
+	(void)settings;
+}
 
-	ui::datatypes::MeasuredQuantityComboBox *measured_quantity_box_;
-
-	void setup_ui();
-
-};
+void BaseView::restore_settings(QSettings &settings)
+{
+	(void)settings;
+}
 
 } // namespace views
+} // namespace ui
 } // namespace sv
-
-#endif // VIEWS_MEASUREMENTCONTROLVIEW_HPP

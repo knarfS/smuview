@@ -91,6 +91,16 @@ void ChannelComboBox::setup_ui()
 	}
 }
 
+void ChannelComboBox::change_device_channel_group(
+	shared_ptr<sv::devices::BaseDevice> device, QString channel_group)
+{
+	device_ = device;
+	channel_group_ = channel_group;
+	for (int i = this->count(); i >= 0; --i)
+		this->removeItem(i);
+	this->setup_ui();
+}
+
 } // namespace devices
 } // namespace ui
 } // namespace sv

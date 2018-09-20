@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,15 +17,15 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VIEWS_PLOTVIEW_HPP
-#define VIEWS_PLOTVIEW_HPP
+#ifndef UI_VIEWS_PLOTVIEW_HPP
+#define UI_VIEWS_PLOTVIEW_HPP
 
 #include <memory>
 
 #include <QAction>
 #include <QToolBar>
 
-#include "src/views/baseview.hpp"
+#include "src/ui/views/baseview.hpp"
 
 using std::shared_ptr;
 
@@ -48,6 +48,7 @@ class Plot;
 }
 }
 
+namespace ui {
 namespace views {
 
 class PlotView : public BaseView
@@ -59,17 +60,17 @@ public:
 		shared_ptr<channels::BaseChannel> channel,
 		QWidget* parent = nullptr);
 	PlotView(const Session& session,
-		shared_ptr<data::AnalogSignal> signal,
+		shared_ptr<sv::data::AnalogSignal> signal,
 		QWidget* parent = nullptr);
 	PlotView(const Session& session,
-		shared_ptr<data::AnalogSignal> x_signal,
-		shared_ptr<data::AnalogSignal> y_signal,
+		shared_ptr<sv::data::AnalogSignal> x_signal,
+		shared_ptr<sv::data::AnalogSignal> y_signal,
 		QWidget* parent = nullptr);
 
 	QString title() const;
-	void add_time_curve(shared_ptr<data::AnalogSignal> signal);
-	void add_xy_curve(shared_ptr<data::AnalogSignal> x_signal,
-		shared_ptr<data::AnalogSignal> y_signal);
+	void add_time_curve(shared_ptr<sv::data::AnalogSignal> signal);
+	void add_xy_curve(shared_ptr<sv::data::AnalogSignal> x_signal,
+		shared_ptr<sv::data::AnalogSignal> y_signal);
 
 private:
 	void setup_ui();
@@ -99,7 +100,7 @@ private Q_SLOTS:
 };
 
 } // namespace views
+} // namespace ui
 } // namespace sv
 
-#endif // VIEWS_PLOTVIEW_HPP
-
+#endif // UI_VIEWS_PLOTVIEW_HPP

@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,14 +17,12 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VIEWS_DATAVIEW_HPP
-#define VIEWS_DATAVIEW_HPP
+#ifndef UI_VIEWS_MEASUREMENTCONTROLVIEW_HPP
+#define UI_VIEWS_MEASUREMENTCONTROLVIEW_HPP
 
 #include <memory>
 
-#include <QTableWidget>
-
-#include "src/views/baseview.hpp"
+#include "src/ui/views/baseview.hpp"
 
 using std::shared_ptr;
 
@@ -32,39 +30,40 @@ namespace sv {
 
 class Session;
 
-namespace data {
-class AnalogSignal;
+namespace devices {
+class Configurable;
+}
+
+namespace ui {
+
+namespace datatypes {
+class MeasuredQuantityComboBox;
 }
 
 namespace views {
 
-class DataView : public BaseView
+class MeasurementControlView : public BaseView
 {
 	Q_OBJECT
 
 public:
-	DataView(const Session& session,
-		shared_ptr<data::AnalogSignal> signal,
+	MeasurementControlView(const Session& session,
+		shared_ptr<sv::devices::Configurable> configurable,
 		QWidget* parent = nullptr);
 
 	QString title() const;
 
 private:
-	shared_ptr<data::AnalogSignal> signal_;
-	size_t next_signal_pos_;
+	shared_ptr<sv::devices::Configurable> configurable_;
 
-	QTableWidget *data_table_;
+	ui::datatypes::MeasuredQuantityComboBox *measured_quantity_box_;
 
 	void setup_ui();
-	void connect_signals();
-
-private Q_SLOTS:
-	void populate_table();
 
 };
 
 } // namespace views
+} // namespace ui
 } // namespace sv
 
-#endif // VIEWS_DATAVIEW_HPP
-
+#endif // UI_VIEWS_MEASUREMENTCONTROLVIEW_HPP

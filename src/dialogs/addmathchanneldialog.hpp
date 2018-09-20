@@ -30,7 +30,6 @@
 #include "src/session.hpp"
 
 using std::shared_ptr;
-using std::vector;
 
 namespace sv {
 
@@ -39,7 +38,7 @@ class BaseDevice;
 }
 
 namespace channels {
-class BaseChannel;
+class MathChannel;
 }
 
 namespace ui {
@@ -51,11 +50,8 @@ class UnitComboBox;
 namespace devices {
 class ChannelGroupComboBox;
 class DeviceComboBox;
+class SelectSignalWidget;
 }
-}
-
-namespace widgets {
-class SignalTree;
 }
 
 namespace dialogs {
@@ -69,7 +65,7 @@ public:
 		shared_ptr<devices::BaseDevice> device,
 		QWidget *parent = nullptr);
 
-	vector<shared_ptr<channels::BaseChannel>> channels();
+	shared_ptr<channels::MathChannel> channel();
 
 private:
 	void setup_ui();
@@ -81,7 +77,7 @@ private:
 
 	const Session &session_;
 	shared_ptr<devices::BaseDevice> device_;
-	vector<shared_ptr<channels::BaseChannel>> channels_;
+	shared_ptr<channels::MathChannel> channel_;
 
 	QTabWidget *tab_widget_;
 	QLineEdit *name_edit_;
@@ -90,15 +86,13 @@ private:
 	ui::data::UnitComboBox *unit_box_;
 	ui::devices::DeviceComboBox *device_box_;
 	ui::devices::ChannelGroupComboBox *channel_group_box_;
-	widgets::SignalTree *m_ss_signal_1_tree_;
-	widgets::SignalTree *m_ss_signal_2_tree_;
-	widgets::SignalTree *m_sf_signal_tree_;
+	ui::devices::SelectSignalWidget *m_ss_signal1_;
+	ui::devices::SelectSignalWidget *m_ss_signal2_;
+	ui::devices::SelectSignalWidget *m_sf_signal_;
 	QLineEdit *m_sf_factor_edit_;
-	widgets::SignalTree *d_ss_signal_1_tree_;
-	widgets::SignalTree *d_ss_signal_2_tree_;
-	widgets::SignalTree *d_sf_signal_tree_;
-	QLineEdit *d_sf_factor_edit_;
-	widgets::SignalTree *i_s_signal_tree_;
+	ui::devices::SelectSignalWidget *d_ss_signal1_;
+	ui::devices::SelectSignalWidget *d_ss_signal2_;
+	ui::devices::SelectSignalWidget *i_s_signal_;
 	QDialogButtonBox *button_box_;
 
 public Q_SLOTS:

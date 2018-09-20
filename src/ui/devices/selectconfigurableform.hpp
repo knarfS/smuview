@@ -17,14 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UI_DEVICES_CHANNELGROUPCOMBOBOX_HPP
-#define UI_DEVICES_CHANNELGROUPCOMBOBOX_HPP
+#ifndef UI_DEVICES_SELECTCONFIGURABLEFORM_HPP
+#define UI_DEVICES_SELECTCONFIGURABLEFORM_HPP
 
 #include <memory>
 
-#include <QComboBox>
-#include <QString>
-#include <QWidget>
+#include <QFormLayout>
 
 using std::shared_ptr;
 
@@ -34,31 +32,36 @@ class Session;
 
 namespace devices {
 class BaseDevice;
+class Configurable;
 }
 
 namespace ui {
 namespace devices {
 
-class ChannelGroupComboBox : public QComboBox
+class ConfigurableComboBox;
+class DeviceComboBox;
+
+class SelectConfigurableForm : public QFormLayout
 {
     Q_OBJECT
 
 public:
-	ChannelGroupComboBox(const Session &session,
-		shared_ptr<sv::devices::BaseDevice> device = nullptr,
-		QWidget *parent = nullptr);
+	SelectConfigurableForm(const Session &session, QWidget *parent = nullptr);
 
-	void select_channel_group(QString);
-	const QString selected_channel_group();
+	void select_device(shared_ptr<sv::devices::BaseDevice>);
+	shared_ptr<sv::devices::Configurable> selected_configurable() const;
 
 private:
-	void setup_ui();
-
 	const Session &session_;
-	shared_ptr<sv::devices::BaseDevice> device_;
 
-public Q_SLOTS:
-	void change_device(shared_ptr<sv::devices::BaseDevice>);
+	DeviceComboBox *device_box_;
+	ConfigurableComboBox *configurable_box_;
+
+	void setup_ui();
+	void connect_signals();
+
+private Q_SLOTS:
+	void on_device_changed();
 
 };
 
@@ -66,4 +69,4 @@ public Q_SLOTS:
 } // namespace ui
 } // namespace sv
 
-#endif // UI_DEVICES_CHANNELGROUPCOMBOBOX_HPP
+#endif // UI_DEVICES_SELECTCONFIGURABLEFORM_HPP

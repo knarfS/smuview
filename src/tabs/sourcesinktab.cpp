@@ -32,10 +32,10 @@
 #include "src/devices/configurable.hpp"
 #include "src/devices/hardwaredevice.hpp"
 #include "src/tabs/devicetab.hpp"
-#include "src/views/sinkcontrolview.hpp"
-#include "src/views/sourcecontrolview.hpp"
-#include "src/views/plotview.hpp"
-#include "src/views/powerpanelview.hpp"
+#include "src/ui/views/sinkcontrolview.hpp"
+#include "src/ui/views/sourcecontrolview.hpp"
+#include "src/ui/views/plotview.hpp"
+#include "src/ui/views/powerpanelview.hpp"
 
 namespace sv {
 namespace tabs {
@@ -55,10 +55,10 @@ void SourceSinkTab::setup_ui()
 	for (auto c : hw_device->configurables()) {
 		if (c->is_controllable()) {
 			if (device_->type() == devices::DeviceType::PowerSupply)
-				add_view(new views::SourceControlView(session_, c),
+				add_view(new ui::views::SourceControlView(session_, c),
 					Qt::TopDockWidgetArea);
 			else if (device_->type() == devices::DeviceType::ElectronicLoad)
-				add_view(new views::SinkControlView(session_, c),
+				add_view(new ui::views::SinkControlView(session_, c),
 					Qt::TopDockWidgetArea);
 		}
 	}
@@ -66,7 +66,7 @@ void SourceSinkTab::setup_ui()
 	// Get signals by their channel group. The signals in a channel are "fixed"
 	// for power supplys and loads.
 	for (auto chg_name_signals_pair : device_->channel_group_name_map()) {
-		views::PlotView *plot_view = NULL;
+		ui::views::PlotView *plot_view = NULL;
 		shared_ptr<data::AnalogSignal> voltage_signal;
 		shared_ptr<data::AnalogSignal> current_signal;
 		auto channels = chg_name_signals_pair.second;
@@ -80,7 +80,7 @@ void SourceSinkTab::setup_ui()
 					voltage_signal = signal;
 					// Voltage plot(s)
 					if (!plot_view) {
-						plot_view = new views::PlotView(session_, voltage_signal);
+						plot_view = new ui::views::PlotView(session_, voltage_signal);
 						add_view(plot_view, Qt::BottomDockWidgetArea);
 					}
 					else
@@ -91,7 +91,7 @@ void SourceSinkTab::setup_ui()
 					current_signal = signal;
 					// Current plot(s)
 					if (!plot_view) {
-						plot_view = new views::PlotView(session_, current_signal);
+						plot_view = new ui::views::PlotView(session_, current_signal);
 						add_view(plot_view, Qt::BottomDockWidgetArea);
 					}
 					else
@@ -102,16 +102,9 @@ void SourceSinkTab::setup_ui()
 
 		if (voltage_signal && current_signal) {
 			// PowerPanel(s)
-			views::BaseView *power_panel_view = new views::PowerPanelView(
+			ui::views::BaseView *power_panel_view = new ui::views::PowerPanelView(
 				session_, voltage_signal, current_signal);
 			add_view(power_panel_view, Qt::TopDockWidgetArea);
-
-			// UI Plots
-			/*
-			views::BaseView *ui_plot_view = new views::PlotView(
-				session_, voltage_signal, current_signal);
-			add_view(ui_plot_view, Qt::BottomDockWidgetArea);
-			*/
 		}
 	}
 }

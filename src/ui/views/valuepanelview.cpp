@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,6 +38,7 @@ using std::dynamic_pointer_cast;
 using std::set;
 
 namespace sv {
+namespace ui {
 namespace views {
 
 ValuePanelView::ValuePanelView(const Session &session,
@@ -53,7 +54,7 @@ ValuePanelView::ValuePanelView(const Session &session,
 {
 	assert(channel_);
 
-	signal_ = dynamic_pointer_cast<data::AnalogSignal>(
+	signal_ = dynamic_pointer_cast<sv::data::AnalogSignal>(
 		channel_->actual_signal());
 
 	digits_ = 7; // TODO
@@ -68,9 +69,9 @@ ValuePanelView::ValuePanelView(const Session &session,
 	reset_display();
 
 	// Signal (aka Quantity + Flags + Unit) can change, e.g. DMM signals
-	connect(channel_.get(), SIGNAL(signal_added(shared_ptr<data::BaseSignal>)),
+	connect(channel_.get(), SIGNAL(signal_added(shared_ptr<sv::data::BaseSignal>)),
 		this, SLOT(on_signal_changed()));
-	connect(channel_.get(), SIGNAL(signal_changed(shared_ptr<data::BaseSignal>)),
+	connect(channel_.get(), SIGNAL(signal_changed(shared_ptr<sv::data::BaseSignal>)),
 		this, SLOT(on_signal_changed()));
 
 	timer_ = new QTimer(this);
@@ -79,7 +80,7 @@ ValuePanelView::ValuePanelView(const Session &session,
 
 
 ValuePanelView::ValuePanelView(const Session& session,
-		shared_ptr<data::AnalogSignal> signal,
+		shared_ptr<sv::data::AnalogSignal> signal,
 		QWidget* parent) :
 	BaseView(session, parent),
 	channel_(nullptr),
@@ -132,23 +133,23 @@ void ValuePanelView::setup_unit()
 	unit_ = signal_->unit_name();
 	quantity_flags_ = signal_->quantity_flags();
 
-	if (quantity_flags_.count(data::QuantityFlag::AC)) {
+	if (quantity_flags_.count(sv::data::QuantityFlag::AC)) {
 		//unit_suffix_ = QString::fromUtf8("\u23E6");
-		unit_suffix_ = data::datautil::format_quantity_flag(
-			data::QuantityFlag::AC);
-		quantity_flags_.erase(data::QuantityFlag::AC);
+		unit_suffix_ = sv::data::datautil::format_quantity_flag(
+			sv::data::QuantityFlag::AC);
+		quantity_flags_.erase(sv::data::QuantityFlag::AC);
 	}
-	else if (quantity_flags_.count(data::QuantityFlag::DC)) {
+	else if (quantity_flags_.count(sv::data::QuantityFlag::DC)) {
 		//unit_suffix_ = QString::fromUtf8("\u2393");
-		unit_suffix_ = data::datautil::format_quantity_flag(
-			data::QuantityFlag::DC);
-		quantity_flags_.erase(data::QuantityFlag::DC);
+		unit_suffix_ = sv::data::datautil::format_quantity_flag(
+			sv::data::QuantityFlag::DC);
+		quantity_flags_.erase(sv::data::QuantityFlag::DC);
 	}
 
 	quantity_flags_min_ = quantity_flags_;
-	quantity_flags_min_.insert(data::QuantityFlag::Min);
+	quantity_flags_min_.insert(sv::data::QuantityFlag::Min);
 	quantity_flags_max_ = quantity_flags_;
-	quantity_flags_max_.insert(data::QuantityFlag::Max);
+	quantity_flags_max_.insert(sv::data::QuantityFlag::Max);
 }
 
 void ValuePanelView::setup_ui()
@@ -159,15 +160,15 @@ void ValuePanelView::setup_ui()
 
 	valueDisplay = new widgets::LcdDisplay(
 		digits_, decimal_places_, true, unit_, unit_suffix_,
-		data::datautil::format_quantity_flags(quantity_flags_, "\n"),
+		sv::data::datautil::format_quantity_flags(quantity_flags_, "\n"),
 		false);
 	valueMinDisplay = new widgets::LcdDisplay(
 		digits_, decimal_places_, true, unit_, unit_suffix_,
-		data::datautil::format_quantity_flags(quantity_flags_min_, "\n"),
+		sv::data::datautil::format_quantity_flags(quantity_flags_min_, "\n"),
 		true);
 	valueMaxDisplay = new widgets::LcdDisplay(
 		digits_, decimal_places_, true, unit_, unit_suffix_,
-		data::datautil::format_quantity_flags(quantity_flags_max_, "\n"),
+		sv::data::datautil::format_quantity_flags(quantity_flags_max_, "\n"),
 		true);
 
 	panelLayout->addWidget(valueDisplay, 0, 0, 1, 2, Qt::AlignHCenter);
@@ -290,7 +291,7 @@ void ValuePanelView::on_signal_changed()
 
 	disconnect_signals_displays();
 
-	signal_ = dynamic_pointer_cast<data::AnalogSignal>(
+	signal_ = dynamic_pointer_cast<sv::data::AnalogSignal>(
 		channel_->actual_signal());
 
 	setup_unit();
@@ -300,21 +301,21 @@ void ValuePanelView::on_signal_changed()
 	valueDisplay->set_unit(unit_);
 	valueDisplay->set_unit_suffix(unit_suffix_);
 	valueDisplay->set_extra_text(
-		data::datautil::format_quantity_flags(quantity_flags_, "\n"));
+		sv::data::datautil::format_quantity_flags(quantity_flags_, "\n"));
 	valueDisplay->set_digits(digits_);
 	valueDisplay->set_decimal_places(decimal_places_);
 
 	valueMinDisplay->set_unit(unit_);
 	valueMinDisplay->set_unit_suffix(unit_suffix_);
 	valueMinDisplay->set_extra_text(
-		data::datautil::format_quantity_flags(quantity_flags_min_, "\n"));
+		sv::data::datautil::format_quantity_flags(quantity_flags_min_, "\n"));
 	valueMinDisplay->set_digits(digits_);
 	valueMinDisplay->set_decimal_places(decimal_places_);
 
 	valueMaxDisplay->set_unit(unit_);
 	valueMaxDisplay->set_unit_suffix(unit_suffix_);
 	valueMaxDisplay->set_extra_text(
-		data::datautil::format_quantity_flags(quantity_flags_max_, "\n"));
+		sv::data::datautil::format_quantity_flags(quantity_flags_max_, "\n"));
 	valueMaxDisplay->set_digits(digits_);
 	valueMaxDisplay->set_decimal_places(decimal_places_);
 
@@ -330,5 +331,5 @@ void ValuePanelView::on_action_reset_display_triggered()
 }
 
 } // namespace views
+} // namespace ui
 } // namespace sv
-
