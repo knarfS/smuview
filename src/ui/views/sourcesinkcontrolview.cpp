@@ -17,12 +17,10 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QApplication>
-#include <QDebug>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 
-#include "sinkcontrolview.hpp"
+#include "sourcesinkcontrolview.hpp"
 #include "src/session.hpp"
 #include "src/devices/configurable.hpp"
 #include "src/devices/deviceutil.hpp"
@@ -38,7 +36,7 @@ namespace sv {
 namespace ui {
 namespace views {
 
-SinkControlView::SinkControlView(const Session &session,
+SourceSinkControlView::SourceSinkControlView(const Session &session,
 		shared_ptr<sv::devices::Configurable> configurable, QWidget *parent) :
 	BaseView(session, parent),
 	configurable_(configurable)
@@ -46,12 +44,12 @@ SinkControlView::SinkControlView(const Session &session,
 	setup_ui();
 }
 
-QString SinkControlView::title() const
+QString SourceSinkControlView::title() const
 {
 	return configurable_->name() + " " + tr("Control");
 }
 
-void SinkControlView::setup_ui()
+void SourceSinkControlView::setup_ui()
 {
 	QIcon red_icon(":/icons/status-red.svg");
 	QIcon green_icon(":/icons/status-green.svg");
@@ -64,13 +62,20 @@ void SinkControlView::setup_ui()
 	// Enable button
 	enable_button_ = new ui::datatypes::BoolButton(
 		configurable_->get_property(ConfigKey::Enabled), true, true);
-	info_layout->addWidget(enable_button_, 0, 0, 2, 1,  Qt::AlignLeft);
+	//info_layout->addWidget(enable_button_, 0, 0, 2, 1,  Qt::AlignLeft);
+	info_layout->addWidget(enable_button_, 0, 0, Qt::AlignLeft);
 
-	// Regulation Leds
-	//cvLed = new widgets::Led(false, false, tr("CV"));
-	//ledLayout->addWidget(cvLed, 0, 1, Qt::AlignLeft);
-	//ccLed = new widgets::Led(true, false, tr("CC"));
-	//ledLayout->addWidget(ccLed, 1, 1, Qt::AlignLeft);
+	// Regulation
+	// TODO: Find a better place. Not for sources?
+	regulation_box_ = new ui::datatypes::StringComboBox(
+		configurable_->get_property(ConfigKey::Regulation), true, true);
+	info_layout->addWidget(regulation_box_, 1, 0, Qt::AlignLeft);
+
+	// TODO
+	// CV
+	//info_layout->addWidget(cv_led_, 0, 1, Qt::AlignLeft);
+	// CC
+	//info_layout->addWidget(cc_led_, 1, 1, Qt::AlignLeft);
 
 	ovp_led_ = new ui::datatypes::BoolLed(
 		configurable_->get_property(ConfigKey::OverVoltageProtectionActive),
@@ -92,15 +97,26 @@ void SinkControlView::setup_ui()
 
 	QHBoxLayout *ctrl_layout = new QHBoxLayout();
 
-	// TODO: Change control for regulation mode (CV, CC, CP, CR)
-	current_control_ = new ui::datatypes::DoubleControl(
-		configurable_->get_property(ConfigKey::CurrentLimit),
-		true, true, tr("Current"));
-	ctrl_layout->addWidget(current_control_);
+	// TODO: Change control for regulation mode (CV, CC, CP, CR) for sinks
+	if (configurable_->has_get_config(ConfigKey::VoltageTarget) ||
+		configurable_->has_set_config(ConfigKey::VoltageTarget)) {
 
-	regulation_box_ = new ui::datatypes::StringComboBox(
-		configurable_->get_property(ConfigKey::Regulation), true, true);
-	ctrl_layout->addWidget(regulation_box_, 1, Qt::AlignLeft);
+		voltage_control_ = new ui::datatypes::DoubleControl(
+			configurable_->get_property(ConfigKey::VoltageTarget),
+			true, true, tr("Voltage"));
+		ctrl_layout->addWidget(voltage_control_);
+	}
+
+	// TODO: Change control for regulation mode (CV, CC, CP, CR) for sinks
+	if (configurable_->has_get_config(ConfigKey::CurrentLimit) ||
+		configurable_->has_set_config(ConfigKey::CurrentLimit)) {
+
+		current_control_ = new ui::datatypes::DoubleControl(
+			configurable_->get_property(ConfigKey::CurrentLimit),
+			true, true, tr("Current"));
+		ctrl_layout->addWidget(current_control_, 1, Qt::AlignLeft);
+	}
+
 	layout->addLayout(ctrl_layout, 0);
 
 	QHBoxLayout *opt_ctrl_layout = new QHBoxLayout();

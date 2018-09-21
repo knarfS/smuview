@@ -31,12 +31,11 @@
 #include "src/devices/deviceutil.hpp"
 #include "src/ui/devices/selectconfigurableform.hpp"
 #include "src/ui/devices/signaltree.hpp"
+#include "src/ui/views/baseview.hpp"
 #include "src/ui/views/dataview.hpp"
-#include "src/ui/views/measurementcontrolview.hpp"
 #include "src/ui/views/plotview.hpp"
-#include "src/ui/views/sinkcontrolview.hpp"
-#include "src/ui/views/sourcecontrolview.hpp"
 #include "src/ui/views/valuepanelview.hpp"
+#include "src/ui/views/viewhelper.hpp"
 
 using std::static_pointer_cast;
 
@@ -168,22 +167,13 @@ void AddViewDialog::accept()
 	int tab_index = tab_widget_->currentIndex();
 	switch (tab_index) {
 	case 0: {
-			/*
 			auto configurable =
 				configurable_configurable_form_->selected_configurable();
-			if (configurable->device_type() == devices::DeviceType::ElectronicLoad) {
-				views_.push_back(
-					new views::SinkControlView(session_, configurable));
-			}
-			else if (configurable->device_type() == devices::DeviceType::PowerSupply) {
-				views_.push_back(
-					new views::SourceControlView(session_, configurable));
-			}
-			else { // TODO: Check for DMM, LCR, Scale....
-				views_.push_back(
-					new views::MeasurementControlView(session_, configurable));
-			}
-			*/
+			auto view = views::viewhelper::get_view_for_configurable(
+				session_, configurable);
+
+			if (view != NULL)
+				views_.push_back(view);
 		}
 		break;
 	case 1:

@@ -58,9 +58,10 @@ namespace devices {
 
 Configurable::Configurable(
 		const shared_ptr<sigrok::Configurable> sr_configurable,
-		const QString device_name):
+		const QString device_name, const DeviceType device_type):
 	sr_configurable_(sr_configurable),
-	device_name_(device_name)
+	device_name_(device_name),
+	device_type_(device_type)
 {
 }
 
@@ -333,6 +334,11 @@ QString Configurable::name() const
 			arg(QString::fromStdString(sr->name()));
 	}
 	return name;
+}
+
+DeviceType Configurable::device_type() const
+{
+	return device_type_;
 }
 
 set<devices::ConfigKey> Configurable::getable_configs() const

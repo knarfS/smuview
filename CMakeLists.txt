@@ -221,9 +221,9 @@ set(smuview_SOURCES
   src/ui/views/measurementcontrolview.cpp
   src/ui/views/plotview.cpp
   src/ui/views/powerpanelview.cpp
-  src/ui/views/sinkcontrolview.cpp
-  src/ui/views/sourcecontrolview.cpp
+  src/ui/views/sourcesinkcontrolview.cpp
   src/ui/views/valuepanelview.cpp
+  src/ui/views/viewhelper.cpp
   src/ui/widgets/colorbutton.cpp
   src/ui/widgets/lcddisplay.cpp
   src/ui/widgets/popup.cpp

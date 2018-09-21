@@ -26,15 +26,11 @@
 #include "src/data/basesignal.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/devices/configurable.hpp"
-#include "src/devices/deviceutil.hpp"
 #include "src/devices/hardwaredevice.hpp"
 #include "src/devices/measurementdevice.hpp"
-#include "src/ui/views/demodmmcontrolview.hpp"
-#include "src/ui/views/measurementcontrolview.hpp"
 #include "src/ui/views/plotview.hpp"
 #include "src/ui/views/valuepanelview.hpp"
-
-using sv::devices::DeviceType;
+#include "src/ui/views/viewhelper.hpp"
 
 namespace sv {
 namespace ui {
@@ -55,21 +51,9 @@ void MeasurementTab::setup_ui()
 	// Device controls
 	size_t i = 0;
 	for (auto c : hw_device->configurables()) {
-		if (c->is_controllable()) {
-			if (device_->type() == DeviceType::DemoDev)
-				add_view(new ui::views::DemoDMMControlView(session_, c),
-					Qt::TopDockWidgetArea);
-			else if (device_->type() == DeviceType::Multimeter ||
-					device_->type() == DeviceType::Multimeter ||
-					device_->type() == DeviceType::SoundLevelMeter ||
-					device_->type() == DeviceType::Thermometer ||
-					device_->type() == DeviceType::Hygrometer ||
-					device_->type() == DeviceType::Energymeter ||
-					device_->type() == DeviceType::LcrMeter ||
-					device_->type() == DeviceType::Scale ||
-					device_->type() == DeviceType::Powermeter)
-				add_view(new ui::views::MeasurementControlView(session_, c),
-					Qt::TopDockWidgetArea);
+		auto view = views::viewhelper::get_view_for_configurable(session_, c);
+		if (view != NULL) {
+			add_view(view, Qt::TopDockWidgetArea);
 
 			// Shown only 2 configurables
 			i++;

@@ -97,14 +97,14 @@ void HardwareDevice::init()
 	if (sr_channel_groups.size() > 0) {
 		for (auto sr_cg_pair : sr_channel_groups) {
 			auto sr_cg = sr_cg_pair.second;
-			auto cg_c = Configurable::create(sr_cg, short_name());
+			auto cg_c = Configurable::create(sr_cg, short_name(), device_type_);
 			configurables_.push_back(cg_c);
 		}
 	}
 
 	// Init Configurable from Device
 	// TODO: Only if there are no channel groups?
-	auto d_c = Configurable::create(sr_device_, short_name());
+	auto d_c = Configurable::create(sr_device_, short_name(), device_type_);
 	configurables_.push_back(d_c);
 }
 

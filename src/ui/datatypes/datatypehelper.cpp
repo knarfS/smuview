@@ -29,7 +29,7 @@
 #include "src/ui/datatypes/stringcombobox.hpp"
 #include "src/ui/datatypes/uint64spinbox.hpp"
 
-using std::dynamic_pointer_cast;
+using std::shared_ptr;
 
 namespace sv {
 namespace ui {

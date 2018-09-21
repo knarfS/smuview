@@ -32,12 +32,9 @@
 #include "src/devices/configurable.hpp"
 #include "src/devices/hardwaredevice.hpp"
 #include "src/ui/tabs/devicetab.hpp"
-#include "src/ui/views/sinkcontrolview.hpp"
-#include "src/ui/views/sourcecontrolview.hpp"
 #include "src/ui/views/plotview.hpp"
 #include "src/ui/views/powerpanelview.hpp"
-
-using sv::devices::DeviceType;
+#include "src/ui/views/viewhelper.hpp"
 
 namespace sv {
 namespace ui {
@@ -56,14 +53,9 @@ void SourceSinkTab::setup_ui()
 
 	// Device control(s)
 	for (auto c : hw_device->configurables()) {
-		if (c->is_controllable()) {
-			if (device_->type() == DeviceType::PowerSupply)
-				add_view(new ui::views::SourceControlView(session_, c),
-					Qt::TopDockWidgetArea);
-			else if (device_->type() == DeviceType::ElectronicLoad)
-				add_view(new ui::views::SinkControlView(session_, c),
-					Qt::TopDockWidgetArea);
-		}
+		auto view = views::viewhelper::get_view_for_configurable(session_, c);
+		if (view != NULL)
+			add_view(view, Qt::TopDockWidgetArea);
 	}
 
 	// Get signals by their channel group. The signals in a channel are "fixed"

@@ -17,8 +17,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UI_VIEWS_SINKCONTROLVIEW_HPP
-#define UI_VIEWS_SINKCONTROLVIEW_HPP
+#ifndef UI_VIEWS_SOURCESINKCONTROLVIEW_HPP
+#define UI_VIEWS_SOURCESINKCONTROLVIEW_HPP
 
 #include <memory>
 
@@ -47,13 +47,13 @@ class ThresholdControl;
 
 namespace views {
 
-class SinkControlView : public BaseView
+class SourceSinkControlView : public BaseView
 {
 	Q_OBJECT
 
 public:
-	SinkControlView(const Session& session,
-		shared_ptr<sv::devices::Configurable> configurable,
+	SourceSinkControlView(const Session& session,
+		std::shared_ptr<sv::devices::Configurable> configurable,
 		QWidget* parent = nullptr);
 
 	QString title() const;
@@ -69,6 +69,7 @@ private:
 	ui::datatypes::BoolLed *uvc_led_;
 	ui::datatypes::BoolButton *enable_button_;
 	ui::datatypes::StringComboBox *regulation_box_;
+	ui::datatypes::DoubleControl *voltage_control_;
 	ui::datatypes::DoubleControl *current_control_;
 	ui::datatypes::ThresholdControl *ovp_control_;
 	ui::datatypes::ThresholdControl *ocp_control_;
@@ -82,4 +83,4 @@ private:
 } // namespace ui
 } // namespace sv
 
-#endif // UI_VIEWS_SINKCONTROLVIEW_HPP
+#endif // UI_VIEWS_SOURCESINKCONTROLVIEW_HPP

@@ -66,7 +66,7 @@ class Configurable :
 
 private:
 	Configurable(const shared_ptr<sigrok::Configurable> sr_configurable,
-		const QString device_name);
+		const QString device_name, const DeviceType device_type);
 
 public:
 	template<typename ...Arg>
@@ -112,6 +112,7 @@ public:
 	bool list_config(devices::ConfigKey, Glib::VariantContainerBase &);
 
 	QString name() const;
+	DeviceType device_type() const;
 
 	set<devices::ConfigKey> getable_configs() const;
 	set<devices::ConfigKey> setable_configs() const;
@@ -127,6 +128,7 @@ public:
 private:
 	const shared_ptr<sigrok::Configurable> sr_configurable_;
 	const QString device_name_;
+	const DeviceType device_type_;
 
 	set<devices::ConfigKey> getable_configs_;
 	set<devices::ConfigKey> setable_configs_;
