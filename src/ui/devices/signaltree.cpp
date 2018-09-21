@@ -38,11 +38,12 @@ using std::unordered_set;
 Q_DECLARE_SMART_POINTER_METATYPE(std::shared_ptr)
 
 namespace sv {
-namespace widgets {
+namespace ui {
+namespace devices {
 
 SignalTree::SignalTree(const Session &session,
 		bool show_signals, bool selectable, bool multiselect,
-		shared_ptr<devices::BaseDevice> selected_device,
+		shared_ptr<sv::devices::BaseDevice> selected_device,
 		QWidget *parent) :
 	QTreeWidget(parent),
 	session_(session),
@@ -70,15 +71,15 @@ vector<shared_ptr<channels::BaseChannel>> SignalTree::selected_channels()
 	return channels;
 }
 
-vector<shared_ptr<data::BaseSignal>> SignalTree::selected_signals()
+vector<shared_ptr<sv::data::BaseSignal>> SignalTree::selected_signals()
 {
-	vector<shared_ptr<data::BaseSignal>> signals;
+	vector<shared_ptr<sv::data::BaseSignal>> signals;
 	for (auto item : this->checked_items()) {
 		QVariant data = item->data(0, Qt::UserRole);
 		if (data.isNull())
 			continue;
 
-		auto signal = data.value<shared_ptr<data::BaseSignal>>();
+		auto signal = data.value<shared_ptr<sv::data::BaseSignal>>();
 		if (signal)
 			signals.push_back(signal);
 	}
@@ -92,7 +93,7 @@ void SignalTree::setup_ui()
 	if (multiselect_)
 		this->setSelectionMode(QTreeView::MultiSelection);
 
-	unordered_set<shared_ptr<devices::BaseDevice>> devices;
+	unordered_set<shared_ptr<sv::devices::BaseDevice>> devices;
 	if (!selected_device_ && &session_)
 		devices = session_.devices();
 	else if (selected_device_)
@@ -122,7 +123,7 @@ void SignalTree::setup_ui()
 	this->resizeColumnToContents(1);
 }
 
-void SignalTree::add_device(shared_ptr<devices::BaseDevice> device,
+void SignalTree::add_device(shared_ptr<sv::devices::BaseDevice> device,
 	bool expanded)
 {
 	QTreeWidgetItem *device_item = new QTreeWidgetItem();
@@ -187,8 +188,8 @@ void SignalTree::add_channel(shared_ptr<channels::BaseChannel> channel,
 		}
 
 		connect(
-			channel.get(), SIGNAL(signal_added(shared_ptr<data::BaseSignal>)),
-			this, SLOT(on_signal_added(shared_ptr<data::BaseSignal>)));
+			channel.get(), SIGNAL(signal_added(shared_ptr<sv::data::BaseSignal>)),
+			this, SLOT(on_signal_added(shared_ptr<sv::data::BaseSignal>)));
 	}
 	ch_item->setIcon(0,
 		QIcon::fromTheme("office-chart-area",
@@ -202,7 +203,7 @@ void SignalTree::add_channel(shared_ptr<channels::BaseChannel> channel,
 		chg_item->setExpanded(expanded);
 }
 
-void SignalTree::add_signal(shared_ptr<data::BaseSignal> signal,
+void SignalTree::add_signal(shared_ptr<sv::data::BaseSignal> signal,
 	QTreeWidgetItem *parent)
 {
 	QTreeWidgetItem *signal_item = new QTreeWidgetItem();
@@ -260,7 +261,7 @@ QTreeWidgetItem *SignalTree::find_item(QTreeWidgetItem *parent, QString name)
 	return NULL;
 }
 
-void SignalTree::on_device_added(shared_ptr<devices::BaseDevice> device)
+void SignalTree::on_device_added(shared_ptr<sv::devices::BaseDevice> device)
 {
 	add_device(device, true);
 }
@@ -279,7 +280,7 @@ void SignalTree::on_channel_removed()
 {
 }
 
-void SignalTree::on_signal_added(shared_ptr<data::BaseSignal> signal)
+void SignalTree::on_signal_added(shared_ptr<sv::data::BaseSignal> signal)
 {
 	auto parent_item = channel_map_[signal->parent_channel()];
 	add_signal(signal, parent_item);
@@ -289,6 +290,6 @@ void SignalTree::on_signal_removed()
 {
 }
 
-} // namespace widgets
+} // namespace devices
+} // namespace ui
 } // namespace sv
-

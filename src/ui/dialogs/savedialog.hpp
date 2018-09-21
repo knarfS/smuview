@@ -40,11 +40,13 @@ namespace sv {
 namespace data {
 class AnalogSignal;
 }
-namespace widgets {
+
+namespace ui {
+
+namespace devices {
 class SignalTree;
 }
 
-namespace ui {
 namespace dialogs {
 
 class SaveDialog : public QDialog
@@ -64,7 +66,7 @@ private:
 	const Session &session_;
 	const vector<shared_ptr<sv::data::AnalogSignal>> selected_signals_;
 
-	widgets::SignalTree *signal_tree_;
+	ui::devices::SignalTree *signal_tree_;
 	QCheckBox *timestamps_combined_;
 	QCheckBox *time_absolut_;
 	QLineEdit *separator_edit_;

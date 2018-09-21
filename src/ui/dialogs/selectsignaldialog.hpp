@@ -39,11 +39,13 @@ class BaseSignal;
 namespace devices {
 class BaseDevice;
 }
-namespace widgets {
+
+namespace ui {
+
+namespace devices {
 class SignalTree;
 }
 
-namespace ui {
 namespace dialogs {
 
 class SelectSignalDialog : public QDialog
@@ -64,7 +66,7 @@ private:
 	const shared_ptr<sv::devices::BaseDevice> device_;
 	vector<shared_ptr<sv::data::BaseSignal>> signals_;
 
-	widgets::SignalTree *signal_tree_;
+	ui::devices::SignalTree *signal_tree_;
 	QDialogButtonBox *button_box_;
 
 public Q_SLOTS:

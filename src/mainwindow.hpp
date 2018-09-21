@@ -42,16 +42,14 @@ namespace devices {
 class BaseDevice;
 class HardwareDevice;
 }
-
 namespace tabs {
 class BaseTab;
 }
 
-namespace widgets {
+namespace ui {
+namespace devices {
 class SignalTree;
 }
-
-namespace ui {
 namespace processing {
 class ProcessingWidget;
 }
@@ -94,7 +92,7 @@ private:
 	QToolButton *add_user_tab_button_;
 	QWidget *centralWidget;
 	QToolBox *info_widget;
-	widgets::SignalTree *signal_tree_;
+	ui::devices::SignalTree *signal_tree_;
 	ui::processing::ProcessingWidget * processing_widget_;
 	QTabWidget *tab_widget_;
 	QWidget *tab_widget_toolbar_;

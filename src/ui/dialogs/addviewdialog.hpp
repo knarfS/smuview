@@ -36,14 +36,12 @@ namespace sv {
 namespace devices {
 class BaseDevice;
 }
-namespace widgets {
-class SignalTree;
-}
 
 namespace ui {
 
 namespace devices {
 class SelectConfigurableForm;
+class SignalTree;
 }
 namespace views {
 class BaseView;
@@ -78,11 +76,11 @@ private:
 
 	QTabWidget *tab_widget_;
 	ui::devices::SelectConfigurableForm *configurable_configurable_form_;
-	widgets::SignalTree *panel_channel_tree_;
-	widgets::SignalTree *time_plot_channel_tree_;
-	widgets::SignalTree *xy_plot_x_signal_tree_;
-	widgets::SignalTree *xy_plot_y_signal_tree_;
-	widgets::SignalTree *table_signal_tree_;
+	ui::devices::SignalTree *panel_channel_tree_;
+	ui::devices::SignalTree *time_plot_channel_tree_;
+	ui::devices::SignalTree *xy_plot_x_signal_tree_;
+	ui::devices::SignalTree *xy_plot_y_signal_tree_;
+	ui::devices::SignalTree *table_signal_tree_;
 	QDialogButtonBox *button_box_;
 
 public Q_SLOTS:

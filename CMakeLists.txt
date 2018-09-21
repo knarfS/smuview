@@ -173,7 +173,6 @@ set(smuview_SOURCES
   src/widgets/colorbutton.cpp
   src/widgets/lcddisplay.cpp
   src/widgets/popup.cpp
-  src/widgets/signaltree.cpp
   src/widgets/plot/axispopup.cpp
   src/widgets/plot/basecurve.cpp
   src/widgets/plot/plot.cpp
@@ -206,6 +205,7 @@ set(smuview_SOURCES
   src/ui/devices/selectconfigurableform.cpp
   src/ui/devices/selectsignalwidget.cpp
   src/ui/devices/signalcombobox.cpp
+  src/ui/devices/signaltree.cpp
   src/ui/dialogs/aboutdialog.cpp
   src/ui/dialogs/addmathchanneldialog.cpp
   src/ui/dialogs/addviewdialog.cpp

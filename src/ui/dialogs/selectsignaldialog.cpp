@@ -33,7 +33,7 @@
 #include "src/session.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/devices/basedevice.hpp"
-#include "src/widgets/signaltree.hpp"
+#include "src/ui/devices/signaltree.hpp"
 
 using std::shared_ptr;
 using std::vector;
@@ -63,7 +63,8 @@ void SelectSignalDialog::setup_ui()
 
 	QVBoxLayout *main_layout = new QVBoxLayout;
 
-	signal_tree_ = new widgets::SignalTree(session_, true, true, true, device_);
+	signal_tree_ = new ui::devices::SignalTree(
+		session_, true, true, true, device_);
 	main_layout->addWidget(signal_tree_);
 
 	button_box_ = new QDialogButtonBox(

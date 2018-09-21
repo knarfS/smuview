@@ -39,6 +39,7 @@
 #include "src/devices/measurementdevice.hpp"
 #include "src/devices/sourcesinkdevice.hpp"
 #include "src/devices/virtualdevice.hpp"
+#include "src/ui/devices/signaltree.hpp"
 #include "src/ui/dialogs/connectdialog.hpp"
 #include "src/ui/processing/processingwidget.hpp"
 #include "src/ui/tabs/basetab.hpp"
@@ -46,7 +47,6 @@
 #include "src/ui/tabs/sourcesinktab.hpp"
 #include "src/ui/tabs/virtualtab.hpp"
 #include "src/ui/tabs/welcometab.hpp"
-#include "src/widgets/signaltree.hpp"
 
 using std::make_pair;
 using std::make_shared;
@@ -294,7 +294,7 @@ void MainWindow::setup_ui()
 	this->setCentralWidget(centralWidget);
 
 	// Signal Tree Dock
-	signal_tree_ = new widgets::SignalTree(
+	signal_tree_ = new ui::devices::SignalTree(
 		*session_, true, false, false, nullptr);
 	signal_tree_->setSizePolicy(
 		QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);

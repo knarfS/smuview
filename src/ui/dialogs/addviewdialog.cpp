@@ -30,13 +30,13 @@
 #include "src/devices/configurable.hpp"
 #include "src/devices/deviceutil.hpp"
 #include "src/ui/devices/selectconfigurableform.hpp"
+#include "src/ui/devices/signaltree.hpp"
 #include "src/ui/views/dataview.hpp"
 #include "src/ui/views/measurementcontrolview.hpp"
 #include "src/ui/views/plotview.hpp"
 #include "src/ui/views/sinkcontrolview.hpp"
 #include "src/ui/views/sourcecontrolview.hpp"
 #include "src/ui/views/valuepanelview.hpp"
-#include "src/widgets/signaltree.hpp"
 
 using std::static_pointer_cast;
 
@@ -106,7 +106,7 @@ void AddViewDialog::setup_ui_panel_tab()
 	QVBoxLayout *layout = new QVBoxLayout();
 	panel_widget->setLayout(layout);
 
-	panel_channel_tree_ = new widgets::SignalTree(
+	panel_channel_tree_ = new ui::devices::SignalTree(
 		session_, false, true, true, device_);
 	layout->addWidget(panel_channel_tree_);
 
@@ -120,7 +120,7 @@ void AddViewDialog::setup_ui_time_plot_tab()
 	QVBoxLayout *layout = new QVBoxLayout();
 	plot_widget->setLayout(layout);
 
-	time_plot_channel_tree_ = new widgets::SignalTree(
+	time_plot_channel_tree_ = new ui::devices::SignalTree(
 		session_, true, true, true, device_);
 	layout->addWidget(time_plot_channel_tree_);
 
@@ -134,10 +134,10 @@ void AddViewDialog::setup_ui_xy_plot_tab()
 	QVBoxLayout *layout = new QVBoxLayout();
 	plot_widget->setLayout(layout);
 
-	xy_plot_x_signal_tree_ = new widgets::SignalTree(
+	xy_plot_x_signal_tree_ = new ui::devices::SignalTree(
 		session_, true, true, false, device_);
 	layout->addWidget(xy_plot_x_signal_tree_);
-	xy_plot_y_signal_tree_ = new widgets::SignalTree(
+	xy_plot_y_signal_tree_ = new ui::devices::SignalTree(
 		session_, true, true, false, device_);
 	layout->addWidget(xy_plot_y_signal_tree_);
 
@@ -151,7 +151,7 @@ void AddViewDialog::setup_ui_table_tab()
 	QVBoxLayout *layout = new QVBoxLayout();
 	table_widget->setLayout(layout);
 
-	table_signal_tree_ = new widgets::SignalTree(
+	table_signal_tree_ = new ui::devices::SignalTree(
 		session_, true, true, true, device_);
 	layout->addWidget(table_signal_tree_);
 

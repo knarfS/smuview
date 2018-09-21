@@ -36,7 +36,7 @@
 #include "src/data/basesignal.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/devices/hardwaredevice.hpp"
-#include "src/widgets/signaltree.hpp"
+#include "src/ui/devices/signaltree.hpp"
 
 using std::ofstream;
 using std::string;
@@ -69,7 +69,8 @@ void SaveDialog::setup_ui()
 
 	QVBoxLayout *main_layout = new QVBoxLayout;
 
-	signal_tree_ = new widgets::SignalTree(session_, true, true, true, nullptr);
+	signal_tree_ = new ui::devices::SignalTree(
+		session_, true, true, true, nullptr);
 	main_layout->addWidget(signal_tree_);
 
 	QFormLayout *form_layout = new QFormLayout();
