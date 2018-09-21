@@ -36,10 +36,11 @@ class Session;
 namespace channels {
 class BaseChannel;
 }
-
 namespace data {
 class AnalogSignal;
 }
+
+namespace ui {
 
 namespace widgets {
 namespace plot {
@@ -48,7 +49,6 @@ class Plot;
 }
 }
 
-namespace ui {
 namespace views {
 
 class PlotView : public BaseView

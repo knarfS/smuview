@@ -170,15 +170,6 @@ set(smuview_SOURCES
   src/devices/properties/measuredquantityproperty.cpp
   src/devices/properties/stringproperty.cpp
   src/devices/properties/uint64property.cpp
-  src/widgets/colorbutton.cpp
-  src/widgets/lcddisplay.cpp
-  src/widgets/popup.cpp
-  src/widgets/plot/axispopup.cpp
-  src/widgets/plot/basecurve.cpp
-  src/widgets/plot/plot.cpp
-  src/widgets/plot/plotscalepicker.cpp
-  src/widgets/plot/timecurve.cpp
-  src/widgets/plot/xycurve.cpp
 
   src/ui/data/quantitycombobox.cpp
   src/ui/data/quantityflagslist.cpp
@@ -233,7 +224,15 @@ set(smuview_SOURCES
   src/ui/views/sinkcontrolview.cpp
   src/ui/views/sourcecontrolview.cpp
   src/ui/views/valuepanelview.cpp
+  src/ui/widgets/colorbutton.cpp
   src/ui/widgets/lcddisplay.cpp
+  src/ui/widgets/popup.cpp
+  src/ui/widgets/plot/axispopup.cpp
+  src/ui/widgets/plot/basecurve.cpp
+  src/ui/widgets/plot/plot.cpp
+  src/ui/widgets/plot/plotscalepicker.cpp
+  src/ui/widgets/plot/timecurve.cpp
+  src/ui/widgets/plot/xycurve.cpp
 )
 
 if(ENABLE_SIGNALS)

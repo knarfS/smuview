@@ -32,7 +32,7 @@
 #include "src/channels/basechannel.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
-#include "src/widgets/lcddisplay.hpp"
+#include "src/ui/widgets/lcddisplay.hpp"
 
 using std::dynamic_pointer_cast;
 using std::set;
@@ -200,20 +200,12 @@ void ValuePanelView::connect_signals_displays()
 	if (signal_) {
 		//connect(signal_.get(), SIGNAL(unit_changed(QString)),
 		//	valueDisplay, SLOT(set_unit(const String)));
-		connect(signal_.get(), SIGNAL(digits_changed(int)),
-			valueDisplay, SLOT(set_digits(const int)));
-		connect(signal_.get(), SIGNAL(decimal_places_changed(int)),
-			valueDisplay, SLOT(set_decimal_places(const int)));
-
-		connect(signal_.get(), SIGNAL(digits_changed(int)),
-			valueMinDisplay, SLOT(set_digits(const int)));
-		connect(signal_.get(), SIGNAL(decimal_places_changed(int)),
-			valueMinDisplay, SLOT(set_decimal_places(const int)));
-
-		connect(signal_.get(), SIGNAL(digits_changed(int)),
-			valueMaxDisplay, SLOT(set_digits(const int)));
-		connect(signal_.get(), SIGNAL(decimal_places_changed(int)),
-			valueMaxDisplay, SLOT(set_decimal_places(const int)));
+		connect(signal_.get(), SIGNAL(digits_changed(const int, const int)),
+			valueDisplay, SLOT(set_digits(const int, const int)));
+		connect(signal_.get(), SIGNAL(digits_changed(const int, const int)),
+			valueMinDisplay, SLOT(set_digits(const int, const int)));
+		connect(signal_.get(), SIGNAL(digits_changed(const int, const int)),
+			valueMaxDisplay, SLOT(set_digits(const int, const int)));
 	}
 }
 
@@ -222,20 +214,12 @@ void ValuePanelView::disconnect_signals_displays()
 	if (signal_) {
 		//disconnect(signal_.get(), SIGNAL(unit_changed(QString)),
 		//	valueDisplay, SLOT(set_unit(QString)));
-		disconnect(signal_.get(), SIGNAL(digits_changed(int)),
-			valueDisplay, SLOT(set_digits(const int)));
-		disconnect(signal_.get(), SIGNAL(decimal_places_changed(int)),
-			valueDisplay, SLOT(set_decimal_places(const int)));
-
-		disconnect(signal_.get(), SIGNAL(digits_changed(int)),
-			valueMinDisplay, SLOT(set_digits(const int)));
-		disconnect(signal_.get(), SIGNAL(decimal_places_changed(int)),
-			valueMinDisplay, SLOT(set_decimal_places(const int)));
-
-		disconnect(signal_.get(), SIGNAL(digits_changed(int)),
-			valueMaxDisplay, SLOT(set_digits(const int)));
-		disconnect(signal_.get(), SIGNAL(decimal_places_changed(int)),
-			valueMaxDisplay, SLOT(set_decimal_places(const int)));
+		disconnect(signal_.get(), SIGNAL(digits_changed(const int, const int)),
+			valueDisplay, SLOT(set_digits(const int, const int)));
+		disconnect(signal_.get(), SIGNAL(digits_changed(const int, const int)),
+			valueMinDisplay, SLOT(set_digits(const int, const int)));
+		disconnect(signal_.get(), SIGNAL(digits_changed(const int, const int)),
+			valueMaxDisplay, SLOT(set_digits(const int, const int)));
 	}
 }
 
@@ -302,22 +286,19 @@ void ValuePanelView::on_signal_changed()
 	valueDisplay->set_unit_suffix(unit_suffix_);
 	valueDisplay->set_extra_text(
 		sv::data::datautil::format_quantity_flags(quantity_flags_, "\n"));
-	valueDisplay->set_digits(digits_);
-	valueDisplay->set_decimal_places(decimal_places_);
+	valueDisplay->set_digits(digits_, decimal_places_);
 
 	valueMinDisplay->set_unit(unit_);
 	valueMinDisplay->set_unit_suffix(unit_suffix_);
 	valueMinDisplay->set_extra_text(
 		sv::data::datautil::format_quantity_flags(quantity_flags_min_, "\n"));
-	valueMinDisplay->set_digits(digits_);
-	valueMinDisplay->set_decimal_places(decimal_places_);
+	valueMinDisplay->set_digits(digits_, decimal_places_);
 
 	valueMaxDisplay->set_unit(unit_);
 	valueMaxDisplay->set_unit_suffix(unit_suffix_);
 	valueMaxDisplay->set_extra_text(
 		sv::data::datautil::format_quantity_flags(quantity_flags_max_, "\n"));
-	valueMaxDisplay->set_digits(digits_);
-	valueMaxDisplay->set_decimal_places(decimal_places_);
+	valueMaxDisplay->set_digits(digits_, decimal_places_);
 
 	this->parentWidget()->setWindowTitle(this->title());
 

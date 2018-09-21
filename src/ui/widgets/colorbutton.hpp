@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WIDGETS_COLORBUTTON_HPP
-#define WIDGETS_COLORBUTTON_HPP
+#ifndef UI_WIDGETS_COLORBUTTON_HPP
+#define UI_WIDGETS_COLORBUTTON_HPP
 
 #include <QColor>
 #include <QPaintEvent>
@@ -26,6 +26,7 @@
 #include <QWidget>
 
 namespace sv {
+namespace ui {
 namespace widgets {
 
 class ColorButton : public QPushButton
@@ -51,8 +52,7 @@ public Q_SLOTS:
 };
 
 } // namespace widgets
+} // namespace ui
 } // namespace sv
 
-#endif // WIDGETS_COLORBUTTON_HPP
-
-
+#endif // UI_WIDGETS_COLORBUTTON_HPP

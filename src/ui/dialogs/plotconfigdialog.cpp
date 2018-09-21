@@ -32,9 +32,9 @@
 #include <QWidget>
 
 #include "plotconfigdialog.hpp"
-#include "src/widgets/plot/plot.hpp"
+#include "src/ui/widgets/plot/plot.hpp"
 
-Q_DECLARE_METATYPE(sv::widgets::plot::PlotUpdateMode)
+Q_DECLARE_METATYPE(sv::ui::widgets::plot::PlotUpdateMode)
 
 namespace sv {
 namespace ui {
@@ -127,7 +127,7 @@ void PlotConfigDialog::setup_ui_oscilloscope()
 void PlotConfigDialog::on_update_mode_changed()
 {
 	QVariant update_mode_var = plot_update_mode_combobox_->currentData();
-	switch (update_mode_var.value<sv::widgets::plot::PlotUpdateMode>()) {
+	switch (update_mode_var.value<sv::ui::widgets::plot::PlotUpdateMode>()) {
 	case widgets::plot::PlotUpdateMode::Additive:
 		setup_ui_additive();
 		break;
@@ -144,7 +144,7 @@ void PlotConfigDialog::accept()
 {
 	QVariant update_mode_var = plot_update_mode_combobox_->currentData();
 	plot_->set_update_mode(
-		update_mode_var.value<sv::widgets::plot::PlotUpdateMode>());
+		update_mode_var.value<sv::ui::widgets::plot::PlotUpdateMode>());
 
 	plot_->set_time_span(time_span_edit_->text().toDouble());
 	plot_->set_add_time(add_time_edit_->text().toDouble());

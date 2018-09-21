@@ -298,8 +298,8 @@ void MainWindow::setup_ui()
 		*session_, true, false, false, nullptr);
 	signal_tree_->setSizePolicy(
 		QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);
-	connect(this, SIGNAL(device_added(shared_ptr<devices::BaseDevice>)),
-		signal_tree_, SLOT(on_device_added(shared_ptr<devices::BaseDevice>)));
+	connect(this, SIGNAL(device_added(shared_ptr<sv::devices::BaseDevice>)),
+		signal_tree_, SLOT(on_device_added(shared_ptr<sv::devices::BaseDevice>)));
 
 	// A layout must be set to the central widget of the main window
 	// before ds_dock->setWidget() is called.

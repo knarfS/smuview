@@ -30,6 +30,7 @@
 #include "colorbutton.hpp"
 
 namespace sv {
+namespace ui {
 namespace widgets {
 
 const int ColorButton::SwatchMargin = 7;
@@ -71,4 +72,5 @@ void ColorButton::paintEvent(QPaintEvent *event)
 }
 
 } // namespace widgets
+} // namespace ui
 } // namespace sv

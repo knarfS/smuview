@@ -34,15 +34,15 @@ class LcdDisplay : public QFrame
 
 public:
 	LcdDisplay(
-		uint digits, uint decimal_places, const bool auto_range,
+		int digits, int decimal_places, const bool auto_range,
 		const QString unit, const QString unit_suffix, const QString extra_text,
 		const bool small, QWidget *parent = nullptr);
 
 	double value() const;
 
 private:
-	uint digits_;
-	uint decimal_places_;
+	int digits_;
+	int decimal_places_;
 	const bool auto_range_;
 	QString unit_;
 	QString unit_si_prefix_;
@@ -66,7 +66,7 @@ public Q_SLOTS:
 	void set_unit(const QString);
 	void set_unit_suffix(const QString);
 	void set_extra_text(const QString);
-	void set_digits(const uint, const uint);
+	void set_digits(const int, const int);
 	void reset_value();
 	void update_display();
 

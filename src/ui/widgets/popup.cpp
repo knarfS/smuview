@@ -45,6 +45,7 @@ using std::max;
 using std::min;
 
 namespace sv {
+namespace ui {
 namespace widgets {
 
 const unsigned int Popup::ArrowLength = 10;
@@ -319,4 +320,5 @@ void Popup::showEvent(QShowEvent *)
 }
 
 } // namespace widgets
+} // namespace ui
 } // namespace sv

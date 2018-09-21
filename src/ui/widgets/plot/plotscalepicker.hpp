@@ -18,13 +18,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WIDGETS_PLOTSCALEPICKER_HPP
-#define WIDGETS_PLOTSCALEPICKER_HPP
+#ifndef UI_WIDGETS_PLOTSCALEPICKER_HPP
+#define UI_WIDGETS_PLOTSCALEPICKER_HPP
 
 #include <QEvent>
 #include <QObject>
 
 namespace sv {
+namespace ui {
 namespace widgets {
 namespace plot {
 
@@ -48,7 +49,7 @@ private:
 
 } // namespace plot
 } // namespace widgets
+} // namespace ui
 } // namespace sv
 
-#endif // WIDGETS_PLOTSCALEPICKER_HPP
-
+#endif // UI_WIDGETS_PLOTSCALEPICKER_HPP

@@ -28,9 +28,10 @@
 #include <qwt_scale_engine.h>
 
 #include "axispopup.hpp"
-#include <src/widgets/popup.hpp>
+#include "src/ui/widgets/popup.hpp"
 
 namespace sv {
+namespace ui {
 namespace widgets {
 namespace plot {
 
@@ -99,4 +100,5 @@ void AxisPopup::on_accept()
 
 } // namespace plot
 } // namespace widgets
+} // namespace ui
 } // namespace sv

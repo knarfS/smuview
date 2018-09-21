@@ -17,57 +17,57 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WIDGETS_PLOT_BASECURVE_HPP
-#define WIDGETS_PLOT_BASECURVE_HPP
+#ifndef UI_WIDGETS_PLOT_XYCURVE_HPP
+#define UI_WIDGETS_PLOT_XYCURVE_HPP
 
-#include <QColor>
+#include <memory>
+
 #include <QPointF>
 #include <QRectF>
 #include <QString>
-#include <qwt_series_data.h>
+
+#include "src/ui/widgets/plot/basecurve.hpp"
+
+using std::shared_ptr;
 
 namespace sv {
+
+namespace data {
+class AnalogSignal;
+}
+
+namespace ui {
 namespace widgets {
 namespace plot {
 
-enum class CurveType {
-	TimeCurve,
-	XYCurve
-};
-
-class BaseCurve : public QwtSeriesData<QPointF>
+class XYCurve : public BaseCurve
 {
 
 public:
-	BaseCurve(CurveType curve_type);
-	virtual ~BaseCurve() = default;
+	XYCurve(shared_ptr<sv::data::AnalogSignal> x_signal,
+		shared_ptr<sv::data::AnalogSignal> y_signal);
 
-	CurveType curve_type() const;
-	QColor color() const;
-	void set_relative_time(bool is_relative_time);
-	bool is_relative_time() const;
+	QPointF sample(size_t i) const;
+	size_t size() const;
+	QRectF boundingRect() const;
 
-	virtual QPointF sample(size_t i) const = 0;
-	virtual size_t size() const = 0;
-	virtual QRectF boundingRect() const = 0;
+	QString name() const;
+	QString x_data_quantity() const;
+	QString x_data_unit() const;
+	QString x_data_title() const;
+	QString y_data_quantity() const;
+	QString y_data_unit() const;
+	QString y_data_title() const;
 
-	virtual QString name() const = 0;
-	virtual QString x_data_quantity() const = 0;
-	virtual QString x_data_unit() const = 0;
-	virtual QString x_data_title() const = 0;
-	virtual QString y_data_quantity() const = 0;
-	virtual QString y_data_unit() const = 0;
-	virtual QString y_data_title() const = 0;
-
-protected:
-	const CurveType curve_type_;
-	QColor color_;
-	bool relative_time_;
+private:
+	shared_ptr<sv::data::AnalogSignal> x_signal_;
+	shared_ptr<sv::data::AnalogSignal> y_signal_;
 
 };
 
 } // namespace plot
 } // namespace widgets
+} // namespace ui
 } // namespace sv
 
-#endif // WIDGETS_PLOT_BASECURVE_HPP
+#endif // UI_WIDGETS_PLOT_XYCURVE_HPP

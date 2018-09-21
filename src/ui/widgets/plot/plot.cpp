@@ -43,12 +43,13 @@
 
 #include "plot.hpp"
 #include "src/ui/dialogs/plotcurveconfigdialog.hpp"
-#include "src/widgets/plot/basecurve.hpp"
-#include "src/widgets/plot/plotscalepicker.hpp"
+#include "src/ui/widgets/plot/basecurve.hpp"
+#include "src/ui/widgets/plot/plotscalepicker.hpp"
 
 using std::make_pair;
 
 namespace sv {
+namespace ui {
 namespace widgets {
 namespace plot {
 
@@ -610,4 +611,5 @@ bool Plot::eventFilter(QObject *object, QEvent *event)
 
 } // namespace plot
 } // namespace widgets
+} // namespace ui
 } // namespace sv

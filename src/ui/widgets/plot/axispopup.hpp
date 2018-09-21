@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,53 +17,50 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WIDGETS_PLOT_TIMECURVE_HPP
-#define WIDGETS_PLOT_TIMECURVE_HPP
+#ifndef UI_WIDGETS_PLOT_AXISPOPUP_HPP
+#define UI_WIDGETS_PLOT_AXISPOPUP_HPP
 
-#include <memory>
+#include <QCheckBox>
+#include <QDialogButtonBox>
+#include <QLineEdit>
+#include <QShowEvent>
+#include <QWidget>
 
-#include <QPointF>
-#include <QRectF>
-#include <QString>
-
-#include "src/widgets/plot/basecurve.hpp"
-
-using std::shared_ptr;
+#include "src/ui/widgets/popup.hpp"
+#include "src/ui/widgets/plot/plot.hpp"
 
 namespace sv {
-
-namespace data {
-class AnalogSignal;
-}
-
+namespace ui {
 namespace widgets {
 namespace plot {
 
-class TimeCurve : public BaseCurve
+class AxisPopup : public widgets::Popup
 {
+	Q_OBJECT
 
 public:
-	TimeCurve(shared_ptr<data::AnalogSignal> signal);
-
-	QPointF sample(size_t i) const;
-	size_t size() const;
-	QRectF boundingRect() const;
-
-	QString name() const;
-	QString x_data_quantity() const;
-	QString x_data_unit() const;
-	QString x_data_title() const;
-	QString y_data_quantity() const;
-	QString y_data_unit() const;
-	QString y_data_title() const;
+	AxisPopup(Plot *plot, int axis_id, QWidget *parent);
 
 private:
-	shared_ptr<data::AnalogSignal> signal_;
+	Plot *plot_;
+	int axis_id_;
+
+	QLineEdit *axis_min_edit_;
+	QLineEdit *axis_max_edit_;
+	QCheckBox *axis_log_check_;
+	QDialogButtonBox *button_box_;
+
+	void setup_ui();
+	void showEvent(QShowEvent *event);
+
+private Q_SLOTS:
+	void on_accept();
 
 };
 
 } // namespace plot
 } // namespace widgets
+} // namespace ui
 } // namespace sv
 
-#endif // WIDGETS_PLOT_TIMECURVE_HPP
+#endif // UI_WIDGETS_PLOT_AXISPOPUP_HPP

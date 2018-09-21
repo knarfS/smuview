@@ -25,16 +25,17 @@
 
 #include "xycurve.hpp"
 #include "src/data/analogsignal.hpp"
-#include "src/widgets/plot/basecurve.hpp"
+#include "src/ui/widgets/plot/basecurve.hpp"
 
 using std::shared_ptr;
 
 namespace sv {
+namespace ui {
 namespace widgets {
 namespace plot {
 
-XYCurve::XYCurve(shared_ptr<data::AnalogSignal> x_signal,
-		shared_ptr<data::AnalogSignal> y_signal) :
+XYCurve::XYCurve(shared_ptr<sv::data::AnalogSignal> x_signal,
+		shared_ptr<sv::data::AnalogSignal> y_signal) :
 	BaseCurve(CurveType::XYCurve),
 	x_signal_(x_signal),
 	y_signal_(y_signal)
@@ -108,4 +109,5 @@ QString XYCurve::y_data_title() const
 
 } // namespace plot
 } // namespace widgets
+} // namespace ui
 } // namespace sv

@@ -38,11 +38,12 @@ namespace data {
 class AnalogSignal;
 }
 
+namespace ui {
+
 namespace widgets {
 class LcdDisplay;
 }
 
-namespace ui {
 namespace views {
 
 class PowerPanelView : public BaseView

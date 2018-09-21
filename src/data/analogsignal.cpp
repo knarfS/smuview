@@ -159,15 +159,17 @@ void AnalogSignal::push_sample(void *sample, double timestamp,
 	sample_count_++;
 	Q_EMIT sample_added();
 
+	bool digits_chngd = false;
 	if (digits != digits_) {
 		digits_ = digits;
-		Q_EMIT digits_changed(digits_);
+		digits_chngd = true;
 	}
-
 	if (decimal_places != decimal_places_) {
 		decimal_places_ = decimal_places;
-		Q_EMIT decimal_places_changed(decimal_places_);
+		digits_chngd = true;
 	}
+	if (digits_chngd)
+		Q_EMIT digits_changed(digits_, decimal_places_);
 }
 
 /*

@@ -29,7 +29,7 @@
 #include <QString>
 #include <QWidget>
 
-#include "src/widgets/plot/plot.hpp"
+#include "src/ui/widgets/plot/plot.hpp"
 
 namespace sv {
 namespace ui {

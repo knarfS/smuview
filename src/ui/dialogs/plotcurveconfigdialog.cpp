@@ -29,7 +29,7 @@
 #include <qwt_symbol.h>
 
 #include "plotcurveconfigdialog.hpp"
-#include "src/widgets/colorbutton.hpp"
+#include "src/ui/widgets/colorbutton.hpp"
 
 namespace sv {
 namespace ui {

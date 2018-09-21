@@ -29,10 +29,10 @@
 #include "src/data/analogsignal.hpp"
 #include "src/ui/dialogs/plotconfigdialog.hpp"
 #include "src/ui/dialogs/selectsignaldialog.hpp"
-#include "src/widgets/plot/plot.hpp"
-#include "src/widgets/plot/basecurve.hpp"
-#include "src/widgets/plot/timecurve.hpp"
-#include "src/widgets/plot/xycurve.hpp"
+#include "src/ui/widgets/plot/plot.hpp"
+#include "src/ui/widgets/plot/basecurve.hpp"
+#include "src/ui/widgets/plot/timecurve.hpp"
+#include "src/ui/widgets/plot/xycurve.hpp"
 
 using std::dynamic_pointer_cast;
 using std::static_pointer_cast;
@@ -65,9 +65,9 @@ PlotView::PlotView(const Session &session,
 		curve_ = nullptr;
 
 	// Signal (aka Quantity + Flags + Unit) can change, e.g. DMM signals
-	connect(channel_.get(), SIGNAL(signal_added(shared_ptr<data::BaseSignal>)),
+	connect(channel_.get(), SIGNAL(signal_added(shared_ptr<sv::data::BaseSignal>)),
 		this, SLOT(on_signal_changed()));
-	connect(channel_.get(), SIGNAL(signal_changed(shared_ptr<data::BaseSignal>)),
+	connect(channel_.get(), SIGNAL(signal_changed(shared_ptr<sv::data::BaseSignal>)),
 		this, SLOT(on_signal_changed()));
 
 	setup_ui();

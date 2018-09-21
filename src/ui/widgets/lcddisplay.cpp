@@ -33,7 +33,7 @@ namespace ui {
 namespace widgets {
 
 LcdDisplay::LcdDisplay(
-		uint digits, uint decimal_places, const bool auto_range,
+		int digits, int decimal_places, const bool auto_range,
 		const QString unit, const QString unit_suffix, const QString extra_text,
 		const bool small, QWidget *parent) :
 	QFrame(parent),
@@ -189,7 +189,7 @@ void LcdDisplay::set_extra_text(const QString extra_text)
 	lcd_extra_->setText(extra_text_);
 }
 
-void LcdDisplay::set_digits(const uint digits, const uint decimal_places)
+void LcdDisplay::set_digits(const int digits, const int decimal_places)
 {
 	digits_ = digits;
 	decimal_places_ = decimal_places;
@@ -200,7 +200,7 @@ void LcdDisplay::set_digits(const uint digits, const uint decimal_places)
 void LcdDisplay::reset_value()
 {
 	QString init_value("");
-	for (uint i=0; i<digits_; i++)
+	for (int i=0; i<digits_; i++)
 		init_value.append("-");
 
 	lcd_value_->display(init_value);

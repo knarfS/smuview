@@ -28,7 +28,7 @@
 #include "src/util.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/data/datautil.hpp"
-#include "src/widgets/lcddisplay.hpp"
+#include "src/ui/widgets/lcddisplay.hpp"
 
 using std::set;
 using sv::data::QuantityFlag;
@@ -231,19 +231,19 @@ void PowerPanelView::setup_toolbar()
 
 void PowerPanelView::connect_signals()
 {
-	connect(voltage_signal_.get(), SIGNAL(digits_changed(int)),
-		voltageDisplay, SLOT(set_digits(int)));
-	connect(voltage_signal_.get(), SIGNAL(digits_changed(int)),
-		voltageMinDisplay, SLOT(set_digits(int)));
-	connect(voltage_signal_.get(), SIGNAL(digits_changed(int)),
-		voltageMaxDisplay, SLOT(set_digits(int)));
+	connect(voltage_signal_.get(), SIGNAL(digits_changed(const int, const int)),
+		voltageDisplay, SLOT(set_digits(const int, const int)));
+	connect(voltage_signal_.get(), SIGNAL(digits_changed(const int, const int)),
+		voltageMinDisplay, SLOT(set_digits(const int, const int)));
+	connect(voltage_signal_.get(), SIGNAL(digits_changed(const int, const int)),
+		voltageMaxDisplay, SLOT(set_digits(const int, const int)));
 
-	connect(current_signal_.get(), SIGNAL(digits_changed(int)),
-		currentDisplay, SLOT(set_digits(int)));
-	connect(current_signal_.get(), SIGNAL(digits_changed(int)),
-		currentMinDisplay, SLOT(set_digits(int)));
-	connect(current_signal_.get(), SIGNAL(digits_changed(int)),
-		currentMaxDisplay, SLOT(set_digits(int)));
+	connect(current_signal_.get(), SIGNAL(digits_changed(const int, const int)),
+		currentDisplay, SLOT(set_digits(const int, const int)));
+	connect(current_signal_.get(), SIGNAL(digits_changed(const int, const int)),
+		currentMinDisplay, SLOT(set_digits(const int, const int)));
+	connect(current_signal_.get(), SIGNAL(digits_changed(const int, const int)),
+		currentMaxDisplay, SLOT(set_digits(const int, const int)));
 
 	// TODO: set_digits() for the other displays!
 }

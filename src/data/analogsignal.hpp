@@ -92,8 +92,7 @@ Q_SIGNALS:
 	void signal_start_timestamp_changed(double);
 	void samples_cleared();
 	void sample_added();
-	void digits_changed(int);
-	void decimal_places_changed(int);
+	void digits_changed(const int, const int);
 
 };
 

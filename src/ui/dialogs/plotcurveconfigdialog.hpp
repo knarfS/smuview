@@ -27,12 +27,12 @@
 #include <qwt_plot_curve.h>
 
 namespace sv {
+namespace ui {
 
 namespace widgets {
 class ColorButton;
 }
 
-namespace ui {
 namespace dialogs {
 
 class PlotCurveConfigDialog : public QDialog

@@ -41,16 +41,16 @@ class Session;
 namespace channels {
 class BaseChannel;
 }
-
 namespace data {
 class AnalogSignal;
 }
+
+namespace ui {
 
 namespace widgets {
 class LcdDisplay;
 }
 
-namespace ui {
 namespace views {
 
 class ValuePanelView : public BaseView

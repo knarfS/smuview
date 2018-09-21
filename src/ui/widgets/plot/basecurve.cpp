@@ -17,55 +17,52 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DATA_XYCURVE_HPP
-#define DATA_XYCURVE_HPP
+#include <QColor>
+#include <qwt_series_data.h>
 
-#include <memory>
-
-#include <QPointF>
-#include <QRectF>
-#include <QString>
-
-#include "src/widgets/plot/basecurve.hpp"
-
-using std::shared_ptr;
+#include "basecurve.hpp"
 
 namespace sv {
-
-namespace data {
-class AnalogSignal;
-}
-
+namespace ui {
 namespace widgets {
 namespace plot {
 
-class XYCurve : public BaseCurve
+BaseCurve::BaseCurve(CurveType curve_type) :
+	QwtSeriesData<QPointF>(),
+	curve_type_(curve_type),
+	relative_time_(true)
 {
+}
 
-public:
-	XYCurve(shared_ptr<data::AnalogSignal> x_signal,
-		shared_ptr<data::AnalogSignal> y_signal);
+CurveType BaseCurve::curve_type() const
+{
+	return curve_type_;
+}
 
-	QPointF sample(size_t i) const;
-	size_t size() const;
-	QRectF boundingRect() const;
+QColor BaseCurve::color() const
+{
+	// TODO
+	if (y_data_unit() == "V")
+		return Qt::red;
+	else if (y_data_unit() == "A")
+		return Qt::green;
+	else
+		return Qt::blue;
 
-	QString name() const;
-	QString x_data_quantity() const;
-	QString x_data_unit() const;
-	QString x_data_title() const;
-	QString y_data_quantity() const;
-	QString y_data_unit() const;
-	QString y_data_title() const;
+	//return color_;
+}
 
-private:
-	shared_ptr<data::AnalogSignal> x_signal_;
-	shared_ptr<data::AnalogSignal> y_signal_;
+void BaseCurve::set_relative_time(bool is_relative_time)
+{
+	relative_time_ = is_relative_time;
+}
 
-};
+bool BaseCurve::is_relative_time() const
+{
+	return relative_time_;
+}
 
 } // namespace plot
 } // namespace widgets
+} // namespace ui
 } // namespace sv
-
-#endif // DATA_XYCURVE_HPP

@@ -26,15 +26,16 @@
 #include "timecurve.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/data/datautil.hpp"
-#include "src/widgets/plot/basecurve.hpp"
+#include "src/ui/widgets/plot/basecurve.hpp"
 
 using std::shared_ptr;
 
 namespace sv {
+namespace ui {
 namespace widgets {
 namespace plot {
 
-TimeCurve::TimeCurve(shared_ptr<data::AnalogSignal> signal) :
+TimeCurve::TimeCurve(shared_ptr<sv::data::AnalogSignal> signal) :
 	BaseCurve(CurveType::TimeCurve),
 	signal_(signal)
 {
@@ -84,12 +85,12 @@ QString TimeCurve::name() const
 
 QString TimeCurve::x_data_quantity() const
 {
-	return data::datautil::format_quantity(data::Quantity::Time);
+	return data::datautil::format_quantity(sv::data::Quantity::Time);
 }
 
 QString TimeCurve::x_data_unit() const
 {
-	return data::datautil::format_unit(data::Unit::Second);
+	return data::datautil::format_unit(sv::data::Unit::Second);
 }
 
 QString TimeCurve::x_data_title() const
@@ -114,4 +115,5 @@ QString TimeCurve::y_data_title() const
 
 } // namespace plot
 } // namespace widgets
+} // namespace ui
 } // namespace sv

@@ -18,8 +18,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WIDGETS_PLOT_HPP
-#define WIDGETS_PLOT_HPP
+#ifndef UI_WIDGETS_PLOT_HPP
+#define UI_WIDGETS_PLOT_HPP
 
 #include <map>
 #include <vector>
@@ -37,6 +37,7 @@ using std::map;
 using std::vector;
 
 namespace sv {
+namespace ui {
 namespace widgets {
 namespace plot {
 
@@ -53,9 +54,9 @@ enum class PlotUpdateMode {
 //       See: http://doc.qt.io/qt-5/i18n-source-translation.html
 typedef map<PlotUpdateMode, QString> plot_update_mode_name_map_t;
 static plot_update_mode_name_map_t plot_update_mode_name_map = {
-	{ sv::widgets::plot::PlotUpdateMode::Additive, QString("Additive") },
-	{ sv::widgets::plot::PlotUpdateMode::Rolling, QString("Rolling") },
-	{ sv::widgets::plot::PlotUpdateMode::Oscilloscope, QString("Oscilloscope") },
+	{ sv::ui::widgets::plot::PlotUpdateMode::Additive, QString("Additive") },
+	{ sv::ui::widgets::plot::PlotUpdateMode::Rolling, QString("Rolling") },
+	{ sv::ui::widgets::plot::PlotUpdateMode::Oscilloscope, QString("Oscilloscope") },
 };
 
 class Plot : public QwtPlot
@@ -125,6 +126,7 @@ private:
 
 } // namespace plot
 } // namespace widgets
+} // namespace ui
 } // namespace sv
 
-#endif // WIDGETS_PLOT_HPP
+#endif // UI_WIDGETS_PLOT_HPP

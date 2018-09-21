@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef WIDGETS_POPUP_HPP
-#define WIDGETS_POPUP_HPP
+#ifndef UI_WIDGETS_POPUP_HPP
+#define UI_WIDGETS_POPUP_HPP
 
 #include <QCloseEvent>
 #include <QEvent>
@@ -35,6 +35,7 @@
 #include <QWidget>
 
 namespace sv {
+namespace ui {
 namespace widgets {
 
 enum class PopupPosition : int
@@ -103,6 +104,7 @@ private:
 };
 
 } // namespace widgets
+} // namespace ui
 } // namespace sv
 
-#endif // WIDGETS_POPUP_HPP
+#endif // UI_WIDGETS_POPUP_HPP

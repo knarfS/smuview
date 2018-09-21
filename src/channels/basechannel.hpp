@@ -196,8 +196,8 @@ Q_SIGNALS:
 	void enabled_changed(const bool);
 	void name_changed(const QString);
 	void colour_changed(const QColor);
-	void signal_added(shared_ptr<data::BaseSignal>);
-	void signal_changed(shared_ptr<data::BaseSignal>);
+	void signal_added(shared_ptr<sv::data::BaseSignal>);
+	void signal_changed(shared_ptr<sv::data::BaseSignal>);
 
 };
 

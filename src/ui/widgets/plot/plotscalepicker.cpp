@@ -32,10 +32,11 @@
 #include <qwt_scale_widget.h>
 
 #include "plotscalepicker.hpp"
-#include "src/widgets/plot/axispopup.hpp"
-#include "src/widgets/plot/plot.hpp"
+#include "src/ui/widgets/plot/axispopup.hpp"
+#include "src/ui/widgets/plot/plot.hpp"
 
 namespace sv {
+namespace ui {
 namespace widgets {
 namespace plot {
 
@@ -242,5 +243,5 @@ bool PlotScalePicker::eventFilter(QObject *object, QEvent *event)
 
 } // namespace plot
 } // namespace widgets
+} // namespace ui
 } // namespace sv
-
