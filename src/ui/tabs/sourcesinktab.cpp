@@ -53,6 +53,9 @@ void SourceSinkTab::setup_ui()
 
 	// Device control(s)
 	for (auto c : hw_device->configurables()) {
+		if (!c->is_controllable())
+			continue;
+
 		auto view = views::viewhelper::get_view_for_configurable(session_, c);
 		if (view != NULL)
 			add_view(view, Qt::TopDockWidgetArea);
