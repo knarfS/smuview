@@ -40,7 +40,8 @@ class BaseView;
 namespace viewhelper {
 
 /**
- * Returns the control view the given configurable.
+ * Returns the fitting control view for the given configurable, by checking for
+ * get-/setable config keys and the device type.
  *
  * @param[in] session The reference to the actual SmuView session
  * @param[in] configurable The Configurable

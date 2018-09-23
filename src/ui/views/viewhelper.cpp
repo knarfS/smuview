@@ -40,41 +40,57 @@ namespace viewhelper {
 BaseView *get_view_for_configurable(const Session &session,
 	shared_ptr<sv::devices::Configurable> configurable)
 {
-	// Check for get-/setable config keys to determin the fitting control view
-
 	// Power supplies or eleectronic loads control view
-	if (configurable->has_set_config(ConfigKey::Enabled) ||
+	if ((configurable->device_type() == DeviceType::PowerSupply ||
+		configurable->device_type() == DeviceType::ElectronicLoad) &&
+		(configurable->has_get_config(ConfigKey::Enabled) ||
 		configurable->has_set_config(ConfigKey::Enabled) ||
+		configurable->has_get_config(ConfigKey::Regulation) ||
 		configurable->has_set_config(ConfigKey::Regulation) ||
-		configurable->has_set_config(ConfigKey::Regulation) ||
+		configurable->has_get_config(ConfigKey::VoltageTarget) ||
 		configurable->has_set_config(ConfigKey::VoltageTarget) ||
-		configurable->has_set_config(ConfigKey::VoltageTarget) ||
+		configurable->has_get_config(ConfigKey::CurrentLimit) ||
 		configurable->has_set_config(ConfigKey::CurrentLimit) ||
-		configurable->has_set_config(ConfigKey::CurrentLimit) ||
+		configurable->has_get_config(ConfigKey::OverVoltageProtectionEnabled) ||
 		configurable->has_set_config(ConfigKey::OverVoltageProtectionEnabled) ||
-		configurable->has_set_config(ConfigKey::OverVoltageProtectionEnabled) ||
+		configurable->has_get_config(ConfigKey::OverVoltageProtectionThreshold) ||
 		configurable->has_set_config(ConfigKey::OverVoltageProtectionThreshold) ||
-		configurable->has_set_config(ConfigKey::OverVoltageProtectionThreshold) ||
+		configurable->has_get_config(ConfigKey::OverCurrentProtectionEnabled) ||
 		configurable->has_set_config(ConfigKey::OverCurrentProtectionEnabled) ||
-		configurable->has_set_config(ConfigKey::OverCurrentProtectionEnabled) ||
+		configurable->has_get_config(ConfigKey::OverCurrentProtectionThreshold) ||
 		configurable->has_set_config(ConfigKey::OverCurrentProtectionThreshold) ||
-		configurable->has_set_config(ConfigKey::OverCurrentProtectionThreshold) ||
+		configurable->has_get_config(ConfigKey::UnderVoltageConditionEnabled) ||
 		configurable->has_set_config(ConfigKey::UnderVoltageConditionEnabled) ||
-		configurable->has_set_config(ConfigKey::UnderVoltageConditionEnabled) ||
-		configurable->has_set_config(ConfigKey::UnderVoltageConditionThreshold) ||
-		configurable->has_set_config(ConfigKey::UnderVoltageConditionThreshold)) {
+		configurable->has_get_config(ConfigKey::UnderVoltageConditionThreshold) ||
+		configurable->has_set_config(ConfigKey::UnderVoltageConditionThreshold))) {
 
 		return new SourceSinkControlView(session, configurable);
 	}
 
-	// Special view for DemoDMM Device (before all other measurement devices!)
-	if (configurable->device_type() == DeviceType::DemoDev) {
+	// View for DemoDMM Device
+	if (configurable->device_type() == DeviceType::DemoDev &&
+		(configurable->has_get_config(ConfigKey::MeasuredQuantity) ||
+		configurable->has_set_config(ConfigKey::MeasuredQuantity) ||
+		configurable->has_get_config(ConfigKey::Amplitude) ||
+		configurable->has_set_config(ConfigKey::Amplitude) /* ||
+		configurable->has_get_config(ConfigKey::Offset) ||
+		configurable->has_set_config(ConfigKey::Offset)	*/ )) {
+
 		return new DemoDMMControlView(session, configurable);
 	}
 
 	// Measurement devices like DMMs, scales, LCR meters, etc.
-	if (configurable->has_get_config(ConfigKey::MeasuredQuantity) ||
-		configurable->has_set_config(ConfigKey::MeasuredQuantity)) {
+	if ((configurable->device_type() == DeviceType::Multimeter ||
+		configurable->device_type() == DeviceType::Multimeter ||
+		configurable->device_type() == DeviceType::SoundLevelMeter ||
+		configurable->device_type() == DeviceType::Thermometer ||
+		configurable->device_type() == DeviceType::Hygrometer ||
+		configurable->device_type() == DeviceType::Energymeter ||
+		configurable->device_type() == DeviceType::LcrMeter ||
+		configurable->device_type() == DeviceType::Scale ||
+		configurable->device_type() == DeviceType::Powermeter) &&
+		(configurable->has_get_config(ConfigKey::MeasuredQuantity) ||
+		configurable->has_set_config(ConfigKey::MeasuredQuantity))) {
 
 		return new MeasurementControlView(session, configurable);
 	}
