@@ -41,7 +41,7 @@ namespace devices {
 
 class ChannelGroupComboBox : public QComboBox
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
 	ChannelGroupComboBox(const Session &session,

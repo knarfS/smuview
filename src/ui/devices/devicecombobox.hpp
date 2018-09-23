@@ -40,7 +40,7 @@ namespace devices {
 
 class DeviceComboBox : public QComboBox
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
 	DeviceComboBox(const Session &session, QWidget *parent = nullptr);

@@ -42,7 +42,7 @@ namespace datatypes {
 
 class BoolButton : public QPushButton, public BaseWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
 	BoolButton(

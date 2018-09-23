@@ -40,7 +40,7 @@ namespace devices {
 
 class ConfigKeyComboBox : public QComboBox
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
 	ConfigKeyComboBox(shared_ptr<sv::devices::Configurable> configurable,

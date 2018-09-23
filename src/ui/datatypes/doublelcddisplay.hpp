@@ -42,7 +42,7 @@ namespace datatypes {
 
 class DoubleLcdDisplay : public widgets::LcdDisplay, public BaseWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
 	DoubleLcdDisplay(

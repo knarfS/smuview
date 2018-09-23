@@ -44,7 +44,7 @@ namespace datatypes {
 
 class BoolLed : public QWidget, public BaseWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
 	BoolLed(shared_ptr<sv::devices::properties::BaseProperty> property,

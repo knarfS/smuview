@@ -54,10 +54,10 @@ void DataView::setup_ui()
 	data_table_ = new QTableWidget();
 	data_table_->setColumnCount(2);
 	QTableWidgetItem *time_header_item = new QTableWidgetItem(tr("Time"));
-    time_header_item->setTextAlignment(Qt::AlignVCenter);
+	time_header_item->setTextAlignment(Qt::AlignVCenter);
 	data_table_->setHorizontalHeaderItem(0, time_header_item);
 	QTableWidgetItem *value_header_item = new QTableWidgetItem(tr("Value"));
-    value_header_item->setTextAlignment(Qt::AlignVCenter);
+	value_header_item->setTextAlignment(Qt::AlignVCenter);
 	data_table_->setHorizontalHeaderItem(1, value_header_item);
 	layout->addWidget(data_table_);
 

@@ -42,7 +42,7 @@ namespace datatypes {
 
 class DoubleSpinBox : public QDoubleSpinBox, public BaseWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
 	DoubleSpinBox(

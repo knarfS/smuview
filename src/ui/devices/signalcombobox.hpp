@@ -45,7 +45,7 @@ namespace devices {
 
 class SignalComboBox : public QComboBox
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
 	SignalComboBox(

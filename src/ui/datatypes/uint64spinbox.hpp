@@ -42,7 +42,7 @@ namespace datatypes {
 
 class UInt64SpinBox : public QSpinBox, public BaseWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
 	UInt64SpinBox(

@@ -31,13 +31,13 @@ namespace widgets {
 
 class ColorButton : public QPushButton
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
 	ColorButton(QWidget *parent = nullptr);
 
-    void set_color(const QColor &color);
-    const QColor &color();
+	void set_color(const QColor &color);
+	const QColor &color();
 
 private:
 	static const int SwatchMargin;
@@ -47,7 +47,7 @@ private:
 	void paintEvent(QPaintEvent *event);
 
 public Q_SLOTS:
-    void change_color();
+	void change_color();
 
 };
 

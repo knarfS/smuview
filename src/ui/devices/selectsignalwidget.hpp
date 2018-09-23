@@ -48,7 +48,7 @@ class SignalComboBox;
 
 class SelectSignalWidget : public QWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
 	SelectSignalWidget(const Session &session, QWidget *parent = nullptr);

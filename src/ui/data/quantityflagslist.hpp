@@ -35,7 +35,7 @@ namespace data {
 
 class QuantityFlagsList : public QListWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
 	QuantityFlagsList(QWidget *parent = nullptr);

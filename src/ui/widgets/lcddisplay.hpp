@@ -30,7 +30,7 @@ namespace widgets {
 
 class LcdDisplay : public QFrame
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
 	LcdDisplay(

@@ -249,7 +249,7 @@ void ConnectDialog::scan_pressed()
 		QString serial;
 		const int index = serial_devices_.currentIndex();
 		if (index >= 0 && index < serial_devices_.count() &&
-		    serial_devices_.currentText() == serial_devices_.itemText(index))
+			serial_devices_.currentText() == serial_devices_.itemText(index))
 			serial = serial_devices_.itemData(index).value<QString>();
 		else
 			serial = serial_devices_.currentText();

@@ -33,7 +33,7 @@ class ProcessThreadWidget;
 
 class ProcessingWidget : public QMainWindow
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
 	ProcessingWidget(QWidget *parent = nullptr);

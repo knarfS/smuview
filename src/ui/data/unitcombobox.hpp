@@ -31,7 +31,7 @@ namespace data {
 
 class UnitComboBox : public QComboBox
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
 	UnitComboBox(QWidget *parent = nullptr);

@@ -142,8 +142,8 @@ Plot::Plot(QWidget *parent) : QwtPlot(parent),
 	grid->enableYMin(false);
 	grid->attach(this);
 
-    // Zooming and panning via the axes
-    (void)new PlotScalePicker(this);
+	// Zooming and panning via the axes
+	(void)new PlotScalePicker(this);
 	// Panning via the canvas
 	//(void)new QwtPlotPanner(this->canvas());
 	// Zooming via the canvas
@@ -355,15 +355,15 @@ void Plot::add_marker()
 
 void Plot::on_marker_moved(QPoint p)
 {
-    double x_top = invTransform(QwtPlot::xTop, p.x());
-    double y_left = invTransform(QwtPlot::yLeft, p.y());
-    QwtText label = axisScaleDraw(QwtPlot::xBottom)->label(
+	double x_top = invTransform(QwtPlot::xTop, p.x());
+	double y_left = invTransform(QwtPlot::yLeft, p.y());
+	QwtText label = axisScaleDraw(QwtPlot::xBottom)->label(
 		invTransform(QwtPlot::xBottom, p.x()));
 
-    marker_->setValue(x_top, y_left);
-    marker_->setLabel(label);
+	marker_->setValue(x_top, y_left);
+	marker_->setLabel(label);
 
-    replot();
+	replot();
 }
 
 void Plot::on_legend_clicked(const QVariant &item_info, int index)
@@ -371,7 +371,7 @@ void Plot::on_legend_clicked(const QVariant &item_info, int index)
 	(void)index;
 
 	QwtPlotItem *plot_item = infoToItem(item_info);
-    if (plot_item) {
+	if (plot_item) {
 		QwtPlotCurve *plot_curve = (QwtPlotCurve *)plot_item;
 		ui::dialogs::PlotCurveConfigDialog dlg(plot_curve);
 		dlg.exec();

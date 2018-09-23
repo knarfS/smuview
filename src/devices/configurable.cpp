@@ -69,11 +69,11 @@ Configurable::Configurable(
 template<typename ...Arg>
 shared_ptr<Configurable> Configurable::create(Arg&&...arg)
 {
-    struct make_shared_enabler : public Configurable {
-      make_shared_enabler(Arg&&...arg) : Configurable(forward<Arg>(arg)...) {}
-    };
+	struct make_shared_enabler : public Configurable {
+		make_shared_enabler(Arg&&...arg) : Configurable(forward<Arg>(arg)...) {}
+	};
 
-    shared_ptr<Configurable> configurable =
+	shared_ptr<Configurable> configurable =
 		make_shared<make_shared_enabler>(forward<Arg>(arg)...);
 	configurable->init();
 

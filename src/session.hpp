@@ -55,7 +55,7 @@ class BaseDevice;
 
 class Session : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
 	static shared_ptr<sigrok::Context> sr_context;

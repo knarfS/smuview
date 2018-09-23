@@ -44,7 +44,7 @@ class DoubleSpinBox;
 
 class ThresholdControl : public QGroupBox, public BaseWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
 	ThresholdControl(

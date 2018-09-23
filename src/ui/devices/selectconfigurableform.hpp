@@ -43,7 +43,7 @@ class DeviceComboBox;
 
 class SelectConfigurableForm : public QFormLayout
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
 	SelectConfigurableForm(const Session &session, QWidget *parent = nullptr);

@@ -39,7 +39,7 @@ namespace tabs {
 
 class MeasurementTab : public DeviceTab
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
 	MeasurementTab(Session &session,

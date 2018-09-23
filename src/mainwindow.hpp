@@ -57,13 +57,13 @@ class ProcessingWidget;
 
 class MainWindow : public QMainWindow
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit MainWindow(DeviceManager &device_manager,
+	explicit MainWindow(DeviceManager &device_manager,
 		QWidget *parent = 0);
 
-    ~MainWindow();
+	~MainWindow();
 
 	void init_session();
 	void init_default_session();

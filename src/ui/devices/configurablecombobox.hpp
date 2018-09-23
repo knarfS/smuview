@@ -41,7 +41,7 @@ namespace devices {
 
 class ConfigurableComboBox : public QComboBox
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
 	ConfigurableComboBox(const Session &session,

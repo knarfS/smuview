@@ -33,12 +33,12 @@ class Plot;
 
 class PlotScalePicker : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    PlotScalePicker(Plot *plot);
+	PlotScalePicker(Plot *plot);
 
-    virtual bool eventFilter(QObject *object, QEvent *event);
+	virtual bool eventFilter(QObject *object, QEvent *event);
 
 private:
 	Plot *plot_;

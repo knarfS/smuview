@@ -43,7 +43,7 @@ namespace datatypes {
 
 class StringComboBox : public QComboBox, public BaseWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
 	StringComboBox(

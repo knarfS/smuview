@@ -43,7 +43,7 @@ namespace datatypes {
 
 class DoubleKnob : public QwtKnob, public BaseWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
 	DoubleKnob(

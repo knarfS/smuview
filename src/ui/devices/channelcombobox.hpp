@@ -45,7 +45,7 @@ namespace devices {
 
 class ChannelComboBox : public QComboBox
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
 	ChannelComboBox(

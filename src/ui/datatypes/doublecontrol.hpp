@@ -45,7 +45,7 @@ class DoubleSpinBox;
 
 class DoubleControl : public QGroupBox, public BaseWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
 	DoubleControl(

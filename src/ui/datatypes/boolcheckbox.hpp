@@ -41,7 +41,7 @@ namespace datatypes {
 
 class BoolCheckBox : public QCheckBox, public BaseWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
 	BoolCheckBox(

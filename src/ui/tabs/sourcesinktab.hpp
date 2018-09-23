@@ -41,11 +41,11 @@ namespace tabs {
 
 class SourceSinkTab : public DeviceTab
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
 	SourceSinkTab(Session &session,
- 		shared_ptr<sv::devices::HardwareDevice> device, QMainWindow *parent);
+		shared_ptr<sv::devices::HardwareDevice> device, QMainWindow *parent);
 
 private:
 	void setup_ui();

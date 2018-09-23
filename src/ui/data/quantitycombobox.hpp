@@ -31,7 +31,7 @@ namespace data {
 
 class QuantityComboBox : public QComboBox
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
 	QuantityComboBox(QWidget *parent = nullptr);

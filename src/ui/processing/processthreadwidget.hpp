@@ -34,7 +34,7 @@ namespace processing {
 
 class ProcessThreadWidget : public QMainWindow
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
 	ProcessThreadWidget(QString name, QWidget *parent = nullptr);

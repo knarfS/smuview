@@ -62,6 +62,8 @@ Done
 	- Move is_controllable() to tab/view? Make more generic... -> Generic is_controllable() function, and specialized function in viewhelper.cpp
 - namespace src/data/datautil.hpp
 - Refactor ui class members CamelCase -> _ _ _
+- Replace all "    Q_OBJECT" with "	Q_OBJECT" (4 spaces -> 1 tab)
+- Replace other "    " -> "	" (4 spaces -> 1 tab)
 
 ------------------------
 

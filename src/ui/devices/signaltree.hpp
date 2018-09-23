@@ -47,7 +47,7 @@ namespace devices {
 
 class SignalTree : public QTreeWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
 	SignalTree(const Session &session,
