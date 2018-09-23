@@ -74,6 +74,9 @@ void ConfigurableComboBox::setup_ui()
 		return;
 
 	for (auto configurable : hw_device->configurables()) {
+		// Only show configurables that either are getable, setable or listable.
+		if (!configurable->is_controllable())
+			continue;
 		this->addItem(configurable->name(), QVariant::fromValue(configurable));
 	}
 
