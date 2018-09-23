@@ -182,7 +182,7 @@ void ConnectDialog::populate_drivers()
 
 void ConnectDialog::check_available_libs()
 {
-	gpib_avialable_ = FALSE;
+	gpib_avialable_ = false;
 	QString libgpib("libgpib");
 
 	GSList *l_orig = sr_buildinfo_libs_get();
@@ -191,7 +191,7 @@ void ConnectDialog::check_available_libs()
 		QString lib((const char *)m->data);
 
 		if (QString::compare(lib, libgpib, Qt::CaseInsensitive) == 0) {
-			gpib_avialable_ = TRUE;
+			gpib_avialable_ = true;
 			g_slist_free_full(m, g_free);
 			break;
 		}

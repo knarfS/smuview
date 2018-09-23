@@ -60,35 +60,23 @@ public:
 
 	const QPoint &point() const;
 	PopupPosition position() const;
-
 	void set_position(const QPoint point, PopupPosition pos);
-
 	bool eventFilter(QObject *obj, QEvent *event);
-
 	void show();
 
 private:
 	bool space_for_arrow() const;
-
 	QPolygon arrow_polygon() const;
-
 	QRegion arrow_region() const;
-
 	QRect bubble_rect() const;
-
 	QRegion bubble_region() const;
-
 	QRegion popup_region() const;
-
 	void reposition_widget();
 
 private:
 	void closeEvent(QCloseEvent *);
-
 	void paintEvent(QPaintEvent *);
-
 	void resizeEvent(QResizeEvent *);
-
 	void mouseReleaseEvent(QMouseEvent *event);
 
 protected:

@@ -78,7 +78,7 @@ QString PowerPanelView::title() const
 void PowerPanelView::setup_ui()
 {
 	QVBoxLayout *layout = new QVBoxLayout();
-	QGridLayout *panelLayout = new QGridLayout();
+	QGridLayout *panel_layout = new QGridLayout();
 
 	QString voltage_unit_suffix("");
 	set<QuantityFlag> voltage_qfs = voltage_signal_->quantity_flags();
@@ -99,15 +99,15 @@ void PowerPanelView::setup_ui()
 	set<QuantityFlag> voltage_qfs_max = voltage_qfs;
 	voltage_qfs_max.insert(QuantityFlag::Max);
 
-	voltageDisplay = new widgets::LcdDisplay(
+	voltage_display_ = new widgets::LcdDisplay(
 		voltage_signal_->digits(), voltage_signal_->decimal_places(), false,
 		voltage_signal_->unit_name(), voltage_unit_suffix,
 		sv::data::datautil::format_quantity_flags(voltage_qfs, "\n"), false);
-	voltageMinDisplay = new widgets::LcdDisplay(
+	voltage_min_display_ = new widgets::LcdDisplay(
 		voltage_signal_->digits(), voltage_signal_->decimal_places(), false,
 		voltage_signal_->unit_name(), voltage_unit_suffix,
 		sv::data::datautil::format_quantity_flags(voltage_qfs_min, "\n"), true);
-	voltageMaxDisplay = new widgets::LcdDisplay(
+	voltage_max_display_ = new widgets::LcdDisplay(
 		voltage_signal_->digits(), voltage_signal_->decimal_places(), false,
 		voltage_signal_->unit_name(), voltage_unit_suffix,
 		sv::data::datautil::format_quantity_flags(voltage_qfs_max, "\n"), true);
@@ -115,13 +115,11 @@ void PowerPanelView::setup_ui()
 	QString current_unit_suffix("");
 	set<QuantityFlag> current_qfs = current_signal_->quantity_flags();
 	if (current_qfs.count(QuantityFlag::AC)) {
-		//current_unit_suffix = QString::fromUtf8("\u23E6");
 		current_unit_suffix = sv::data::datautil::format_quantity_flag(
 			QuantityFlag::AC);
 		current_qfs.erase(QuantityFlag::AC);
 	}
 	else if (current_qfs.count(QuantityFlag::DC)) {
-		//current_unit_suffix = QString::fromUtf8("\u2393");
 		current_unit_suffix = sv::data::datautil::format_quantity_flag(
 			QuantityFlag::DC);
 		current_qfs.erase(QuantityFlag::DC);
@@ -131,15 +129,15 @@ void PowerPanelView::setup_ui()
 	set<QuantityFlag> current_qfs_max = current_qfs;
 	current_qfs_max.insert(QuantityFlag::Max);
 
-	currentDisplay = new widgets::LcdDisplay(
+	current_display_ = new widgets::LcdDisplay(
 		current_signal_->digits(), current_signal_->decimal_places(), false,
 		current_signal_->unit_name(), current_unit_suffix,
 		sv::data::datautil::format_quantity_flags(current_qfs, "\n"), false);
-	currentMinDisplay = new widgets::LcdDisplay(
+	current_min_display_ = new widgets::LcdDisplay(
 		current_signal_->digits(), current_signal_->decimal_places(), false,
 		current_signal_->unit_name(), current_unit_suffix,
 		sv::data::datautil::format_quantity_flags(current_qfs_min, "\n"), true);
-	currentMaxDisplay = new widgets::LcdDisplay(
+	current_max_display_ = new widgets::LcdDisplay(
 		current_signal_->digits(), current_signal_->decimal_places(), false,
 		current_signal_->unit_name(), current_unit_suffix,
 		sv::data::datautil::format_quantity_flags(current_qfs_max, "\n"), true);
@@ -155,62 +153,61 @@ void PowerPanelView::setup_ui()
 	else
 		decimal_places = current_signal_->decimal_places();
 
-	resistanceDisplay = new widgets::LcdDisplay(
+	resistance_display_ = new widgets::LcdDisplay(
 		digits, decimal_places, true,
 		sv::data::datautil::format_unit(data::Unit::Ohm), "", "", false);
-	resistanceMinDisplay = new widgets::LcdDisplay(
+	resistance_min_display_ = new widgets::LcdDisplay(
 		digits, decimal_places, true,
 		sv::data::datautil::format_unit(data::Unit::Ohm), "",
 		sv::data::datautil::format_quantity_flag(QuantityFlag::Min),
 		true);
-	resistanceMaxDisplay = new widgets::LcdDisplay(
+	resistance_max_display_ = new widgets::LcdDisplay(
 		digits, decimal_places, true,
 		sv::data::datautil::format_unit(data::Unit::Ohm), "",
 		sv::data::datautil::format_quantity_flag(QuantityFlag::Max),
 		true);
 
-	powerDisplay = new widgets::LcdDisplay(
+	power_display_ = new widgets::LcdDisplay(
 		digits, decimal_places, true,
 		sv::data::datautil::format_unit(data::Unit::Watt), "", "", false);
-	powerMinDisplay = new widgets::LcdDisplay(
+	power_min_display_ = new widgets::LcdDisplay(
 		digits, decimal_places, true,
 		sv::data::datautil::format_unit(data::Unit::Watt), "",
 		sv::data::datautil::format_quantity_flag(QuantityFlag::Min),
 		true);
-	powerMaxDisplay = new widgets::LcdDisplay(
+	power_max_display_ = new widgets::LcdDisplay(
 		digits, decimal_places, true,
 		sv::data::datautil::format_unit(data::Unit::Watt), "",
 		sv::data::datautil::format_quantity_flag(QuantityFlag::Max),
 		true);
 
-	// TODO: sigrok::Unit::AMP_HOUR missing!
-	ampHourDisplay = new widgets::LcdDisplay(
+	amp_hour_display_ = new widgets::LcdDisplay(
 		digits, decimal_places, true,
 		sv::data::datautil::format_unit(data::Unit::AmpereHour), "", "", false);
-	wattHourDisplay = new widgets::LcdDisplay(
+	watt_hour_display_ = new widgets::LcdDisplay(
 		digits, decimal_places, true,
 		sv::data::datautil::format_unit(data::Unit::WattHour), "", "", false);
 
-	panelLayout->addWidget(voltageDisplay, 0, 0, 1, 2, Qt::AlignHCenter);
-	panelLayout->addWidget(voltageMinDisplay, 1, 0, 1, 1, Qt::AlignHCenter);
-	panelLayout->addWidget(voltageMaxDisplay, 1, 1, 1, 1, Qt::AlignHCenter);
+	panel_layout->addWidget(voltage_display_, 0, 0, 1, 2, Qt::AlignHCenter);
+	panel_layout->addWidget(voltage_min_display_, 1, 0, 1, 1, Qt::AlignHCenter);
+	panel_layout->addWidget(voltage_max_display_, 1, 1, 1, 1, Qt::AlignHCenter);
 
-	panelLayout->addWidget(currentDisplay, 2, 0, 1, 2, Qt::AlignHCenter);
-	panelLayout->addWidget(currentMinDisplay, 3, 0, 1, 1, Qt::AlignHCenter);
-	panelLayout->addWidget(currentMaxDisplay, 3, 1, 1, 1, Qt::AlignHCenter);
+	panel_layout->addWidget(current_display_, 2, 0, 1, 2, Qt::AlignHCenter);
+	panel_layout->addWidget(current_min_display_, 3, 0, 1, 1, Qt::AlignHCenter);
+	panel_layout->addWidget(current_max_display_, 3, 1, 1, 1, Qt::AlignHCenter);
 
-	panelLayout->addWidget(resistanceDisplay, 0, 2, 1, 2, Qt::AlignHCenter);
-	panelLayout->addWidget(resistanceMinDisplay, 1, 2, 1, 1, Qt::AlignHCenter);
-	panelLayout->addWidget(resistanceMaxDisplay, 1, 3, 1, 1, Qt::AlignHCenter);
+	panel_layout->addWidget(resistance_display_, 0, 2, 1, 2, Qt::AlignHCenter);
+	panel_layout->addWidget(resistance_min_display_, 1, 2, 1, 1, Qt::AlignHCenter);
+	panel_layout->addWidget(resistance_max_display_, 1, 3, 1, 1, Qt::AlignHCenter);
 
-	panelLayout->addWidget(powerDisplay, 2, 2, 1, 2, Qt::AlignHCenter);
-	panelLayout->addWidget(powerMinDisplay, 3, 2, 1, 1, Qt::AlignHCenter);
-	panelLayout->addWidget(powerMaxDisplay, 3, 3, 1, 1, Qt::AlignHCenter);
+	panel_layout->addWidget(power_display_, 2, 2, 1, 2, Qt::AlignHCenter);
+	panel_layout->addWidget(power_min_display_, 3, 2, 1, 1, Qt::AlignHCenter);
+	panel_layout->addWidget(power_max_display_, 3, 3, 1, 1, Qt::AlignHCenter);
 
-	panelLayout->addWidget(ampHourDisplay, 0, 4, 2, 1, Qt::AlignCenter);
-	panelLayout->addWidget(wattHourDisplay, 2, 4, 2, 1, Qt::AlignCenter);
+	panel_layout->addWidget(amp_hour_display_, 0, 4, 2, 1, Qt::AlignCenter);
+	panel_layout->addWidget(watt_hour_display_, 2, 4, 2, 1, Qt::AlignCenter);
 
-	layout->addLayout(panelLayout);
+	layout->addLayout(panel_layout);
 
 	this->centralWidget_->setLayout(layout);
 }
@@ -232,42 +229,42 @@ void PowerPanelView::setup_toolbar()
 void PowerPanelView::connect_signals()
 {
 	connect(voltage_signal_.get(), SIGNAL(digits_changed(const int, const int)),
-		voltageDisplay, SLOT(set_digits(const int, const int)));
+		voltage_display_, SLOT(set_digits(const int, const int)));
 	connect(voltage_signal_.get(), SIGNAL(digits_changed(const int, const int)),
-		voltageMinDisplay, SLOT(set_digits(const int, const int)));
+		voltage_min_display_, SLOT(set_digits(const int, const int)));
 	connect(voltage_signal_.get(), SIGNAL(digits_changed(const int, const int)),
-		voltageMaxDisplay, SLOT(set_digits(const int, const int)));
+		voltage_max_display_, SLOT(set_digits(const int, const int)));
 
 	connect(current_signal_.get(), SIGNAL(digits_changed(const int, const int)),
-		currentDisplay, SLOT(set_digits(const int, const int)));
+		current_display_, SLOT(set_digits(const int, const int)));
 	connect(current_signal_.get(), SIGNAL(digits_changed(const int, const int)),
-		currentMinDisplay, SLOT(set_digits(const int, const int)));
+		current_min_display_, SLOT(set_digits(const int, const int)));
 	connect(current_signal_.get(), SIGNAL(digits_changed(const int, const int)),
-		currentMaxDisplay, SLOT(set_digits(const int, const int)));
+		current_max_display_, SLOT(set_digits(const int, const int)));
 
 	// TODO: set_digits() for the other displays!
 }
 
 void PowerPanelView::reset_displays()
 {
-	voltageDisplay->reset_value();
-	voltageMinDisplay->reset_value();
-	voltageMaxDisplay->reset_value();
+	voltage_display_->reset_value();
+	voltage_min_display_->reset_value();
+	voltage_max_display_->reset_value();
 
-	currentDisplay->reset_value();
-	currentMinDisplay->reset_value();
-	currentMaxDisplay->reset_value();
+	current_display_->reset_value();
+	current_min_display_->reset_value();
+	current_max_display_->reset_value();
 
-	resistanceDisplay->reset_value();
-	resistanceMinDisplay->reset_value();
-	resistanceMaxDisplay->reset_value();
+	resistance_display_->reset_value();
+	resistance_min_display_->reset_value();
+	resistance_max_display_->reset_value();
 
-	powerDisplay->reset_value();
-	powerMinDisplay->reset_value();
-	powerMaxDisplay->reset_value();
+	power_display_->reset_value();
+	power_min_display_->reset_value();
+	power_max_display_->reset_value();
 
-	ampHourDisplay->reset_value();
-	wattHourDisplay->reset_value();
+	amp_hour_display_->reset_value();
+	watt_hour_display_->reset_value();
 }
 
 void PowerPanelView::init_timer()
@@ -347,24 +344,24 @@ void PowerPanelView::on_update()
 	actual_amp_hours_ = actual_amp_hours_ + (current * elapsed_time);
 	actual_watt_hours_ = actual_watt_hours_ + (power * elapsed_time);
 
-	voltageDisplay->set_value(voltage);
-	voltageMinDisplay->set_value(voltage_min_);
-	voltageMaxDisplay->set_value(voltage_max_);
+	voltage_display_->set_value(voltage);
+	voltage_min_display_->set_value(voltage_min_);
+	voltage_max_display_->set_value(voltage_max_);
 
-	currentDisplay->set_value(current);
-	currentMinDisplay->set_value(current_min_);
-	currentMaxDisplay->set_value(current_max_);
+	current_display_->set_value(current);
+	current_min_display_->set_value(current_min_);
+	current_max_display_->set_value(current_max_);
 
-	resistanceDisplay->set_value(resistance);
-	resistanceMinDisplay->set_value(resistance_min_);
-	resistanceMaxDisplay->set_value(resistance_max_);
+	resistance_display_->set_value(resistance);
+	resistance_min_display_->set_value(resistance_min_);
+	resistance_max_display_->set_value(resistance_max_);
 
-	powerDisplay->set_value(power);
-	powerMinDisplay->set_value(power_min_);
-	powerMaxDisplay->set_value(power_max_);
+	power_display_->set_value(power);
+	power_min_display_->set_value(power_min_);
+	power_max_display_->set_value(power_max_);
 
-	ampHourDisplay->set_value(actual_amp_hours_);
-	wattHourDisplay->set_value(actual_watt_hours_);
+	amp_hour_display_->set_value(actual_amp_hours_);
+	watt_hour_display_->set_value(actual_watt_hours_);
 }
 
 void PowerPanelView::on_action_reset_displays_triggered()

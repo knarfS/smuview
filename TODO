@@ -13,19 +13,17 @@ ToDo
 - Autoscale plot. Plot doesn't always auto-update scale (rlp without load)
 - Save session, save all data (gnuplot, octave, ...)
 	- add a saveutil.cpp
-- Refactor ui class members CamelCase -> _ _ _
 - Configurable:
 	- default check for getable/setable in get/set functions without assert(false)?
 	- add button to sink/source/demodmm/measurement-ControlViews to control non default config keys.
-	- Move is_controllable() to tab/view? Make more generic...
-	- Refactore:
-		- src/data -> src/signals
-		- src/data/datautil.cpp -> src/data/
-		- src/devices/deviceutil.cpp -> src/data/
-		- src/devices/properties/ -> src/data/
 	- Check getable/setable/listable also in the properties
-	- Enhance ThresholdControl widget (e.g for re:load pro). Mayby a dedicated property?
+	- Enhance ThresholdControl widget (e.g for re:load pro). Maybe a dedicated property?
 		- Dedicated SvDoubleSpinBox and SvBoolButton?
+- Refactore:
+	- src/data -> src/signals
+	- src/data/datautil.cpp -> src/data/
+	- src/devices/deviceutil.cpp -> src/data/
+	- src/devices/properties/ -> src/data/
 - Breeze icons action/labplot-* for plots?
 
 ------------------------
@@ -61,7 +59,9 @@ Done
 	- Cache stuff
 	- Missing sigok::ConfigKey::OFFSET
 	- get_mq / set_mq problem with template?
+	- Move is_controllable() to tab/view? Make more generic... -> Generic is_controllable() function, and specialized function in viewhelper.cpp
 - namespace src/data/datautil.hpp
+- Refactor ui class members CamelCase -> _ _ _
 
 ------------------------
 
@@ -102,6 +102,7 @@ libsigrok
 - Re:load Pro: Don't use "monitor 200", Instead "read" values every aquisition cycle with serial "read line blocking" and use a mutex around every read, write and write+read
 - HP3478A: Implement SPoll,
 - Add missing confg key sigok::ConfigKey::OFFSET
+- Add missing units: sigrok::Unit::DECIBEL, sigrok::Unit::JOULE, sigrok::Unit::AMPEREHOUR, sigrok::Unit::COULOMB, sigrok::Unit::(HECTO)PASCAL
 
 Done
 ----

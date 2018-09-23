@@ -49,10 +49,10 @@ PlotConfigDialog::PlotConfigDialog(widgets::plot::Plot *plot, QWidget *parent) :
 
 void PlotConfigDialog::setup_ui()
 {
-	QIcon mainIcon;
-	mainIcon.addFile(QStringLiteral(":/icons/smuview.ico"),
+	QIcon main_icon;
+	main_icon.addFile(QStringLiteral(":/icons/smuview.ico"),
 		QSize(), QIcon::Normal, QIcon::Off);
-	this->setWindowIcon(mainIcon);
+	this->setWindowIcon(main_icon);
 	this->setWindowTitle(tr("Plot Config"));
 	this->setMinimumWidth(500);
 

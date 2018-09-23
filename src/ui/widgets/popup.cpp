@@ -82,14 +82,14 @@ void Popup::set_position(const QPoint point, PopupPosition pos)
 
 bool Popup::eventFilter(QObject *obj, QEvent *event)
 {
-	QKeyEvent *keyEvent;
+	QKeyEvent *key_event;
 
 	(void)obj;
 
 	if (event->type() == QEvent::KeyPress) {
-		keyEvent = static_cast<QKeyEvent*>(event);
-		if (keyEvent->key() == Qt::Key_Enter ||
-				keyEvent->key() == Qt::Key_Return) {
+		key_event = static_cast<QKeyEvent*>(event);
+		if (key_event->key() == Qt::Key_Enter ||
+				key_event->key() == Qt::Key_Return) {
 			close();
 			return true;
 		}

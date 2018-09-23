@@ -89,9 +89,9 @@ private:
 
 	QAction *const action_reset_display_;
 	QToolBar *toolbar_;
-	widgets::LcdDisplay *valueDisplay;
-	widgets::LcdDisplay *valueMinDisplay;
-	widgets::LcdDisplay *valueMaxDisplay;
+	widgets::LcdDisplay *value_display_;
+	widgets::LcdDisplay *value_min_display_;
+	widgets::LcdDisplay *value_max_display_;
 
 	void setup_ui();
 	void setup_toolbar();

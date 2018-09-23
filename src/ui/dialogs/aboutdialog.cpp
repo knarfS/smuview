@@ -95,21 +95,21 @@ void AboutDialog::create_pages()
 	if (device_) {
 		pages->addWidget(get_device_page(pages));
 
-		QListWidgetItem *deviceButton = new QListWidgetItem(page_list);
-		deviceButton->setIcon(QIcon(":/icons/smuview.svg"));
-		deviceButton->setText(tr("Device"));
-		deviceButton->setTextAlignment(Qt::AlignHCenter);
-		deviceButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+		QListWidgetItem *device_button = new QListWidgetItem(page_list);
+		device_button->setIcon(QIcon(":/icons/smuview.svg"));
+		device_button->setText(tr("Device"));
+		device_button->setTextAlignment(Qt::AlignHCenter);
+		device_button->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 	}
 
 	// About page
 	pages->addWidget(get_about_page(pages));
 
-	QListWidgetItem *aboutButton = new QListWidgetItem(page_list);
-	aboutButton->setIcon(QIcon(":/icons/information.svg"));
-	aboutButton->setText(tr("About"));
-	aboutButton->setTextAlignment(Qt::AlignHCenter);
-	aboutButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+	QListWidgetItem *about_button = new QListWidgetItem(page_list);
+	about_button->setIcon(QIcon(":/icons/information.svg"));
+	about_button->setText(tr("About"));
+	about_button->setTextAlignment(Qt::AlignHCenter);
+	about_button->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 }
 
 QWidget *AboutDialog::get_about_page(QWidget *parent) const

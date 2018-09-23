@@ -156,25 +156,25 @@ void ValuePanelView::setup_ui()
 {
 	QVBoxLayout *layout = new QVBoxLayout();
 
-	QGridLayout *panelLayout = new QGridLayout();
+	QGridLayout *panel_layout = new QGridLayout();
 
-	valueDisplay = new widgets::LcdDisplay(
+	value_display_ = new widgets::LcdDisplay(
 		digits_, decimal_places_, true, unit_, unit_suffix_,
 		sv::data::datautil::format_quantity_flags(quantity_flags_, "\n"),
 		false);
-	valueMinDisplay = new widgets::LcdDisplay(
+	value_min_display_ = new widgets::LcdDisplay(
 		digits_, decimal_places_, true, unit_, unit_suffix_,
 		sv::data::datautil::format_quantity_flags(quantity_flags_min_, "\n"),
 		true);
-	valueMaxDisplay = new widgets::LcdDisplay(
+	value_max_display_ = new widgets::LcdDisplay(
 		digits_, decimal_places_, true, unit_, unit_suffix_,
 		sv::data::datautil::format_quantity_flags(quantity_flags_max_, "\n"),
 		true);
 
-	panelLayout->addWidget(valueDisplay, 0, 0, 1, 2, Qt::AlignHCenter);
-	panelLayout->addWidget(valueMinDisplay, 1, 0, 1, 1, Qt::AlignHCenter);
-	panelLayout->addWidget(valueMaxDisplay, 1, 1, 1, 1, Qt::AlignHCenter);
-	layout->addLayout(panelLayout);
+	panel_layout->addWidget(value_display_, 0, 0, 1, 2, Qt::AlignHCenter);
+	panel_layout->addWidget(value_min_display_, 1, 0, 1, 1, Qt::AlignHCenter);
+	panel_layout->addWidget(value_max_display_, 1, 1, 1, 1, Qt::AlignHCenter);
+	layout->addLayout(panel_layout);
 
 	layout->addStretch(4);
 
@@ -199,13 +199,13 @@ void ValuePanelView::connect_signals_displays()
 {
 	if (signal_) {
 		//connect(signal_.get(), SIGNAL(unit_changed(QString)),
-		//	valueDisplay, SLOT(set_unit(const String)));
+		//	value_display_, SLOT(set_unit(const String)));
 		connect(signal_.get(), SIGNAL(digits_changed(const int, const int)),
-			valueDisplay, SLOT(set_digits(const int, const int)));
+			value_display_, SLOT(set_digits(const int, const int)));
 		connect(signal_.get(), SIGNAL(digits_changed(const int, const int)),
-			valueMinDisplay, SLOT(set_digits(const int, const int)));
+			value_min_display_, SLOT(set_digits(const int, const int)));
 		connect(signal_.get(), SIGNAL(digits_changed(const int, const int)),
-			valueMaxDisplay, SLOT(set_digits(const int, const int)));
+			value_max_display_, SLOT(set_digits(const int, const int)));
 	}
 }
 
@@ -213,19 +213,19 @@ void ValuePanelView::disconnect_signals_displays()
 {
 	if (signal_) {
 		//disconnect(signal_.get(), SIGNAL(unit_changed(QString)),
-		//	valueDisplay, SLOT(set_unit(QString)));
+		//	value_display_, SLOT(set_unit(QString)));
 		disconnect(signal_.get(), SIGNAL(digits_changed(const int, const int)),
-			valueDisplay, SLOT(set_digits(const int, const int)));
+			value_display_, SLOT(set_digits(const int, const int)));
 		disconnect(signal_.get(), SIGNAL(digits_changed(const int, const int)),
-			valueMinDisplay, SLOT(set_digits(const int, const int)));
+			value_min_display_, SLOT(set_digits(const int, const int)));
 		disconnect(signal_.get(), SIGNAL(digits_changed(const int, const int)),
-			valueMaxDisplay, SLOT(set_digits(const int, const int)));
+			value_max_display_, SLOT(set_digits(const int, const int)));
 	}
 }
 
 void ValuePanelView::reset_display()
 {
-	valueDisplay->reset_value();
+	value_display_->reset_value();
 }
 
 void ValuePanelView::init_timer()
@@ -262,9 +262,9 @@ void ValuePanelView::on_update()
 			value_max_ = value;
 	}
 
-	valueDisplay->set_value(value);
-	valueMinDisplay->set_value(value_min_);
-	valueMaxDisplay->set_value(value_max_);
+	value_display_->set_value(value);
+	value_min_display_->set_value(value_min_);
+	value_max_display_->set_value(value_max_);
 }
 
 void ValuePanelView::on_signal_changed()
@@ -282,23 +282,23 @@ void ValuePanelView::on_signal_changed()
 	digits_ = signal_->digits();
 	decimal_places_ = signal_->decimal_places();
 
-	valueDisplay->set_unit(unit_);
-	valueDisplay->set_unit_suffix(unit_suffix_);
-	valueDisplay->set_extra_text(
+	value_display_->set_unit(unit_);
+	value_display_->set_unit_suffix(unit_suffix_);
+	value_display_->set_extra_text(
 		sv::data::datautil::format_quantity_flags(quantity_flags_, "\n"));
-	valueDisplay->set_digits(digits_, decimal_places_);
+	value_display_->set_digits(digits_, decimal_places_);
 
-	valueMinDisplay->set_unit(unit_);
-	valueMinDisplay->set_unit_suffix(unit_suffix_);
-	valueMinDisplay->set_extra_text(
+	value_min_display_->set_unit(unit_);
+	value_min_display_->set_unit_suffix(unit_suffix_);
+	value_min_display_->set_extra_text(
 		sv::data::datautil::format_quantity_flags(quantity_flags_min_, "\n"));
-	valueMinDisplay->set_digits(digits_, decimal_places_);
+	value_min_display_->set_digits(digits_, decimal_places_);
 
-	valueMaxDisplay->set_unit(unit_);
-	valueMaxDisplay->set_unit_suffix(unit_suffix_);
-	valueMaxDisplay->set_extra_text(
+	value_max_display_->set_unit(unit_);
+	value_max_display_->set_unit_suffix(unit_suffix_);
+	value_max_display_->set_extra_text(
 		sv::data::datautil::format_quantity_flags(quantity_flags_max_, "\n"));
-	valueMaxDisplay->set_digits(digits_, decimal_places_);
+	value_max_display_->set_digits(digits_, decimal_places_);
 
 	this->parentWidget()->setWindowTitle(this->title());
 

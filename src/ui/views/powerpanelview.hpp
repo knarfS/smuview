@@ -81,20 +81,20 @@ private:
 
 	QAction *const action_reset_displays_;
 	QToolBar *toolbar_;
-	widgets::LcdDisplay *voltageDisplay;
-	widgets::LcdDisplay *voltageMinDisplay;
-	widgets::LcdDisplay *voltageMaxDisplay;
-	widgets::LcdDisplay *currentDisplay;
-	widgets::LcdDisplay *currentMinDisplay;
-	widgets::LcdDisplay *currentMaxDisplay;
-	widgets::LcdDisplay *resistanceDisplay;
-	widgets::LcdDisplay *resistanceMinDisplay;
-	widgets::LcdDisplay *resistanceMaxDisplay;
-	widgets::LcdDisplay *powerDisplay;
-	widgets::LcdDisplay *powerMinDisplay;
-	widgets::LcdDisplay *powerMaxDisplay;
-	widgets::LcdDisplay *ampHourDisplay;
-	widgets::LcdDisplay *wattHourDisplay;
+	widgets::LcdDisplay *voltage_display_;
+	widgets::LcdDisplay *voltage_min_display_;
+	widgets::LcdDisplay *voltage_max_display_;
+	widgets::LcdDisplay *current_display_;
+	widgets::LcdDisplay *current_min_display_;
+	widgets::LcdDisplay *current_max_display_;
+	widgets::LcdDisplay *resistance_display_;
+	widgets::LcdDisplay *resistance_min_display_;
+	widgets::LcdDisplay *resistance_max_display_;
+	widgets::LcdDisplay *power_display_;
+	widgets::LcdDisplay *power_min_display_;
+	widgets::LcdDisplay *power_max_display_;
+	widgets::LcdDisplay *amp_hour_display_;
+	widgets::LcdDisplay *watt_hour_display_;
 
 	void setup_ui();
 	void setup_toolbar();
