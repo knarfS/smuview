@@ -372,24 +372,12 @@ shared_ptr<properties::BaseProperty>
 
 bool Configurable::is_controllable() const
 {
-	// TODO: Also check for device types?
+	if (setable_configs_.size() > 0 ||
+		getable_configs_.size() > 0 ||
+		listable_configs_.size() > 0) {
 
-	if (has_set_config(ConfigKey::Enabled) ||
-			has_set_config(ConfigKey::Regulation) ||
-			has_set_config(ConfigKey::VoltageTarget) ||
-			has_set_config(ConfigKey::CurrentLimit) ||
-			has_set_config(ConfigKey::OverVoltageProtectionEnabled) ||
-			has_set_config(ConfigKey::OverVoltageProtectionThreshold) ||
-			has_set_config(ConfigKey::OverCurrentProtectionEnabled) ||
-			has_set_config(ConfigKey::OverCurrentProtectionThreshold) ||
-			has_set_config(ConfigKey::UnderVoltageConditionEnabled) ||
-			has_set_config(ConfigKey::UnderVoltageConditionThreshold))
 		return true;
-
-	if (has_get_config(ConfigKey::MeasuredQuantity) ||
-			has_set_config(ConfigKey::MeasuredQuantity))
-		return true;
-
+	}
 	return false;
 }
 

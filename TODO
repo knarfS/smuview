@@ -15,7 +15,6 @@ ToDo
 	- add a saveutil.cpp
 - Refactor ui class members CamelCase -> _ _ _
 - Configurable:
-	- get_mq / set_mq problem with template?
 	- default check for getable/setable in get/set functions without assert(false)?
 	- add button to sink/source/demodmm/measurement-ControlViews to control non default config keys.
 	- Move is_controllable() to tab/view? Make more generic...
@@ -61,6 +60,7 @@ Done
 	- signals for controls (views) to work with processing
 	- Cache stuff
 	- Missing sigok::ConfigKey::OFFSET
+	- get_mq / set_mq problem with template?
 - namespace src/data/datautil.hpp
 
 ------------------------
