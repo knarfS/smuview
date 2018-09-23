@@ -33,7 +33,7 @@ namespace ui {
 namespace processing {
 namespace dialogs {
 
-WaitBlockDialog::WaitBlockDialog(shared_ptr<Session> session,
+WaitBlockDialog::WaitBlockDialog(const Session &session,
 		QWidget *parent) :
 	QDialog(parent),
 	session_(session)
@@ -44,10 +44,10 @@ WaitBlockDialog::WaitBlockDialog(shared_ptr<Session> session,
 
 void WaitBlockDialog::setup_ui()
 {
-	QIcon mainIcon;
-	mainIcon.addFile(QStringLiteral(":/icons/smuview.ico"),
+	QIcon main_icon;
+	main_icon.addFile(QStringLiteral(":/icons/smuview.ico"),
 		QSize(), QIcon::Normal, QIcon::Off);
-	this->setWindowIcon(mainIcon);
+	this->setWindowIcon(main_icon);
 	this->setWindowTitle(tr("Wait Block"));
 	this->setMinimumWidth(550);
 

@@ -22,6 +22,7 @@
 #include <QComboBox>
 #include <QDebug>
 #include <QFormLayout>
+#include <QGroupBox>
 #include <QMessageBox>
 #include <QSizePolicy>
 #include <QString>
@@ -33,13 +34,9 @@
 #include "src/devices/properties/baseproperty.hpp"
 #include "src/ui/datatypes/basewidget.hpp"
 #include "src/ui/datatypes/datatypehelper.hpp"
-#include "src/widgets/configkeycombobox.hpp"
-#include "src/widgets/configurablecombobox.hpp"
+#include "src/ui/devices/selectconfigkeyform.hpp"
 
-using std::dynamic_pointer_cast;
-using std::make_shared;
 using std::shared_ptr;
-using std::static_pointer_cast;
 
 Q_DECLARE_SMART_POINTER_METATYPE(std::shared_ptr)
 
@@ -48,7 +45,7 @@ namespace ui {
 namespace processing {
 namespace dialogs {
 
-SetValueBlockDialog::SetValueBlockDialog(shared_ptr<Session> session,
+SetValueBlockDialog::SetValueBlockDialog(const Session &session,
 		QWidget *parent) :
 	QDialog(parent),
 	session_(session)
@@ -59,10 +56,10 @@ SetValueBlockDialog::SetValueBlockDialog(shared_ptr<Session> session,
 
 void SetValueBlockDialog::setup_ui()
 {
-	QIcon mainIcon;
-	mainIcon.addFile(QStringLiteral(":/icons/smuview.ico"),
+	QIcon main_icon;
+	main_icon.addFile(QStringLiteral(":/icons/smuview.ico"),
 		QSize(), QIcon::Normal, QIcon::Off);
-	this->setWindowIcon(mainIcon);
+	this->setWindowIcon(main_icon);
 	this->setWindowTitle(tr("Set Value Block"));
 	this->setMinimumWidth(550);
 
@@ -72,14 +69,15 @@ void SetValueBlockDialog::setup_ui()
 	form_layout_ = new QFormLayout();
 	name_edit_ = new QLineEdit();
 	form_layout_->addRow(tr("Name"), name_edit_);
-	configurable_box_ = new widgets::ConfigurableComboBox(session_);
-	form_layout_->addRow(tr("Channel"), configurable_box_);
-	config_key_box_ = new widgets::ConfigKeyComboBox(
-		configurable_box_->selected_configurable(), false, true, false);
-	form_layout_->addRow(tr("Control"), config_key_box_);
 
-	property_ = configurable_box_->selected_configurable()->get_property(
-		config_key_box_->selected_config_key());
+	// Config Key
+	QGroupBox *ck_group = new QGroupBox(tr("Config Key"));
+	config_key_form_ = new ui::devices::SelectConfigKeyForm(
+		session_, false, true, false);
+	ck_group->setLayout(config_key_form_);
+	form_layout_->addRow(ck_group);
+
+	property_ = config_key_form_->get_property();
 	value_widget_ = datatypes::datatypehelper::get_widget_for_property(
 		property_, false, false);
 	form_layout_->addRow(tr("Value"), value_widget_);
@@ -98,10 +96,7 @@ void SetValueBlockDialog::setup_ui()
 
 void SetValueBlockDialog::connect_signals()
 {
-	connect(configurable_box_, SIGNAL(currentIndexChanged(int)),
-		this, SLOT(on_configurable_changed()));
-	connect(config_key_box_,
-		SIGNAL(current_config_key_changed(const devices::ConfigKey)),
+	connect(config_key_form_, SIGNAL(current_config_key_changed()),
 		this, SLOT(on_config_key_changed()));
 }
 
@@ -118,7 +113,7 @@ void SetValueBlockDialog::accept()
 	QDialog::accept();
 }
 
-shared_ptr<devices::properties::BaseProperty>
+shared_ptr<sv::devices::properties::BaseProperty>
 	SetValueBlockDialog::property() const
 {
 	return property_;
@@ -131,17 +126,9 @@ QVariant SetValueBlockDialog::value() const
 	return base_widget->variant_value();
 }
 
-void SetValueBlockDialog::on_configurable_changed()
-{
-	config_key_box_->set_configurable(
-		configurable_box_->selected_configurable());
-}
-
 void SetValueBlockDialog::on_config_key_changed()
 {
-	auto c = configurable_box_->selected_configurable();
-	auto ck = config_key_box_->selected_config_key();
-	property_ = c->get_property(ck);
+	property_ = config_key_form_->get_property();
 
 	// Dummy widget if there is no widget for this property. Otherwise the NULL
 	// widget can't be replaced with another property widget.

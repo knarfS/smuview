@@ -37,14 +37,14 @@ class WaitBlockDialog : public QDialog
 	Q_OBJECT
 
 public:
-	WaitBlockDialog(shared_ptr<Session> session,
+	WaitBlockDialog(const Session &session,
 		QWidget *parent = nullptr);
 
 	QString name();
 	int wait_ms() const;
 
 private:
-	shared_ptr<Session> session_;
+	const Session &session_;
 
 	QLineEdit *name_edit_;
 	QSpinBox *wait_ms_;

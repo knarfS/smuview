@@ -46,12 +46,12 @@ class BaseProperty;
 }
 }
 
-namespace widgets {
-class ConfigKeyComboBox;
-class ConfigurableComboBox;
+namespace ui {
+
+namespace devices {
+class SelectConfigKeyForm;
 }
 
-namespace ui {
 namespace processing {
 namespace dialogs {
 
@@ -60,19 +60,18 @@ class SetValueBlockDialog : public QDialog
 	Q_OBJECT
 
 public:
-	SetValueBlockDialog(shared_ptr<Session> session, QWidget *parent = nullptr);
+	SetValueBlockDialog(const Session &session, QWidget *parent = nullptr);
 
-	shared_ptr<devices::properties::BaseProperty> property() const;
+	shared_ptr<sv::devices::properties::BaseProperty> property() const;
 	QVariant value() const;
 
 private:
-	shared_ptr<Session> session_;
-	shared_ptr<devices::properties::BaseProperty> property_;
+	const Session &session_;
+	shared_ptr<sv::devices::properties::BaseProperty> property_;
 
 	QFormLayout *form_layout_;
 	QLineEdit *name_edit_;
-	sv::widgets::ConfigurableComboBox *configurable_box_;
-	sv::widgets::ConfigKeyComboBox *config_key_box_;
+	ui::devices::SelectConfigKeyForm *config_key_form_;
 	QWidget *value_widget_;
 	QDialogButtonBox *button_box_;
 
@@ -83,7 +82,6 @@ public Q_SLOTS:
 	void accept() override;
 
 private Q_SLOTS:
-	void on_configurable_changed();
 	void on_config_key_changed();
 
 };

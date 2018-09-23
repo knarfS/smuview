@@ -33,7 +33,7 @@ namespace sv {
 namespace ui {
 namespace processing {
 
-ProcessingWidget::ProcessingWidget(shared_ptr<Session> session,
+ProcessingWidget::ProcessingWidget(const Session &session,
 		QWidget *parent) :
 	QMainWindow(parent),
 	session_(session),

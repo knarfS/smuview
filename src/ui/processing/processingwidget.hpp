@@ -48,10 +48,10 @@ class ProcessingWidget : public QMainWindow
 	Q_OBJECT
 
 public:
-	ProcessingWidget(shared_ptr<Session> session, QWidget *parent = nullptr);
+	ProcessingWidget(const Session &session, QWidget *parent = nullptr);
 
 private:
-	shared_ptr<Session> session_;
+	const Session &session_;
 	shared_ptr<sv::processing::Processor> processor_;
 	uint thread_count_;
 

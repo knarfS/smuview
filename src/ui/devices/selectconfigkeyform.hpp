@@ -17,13 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UI_DEVICES_CONFIGURABLECOMBOBOX_HPP
-#define UI_DEVICES_CONFIGURABLECOMBOBOX_HPP
+#ifndef UI_DEVICES_SELECTCONFIGKEYFORM_HPP
+#define UI_DEVICES_SELECTCONFIGKEYFORM_HPP
 
 #include <memory>
 
-#include <QComboBox>
-#include <QWidget>
+#include <QFormLayout>
+
+#include "src/devices/deviceutil.hpp"
 
 using std::shared_ptr;
 
@@ -34,32 +35,53 @@ class Session;
 namespace devices {
 class BaseDevice;
 class Configurable;
+namespace properties {
+class BaseProperty;
+}
 }
 
 namespace ui {
 namespace devices {
 
-class ConfigurableComboBox : public QComboBox
+class ConfigKeyComboBox;
+class ConfigurableComboBox;
+class DeviceComboBox;
+
+class SelectConfigKeyForm : public QFormLayout
 {
 	Q_OBJECT
 
 public:
-	ConfigurableComboBox(const Session &session,
-		shared_ptr<sv::devices::BaseDevice> device,
-		QWidget *parent = nullptr);
+	SelectConfigKeyForm(const Session &session,
+		const bool show_getable_config_keys,
+		const bool show_setable_config_keys,
+		const bool show_listable_config_keys, QWidget *parent = nullptr);
 
-	void select_configurable(shared_ptr<sv::devices::Configurable>);
+	void select_device(shared_ptr<sv::devices::BaseDevice>);
 	shared_ptr<sv::devices::Configurable> selected_configurable() const;
+	sv::devices::ConfigKey selected_config_key() const;
+	shared_ptr<sv::devices::properties::BaseProperty> get_property() const;
 
 private:
 	const Session &session_;
-	shared_ptr<sv::devices::BaseDevice> device_;
+	const bool show_getable_config_keys_;
+	const bool show_setable_config_keys_;
+	const bool show_listable_config_keys_;
+
+	DeviceComboBox *device_box_;
+	ConfigurableComboBox *configurable_box_;
+	ConfigKeyComboBox *config_key_box_;
 
 	void setup_ui();
+	void connect_signals();
 
+private Q_SLOTS:
+	void on_device_changed();
+	void on_configurable_changed();
+	void on_config_key_changed();
 
-public Q_SLOTS:
-	void change_device(shared_ptr<sv::devices::BaseDevice>);
+Q_SIGNALS:
+	void current_config_key_changed();
 
 };
 
@@ -67,4 +89,4 @@ public Q_SLOTS:
 } // namespace ui
 } // namespace sv
 
-#endif // UI_DEVICES_CONFIGURABLECOMBOBOX_HPP
+#endif // UI_DEVICES_SELECTCONFIGKEYFORM_HPP

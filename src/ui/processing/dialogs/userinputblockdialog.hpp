@@ -41,12 +41,12 @@ class UserInputBlockDialog : public QDialog
 	Q_OBJECT
 
 public:
-	UserInputBlockDialog(shared_ptr<Session> session, QWidget *parent = nullptr);
+	UserInputBlockDialog(const Session &session, QWidget *parent = nullptr);
 
 	QString message() const;
 
 private:
-	shared_ptr<Session> session_;
+	const Session &session_;
 
 	QLineEdit *name_edit_;
 	QLineEdit *msg_edit_;

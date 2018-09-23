@@ -44,11 +44,16 @@ ConfigKeyComboBox::ConfigKeyComboBox(
 	setup_ui();
 }
 
-void ConfigKeyComboBox::set_configurable(
-	shared_ptr<sv::devices::Configurable> configurable)
+void ConfigKeyComboBox::select_config_key(sv::devices::ConfigKey config_key)
 {
-	configurable_ = configurable;
-	fill_config_keys();
+	for (int i = 0; i < this->count(); ++i) {
+		QVariant data = this->itemData(i, Qt::UserRole);
+		auto item_ck = data.value<sv::devices::ConfigKey>();
+		if (item_ck == config_key) {
+			this->setCurrentIndex(i);
+			break;
+		}
+	}
 }
 
 sv::devices::ConfigKey ConfigKeyComboBox::selected_config_key() const
@@ -60,11 +65,6 @@ sv::devices::ConfigKey ConfigKeyComboBox::selected_config_key() const
 }
 
 void ConfigKeyComboBox::setup_ui()
-{
-	fill_config_keys();
-}
-
-void ConfigKeyComboBox::fill_config_keys()
 {
 	this->clear();
 
@@ -81,6 +81,13 @@ void ConfigKeyComboBox::fill_config_keys()
 			sv::devices::deviceutil::format_config_key(prop.first),
 			QVariant::fromValue(prop.first));
 	}
+}
+
+void ConfigKeyComboBox::change_configurable(
+	shared_ptr<sv::devices::Configurable> configurable)
+{
+	configurable_ = configurable;
+	this->setup_ui();
 }
 
 } // namespace devices

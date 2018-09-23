@@ -17,6 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <cassert>
+
 #include <QDebug>
 #include <QVariant>
 
@@ -61,11 +63,15 @@ shared_ptr<sv::devices::Configurable>
 	ConfigurableComboBox::selected_configurable() const
 {
 	QVariant data = this->currentData();
+	if (!data.isValid())
+		return nullptr;
 	return data.value<shared_ptr<sv::devices::Configurable>>();
 }
 
 void ConfigurableComboBox::setup_ui()
 {
+	this->clear();
+
 	if (device_ == nullptr)
 		return;
 
@@ -86,8 +92,6 @@ void ConfigurableComboBox::change_device(
 	shared_ptr<sv::devices::BaseDevice> device)
 {
 	device_ = device;
-	for (int i = this->count(); i >= 0; --i)
-		this->removeItem(i);
 	this->setup_ui();
 }
 

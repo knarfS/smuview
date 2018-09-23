@@ -50,7 +50,7 @@ namespace sv {
 namespace ui {
 namespace processing {
 
-ProcessThreadWidget::ProcessThreadWidget(shared_ptr<Session> session,
+ProcessThreadWidget::ProcessThreadWidget(const Session &session,
 		QString name, shared_ptr<sv::processing::Processor> processor,
 		QWidget *parent) :
 	QMainWindow(parent),

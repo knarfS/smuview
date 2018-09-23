@@ -49,12 +49,12 @@ class ProcessThreadWidget : public QMainWindow
 	Q_OBJECT
 
 public:
-	ProcessThreadWidget(shared_ptr<Session> session, QString name,
+	ProcessThreadWidget(const Session &session, QString name,
 		shared_ptr<sv::processing::Processor> processor,
 		QWidget *parent = nullptr);
 
 private:
-	shared_ptr<Session> session_;
+	const Session &session_;
 	QString name_;
 	shared_ptr<sv::processing::Processor> processor_;
 

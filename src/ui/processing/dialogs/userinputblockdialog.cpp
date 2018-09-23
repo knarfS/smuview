@@ -36,7 +36,7 @@ namespace ui {
 namespace processing {
 namespace dialogs {
 
-UserInputBlockDialog::UserInputBlockDialog(shared_ptr<Session> session,
+UserInputBlockDialog::UserInputBlockDialog(const Session &session,
 		QWidget *parent) :
 	QDialog(parent),
 	session_(session)
@@ -46,10 +46,10 @@ UserInputBlockDialog::UserInputBlockDialog(shared_ptr<Session> session,
 
 void UserInputBlockDialog::setup_ui()
 {
-	QIcon mainIcon;
-	mainIcon.addFile(QStringLiteral(":/icons/smuview.ico"),
+	QIcon main_icon;
+	main_icon.addFile(QStringLiteral(":/icons/smuview.ico"),
 		QSize(), QIcon::Normal, QIcon::Off);
-	this->setWindowIcon(mainIcon);
+	this->setWindowIcon(main_icon);
 	this->setWindowTitle(tr("Set Value Block"));
 	this->setMinimumWidth(550);
 
