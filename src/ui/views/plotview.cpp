@@ -169,7 +169,7 @@ void PlotView::setup_ui()
 
 	layout->addWidget(plot_);
 
-	this->centralWidget_->setLayout(layout);
+	this->central_widget_->setLayout(layout);
 }
 
 void PlotView::setup_toolbar()

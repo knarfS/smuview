@@ -61,7 +61,7 @@ void DataView::setup_ui()
 	data_table_->setHorizontalHeaderItem(1, value_header_item);
 	layout->addWidget(data_table_);
 
-	this->centralWidget_->setLayout(layout);
+	this->central_widget_->setLayout(layout);
 }
 
 void DataView::populate_table()

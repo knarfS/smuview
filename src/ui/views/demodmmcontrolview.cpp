@@ -86,7 +86,7 @@ void DemoDMMControlView::setup_ui()
 
 	layout->addLayout(controls_layout);
 
-	this->centralWidget_->setLayout(layout);
+	this->central_widget_->setLayout(layout);
 }
 
 void DemoDMMControlView::connect_signals()

@@ -178,7 +178,7 @@ void ValuePanelView::setup_ui()
 
 	layout->addStretch(4);
 
-	this->centralWidget_->setLayout(layout);
+	this->central_widget_->setLayout(layout);
 }
 
 void ValuePanelView::setup_toolbar()

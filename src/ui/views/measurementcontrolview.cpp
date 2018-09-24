@@ -53,7 +53,7 @@ void MeasurementControlView::setup_ui()
 		configurable_->get_property(ConfigKey::MeasuredQuantity), true, true);
 	layout->addWidget(measured_quantity_box_);
 
-	this->centralWidget_->setLayout(layout);
+	this->central_widget_->setLayout(layout);
 }
 
 } // namespace views

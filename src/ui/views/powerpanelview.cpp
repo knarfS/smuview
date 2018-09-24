@@ -209,7 +209,7 @@ void PowerPanelView::setup_ui()
 
 	layout->addLayout(panel_layout);
 
-	this->centralWidget_->setLayout(layout);
+	this->central_widget_->setLayout(layout);
 }
 
 void PowerPanelView::setup_toolbar()

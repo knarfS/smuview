@@ -141,7 +141,7 @@ void SourceSinkControlView::setup_ui()
 	layout->addLayout(opt_ctrl_layout, 0);
 	layout->addStretch(1);
 
-	this->centralWidget_->setLayout(layout);
+	this->central_widget_->setLayout(layout);
 }
 
 } // namespace views
