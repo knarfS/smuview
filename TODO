@@ -10,7 +10,6 @@ ToDo
 - Plot: Sampling
 - Mutex for aquisition_state_?
 - QWT Multiaxis
-- Autoscale plot. Plot doesn't always auto-update scale (rlp without load)
 - Save session, save all data (gnuplot, octave, ...)
 	- add a saveutil.cpp
 - Configurable:
@@ -26,6 +25,7 @@ ToDo
 	- src/devices/properties/ -> src/data/
 - Breeze icons action/labplot-* for plots?
 - Get fixed qunatity signals from channel(/channel group) (q/qf/u is set in ch.meaning at the beginning). Implement in sigrok!
+- Implement something like ch.meanings for config keys in sigrok, so smuview known the quantity/unit of config keys.
 - Start timestamp on_update() -> device ctor -> timestamp = .0
 - Start timestamp to session
 - Use new connect/disconnet variant whenever possible
@@ -69,6 +69,7 @@ Done
 - Refactor ui class members CamelCase -> _ _ _
 - Replace all "    Q_OBJECT" with "	Q_OBJECT" (4 spaces -> 1 tab)
 - Replace other "    " -> "	" (4 spaces -> 1 tab)
+- Autoscale plot. Plot doesn't always auto-update scale (rlp without load)
 
 ------------------------
 
