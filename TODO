@@ -30,6 +30,8 @@ ToDo
 - Start timestamp to session
 - Use new connect/disconnet variant whenever possible
 - Lookup: std::atomic, std::condition_variable, std::mutex
+- Remove "const Session &session" form ui::devices::* ctors and more??
+- Remove all items in combo box when parent has changed and setup_ui() is recalled?	see ConfigKeyComboBox and ConfigurableComboBox
 
 ------------------------
 
