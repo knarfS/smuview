@@ -43,14 +43,9 @@
 
 using std::dynamic_pointer_cast;
 using std::forward;
-using std::get;
-using std::is_base_of;
 using std::make_pair;
 using std::make_shared;
-using std::make_tuple;
-using std::pair;
 using std::string;
-using std::tuple;
 using sv::devices::ConfigKey;
 
 namespace sv {

@@ -25,6 +25,11 @@ ToDo
 	- src/devices/deviceutil.cpp -> src/data/
 	- src/devices/properties/ -> src/data/
 - Breeze icons action/labplot-* for plots?
+- Get fixed qunatity signals from channel(/channel group) (q/qf/u is set in ch.meaning at the beginning). Implement in sigrok!
+- Start timestamp on_update() -> device ctor -> timestamp = .0
+- Start timestamp to session
+- Use new connect/disconnet variant whenever possible
+- Lookup: std::atomic, std::condition_variable, std::mutex
 
 ------------------------
 
