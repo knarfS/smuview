@@ -22,7 +22,9 @@
 
 #include <memory>
 
+#include <QAction>
 #include <QTableWidget>
+#include <QToolBar>
 
 #include "src/ui/views/baseview.hpp"
 
@@ -53,14 +55,21 @@ public:
 private:
 	shared_ptr<sv::data::AnalogSignal> signal_;
 	size_t next_signal_pos_;
+	bool auto_scroll_;
 
+	QAction *const action_auto_scroll_;
+	QAction *const action_add_signal_;
+	QToolBar *toolbar_;
 	QTableWidget *data_table_;
 
 	void setup_ui();
+	void setup_toolbar();
 	void connect_signals();
 
 private Q_SLOTS:
 	void populate_table();
+	void on_action_auto_scroll_triggered();
+	void on_action_add_signal_triggered();
 
 };
 

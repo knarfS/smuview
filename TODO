@@ -32,6 +32,7 @@ ToDo
 - Lookup: std::atomic, std::condition_variable, std::mutex
 - Remove "const Session &session" form ui::devices::* ctors and more??
 - Remove all items in combo box when parent has changed and setup_ui() is recalled?	see ConfigKeyComboBox and ConfigurableComboBox
+- DataView: Add toolbar with "StayAtBottom" switchable action and add signal (into this table) action
 
 ------------------------
 

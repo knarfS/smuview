@@ -17,9 +17,12 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QAction>
 #include <QDebug>
+#include <QScrollBar>
 #include <QTableWidget>
 #include <QTableWidgetItem>
+#include <QToolBar>
 #include <QVBoxLayout>
 
 #include "dataview.hpp"
@@ -35,10 +38,13 @@ DataView::DataView(const Session &session,
 		QWidget *parent) :
 	BaseView(session, parent),
 	signal_(signal),
-	next_signal_pos_(0)
+	next_signal_pos_(0),
+	auto_scroll_(true),
+	action_auto_scroll_(new QAction(this)),
+	action_add_signal_(new QAction(this))
 {
 	setup_ui();
-	populate_table();
+	setup_toolbar();
 	connect_signals();
 }
 
@@ -49,19 +55,63 @@ QString DataView::title() const
 
 void DataView::setup_ui()
 {
+	QString value_text = QString("%1 [%3").
+		arg(signal_->quantity_name()).arg(signal_->unit_name());
+	if (!signal_->quantity_flags_name().isEmpty()) {
+		value_text.append(" ").append(signal_->quantity_flags_name());
+	}
+	value_text.append("]");
+
 	QVBoxLayout *layout = new QVBoxLayout();
 
 	data_table_ = new QTableWidget();
 	data_table_->setColumnCount(2);
-	QTableWidgetItem *time_header_item = new QTableWidgetItem(tr("Time"));
+	QTableWidgetItem *time_header_item = new QTableWidgetItem(tr("Time [s]"));
 	time_header_item->setTextAlignment(Qt::AlignVCenter);
 	data_table_->setHorizontalHeaderItem(0, time_header_item);
-	QTableWidgetItem *value_header_item = new QTableWidgetItem(tr("Value"));
+	QTableWidgetItem *value_header_item = new QTableWidgetItem(value_text);
 	value_header_item->setTextAlignment(Qt::AlignVCenter);
 	data_table_->setHorizontalHeaderItem(1, value_header_item);
+	data_table_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 	layout->addWidget(data_table_);
 
 	this->central_widget_->setLayout(layout);
+
+	this->populate_table();
+}
+
+void DataView::setup_toolbar()
+{
+	action_auto_scroll_->setText(tr("Auto scroll"));
+	action_auto_scroll_->setIcon(
+		QIcon::fromTheme("go-bottom",
+		QIcon(":/icons/go-bottom.png")));
+	action_auto_scroll_->setCheckable(true);
+	action_auto_scroll_->setChecked(auto_scroll_);
+	connect(action_auto_scroll_, SIGNAL(triggered(bool)),
+		this, SLOT(on_action_auto_scroll_triggered()));
+
+	/* TODO: Implement
+	action_add_signal_->setText(tr("Add signal"));
+	action_add_signal_->setIcon(
+		QIcon::fromTheme("office-chart-line",
+		QIcon(":/icons/office-chart-line.png")));
+	connect(action_add_signal_, SIGNAL(triggered(bool)),
+		this, SLOT(on_action_add_signal_triggered()));
+	*/
+
+	toolbar_ = new QToolBar("Data View Toolbar");
+	toolbar_->addAction(action_auto_scroll_);
+	//toolbar_->addSeparator();
+	// TODO: Implement:
+	//toolbar_->addAction(action_add_signal_);
+	this->addToolBar(Qt::TopToolBarArea, toolbar_);
+}
+
+void DataView::connect_signals()
+{
+	connect(signal_.get(), SIGNAL(sample_added()),
+		this, SLOT(populate_table()));
 }
 
 void DataView::populate_table()
@@ -81,14 +131,19 @@ void DataView::populate_table()
 
 		++next_signal_pos_;
 	}
-	// TODO: Implement free scrolling. when at the bottom, then fix
-	data_table_->scrollToBottom();
+
+	if (auto_scroll_)
+		data_table_->scrollToBottom();
 }
 
-void DataView::connect_signals()
+void DataView::on_action_auto_scroll_triggered()
 {
-	connect(signal_.get(), SIGNAL(sample_added()),
-		this, SLOT(populate_table()));
+	auto_scroll_ = !auto_scroll_;
+	action_auto_scroll_->setChecked(auto_scroll_);
+}
+
+void DataView::on_action_add_signal_triggered()
+{
 }
 
 } // namespace views
