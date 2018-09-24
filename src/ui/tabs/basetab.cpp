@@ -37,6 +37,9 @@ BaseTab::BaseTab(Session &session, QMainWindow *parent) :
 	session_(session),
 	parent_(parent)
 {
+	// Hide the central widget of the tab, so the  views (dock widgets) can use
+	// all of the available space.
+	this->hide();
 }
 
 Session& BaseTab::session()
@@ -77,6 +80,9 @@ void BaseTab::add_view(views::BaseView *view, Qt::DockWidgetArea area)
 		QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable);
 	dock->setWidget(view);
 	parent_->addDockWidget(area, dock);
+
+	// This fixes a qt bug. See: https://bugreports.qt.io/browse/QTBUG-65592
+	parent_->resizeDocks({dock}, {40}, Qt::Horizontal);
 
 	view_docks_[dock] = view;
 }

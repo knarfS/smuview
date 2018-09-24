@@ -45,8 +45,7 @@ void DoubleControl::setup_ui()
 {
 	this->setTitle(title_);
 
-	QSizePolicy size_policy(
-		QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+	QSizePolicy size_policy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	size_policy.setHorizontalStretch(0);
 	size_policy.setVerticalStretch(0);
 	this->setSizePolicy(size_policy);
