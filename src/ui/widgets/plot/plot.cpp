@@ -148,6 +148,13 @@ Plot::Plot(QWidget *parent) : QwtPlot(parent),
 	//(void)new QwtPlotPanner(this->canvas());
 	// Zooming via the canvas
 	//(void)new QwtPlotMagnifier(this->canvas());
+
+	QwtPlotPicker *marker_picker = new QwtPlotPicker(
+		QwtPlot::xBottom, QwtPlot::yLeft, QwtPlotPicker::NoRubberBand,
+		QwtPicker::AlwaysOff, this->canvas());
+	marker_picker->setStateMachine(new QwtPickerClickPointMachine());
+	connect(marker_picker, SIGNAL(selected(const QPointF &)),
+		this, SLOT(on_marker_selected(const QPointF)));
 }
 
 Plot::~Plot()
@@ -331,37 +338,72 @@ void Plot::set_y_axis_fixed(const bool fixed)
 void Plot::add_marker()
 {
 	QwtSymbol *sym = new QwtSymbol(
-		QwtSymbol::Diamond, QBrush(Qt::red), QPen(Qt::red), QSize(5,5));
+		QwtSymbol::Diamond, QBrush(Qt::red), QPen(Qt::red), QSize(7, 7));
 
-	marker_ = new QwtPlotMarker(QString("Marker1"));
-	marker_->setLabel(QwtText(QString("Marker1")));
-	marker_->setLabelAlignment(Qt::AlignLeft | Qt::AlignBottom);
-	marker_->setSymbol(sym);
-	marker_->setLineStyle(QwtPlotMarker::Cross);
-	marker_->setLinePen(Qt::green, 1, Qt::DotLine);
-	marker_->setValue(2, 2);
-	marker_->attach(this);
+	QwtPlotMarker *marker = new QwtPlotMarker(QString("Marker1"));
+	marker->setLabel(QwtText(QString("Marker1")));
+	marker->setLabelAlignment(Qt::AlignLeft | Qt::AlignBottom);
+	marker->setSymbol(sym);
+	marker->setLineStyle(QwtPlotMarker::Cross);
+	marker->setLinePen(Qt::green, 1, Qt::DotLine);
+	marker->setValue(2, 2); // TODO
+	marker->attach(this);
+
+	markers_.push_back(marker);
+	active_marker_ = marker;
 
 	replot();
-
-	QwtPlotPicker *picker = new QwtPlotPicker(QwtPlot::xBottom, QwtPlot::yLeft,
-		QwtPlotPicker::CrossRubberBand, QwtPicker::AlwaysOn, canvas());
-	picker->setStateMachine(new QwtPickerPolygonMachine());
-	picker->setRubberBandPen(QColor(Qt::yellow));
-	picker->setRubberBand(QwtPicker::CrossRubberBand);
-	picker->setTrackerPen(QColor(Qt::white));
-	connect(picker, SIGNAL(moved(QPoint)), this, SLOT(moved(QPoint)));
 }
 
-void Plot::on_marker_moved(QPoint p)
+void Plot::on_marker_selected(const QPointF pos)
 {
-	double x_top = invTransform(QwtPlot::xTop, p.x());
-	double y_left = invTransform(QwtPlot::yLeft, p.y());
-	QwtText label = axisScaleDraw(QwtPlot::xBottom)->label(
-		invTransform(QwtPlot::xBottom, p.x()));
+	qWarning() << "Plot::on_marker_selected(): pos.x = " << pos.x() << ", pos.y = " << pos.y();
 
-	marker_->setValue(x_top, y_left);
-	marker_->setLabel(label);
+	double dmin = 1.0e10;
+	QwtPlotMarker *selected_marker = nullptr;
+	for (auto marker : markers_) {
+		double x = marker->value().x();
+		double y = marker->value().y();
+		qWarning() << "Plot::on_marker_selected(): " << marker->title().text() << " x = " << x << ", y = " << y;
+
+		// TODO: use canvas coordinates and only use markers within a radius of 10(?) px
+		//const double cx = xMap.transform( sample.x() ) - pos.x();
+		//const double cy = yMap.transform( sample.y() ) - pos.y();
+		const double cx = x - pos.x();
+		const double cy = y - pos.y();
+
+		const double f = qSqrt(qwtSqr(cx) + qwtSqr(cy));
+		qWarning() << "Plot::on_marker_selected(): " << marker->title().text() << " f = " << f;
+		if (f < dmin) {
+			dmin = f;
+			selected_marker = marker;
+		}
+	}
+
+	active_marker_ = selected_marker;
+
+	picker_ = new QwtPlotPicker(QwtPlot::xBottom, QwtPlot::yLeft,
+		QwtPlotPicker::NoRubberBand, QwtPicker::AlwaysOff, this->canvas());
+	picker_->setStateMachine(new QwtPickerDragPointMachine()); // QwtPickerTrackerMachine()); // QwtPickerDragPointMachine()
+	connect(picker_, SIGNAL(moved(QPoint)), this, SLOT(on_marker_moved(QPoint)));
+}
+
+void Plot::on_marker_moved(const QPoint pos)
+{
+	if (active_marker_ == nullptr)
+		return;
+
+	int x = plot_curve_map_[curves_[0]]->closestPoint(pos, NULL);
+	QPointF curve_pos = plot_curve_map_[curves_[0]]->sample(x);
+
+	//double x_top = invTransform(QwtPlot::xTop, pos.x());
+	//double y_left = invTransform(QwtPlot::yLeft, pos.y());
+	//QwtText label = axisScaleDraw(QwtPlot::xBottom)->label(
+	//	invTransform(curve_pos.y(), curve_pos.x()));
+	QwtText label = QwtText(QString("%1, %2").arg(curve_pos.y()).arg(curve_pos.x()));
+
+	active_marker_->setValue(curve_pos);
+	active_marker_->setLabel(label);
 
 	replot();
 }

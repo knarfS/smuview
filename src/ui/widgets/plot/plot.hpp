@@ -31,6 +31,7 @@
 #include <qwt_plot_curve.h>
 #include <qwt_plot_directpainter.h>
 #include <qwt_plot_marker.h>
+#include <qwt_plot_picker.h>
 #include <qwt_system_clock.h>
 
 using std::map;
@@ -88,7 +89,8 @@ public Q_SLOTS:
 	void set_x_axis_fixed(const bool fixed);
 	void set_y_axis_fixed(const bool fixed);
 	void add_marker();
-	void on_marker_moved(QPoint p);
+	void on_marker_selected(const QPointF pos);
+	void on_marker_moved(const QPoint pos);
 	void on_legend_clicked(const QVariant &item_info, int index);
 
 protected:
@@ -120,7 +122,9 @@ private:
 	double time_span_;
 	double add_time_;
 
-	QwtPlotMarker *marker_;
+	vector<QwtPlotMarker *> markers_;
+	QwtPlotMarker *active_marker_;
+	QwtPlotPicker *picker_;
 
 };
 
