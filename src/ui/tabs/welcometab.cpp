@@ -25,6 +25,7 @@
 
 #include "welcometab.hpp"
 #include "src/session.hpp"
+#include <config.h>
 
 using std::shared_ptr;
 
@@ -45,14 +46,23 @@ void WelcomeTab::setup_ui()
 	QString welcome("");
 	welcome.
 		append("<center>").
-		append("<big><b>Welcome to SmuView!</b></big><br>").
-		append("Multimeters, Power Supplies and Loads<br>").
+		append("<big>Welcome to <b>SmuView</b></big><br>").
+		append("Multimeters, Power Supplies and Loads<br><br>").
+		append("Version ").append(SV_VERSION_STRING).append("<br><br>").
+		append("Copyright 2017-2018, Frank Stettner<br>").
+		append("Lizenz: <a href=\"https://www.gnu.org/licenses/gpl.html\">GNU General Public License Version 3</a><br><br>").
+		append("<a href=\"https://github.com/knarfS/smuview\">github.com/knarfS/smuview</a><br>").
 		append("</center>");
 
 	QLabel *welcome_label = new QLabel();
+	welcome_label->setTextFormat(Qt::RichText);
+	welcome_label->setTextInteractionFlags(Qt::TextBrowserInteraction);
+	welcome_label->setOpenExternalLinks(true);
 	welcome_label->setText(welcome);
 	layout->addWidget(welcome_label);
 
+	// Show the central widget of the tab (hidden by BaseTab)
+	this->show();
 	this->setLayout(layout);
 }
 
