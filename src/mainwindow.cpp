@@ -64,7 +64,7 @@ MainWindow::MainWindow(DeviceManager &device_manager, QWidget *parent) :
 {
 	qRegisterMetaType<util::Timestamp>("util::Timestamp");
 	qRegisterMetaType<uint64_t>("uint64_t");
-	qRegisterMetaType<shared_ptr<data::BaseSignal>>("shared_ptr<data::BaseSignal>");
+	qRegisterMetaType<shared_ptr<data::BaseSignal>>("shared_ptr<sv::data::BaseSignal>");
 	qRegisterMetaType<devices::ConfigKey>("devices::ConfigKey");
 
 	init_session();
