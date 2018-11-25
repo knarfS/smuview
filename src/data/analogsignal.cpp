@@ -131,7 +131,7 @@ void AnalogSignal::push_sample(void *sample, double timestamp,
 	qWarning() << "AnalogSignal::push_sample(): " << name_
 		<< ": sample = " << dsample << " @ " <<  timestamp;
 	qWarning() << "AnalogSignal::push_sample(): " << name_
-		<< ":sample_count_ = " << sample_count_+1;
+		<< ": sample_count_ = " << sample_count_+1;
 	*/
 
 	// TODO: Mutex?

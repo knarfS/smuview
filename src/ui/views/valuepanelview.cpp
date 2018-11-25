@@ -106,6 +106,11 @@ ValuePanelView::ValuePanelView(const Session& session,
 	init_timer();
 }
 
+ValuePanelView::~ValuePanelView()
+{
+	stop_timer();
+}
+
 QString ValuePanelView::title() const
 {
 	QString title;
@@ -121,11 +126,6 @@ QString ValuePanelView::title() const
 		title = title.append(" ").append(channel_->display_name());
 
 	return title;
-}
-
-ValuePanelView::~ValuePanelView()
-{
-	stop_timer();
 }
 
 void ValuePanelView::setup_unit()
