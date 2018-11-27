@@ -96,7 +96,7 @@ private:
 	QWidget *tcp_config_;
 	QLineEdit *tcp_host_;
 	QSpinBox *tcp_port_;
-	QCheckBox *tcp_use_vxi_;
+	QComboBox *tcp_protocol_;
 
 	QLineEdit *gpib_libgpib_name_;
 
