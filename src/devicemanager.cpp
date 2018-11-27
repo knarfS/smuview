@@ -56,7 +56,7 @@ using Glib::VariantBase;
 namespace sv {
 
 DeviceManager::DeviceManager(shared_ptr<sigrok::Context> context,
-	vector<string> drivers) :
+		vector<string> drivers, bool do_scan) :
 	context_(context)
 {
 	unique_ptr<QProgressDialog> progress(new QProgressDialog("",
@@ -88,6 +88,13 @@ DeviceManager::DeviceManager(shared_ptr<sigrok::Context> context,
 	 * best effort auto detection.
 	 */
 	for (auto entry : context->drivers()) {
+		if (!do_scan)
+			break;
+
+		// Skip drivers we won't scan anyway
+		if (!driver_supported(entry.second))
+			continue;
+
 		progress->setLabelText(QObject::tr("Scanning for %1...")
 			.arg(QString::fromStdString(entry.first)));
 
@@ -129,18 +136,18 @@ DeviceManager::DeviceManager(shared_ptr<sigrok::Context> context,
 			scan_drv = (entry != drivers.end()) ? entry->second : nullptr;
 
 			/*
-			* Convert generic string representation of options
-			* to the driver specific data types.
-			*/
+			 * Convert generic string representation of options
+			 * to the driver specific data types.
+			 */
 			if (scan_drv && !user_drv_opts.empty()) {
 				auto drv_opts = scan_drv->scan_options();
 				scan_opts = driver_scan_options(user_drv_opts, drv_opts);
 			}
 
 			/*
-			* Run another scan for the specified driver, passing
-			* user provided scan options this time.
-			*/
+			 * Run another scan for the specified driver, passing
+			 * user provided scan options this time.
+			 */
 			list< shared_ptr<devices::HardwareDevice> > found;
 			if (scan_drv) {
 				found = driver_scan(scan_drv, scan_opts);
@@ -227,17 +234,12 @@ DeviceManager::driver_scan_options(vector<string> user_spec,
 	return result;
 }
 
-list< shared_ptr<devices::HardwareDevice> >
-DeviceManager::driver_scan(
-	shared_ptr<sigrok::Driver> sr_driver,
-	map<const sigrok::ConfigKey *, VariantBase> drvopts)
+bool DeviceManager::driver_supported(shared_ptr<sigrok::Driver> sr_driver) const
 {
-	list< shared_ptr<devices::HardwareDevice> > driver_devices;
-
 	assert(sr_driver);
 
 	const auto keys = sr_driver->config_keys();
-	bool supported_device = keys.count(sigrok::ConfigKey::POWER_SUPPLY)
+	return keys.count(sigrok::ConfigKey::POWER_SUPPLY)
 		| keys.count(sigrok::ConfigKey::ELECTRONIC_LOAD)
 		| keys.count(sigrok::ConfigKey::MULTIMETER)
 		| keys.count(sigrok::ConfigKey::SOUNDLEVELMETER)
@@ -248,7 +250,18 @@ DeviceManager::driver_scan(
 		| keys.count(sigrok::ConfigKey::SCALE)
 		| keys.count(sigrok::ConfigKey::POWERMETER);
 		//| keys.count(sigrok::ConfigKey::DEMO_DEV) // TODO
-	if (!supported_device)
+}
+
+list< shared_ptr<devices::HardwareDevice> >
+DeviceManager::driver_scan(
+	shared_ptr<sigrok::Driver> sr_driver,
+	map<const sigrok::ConfigKey *, VariantBase> drvopts)
+{
+	list< shared_ptr<devices::HardwareDevice> > driver_devices;
+
+	assert(sr_driver);
+
+	if (!driver_supported(sr_driver))
 		return driver_devices;
 
 	// Remove any device instances from this driver from the device
@@ -260,6 +273,7 @@ DeviceManager::driver_scan(
 	auto sr_devices = sr_driver->scan(drvopts);
 
 	// Add the scanned devices to the main list, set display names and sort.
+	const auto keys = sr_driver->config_keys();
 	for (shared_ptr<sigrok::HardwareDevice> sr_device : sr_devices) {
 		if (keys.count(sigrok::ConfigKey::POWER_SUPPLY) |
 				keys.count(sigrok::ConfigKey::ELECTRONIC_LOAD)) {

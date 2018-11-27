@@ -59,7 +59,7 @@ class DeviceManager
 
 public:
 	DeviceManager(shared_ptr<sigrok::Context> context,
-		vector<std::string> drivers);
+		vector<std::string> drivers, bool do_scan);
 
 	~DeviceManager() = default;
 
@@ -69,6 +69,8 @@ public:
 
 	const list< shared_ptr<devices::HardwareDevice> > &devices() const;
 	list< shared_ptr<devices::HardwareDevice> > user_spec_devices() const;
+
+	bool driver_supported(shared_ptr<sigrok::Driver> sr_driver) const;
 
 	list< shared_ptr<devices::HardwareDevice> > driver_scan(
 		shared_ptr<sigrok::Driver> sr_driver,

@@ -60,6 +60,7 @@ void usage()
 		"  -V, --version              Show release version\n"
 		"  -l, --loglevel             Set libsigrok loglevel\n"
 		"  -d, --driver               Specify the device driver(s) to use\n"
+		"  -D, --dont-scan            Don't auto-scan for devices, use -d spec only\n"
 		/* Disable cmd line options i, I and c
 		"  -i, --input-file           Load input from file\n"
 		"  -I, --input-format         Input format\n"
@@ -84,6 +85,7 @@ int main(int argc, char *argv[])
 	vector<string> drivers;
 	string open_file, open_file_format;
 	bool restore_session = true;
+	bool do_scan = true;
 
 	Application app(argc, argv);
 
@@ -94,6 +96,7 @@ int main(int argc, char *argv[])
 			{ "version", no_argument, nullptr, 'V' },
 			{ "loglevel", required_argument, nullptr, 'l' },
 			{ "driver", required_argument, nullptr, 'd' },
+			{ "dont-scan", no_argument, nullptr, 'D' },
 			/* Disable cmd line options i, I and c
 			{ "input-file", required_argument, nullptr, 'i' },
 			{ "input-format", required_argument, nullptr, 'I' },
@@ -107,7 +110,7 @@ int main(int argc, char *argv[])
 			"l:Vhc?d:i:I:", long_options, nullptr);
 		*/
 		const int c = getopt_long(argc, argv,
-			"l:Vhd:", long_options, nullptr);
+			"h?VDl:d:", long_options, nullptr);
 
 		if (c == -1)
 			break;
@@ -138,6 +141,10 @@ int main(int argc, char *argv[])
 
 		case 'd':
 			drivers.push_back(optarg);
+			break;
+
+		case 'D':
+			do_scan = false;
 			break;
 
 		/* Disable cmd line options i, I and c
@@ -171,7 +178,7 @@ int main(int argc, char *argv[])
 	do {
 		try {
 			// Create the device manager, initialise the drivers
-			sv::DeviceManager device_manager(context, drivers);
+			sv::DeviceManager device_manager(context, drivers, do_scan);
 
 			// Initialise the main window
 			sv::MainWindow w(device_manager);
