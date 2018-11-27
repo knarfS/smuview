@@ -60,9 +60,11 @@ void usage()
 		"  -V, --version              Show release version\n"
 		"  -l, --loglevel             Set libsigrok loglevel\n"
 		"  -d, --driver               Specify the device driver(s) to use\n"
+		/* Disable cmd line options i, I and c
 		"  -i, --input-file           Load input from file\n"
 		"  -I, --input-format         Input format\n"
 		"  -c, --clean                Don't restore previous session on startup\n"
+		*/
 		"\n"
 		"Examples:\n"
 		"  %s --driver tecpel-dmm-8061-ser:conn=/dev/ttyUSB0\n"
@@ -92,14 +94,21 @@ int main(int argc, char *argv[])
 			{ "version", no_argument, nullptr, 'V' },
 			{ "loglevel", required_argument, nullptr, 'l' },
 			{ "driver", required_argument, nullptr, 'd' },
+			/* Disable cmd line options i, I and c
 			{ "input-file", required_argument, nullptr, 'i' },
 			{ "input-format", required_argument, nullptr, 'I' },
 			{ "clean", no_argument, nullptr, 'c' },
+			*/
 			{ nullptr, 0, nullptr, 0 }
 		};
 
+		/* Disable cmd line options i, I and c
 		const int c = getopt_long(argc, argv,
 			"l:Vhc?d:i:I:", long_options, nullptr);
+		*/
+		const int c = getopt_long(argc, argv,
+			"l:Vhd:", long_options, nullptr);
+
 		if (c == -1)
 			break;
 
@@ -131,6 +140,7 @@ int main(int argc, char *argv[])
 			drivers.push_back(optarg);
 			break;
 
+		/* Disable cmd line options i, I and c
 		case 'i':
 			open_file = optarg;
 			break;
@@ -142,6 +152,7 @@ int main(int argc, char *argv[])
 		case 'c':
 			restore_session = false;
 			break;
+		*/
 		}
 	}
 
