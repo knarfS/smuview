@@ -126,6 +126,8 @@ ConnectDialog::ConnectDialog(sv::DeviceManager &device_manager,
 	form_layout_.addRow(groupbox_scan);
 
 	QVBoxLayout *vbox_select = new QVBoxLayout;
+	// Let the device list occupy only the minimum space needed
+	device_list_.setMaximumHeight(device_list_.minimumSizeHint().height());
 	vbox_select->addWidget(&device_list_);
 	QGroupBox *groupbox_select = new QGroupBox(tr("Step 4: Select the device"));
 	groupbox_select->setLayout(vbox_select);
