@@ -35,6 +35,7 @@
 #include "devicemanager.hpp"
 #include "src/util.hpp"
 #include "src/devices/basedevice.hpp"
+#include "src/devices/deviceutil.hpp"
 #include "src/devices/hardwaredevice.hpp"
 #include "src/devices/measurementdevice.hpp"
 #include "src/devices/sourcesinkdevice.hpp"
@@ -92,7 +93,7 @@ DeviceManager::DeviceManager(shared_ptr<sigrok::Context> context,
 			break;
 
 		// Skip drivers we won't scan anyway
-		if (!driver_supported(entry.second))
+		if (!devices::deviceutil::is_supported_driver(entry.second))
 			continue;
 
 		progress->setLabelText(QObject::tr("Scanning for %1...")
@@ -234,24 +235,6 @@ DeviceManager::driver_scan_options(vector<string> user_spec,
 	return result;
 }
 
-bool DeviceManager::driver_supported(shared_ptr<sigrok::Driver> sr_driver) const
-{
-	assert(sr_driver);
-
-	const auto keys = sr_driver->config_keys();
-	return keys.count(sigrok::ConfigKey::POWER_SUPPLY)
-		| keys.count(sigrok::ConfigKey::ELECTRONIC_LOAD)
-		| keys.count(sigrok::ConfigKey::MULTIMETER)
-		| keys.count(sigrok::ConfigKey::SOUNDLEVELMETER)
-		| keys.count(sigrok::ConfigKey::THERMOMETER)
-		| keys.count(sigrok::ConfigKey::HYGROMETER)
-		| keys.count(sigrok::ConfigKey::ENERGYMETER)
-		| keys.count(sigrok::ConfigKey::LCRMETER)
-		| keys.count(sigrok::ConfigKey::SCALE)
-		| keys.count(sigrok::ConfigKey::POWERMETER);
-		//| keys.count(sigrok::ConfigKey::DEMO_DEV) // TODO
-}
-
 list< shared_ptr<devices::HardwareDevice> >
 DeviceManager::driver_scan(
 	shared_ptr<sigrok::Driver> sr_driver,
@@ -261,7 +244,7 @@ DeviceManager::driver_scan(
 
 	assert(sr_driver);
 
-	if (!driver_supported(sr_driver))
+	if (!devices::deviceutil::is_supported_driver(sr_driver))
 		return driver_devices;
 
 	// Remove any device instances from this driver from the device
@@ -273,25 +256,14 @@ DeviceManager::driver_scan(
 	auto sr_devices = sr_driver->scan(drvopts);
 
 	// Add the scanned devices to the main list, set display names and sort.
-	const auto keys = sr_driver->config_keys();
 	for (shared_ptr<sigrok::HardwareDevice> sr_device : sr_devices) {
-		if (keys.count(sigrok::ConfigKey::POWER_SUPPLY) |
-				keys.count(sigrok::ConfigKey::ELECTRONIC_LOAD)) {
-			const shared_ptr<devices::SourceSinkDevice> d =
-				devices::SourceSinkDevice::create(context_, sr_device);
-			driver_devices.push_back(d);
+		if (devices::deviceutil::is_source_sink_driver(sr_driver)) {
+			driver_devices.push_back(
+				devices::SourceSinkDevice::create(context_, sr_device));
 		}
-		else if (keys.count(sigrok::ConfigKey::MULTIMETER) |
-				keys.count(sigrok::ConfigKey::SOUNDLEVELMETER) |
-				keys.count(sigrok::ConfigKey::THERMOMETER) |
-				keys.count(sigrok::ConfigKey::HYGROMETER) |
-				keys.count(sigrok::ConfigKey::ENERGYMETER) |
-				keys.count(sigrok::ConfigKey::LCRMETER) |
-				keys.count(sigrok::ConfigKey::SCALE) |
-				keys.count(sigrok::ConfigKey::POWERMETER)) {
-			const shared_ptr<devices::MeasurementDevice> d =
-				devices::MeasurementDevice::create(context_, sr_device);
-			driver_devices.push_back(d);
+		else if (devices::deviceutil::is_measurement_driver(sr_driver)) {
+			driver_devices.push_back(
+				devices::MeasurementDevice::create(context_, sr_device));
 		}
 	}
 

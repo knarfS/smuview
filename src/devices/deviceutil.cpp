@@ -17,13 +17,16 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <cassert>
 #include <map>
+#include <memory>
 #include <set>
 
 #include "deviceutil.hpp"
 
 using std::map;
 using std::set;
+using std::shared_ptr;
 
 namespace sv {
 namespace devices {
@@ -47,6 +50,38 @@ config_key_name_map_t get_config_key_name_map()
 data_type_name_map_t get_data_type_name_map()
 {
 	return data_type_name_map;
+}
+
+
+bool is_supported_driver(shared_ptr<sigrok::Driver> sr_driver)
+{
+	// TODO: Demo device(s)
+	return is_source_sink_driver(sr_driver) ||
+		is_measurement_driver(sr_driver);
+}
+
+bool is_source_sink_driver(shared_ptr<sigrok::Driver> sr_driver)
+{
+	assert(sr_driver);
+
+	const auto keys = sr_driver->config_keys();
+	return keys.count(sigrok::ConfigKey::POWER_SUPPLY)
+		| keys.count(sigrok::ConfigKey::ELECTRONIC_LOAD);
+}
+
+bool is_measurement_driver(shared_ptr<sigrok::Driver> sr_driver)
+{
+	assert(sr_driver);
+
+	const auto keys = sr_driver->config_keys();
+	return keys.count(sigrok::ConfigKey::MULTIMETER)
+		| keys.count(sigrok::ConfigKey::SOUNDLEVELMETER)
+		| keys.count(sigrok::ConfigKey::THERMOMETER)
+		| keys.count(sigrok::ConfigKey::HYGROMETER)
+		| keys.count(sigrok::ConfigKey::ENERGYMETER)
+		| keys.count(sigrok::ConfigKey::LCRMETER)
+		| keys.count(sigrok::ConfigKey::SCALE)
+		| keys.count(sigrok::ConfigKey::POWERMETER);
 }
 
 

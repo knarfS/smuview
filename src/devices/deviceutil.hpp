@@ -21,6 +21,7 @@
 #define DEVICES_DEVICEUTIL_HPP
 
 #include <map>
+#include <memory>
 #include <set>
 #include <vector>
 
@@ -33,6 +34,7 @@
 
 using std::map;
 using std::set;
+using std::shared_ptr;
 using std::vector;
 
 namespace sigrok {
@@ -707,6 +709,33 @@ config_key_name_map_t get_config_key_name_map();
  */
 data_type_name_map_t get_data_type_name_map();
 
+
+/**
+ * Checks if the driver is supported by SmuView.
+ *
+ * @param sr_driver The sigrok Driver to check.
+ *
+ * @return true, if the driver is supported.
+ */
+bool is_supported_driver(shared_ptr<sigrok::Driver> sr_driver);
+
+/**
+ * Checks if the driver is a power supply or a electronic load.
+ *
+ * @param sr_driver The sigrok Driver to check.
+ *
+ * @return true, if the driver is a power supply or a electronic load.
+ */
+bool is_source_sink_driver(shared_ptr<sigrok::Driver> sr_driver);
+
+/**
+ * Checks if the driver is supported a measurement device (dmm, lcr meter, ...).
+ *
+ * @param sr_driver The sigrok Driver to check.
+ *
+ * @return true, if the driver is a measurement device.
+ */
+ bool is_measurement_driver(shared_ptr<sigrok::Driver> sr_driver);
 
 /**
  * Returns the corresponding DeviceType for a sigrok ConfigKey

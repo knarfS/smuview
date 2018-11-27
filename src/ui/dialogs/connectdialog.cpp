@@ -28,6 +28,7 @@
 
 #include "connectdialog.hpp"
 #include "src/devicemanager.hpp"
+#include "src/devices/deviceutil.hpp"
 
 using std::list;
 using std::map;
@@ -169,19 +170,13 @@ void ConnectDialog::populate_drivers()
 {
 	for (auto entry : device_manager_.context()->drivers()) {
 		auto name = entry.first;
-		auto driver = entry.second;
+		auto sr_driver = entry.second;
 
-		const auto keys = driver->config_keys();
-
-		bool supported_device = keys.count(ConfigKey::POWER_SUPPLY) |
-			keys.count(ConfigKey::ELECTRONIC_LOAD) |
-			keys.count(ConfigKey::MULTIMETER) |
-			keys.count(ConfigKey::DEMO_DEV);
-
-		if (supported_device)
+		if (sv::devices::deviceutil::is_supported_driver(sr_driver)) {
 			drivers_.addItem(QString("%1 (%2)").arg(
-				driver->long_name().c_str(), name.c_str()),
-				qVariantFromValue(driver));
+				sr_driver->long_name().c_str(), name.c_str()),
+				qVariantFromValue(sr_driver));
+		}
 	}
 }
 
