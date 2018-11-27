@@ -3,7 +3,6 @@ SmuView
 
 ToDo
 
-- Remove "hp3478a" from gpib_libgpib_name_ and list all available names.
 - Use util::Timestamp?
 - last_value_, min_value_, max_value_ -> std::atomic!
 - License headers are not the same
@@ -73,6 +72,7 @@ Done
 - Replace all "    Q_OBJECT" with "	Q_OBJECT" (4 spaces -> 1 tab)
 - Replace other "    " -> "	" (4 spaces -> 1 tab)
 - Autoscale plot. Plot doesn't always auto-update scale (rlp without load)
+- Remove "hp3478a" from gpib_libgpib_name_ and list all available names.
 
 ------------------------
 
