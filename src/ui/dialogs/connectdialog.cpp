@@ -142,8 +142,9 @@ ConnectDialog::ConnectDialog(sv::DeviceManager &device_manager,
 
 	if (gpib_avialable_) {
 		QRadioButton *radiobtn_gpib = new QRadioButton(tr("&GPIB"), this);
+		// TODO: Replace with QComboBox and prefill with available gpib
+		// connection strings (like the serial box). Must be implemented in libsigrok.
 		gpib_libgpib_name_ = new QLineEdit;
-		gpib_libgpib_name_->setText("hp3478a"); // TODO
 		gpib_libgpib_name_->setEnabled(false);
 		vbox_if->addWidget(radiobtn_gpib);
 		vbox_if->addWidget(gpib_libgpib_name_);
