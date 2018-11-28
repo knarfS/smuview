@@ -30,8 +30,10 @@
 #include <QVBoxLayout>
 
 #include "mainwindow.hpp"
+#include "config.h"
 #include "src/devicemanager.hpp"
 #include "src/session.hpp"
+#include "src/util.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/devices/deviceutil.hpp"
@@ -43,9 +45,7 @@
 #include "src/ui/dialogs/connectdialog.hpp"
 #include "src/ui/processing/processingwidget.hpp"
 #include "src/ui/tabs/basetab.hpp"
-#include "src/ui/tabs/measurementtab.hpp"
-#include "src/ui/tabs/sourcesinktab.hpp"
-#include "src/ui/tabs/virtualtab.hpp"
+#include "src/ui/tabs/tabhelper.hpp"
 #include "src/ui/tabs/welcometab.hpp"
 
 using std::make_pair;
@@ -155,9 +155,8 @@ void MainWindow::add_welcome_tab()
 	QMainWindow *tab_window = new QMainWindow();
 	tab_window->setWindowFlags(Qt::Widget);  // Remove Qt::Window flag
 	tab_window->setDockNestingEnabled(true);
-
-	ui::tabs::WelcomeTab *tab = new ui::tabs::WelcomeTab(*session_, tab_window);
-	tab_window->setCentralWidget(tab);
+	tab_window->setCentralWidget(
+		new ui::tabs::WelcomeTab(*session_, tab_window));
 
 	add_tab(tab_window, tr("Welcome"));
 }
@@ -166,7 +165,7 @@ void MainWindow::add_virtual_device_tab()
 {
 	QString vendor(tr("SmuView"));
 	QString model(tr("User Device")); // TODO: enumerate
-	QString version("0.0.1"); // TODO
+	QString version(SV_VERSION_STRING);
 
 	auto device = make_shared<devices::VirtualDevice>(
 		session_->sr_context, vendor, model, version);
@@ -177,10 +176,8 @@ void MainWindow::add_virtual_device_tab()
 	QMainWindow *tab_window = new QMainWindow();
 	tab_window->setWindowFlags(Qt::Widget);  // Remove Qt::Window flag
 	tab_window->setDockNestingEnabled(true);
-
-	ui::tabs::VirtualTab *tab =
-		new ui::tabs::VirtualTab(*session_, device, tab_window);
-	tab_window->setCentralWidget(tab);
+	tab_window->setCentralWidget(
+		ui::tabs::tabhelper::get_tab_for_device(*session_, device, tab_window));
 
 	add_tab(tab_window, device->short_name());
 
@@ -200,21 +197,8 @@ void MainWindow::add_hw_device_tab(
 	QMainWindow *tab_window = new QMainWindow();
 	tab_window->setWindowFlags(Qt::Widget);  // Remove Qt::Window flag
 	tab_window->setDockNestingEnabled(true);
-
-	ui::tabs::BaseTab *tab;
-	// TODO: Use Tyoe enum
-	// TODO: Handle in devicehelper/tabhelper and return tab
-	const auto keys = device->sr_hardware_device()->driver()->config_keys();
-	if (keys.count(sigrok::ConfigKey::POWER_SUPPLY) ||
-			keys.count(sigrok::ConfigKey::ELECTRONIC_LOAD)) {
-		tab = new ui::tabs::SourceSinkTab(*session_,
-			static_pointer_cast<devices::SourceSinkDevice>(device), tab_window);
-	}
-	else {
-		tab = new ui::tabs::MeasurementTab(*session_,
-			static_pointer_cast<devices::MeasurementDevice>(device), tab_window);
-	}
-	tab_window->setCentralWidget(tab);
+	tab_window->setCentralWidget(
+		ui::tabs::tabhelper::get_tab_for_device(*session_, device, tab_window));
 
 	add_tab(tab_window, device->short_name());
 

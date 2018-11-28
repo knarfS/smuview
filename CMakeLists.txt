@@ -212,6 +212,7 @@ set(smuview_SOURCES
   src/ui/tabs/basetab.cpp
   src/ui/tabs/devicetab.cpp
   src/ui/tabs/measurementtab.cpp
+  src/ui/tabs/tabhelper.cpp
   src/ui/tabs/sourcesinktab.cpp
   src/ui/tabs/virtualtab.cpp
   src/ui/tabs/welcometab.cpp

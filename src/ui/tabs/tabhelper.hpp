@@ -17,10 +17,12 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UI_VIEWS_VIEWHELPER_HPP
-#define UI_VIEWS_VIEWHELPER_HPP
+#ifndef UI_TABS_TABHELPER_HPP
+#define UI_TABS_TABHELPER_HPP
 
 #include <memory>
+
+#include <QMainWindow>
 
 using std::shared_ptr;
 
@@ -29,31 +31,31 @@ namespace sv {
 class Session;
 
 namespace devices {
-class Configurable;
+class BaseDevice;
 }
 
 namespace ui {
-namespace views {
+namespace tabs {
 
-class BaseView;
+class BaseTab;
 
-namespace viewhelper {
+namespace tabhelper {
 
 /**
- * Returns the fitting control view for the given configurable, by checking for
- * get-/setable config keys and the device type.
+ * Returns the fitting tab for the given device, by checking the device type.
  *
  * @param[in] session The reference to the actual SmuView session
- * @param[in] configurable The Configurable
+ * @param[in] device The base device
+ * @param[in] parent The parent (QMainWindow) for the tab
  *
- * @return The control view for the configurable
+ * @return The tab for the device
  */
-BaseView *get_view_for_configurable(const Session &session,
-	shared_ptr<sv::devices::Configurable> configurable);
+BaseTab *get_tab_for_device(Session &session,
+	shared_ptr<sv::devices::BaseDevice> device, QMainWindow *parent);
 
-} // namespace viewhelper
-} // namespace views
+} // namespace tabhelper
+} // namespace tabs
 } // namespace ui
 } // namespace sv
 
-#endif // UI_VIEWS_VIEWHELPER_HPP
+#endif // UI_TABS_TABHELPER_HPP

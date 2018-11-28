@@ -43,7 +43,7 @@ BaseView *get_view_for_configurable(const Session &session,
 	if (!configurable)
 		return nullptr;
 
-	// Power supplies or eleectronic loads control view
+	// Power supplies or electronic loads control view
 	if ((configurable->device_type() == DeviceType::PowerSupply ||
 		configurable->device_type() == DeviceType::ElectronicLoad) &&
 		(configurable->has_get_config(ConfigKey::Enabled) ||
@@ -84,7 +84,6 @@ BaseView *get_view_for_configurable(const Session &session,
 
 	// Measurement devices like DMMs, scales, LCR meters, etc.
 	if ((configurable->device_type() == DeviceType::Multimeter ||
-		configurable->device_type() == DeviceType::Multimeter ||
 		configurable->device_type() == DeviceType::SoundLevelMeter ||
 		configurable->device_type() == DeviceType::Thermometer ||
 		configurable->device_type() == DeviceType::Hygrometer ||
