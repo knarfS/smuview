@@ -175,8 +175,7 @@ void ValuePanelView::setup_ui()
 	panel_layout->addWidget(value_min_display_, 1, 0, 1, 1, Qt::AlignHCenter);
 	panel_layout->addWidget(value_max_display_, 1, 1, 1, 1, Qt::AlignHCenter);
 	layout->addLayout(panel_layout);
-
-	layout->addStretch(4);
+	layout->addStretch(1);
 
 	this->central_widget_->setLayout(layout);
 }

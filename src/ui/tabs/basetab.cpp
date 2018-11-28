@@ -74,7 +74,6 @@ void BaseTab::add_view(views::BaseView *view, Qt::DockWidgetArea area)
 	QDockWidget *dock = new QDockWidget(view->title());
 	dock->setAttribute(Qt::WA_DeleteOnClose);
 	dock->setAllowedAreas(Qt::AllDockWidgetAreas);
-	dock->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 	dock->setContextMenuPolicy(Qt::PreventContextMenu);
 	dock->setFeatures(QDockWidget::DockWidgetMovable |
 		QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable);

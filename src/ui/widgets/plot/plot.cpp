@@ -125,6 +125,10 @@ Plot::Plot(QWidget *parent) : QwtPlot(parent),
 	// This must be done, because when the QwtPlot widget is directly or
 	// indirectly in a (Main)Window, the minimum size is way to big
 	this->setMinimumSize(250, 250);
+	//qWarning() << "Plot::Plot(): sizeHint() = " << sizeHint() <<
+	//	", minimumSizeHint() = " << minimumSizeHint();
+	//qWarning() << "Plot::Plot(): size() = " << size() <<
+	//	", minimumSize() = " << minimumSize();
 
 	this->plotLayout()->setAlignCanvasToScales(true);
 
