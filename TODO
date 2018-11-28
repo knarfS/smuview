@@ -31,7 +31,7 @@ ToDo
 - Lookup: std::atomic, std::condition_variable, std::mutex
 - Remove "const Session &session" form ui::devices::* ctors and more??
 - Remove all items in combo box when parent has changed and setup_ui() is recalled?	see ConfigKeyComboBox and ConfigurableComboBox
-- DataView: Add toolbar with "StayAtBottom" switchable action and add signal (into this table) action
+- DataView: add signal (into this table) action
 
 ------------------------
 
@@ -73,6 +73,7 @@ Done
 - Replace other "    " -> "	" (4 spaces -> 1 tab)
 - Autoscale plot. Plot doesn't always auto-update scale (rlp without load)
 - Remove "hp3478a" from gpib_libgpib_name_ and list all available names.
+- DataView: Add toolbar with "StayAtBottom" switchable action.
 
 ------------------------
 
