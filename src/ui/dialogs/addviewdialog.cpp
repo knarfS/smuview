@@ -18,7 +18,8 @@
  */
 
 #include <QDebug>
-#include <QFormLayout>
+#include <QGroupBox>
+#include <QHBoxLayout>
 #include <QString>
 #include <QVBoxLayout>
 #include <QWidget>
@@ -30,6 +31,7 @@
 #include "src/devices/configurable.hpp"
 #include "src/devices/deviceutil.hpp"
 #include "src/ui/devices/selectconfigurableform.hpp"
+#include "src/ui/devices/selectsignalwidget.hpp"
 #include "src/ui/devices/signaltree.hpp"
 #include "src/ui/views/baseview.hpp"
 #include "src/ui/views/dataview.hpp"
@@ -130,15 +132,24 @@ void AddViewDialog::setup_ui_xy_plot_tab()
 {
 	QString title(tr("XY Plot"));
 	QWidget *plot_widget = new QWidget();
-	QVBoxLayout *layout = new QVBoxLayout();
+	QHBoxLayout *layout = new QHBoxLayout();
 	plot_widget->setLayout(layout);
 
-	xy_plot_x_signal_tree_ = new ui::devices::SignalTree(
-		session_, true, true, false, device_);
-	layout->addWidget(xy_plot_x_signal_tree_);
-	xy_plot_y_signal_tree_ = new ui::devices::SignalTree(
-		session_, true, true, false, device_);
-	layout->addWidget(xy_plot_y_signal_tree_);
+	QGroupBox *x_signal_group = new QGroupBox(tr("X Signal"));
+	QVBoxLayout *x_layout = new QVBoxLayout();
+	xy_plot_x_signal_widget_ = new ui::devices::SelectSignalWidget(session_);
+	xy_plot_x_signal_widget_->select_device(device_);
+	x_layout->addWidget(xy_plot_x_signal_widget_);
+	x_signal_group->setLayout(x_layout);
+	layout->addWidget(x_signal_group);
+
+	QGroupBox *y_signal_group = new QGroupBox(tr("Y Signal"));
+	QVBoxLayout *y_layout = new QVBoxLayout();
+	xy_plot_y_signal_widget_ = new ui::devices::SelectSignalWidget(session_);
+	xy_plot_y_signal_widget_->select_device(device_);
+	y_layout->addWidget(xy_plot_y_signal_widget_);
+	y_signal_group->setLayout(y_layout);
+	layout->addWidget(y_signal_group);
 
 	tab_widget_->addTab(plot_widget, title);
 }
@@ -166,22 +177,26 @@ void AddViewDialog::accept()
 {
 	int tab_index = tab_widget_->currentIndex();
 	switch (tab_index) {
-	case 0: {
+	case 0:
+		// Add control view for configurable
+		{
 			auto configurable =
 				configurable_configurable_form_->selected_configurable();
 			auto view = views::viewhelper::get_view_for_configurable(
 				session_, configurable);
 
-			if (view != NULL)
+			if (view != nullptr)
 				views_.push_back(view);
 		}
 		break;
 	case 1:
+		// Add value panel view
 		for (auto channel : panel_channel_tree_->selected_channels()) {
 			views_.push_back(new ui::views::ValuePanelView(session_, channel));
 		}
 		break;
 	case 2:
+		// Add plot view
 		for (auto channel : time_plot_channel_tree_->selected_channels()) {
 			views_.push_back(new ui::views::PlotView(session_, channel));
 		}
@@ -191,21 +206,21 @@ void AddViewDialog::accept()
 		}
 
 		break;
-	case 3: {
-			shared_ptr<data::AnalogSignal> x_signal;
-			shared_ptr<data::AnalogSignal> y_signal;
-			for (auto signal : xy_plot_x_signal_tree_->selected_signals()) {
-				x_signal = static_pointer_cast<data::AnalogSignal>(signal);
-				break;
+	case 3:
+		// Add x/y plot view
+		{
+			auto x_signal = xy_plot_x_signal_widget_->selected_signal();
+			auto y_signal = xy_plot_y_signal_widget_->selected_signal();
+
+			if (x_signal != nullptr && y_signal != nullptr) {
+				views_.push_back(new ui::views::PlotView(session_,
+					static_pointer_cast<data::AnalogSignal>(x_signal),
+					static_pointer_cast<data::AnalogSignal>(y_signal)));
 			}
-			for (auto signal : xy_plot_y_signal_tree_->selected_signals()) {
-				y_signal = static_pointer_cast<data::AnalogSignal>(signal);
-				break;
-			}
-			views_.push_back(new ui::views::PlotView(session_, x_signal, y_signal));
 		}
 		break;
 	case 4:
+		// Add data table view
 		for (auto signal : table_signal_tree_->selected_signals()) {
 			auto a_signal = static_pointer_cast<data::AnalogSignal>(signal);
 			views_.push_back(new ui::views::DataView(session_, a_signal));

@@ -40,6 +40,9 @@ namespace viewhelper {
 BaseView *get_view_for_configurable(const Session &session,
 	shared_ptr<sv::devices::Configurable> configurable)
 {
+	if (!configurable)
+		return nullptr;
+
 	// Power supplies or eleectronic loads control view
 	if ((configurable->device_type() == DeviceType::PowerSupply ||
 		configurable->device_type() == DeviceType::ElectronicLoad) &&
@@ -95,7 +98,7 @@ BaseView *get_view_for_configurable(const Session &session,
 		return new MeasurementControlView(session, configurable);
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 } // namespace viewhelper

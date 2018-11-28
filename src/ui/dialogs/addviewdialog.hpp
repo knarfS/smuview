@@ -41,6 +41,7 @@ namespace ui {
 
 namespace devices {
 class SelectConfigurableForm;
+class SelectSignalWidget;
 class SignalTree;
 }
 namespace views {
@@ -78,8 +79,8 @@ private:
 	ui::devices::SelectConfigurableForm *configurable_configurable_form_;
 	ui::devices::SignalTree *panel_channel_tree_;
 	ui::devices::SignalTree *time_plot_channel_tree_;
-	ui::devices::SignalTree *xy_plot_x_signal_tree_;
-	ui::devices::SignalTree *xy_plot_y_signal_tree_;
+	ui::devices::SelectSignalWidget *xy_plot_x_signal_widget_;
+	ui::devices::SelectSignalWidget *xy_plot_y_signal_widget_;
 	ui::devices::SignalTree *table_signal_tree_;
 	QDialogButtonBox *button_box_;
 
