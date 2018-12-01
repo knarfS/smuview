@@ -24,6 +24,8 @@
 #include <QDebug>
 #include <QEvent>
 #include <QPen>
+#include <QPoint>
+#include <QPointF>
 #include <QRectF>
 #include <qwt_curve_fitter.h>
 #include <qwt_date_scale_engine.h>
@@ -35,6 +37,7 @@
 #include <qwt_plot_directpainter.h>
 #include <qwt_plot_grid.h>
 #include <qwt_plot_layout.h>
+#include <qwt_plot_textlabel.h>
 #include <qwt_plot_panner.h>
 #include <qwt_plot_picker.h>
 #include <qwt_plot_magnifier.h>
@@ -117,7 +120,8 @@ Plot::Plot(QWidget *parent) : QwtPlot(parent),
 	plot_interval_(200),
 	timer_id_(-1),
 	time_span_(120.),
-	add_time_(30.)
+	add_time_(30.),
+	markers_label_(nullptr)
 {
 	this->setAutoReplot(false);
 	this->setCanvas(new Canvas());
@@ -339,45 +343,58 @@ void Plot::set_y_axis_fixed(const bool fixed)
 	y_axis_fixed_ = fixed;
 }
 
-void Plot::add_marker()
+void Plot::add_marker(plot::BaseCurve *curve)
 {
-	QwtSymbol *sym = new QwtSymbol(
-		QwtSymbol::Diamond, QBrush(Qt::red), QPen(Qt::red), QSize(7, 7));
+	QString marker_name = QString("M%1").arg(markers_.size()+1);
+	QwtSymbol *marker_sym = new QwtSymbol(
+		QwtSymbol::Diamond, QBrush(Qt::red), QPen(Qt::red), QSize(9, 9));
 
-	QwtPlotMarker *marker = new QwtPlotMarker(QString("Marker1"));
-	marker->setLabel(QwtText(QString("Marker1")));
-	marker->setLabelAlignment(Qt::AlignLeft | Qt::AlignBottom);
-	marker->setSymbol(sym);
+	QwtPlotMarker *marker = new QwtPlotMarker(marker_name);
+	marker->setSymbol(marker_sym);
 	marker->setLineStyle(QwtPlotMarker::Cross);
-	marker->setLinePen(Qt::green, 1, Qt::DotLine);
-	marker->setValue(2, 2); // TODO
+	marker->setLinePen(Qt::black, 1, Qt::DotLine);
+	// Initial marker position on end of curve
+	marker->setValue(curve->sample(curve->size()-1));
+	marker->setLabel(QwtText(marker_name));
+	marker->setLabelAlignment(Qt::AlignTop | Qt::AlignRight);
 	marker->attach(this);
 
 	markers_.push_back(marker);
+	marker_curve_map_.insert(make_pair(marker, curve));
 	active_marker_ = marker;
 
+	qWarning() << "Plot::add_marker(): curve = " << curve->name();
+
+	update_markers_label();
 	replot();
 }
 
 void Plot::on_marker_selected(const QPointF pos)
 {
-	qWarning() << "Plot::on_marker_selected(): pos.x = " << pos.x() << ", pos.y = " << pos.y();
+	if (markers_.empty())
+		return;
+
+	//qWarning() << "Plot::on_marker_selected(): mouse.x = " << pos.x() << ", mouse.y = " << pos.y();
 
 	double dmin = 1.0e10;
 	QwtPlotMarker *selected_marker = nullptr;
 	for (auto marker : markers_) {
-		double x = marker->value().x();
-		double y = marker->value().y();
-		qWarning() << "Plot::on_marker_selected(): " << marker->title().text() << " x = " << x << ", y = " << y;
+		double x = marker->xValue();
+		double y = marker->yValue();
+		//qWarning() << "Plot::on_marker_selected(): " << marker->title().text() << " x = " << x << ", y = " << y;
+
+		// From marker move:
+		//double x_top = invTransform(QwtPlot::xTop, pos.x());
+		//double y_left = invTransform(QwtPlot::yLeft, pos.y());
 
 		// TODO: use canvas coordinates and only use markers within a radius of 10(?) px
-		//const double cx = xMap.transform( sample.x() ) - pos.x();
-		//const double cy = yMap.transform( sample.y() ) - pos.y();
+		//const double cx = xMap.transform(sample.x()) - pos.x();
+		//const double cy = yMap.transform(sample.y()) - pos.y();
 		const double cx = x - pos.x();
 		const double cy = y - pos.y();
 
 		const double f = qSqrt(qwtSqr(cx) + qwtSqr(cy));
-		qWarning() << "Plot::on_marker_selected(): " << marker->title().text() << " f = " << f;
+		//qWarning() << "Plot::on_marker_selected(): " << marker->title().text() << " f = " << f;
 		if (f < dmin) {
 			dmin = f;
 			selected_marker = marker;
@@ -397,18 +414,15 @@ void Plot::on_marker_moved(const QPoint pos)
 	if (active_marker_ == nullptr)
 		return;
 
-	int x = plot_curve_map_[curves_[0]]->closestPoint(pos, NULL);
-	QPointF curve_pos = plot_curve_map_[curves_[0]]->sample(x);
+	plot::BaseCurve *curve = marker_curve_map_[active_marker_];
+	int x = plot_curve_map_[curve]->closestPoint(pos, NULL);
+	//qWarning() << "Plot::on_marker_moved(): pos = " << pos << ", x = " << x;
+	active_marker_->setValue(plot_curve_map_[curve]->sample(x));
 
-	//double x_top = invTransform(QwtPlot::xTop, pos.x());
-	//double y_left = invTransform(QwtPlot::yLeft, pos.y());
-	//QwtText label = axisScaleDraw(QwtPlot::xBottom)->label(
-	//	invTransform(curve_pos.y(), curve_pos.x()));
-	QwtText label = QwtText(QString("%1, %2").arg(curve_pos.y()).arg(curve_pos.x()));
+	//QwtPlotCurve *pc = plot_curve_map_[curve];
+	//qWarning() << "Plot::on_marker_moved(): curve = " << curve->name() << ", pc = " << pc->title().text();
 
-	active_marker_->setValue(curve_pos);
-	active_marker_->setLabel(label);
-
+	update_markers_label();
 	replot();
 }
 
@@ -623,6 +637,45 @@ bool Plot::update_y_interval(plot::BaseCurve *curve)
 	}
 
 	return interval_changed;
+}
+
+void Plot::update_markers_label()
+{
+	if (!markers_label_) {
+		markers_label_ = new QwtPlotTextLabel();
+		markers_label_->setMargin(5);
+		markers_label_->attach(this);
+	}
+
+	QString table("<table>");
+	for (QwtPlotMarker *marker : markers_) {
+		table.append("<tr>");
+		table.append(QString("<td width=\"50\" align=\"left\">%1:</td>").
+			arg(marker->title().text()));
+		table.append(QString("<td width=\"70\" align=\"right\">%2 %3</td>").
+			arg(marker->yValue()).
+			arg("V")); // TODO
+		table.append(QString("<td width=\"70\" align=\"right\">%4 %5</td>").
+			arg(marker->xValue()).
+			arg("s")); // TODO
+		table.append("</tr>");
+	}
+	table.append("</table>");
+
+	QwtText text = QwtText(table);
+	text.setPaintAttribute(QwtText::PaintBackground, true);
+	QColor c(Qt::gray);
+	c.setAlpha(200);
+	text.setBackgroundBrush(c);
+	text.setBorderRadius(3);
+	QPen pen;
+	pen.setColor(Qt::black);
+	pen.setWidthF(1.0);
+	pen.setStyle(Qt::SolidLine);
+	text.setBorderPen(pen);
+	text.setRenderFlags(Qt::AlignBottom | Qt::AlignHCenter);
+
+	markers_label_->setText(text);
 }
 
 void Plot::timerEvent(QTimerEvent *event)

@@ -23,7 +23,9 @@
 #include <memory>
 
 #include <QAction>
+#include <QMenu>
 #include <QToolBar>
+#include <QToolButton>
 
 #include "src/ui/views/baseview.hpp"
 
@@ -75,12 +77,15 @@ public:
 private:
 	void setup_ui();
 	void setup_toolbar();
+	void update_add_marker_menu();
 	void connect_signals();
 	void init_values();
 
-	shared_ptr<channels::BaseChannel> channel_;
-	widgets::plot::BaseCurve *curve_;
+	shared_ptr<channels::BaseChannel> channel_; // TODO: to vector? remove?
+	widgets::plot::BaseCurve *curve_; // TODO: to vector
 
+	QMenu *add_marker_menu_;
+	QToolButton *add_marker_button_;
 	QAction *const action_add_marker_;
 	QAction *const action_add_diff_marker_;
 	QAction *const action_zoom_best_fit_;

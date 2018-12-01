@@ -31,8 +31,10 @@
 #include <qwt_plot_curve.h>
 #include <qwt_plot_directpainter.h>
 #include <qwt_plot_marker.h>
+#include <qwt_plot_textlabel.h>
 #include <qwt_plot_picker.h>
 #include <qwt_system_clock.h>
+#include <qwt_text.h>
 
 using std::map;
 using std::vector;
@@ -71,6 +73,7 @@ public:
 	virtual void replot();
 	virtual bool eventFilter(QObject * object, QEvent *event);
 	void add_curve(plot::BaseCurve *curve_data);
+	vector<plot::BaseCurve *> curves() { return curves_; }
 	void set_plot_interval(int plot_interval) { plot_interval_ = plot_interval; }
 	void set_update_mode(PlotUpdateMode update_mode) { update_mode_ = update_mode; }
 	PlotUpdateMode update_mode() const { return update_mode_; };
@@ -82,13 +85,13 @@ public:
 public Q_SLOTS:
 	void start();
 	void stop();
-	int init_x_axis(widgets::plot::BaseCurve *curve);
-	int init_y_axis(widgets::plot::BaseCurve *curve);
+	int init_x_axis(plot::BaseCurve *curve);
+	int init_y_axis(plot::BaseCurve *curve);
 	void set_x_interval(double x_start, double x_end);
 	void set_y_interval(int y_axis_id, double y_start, double y_end);
 	void set_x_axis_fixed(const bool fixed);
 	void set_y_axis_fixed(const bool fixed);
-	void add_marker();
+	void add_marker(plot::BaseCurve *curve);
 	void on_marker_selected(const QPointF pos);
 	void on_marker_moved(const QPoint pos);
 	void on_legend_clicked(const QVariant &item_info, int index);
@@ -103,6 +106,7 @@ private:
 	void update_intervals();
 	bool update_x_interval(plot::BaseCurve *curve);
 	bool update_y_interval(plot::BaseCurve *curve);
+	void update_markers_label();
 
 	vector<plot::BaseCurve *> curves_;
 	map<plot::BaseCurve *, QwtPlotCurve *> plot_curve_map_;
@@ -123,7 +127,9 @@ private:
 	double add_time_;
 
 	vector<QwtPlotMarker *> markers_;
+	map<QwtPlotMarker *, plot::BaseCurve *> marker_curve_map_;
 	QwtPlotMarker *active_marker_;
+	QwtPlotTextLabel *markers_label_;
 	QwtPlotPicker *picker_;
 
 };

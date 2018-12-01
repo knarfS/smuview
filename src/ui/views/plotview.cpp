@@ -20,7 +20,8 @@
 #include <cassert>
 
 #include <QMainWindow>
-#include <QBoxLayout>
+#include <QMenu>
+#include <QToolButton>
 #include <QVBoxLayout>
 
 #include "plotview.hpp"
@@ -36,6 +37,8 @@
 
 using std::dynamic_pointer_cast;
 using std::static_pointer_cast;
+
+Q_DECLARE_METATYPE(sv::ui::widgets::plot::BaseCurve *)
 
 namespace sv {
 namespace ui {
@@ -147,6 +150,7 @@ void PlotView::add_time_curve(shared_ptr<sv::data::AnalogSignal> signal)
 {
 	widgets::plot::TimeCurve *curve = new widgets::plot::TimeCurve(signal);
 	plot_->add_curve(curve);
+	update_add_marker_menu();
 }
 
 void PlotView::add_xy_curve(shared_ptr<sv::data::AnalogSignal> x_signal,
@@ -155,6 +159,7 @@ void PlotView::add_xy_curve(shared_ptr<sv::data::AnalogSignal> x_signal,
 	widgets::plot::XYCurve *curve =
 		new widgets::plot::XYCurve(x_signal, y_signal);
 	plot_->add_curve(curve);
+	update_add_marker_menu();
 }
 
 void PlotView::setup_ui()
@@ -174,14 +179,18 @@ void PlotView::setup_ui()
 
 void PlotView::setup_toolbar()
 {
-	action_add_marker_->setText(tr("Add Marker"));
-	action_add_marker_->setIcon(
+	add_marker_menu_ = new QMenu();
+	update_add_marker_menu();
+
+	add_marker_button_ = new QToolButton();
+	add_marker_button_->setText(tr("Add marker"));
+	add_marker_button_->setIcon(
 		QIcon::fromTheme("snap-orthogonal",
 		QIcon(":/icons/snap-orthogonal.png")));
-	connect(action_add_marker_, SIGNAL(triggered(bool)),
-		this, SLOT(on_action_add_marker_triggered()));
+	add_marker_button_->setMenu(add_marker_menu_);
+	add_marker_button_->setPopupMode(QToolButton::MenuButtonPopup);
 
-	action_add_diff_marker_->setText(tr("Add Diff-Marker"));
+	action_add_diff_marker_->setText(tr("Add diff-marker"));
 	action_add_diff_marker_->setIcon(
 		QIcon::fromTheme("snap-guideline",
 		QIcon(":/icons/snap-guideline.png")));
@@ -210,7 +219,7 @@ void PlotView::setup_toolbar()
 		this, SLOT(on_action_config_plot_triggered()));
 
 	toolbar_ = new QToolBar("Plot Toolbar");
-	toolbar_->addAction(action_add_marker_);
+	toolbar_->addWidget(add_marker_button_);
 	toolbar_->addAction(action_add_diff_marker_);
 	toolbar_->addSeparator();
 	toolbar_->addAction(action_zoom_best_fit_);
@@ -219,6 +228,28 @@ void PlotView::setup_toolbar()
 	toolbar_->addSeparator();
 	toolbar_->addAction(action_config_plot_);
 	this->addToolBar(Qt::TopToolBarArea, toolbar_);
+}
+
+void PlotView::update_add_marker_menu()
+{
+	// First remove all existing actions
+	for (QAction *action : add_marker_menu_->actions()) {
+		disconnect(action, SIGNAL(triggered(bool)),
+			this, SLOT(on_action_add_marker_triggered()));
+		add_marker_menu_->removeAction(action);
+		delete action;
+	}
+
+	// One add marker action for each curve
+	for (widgets::plot::BaseCurve *curve : plot_->curves()) {
+		QAction *action = new QAction(this);
+		action->setText(curve->name());
+		action->setData(QVariant::fromValue(curve));
+		connect(action, SIGNAL(triggered(bool)),
+			this, SLOT(on_action_add_marker_triggered()));
+		add_marker_menu_->addAction(action);
+		qWarning() << "PlotView::setup_add_marker_menu(): Add action = " << action->text();
+	}
 }
 
 void PlotView::connect_signals()
@@ -244,15 +275,21 @@ void PlotView::on_signal_changed()
 	if (signal) {
 		curve_ = new widgets::plot::TimeCurve(signal);
 		plot_->add_curve(curve_);
+		update_add_marker_menu();
 	}
-	else
+	else {
 		curve_ = nullptr;
+	}
 }
 
-// TODO: connect directly to plot?
 void PlotView::on_action_add_marker_triggered()
 {
-	plot_->add_marker();
+	QAction *action = qobject_cast<QAction *>(sender());
+	if (action) {
+		widgets::plot::BaseCurve *curve =
+			action->data().value<widgets::plot::BaseCurve *>();
+		plot_->add_marker(curve);
+	}
 }
 
 void PlotView::on_action_add_diff_marker_triggered()
