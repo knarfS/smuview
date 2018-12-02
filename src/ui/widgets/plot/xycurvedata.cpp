@@ -23,9 +23,9 @@
 #include <QRectF>
 #include <QString>
 
-#include "xycurve.hpp"
+#include "xycurvedata.hpp"
 #include "src/data/analogsignal.hpp"
-#include "src/ui/widgets/plot/basecurve.hpp"
+#include "src/ui/widgets/plot/basecurvedata.hpp"
 
 using std::shared_ptr;
 
@@ -34,15 +34,15 @@ namespace ui {
 namespace widgets {
 namespace plot {
 
-XYCurve::XYCurve(shared_ptr<sv::data::AnalogSignal> x_signal,
+XYCurveData::XYCurveData(shared_ptr<sv::data::AnalogSignal> x_signal,
 		shared_ptr<sv::data::AnalogSignal> y_signal) :
-	BaseCurve(CurveType::XYCurve),
+	BaseCurveData(CurveType::XYCurve),
 	x_signal_(x_signal),
 	y_signal_(y_signal)
 {
 }
 
-QPointF XYCurve::sample(size_t i) const
+QPointF XYCurveData::sample(size_t i) const
 {
 	//signal_data_->lock();
 
@@ -58,13 +58,13 @@ QPointF XYCurve::sample(size_t i) const
 	return sample_point;
 }
 
-size_t XYCurve::size() const
+size_t XYCurveData::size() const
 {
 	// TODO: Synchronize x/y sample data
 	return x_signal_->get_sample_count();
 }
 
-QRectF XYCurve::boundingRect() const
+QRectF XYCurveData::boundingRect() const
 {
 	// top left, bottom right
 	return QRectF(
@@ -72,37 +72,62 @@ QRectF XYCurve::boundingRect() const
 		QPointF(x_signal_->max_value(), y_signal_->min_value()));
 }
 
-QString XYCurve::name() const
+QPointF XYCurveData::closest_point(const QPointF &pos, double *dist) const
+{
+	const size_t num_samples = size();
+	if (num_samples <= 0)
+		return QPointF(0, 0); // TODO
+
+	size_t index = -1;
+	double dmin = 1.0e10;
+
+	for (size_t i=0; i < num_samples; i++) {
+		const QPointF s = sample(i);
+		const double cx = s.x() - pos.x();
+		const double cy = s.y() - pos.y();
+		const double d = qwtSqr(cx) + qwtSqr(cy);
+		if (d < dmin) {
+			index = i;
+			dmin = d;
+		}
+	}
+	if (dist)
+		*dist = qSqrt(dmin);
+
+	return sample(index);
+}
+
+QString XYCurveData::name() const
 {
 	return y_signal_->name().append(" -> ").append(x_signal_->name());
 }
 
-QString XYCurve::x_data_quantity() const
+QString XYCurveData::x_data_quantity() const
 {
 	return x_signal_->quantity_name();
 }
 
-QString XYCurve::x_data_unit() const
+QString XYCurveData::x_data_unit() const
 {
 	return x_signal_->unit_name();
 }
 
-QString XYCurve::x_data_title() const
+QString XYCurveData::x_data_title() const
 {
 	return QString("%1 [%2]").arg(x_data_quantity()).arg(x_data_unit());
 }
 
-QString XYCurve::y_data_quantity() const
+QString XYCurveData::y_data_quantity() const
 {
 	return y_signal_->quantity_name();
 }
 
-QString XYCurve::y_data_unit() const
+QString XYCurveData::y_data_unit() const
 {
 	return y_signal_->unit_name();
 }
 
-QString XYCurve::y_data_title() const
+QString XYCurveData::y_data_title() const
 {
 	return QString("%1 [%2]").arg(y_data_quantity()).arg(y_data_unit());
 }

@@ -31,14 +31,14 @@
 #include "src/ui/dialogs/plotconfigdialog.hpp"
 #include "src/ui/dialogs/selectsignaldialog.hpp"
 #include "src/ui/widgets/plot/plot.hpp"
-#include "src/ui/widgets/plot/basecurve.hpp"
-#include "src/ui/widgets/plot/timecurve.hpp"
-#include "src/ui/widgets/plot/xycurve.hpp"
+#include "src/ui/widgets/plot/basecurvedata.hpp"
+#include "src/ui/widgets/plot/timecurvedata.hpp"
+#include "src/ui/widgets/plot/xycurvedata.hpp"
 
 using std::dynamic_pointer_cast;
 using std::static_pointer_cast;
 
-Q_DECLARE_METATYPE(sv::ui::widgets::plot::BaseCurve *)
+Q_DECLARE_METATYPE(sv::ui::widgets::plot::BaseCurveData *)
 
 namespace sv {
 namespace ui {
@@ -48,29 +48,31 @@ PlotView::PlotView(const Session &session,
 		shared_ptr<channels::BaseChannel> channel,
 		QWidget *parent) :
 	BaseView(session, parent),
-	channel_(channel),
+	initial_channel_(channel),
 	action_add_marker_(new QAction(this)),
 	action_add_diff_marker_(new QAction(this)),
 	action_zoom_best_fit_(new QAction(this)),
 	action_add_signal_(new QAction(this)),
 	action_config_plot_(new QAction(this))
 {
-	assert(channel_);
+	assert(initial_channel_);
 
 	shared_ptr<data::AnalogSignal> signal;
-	if (channel_->actual_signal())
+	if (initial_channel_->actual_signal())
 		signal = static_pointer_cast<data::AnalogSignal>(
-			channel_->actual_signal());
+			initial_channel_->actual_signal());
 
 	if (signal)
-		curve_ = new widgets::plot::TimeCurve(signal);
+		curve_data_ = new widgets::plot::TimeCurveData(signal);
 	else
-		curve_ = nullptr;
+		curve_data_ = nullptr;
 
 	// Signal (aka Quantity + Flags + Unit) can change, e.g. DMM signals
-	connect(channel_.get(), SIGNAL(signal_added(shared_ptr<sv::data::BaseSignal>)),
+	connect(initial_channel_.get(),
+		SIGNAL(signal_added(shared_ptr<sv::data::BaseSignal>)),
 		this, SLOT(on_signal_changed()));
-	connect(channel_.get(), SIGNAL(signal_changed(shared_ptr<sv::data::BaseSignal>)),
+	connect(initial_channel_.get(),
+		SIGNAL(signal_changed(shared_ptr<sv::data::BaseSignal>)),
 		this, SLOT(on_signal_changed()));
 
 	setup_ui();
@@ -85,7 +87,7 @@ PlotView::PlotView(const Session& session,
 		shared_ptr<sv::data::AnalogSignal> signal,
 		QWidget* parent) :
 	BaseView(session, parent),
-	channel_(nullptr),
+	initial_channel_(nullptr),
 	action_add_marker_(new QAction(this)),
 	action_add_diff_marker_(new QAction(this)),
 	action_zoom_best_fit_(new QAction(this)),
@@ -94,7 +96,7 @@ PlotView::PlotView(const Session& session,
 {
 	assert(signal);
 
-	curve_ = new widgets::plot::TimeCurve(signal);
+	curve_data_ = new widgets::plot::TimeCurveData(signal);
 
 	setup_ui();
 	setup_toolbar();
@@ -109,7 +111,7 @@ PlotView::PlotView(const Session& session,
 		shared_ptr<sv::data::AnalogSignal> y_signal,
 		QWidget* parent) :
 	BaseView(session, parent),
-	channel_(nullptr),
+	initial_channel_(nullptr),
 	action_add_marker_(new QAction(this)),
 	action_add_diff_marker_(new QAction(this)),
 	action_zoom_best_fit_(new QAction(this)),
@@ -119,7 +121,7 @@ PlotView::PlotView(const Session& session,
 	assert(x_signal);
 	assert(y_signal);
 
-	curve_ = new widgets::plot::XYCurve(x_signal, y_signal);
+	curve_data_ = new widgets::plot::XYCurveData(x_signal, y_signal);
 
 	setup_ui();
 	setup_toolbar();
@@ -133,32 +135,33 @@ QString PlotView::title() const
 {
 	QString title;
 
-	if (channel_)
+	if (initial_channel_)
 		title = tr("Channel");
 	else
 		title = tr("Signal");
 
-	if (curve_)
-		title = title.append(" ").append(curve_->name());
-	else if (channel_)
-		title = title.append(" ").append(channel_->display_name());
+	if (curve_data_)
+		title = title.append(" ").append(curve_data_->name());
+	else if (initial_channel_)
+		title = title.append(" ").append(initial_channel_->display_name());
 
 	return title;
 }
 
 void PlotView::add_time_curve(shared_ptr<sv::data::AnalogSignal> signal)
 {
-	widgets::plot::TimeCurve *curve = new widgets::plot::TimeCurve(signal);
-	plot_->add_curve(curve);
+	widgets::plot::TimeCurveData *curve_data =
+		new widgets::plot::TimeCurveData(signal);
+	plot_->add_curve(curve_data);
 	update_add_marker_menu();
 }
 
 void PlotView::add_xy_curve(shared_ptr<sv::data::AnalogSignal> x_signal,
 	shared_ptr<sv::data::AnalogSignal> y_signal)
 {
-	widgets::plot::XYCurve *curve =
-		new widgets::plot::XYCurve(x_signal, y_signal);
-	plot_->add_curve(curve);
+	widgets::plot::XYCurveData *curve_data =
+		new widgets::plot::XYCurveData(x_signal, y_signal);
+	plot_->add_curve(curve_data);
 	update_add_marker_menu();
 }
 
@@ -169,8 +172,8 @@ void PlotView::setup_ui()
 	plot_ = new widgets::plot::Plot();
 	plot_->set_update_mode(widgets::plot::PlotUpdateMode::Additive);
 	plot_->set_plot_interval(200); // 200ms
-	if (curve_)
-		plot_->add_curve(curve_);
+	if (curve_data_)
+		plot_->add_curve(curve_data_);
 
 	layout->addWidget(plot_);
 
@@ -241,14 +244,13 @@ void PlotView::update_add_marker_menu()
 	}
 
 	// One add marker action for each curve
-	for (widgets::plot::BaseCurve *curve : plot_->curves()) {
+	for (widgets::plot::BaseCurveData *curve_data : plot_->curve_datas()) {
 		QAction *action = new QAction(this);
-		action->setText(curve->name());
-		action->setData(QVariant::fromValue(curve));
+		action->setText(curve_data->name());
+		action->setData(QVariant::fromValue(curve_data));
 		connect(action, SIGNAL(triggered(bool)),
 			this, SLOT(on_action_add_marker_triggered()));
 		add_marker_menu_->addAction(action);
-		qWarning() << "PlotView::setup_add_marker_menu(): Add action = " << action->text();
 	}
 }
 
@@ -262,23 +264,23 @@ void PlotView::init_values()
 
 void PlotView::on_signal_changed()
 {
-	if (!channel_)
+	if (!initial_channel_)
 		return;
 
 	shared_ptr<sv::data::AnalogSignal> signal;
-	if (channel_->actual_signal())
+	if (initial_channel_->actual_signal())
 		signal = dynamic_pointer_cast<sv::data::AnalogSignal>(
-			channel_->actual_signal());
+			initial_channel_->actual_signal());
 
 	this->parentWidget()->setWindowTitle(this->title());
 
 	if (signal) {
-		curve_ = new widgets::plot::TimeCurve(signal);
-		plot_->add_curve(curve_);
+		curve_data_ = new widgets::plot::TimeCurveData(signal);
+		plot_->add_curve(curve_data_);
 		update_add_marker_menu();
 	}
 	else {
-		curve_ = nullptr;
+		curve_data_ = nullptr;
 	}
 }
 
@@ -286,9 +288,9 @@ void PlotView::on_action_add_marker_triggered()
 {
 	QAction *action = qobject_cast<QAction *>(sender());
 	if (action) {
-		widgets::plot::BaseCurve *curve =
-			action->data().value<widgets::plot::BaseCurve *>();
-		plot_->add_marker(curve);
+		widgets::plot::BaseCurveData *curve_data =
+			action->data().value<widgets::plot::BaseCurveData *>();
+		plot_->add_marker(curve_data);
 	}
 }
 

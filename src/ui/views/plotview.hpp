@@ -46,7 +46,7 @@ namespace ui {
 
 namespace widgets {
 namespace plot {
-class BaseCurve;
+class BaseCurveData;
 class Plot;
 }
 }
@@ -81,8 +81,8 @@ private:
 	void connect_signals();
 	void init_values();
 
-	shared_ptr<channels::BaseChannel> channel_; // TODO: to vector? remove?
-	widgets::plot::BaseCurve *curve_; // TODO: to vector
+	shared_ptr<channels::BaseChannel> initial_channel_;
+	widgets::plot::BaseCurveData *curve_data_; // TODO: to vector
 
 	QMenu *add_marker_menu_;
 	QToolButton *add_marker_button_;

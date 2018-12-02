@@ -17,8 +17,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UI_WIDGETS_PLOT_XYCURVE_HPP
-#define UI_WIDGETS_PLOT_XYCURVE_HPP
+#ifndef UI_WIDGETS_PLOT_XYCURVEDATA_HPP
+#define UI_WIDGETS_PLOT_XYCURVEDATA_HPP
 
 #include <memory>
 
@@ -26,7 +26,7 @@
 #include <QRectF>
 #include <QString>
 
-#include "src/ui/widgets/plot/basecurve.hpp"
+#include "src/ui/widgets/plot/basecurvedata.hpp"
 
 using std::shared_ptr;
 
@@ -40,24 +40,25 @@ namespace ui {
 namespace widgets {
 namespace plot {
 
-class XYCurve : public BaseCurve
+class XYCurveData : public BaseCurveData
 {
 
 public:
-	XYCurve(shared_ptr<sv::data::AnalogSignal> x_signal,
+	XYCurveData(shared_ptr<sv::data::AnalogSignal> x_signal,
 		shared_ptr<sv::data::AnalogSignal> y_signal);
 
-	QPointF sample(size_t i) const;
-	size_t size() const;
-	QRectF boundingRect() const;
+	QPointF sample(size_t i) const override;
+	size_t size() const override;
+	QRectF boundingRect() const override;
 
-	QString name() const;
-	QString x_data_quantity() const;
-	QString x_data_unit() const;
-	QString x_data_title() const;
-	QString y_data_quantity() const;
-	QString y_data_unit() const;
-	QString y_data_title() const;
+	QPointF closest_point(const QPointF &pos, double *dist) const override;
+	QString name() const override;
+	QString x_data_quantity() const override;
+	QString x_data_unit() const override;
+	QString x_data_title() const override;
+	QString y_data_quantity() const override;
+	QString y_data_unit() const override;
+	QString y_data_title() const override;
 
 private:
 	shared_ptr<sv::data::AnalogSignal> x_signal_;
@@ -70,4 +71,4 @@ private:
 } // namespace ui
 } // namespace sv
 
-#endif // UI_WIDGETS_PLOT_XYCURVE_HPP
+#endif // UI_WIDGETS_PLOT_XYCURVEDATA_HPP

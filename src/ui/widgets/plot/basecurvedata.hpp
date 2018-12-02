@@ -17,8 +17,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UI_WIDGETS_PLOT_BASECURVE_HPP
-#define UI_WIDGETS_PLOT_BASECURVE_HPP
+#ifndef UI_WIDGETS_PLOT_BASECURVEDATA_HPP
+#define UI_WIDGETS_PLOT_BASECURVEDATA_HPP
 
 #include <QColor>
 #include <QPointF>
@@ -36,12 +36,12 @@ enum class CurveType {
 	XYCurve
 };
 
-class BaseCurve : public QwtSeriesData<QPointF>
+class BaseCurveData : public QwtSeriesData<QPointF>
 {
 
 public:
-	BaseCurve(CurveType curve_type);
-	virtual ~BaseCurve() = default;
+	BaseCurveData(CurveType curve_type);
+	virtual ~BaseCurveData() = default;
 
 	CurveType curve_type() const;
 	QColor color() const;
@@ -52,6 +52,7 @@ public:
 	virtual size_t size() const = 0;
 	virtual QRectF boundingRect() const = 0;
 
+	virtual QPointF closest_point(const QPointF &pos, double *dist) const = 0;
 	virtual QString name() const = 0;
 	virtual QString x_data_quantity() const = 0;
 	virtual QString x_data_unit() const = 0;
@@ -72,4 +73,4 @@ protected:
 } // namespace ui
 } // namespace sv
 
-#endif // UI_WIDGETS_PLOT_BASECURVE_HPP
+#endif // UI_WIDGETS_PLOT_BASECURVEDATA_HPP

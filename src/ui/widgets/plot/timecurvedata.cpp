@@ -23,10 +23,10 @@
 #include <QRectF>
 #include <QString>
 
-#include "timecurve.hpp"
+#include "timecurvedata.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/data/datautil.hpp"
-#include "src/ui/widgets/plot/basecurve.hpp"
+#include "src/ui/widgets/plot/basecurvedata.hpp"
 
 using std::shared_ptr;
 
@@ -35,13 +35,13 @@ namespace ui {
 namespace widgets {
 namespace plot {
 
-TimeCurve::TimeCurve(shared_ptr<sv::data::AnalogSignal> signal) :
-	BaseCurve(CurveType::TimeCurve),
+TimeCurveData::TimeCurveData(shared_ptr<sv::data::AnalogSignal> signal) :
+	BaseCurveData(CurveType::TimeCurve),
 	signal_(signal)
 {
 }
 
-QPointF TimeCurve::sample(size_t i) const
+QPointF TimeCurveData::sample(size_t i) const
 {
 	//signal_data_->lock();
 
@@ -53,22 +53,22 @@ QPointF TimeCurve::sample(size_t i) const
 	return sample_point;
 }
 
-size_t TimeCurve::size() const
+size_t TimeCurveData::size() const
 {
 	// TODO: Synchronize x/y sample data
 	return signal_->get_sample_count();
 }
 
-QRectF TimeCurve::boundingRect() const
+QRectF TimeCurveData::boundingRect() const
 {
 	/*
-	qWarning() << "TimeCurve::boundingRect(): min time = "
+	qWarning() << "TimeCurveData::boundingRect(): min time = "
 		<< signal_->first_timestamp(relative_time_);
-	qWarning() << "TimeCurve::boundingRect(): max time = "
+	qWarning() << "TimeCurveData::boundingRect(): max time = "
 		<< signal_->last_timestamp(relative_time_);
-	qWarning() << "TimeCurve::boundingRect(): min value = "
+	qWarning() << "TimeCurveData::boundingRect(): min value = "
 		<< signal_->min_value();
-	qWarning() << "TimeCurve::boundingRect(): max value = "
+	qWarning() << "TimeCurveData::boundingRect(): max value = "
 		<< signal_->max_value();
 	*/
 
@@ -78,37 +78,65 @@ QRectF TimeCurve::boundingRect() const
 		QPointF(signal_->last_timestamp(relative_time_), signal_->min_value()));
 }
 
-QString TimeCurve::name() const
+QPointF TimeCurveData::closest_point(const QPointF &pos, double *dist) const
+{
+	(void)dist;
+	const double x_value = pos.x();
+	const int index_max = size() - 1;
+
+	if (index_max < 0 || x_value >= sample(index_max).x())
+		return QPointF(0, 0); // TODO
+
+	size_t index_min = 0;
+	size_t n = index_max;
+
+	while (n > 0) {
+		const size_t half = n >> 1;
+		const size_t index_mid = index_min + half;
+
+		if (x_value < sample(index_mid).x()) {
+			n = half;
+		}
+		else {
+			index_min = index_mid + 1;
+			n -= half + 1;
+		}
+	}
+
+	return sample(index_min);
+}
+
+QString TimeCurveData::name() const
 {
 	return signal_->name();
 }
 
-QString TimeCurve::x_data_quantity() const
+QString TimeCurveData::x_data_quantity() const
 {
 	return data::datautil::format_quantity(sv::data::Quantity::Time);
 }
 
-QString TimeCurve::x_data_unit() const
+QString TimeCurveData::x_data_unit() const
 {
 	return data::datautil::format_unit(sv::data::Unit::Second);
 }
 
-QString TimeCurve::x_data_title() const
+QString TimeCurveData::x_data_title() const
 {
 	return QString("%1 [%2]").arg(x_data_quantity()).arg(x_data_unit());
 }
 
-QString TimeCurve::y_data_quantity() const
+QString TimeCurveData::y_data_quantity() const
 {
 	return signal_->quantity_name();
 }
 
-QString TimeCurve::y_data_unit() const
+QString TimeCurveData::y_data_unit() const
 {
 	return signal_->unit_name();
 }
 
-QString TimeCurve::y_data_title() const
+QString TimeCurveData::y_data_title() const
 {
 	return QString("%1 [%2]").arg(y_data_quantity()).arg(y_data_unit());
 }

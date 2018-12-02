@@ -20,26 +20,26 @@
 #include <QColor>
 #include <qwt_series_data.h>
 
-#include "basecurve.hpp"
+#include "basecurvedata.hpp"
 
 namespace sv {
 namespace ui {
 namespace widgets {
 namespace plot {
 
-BaseCurve::BaseCurve(CurveType curve_type) :
+BaseCurveData::BaseCurveData(CurveType curve_type) :
 	QwtSeriesData<QPointF>(),
 	curve_type_(curve_type),
 	relative_time_(true)
 {
 }
 
-CurveType BaseCurve::curve_type() const
+CurveType BaseCurveData::curve_type() const
 {
 	return curve_type_;
 }
 
-QColor BaseCurve::color() const
+QColor BaseCurveData::color() const
 {
 	// TODO
 	if (y_data_unit() == "V")
@@ -52,12 +52,12 @@ QColor BaseCurve::color() const
 	//return color_;
 }
 
-void BaseCurve::set_relative_time(bool is_relative_time)
+void BaseCurveData::set_relative_time(bool is_relative_time)
 {
 	relative_time_ = is_relative_time;
 }
 
-bool BaseCurve::is_relative_time() const
+bool BaseCurveData::is_relative_time() const
 {
 	return relative_time_;
 }

@@ -46,7 +46,7 @@
 
 #include "plot.hpp"
 #include "src/ui/dialogs/plotcurveconfigdialog.hpp"
-#include "src/ui/widgets/plot/basecurve.hpp"
+#include "src/ui/widgets/plot/basecurvedata.hpp"
 #include "src/ui/widgets/plot/plotscalepicker.hpp"
 
 using std::make_pair;
@@ -121,7 +121,10 @@ Plot::Plot(QWidget *parent) : QwtPlot(parent),
 	timer_id_(-1),
 	time_span_(120.),
 	add_time_(30.),
-	markers_label_(nullptr)
+	active_marker_(nullptr),
+	markers_label_(nullptr),
+	marker_select_picker_(nullptr),
+	marker_move_picker_(nullptr)
 {
 	this->setAutoReplot(false);
 	this->setCanvas(new Canvas());
@@ -153,16 +156,9 @@ Plot::Plot(QWidget *parent) : QwtPlot(parent),
 	// Zooming and panning via the axes
 	(void)new PlotScalePicker(this);
 	// Panning via the canvas
-	//(void)new QwtPlotPanner(this->canvas());
+	plot_panner_ = new QwtPlotPanner(this->canvas());
 	// Zooming via the canvas
-	//(void)new QwtPlotMagnifier(this->canvas());
-
-	QwtPlotPicker *marker_picker = new QwtPlotPicker(
-		QwtPlot::xBottom, QwtPlot::yLeft, QwtPlotPicker::NoRubberBand,
-		QwtPicker::AlwaysOff, this->canvas());
-	marker_picker->setStateMachine(new QwtPickerClickPointMachine());
-	connect(marker_picker, SIGNAL(selected(const QPointF &)),
-		this, SLOT(on_marker_selected(const QPointF)));
+	(void)new QwtPlotMagnifier(this->canvas());
 }
 
 Plot::~Plot()
@@ -191,8 +187,8 @@ void Plot::replot()
 
 	//qWarning() << "Plot::replot()";
 
-	for (auto curve : curves_) {
-		painted_points_map_[curve] = 0;
+	for (auto curve_data : curve_datas_) {
+		painted_points_map_[curve_data] = 0;
 	}
 
 	QwtPlot::replot();
@@ -201,27 +197,27 @@ void Plot::replot()
 	//ReLoadProData::instance().unlock();
 }
 
-void Plot::add_curve(widgets::plot::BaseCurve *curve)
+void Plot::add_curve(widgets::plot::BaseCurveData *curve_data)
 {
-	assert(curve);
+	assert(curve_data);
 
 	// Check y axis
-	int y_axis_id = this->init_y_axis(curve);
+	int y_axis_id = this->init_y_axis(curve_data);
 	if (y_axis_id < 0)
 		return;
 
 	// Check x axis
-	int x_axis_id = this->init_x_axis(curve);
+	int x_axis_id = this->init_x_axis(curve_data);
 
-	curves_.push_back(curve);
+	curve_datas_.push_back(curve_data);
 
 	QPen pen;
-	pen.setColor(curve->color());
+	pen.setColor(curve_data->color());
 	pen.setWidthF(2.0);
 	pen.setStyle(Qt::SolidLine);
 	pen.setCosmetic(false);
 
-	QwtPlotCurve *plot_curve = new QwtPlotCurve(curve->y_data_quantity());
+	QwtPlotCurve *plot_curve = new QwtPlotCurve(curve_data->y_data_quantity());
 	//plot_curve->setXAxis(QwtAxisId(QwtAxis::yLeft, 0)); // TODO: Multiaxis
 	plot_curve->setYAxis(y_axis_id);
 	plot_curve->setXAxis(x_axis_id);
@@ -229,32 +225,32 @@ void Plot::add_curve(widgets::plot::BaseCurve *curve)
 	plot_curve->setPen(pen);
 	plot_curve->setRenderHint(QwtPlotItem::RenderAntialiased, true);
 	plot_curve->setPaintAttribute(QwtPlotCurve::ClipPolygons, false);
-	plot_curve->setData(curve);
+	plot_curve->setData(curve_data);
 	//plot_curve->setRawSamples(); // TODO: is this an option?
 	plot_curve->attach(this);
-	plot_curve_map_.insert(make_pair(curve, plot_curve));
+	plot_curve_map_.insert(make_pair(curve_data, plot_curve));
 
 	QwtPlotDirectPainter *direct_painter = new QwtPlotDirectPainter();
-	plot_direct_painter_map_.insert(make_pair(curve, direct_painter));
+	plot_direct_painter_map_.insert(make_pair(curve_data, direct_painter));
 
-	painted_points_map_.insert(make_pair(curve, 0));
+	painted_points_map_.insert(make_pair(curve_data, 0));
 
 	QwtPlot::replot();
 }
 
-int Plot::init_x_axis(widgets::plot::BaseCurve *curve)
+int Plot::init_x_axis(widgets::plot::BaseCurveData *curve_data)
 {
-	assert(curve);
+	assert(curve_data);
 
 	int x_axis_id = QwtPlot::xBottom;
-	QString title = curve->x_data_title();
+	QString title = curve_data->x_data_title();
 	double min;
 	double max;
-	if (curve->curve_type() == CurveType::TimeCurve &&
-			curve->is_relative_time()) {
+	if (curve_data->curve_type() == CurveType::TimeCurve &&
+			curve_data->is_relative_time()) {
 		min = 0.;
 		max = add_time_;
-		// TODO: !curve->is_relative_time()
+		// TODO: !curve_data->is_relative_time()
 	}
 	else {
 		min = 0.;
@@ -267,8 +263,8 @@ int Plot::init_x_axis(widgets::plot::BaseCurve *curve)
 	//this->setAxisAutoScale(x_axis_id, true); // TODO: Not working!?
 	this->enableAxis(x_axis_id);
 
-	if (curve->curve_type() == CurveType::TimeCurve &&
-			!curve->is_relative_time())
+	if (curve_data->curve_type() == CurveType::TimeCurve &&
+			!curve_data->is_relative_time())
 		this->setAxisScaleEngine(x_axis_id, new QwtDateScaleEngine);
 
 	x_interval_.setInterval(min, max);
@@ -276,19 +272,19 @@ int Plot::init_x_axis(widgets::plot::BaseCurve *curve)
 	return x_axis_id;
 }
 
-int Plot::init_y_axis(widgets::plot::BaseCurve *curve)
+int Plot::init_y_axis(widgets::plot::BaseCurveData *curve_data)
 {
-	assert(curve);
+	assert(curve_data);
 
 	int y_axis_id = -1;
-	if (curves_.size() == 0)
+	if (curve_datas_.size() == 0)
 		y_axis_id = QwtPlot::yLeft;
-	else if (curves_.size() == 1)
+	else if (curve_datas_.size() == 1)
 		y_axis_id = QwtPlot::yRight;
 	else
 		return y_axis_id; // TODO: walk trough
 
-	QString title = curve->y_data_title();
+	QString title = curve_data->y_data_title();
 	double min = 0.;
 	double max = 0.;
 
@@ -303,8 +299,8 @@ int Plot::init_y_axis(widgets::plot::BaseCurve *curve)
 
 	QwtInterval *y_interval = new QwtInterval(min, max);
 	y_axis_interval_map_.insert(make_pair(y_axis_id, y_interval));
-	curve_y_interval_map_.insert(make_pair(curve, y_interval));
-	curve_y_axis_id_map_.insert(make_pair(curve, y_axis_id));
+	y_interval_map_.insert(make_pair(curve_data, y_interval));
+	y_axis_id_map_.insert(make_pair(curve_data, y_axis_id));
 
 	return y_axis_id;
 }
@@ -343,8 +339,12 @@ void Plot::set_y_axis_fixed(const bool fixed)
 	y_axis_fixed_ = fixed;
 }
 
-void Plot::add_marker(plot::BaseCurve *curve)
+void Plot::add_marker(plot::BaseCurveData *curve_data)
 {
+	assert(curve_data);
+
+	QwtPlotCurve *plot_curve = plot_curve_map_[curve_data];
+
 	QString marker_name = QString("M%1").arg(markers_.size()+1);
 	QwtSymbol *marker_sym = new QwtSymbol(
 		QwtSymbol::Diamond, QBrush(Qt::red), QPen(Qt::red), QSize(9, 9));
@@ -353,74 +353,119 @@ void Plot::add_marker(plot::BaseCurve *curve)
 	marker->setSymbol(marker_sym);
 	marker->setLineStyle(QwtPlotMarker::Cross);
 	marker->setLinePen(Qt::black, 1, Qt::DotLine);
-	// Initial marker position on end of curve
-	marker->setValue(curve->sample(curve->size()-1));
+	// Initial marker position is at the end of the curve
+	marker->setValue(curve_data->sample(curve_data->size()-1));
 	marker->setLabel(QwtText(marker_name));
 	marker->setLabelAlignment(Qt::AlignTop | Qt::AlignRight);
+	marker->setXAxis(plot_curve->xAxis());
+	marker->setYAxis(plot_curve->yAxis());
 	marker->attach(this);
 
 	markers_.push_back(marker);
-	marker_curve_map_.insert(make_pair(marker, curve));
+	marker_map_.insert(make_pair(marker, curve_data));
 	active_marker_ = marker;
 
-	qWarning() << "Plot::add_marker(): curve = " << curve->name();
+	// Add pickers for _all_ markers, no matter of the axis
+	if (!marker_select_picker_) {
+		// Use QwtPlot::xBottom and QwtPlot::yLeft as axis. We calculate the
+		// canvas positions for the markers in on_marker_selected()
+		marker_select_picker_ = new QwtPlotPicker(
+			QwtPlot::xBottom, QwtPlot::yLeft, QwtPlotPicker::NoRubberBand,
+			QwtPicker::AlwaysOff, this->canvas());
+		marker_select_picker_->setStateMachine(new QwtPickerClickPointMachine());
+		connect(marker_select_picker_, SIGNAL(selected(const QPointF &)),
+			this, SLOT(on_marker_selected(const QPointF)));
+	}
+	if (!marker_move_picker_) {
+		// Use QwtPlot::xBottom and QwtPlot::yLeft as axis. We calculate the
+		// canvas positions for the markers in on_marker_moved()
+		marker_move_picker_ = new QwtPlotPicker(
+			QwtPlot::xBottom, QwtPlot::yLeft,
+			QwtPlotPicker::NoRubberBand, QwtPicker::AlwaysOff, this->canvas());
+		marker_move_picker_->setStateMachine(new QwtPickerDragPointMachine());
+		connect(marker_move_picker_, SIGNAL(moved(QPointF)),
+			this, SLOT(on_marker_moved(QPointF)));
+	}
+	/*
+	 * TODO: Maybe we could use a QwtPickerTrackerMachine for mouse movement.
+	 * This way we can avoid the mouse click event (problems with QwtPlotPanner)
+	 * and also highlight the marker that in the "selectable range" of the
+	 * mouse pointer. Maybe this would be a performance issue?
+	 */
 
 	update_markers_label();
 	replot();
 }
 
-void Plot::on_marker_selected(const QPointF pos)
+// TODO: implement remove marker call
+void Plot::remove_marker()
+{
+	// If last marker of this axis.
+	disconnect(marker_select_picker_, SIGNAL(selected(const QPointF &)),
+		this, SLOT(on_marker_selected(const QPointF)));
+	delete marker_select_picker_;
+	marker_select_picker_ = nullptr;
+	disconnect(marker_move_picker_, SIGNAL(moved(QPointF)),
+		this, SLOT(on_marker_moved(QPointF)));
+	delete marker_move_picker_;
+	marker_move_picker_ = nullptr;
+}
+
+void Plot::on_marker_selected(const QPointF mouse_pos)
 {
 	if (markers_.empty())
 		return;
 
-	//qWarning() << "Plot::on_marker_selected(): mouse.x = " << pos.x() << ", mouse.y = " << pos.y();
+	// Mouse canvas coordinates. Use QwtPlot::xBottom and QwtPlot::yLeft
+	// as axis for marker_select_picker_.
+	const double mouse_canvas_x = transform(QwtPlot::xBottom, mouse_pos.x());
+	const double mouse_canvas_y = transform(QwtPlot::yLeft, mouse_pos.y());
 
-	double dmin = 1.0e10;
+	double d_min = 15.; // Minimum distance to marker for selecting
+	double d_lowest = 1.0e10;
 	QwtPlotMarker *selected_marker = nullptr;
 	for (auto marker : markers_) {
-		double x = marker->xValue();
-		double y = marker->yValue();
-		//qWarning() << "Plot::on_marker_selected(): " << marker->title().text() << " x = " << x << ", y = " << y;
+		// Marker canvas coordinates. Use axis ids form plot.
+		QwtPlotCurve *plot_curve = plot_curve_map_[marker_map_[marker]];
+		const double marker_canvas_x =
+			transform(plot_curve->xAxis(), marker->xValue());
+		const double marker_canvas_y =
+			transform(plot_curve->yAxis(), marker->yValue());
 
-		// From marker move:
-		//double x_top = invTransform(QwtPlot::xTop, pos.x());
-		//double y_left = invTransform(QwtPlot::yLeft, pos.y());
-
-		// TODO: use canvas coordinates and only use markers within a radius of 10(?) px
-		//const double cx = xMap.transform(sample.x()) - pos.x();
-		//const double cy = yMap.transform(sample.y()) - pos.y();
-		const double cx = x - pos.x();
-		const double cy = y - pos.y();
-
-		const double f = qSqrt(qwtSqr(cx) + qwtSqr(cy));
-		//qWarning() << "Plot::on_marker_selected(): " << marker->title().text() << " f = " << f;
-		if (f < dmin) {
-			dmin = f;
+		const double d_x = marker_canvas_x - mouse_canvas_x;
+		const double d_y = marker_canvas_y - mouse_canvas_y;
+		const double d = qSqrt(qwtSqr(d_x) + qwtSqr(d_y));
+		if (d <= d_min && d < d_lowest) {
+			d_lowest = d;
 			selected_marker = marker;
 		}
 	}
 
-	active_marker_ = selected_marker;
+	if (selected_marker) {
+		plot_panner_->setEnabled(false);
+		active_marker_ = selected_marker;
+	}
+	else {
+		/*
+		 * TODO: Maybe activate the plot panner via a timer after 1s of no
+		 * marker move event. This would avoid the "double" click to deselect
+		 * the marker/enable the panner (1) and register a new panning event (2)
+		 */
+		plot_panner_->setEnabled(true);
+		active_marker_ = nullptr;
+	}
 
-	picker_ = new QwtPlotPicker(QwtPlot::xBottom, QwtPlot::yLeft,
-		QwtPlotPicker::NoRubberBand, QwtPicker::AlwaysOff, this->canvas());
-	picker_->setStateMachine(new QwtPickerDragPointMachine()); // QwtPickerTrackerMachine()); // QwtPickerDragPointMachine()
-	connect(picker_, SIGNAL(moved(QPoint)), this, SLOT(on_marker_moved(QPoint)));
+	// TODO: connect/disconnect marker_move_picker_
 }
 
-void Plot::on_marker_moved(const QPoint pos)
+void Plot::on_marker_moved(const QPointF mouse_pos)
 {
-	if (active_marker_ == nullptr)
+	if (!active_marker_)
 		return;
 
-	plot::BaseCurve *curve = marker_curve_map_[active_marker_];
-	int x = plot_curve_map_[curve]->closestPoint(pos, NULL);
-	//qWarning() << "Plot::on_marker_moved(): pos = " << pos << ", x = " << x;
-	active_marker_->setValue(plot_curve_map_[curve]->sample(x));
-
-	//QwtPlotCurve *pc = plot_curve_map_[curve];
-	//qWarning() << "Plot::on_marker_moved(): curve = " << curve->name() << ", pc = " << pc->title().text();
+	plot::BaseCurveData *curve_data = marker_map_[active_marker_];
+	QPointF marker_pos = curve_data->closest_point(mouse_pos, NULL);
+	active_marker_->setValue(marker_pos);
 
 	update_markers_label();
 	replot();
@@ -440,14 +485,15 @@ void Plot::on_legend_clicked(const QVariant &item_info, int index)
 
 void Plot::update_curves()
 {
-	for (plot::BaseCurve *curve : curves_) {
+	for (plot::BaseCurveData *curve_data : curve_datas_) {
 		//ReLoadProData::instance().lock(); // TODO
 
-		const size_t painted_points = painted_points_map_[curve];
-		const size_t num_points = curve->size();
+		const size_t painted_points = painted_points_map_[curve_data];
+		const size_t num_points = curve_data->size();
 		if (num_points > painted_points) {
-			QwtPlotCurve *plot_curve = plot_curve_map_[curve];
-			QwtPlotDirectPainter *direct_painter = plot_direct_painter_map_[curve];
+			QwtPlotCurve *plot_curve = plot_curve_map_[curve_data];
+			QwtPlotDirectPainter *direct_painter =
+				plot_direct_painter_map_[curve_data];
 
 			//qWarning() << QString("Plot::updateCurve(): num_points = %1, painted_points = %2").arg(num_points).arg(painted_points);
 			const bool clip = !canvas()->testAttribute(Qt::WA_PaintOnScreen);
@@ -473,7 +519,7 @@ void Plot::update_curves()
 			direct_painter->drawSeries(plot_curve,
 				painted_points - 1, num_points - 1);
 
-			painted_points_map_[curve] = num_points;
+			painted_points_map_[curve_data] = num_points;
 		}
 
 		//ReLoadProData::instance().unlock(); // TODO
@@ -486,10 +532,10 @@ void Plot::update_intervals()
 {
 	bool intervals_changed = false;
 
-	for (plot::BaseCurve *curve : curves_) {
-		if (update_x_interval(curve))
+	for (plot::BaseCurveData *curve_data : curve_datas_) {
+		if (update_x_interval(curve_data))
 			intervals_changed = true;
-		if (update_y_interval(curve))
+		if (update_y_interval(curve_data))
 			intervals_changed = true;
 	}
 
@@ -497,13 +543,13 @@ void Plot::update_intervals()
 		replot();
 }
 
-bool Plot::update_x_interval(plot::BaseCurve *curve)
+bool Plot::update_x_interval(plot::BaseCurveData *curve_data)
 {
 	if (x_axis_fixed_)
 		return false;
 
 	bool interval_changed = false;
-	QRectF boundaries = curve->boundingRect();
+	QRectF boundaries = curve_data->boundingRect();
 
 	if (update_mode_ == PlotUpdateMode::Additive) {
 		/*
@@ -521,7 +567,7 @@ bool Plot::update_x_interval(plot::BaseCurve *curve)
 		}
 		if (boundaries.right() > x_interval_.maxValue()) {
 			double max;
-			if (curve->curve_type() == CurveType::TimeCurve)
+			if (curve_data->curve_type() == CurveType::TimeCurve)
 				max = x_interval_.maxValue() + add_time_;
 			else
 				max = boundaries.right() + (boundaries.right() * 0.1);
@@ -589,7 +635,7 @@ bool Plot::update_x_interval(plot::BaseCurve *curve)
 			scaleDiv.setTicks(i, ticks);
 		}
 		setAxisScaleDiv(QwtPlot::xBottom, scaleDiv);
-		painted_points_map_[curve] = 0;
+		painted_points_map_[curve_data] = 0;
 
 		return true;
 	}
@@ -597,15 +643,15 @@ bool Plot::update_x_interval(plot::BaseCurve *curve)
 	return false;
 }
 
-bool Plot::update_y_interval(plot::BaseCurve *curve)
+bool Plot::update_y_interval(plot::BaseCurveData *curve_data)
 {
 	if (y_axis_fixed_)
 		return false;
 
 	bool interval_changed = false;
-	QRectF boundaries = curve->boundingRect();
-	QwtInterval *y_interval = curve_y_interval_map_[curve];
-	int y_axis_id = curve_y_axis_id_map_[curve];
+	QRectF boundaries = curve_data->boundingRect();
+	QwtInterval *y_interval = y_interval_map_[curve_data];
+	int y_axis_id = y_axis_id_map_[curve_data];
 
 	/*
 	qWarning() << "Plot::update_y_interval() for b.bottom < y_int.min = " <<
@@ -654,10 +700,10 @@ void Plot::update_markers_label()
 			arg(marker->title().text()));
 		table.append(QString("<td width=\"70\" align=\"right\">%2 %3</td>").
 			arg(marker->yValue()).
-			arg("V")); // TODO
+			arg(marker_map_[marker]->y_data_unit()));
 		table.append(QString("<td width=\"70\" align=\"right\">%4 %5</td>").
 			arg(marker->xValue()).
-			arg("s")); // TODO
+			arg(marker_map_[marker]->x_data_unit()));
 		table.append("</tr>");
 	}
 	table.append("</table>");
