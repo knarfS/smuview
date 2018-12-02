@@ -147,18 +147,23 @@ bool PlotScalePicker::eventFilter(QObject *object, QEvent *event)
 				plot_->setAutoReplot(false);
 
 				int axis_id = -1;
+				double mouse_pos = -1; // Mouse position in the scale widget.
 				switch (scale_widget->alignment()) {
 				case QwtScaleDraw::LeftScale:
 					axis_id = QwtPlot::yLeft;
+					mouse_pos = wheel_event->pos().y();
 					break;
 				case QwtScaleDraw::RightScale:
 					axis_id = QwtPlot::yRight;
+					mouse_pos = wheel_event->pos().y();
 					break;
 				case QwtScaleDraw::BottomScale:
 					axis_id = QwtPlot::xBottom;
+					mouse_pos = wheel_event->pos().x();
 					break;
 				case QwtScaleDraw::TopScale:
 					axis_id = QwtPlot::xTop;
+					mouse_pos = wheel_event->pos().x();
 					break;
 				}
 
@@ -168,13 +173,14 @@ bool PlotScalePicker::eventFilter(QObject *object, QEvent *event)
 				if (scale_map.transformation()) {
 					// The coordinate system of the paint device is
 					// always linear
-					v1 = scale_map.transform(v1); // scale_map.p1()
-					v2 = scale_map.transform(v2); // scale_map.p2()
+					v1 = scale_map.transform(v1);
+					v2 = scale_map.transform(v2);
 				}
-				const double center = 0.5 * (v1 + v2);
-				const double width_2 = 0.5 * (v2 - v1) * factor;
-				v1 = center - width_2;
-				v2 = center + width_2;
+				const double center = scale_map.invTransform(mouse_pos);
+				const double upper = (v2 - center) * factor;
+				const double lower = (center - v1) * factor;
+				v1 = center - lower;
+				v2 = center + upper;
 				if (scale_map.transformation()) {
 					v1 = scale_map.invTransform(v1);
 					v2 = scale_map.invTransform(v2);
