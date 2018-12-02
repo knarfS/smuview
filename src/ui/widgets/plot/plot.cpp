@@ -265,7 +265,7 @@ int Plot::init_x_axis(widgets::plot::BaseCurveData *curve_data)
 
 	if (curve_data->curve_type() == CurveType::TimeCurve &&
 			!curve_data->is_relative_time())
-		this->setAxisScaleEngine(x_axis_id, new QwtDateScaleEngine);
+		this->setAxisScaleEngine(x_axis_id, new QwtDateScaleEngine());
 
 	x_interval_.setInterval(min, max);
 
