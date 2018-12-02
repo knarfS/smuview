@@ -82,6 +82,15 @@ void Popup::set_position(const QPoint point, PopupPosition pos)
 
 bool Popup::eventFilter(QObject *obj, QEvent *event)
 {
+	(void)obj;
+	(void)event;
+
+	return false;
+
+	/*
+	 * Deactivaded, because when catching key_Enter and _key_Return in here,
+	 * the retunPressed() signal in AxisPopup isn't working correctly.
+
 	QKeyEvent *key_event;
 
 	(void)obj;
@@ -96,6 +105,7 @@ bool Popup::eventFilter(QObject *obj, QEvent *event)
 	}
 
 	return false;
+	*/
 }
 
 void Popup::show()

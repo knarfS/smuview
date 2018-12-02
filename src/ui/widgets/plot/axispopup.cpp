@@ -49,17 +49,29 @@ void AxisPopup::setup_ui()
 	QVBoxLayout *main_layout = new QVBoxLayout;
 	QFormLayout *form_layout = new QFormLayout;
 
-	double min_value = plot_->axisScaleDiv(axis_id_).lowerBound();
-	axis_min_edit_ = new QLineEdit();
-	axis_min_edit_->setValidator(new QDoubleValidator);
-	axis_min_edit_->setText(QString("%1").arg(min_value, 0, 'f'));
-	form_layout->addRow(tr("Min"), axis_min_edit_);
-
 	double max_value = plot_->axisScaleDiv(axis_id_).upperBound();
 	axis_max_edit_ = new QLineEdit();
-	axis_max_edit_->setValidator(new QDoubleValidator);
+	axis_max_edit_->setValidator(new QDoubleValidator());
 	axis_max_edit_->setText(QString("%1").arg(max_value, 0, 'f'));
-	form_layout->addRow(tr("Max"), axis_max_edit_);
+	QString max_label;
+	if (axis_id_ == QwtPlot::xTop  || axis_id_ == QwtPlot::xBottom)
+		max_label = tr("Right");
+	else
+		max_label = tr("Top");
+	form_layout->addRow(max_label, axis_max_edit_);
+	connect(axis_max_edit_, SIGNAL(returnPressed()), this, SLOT(on_accept()));
+
+	double min_value = plot_->axisScaleDiv(axis_id_).lowerBound();
+	axis_min_edit_ = new QLineEdit();
+	axis_min_edit_->setValidator(new QDoubleValidator());
+	axis_min_edit_->setText(QString("%1").arg(min_value, 0, 'f'));
+	QString min_label;
+	if (axis_id_ == QwtPlot::xTop  || axis_id_ == QwtPlot::xBottom)
+		min_label = tr("Left");
+	else
+		min_label = tr("Bottom");
+	form_layout->addRow(min_label, axis_min_edit_);
+	connect(axis_min_edit_, SIGNAL(returnPressed()), this, SLOT(on_accept()));
 
 	bool is_log_scale = false;
 	if (dynamic_cast<QwtLogScaleEngine *>(plot_->axisScaleEngine(axis_id_)))
