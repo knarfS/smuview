@@ -499,6 +499,17 @@ void Plot::add_marker(plot::BaseCurveData *curve_data)
 	replot();
 }
 
+void Plot::add_diff_marker(QwtPlotMarker *marker1, QwtPlotMarker *marker2)
+{
+	if (!marker1 || !marker2)
+		return;
+
+	diff_markers_.push_back(make_pair(marker1, marker2));
+
+	update_markers_label();
+	replot();
+}
+
 // TODO: implement remove marker call
 void Plot::remove_marker()
 {
@@ -804,6 +815,7 @@ void Plot::update_markers_label()
 	}
 
 	QString table("<table>");
+
 	for (QwtPlotMarker *marker : markers_) {
 		table.append("<tr>");
 		table.append(QString("<td width=\"50\" align=\"left\">%1:</td>").
@@ -816,6 +828,34 @@ void Plot::update_markers_label()
 			arg(marker_map_[marker]->x_data_unit()));
 		table.append("</tr>");
 	}
+
+	for (auto marker_pair : diff_markers_) {
+		double d_x = marker_pair.first->xValue() - marker_pair.second->xValue();
+		double d_y = marker_pair.first->yValue() - marker_pair.second->yValue();
+
+		QString x_unit("");
+		QString m1_x_unit = marker_map_[marker_pair.first]->x_data_unit();
+		QString m2_x_unit = marker_map_[marker_pair.second]->x_data_unit();
+		if (m1_x_unit == m1_x_unit)
+			x_unit = m1_x_unit;
+
+		QString y_unit("");
+		QString m1_y_unit = marker_map_[marker_pair.first]->y_data_unit();
+		QString m2_y_unit = marker_map_[marker_pair.second]->y_data_unit();
+		if (m1_y_unit == m2_y_unit)
+			y_unit = m1_y_unit;
+
+		table.append("<tr>");
+		table.append(QString("<td width=\"50\" align=\"left\">%1 - %2:</td>").
+			arg(marker_pair.first->title().text()).
+			arg(marker_pair.second->title().text()));
+		table.append(QString("<td width=\"70\" align=\"right\">%2 %3</td>").
+			arg(d_y).arg(y_unit));
+		table.append(QString("<td width=\"70\" align=\"right\">%4 %5</td>").
+			arg(d_x).arg(x_unit));
+		table.append("</tr>");
+	}
+
 	table.append("</table>");
 
 	QwtText text = QwtText(table);

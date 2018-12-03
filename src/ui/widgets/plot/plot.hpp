@@ -38,6 +38,7 @@
 #include <qwt_text.h>
 
 using std::map;
+using std::pair;
 using std::vector;
 
 namespace sv {
@@ -90,6 +91,7 @@ public:
 	double time_span() { return time_span_; }
 	void set_add_time(double add_time) { add_time_ = add_time; }
 	double add_time() { return add_time_; }
+	map<QwtPlotMarker *, plot::BaseCurveData *> markers() { return marker_map_; }
 
 public Q_SLOTS:
 	void start();
@@ -101,6 +103,7 @@ public Q_SLOTS:
 	void add_axis_icons(const int axis_id);
 	void on_axis_lock_clicked();
 	void add_marker(plot::BaseCurveData *curve_data);
+	void add_diff_marker(QwtPlotMarker *marker1, QwtPlotMarker *marker2);
 	void remove_marker();
 	void on_marker_selected(const QPointF mouse_pos);
 	void on_marker_moved(const QPointF mouse_pos);
@@ -141,6 +144,7 @@ private:
 	QwtPlotPanner *plot_panner_;
 
 	vector<QwtPlotMarker *> markers_;
+	vector<pair<QwtPlotMarker *, QwtPlotMarker *>> diff_markers_;
 	map<QwtPlotMarker *, plot::BaseCurveData *> marker_map_;
 	QwtPlotMarker *active_marker_;
 	QwtPlotTextLabel *markers_label_;

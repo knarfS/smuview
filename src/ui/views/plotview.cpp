@@ -29,6 +29,7 @@
 #include "src/channels/basechannel.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/ui/dialogs/plotconfigdialog.hpp"
+#include "src/ui/dialogs/plotdiffmarkerdialog.hpp"
 #include "src/ui/dialogs/selectsignaldialog.hpp"
 #include "src/ui/widgets/plot/plot.hpp"
 #include "src/ui/widgets/plot/basecurvedata.hpp"
@@ -296,6 +297,8 @@ void PlotView::on_action_add_marker_triggered()
 
 void PlotView::on_action_add_diff_marker_triggered()
 {
+	ui::dialogs::PlotDiffMarkerDialog dlg(plot_);
+	dlg.exec();
 }
 
 void PlotView::on_action_zoom_best_fit_triggered()
