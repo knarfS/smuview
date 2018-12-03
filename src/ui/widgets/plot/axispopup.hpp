@@ -45,8 +45,10 @@ private:
 	Plot *plot_;
 	int axis_id_;
 
-	QLineEdit *axis_min_edit_;
-	QLineEdit *axis_max_edit_;
+	QLineEdit *axis_lower_edit_;
+	QCheckBox *axis_lower_locked_check_;
+	QLineEdit *axis_upper_edit_;
+	QCheckBox *axis_upper_locked_check_;
 	QCheckBox *axis_log_check_;
 	QDialogButtonBox *button_box_;
 

@@ -47,6 +47,11 @@ namespace plot {
 
 class BaseCurveData;
 
+enum class AxisBoundary {
+	LowerBoundary,
+	UpperBoundary
+};
+
 enum class PlotUpdateMode {
 	Additive = 0,
 	Rolling,
@@ -75,6 +80,9 @@ public:
 	virtual bool eventFilter(QObject * object, QEvent *event);
 	void add_curve(plot::BaseCurveData *curve_data);
 	vector<plot::BaseCurveData *> curve_datas() { return curve_datas_; }
+	bool is_axis_locked(int axis_id, AxisBoundary axis_boundary) { return axis_lock_map_[axis_id][axis_boundary]; }
+	void set_axis_locked(int axis_id, AxisBoundary axis_boundary, bool locked);
+	void set_all_axis_locked(bool locked);
 	void set_plot_interval(int plot_interval) { plot_interval_ = plot_interval; }
 	void set_update_mode(PlotUpdateMode update_mode) { update_mode_ = update_mode; }
 	PlotUpdateMode update_mode() const { return update_mode_; };
@@ -90,13 +98,16 @@ public Q_SLOTS:
 	int init_y_axis(plot::BaseCurveData *curve_data);
 	void set_x_interval(double x_start, double x_end);
 	void set_y_interval(int y_axis_id, double y_start, double y_end);
-	void set_x_axis_fixed(const bool fixed);
-	void set_y_axis_fixed(const bool fixed);
+	void add_axis_icons(const int axis_id);
+	void on_axis_lock_clicked();
 	void add_marker(plot::BaseCurveData *curve_data);
 	void remove_marker();
 	void on_marker_selected(const QPointF mouse_pos);
 	void on_marker_moved(const QPointF mouse_pos);
 	void on_legend_clicked(const QVariant &item_info, int index);
+
+Q_SIGNALS:
+	void axis_lock_changed(int axis_id, AxisBoundary axis_boundary, bool locked);
 
 protected:
 	virtual void showEvent(QShowEvent *);
@@ -118,10 +129,9 @@ private:
 	map<plot::BaseCurveData *, size_t> painted_points_map_;
 
 	map<int, QwtInterval *> y_axis_interval_map_;
-
 	QwtInterval x_interval_;
-	bool x_axis_fixed_;
-	bool y_axis_fixed_;
+
+	map<int, map<AxisBoundary, bool>> axis_lock_map_; // map<axis_id, map<AxisBoundary, locked>>
 	int plot_interval_;
 	int timer_id_;
 	PlotUpdateMode update_mode_;

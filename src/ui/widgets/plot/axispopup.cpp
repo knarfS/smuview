@@ -21,6 +21,8 @@
 #include <QDialogButtonBox>
 #include <QDoubleValidator>
 #include <QFormLayout>
+#include <QHBoxLayout>
+#include <QLabel>
 #include <QLineEdit>
 #include <QShowEvent>
 #include <QVBoxLayout>
@@ -46,49 +48,70 @@ AxisPopup::AxisPopup(Plot *plot, int axis_id, QWidget *parent) :
 
 void AxisPopup::setup_ui()
 {
-	QVBoxLayout *main_layout = new QVBoxLayout;
 	QFormLayout *form_layout = new QFormLayout;
 
-	double max_value = plot_->axisScaleDiv(axis_id_).upperBound();
-	axis_max_edit_ = new QLineEdit();
-	axis_max_edit_->setValidator(new QDoubleValidator());
-	axis_max_edit_->setText(QString("%1").arg(max_value, 0, 'f'));
-	QString max_label;
+	double lower_value = plot_->axisScaleDiv(axis_id_).lowerBound();
+	axis_lower_edit_ = new QLineEdit();
+	axis_lower_edit_->setValidator(new QDoubleValidator());
+	axis_lower_edit_->setText(QString("%1").arg(lower_value, 0, 'f'));
+	QString lower_label;
 	if (axis_id_ == QwtPlot::xTop  || axis_id_ == QwtPlot::xBottom)
-		max_label = tr("Right");
+		lower_label = tr("Left boundary");
 	else
-		max_label = tr("Top");
-	form_layout->addRow(max_label, axis_max_edit_);
-	connect(axis_max_edit_, SIGNAL(returnPressed()), this, SLOT(on_accept()));
+		lower_label = tr("Bottom boundary");
+	connect(axis_lower_edit_, SIGNAL(returnPressed()), this, SLOT(on_accept()));
 
-	double min_value = plot_->axisScaleDiv(axis_id_).lowerBound();
-	axis_min_edit_ = new QLineEdit();
-	axis_min_edit_->setValidator(new QDoubleValidator());
-	axis_min_edit_->setText(QString("%1").arg(min_value, 0, 'f'));
-	QString min_label;
+	axis_lower_locked_check_ = new QCheckBox(tr("Locked"));
+	axis_lower_locked_check_->setChecked(plot_->is_axis_locked(
+		axis_id_, AxisBoundary::LowerBoundary));
+
+	QHBoxLayout *lower_layout = new QHBoxLayout;
+	lower_layout->addWidget(axis_lower_edit_);
+	lower_layout->addSpacing(15);
+	lower_layout->addWidget(axis_lower_locked_check_);
+	QWidget *lower_widget = new QWidget();
+	lower_widget->setLayout(lower_layout);
+	form_layout->addRow(lower_label, lower_widget);
+
+
+	double upper_value = plot_->axisScaleDiv(axis_id_).upperBound();
+	axis_upper_edit_ = new QLineEdit();
+	axis_upper_edit_->setValidator(new QDoubleValidator());
+	axis_upper_edit_->setText(QString("%1").arg(upper_value, 0, 'f'));
+	QString upper_label;
 	if (axis_id_ == QwtPlot::xTop  || axis_id_ == QwtPlot::xBottom)
-		min_label = tr("Left");
+		upper_label = tr("Right boundary");
 	else
-		min_label = tr("Bottom");
-	form_layout->addRow(min_label, axis_min_edit_);
-	connect(axis_min_edit_, SIGNAL(returnPressed()), this, SLOT(on_accept()));
+		upper_label = tr("Top boundary");
+	connect(axis_upper_edit_, SIGNAL(returnPressed()), this, SLOT(on_accept()));
+
+	axis_upper_locked_check_ = new QCheckBox(tr("Locked"));
+	axis_upper_locked_check_->setChecked(plot_->is_axis_locked(
+		axis_id_, AxisBoundary::UpperBoundary));
+
+	QHBoxLayout *upper_layout = new QHBoxLayout;
+	upper_layout->addWidget(axis_upper_edit_);
+	upper_layout->addSpacing(15);
+	upper_layout->addWidget(axis_upper_locked_check_);
+	QWidget *upper_widget = new QWidget();
+	upper_widget->setLayout(upper_layout);
+	form_layout->addRow(upper_label, upper_widget);
+
 
 	bool is_log_scale = false;
 	if (dynamic_cast<QwtLogScaleEngine *>(plot_->axisScaleEngine(axis_id_)))
 		is_log_scale = true;
 	axis_log_check_ = new QCheckBox();
 	axis_log_check_->setChecked(is_log_scale);
-	form_layout->addRow(tr("Logarithmic"), axis_log_check_);
-
-	main_layout->addLayout(form_layout);
+	form_layout->addRow(tr("Logarithmic scale"), axis_log_check_);
 
 	button_box_ = new QDialogButtonBox(
 		QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
-	main_layout->addWidget(button_box_);
+	form_layout->addWidget(button_box_);
 	connect(button_box_, SIGNAL(accepted()), this, SLOT(on_accept()));
 	connect(button_box_, SIGNAL(rejected()), this, SLOT(close()));
 
-	this->setLayout(main_layout);
+	this->setLayout(form_layout);
 }
 
 void AxisPopup::showEvent(QShowEvent *event)
@@ -99,7 +122,13 @@ void AxisPopup::showEvent(QShowEvent *event)
 void AxisPopup::on_accept()
 {
 	plot_->setAxisScale(axis_id_,
-		axis_min_edit_->text().toDouble(), axis_max_edit_->text().toDouble());
+		axis_lower_edit_->text().toDouble(),
+		axis_upper_edit_->text().toDouble());
+
+	plot_->set_axis_locked(axis_id_, AxisBoundary::LowerBoundary,
+		axis_lower_locked_check_->isChecked());
+	plot_->set_axis_locked(axis_id_, AxisBoundary::UpperBoundary,
+		axis_upper_locked_check_->isChecked());
 
 	if (axis_log_check_->isChecked())
 		plot_->setAxisScaleEngine(axis_id_, new QwtLogScaleEngine);

@@ -88,24 +88,24 @@ bool PlotScalePicker::eventFilter(QObject *object, QEvent *event)
 				case QwtScaleDraw::LeftScale:
 					axis_id = QwtPlot::yLeft;
 					p_value = pos.y();
-					plot_->set_y_axis_fixed(true);
 					break;
 				case QwtScaleDraw::RightScale:
 					axis_id = QwtPlot::yRight;
 					p_value = pos.y();
-					plot_->set_y_axis_fixed(true);
 					break;
 				case QwtScaleDraw::BottomScale:
 					axis_id = QwtPlot::xBottom;
 					p_value = pos.x();
-					plot_->set_x_axis_fixed(true);
 					break;
 				case QwtScaleDraw::TopScale:
 					axis_id = QwtPlot::xTop;
 					p_value = pos.x();
-					plot_->set_x_axis_fixed(true);
 					break;
 				}
+				plot_->set_axis_locked(
+					axis_id, AxisBoundary::LowerBoundary, true);
+				plot_->set_axis_locked(
+					axis_id, AxisBoundary::UpperBoundary, true);
 
 				const bool auto_replot = plot_->autoReplot();
 				plot_->setAutoReplot(false);

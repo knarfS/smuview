@@ -300,8 +300,7 @@ void PlotView::on_action_add_diff_marker_triggered()
 
 void PlotView::on_action_zoom_best_fit_triggered()
 {
-	plot_->set_x_axis_fixed(false);
-	plot_->set_y_axis_fixed(false);
+	plot_->set_all_axis_locked(false);
 }
 
 void PlotView::on_action_add_signal_triggered()
