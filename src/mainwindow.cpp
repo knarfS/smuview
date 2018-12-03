@@ -299,6 +299,7 @@ void MainWindow::setup_ui()
 	this->resizeDocks({ds_dock}, {40}, Qt::Horizontal);
 
 	// Processing Dock
+	/*
 	processing_widget_ = new ui::processing::ProcessingWidget();
 
 	QDockWidget* proc_dock = new QDockWidget(tr("Processing"));
@@ -308,6 +309,7 @@ void MainWindow::setup_ui()
 		QDockWidget::DockWidgetFloatable);
 	proc_dock->setWidget(processing_widget_);
 	this->tabifyDockWidget(ds_dock, proc_dock);
+	*/
 
 	// Select devices and signal dock tab
 	ds_dock->show();
