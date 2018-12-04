@@ -234,12 +234,14 @@ void MainWindow::setup_ui()
 	QIcon mainIcon;
 	mainIcon.addFile(QStringLiteral(":/icons/smuview.ico"),
 		QSize(), QIcon::Normal, QIcon::Off);
-	setWindowIcon(mainIcon);
+	this->setWindowIcon(mainIcon);
+
+	this->setWindowTitle(tr("SmuView"));
 
 	QHBoxLayout *centralLayout = new QHBoxLayout();
 	centralLayout->setContentsMargins(2, 2, 2, 2);
-	centralWidget = new QWidget();
-	centralWidget->setLayout(centralLayout);
+	central_widget_ = new QWidget();
+	central_widget_->setLayout(centralLayout);
 
 	// Tab Toolbar
 	add_device_button_ = new QToolButton();
@@ -275,7 +277,7 @@ void MainWindow::setup_ui()
 		this, SLOT(on_tab_close_requested(int)));
 	centralLayout->addWidget(tab_widget_);
 
-	this->setCentralWidget(centralWidget);
+	this->setCentralWidget(central_widget_);
 
 	// Signal Tree Dock
 	signal_tree_ = new ui::devices::SignalTree(
@@ -314,18 +316,10 @@ void MainWindow::setup_ui()
 	// Select devices and signal dock tab
 	ds_dock->show();
 	ds_dock->raise();
-
-	retranslate_ui();
 }
 
 void MainWindow::connect_signals()
 {
-}
-
-void MainWindow::retranslate_ui()
-{
-	this->setWindowTitle(
-		QApplication::translate("SmuView", "SmuView", Q_NULLPTR));
 }
 
 void MainWindow::session_error(const QString text, const QString info_text)
@@ -348,6 +342,7 @@ void MainWindow::show_session_error(const QString text, const QString info_text)
 void MainWindow::on_action_add_device_tab_triggered()
 {
 	ui::dialogs::ConnectDialog dlg(device_manager_);
+
 	if (dlg.exec())
 		add_hw_device_tab(dlg.get_selected_device());
 }

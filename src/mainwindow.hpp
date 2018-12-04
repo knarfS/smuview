@@ -25,7 +25,6 @@
 #include <vector>
 
 #include <QToolBar>
-#include <QToolBox>
 #include <QToolButton>
 #include <QMainWindow>
 
@@ -90,8 +89,7 @@ private:
 
 	QToolButton *add_device_button_;
 	QToolButton *add_user_tab_button_;
-	QWidget *centralWidget;
-	QToolBox *info_widget;
+	QWidget *central_widget_;
 	ui::devices::SignalTree *signal_tree_;
 	ui::processing::ProcessingWidget * processing_widget_;
 	QTabWidget *tab_widget_;
