@@ -348,7 +348,6 @@ void MainWindow::show_session_error(const QString text, const QString info_text)
 void MainWindow::on_action_add_device_tab_triggered()
 {
 	ui::dialogs::ConnectDialog dlg(device_manager_);
-
 	if (dlg.exec())
 		add_hw_device_tab(dlg.get_selected_device());
 }
@@ -361,7 +360,11 @@ void MainWindow::on_action_add_virtual_tab_triggered()
 void MainWindow::on_tab_close_requested(int index)
 {
 	QMessageBox::StandardButton reply = QMessageBox::question(this,
-		"Test", "Close?", QMessageBox::Yes | QMessageBox::No);
+		tr("Close device"),
+		tr("Closing the device tab will leave the device connected!"),
+		QMessageBox::Yes | QMessageBox::Cancel);
+
+	// TODO: Disconnect device and clear signal data?
 
 	if (reply == QMessageBox::Yes)
 		remove_tab(index);
