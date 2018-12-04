@@ -99,9 +99,6 @@ private Q_SLOTS:
 	void on_action_add_virtual_tab_triggered();
 	void on_tab_close_requested(int);
 
-Q_SIGNALS:
-	void device_added(shared_ptr<sv::devices::BaseDevice>); // TODO: Move to session?
-
 };
 
 } // namespace sv

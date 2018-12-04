@@ -86,6 +86,9 @@ private:
 
 	void free_unused_memory();
 
+Q_SIGNALS:
+	void device_added(shared_ptr<sv::devices::BaseDevice>);
+
 };
 
 } // namespace sv

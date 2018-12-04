@@ -162,8 +162,6 @@ void MainWindow::add_virtual_device_tab()
 		ui::tabs::tabhelper::get_tab_for_device(*session_, device, tab_window));
 
 	add_tab(tab_window, device->short_name());
-
-	Q_EMIT device_added(device);
 }
 
 void MainWindow::add_hw_device_tab(
@@ -183,8 +181,6 @@ void MainWindow::add_hw_device_tab(
 		ui::tabs::tabhelper::get_tab_for_device(*session_, device, tab_window));
 
 	add_tab(tab_window, device->short_name());
-
-	Q_EMIT device_added(device);
 }
 
 void MainWindow::remove_tab(int tab_index)
@@ -268,7 +264,7 @@ void MainWindow::setup_ui()
 		*session_, true, false, false, nullptr);
 	signal_tree_->setSizePolicy(
 		QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);
-	connect(this, SIGNAL(device_added(shared_ptr<sv::devices::BaseDevice>)),
+	connect(session_.get(), SIGNAL(device_added(shared_ptr<sv::devices::BaseDevice>)),
 		signal_tree_, SLOT(on_device_added(shared_ptr<sv::devices::BaseDevice>)));
 
 	// A layout must be set to the central widget of the main window

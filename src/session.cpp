@@ -91,6 +91,8 @@ void Session::add_device(shared_ptr<devices::BaseDevice> device,
 	}
 
 	devices_.insert(device);
+
+	Q_EMIT device_added(device);
 }
 
 void Session::remove_device(shared_ptr<devices::BaseDevice> device)
