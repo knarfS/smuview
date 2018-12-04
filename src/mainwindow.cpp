@@ -124,24 +124,6 @@ void MainWindow::restore_session()
 	settings.endGroup();
 }
 
-void MainWindow::remove_session()
-{
-	// Stop capture while the session still exists so that the UI can be
-	// updated in case we're currently running. If so, this will schedule a
-	// call to our on_capture_state_changed() slot for the next run of the
-	// event loop. We need to have this executed immediately or else it will
-	// be dismissed since the session object will be deleted by the time we
-	// leave this method and the event loop gets a chance to run again.
-	qWarning() << "remove_session(): stop_capture";
-	// TODO: for each device?
-	//session_->stop_capture();
-	QApplication::processEvents();
-
-	// Remove the session from our list of sessions (which also destroys it)
-	//sessions_.remove_if([&](shared_ptr<Session> s) {
-	//	return s == session_; });
-}
-
 void MainWindow::add_tab(QMainWindow *tab_window, QString title)
 {
 	int index = tab_widget_->addTab(tab_window, title);

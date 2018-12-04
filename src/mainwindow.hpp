@@ -69,12 +69,10 @@ public:
 	void init_session_with_file(string open_file_name, string open_file_format);
 	void save_session();
 	void restore_session();
-	void remove_session();
 
 private:
 	void setup_ui();
 	void connect_signals();
-	void retranslate_ui();
 	void session_error(const QString text, const QString info_text);
 	void add_tab(QMainWindow *tab_window, QString title);
 	void add_welcome_tab();
