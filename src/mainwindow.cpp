@@ -218,7 +218,9 @@ void MainWindow::setup_ui()
 		QSize(), QIcon::Normal, QIcon::Off);
 	this->setWindowIcon(mainIcon);
 
-	this->setWindowTitle(tr("SmuView"));
+	QString window_title = QString("%1 %2").
+		arg(tr("SmuView")).arg(SV_VERSION_STRING);
+	this->setWindowTitle(window_title);
 
 	QHBoxLayout *centralLayout = new QHBoxLayout();
 	centralLayout->setContentsMargins(2, 2, 2, 2);
