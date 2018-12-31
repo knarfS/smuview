@@ -29,7 +29,6 @@
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
 #include <QString>
-#include <QStringList>
 
 #include "src/devices/basedevice.hpp"
 

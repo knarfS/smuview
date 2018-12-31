@@ -4,6 +4,7 @@ doc/linuxgpib_build.txt
 doc/parameter.txt
 doc/pps-wiki.txt
 doc/relays/
+testing/
 
 # CMake
 CMakeCache.txt
