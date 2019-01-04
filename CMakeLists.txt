@@ -245,7 +245,6 @@ set(smuview_SOURCES
   src/ui/dialogs/selectsignaldialog.cpp
   src/ui/tabs/basetab.cpp
   src/ui/tabs/devicetab.cpp
-  src/ui/tabs/flowtab.cpp
   src/ui/tabs/measurementtab.cpp
   src/ui/tabs/tabhelper.cpp
   src/ui/tabs/sourcesinktab.cpp

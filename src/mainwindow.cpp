@@ -44,7 +44,6 @@
 #include "src/ui/devices/signaltree.hpp"
 #include "src/ui/dialogs/connectdialog.hpp"
 #include "src/ui/tabs/basetab.hpp"
-#include "src/ui/tabs/flowtab.hpp"
 #include "src/ui/tabs/tabhelper.hpp"
 #include "src/ui/tabs/welcometab.hpp"
 
@@ -145,7 +144,6 @@ void MainWindow::add_welcome_tab()
 
 void MainWindow::add_virtual_device_tab()
 {
-	/*
 	QString vendor(tr("SmuView"));
 	QString model(tr("User Device")); // TODO: enumerate
 	QString version(SV_VERSION_STRING);
@@ -163,15 +161,6 @@ void MainWindow::add_virtual_device_tab()
 		ui::tabs::tabhelper::get_tab_for_device(*session_, device, tab_window));
 
 	add_tab(tab_window, device->short_name());
-	*/
-
-	QMainWindow *tab_window = new QMainWindow();
-	tab_window->setWindowFlags(Qt::Widget);  // Remove Qt::Window flag
-	tab_window->setDockNestingEnabled(true);
-	tab_window->setCentralWidget(
-		new ui::tabs::FlowTab(*session_, tab_window));
-
-	add_tab(tab_window, tr("Control Flow"));
 }
 
 void MainWindow::add_hw_device_tab(

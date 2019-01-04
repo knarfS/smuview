@@ -30,6 +30,7 @@
 #include "src/ui/dialogs/addmathchanneldialog.hpp"
 #include "src/ui/dialogs/addviewdialog.hpp"
 #include "src/ui/dialogs/savedialog.hpp"
+#include "src/ui/views/flowview.hpp"
 
 namespace sv {
 namespace ui {
@@ -45,6 +46,7 @@ DeviceTab::DeviceTab(Session &session,
 	action_add_panel_view_(new QAction(this)),
 	action_add_plot_view_(new QAction(this)),
 	action_add_math_channel_(new QAction(this)),
+	action_add_flow_(new QAction(this)),
 	action_reset_data_(new QAction(this)),
 	action_about_(new QAction(this))
 {
@@ -73,7 +75,7 @@ void DeviceTab::setup_toolbar()
 	connect(action_save_as_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_save_as_triggered()));
 
-	action_reset_data_->setText(tr("&Reset Data..."));
+	action_reset_data_->setText(tr("&Reset Data"));
 	action_reset_data_->setIcon(
 		QIcon::fromTheme("view-refresh",
 		QIcon(":/icons/view-refresh.png")));
@@ -81,7 +83,7 @@ void DeviceTab::setup_toolbar()
 	connect(action_reset_data_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_reset_data_triggered()));
 
-	action_add_control_view_->setText(tr("Add &Control..."));
+	action_add_control_view_->setText(tr("Add &Control"));
 	action_add_control_view_->setIcon(
 		QIcon::fromTheme("mixer-front",
 		QIcon(":/icons/mixer-front.png")));
@@ -89,7 +91,7 @@ void DeviceTab::setup_toolbar()
 	connect(action_add_control_view_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_add_control_view_triggered()));
 
-	action_add_panel_view_->setText(tr("Add &Panel..."));
+	action_add_panel_view_->setText(tr("Add &Panel"));
 	action_add_panel_view_->setIcon(
 		QIcon::fromTheme("chronometer",
 		QIcon(":/icons/chronometer.png")));
@@ -97,7 +99,7 @@ void DeviceTab::setup_toolbar()
 	connect(action_add_panel_view_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_add_panel_view_triggered()));
 
-	action_add_plot_view_->setText(tr("Add P&lot..."));
+	action_add_plot_view_->setText(tr("Add P&lot"));
 	action_add_plot_view_->setIcon(
 		QIcon::fromTheme("office-chart-line",
 		QIcon(":/icons/office-chart-line.png")));
@@ -105,7 +107,7 @@ void DeviceTab::setup_toolbar()
 	connect(action_add_plot_view_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_add_plot_view_triggered()));
 
-	action_add_math_channel_->setText(tr("Add &Math Channel..."));
+	action_add_math_channel_->setText(tr("Add &Math Channel"));
 	action_add_math_channel_->setIcon(
 		QIcon::fromTheme("office-chart-line-percentage",
 		QIcon(":/icons/office-chart-line-percentage.png")));
@@ -113,7 +115,15 @@ void DeviceTab::setup_toolbar()
 	connect(action_add_math_channel_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_add_math_channel_triggered()));
 
-	action_about_->setText(tr("&About..."));
+	action_add_flow_->setText(tr("Add &Flow Control"));
+	action_add_flow_->setIcon(
+		QIcon::fromTheme("code-class",
+		QIcon(":/icons/code-class.png")));
+	action_add_flow_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_F));
+	connect(action_add_flow_, SIGNAL(triggered(bool)),
+		this, SLOT(on_action_add_flow_triggered()));
+
+	action_about_->setText(tr("&About"));
 	action_about_->setIcon(
 		QIcon::fromTheme("help-about",
 		QIcon(":/icons/help-about.png")));
@@ -132,6 +142,8 @@ void DeviceTab::setup_toolbar()
 	toolbar->addAction(action_add_plot_view_);
 	toolbar->addSeparator();
 	toolbar->addAction(action_add_math_channel_);
+	toolbar->addSeparator();
+	toolbar->addAction(action_add_flow_);
 	toolbar->addSeparator();
 	toolbar->addAction(action_about_);
 	parent_->addToolBar(Qt::TopToolBarArea, toolbar);
@@ -202,6 +214,12 @@ void DeviceTab::on_action_add_math_channel_triggered()
 	auto channel = dlg.channel();
 	if (channel != nullptr)
 		device_->add_channel(channel, channel->channel_group_name());
+}
+
+void DeviceTab::on_action_add_flow_triggered()
+{
+	auto view = new views::FlowView(session_);
+	add_view(view, Qt::RightDockWidgetArea);
 }
 
 void DeviceTab::on_action_reset_data_triggered()
