@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@
 #include <glib.h>
 
 #include <QObject>
+#include <QString>
 #include <QVariant>
 
 #include "src/data/datautil.hpp"
@@ -49,8 +50,9 @@ public:
 		devices::ConfigKey config_key);
 
 public:
-	QVariant value() const;
-	double float_value() const;
+	QVariant value() const override;
+	double double_value() const;
+	QString to_string() const override;
 	double min() const;
 	double max() const;
 	double step() const;
@@ -58,17 +60,17 @@ public:
 	uint decimal_places() const;
 
 private:
+	bool list_config();
+
 	double min_;
 	double max_;
 	double step_;
 	uint digits_;
 	uint decimal_places_;
 
-	bool list_config();
-
 public Q_SLOTS:
-	void change_value(const QVariant);
-	void on_value_changed(Glib::VariantBase);
+	void change_value(const QVariant) override;
+	void on_value_changed(Glib::VariantBase) override;
 
 };
 

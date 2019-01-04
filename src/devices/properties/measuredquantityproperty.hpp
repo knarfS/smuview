@@ -24,6 +24,7 @@
 #include <vector>
 
 #include <QObject>
+#include <QString>
 #include <QVariant>
 
 #include "src/data/datautil.hpp"
@@ -46,18 +47,19 @@ public:
 		devices::ConfigKey config_key);
 
 public:
-	QVariant value() const;
+	QVariant value() const override;
 	data::measured_quantity_t measured_quantity_value() const;
 	vector<data::measured_quantity_t> list_values() const;
+	QString to_string() const override;
 
 private:
-	vector<data::measured_quantity_t> measured_quantity_list_;
-
 	bool list_config();
 
+	vector<data::measured_quantity_t> measured_quantity_list_;
+
 public Q_SLOTS:
-	void change_value(const QVariant);
-	void on_value_changed(Glib::VariantBase);
+	void change_value(const QVariant) override;
+	void on_value_changed(Glib::VariantBase) override;
 
 };
 

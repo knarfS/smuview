@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@
 #include <glib.h>
 
 #include <QObject>
+#include <QString>
 #include <QVariant>
 
 #include "src/devices/deviceutil.hpp"
@@ -54,6 +55,7 @@ public:
 	bool is_setable() const;
 	bool is_listable() const;
 	virtual QVariant value() const = 0;
+	virtual QString to_string() const = 0;
 
 protected:
 	shared_ptr<devices::Configurable> configurable_;

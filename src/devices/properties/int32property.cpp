@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@
 #include <limits>
 
 #include <QDebug>
+#include <QString>
+#include <QVariant>
 
 #include "int32property.hpp"
 #include "src/devices/configurable.hpp"
@@ -53,6 +55,11 @@ QVariant Int32Property::value() const
 int32_t Int32Property::int32_value() const
 {
 	return configurable_->get_config<int32_t>(config_key_);
+}
+
+QString Int32Property::to_string() const
+{
+	return QString::number(int32_value());
 }
 
 int32_t Int32Property::min() const

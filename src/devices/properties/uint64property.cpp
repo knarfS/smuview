@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@
 #include <limits>
 
 #include <QDebug>
+#include <QString>
+#include <QVariant>
 
 #include "uint64property.hpp"
 #include "src/devices/configurable.hpp"
@@ -53,6 +55,11 @@ QVariant UInt64Property::value() const
 uint64_t UInt64Property::uint64_value() const
 {
 	return configurable_->get_config<uint64_t>(config_key_);
+}
+
+QString UInt64Property::to_string() const
+{
+	return QString("%1").arg(uint64_value());
 }
 
 uint64_t UInt64Property::min() const

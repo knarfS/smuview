@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@
 #include <limits>
 
 #include <QDebug>
+#include <QString>
+#include <QVariant>
 
 #include "doubleproperty.hpp"
 #include "src/util.hpp"
@@ -47,12 +49,18 @@ DoubleProperty::DoubleProperty(shared_ptr<devices::Configurable> configurable,
 
 QVariant DoubleProperty::value() const
 {
-	return QVariant(float_value());
+	return QVariant(double_value());
 }
 
-double DoubleProperty::float_value() const
+double DoubleProperty::double_value() const
 {
 	return configurable_->get_config<double>(config_key_);
+}
+
+QString DoubleProperty::to_string() const
+{
+	// TODO: digits_, decimal_places_
+	return QString::number(double_value(), 'f');
 }
 
 double DoubleProperty::min() const

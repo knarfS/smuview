@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,18 +52,19 @@ public:
 		devices::ConfigKey config_key);
 
 public:
-	QVariant value() const;
+	QVariant value() const override;
 	QString string_value() const;
 	QStringList list_values() const;
+	QString to_string() const override;
 
 private:
-	QStringList string_list_;
-
 	bool list_config();
 
+	QStringList string_list_;
+
 public Q_SLOTS:
-	void change_value(const QVariant);
-	void on_value_changed(Glib::VariantBase);
+	void change_value(const QVariant) override;
+	void on_value_changed(Glib::VariantBase) override;
 
 };
 

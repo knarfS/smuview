@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,8 @@
 #include <glib.h>
 
 #include <QDebug>
+#include <QString>
+#include <QVariant>
 
 #include "measuredquantityproperty.hpp"
 #include "src/data/datautil.hpp"
@@ -86,6 +88,11 @@ MeasuredQuantityProperty::measured_quantity_value() const
 		data::datautil::get_quantity_flags(sr_qflags);
 
 	return make_pair(quantity, quantity_flags);
+}
+
+QString MeasuredQuantityProperty::to_string() const
+{
+	return data::datautil::format_measured_quantity(measured_quantity_value());
 }
 
 vector<data::measured_quantity_t> MeasuredQuantityProperty::list_values() const

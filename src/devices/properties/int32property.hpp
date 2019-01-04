@@ -25,6 +25,7 @@
 #include <glib.h>
 
 #include <QObject>
+#include <QString>
 #include <QVariant>
 
 #include "src/devices/properties/baseproperty.hpp"
@@ -48,22 +49,23 @@ public:
 		devices::ConfigKey config_key /*, data::Unit unit*/);
 
 public:
-	QVariant value() const;
+	QVariant value() const override;
 	int32_t int32_value() const;
 	int32_t min() const;
 	int32_t max() const;
 	int32_t step() const;
+	QString to_string() const override;
 
 private:
+	bool list_config();
+
 	int32_t min_;
 	int32_t max_;
 	int32_t step_;
 
-	bool list_config();
-
 public Q_SLOTS:
-	void change_value(const QVariant);
-	void on_value_changed(Glib::VariantBase);
+	void change_value(const QVariant) override;
+	void on_value_changed(Glib::VariantBase) override;
 
 };
 
