@@ -194,6 +194,7 @@ set(smuview_SOURCES
   src/ui/devices/configurablecombobox.cpp
   src/ui/devices/devicecombobox.cpp
   src/ui/devices/selectconfigurableform.cpp
+  src/ui/devices/selectpropertyform.cpp
   src/ui/devices/selectsignalwidget.cpp
   src/ui/devices/signalcombobox.cpp
   src/ui/devices/signaltree.cpp
