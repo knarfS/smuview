@@ -46,7 +46,19 @@ void ConfigKeyComboBox::set_configurable(
 	fill_config_keys();
 }
 
-sv::devices::ConfigKey ConfigKeyComboBox::selected_config_key()
+void ConfigKeyComboBox::select_config_key(sv::devices::ConfigKey config_key)
+{
+	for (int i = 0; i < this->count(); ++i) {
+		QVariant data = this->itemData(i, Qt::UserRole);
+		auto item_ck = data.value<sv::devices::ConfigKey>();
+		if (item_ck == config_key) {
+			this->setCurrentIndex(i);
+			break;
+		}
+	}
+}
+
+sv::devices::ConfigKey ConfigKeyComboBox::selected_config_key() const
 {
 	QVariant data = this->currentData();
 	return data.value<sv::devices::ConfigKey>();
@@ -64,6 +76,7 @@ void ConfigKeyComboBox::fill_config_keys()
 	if (!configurable_)
 		return;
 
+	// TODO: Filter for getable, setable, listable
 	for (auto config_key : configurable_->setable_configs()) {
 		this->addItem(
 			sv::devices::deviceutil::format_config_key(config_key),

@@ -47,13 +47,14 @@ public:
 		QWidget *parent = nullptr);
 
 	void set_configurable(shared_ptr<sv::devices::Configurable> configurable);
-	sv::devices::ConfigKey selected_config_key();
+	void select_config_key(sv::devices::ConfigKey config_key);
+	sv::devices::ConfigKey selected_config_key() const;
 
 private:
-	shared_ptr<sv::devices::Configurable> configurable_;
-
 	void setup_ui();
 	void fill_config_keys();
+
+	shared_ptr<sv::devices::Configurable> configurable_;
 
 };
 
