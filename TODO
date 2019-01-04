@@ -36,6 +36,35 @@ ToDo
 - Maybe: In all ctors "Session &session" -> "const Session &session"
 - boost::stacktrace, see pv
 
+
+Flow Nodes/Blocks:
+
+- AND/OR: 4 Inputs, 1 Output (Logic)
+- Clock (Logic)
+- Wait ms (Logic)
+- Wait for User (Logic)
+- Loop (Logic)
+- Condition (Logic)
+
+- Generic Device Property (Source)
+- Signal (Source)
+- User Input Dlg (Source)
+- User Input Const (Source)
+- Sin Generator (Source)
+- User Sequence (Source)
+
+- Generic Device Property (Sink)
+- Signal (Sink)
+- Display Property (Sink)
+
+- Signal Add/Sub/Mul/Div/Integrate (Math)
+- Property Add/Sub/Mul/Div/Integrate (Math)
+- Signal RollingAvg (Math)
+- Signal FFT (Math)
+
+- Create Signal (Misc)
+- Show graph (GUI<)
+
 ------------------------
 
 Done

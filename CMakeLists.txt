@@ -104,6 +104,7 @@ endif()
 set(QT_LIBRARIES Qt5::Gui Qt5::Widgets Qt5::Svg)
 
 find_package(Qwt 6.1.2 REQUIRED)
+find_package(QtNodes REQUIRED)
 
 # Only boost::config and boost::multiprecision are required, so no need to
 # specify any boost libraries
@@ -199,6 +200,11 @@ set(smuview_SOURCES
   src/devices/properties/stringproperty.cpp
   src/devices/properties/uint64property.cpp
 
+  src/flow/analogsourcedatamodel.cpp
+  src/flow/doubleconfigsinkdatamodel.cpp
+  src/flow/rampsourcedatamodel.cpp
+  src/flow/startdatamodel.cpp
+
   src/ui/data/quantitycombobox.cpp
   src/ui/data/quantityflagslist.cpp
   src/ui/data/unitcombobox.cpp
@@ -237,11 +243,9 @@ set(smuview_SOURCES
   src/ui/dialogs/plotdiffmarkerdialog.cpp
   src/ui/dialogs/savedialog.cpp
   src/ui/dialogs/selectsignaldialog.cpp
-  src/ui/processing/processingwidget.cpp
-  src/ui/processing/processthreadwidget.cpp
-  src/ui/processing/blocks/sequencesinblock.cpp
   src/ui/tabs/basetab.cpp
   src/ui/tabs/devicetab.cpp
+  src/ui/tabs/flowtab.cpp
   src/ui/tabs/measurementtab.cpp
   src/ui/tabs/tabhelper.cpp
   src/ui/tabs/sourcesinktab.cpp
@@ -250,6 +254,7 @@ set(smuview_SOURCES
   src/ui/views/baseview.cpp
   src/ui/views/dataview.cpp
   src/ui/views/democontrolview.cpp
+  src/ui/views/flowview.cpp
   src/ui/views/genericcontrolview.cpp
   src/ui/views/measurementcontrolview.cpp
   src/ui/views/plotview.cpp
@@ -261,6 +266,9 @@ set(smuview_SOURCES
   src/ui/widgets/colorbutton.cpp
   src/ui/widgets/lcddisplay.cpp
   src/ui/widgets/popup.cpp
+  src/ui/widgets/flow/doubleconfigsinkpopup.cpp
+  src/ui/widgets/flow/nodehelper.cpp
+  src/ui/widgets/flow/rampsourcepopup.cpp
   src/ui/widgets/plot/axislocklabel.cpp
   src/ui/widgets/plot/axispopup.cpp
   src/ui/widgets/plot/basecurvedata.cpp
@@ -292,10 +300,12 @@ qt5_add_resources(smuview_RESOURCES_RCC ${smuview_RESOURCES})
 #= Global Definitions
 #-------------------------------------------------------------------------------
 
+# c++14 is required because of QtNodes
+set(CMAKE_CXX_STANDARD 14)
+
 add_definitions(-DQT_NO_KEYWORDS)
 add_definitions(-D__STDC_LIMIT_MACROS)
 add_definitions(-Wall -Wextra -Woverloaded-virtual) # -Weffc++ -Wconversion -Wsign-conversion)
-add_definitions(-std=c++11)
 add_definitions(-DBOOST_MATH_DISABLE_FLOAT128=1)
 
 if(NOT DISABLE_WERROR)
@@ -315,6 +325,7 @@ include_directories(
 	${CMAKE_CURRENT_BINARY_DIR}
 	${CMAKE_CURRENT_SOURCE_DIR}
 	${QWT_INCLUDE_DIR}
+	${QTNODES_INCLUDE_DIR}
 	${Boost_INCLUDE_DIRS}
 )
 
@@ -335,6 +346,7 @@ set(SMUVIEW_LINK_LIBS
 	${Boost_LIBRARIES}
 	${QT_LIBRARIES}
 	${QWT_LIBRARY}
+	${QTNODES_LIBRARY}
 	${CMAKE_THREAD_LIBS_INIT}
 #	${LIBATOMIC_LIBRARY}
 )
@@ -346,6 +358,11 @@ else()
 	link_directories(${PKGDEPS_LIBRARY_DIRS})
 	list(APPEND SMUVIEW_LINK_LIBS ${PKGDEPS_LIBRARIES})
 endif()
+
+# Use the shared linked QtNodes library
+#add_definitions(-DNODE_EDITOR_SHARED)
+# Use the static linked QtNodes library
+add_definitions(-DNODE_EDITOR_STATIC)
 
 if(WIN32)
 	# On Windows we need to statically link the libqsvg imageformat
