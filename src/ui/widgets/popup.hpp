@@ -61,7 +61,7 @@ public:
 	const QPoint &point() const;
 	PopupPosition position() const;
 	void set_position(const QPoint point, PopupPosition pos);
-	bool eventFilter(QObject *obj, QEvent *event);
+	bool eventFilter(QObject *obj, QEvent *event) override;
 	void show();
 
 private:
@@ -73,11 +73,11 @@ private:
 	QRegion popup_region() const;
 	void reposition_widget();
 
-private:
-	void closeEvent(QCloseEvent *);
-	void paintEvent(QPaintEvent *);
-	void resizeEvent(QResizeEvent *);
-	void mouseReleaseEvent(QMouseEvent *event);
+	void closeEvent(QCloseEvent *event) override;
+	void paintEvent(QPaintEvent *event) override;
+	void resizeEvent(QResizeEvent *event) override;
+	void mousePressEvent(QMouseEvent *event) override;
+	void mouseReleaseEvent(QMouseEvent *event) override;
 
 protected:
 	void showEvent(QShowEvent *);
@@ -88,6 +88,7 @@ Q_SIGNALS:
 private:
 	QPoint point_;
 	PopupPosition pos_;
+	bool mouse_pressed_;
 
 };
 

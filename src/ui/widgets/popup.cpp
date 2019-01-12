@@ -55,7 +55,8 @@ const unsigned int Popup::MarginWidth = 6;
 Popup::Popup(QWidget *parent) :
 	QWidget(parent, Qt::Popup | Qt::FramelessWindowHint),
 	point_(),
-	pos_(PopupPosition::Left)
+	pos_(PopupPosition::Left),
+	mouse_pressed_(false)
 {
 }
 
@@ -314,9 +315,20 @@ void Popup::resizeEvent(QResizeEvent *)
 	setMask(popup_region());
 }
 
+
+void Popup::mousePressEvent(QMouseEvent *)
+{
+	mouse_pressed_ = true;
+}
+
 void Popup::mouseReleaseEvent(QMouseEvent *event)
 {
 	assert(event);
+
+	if (!mouse_pressed_)
+		return;
+
+	mouse_pressed_ = false;
 
 	// We need our own out-of-bounds click handler because QWidget counts
 	// the drop-shadow region as inside the widget
