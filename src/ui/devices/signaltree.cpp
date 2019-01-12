@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,14 +20,20 @@
 #include <unordered_set>
 #include <utility>
 
+#include <QDateTime>
 #include <QDebug>
 #include <QHeaderView>
+#include <QMenu>
+#include <QModelIndex>
+#include <QPoint>
 #include <QTreeView>
 
 #include "signaltree.hpp"
 #include "src/channels/basechannel.hpp"
+#include "src/channels/userchannel.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/devices/basedevice.hpp"
+#include "src/ui/dialogs/adduserchanneldialog.hpp"
 
 using std::dynamic_pointer_cast;
 using std::make_pair;
@@ -86,6 +92,40 @@ vector<shared_ptr<sv::data::BaseSignal>> SignalTree::selected_signals()
 	return signals;
 }
 
+void SignalTree::enable_context_menu(bool enable)
+{
+	if (enable) {
+		this->setContextMenuPolicy(Qt::CustomContextMenu);
+		connect(this, SIGNAL(customContextMenuRequested(const QPoint &)),
+			this, SLOT(on_context_menu(const QPoint &)));
+	}
+	else {
+		// Default
+		this->setContextMenuPolicy(Qt::DefaultContextMenu);
+		disconnect(this, SIGNAL(customContextMenuRequested(const QPoint &)),
+			this, SLOT(on_context_menu(const QPoint &)));
+	}
+}
+
+void SignalTree::enable_tool_bar(bool enable)
+{
+	if (enable) {
+		/*
+		this->setContextMenuPolicy(Qt::CustomContextMenu);
+		connect(this, SIGNAL(customContextMenuRequested(const QPoint &)),
+			this, SLOT(on_context_menu(const QPoint &)));
+		*/
+	}
+	else {
+		/*
+		// Default
+		this->setContextMenuPolicy(Qt::DefaultContextMenu);
+		disconnect(this, SIGNAL(customContextMenuRequested(const QPoint &)),
+			this, SLOT(on_context_menu(const QPoint &)));
+		*/
+	}
+}
+
 void SignalTree::setup_ui()
 {
 	this->setColumnCount(1); // 2
@@ -129,6 +169,7 @@ void SignalTree::add_device(shared_ptr<sv::devices::BaseDevice> device,
 	QTreeWidgetItem *device_item = new QTreeWidgetItem();
 	device_item->setIcon(0, QIcon(":/icons/smuview.png"));
 	device_item->setText(0, device->full_name());
+	device_item->setData(0, Qt::UserRole, QVariant::fromValue(device));
 	this->addTopLevelItem(device_item);
 	this->setFirstItemColumnSpanned(device_item, true);
 
@@ -154,7 +195,7 @@ void SignalTree::add_channel(shared_ptr<channels::BaseChannel> channel,
 	QString channel_group_name, bool expanded, QTreeWidgetItem *parent)
 {
 	QTreeWidgetItem *chg_item;
-	if (channel_group_name.size() > 0) {
+	if (!channel_group_name.isEmpty()) {
 		chg_item = this->find_item(parent, channel_group_name);
 		if (!chg_item) {
 			// Channel is in a channel group, add group first
@@ -163,6 +204,8 @@ void SignalTree::add_channel(shared_ptr<channels::BaseChannel> channel,
 				QIcon::fromTheme("document-open-folder",
 				QIcon(":/icons/document-open-folder.png")));
 			chg_item->setText(0, channel_group_name);
+			chg_item->setData(0,
+				Qt::UserRole, QVariant::fromValue(channel_group_name));
 			parent->addChild(chg_item);
 		}
 
@@ -288,6 +331,75 @@ void SignalTree::on_signal_added(shared_ptr<sv::data::BaseSignal> signal)
 
 void SignalTree::on_signal_removed()
 {
+}
+
+void SignalTree::on_context_menu(const QPoint &pos)
+{
+	QModelIndex index = this->indexAt(pos);
+	if (index.isValid()) {
+		QVariant data = index.data(Qt::UserRole);
+		if (data.isNull())
+			return;
+
+		bool has_menu = false;
+		QMenu menu(this);
+
+		// TODO: use UserType+X
+		auto device = data.value<shared_ptr<sv::devices::BaseDevice>>();
+		if (device) {
+			has_menu = true;
+
+			QAction *disconnect_device = new QAction(tr("Disconnect device"));
+			menu.addAction(disconnect_device);
+			menu.addSeparator();
+
+			QAction *action_add_channel = new QAction(tr("Add user channel"));
+			connect(action_add_channel, SIGNAL(triggered(bool)),
+				this, SLOT(on_add_user_channel()));
+			menu.addAction(action_add_channel);
+		}
+
+		// TODO: use UserType+X
+		QString channel_group = data.toString();
+		if (!channel_group.isEmpty()) {
+			has_menu = true;
+
+			QAction *action_add_channel = new QAction(tr("Add user channel"));
+			connect(action_add_channel, SIGNAL(triggered(bool)),
+				this, SLOT(on_add_user_channel()));
+			menu.addAction(action_add_channel);
+		}
+
+		if (has_menu) {
+			menu.exec(this->viewport()->mapToGlobal(pos));
+		}
+	}
+}
+
+void SignalTree::on_add_user_channel()
+{
+	QVariant data = this->currentItem()->data(0, Qt::UserRole);
+
+	// TODO: use UserType+X
+	shared_ptr<sv::devices::BaseDevice> device;
+	QString channel_group_name = data.toString();
+	if (!channel_group_name.isEmpty()) {
+		QVariant parent_data =
+			this->currentItem()->parent()->data(0, Qt::UserRole);
+		device = parent_data.value<shared_ptr<sv::devices::BaseDevice>>();
+	}
+	else {
+		// TODO: use UserType+X
+		device = data.value<shared_ptr<sv::devices::BaseDevice>>();
+	}
+
+	ui::dialogs::AddUserChannelDialog dlg(session_, device);
+	if (!dlg.exec())
+		return;
+
+	auto channel = dlg.channel();
+	if (channel != nullptr)
+		device->add_channel(channel, channel_group_name);
 }
 
 } // namespace devices

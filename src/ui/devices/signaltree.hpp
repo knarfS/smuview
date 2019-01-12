@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 
 #include <memory>
 
+#include <QPoint>
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
 #include <QWidget>
@@ -57,6 +58,8 @@ public:
 
 	vector<shared_ptr<channels::BaseChannel>> selected_channels();
 	vector<shared_ptr<sv::data::BaseSignal>> selected_signals();
+	void enable_context_menu(bool enable);
+	void enable_tool_bar(bool enable);
 
 private:
 	void setup_ui();
@@ -92,6 +95,8 @@ private Q_SLOTS:
 	void on_channel_removed();
 	void on_signal_added(shared_ptr<sv::data::BaseSignal> signal);
 	void on_signal_removed();
+	void on_context_menu(const QPoint &);
+	void on_add_user_channel();
 
 };
 

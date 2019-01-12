@@ -263,6 +263,7 @@ void MainWindow::setup_ui()
 		*session_, true, false, false, nullptr);
 	signal_tree_->setSizePolicy(
 		QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);
+	signal_tree_->enable_context_menu(true);
 	connect(session_.get(), SIGNAL(device_added(shared_ptr<sv::devices::BaseDevice>)),
 		signal_tree_, SLOT(on_device_added(shared_ptr<sv::devices::BaseDevice>)));
 
