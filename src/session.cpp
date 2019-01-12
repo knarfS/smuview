@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,16 +18,20 @@
  */
 
 #include <cassert>
-#include <mutex>
+#include <functional>
+#include <memory>
+#include <string>
+#include <unordered_set>
 
 #include <QDebug>
 
 #include "session.hpp"
-#include "data/basesignal.hpp"
 #include "devices/basedevice.hpp"
 
-using std::lock_guard;
-using std::mutex;
+using std::function;
+using std::shared_ptr;
+using std::string;
+using std::unordered_set;
 
 namespace sigrok {
 class Context;
@@ -101,12 +105,6 @@ void Session::remove_device(shared_ptr<devices::BaseDevice> device)
 		device->close();
 
 	devices_.erase(device);
-}
-
-// TODO: signal/slot??
-void Session::add_signal(shared_ptr<data::BaseSignal> signal)
-{
-	all_signals_.insert(signal);
 }
 
 } // namespace sv

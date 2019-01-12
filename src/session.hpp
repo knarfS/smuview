@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,20 +22,16 @@
 
 #include <functional>
 #include <memory>
-#include <mutex>
 #include <string>
 #include <unordered_set>
-#include <vector>
 
 #include <QObject>
 #include <QSettings>
 
 using std::function;
-using std::mutex;
 using std::shared_ptr;
 using std::string;
 using std::unordered_set;
-using std::vector;
 
 namespace sigrok {
 class Context;
@@ -44,10 +40,6 @@ class Context;
 namespace sv {
 
 class DeviceManager;
-
-namespace data {
-class BaseSignal;
-}
 
 namespace devices {
 class BaseDevice;
@@ -75,14 +67,11 @@ public:
 		function<void (const QString)> error_handler);
 	void remove_device(shared_ptr<devices::BaseDevice> device);
 
-	void add_signal(shared_ptr<data::BaseSignal> signal);
-
 	void load_init_file(const string &file_name, const string &format);
 
 private:
 	DeviceManager &device_manager_;
 	unordered_set<shared_ptr<devices::BaseDevice>> devices_;
-	unordered_set<shared_ptr<data::BaseSignal>> all_signals_;
 
 	void free_unused_memory();
 
