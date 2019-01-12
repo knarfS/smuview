@@ -69,10 +69,11 @@ void RampSourcePopup::setup_ui()
 	form_layout->addRow(tr("Step width"), step_width_box_);
 
 	step_trigger_box_ = new QCheckBox();
+	connect(step_trigger_box_, SIGNAL(stateChanged(int)),
+		this, SLOT(on_step_trigger_changed()));
 	step_trigger_box_->setChecked(data_model->step_trigger());
 	form_layout->addRow(tr("Step trigger"), step_trigger_box_);
 
-	// TODO: disable when step_trigger is true
 	step_delay_box_ = new QSpinBox();
 	step_delay_box_->setSuffix(QString(" %1").arg("ms"));
 	step_delay_box_->setMinimum(0);
@@ -108,6 +109,11 @@ void RampSourcePopup::on_accept()
 	data_model->set_step_delay(step_delay_box_->value());
 
 	this->close();
+}
+
+void RampSourcePopup::on_step_trigger_changed()
+{
+	step_delay_box_->setDisabled(step_trigger_box_->isChecked());
 }
 
 } // namespace flow

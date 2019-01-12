@@ -58,6 +58,7 @@ private:
 
 private Q_SLOTS:
 	void on_accept();
+	void on_step_trigger_changed();
 
 };
 
