@@ -17,48 +17,56 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QString>
-#include <QWidget>
-#include <Node>
-#include <NodeDataModel>
+#ifndef UI_WIDGETS_FLOW_ANALOGSIGNALSINKPOPUP_HPP
+#define UI_WIDGETS_FLOW_ANALOGSIGNALSINKPOPUP_HPP
 
-#include "nodehelper.hpp"
-#include "src/session.hpp"
-#include "src/ui/widgets/flow/analogsignalsinkpopup.hpp"
-#include "src/ui/widgets/flow/doubleconfigsinkpopup.hpp"
-#include "src/ui/widgets/flow/rampsourcepopup.hpp"
+#include <QDialogButtonBox>
+#include <QShowEvent>
+#include <QWidget>
+
+#include <Node>
+
 #include "src/ui/widgets/popup.hpp"
 
 namespace sv {
+
+class Session;
+
 namespace ui {
-namespace widgets {
-namespace flow {
-namespace nodehelper {
 
-Popup *get_popup_for_node(const Session &session,
-	QtNodes::Node &node, QWidget *parent)
-{
-	if (!node.nodeDataModel())
-		return nullptr;
-
-	QString node_name = node.nodeDataModel()->name();
-
-	if (node_name == "AnalogSignalSink")
-		return new AnalogSignalSinkPopup(session, node, parent);
-	else if (node_name == "Start")
-		return nullptr;
-	else if (node_name == "NumberSource")
-		return nullptr;
-	else if (node_name == "RampSource")
-		return new RampSourcePopup(node, parent);
-	else if (node_name == "DoubleConfigKeySink")
-		return new DoubleConfigSinkPopup(session, node, parent);
-	else
-		return nullptr;
+namespace devices {
+class SelectSignalWidget;
 }
 
-} // namespace nodehelper
+namespace widgets {
+namespace flow {
+
+class AnalogSignalSinkPopup : public widgets::Popup
+{
+	Q_OBJECT
+
+public:
+	AnalogSignalSinkPopup(const Session &session, QtNodes::Node &node,
+		QWidget *parent);
+
+private:
+	void setup_ui();
+	void showEvent(QShowEvent *event);
+
+	const Session &session_;
+	QtNodes::Node &node_;
+
+	devices::SelectSignalWidget *signal_widget_;
+	QDialogButtonBox *button_box_;
+
+private Q_SLOTS:
+	void on_accept();
+
+};
+
 } // namespace flow
 } // namespace widgets
 } // namespace ui
 } // namespace sv
+
+#endif // UI_WIDGETS_FLOW_ANALOGSIGNALSINKPOPUP_HPP

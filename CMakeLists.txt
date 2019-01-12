@@ -204,6 +204,7 @@ set(smuview_SOURCES
   src/flow/doubleconfigsinkdatamodel.cpp
   src/flow/rampsourcedatamodel.cpp
   src/flow/startdatamodel.cpp
+  src/flow/nodes/analogsignalsinkdatamodel.cpp
 
   src/ui/data/quantitycombobox.cpp
   src/ui/data/quantityflagslist.cpp
@@ -265,6 +266,7 @@ set(smuview_SOURCES
   src/ui/widgets/colorbutton.cpp
   src/ui/widgets/lcddisplay.cpp
   src/ui/widgets/popup.cpp
+  src/ui/widgets/flow/analogsignalsinkpopup.cpp
   src/ui/widgets/flow/doubleconfigsinkpopup.cpp
   src/ui/widgets/flow/nodehelper.cpp
   src/ui/widgets/flow/rampsourcepopup.cpp

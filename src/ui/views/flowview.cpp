@@ -19,6 +19,7 @@
 
 #include <memory>
 
+#include <QDebug>
 #include <QHBoxLayout>
 #include <QPoint>
 #include <QToolBar>
@@ -35,9 +36,9 @@
 #include "src/flow/doubleconfigsinkdatamodel.hpp"
 #include "src/flow/rampsourcedatamodel.hpp"
 #include "src/flow/startdatamodel.hpp"
+#include "src/flow/nodes/analogsignalsinkdatamodel.hpp"
 #include "src/ui/widgets/popup.hpp"
 #include "src/ui/widgets/flow/nodehelper.hpp"
-#include "src/ui/widgets/flow/rampsourcepopup.hpp"
 
 using std::make_shared;
 using std::shared_ptr;
@@ -92,6 +93,7 @@ static shared_ptr<QtNodes::DataModelRegistry> register_data_models()
 	registry->registerModel<sv::flow::AnalogSourceDataModel>("Sources");
 	registry->registerModel<sv::flow::RampSourceDataModel>("Sources");
 
+	registry->registerModel<sv::flow::nodes::AnalogSignalSinkDataModel>("Sinks");
 	registry->registerModel<sv::flow::DoubleConfigSinkDataModel>("Sinks");
 
 	/*
@@ -217,8 +219,10 @@ void FlowView::show_node_popup(Node &node, QPoint pos)
 	widgets::Popup *popup = widgets::flow::nodehelper::get_popup_for_node(
 		session_, node, flow_view_widget_);
 
-	popup->set_position(pos, widgets::PopupPosition::Right);
-	popup->show();
+	if (popup) {
+		popup->set_position(pos, widgets::PopupPosition::Right);
+		popup->show();
+	}
 }
 
 } // namespace views
