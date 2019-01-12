@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,15 +17,14 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UI_DIALOGS_ADDMATHCHANNELDIALOG_HPP
-#define UI_DIALOGS_ADDMATHCHANNELDIALOG_HPP
+#ifndef UI_DIALOGS_ADDUSERCHANNELDIALOG_HPP
+#define UI_DIALOGS_ADDUSERCHANNELDIALOG_HPP
 
 #include <memory>
 
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QLineEdit>
-#include <QTabWidget>
 
 #include "src/session.hpp"
 
@@ -50,17 +49,16 @@ class UnitComboBox;
 namespace devices {
 class ChannelGroupComboBox;
 class DeviceComboBox;
-class SelectSignalWidget;
 }
 
 namespace dialogs {
 
-class AddMathChannelDialog : public QDialog
+class AddUserChannelDialog : public QDialog
 {
 	Q_OBJECT
 
 public:
-	AddMathChannelDialog(const Session &session,
+	AddUserChannelDialog(const Session &session,
 		shared_ptr<sv::devices::BaseDevice> device,
 		QWidget *parent = nullptr);
 
@@ -68,30 +66,17 @@ public:
 
 private:
 	void setup_ui();
-	void setup_ui_multiply_signals_tab();
-	void setup_ui_multiply_signal_tab();
-	void setup_ui_divide_signals_tab();
-	void setup_ui_divide_signal_tab();
-	void setup_ui_integrate_signal_tab();
 
 	const Session &session_;
 	shared_ptr<sv::devices::BaseDevice> device_;
 	shared_ptr<channels::UserChannel> channel_;
 
-	QTabWidget *tab_widget_;
 	QLineEdit *name_edit_;
 	ui::data::QuantityComboBox *quantity_box_;
 	ui::data::QuantityFlagsList *quantity_flags_list_;
 	ui::data::UnitComboBox *unit_box_;
 	ui::devices::DeviceComboBox *device_box_;
 	ui::devices::ChannelGroupComboBox *channel_group_box_;
-	ui::devices::SelectSignalWidget *m_ss_signal1_;
-	ui::devices::SelectSignalWidget *m_ss_signal2_;
-	ui::devices::SelectSignalWidget *m_sf_signal_;
-	QLineEdit *m_sf_factor_edit_;
-	ui::devices::SelectSignalWidget *d_ss_signal1_;
-	ui::devices::SelectSignalWidget *d_ss_signal2_;
-	ui::devices::SelectSignalWidget *i_s_signal_;
 	QDialogButtonBox *button_box_;
 
 public Q_SLOTS:
@@ -106,4 +91,4 @@ private Q_SLOTS:
 } // namespace ui
 } // namespace sv
 
-#endif // UI_DIALOGS_ADDMATHCHANNELDIALOG_HPP
+#endif // UI_DIALOGS_ADDUSERCHANNELDIALOG_HPP

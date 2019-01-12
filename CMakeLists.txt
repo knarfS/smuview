@@ -150,9 +150,9 @@ set(smuview_SOURCES
   src/channels/dividechannel.cpp
   src/channels/hardwarechannel.cpp
   src/channels/integratechannel.cpp
-  src/channels/mathchannel.cpp
   src/channels/multiplysfchannel.cpp
   src/channels/multiplysschannel.cpp
+  src/channels/userchannel.cpp
   src/data/analogsignal.cpp
   src/data/basesignal.cpp
   src/data/datautil.cpp
@@ -200,6 +200,7 @@ set(smuview_SOURCES
   src/ui/devices/signaltree.cpp
   src/ui/dialogs/aboutdialog.cpp
   src/ui/dialogs/addmathchanneldialog.cpp
+  src/ui/dialogs/adduserchanneldialog.cpp
   src/ui/dialogs/addviewdialog.cpp
   src/ui/dialogs/addviewdialog.cpp
   src/ui/dialogs/connectdialog.cpp

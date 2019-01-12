@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
 
 #include <QDebug>
 
-#include "mathchannel.hpp"
+#include "userchannel.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
@@ -37,7 +37,7 @@ using std::static_pointer_cast;
 namespace sv {
 namespace channels {
 
-MathChannel::MathChannel(
+UserChannel::UserChannel(
 		data::Quantity quantity,
 		set<data::QuantityFlag> quantity_flags,
 		data::Unit unit,
@@ -57,12 +57,12 @@ MathChannel::MathChannel(
 	name_ = channel_name;
 }
 
-unsigned int MathChannel::index() const
+unsigned int UserChannel::index() const
 {
 	return 1000;
 }
 
-shared_ptr<data::BaseSignal> MathChannel::init_signal()
+shared_ptr<data::BaseSignal> UserChannel::init_signal()
 {
 	// TODO: At the moment, only analog channels are supported
 	shared_ptr<data::AnalogSignal> signal = make_shared<data::AnalogSignal>(
@@ -81,7 +81,7 @@ shared_ptr<data::BaseSignal> MathChannel::init_signal()
 	return signal;
 }
 
-void MathChannel::push_sample(double sample, double timestamp)
+void UserChannel::push_sample(double sample, double timestamp)
 {
 	auto signal = static_pointer_cast<data::AnalogSignal>(actual_signal_);
 	signal->push_sample(&sample, timestamp,

@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@
 #include "src/channels/basechannel.hpp"
 #include "src/channels/dividechannel.hpp"
 #include "src/channels/integratechannel.hpp"
-#include "src/channels/mathchannel.hpp"
+#include "src/channels/userchannel.hpp"
 #include "src/channels/multiplysfchannel.hpp"
 #include "src/channels/multiplysschannel.hpp"
 #include "src/data/analogsignal.hpp"
@@ -228,7 +228,7 @@ void AddMathChannelDialog::setup_ui_integrate_signal_tab()
 	tab_widget_->addTab(widget, title);
 }
 
-shared_ptr<channels::MathChannel> AddMathChannelDialog::channel()
+shared_ptr<channels::UserChannel> AddMathChannelDialog::channel()
 {
 	return channel_;
 }

@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@
 #include <QObject>
 
 #include "src/channels/basechannel.hpp"
-#include "src/channels/mathchannel.hpp"
+#include "src/channels/userchannel.hpp"
 #include "src/data/datautil.hpp"
 
 using std::set;
@@ -44,7 +44,7 @@ class BaseDevice;
 
 namespace channels {
 
-class MultiplySSChannel : public MathChannel
+class MultiplySSChannel : public UserChannel
 {
 	Q_OBJECT
 

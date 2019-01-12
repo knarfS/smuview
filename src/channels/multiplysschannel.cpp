@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@
 
 #include "multiplysschannel.hpp"
 #include "src/channels/basechannel.hpp"
-#include "src/channels/mathchannel.hpp"
+#include "src/channels/userchannel.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/data/datautil.hpp"
 #include "src/devices/basedevice.hpp"
@@ -43,7 +43,7 @@ MultiplySSChannel::MultiplySSChannel(
 		const QString channel_group_name,
 		QString channel_name,
 		double channel_start_timestamp) :
-	MathChannel(quantity, quantity_flags, unit,
+	UserChannel(quantity, quantity_flags, unit,
 		parent_device, channel_group_name, channel_name,
 		channel_start_timestamp),
 	signal_1_(signal_1),

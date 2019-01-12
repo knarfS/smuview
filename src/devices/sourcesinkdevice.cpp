@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,8 +29,8 @@
 #include "src/channels/dividechannel.hpp"
 #include "src/channels/hardwarechannel.hpp"
 #include "src/channels/integratechannel.hpp"
-#include "src/channels/mathchannel.hpp"
 #include "src/channels/multiplysschannel.hpp"
+#include "src/channels/userchannel.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/devices/configurable.hpp"

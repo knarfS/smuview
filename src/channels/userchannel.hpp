@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CHANNELS_MATHCHANNEL_HPP
-#define CHANNELS_MATHCHANNEL_HPP
+#ifndef CHANNELS_USERCHANNEL_HPP
+#define CHANNELS_USERCHANNEL_HPP
 
 #include <memory>
 #include <set>
@@ -51,12 +51,12 @@ enum class MathChannelType {
 		IntegrateChannel
 };
 
-class MathChannel : public BaseChannel
+class UserChannel : public BaseChannel
 {
 	Q_OBJECT
 
 public:
-	MathChannel(
+	UserChannel(
 		data::Quantity quantity,
 		set<data::QuantityFlag> quantity_flags,
 		data::Unit unit,
@@ -68,6 +68,8 @@ public:
 public:
 	/**
 	 * Gets the index number of this channel
+	 *
+	 * TODO: Can be removed (also from base class)?
 	 */
 	unsigned int index() const;
 
@@ -111,4 +113,4 @@ protected:
 } // namespace channels
 } // namespace sv
 
-#endif // CHANNELS_MATHCHANNEL_HPP
+#endif // CHANNELS_USERCHANNEL_HPP
