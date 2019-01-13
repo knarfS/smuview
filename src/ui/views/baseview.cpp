@@ -24,10 +24,8 @@ namespace sv {
 namespace ui {
 namespace views {
 
-const int BaseView::MaxViewAutoUpdateRate = 25; // No more than 25 Hz
-
 BaseView::BaseView(const Session &session, QWidget *parent) :
-		QMainWindow(parent),
+	QMainWindow(parent),
 	session_(session)
 {
 	// Remove Qt::Window flag
