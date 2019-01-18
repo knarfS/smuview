@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,12 +32,15 @@ namespace ui {
 namespace views {
 
 enum class ViewType {
-	ViewTypeMeasurementControl,
-	ViewTypeSinkControl,
-	ViewTypeSourceControl,
-	ViewTypeValuePanel,
-	ViewTypePowerPanel,
-	ViewTypePlot
+	DataView,
+	DemoDmmControlView,
+	FlowView,
+	MeasurementControlView,
+	PlotView,
+	PowerPanelView,
+	SignalTreeView,
+	SourceSinkControlView,
+	ValuePanelView
 };
 
 class BaseView : public QMainWindow
@@ -56,9 +59,6 @@ public:
 protected:
 	const Session &session_;
 	QWidget *central_widget_;
-
-private:
-	static const int MaxViewAutoUpdateRate;
 
 };
 
