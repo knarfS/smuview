@@ -25,7 +25,6 @@
 #include <stdexcept>
 #include <string>
 
-#include <boost/filesystem.hpp>
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
 #include <QApplication>

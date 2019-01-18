@@ -89,13 +89,11 @@ endif()
 
 set(QT_LIBRARIES Qt5::Gui Qt5::Widgets Qt5::Svg)
 
-find_package(Qwt REQUIRED)
+find_package(Qwt 6.1.2 REQUIRED)
 
-set(BOOSTCOMPS filesystem serialization system)
-if(ENABLE_TESTS)
-	list(APPEND BOOSTCOMPS unit_test_framework)
-endif()
-find_package(Boost 1.55 COMPONENTS ${BOOSTCOMPS} REQUIRED)
+# Only boost::config and boost::multiprecision are required, so no need to
+# specify any boost libraries
+find_package(Boost 1.55 REQUIRED)
 
 # Find the platform's thread library (needed for C++11 threads).
 # This will set ${CMAKE_THREAD_LIBS_INIT} to the correct, OS-specific value.
