@@ -34,6 +34,7 @@ ToDo
 - DataView: add signal (into this table) action
 - Resize the DockWidgets/Views to their best sizes (value panels minimum, plot views max, ...). Maybe with QMainWindow->resizeDocks, SizePolicy in QDockWidget does not work....
 - Maybe: In all ctors "Session &session" -> "const Session &session"
+- boost::stacktrace, see pv
 
 ------------------------
 
