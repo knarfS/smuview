@@ -37,8 +37,14 @@ option(ENABLE_SIGNALS "Build with UNIX signals" TRUE)
 option(ENABLE_TESTS "Enable unit tests" TRUE)
 option(STATIC_PKGDEPS_LIBS "Statically link to (pkg-config) libraries" FALSE)
 
+# Let AUTOMOC and AUTOUIC process GENERATED files.
 if(POLICY CMP0071)
 	cmake_policy(SET CMP0071 NEW)
+endif()
+
+# Only interpret if() arguments as variables or keywords when unquoted.
+if(POLICY CMP0054)
+	cmake_policy(SET CMP0054 NEW)
 endif()
 
 if(WIN32)
@@ -69,11 +75,16 @@ add_subdirectory(manual)
 #-------------------------------------------------------------------------------
 
 list(APPEND PKGDEPS glib-2.0>=2.28.0)
-list(APPEND PKGDEPS glibmm-2.4>=2.42.0)
+list(APPEND PKGDEPS glibmm-2.4>=2.28.0)
 
-list(APPEND PKGDEPS libsigrokcxx>=0.6.0)
+set(LIBSR_CXX_BINDING "libsigrokcxx>=0.5.1")
+list(APPEND PKGDEPS "${LIBSR_CXX_BINDING}")
 
 find_package(PkgConfig)
+pkg_check_modules(LIBSRCXX ${LIBSR_CXX_BINDING})
+if(NOT LIBSRCXX_FOUND OR NOT LIBSRCXX_VERSION)
+	message(FATAL_ERROR "libsigrok C++ bindings missing, check libsigrok's 'configure' output (missing dependencies?)")
+endif()
 pkg_check_modules(PKGDEPS REQUIRED ${PKGDEPS})
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -84,7 +95,10 @@ find_package(Qt5 COMPONENTS Core Gui Widgets Svg REQUIRED)
 if(WIN32)
 	# MXE workaround: Use pkg-config to find Qt5 libs.
 	# https://github.com/mxe/mxe/issues/1642
-	pkg_check_modules(QT5ALL REQUIRED Qt5Widgets Qt5Gui Qt5Svg)
+	# Not required (and doesn't work) on MSYS2.
+	if(NOT DEFINED ENV{MSYSTEM})
+		pkg_check_modules(QT5ALL REQUIRED Qt5Widgets Qt5Gui Qt5Svg)
+	endif()
 endif()
 
 set(QT_LIBRARIES Qt5::Gui Qt5::Widgets Qt5::Svg)

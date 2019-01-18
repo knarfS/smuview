@@ -1,0 +1,12 @@
+- Install Ubuntu 14.04.5 64bit VM image
+- Update
+- Snapshot
+
+$ apt-get install git gcc make cmake wget unzip pkg-config sdcc libtool autoconf
+$ apt-get install libzip-dev libftdi-dev libusb-1.0-0-dev libvisa-dev libieee1284-3-dev check python-gi-dev doxygen swig python­-setuptools python3-­setuptools python-numpy python3-numpy
+$ apt-get install libglib2.0-0 libglib2.0-dev libglibmm-2.4-1c2a libglibmm-2.4-dev qtbase5-dev libqt5svg5-dev libboost1.55-all-dev libqwt-dev
+$ git clone https://github.com/knarfS/sigrok-util.git
+$ cd sigrok-util
+$ git checkout smuview
+$ cd cross-compile/linux
+$ ./sigrok-cross-linux-smuview
