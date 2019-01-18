@@ -304,6 +304,9 @@ qt5_add_resources(smuview_RESOURCES_RCC ${smuview_RESOURCES})
 # c++14 is required because of QtNodes
 set(CMAKE_CXX_STANDARD 14)
 
+# Create compile_commands.json for clazy
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 add_definitions(-DQT_NO_KEYWORDS)
 add_definitions(-D__STDC_LIMIT_MACROS)
 add_definitions(-Wall -Wextra -Woverloaded-virtual) # -Weffc++ -Wconversion -Wsign-conversion)
