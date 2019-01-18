@@ -1,0 +1,22 @@
+Docs
+====
+
+- https://code.launchpad.net/~richwareham/firtree/gstreamer-integration
+
+
+Pipeline editors
+================
+
+- https://github.com/virinext/pipeviz
+- https://github.com/emdash/gst-editor
+- https://github.com/metratec/gst-editor
+  - https://code.google.com/archive/p/gst-editor/
+- https://code.launchpad.net/firtree
+  - https://code.launchpad.net/~richwareham/firtree/pipeline-editor
+  - https://code.launchpad.net/~richwareham/firtree/gstreamer-integration
+
+
+Node editors
+============
+
+- https://github.com/paceholder/nodeeditor
