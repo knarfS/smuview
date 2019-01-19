@@ -13,12 +13,14 @@
 
 
 set(QWT_LIBRARY_NAMES qwt-qt5 qwt6-qt5 qwt)
+file(GLOB QWT_CUSTOM_INSTALL_PATH /usr/local/qwt-6.1.[0-9])
 
 find_library(QWT_LIBRARY
   NAMES ${QWT_LIBRARY_NAMES}
   PATHS
     /usr/lib
     /usr/local/lib
+    "${QWT_CUSTOM_INSTALL_PATH}/lib"
     "$ENV{LIB_DIR}/lib"
     "$ENV{LIB}"
 )
@@ -32,6 +34,7 @@ FIND_PATH(QWT_INCLUDE_DIR NAMES qwt.h PATHS
   "${_qwt_fw}/Headers"
   /usr/include
   /usr/local/include
+  "${QWT_CUSTOM_INSTALL_PATH}/include"
   "$ENV{LIB_DIR}/include"
   "$ENV{INCLUDE}"
   PATH_SUFFIXES qwt-qt5 qwt qwt6
