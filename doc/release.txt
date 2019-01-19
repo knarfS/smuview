@@ -1,15 +1,53 @@
-- Install Ubuntu 16.04 64bit (doesn't work bc of qwt = 6.0.0 and qt = 5.2.?: Ubuntu 14.04.5 64bit VM image)
+- Install a Ubuntu 14.04.5 64bit Server VM
+$ sudo su
 $ apt-get update && apt-get upgrade
+$ apt-get install gpm vim apt-file
 - Snapshot
 
+
+# Packages for libserialport
 $ apt-get install git wget unzip gcc make autoconf automake libtool
-- install libserialport
 
+
+# Packages for libsigrok
 $ apt-get install g++ autoconf-archive pkg-config libglib2.0-dev libglibmm-2.4-dev libzip-dev libusb-1.0-0-dev libftdi-dev libvisa-dev libieee1284-3-dev check doxygen python-numpy python-dev python-gi-dev python-setuptools swig
-- install libsigrok
 
+
+# Packages for libsigrokdecode
 $ apt-get install python3-dev
-- install libsigrokdecode
+
+
+# Packages for smuview
+$ apt-get install cmake3 libboost1.55-all-dev
+$ add-apt-repository ppa:beineri/opt-qt-5.10.1-trusty
+$ apt-get update
+$ apt-get install qt510base
+$ apt-get install qt510-meta-full
+
+CALL EVERY TIME:
+$ source /opt/qt510/bin/qt510-env.sh
+
+
+$ apt-get install mesa-common-dev
+$ wget https://sourceforge.net/projects/qwt/files/qwt/6.1.4/qwt-6.1.4.tar.bz2/download
+$ tar xf qwt-6.1.4.tar.bz2
+$ cd qwt-6.1.4
+$ qmake qwt.pro
+$ make
+$ sudo make install
+
+
+
+#########################
+
+
+$ apt-get install openssl-dev
+$ wget https://github.com/Kitware/CMake/releases/download/v3.13.3/cmake-3.13.3.tar.gz
+$ tar xf cmake-3.13.3.tar.gz
+$ cd cmake-3.13.3
+$ ./bootstrap
+$ make
+$ sudo make install
 
 $ apt-get install libfontconfig1-dev libfreetype6-dev libx11-dev libxext-dev libxfixes-dev libxi-dev libxrender-dev libxcb1-dev  libx11-xcb-dev libxcb-glx0-dev libxcb-keysyms1-dev libxcb-image0-dev libxcb-shm0-dev libxcb-icccm4-dev libxcb-sync0-dev libxcb-xfixes0-dev libxcb-shape0-dev libxcb-randr0-dev libxcb-render-util0-dev libgles2-mesa-dev bison flex gperf libdbus-1-dev
 $ wget http://download.qt.io/official_releases/qt/5.12/5.12.0/single/qt-everywhere-src-5.12.0.tar.xz
@@ -19,25 +57,29 @@ $ ./configure -skip qtlocation
 $ make
 $ sudo make install
 
-$ wget https://sourceforge.net/projects/qwt/files/qwt/6.1.4/qwt-6.1.4.tar.bz2/download
-$ tar xf qwt-6.1.4.tar.bz2
-$ cd qwt-6.1.4
-$ /usr/local/Qt-5.11.3/bin/qmake qwt.pro
-$ make
-$ sudo make install
 
-$ apt-get install cmake3 libboost1.55-all-dev
+$ apt-get install libboost1.55-all-dev
 $ git clone https://github.com/knarfS/smuview.git
 $ cd smuview
 $ mkdir build
 $ cd build
 $ cmake ../ -DCMAKE_PREFIX_PATH=/usr/local/Qt-5.11.3/
 
-
 $ apt-get install sdcc
-$ apt-get install  qtbase5-dev libqt5svg5-dev  libqwt-dev
 $ git clone https://github.com/knarfS/sigrok-util.git
 $ cd sigrok-util
 $ git checkout smuview
 $ cd cross-compile/linux
 $ ./sigrok-cross-linux-smuview
+
+$ apt-get install desktop-file-utils libcairo2-dev libfuse-dev
+$ cd $HOME
+$ git clone https://github.com/AppImage/AppImageKit
+$ cd AppImageKit
+$ ./install-build-deps.sh # TODO: wants to install cmake!!!
+$ patch -p1 < ../sigrok-util/cross-compile/appimage/chdir.patch
+$ ./build.sh
+$ mkdir -p build/lib/appimagekit
+$ cp build/out/mksquashfs build/lib/appimagekit
+
+

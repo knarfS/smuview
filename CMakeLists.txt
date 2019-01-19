@@ -370,7 +370,24 @@ endif()
 #= Installation
 #-------------------------------------------------------------------------------
 
+# Install the executable.
 install(TARGETS ${PROJECT_NAME} DESTINATION bin/)
+
+# Install the manpage.
+#install(FILES doc/smuview.1 DESTINATION ${CMAKE_INSTALL_MANDIR}/man1 COMPONENT doc)
+
+# Install the desktop file.
+install(FILES contrib/org.sigrok.SmuView.desktop DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications)
+
+# Install the AppData/AppStream file.
+install(FILES contrib/org.sigrok.SmuView.appdata.xml DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/metainfo)
+
+# Install the SmuView icons.
+install(FILES icons/smuview.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/48x48/apps)
+install(FILES icons/smuview.svg DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/scalable/apps)
+
+# Generate Windows installer script.
+#configure_file(contrib/smuview_cross.nsi.in contrib/smuview_cross.nsi @ONLY)
 
 
 #===============================================================================
