@@ -1,0 +1,300 @@
+##
+## This file is part of the SmuView project.
+##
+## Copyright (C) 2013-2014 Uwe Hermann <uwe@hermann-uwe.de>
+## Copyright (C) 2019 Frank Stettner <frank-stettner@gmx.net>
+##
+## This program is free software; you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation; either version 2 of the License, or
+## (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, see <http://www.gnu.org/licenses/>.
+##
+
+#
+# This file is used to create the Smuiew Windows installer via NSIS.
+# It is meant for use in a cross-compile setup (not for native builds).
+# See the 'sigrok-cross-mingw' script in the sigrok-util repo for details.
+#
+# NSIS documentation:
+# http://nsis.sourceforge.net/Docs/
+# http://nsis.sourceforge.net/Docs/Modern%20UI%202/Readme.html
+#
+
+# Include the "Modern UI" header, which gives us the usual Windows look-n-feel.
+!include "MUI2.nsh"
+
+# Include the file association header so that we can register file extensions.
+!include "FileAssociation.nsh"
+
+
+# --- Global stuff ------------------------------------------------------------
+
+# Installer/product name.
+Name "SmuView"
+
+# Filename of the installer executable.
+OutFile "smuview-@SV_VERSION_STRING@-installer.exe"
+
+# Where to install the application.
+InstallDir "$PROGRAMFILES\sigrok\SmuView"
+
+# Request admin privileges for Windows Vista and Windows 7.
+# http://nsis.sourceforge.net/Docs/Chapter4.html
+RequestExecutionLevel admin
+
+# Local helper definitions.
+!define REGSTR "Software\Microsoft\Windows\CurrentVersion\Uninstall\SmuView"
+
+
+# --- MUI interface configuration ---------------------------------------------
+
+# Use the following icon for the installer EXE file.
+!define MUI_ICON "@PROJECT_SOURCE_DIR@/icons/smuview.ico"
+
+# Show a nice image at the top of each installer page.
+!define MUI_HEADERIMAGE
+
+# Don't automatically go to the Finish page so the user can check the log.
+!define MUI_FINISHPAGE_NOAUTOCLOSE
+
+# Upon "cancel", ask the user if he really wants to abort the installer.
+!define MUI_ABORTWARNING
+
+# Don't force the user to accept the license, just show it.
+# Details: http://trac.videolan.org/vlc/ticket/3124
+!define MUI_LICENSEPAGE_BUTTON $(^NextBtn)
+!define MUI_LICENSEPAGE_TEXT_BOTTOM "Click Next to continue."
+
+# Path where the cross-compiled sigrok tools and libraries are located.
+# Change this to where-ever you installed libsigrok.a and so on.
+!define CROSS "@CMAKE_INSTALL_PREFIX@"
+
+# Defines for WinAPI SHChangeNotify call.
+!define SHCNE_ASSOCCHANGED 0x8000000
+!define SHCNF_IDLIST 0
+
+
+# --- Functions/Macros --------------------------------------------------------
+
+Function register_sr_files
+	${registerExtension} "$INSTDIR\smuview.exe" ".sr" "sigrok session file"
+
+	# Force Windows to update the icon cache so that the icon for .sr files shows up.
+	System::Call 'Shell32::SHChangeNotify(i ${SHCNE_ASSOCCHANGED}, i ${SHCNF_IDLIST}, i 0, i 0)'
+FunctionEnd
+
+# Inspired by http://nsis.sourceforge.net/Create_Internet_Shorcuts_during_installation
+!Macro "CreateURL" "URLFile" "URLSite" "URLDesc"
+	WriteINIStr "$INSTDIR\${URLFile}.URL" "InternetShortcut" "URL" "${URLSite}"
+	CreateShortCut "$SMPROGRAMS\sigrok\SmuView\${URLFile}.lnk" "$INSTDIR\${URLFile}.url" "" \
+		"$INSTDIR\smuview.exe" 0 "SW_SHOWNORMAL" "" "${URLDesc}"
+!MacroEnd
+
+# --- MUI pages ---------------------------------------------------------------
+
+# Show a nice "Welcome to the ... Setup Wizard" page.
+!insertmacro MUI_PAGE_WELCOME
+
+# Show the license of the project.
+!insertmacro MUI_PAGE_LICENSE "@PROJECT_SOURCE_DIR@/COPYING"
+
+# Show a screen which allows the user to select which components to install.
+!insertmacro MUI_PAGE_COMPONENTS
+
+# Allow the user to select a different install directory.
+!insertmacro MUI_PAGE_DIRECTORY
+
+# Perform the actual installation, i.e. install the files.
+!insertmacro MUI_PAGE_INSTFILES
+
+# Insert the "Show Readme" button in the finish dialog. We repurpose it for
+# registering the .sr file extension. This way, we don't need to add in-depth
+# modifications to the finish page.
+!define MUI_FINISHPAGE_SHOWREADME ""
+!define MUI_FINISHPAGE_SHOWREADME_CHECKED
+!define MUI_FINISHPAGE_SHOWREADME_TEXT "Register .sr files with SmuView"
+!define MUI_FINISHPAGE_SHOWREADME_FUNCTION register_sr_files
+
+# Show a final "We're done, click Finish to close this wizard" message.
+!insertmacro MUI_PAGE_FINISH
+
+# Pages used for the uninstaller.
+!insertmacro MUI_UNPAGE_WELCOME
+!insertmacro MUI_UNPAGE_CONFIRM
+!insertmacro MUI_UNPAGE_INSTFILES
+!insertmacro MUI_UNPAGE_FINISH
+
+
+# --- MUI language files ------------------------------------------------------
+
+# Select an installer language (required!).
+!insertmacro MUI_LANGUAGE "English"
+
+
+# --- Default section ---------------------------------------------------------
+
+Section "SmuView (required)" Section1
+	# This section is gray (can't be disabled) in the component list.
+	SectionIn RO
+
+	# Install the file(s) specified below into the specified directory.
+	SetOutPath "$INSTDIR"
+
+	# License file.
+	File "@PROJECT_SOURCE_DIR@/COPYING"
+
+	# SmuView (statically linked, includes all libs).
+	File "${CROSS}/bin/smuview.exe"
+
+	# Zadig (used for installing WinUSB drivers).
+	File "${CROSS}/zadig.exe"
+	File "${CROSS}/zadig_xp.exe"
+
+	# Python
+	#File "${CROSS}/python34.dll"3-2014
+	#File "${CROSS}/python34.zip"
+
+	SetOutPath "$INSTDIR\share"
+
+	# Protocol decoders.
+	#File /r /x "__pycache__" /x "*.pyc" "${CROSS}/share/libsigrokdecode"
+
+	# Firmware files.
+	File /r "${CROSS}/share/sigrok-firmware"
+
+	# Generate the uninstaller executable.
+	WriteUninstaller "$INSTDIR\Uninstall.exe"
+
+	# Create a sub-directory in the start menu.
+	CreateDirectory "$SMPROGRAMS\sigrok"
+	CreateDirectory "$SMPROGRAMS\sigrok\SmuView"
+
+	# Create a shortcut for the SmuView application.
+	SetOutPath "$INSTDIR"
+	CreateShortCut "$SMPROGRAMS\sigrok\SmuView\SmuView.lnk" \
+		"$INSTDIR\smuview.exe" "" "$INSTDIR\smuview.exe" \
+		0 SW_SHOWNORMAL \
+		"" "Open-source, portable sigrok GUI"
+
+	# Create a shortcut for the SmuView application running in debug mode.
+	CreateShortCut "$SMPROGRAMS\sigrok\SmuView\SmuView (Debug).lnk" \
+		"$INSTDIR\smuview.exe" "-l 5" "$INSTDIR\smuview.exe" \
+		0 SW_SHOWNORMAL \
+		"" "Open-source, portable sigrok GUI (debug log level)"
+
+	# Create a shortcut for the uninstaller.
+	CreateShortCut "$SMPROGRAMS\sigrok\SmuView\Uninstall SmuView.lnk" \
+		"$INSTDIR\Uninstall.exe" "" "$INSTDIR\Uninstall.exe" 0 \
+		SW_SHOWNORMAL "" "Uninstall SmuView"
+
+	# Create a shortcut for the Zadig executable.
+	CreateShortCut "$SMPROGRAMS\sigrok\SmuView\Zadig (SmuView).lnk" \
+		"$INSTDIR\zadig.exe" "" "$INSTDIR\zadig.exe" 0 \
+		SW_SHOWNORMAL "" "Zadig (SmuView)"
+
+	# Create a shortcut for the Zadig executable (for Win XP).
+	CreateShortCut "$SMPROGRAMS\sigrok\SmuView\Zadig (SmuView, Win XP).lnk" \
+		"$INSTDIR\zadig_xp.exe" "" "$INSTDIR\zadig_xp.exe" 0 \
+		SW_SHOWNORMAL "" "Zadig (SmuView, Win XP)"
+
+	# Create shortcuts to the HTML and PDF manuals, respectively.
+	#!InsertMacro "CreateURL" "SmuView HTML manual" "https://sigrok.org/doc/smuview/@SV_MANUAL_VERSION@/manual.html" "SmuView HTML manual"
+	#!InsertMacro "CreateURL" "SmuView PDF manual" "https://sigrok.org/doc/smuview/@SV_MANUAL_VERSION@/manual.pdf" "SmuView PDF manual"
+
+	# Create registry keys for "Add/remove programs" in the control panel.
+	WriteRegStr HKLM "${REGSTR}" "DisplayName" "SmuView"
+	WriteRegStr HKLM "${REGSTR}" "UninstallString" \
+		"$\"$INSTDIR\Uninstall.exe$\""
+	WriteRegStr HKLM "${REGSTR}" "InstallLocation" "$\"$INSTDIR$\""
+	WriteRegStr HKLM "${REGSTR}" "DisplayIcon" \
+		"$\"$INSTDIR\smuview.ico$\""
+	WriteRegStr HKLM "${REGSTR}" "Publisher" "sigrok"
+	WriteRegStr HKLM "${REGSTR}" "HelpLink" \
+		"http://sigrok.org/wiki/SmuView"
+	WriteRegStr HKLM "${REGSTR}" "URLUpdateInfo" \
+		"http://sigrok.org/wiki/Downloads"
+	WriteRegStr HKLM "${REGSTR}" "URLInfoAbout" "http://sigrok.org"
+	WriteRegStr HKLM "${REGSTR}" "DisplayVersion" "@SV_VERSION_STRING@"
+	WriteRegStr HKLM "${REGSTR}" "Contact" \
+		"sigrok-devel@lists.sourceforge.org"
+	WriteRegStr HKLM "${REGSTR}" "Comments" \
+		"This is a Qt based sigrok GUI."
+
+	# Display "Remove" instead of "Modify/Remove" in the control panel.
+	WriteRegDWORD HKLM "${REGSTR}" "NoModify" 1
+	WriteRegDWORD HKLM "${REGSTR}" "NoRepair" 1
+SectionEnd
+
+
+# --- Uninstaller section -----------------------------------------------------
+
+Section "Uninstall"
+	# Always delete the uninstaller first (yes, this really works).
+	Delete "$INSTDIR\Uninstall.exe"
+
+	# Delete the application, the application data, and related libs.
+	Delete "$INSTDIR\COPYING"
+	Delete "$INSTDIR\smuview.exe"
+	Delete "$INSTDIR\zadig.exe"
+	Delete "$INSTDIR\zadig_xp.exe"
+	#Delete "$INSTDIR\python34.dll"
+	#Delete "$INSTDIR\python34.zip"
+
+	# Delete all decoders and everything else in libsigrokdecode/.
+	# There could be *.pyc files or __pycache__ subdirs and so on.
+	#RMDir /r "$INSTDIR\share\libsigrokdecode"
+
+	# Delete the firmware files.
+	RMDir /r "$INSTDIR\share\sigrok-firmware"
+
+	# Delete the URL files for the manual.
+	#Delete "$INSTDIR\SmuView HTML manual.url"
+	#Delete "$INSTDIR\SmuView PDF manual.url"
+
+	# Delete the install directory and its sub-directories.
+	RMDir "$INSTDIR\share"
+	RMDir "$INSTDIR"
+
+	# Delete the links from the start menu.
+	Delete "$SMPROGRAMS\sigrok\SmuView\SmuView"
+	Delete "$SMPROGRAMS\sigrok\SmuView\SmuView (Debug).lnk"
+	Delete "$SMPROGRAMS\sigrok\SmuView\Uninstall SmuView.lnk"
+	Delete "$SMPROGRAMS\sigrok\SmuView\Zadig (SmuView).lnk"
+	Delete "$SMPROGRAMS\sigrok\SmuView\Zadig (SmuView, Win XP).lnk"
+	Delete "$SMPROGRAMS\sigrok\SmuView\Examples (SmuView).lnk"
+
+	# Delete the links to the manual.
+	#Delete "$SMPROGRAMS\sigrok\SmuView\SmuView HTML manual.lnk"
+	#Delete "$SMPROGRAMS\sigrok\SmuView\SmuView PDF manual.lnk"
+
+	# Delete the sub-directory in the start menu.
+	RMDir "$SMPROGRAMS\sigrok\SmuView"
+	RMDir "$SMPROGRAMS\sigrok"
+
+	# Delete the registry key(s).
+	DeleteRegKey HKLM "${REGSTR}"
+
+	# Unregister any previously registered file extension(s).
+	${unregisterExtension} ".sr" "sigrok session file"
+
+	# Force Windows to update the icon cache so that the icon for .sr files is reset.
+	System::Call 'Shell32::SHChangeNotify(i ${SHCNE_ASSOCCHANGED}, i ${SHCNF_IDLIST}, i 0, i 0)'
+SectionEnd
+
+
+# --- Component selection section descriptions --------------------------------
+
+LangString DESC_Section1 ${LANG_ENGLISH} "This installs the SmuView sigrok GUI, some firmware files, and all required libraries."
+
+!insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
+	!insertmacro MUI_DESCRIPTION_TEXT ${Section1} $(DESC_Section1)
+!insertmacro MUI_FUNCTION_DESCRIPTION_END
+

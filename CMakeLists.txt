@@ -387,7 +387,7 @@ install(FILES icons/smuview.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/h
 install(FILES icons/smuview.svg DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/scalable/apps)
 
 # Generate Windows installer script.
-#configure_file(contrib/smuview_cross.nsi.in contrib/smuview_cross.nsi @ONLY)
+configure_file(contrib/smuview_cross.nsi.in contrib/smuview_cross.nsi @ONLY)
 
 
 #===============================================================================
