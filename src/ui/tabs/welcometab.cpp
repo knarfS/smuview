@@ -49,7 +49,7 @@ void WelcomeTab::setup_ui()
 		append("<big>Welcome to <b>SmuView</b></big><br>").
 		append("Multimeters, Power Supplies and Loads<br><br>").
 		append("Version ").append(SV_VERSION_STRING).append("<br><br>").
-		append("Copyright 2017-2018, Frank Stettner<br>").
+		append("Copyright 2017-2019, Frank Stettner<br>").
 		append("Lizenz: <a href=\"https://www.gnu.org/licenses/gpl.html\">GNU General Public License Version 3</a><br><br>").
 		append("<a href=\"https://github.com/knarfS/smuview\">github.com/knarfS/smuview</a><br>").
 		append("</center>");
