@@ -1,122 +1,125 @@
-- Install a Ubuntu 14.04.5 64bit Server VM
-$ sudo su
-$ apt-get update && apt-get upgrade
-$ apt-get install gpm vim apt-file
+Prepare a virtual machine for the AppImage build process
+========================================================
+
+Install a Ubuntu 14.04.5 64bit or 32bit Server VM. Then update and install some base packets:
+ $ sudo apt-get update && sudo apt-get -y -y upgrade
+ $ sudo apt-get -y install gpm vim apt-file
+
+After the base installation take a snapshot of the VM.
+
+Install packages for libserialport:
+ $ sudo apt-get -y install git wget unzip gcc make autoconf automake libtool
+
+Install packages for libsigrok:
+ $ sudo apt-get -y install g++ autoconf-archive pkg-config libglib2.0-dev libglibmm-2.4-dev libzip-dev libusb-1.0-0-dev libftdi-dev libvisa-dev libieee1284-3-dev check doxygen python-numpy python-dev python-gi-dev python-setuptools swig
+
+Install packages for sigrok-firmware (TODO: needed?).
+ $ sudo apt-get -y install sdcc
+
+Install packages for smuview:
+ $ sudo apt-get -y install libboost1.55-all-dev
+
+For Trusty 64bit you can use a newer version of CMake (3.13.3) (needed by AppImageKit):
+ $ wget https://github.com/Kitware/CMake/releases/download/v3.13.3/cmake-3.13.3-Linux-x86_64.sh
+ $ chmod a+x cmake-3.13.3-Linux-x86_64.sh
+ $ sudo ./cmake-3.13.3-Linux-x86_64.sh --skip-license --prefix=/usr/local
+For Trusty 32bit use Ubuntus CMake3 for now (If you want to use AppImageKit, you need to compile CMake 3.13.3):
+ $ sudo apt-get -y install cmake3
+
+Install Qt 5.10.1 (SmuView needs Qt >= 5.6 but Ubuntu 14.04 comes with 5.2):
+ $ sudo add-apt-repository ppa:beineri/opt-qt-5.10.1-trusty
+ $ sudo apt-get update
+ $ sudo apt-get -y install qt510base
+ $ sudo apt-get -y install qt510-meta-full
+ $ source /opt/qt510/bin/qt510-env.sh
+
+Install Qwt 6.1.4 (SmuView needs Qwt >= 6.1.2 but Ubuntu 14.04 comes with 6.0.?):
+ $ sudo apt-get -y install mesa-common-dev libgl1-mesa-dev
+ $ wget https://sourceforge.net/projects/qwt/files/qwt/6.1.4/qwt-6.1.4.tar.bz2
+ $ tar xf qwt-6.1.4.tar.bz2
+ $ cd qwt-6.1.4
+ $ qmake qwt.pro
+ $ make
+Now change the QWT_INSTALL_PREFIX in qwtconfig.pri to /usr/local and then install:
+ $ sudo make install
+
+After the advanced installation take a snapshot of the VM.
 
 
-- Snapshot
+Build the SmuView release
+=========================
+
+ $ source /opt/qt510/bin/qt510-env.sh
+ $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local
+ $ sudo ldconfig
+
+Now all needed sigrok packages are build:
+ $ cd
+ $ git clone https://github.com/knarfS/sigrok-util.git
+ $ cd sigrok-util
+ $ git checkout smuview
+ $ cd cross-compile/linux
+ $ ./sigrok-cross-linux-smuview
+
+ $ cd
+ $ mkdir -p SmuView.AppDir/usr
+ $ cp -r sr/* SmuView.AppDir/usr/
+
+Use linuxdeployqt to create the AppImage.
+Download the 64bit AppImage:
+ $ wget -c https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage
+ $ chmod a+x linuxdeployqt-continuous-x86_64.AppImage
+On Trusty 32bit you have to build your own 32bit linuxdeployqt:
+ $ git clone https://github.com/probonopd/linuxdeployqt.git
+ $ cd linuxdeployqt
+ $ qmake
+ $ make
+ $ sudo make install
+ $ cd
+ $ wget https://nixos.org/releases/patchelf/patchelf-0.9/patchelf-0.9.tar.bz2
+ $ tar xf patchelf-0.9.tar.bz2
+ $ ( cd patchelf-0.9/ && ./configure  && make && sudo make install )
+ $ sudo wget -c "https://github.com/probonopd/AppImageKit/releases/download/continuous/appimagetool-i686.AppImage" -O /usr/local/bin/appimagetool
+ $ sudo chmod a+x /usr/local/bin/appimagetool
+
+Create AppImage for SmuView:
+ $ ./linuxdeployqt-continuous-x86_64.AppImage ./SmuView.AppDir/usr/bin/smuview
+ $ ( cd SmuView.AppDir/ ; cp ./usr/share/applications/org.sigrok.SmuView.desktop . )
+ $ ( cd SmuView.AppDir/ ; cp ./usr/share/icons/hicolor/scalable/apps/smuview.svg . )
+ $ export VERSION=$(git rev-list --count HEAD).$(git describe --tags | cut -d - -f 3)
+ $ export VERSION="0.0.1"
+ $ ./linuxdeployqt-continuous-x86_64.AppImage ./SmuView.AppDir/usr/bin/smuview -appimage
+
+The alternative to linuxdeployqt is the sigrok AppImageKit script:
+ $ cd
+ $ sudo apt-get -y install desktop-file-utils libcairo2-dev libfuse-dev zsync
+ $ git clone https://github.com/AppImage/AppImageKit
+ $ cd AppImageKit
+ $ ./install-build-deps.sh # TODO: wants to install cmake!!!
+ $ patch -p1 < ../sigrok-util/cross-compile/appimage/chdir.patch
+ $ ./build.sh
+ $ mkdir -p build/lib/appimagekit
+ $ cp build/out/mksquashfs build/lib/appimagekit
+
+To debug the SmuView AppImage:
+ $ export QT_DEBUG_PLUGINS=1
+ $ LD_DEBUG=libs ./SmuView.AppImage
 
 
-# Packages for libserialport
-$ apt-get install git wget unzip gcc make autoconf automake libtool
+TODO
+====
 
+- Qwt install path. /usr/local/qwt-6.1.3 not found by linuxdeployqt
+- smuview binary size (~100MB)
 
-# Packages for libsigrok
-$ apt-get install g++ autoconf-archive pkg-config libglib2.0-dev libglibmm-2.4-dev libzip-dev libusb-1.0-0-dev libftdi-dev libvisa-dev libieee1284-3-dev check doxygen python-numpy python-dev python-gi-dev python-setuptools swig
+Misc
+====
 
-
-# Packages for sigrok-firmware
-$ apt-get install sdcc
-
-
-# Packages for libsigrokdecode
-$ apt-get install python3-dev
-
-
-# Packages for smuview
-$ apt-get install libboost1.55-all-dev
-
-
-# CMake
-$ wget wget https://github.com/Kitware/CMake/releases/download/v3.13.3/cmake-3.13.3-Linux-x86_64.sh
-$ chmod a+x cmake-3.13.3-Linux-x86_64.sh
-$ sudo ./cmake-3.13.3-Linux-x86_64.sh --skip-license --prefix=/usr/local
-
-
-# Qt 5.10.1 (SmuView needs Qt >= 5.6 but Ubuntu 14.04 comes with 5.2)
-$ add-apt-repository ppa:beineri/opt-qt-5.10.1-trusty
-$ apt-get update
-$ apt-get install qt510base
-$ apt-get install qt510-meta-full
-
-CALL EVERY TIME:
-$ source /opt/qt510/bin/qt510-env.sh
-
-
-# Install Qwt
-$ apt-get install mesa-common-dev libgl1-mesa-dev
-$ wget https://sourceforge.net/projects/qwt/files/qwt/6.1.4/qwt-6.1.4.tar.bz2/download
-$ tar xf qwt-6.1.4.tar.bz2
-$ cd qwt-6.1.4
-$ qmake qwt.pro
-$ make
-- Change QWT_INSTALL_PREFIX in qwtconfig.pri to /usr/local
-$ sudo make install
-
-
-- Snapshot
-
-
-# sigrok utils
-$ git clone https://github.com/knarfS/sigrok-util.git
-$ cd sigrok-util
-$ git checkout smuview
-$ cd cross-compile/linux
-$ ./sigrok-cross-linux-smuview
-
-
-# AppImageKit
-$ apt-get install desktop-file-utils libcairo2-dev libfuse-dev zsync
-$ cd $HOME
-$ git clone https://github.com/AppImage/AppImageKit
-$ cd AppImageKit
-$ ./install-build-deps.sh # TODO: wants to install cmake!!!
-$ patch -p1 < ../sigrok-util/cross-compile/appimage/chdir.patch
-$ ./build.sh
-$ mkdir -p build/lib/appimagekit
-$ cp build/out/mksquashfs build/lib/appimagekit
-
-
-# DEBUG:
-
-$ export QT_DEBUG_PLUGINS=1
-$ LD_DEBUG=libs ./SmuView.AppImage
-
-#########################
-
-$ git clone https://github.com/knarfS/smuview.git
-$ cd smuview
-$ mkdir build
-$ cd build
-$ cmake ../ -DCMAKE_PREFIX_PATH=/usr/local/Qt-5.11.3/
-
-$ apt-get install desktop-file-utils libcairo2-dev libfuse-dev
-$ cd $HOME
-$ git clone https://github.com/AppImage/AppImageKit
-$ cd AppImageKit
-$ ./install-build-deps.sh # TODO: wants to install cmake!!!
-$ patch -p1 < ../sigrok-util/cross-compile/appimage/chdir.patch
-$ ./build.sh
-$ mkdir -p build/lib/appimagekit
-$ cp build/out/mksquashfs build/lib/appimagekit
-
-
-########################################
-OLD
-########################################
-
-$ apt-get install openssl-dev libgl1-mesa-dev
-$ wget https://github.com/Kitware/CMake/releases/download/v3.13.3/cmake-3.13.3.tar.gz
-$ tar xf cmake-3.13.3.tar.gz
-$ cd cmake-3.13.3
-$ ./bootstrap
-$ make
-$ sudo make install
-
-$ apt-get install libfontconfig1-dev libfreetype6-dev libx11-dev libxext-dev libxfixes-dev libxi-dev libxrender-dev libxcb1-dev  libx11-xcb-dev libxcb-glx0-dev libxcb-keysyms1-dev libxcb-image0-dev libxcb-shm0-dev libxcb-icccm4-dev libxcb-sync0-dev libxcb-xfixes0-dev libxcb-shape0-dev libxcb-randr0-dev libxcb-render-util0-dev libgles2-mesa-dev bison flex gperf libdbus-1-dev
-$ wget http://download.qt.io/official_releases/qt/5.12/5.12.0/single/qt-everywhere-src-5.12.0.tar.xz
-$ tar xf qt-everywhere-src-5.12.0.tar.xz
-$ cd qt-everywhere-src-5.12.0
-$ ./configure -skip qtlocation
-$ make
-$ sudo make install
+Build CMake. Probably some dependencies are missing!
+ $ apt-get -y install openssl-dev libgl1-mesa-dev
+ $ wget https://github.com/Kitware/CMake/releases/download/v3.13.3/cmake-3.13.3.tar.gz
+ $ tar xf cmake-3.13.3.tar.gz
+ $ cd cmake-3.13.3
+ $ ./bootstrap
+ $ make
+ $ sudo make install
