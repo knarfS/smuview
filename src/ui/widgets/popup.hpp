@@ -80,7 +80,7 @@ private:
 	void mouseReleaseEvent(QMouseEvent *event) override;
 
 protected:
-	void showEvent(QShowEvent *);
+	void showEvent(QShowEvent *) override;
 
 Q_SIGNALS:
 	void closed();

@@ -99,8 +99,8 @@ void MainWindow::init_default_session()
 void MainWindow::init_session_with_file(
 	string open_file_name, string open_file_format)
 {
-	open_file_name = open_file_name;
-	open_file_format = open_file_format;
+	(void)open_file_name;
+	(void)open_file_format;
 	// TODO
 	//session_->load_init_file(open_file_name, open_file_format);
 }

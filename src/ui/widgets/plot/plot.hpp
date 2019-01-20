@@ -77,8 +77,8 @@ public:
 	Plot(QWidget *parent = nullptr);
 	virtual ~Plot();
 
-	virtual void replot();
-	virtual bool eventFilter(QObject * object, QEvent *event);
+	virtual void replot() override;
+	virtual bool eventFilter(QObject * object, QEvent *event) override;
 	void add_curve(plot::BaseCurveData *curve_data);
 	vector<plot::BaseCurveData *> curve_datas() { return curve_datas_; }
 	bool is_axis_locked(int axis_id, AxisBoundary axis_boundary) { return axis_lock_map_[axis_id][axis_boundary]; }
@@ -113,9 +113,9 @@ Q_SIGNALS:
 	void axis_lock_changed(int axis_id, AxisBoundary axis_boundary, bool locked);
 
 protected:
-	virtual void showEvent(QShowEvent *);
-	virtual void resizeEvent(QResizeEvent *);
-	virtual void timerEvent(QTimerEvent *);
+	virtual void showEvent(QShowEvent *) override;
+	virtual void resizeEvent(QResizeEvent *) override;
+	virtual void timerEvent(QTimerEvent *) override;
 
 private:
 	void update_curves();

@@ -94,7 +94,7 @@ void SignalTree::setup_ui()
 		this->setSelectionMode(QTreeView::MultiSelection);
 
 	unordered_set<shared_ptr<sv::devices::BaseDevice>> devices;
-	if (!selected_device_ && &session_)
+	if (!selected_device_)
 		devices = session_.devices();
 	else if (selected_device_)
 		devices.insert(selected_device_);
