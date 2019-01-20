@@ -50,13 +50,13 @@ public Q_SLOTS:
 	void on_axis_lock_changed(
 		const int axis_id, const AxisBoundary axis_boundary, bool locked);
 private:
+	void setup_ui();
+
 	const int axis_id_;
 	const AxisBoundary axis_boundary_;
 	QPixmap unlocked_pixmap_;
 	QPixmap locked_pixmap_;
 	bool locked_;
-
-	void setup_ui();
 
 };
 
