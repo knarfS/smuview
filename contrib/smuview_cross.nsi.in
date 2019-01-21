@@ -31,9 +31,6 @@
 # Include the "Modern UI" header, which gives us the usual Windows look-n-feel.
 !include "MUI2.nsh"
 
-# Include the file association header so that we can register file extensions.
-!include "FileAssociation.nsh"
-
 
 # --- Global stuff ------------------------------------------------------------
 
@@ -84,19 +81,13 @@ RequestExecutionLevel admin
 
 # --- Functions/Macros --------------------------------------------------------
 
-Function register_sr_files
-	${registerExtension} "$INSTDIR\smuview.exe" ".sr" "sigrok session file"
-
-	# Force Windows to update the icon cache so that the icon for .sr files shows up.
-	System::Call 'Shell32::SHChangeNotify(i ${SHCNE_ASSOCCHANGED}, i ${SHCNF_IDLIST}, i 0, i 0)'
-FunctionEnd
-
 # Inspired by http://nsis.sourceforge.net/Create_Internet_Shorcuts_during_installation
 !Macro "CreateURL" "URLFile" "URLSite" "URLDesc"
 	WriteINIStr "$INSTDIR\${URLFile}.URL" "InternetShortcut" "URL" "${URLSite}"
 	CreateShortCut "$SMPROGRAMS\sigrok\SmuView\${URLFile}.lnk" "$INSTDIR\${URLFile}.url" "" \
 		"$INSTDIR\smuview.exe" 0 "SW_SHOWNORMAL" "" "${URLDesc}"
 !MacroEnd
+
 
 # --- MUI pages ---------------------------------------------------------------
 
@@ -114,14 +105,6 @@ FunctionEnd
 
 # Perform the actual installation, i.e. install the files.
 !insertmacro MUI_PAGE_INSTFILES
-
-# Insert the "Show Readme" button in the finish dialog. We repurpose it for
-# registering the .sr file extension. This way, we don't need to add in-depth
-# modifications to the finish page.
-!define MUI_FINISHPAGE_SHOWREADME ""
-!define MUI_FINISHPAGE_SHOWREADME_CHECKED
-!define MUI_FINISHPAGE_SHOWREADME_TEXT "Register .sr files with SmuView"
-!define MUI_FINISHPAGE_SHOWREADME_FUNCTION register_sr_files
 
 # Show a final "We're done, click Finish to close this wizard" message.
 !insertmacro MUI_PAGE_FINISH
@@ -158,20 +141,7 @@ Section "SmuView (required)" Section1
 	File "${CROSS}/zadig.exe"
 	File "${CROSS}/zadig_xp.exe"
 
-	# Python
-	#File "${CROSS}/python34.dll"3-2014
-	#File "${CROSS}/python34.zip"
-
 	SetOutPath "$INSTDIR\share"
-
-	# Protocol decoders.
-	#File /r /x "__pycache__" /x "*.pyc" "${CROSS}/share/libsigrokdecode"
-
-	# Firmware files.
-	File /r "${CROSS}/share/sigrok-firmware"
-
-	# Generate the uninstaller executable.
-	WriteUninstaller "$INSTDIR\Uninstall.exe"
 
 	# Create a sub-directory in the start menu.
 	CreateDirectory "$SMPROGRAMS\sigrok"
@@ -220,8 +190,8 @@ Section "SmuView (required)" Section1
 	WriteRegStr HKLM "${REGSTR}" "HelpLink" \
 		"http://sigrok.org/wiki/SmuView"
 	WriteRegStr HKLM "${REGSTR}" "URLUpdateInfo" \
-		"http://sigrok.org/wiki/Downloads"
-	WriteRegStr HKLM "${REGSTR}" "URLInfoAbout" "http://sigrok.org"
+		"https://github.com/knarfS/smuview/releases"
+	WriteRegStr HKLM "${REGSTR}" "URLInfoAbout" "https://github.com/knarfS/smuview"
 	WriteRegStr HKLM "${REGSTR}" "DisplayVersion" "@SV_VERSION_STRING@"
 	WriteRegStr HKLM "${REGSTR}" "Contact" \
 		"sigrok-devel@lists.sourceforge.org"
@@ -248,13 +218,6 @@ Section "Uninstall"
 	#Delete "$INSTDIR\python34.dll"
 	#Delete "$INSTDIR\python34.zip"
 
-	# Delete all decoders and everything else in libsigrokdecode/.
-	# There could be *.pyc files or __pycache__ subdirs and so on.
-	#RMDir /r "$INSTDIR\share\libsigrokdecode"
-
-	# Delete the firmware files.
-	RMDir /r "$INSTDIR\share\sigrok-firmware"
-
 	# Delete the URL files for the manual.
 	#Delete "$INSTDIR\SmuView HTML manual.url"
 	#Delete "$INSTDIR\SmuView PDF manual.url"
@@ -269,7 +232,6 @@ Section "Uninstall"
 	Delete "$SMPROGRAMS\sigrok\SmuView\Uninstall SmuView.lnk"
 	Delete "$SMPROGRAMS\sigrok\SmuView\Zadig (SmuView).lnk"
 	Delete "$SMPROGRAMS\sigrok\SmuView\Zadig (SmuView, Win XP).lnk"
-	Delete "$SMPROGRAMS\sigrok\SmuView\Examples (SmuView).lnk"
 
 	# Delete the links to the manual.
 	#Delete "$SMPROGRAMS\sigrok\SmuView\SmuView HTML manual.lnk"
@@ -281,20 +243,13 @@ Section "Uninstall"
 
 	# Delete the registry key(s).
 	DeleteRegKey HKLM "${REGSTR}"
-
-	# Unregister any previously registered file extension(s).
-	${unregisterExtension} ".sr" "sigrok session file"
-
-	# Force Windows to update the icon cache so that the icon for .sr files is reset.
-	System::Call 'Shell32::SHChangeNotify(i ${SHCNE_ASSOCCHANGED}, i ${SHCNF_IDLIST}, i 0, i 0)'
 SectionEnd
 
 
 # --- Component selection section descriptions --------------------------------
 
-LangString DESC_Section1 ${LANG_ENGLISH} "This installs the SmuView sigrok GUI, some firmware files, and all required libraries."
+LangString DESC_Section1 ${LANG_ENGLISH} "This installs the SmuView sigrok GUI and all required libraries."
 
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
 	!insertmacro MUI_DESCRIPTION_TEXT ${Section1} $(DESC_Section1)
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
-
