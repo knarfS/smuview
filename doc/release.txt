@@ -13,9 +13,6 @@ Install packages for libserialport:
 Install packages for libsigrok:
  $ sudo apt-get -y install g++ autoconf-archive pkg-config libglib2.0-dev libglibmm-2.4-dev libzip-dev libusb-1.0-0-dev libftdi-dev libvisa-dev libieee1284-3-dev check doxygen python-numpy python-dev python-gi-dev python-setuptools swig
 
-Install packages for sigrok-firmware (TODO: needed?).
- $ sudo apt-get -y install sdcc
-
 Install packages for smuview:
  $ sudo apt-get -y install libboost1.55-all-dev
 
