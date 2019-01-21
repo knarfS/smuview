@@ -5,7 +5,7 @@
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0+</project_license>
   <name>SmuView</name>
-  <summary>Logic analyzer, oscilloscope and MSO GUI</summary>
+  <summary>Power supplies, electronic loads, multimeters and more.</summary>
   <description>
     <p>SmuView is a Qt based source measure unit GUI for sigrok.</p>
     <p>Features:</p>
@@ -28,11 +28,5 @@
   <provides>
     <binary>smuview</binary>
   </provides>
-  <suggests>
-    <id>org.sigrok.sigrok-firmware</id>
-  </suggests>
   <launchable type="desktop-id">org.sigrok.SmuView.desktop</launchable>
-  <mimetypes>
-    <mimetype>application/vnd.sigrok.session</mimetype>
-  </mimetypes>
 </component>

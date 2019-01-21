@@ -7,4 +7,3 @@ Comment=SmuView is a Qt based source measure unit GUI for sigrok.
 Exec=smuview
 Icon=smuview
 Type=Application
-MimeType=application/vnd.sigrok.session;
