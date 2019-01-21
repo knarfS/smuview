@@ -38,7 +38,7 @@
 Name "SmuView"
 
 # Filename of the installer executable.
-OutFile "smuview-@SV_VERSION_STRING@-installer.exe"
+OutFile "SmuView-@SV_VERSION_STRING@-installer.exe"
 
 # Where to install the application.
 InstallDir "$PROGRAMFILES\sigrok\SmuView"
@@ -142,6 +142,9 @@ Section "SmuView (required)" Section1
 	File "${CROSS}/zadig_xp.exe"
 
 	SetOutPath "$INSTDIR\share"
+
+	# Generate the uninstaller executable.
+	WriteUninstaller "$INSTDIR\Uninstall.exe"
 
 	# Create a sub-directory in the start menu.
 	CreateDirectory "$SMPROGRAMS\sigrok"
