@@ -1,0 +1,155 @@
+https://xdevs.com/guide/agilent_gpib_rpi/
+https://gist.github.com/turingbirds/6eb05c9267a6437183a9567700e8581a
+https://www.linuxquestions.org/questions/linux-software-2/how-to-enable-agilent-82357a-usb-gpib-dongle-and-remain-sane-4175498814/
+https://www.linuxquestions.org/questions/linux-software-2/how-to-enable-hp-82357b-usb-gpib-dongle-and-remain-sane-4175485218/
+
+
+My Way (Debian Testing, Clone Agilent 82357B):
+==============================================
+
+After each Kernel update:
+
+- Install Kernel Headers (linux-headers-4.XX.X-X-all)
+- Install fxload (fxload)
+- Download last linux-gpib (https://sourceforge.net/projects/linux-gpib/files/)
+- Download last firmware (http://linux-gpib.sourceforge.net/firmware/)
+
+# tar -xvzf linux-gpib-4.1.0.tar.gz
+# cd linux-gpib-4.1.0
+# ./configure
+# make
+# su
+# make install
+# ldconfig
+# exit
+
+- Copy firmware to /usr/share/usb (e.g. agilent_82357a -> /usr/share/usb) as root
+- Edit file /etc/gpib.conf:
+
+/***********************************************************************
+                 GPIB.CONF IEEE488 library config file
+                             -------------------
+
+   copyright            : (C) 2002 by Frank Mori Hess
+                          (C) 1994 by C.Schroeter
+   email                : fmhess@users.sourceforge.net
+ ***************************************************************************/
+/***************************************************************************
+ *
+ *   Syntax:
+ *
+ *         interface { ... } starts new interface board section
+ *         device {...} device configuration
+ *
+ ***************************************************************************/
+
+/* This section configures the configurable driver characteristics
+ * for an interface board, such as board address, and interrupt level.
+ * minor = 0 configures /dev/gpib0, minor = 1 configures /dev/gpib1, etc.
+ */
+
+interface {
+        minor = 0       /* board index, minor = 0 uses /dev/gpib0, minor = 1 uses /dev/gpib1, etc. */
+        board_type = "agilent_82357a"   /* type of interface board being used */
+        name = "agi"    /* optional name, allows you to get a board descriptor using ibfind() */
+        pad = 0 /* primary address of interface             */
+        sad = 0 /* secondary address of interface           */
+        timeout = T3s   /* timeout for commands */
+
+        eos = 0x0a      /* EOS Byte, 0xa is newline and 0xd is carriage return */
+        set-reos = yes  /* Terminate read if EOS */
+        set-bin = no    /* Compare EOS 8-bit */
+        set-xeos = no   /* Assert EOI whenever EOS byte is sent */
+        set-eot = yes   /* Assert EOI with last byte on writes */
+
+/* settings for boards that lack plug-n-play capability */
+        base = 0        /* Base io ADDRESS                  */
+        irq  = 0        /* Interrupt request level */
+        dma  = 0        /* DMA channel (zero disables)      */
+
+/* pci_bus and pci_slot can be used to distinguish two pci boards supported by the same driver */
+/*      pci_bus = 0 */
+/*      pci_slot = 7 */
+
+        master = yes    /* interface board is system controller */
+}
+
+/* This is how you might set up a pcIIa board on /dev/gpib1, uncomment to use. */
+/*******************
+interface {
+        minor = 1
+        board_type = "pcIIa"
+        pad = 0
+        sad = 0
+        timeout = T3s
+
+        eos = 0x0a
+        set-reos = yes
+        set-bin = no
+
+        base = 0x2e1
+        irq  = 7
+        dma  = 1
+
+        master = yes
+}
+*********************/
+
+/* Now the device sections define the device characteristics for each device.
+ * These are only used if you want to open the device using ibfind() (instead
+ * of ibdev() )
+ */
+
+device {
+        minor = 0       /* minor number for interface board this device is connected to */
+        name = "hp3478a"        /* device mnemonic */
+        pad = 24        /* The Primary Address */
+        sad = 0 /* Secondary Address */
+
+        eos = 0xa       /* EOS Byte */
+        set-reos = no /* Terminate read if EOS */
+        set-bin = no /* Compare EOS 8-bit */
+}
+
+device {
+        minor = 0       /* minor number for interface board this device is connected to */
+        name = "voltmeter"      /* device mnemonic */
+        pad = 7 /* The Primary Address */
+        sad = 0 /* Secondary Address */
+
+        eos = 0xa       /* EOS Byte */
+        set-reos = no /* Terminate read if EOS */
+        set-bin = no /* Compare EOS 8-bit */
+}
+
+device {
+        minor = 0
+        name = "scope"
+        pad = 8
+        sad = 0
+}
+
+- add users to group "gpib" (/etc/group)
+- load config:
+# sudo gpib_config
+
+CHECK:
+======
+
+# lsmod
+agilent_82357a         24576  0
+gpib_common            36864  1 agilent_82357a
+
+
+# dmesg
+Linux-GPIB 4.1.0 Driver
+agilent_82357a_gpib driver loading
+usbcore: registered new interface driver agilent_82357a_gpib
+gpib: registered agilent_82357a interface
+
+# ls -l /dev/gpib*
+crw-rw----  1 root gpib    160,   1 Okt 31 17:25 gpib0
+...
+crw-rw----  1 root gpib    160,   9 Okt 31 17:25 gpib9
+
+# ibtest -d 24

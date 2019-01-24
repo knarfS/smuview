@@ -1,0 +1,29 @@
+Finder
+======
+
+55.34.9.012.5040 (AgNi + Au plated)
+55.34.9.006.0040 (AgNi)
+
+
+A 7A medium power relay with AgNi contacts has a minimum switching specification of 5 V / 5 mA / 300 mW.
+This relay is also available with gold plated contacts; when the revised values become 5 V / 2 mA / 50 mW.
+
+If a much lower voltage must be reliably switched, consider two contacts in parallel. This dramatically
+lowers the minimum switching load - two parallel gold contacts make it possible to handle loads down to
+0.1 V / 1 mA / 1 mW. It may be useful to appreciate that statistically the unreliability of two contacts
+in parallel is equal to the unreliability of the single contact raised to the power of two. So, just to
+illustrate the maths, a 1% unreliable switching circuit becomes 0.01% unreliable - i.e. a 100x improvement
+in reliability. And for three contacts in parallel the unreliability would be raised to the power of
+three – a 10,000x improvement in reliability!
+(https://www.findernet.com/en/unitedkingdom/news/relay-contact-materials-does-it-matter)
+
+
+Minimum switching load:
+The minimum values of power, voltage and current that a contact can reliably switch. For example, if
+minimum values are 300 mW, 5 V / 5 mA:
+- with 5 V the current must be at least 60 mA;
+- with 24 V the current must be at least 12.5 mA;
+- with 5 mA the voltage must be at least 60 V;
+For gold contact variants, loads no less than 50 mW, 5 V / 2 mA are suggested.
+With 2 gold contacts in parallel, it is possible to switch 1 mW, 0.1 V / 1 mA.
+(https://www.finder-relais.net/en/Finder-general-technical-information-en.pdf)
