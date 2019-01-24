@@ -345,15 +345,22 @@ if(WIN32)
 	add_definitions(-DQT_STATICPLUGIN)
 	list(APPEND SMUVIEW_LINK_LIBS Qt5::QSvgPlugin)
 	list(APPEND SMUVIEW_LINK_LIBS Qt5::QWindowsIntegrationPlugin)
-	list(APPEND SMUVIEW_LINK_LIBS -lQt5PlatformSupport ${QT5ALL_LDFLAGS})
 
 	# Form Qt 5.8 on, Qt5PlatformSupport is split into several plugins:
 	# QtAccessibilitySupport QtCliboardSupport QtEventDispatcherSupport
-	# QtFontDatabaseSupport QtGraphicsSupport QtThemeSupport (<- some are wrong)
-	#list(APPEND SMUVIEW_LINK_LIBS -lQt5AccessibilitySupport -lQt5EventDispatcherSupport)
-	#list(APPEND SMUVIEW_LINK_LIBS -lQt5FontDatabaseSupport -lQt5ThemeSupport)
-	#list(APPEND SMUVIEW_LINK_LIBS -lQt5ClipboardSupport -lQt5GraphicsSupport)
-	#list(APPEND SMUVIEW_LINK_LIBS ${QT5ALL_LDFLAGS})
+	# QtFontDatabaseSupport QtGraphicsSupport QtThemeSupport
+	# TODO: Some of the plugins are wrong?
+	if(Qt5Core_VERSION VERSION_LESS "5.8.0")
+		list(APPEND SMUVIEW_LINK_LIBS -lQt5PlatformSupport ${QT5ALL_LDFLAGS})
+	else()
+		list(APPEND SMUVIEW_LINK_LIBS -lQt5AccessibilitySupport)
+		list(APPEND SMUVIEW_LINK_LIBS -lQt5EventDispatcherSupport)
+		list(APPEND SMUVIEW_LINK_LIBS -lQt5FontDatabaseSupport)
+		list(APPEND SMUVIEW_LINK_LIBS -lQt5ThemeSupport)
+		#list(APPEND SMUVIEW_LINK_LIBS -lQt5ClipboardSupport)
+		#list(APPEND SMUVIEW_LINK_LIBS -lQt5GraphicsSupport)
+		list(APPEND SMUVIEW_LINK_LIBS ${QT5ALL_LDFLAGS})
+	endif()
 endif()
 
 add_executable(${PROJECT_NAME} ${smuview_SOURCES} ${smuview_RESOURCES_RCC})
