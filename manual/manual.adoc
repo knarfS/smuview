@@ -1,6 +1,6 @@
 SmuView User Manual
 ===================
-unreleased development snapshot, dated 2019-01-18
+unreleased development snapshot, dated 2019-01-24
 :doctype: book
 :imagesdir: ./images
 :sectnums:
@@ -11,18 +11,16 @@ unreleased development snapshot, dated 2019-01-18
 
 ifdef::ebook-format[:leveloffset: -1]
 
-//include::license.txt[]
+include::license.adoc[]
 
-//include::overview.txt[]
+include::overview.adoc[]
 
-//include::installation.txt[]
+include::installation.adoc[]
 
-//include::acquisition.txt[]
+//include::acquisition.adoc[]
 
-//include::analysis.txt[]
+//include::analysis.adoc[]
 
-//include::decoders.txt[]
+//include::export.adoc[]
 
-//include::import_export.txt[]
-
-//include::cli.txt[]
+include::cli.adoc[]

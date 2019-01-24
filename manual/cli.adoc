@@ -1,0 +1,27 @@
+== Command-line Interface
+
+Even though SmuView has a graphical user interface, there is also a command-line interface that
+you can make use of. It is meant to provide functions for convenience and debug purposes, not to
+replace the user interface itself.
+
+Running
+
+	smuview -h
+
+gives you a list of these functions.
+
+Since SmuView can't automatically scan for devices connected to a COM port (ttySx on Linux) or
+Ethernet, you can tell it to look for a specific device using the -d or --driver parameter. Its
+usage is the same as for sigrok-cli. For example:
+
+	smuview -d arachnid-labs-re-load-pro:conn=/dev/ttyUSB0
+
+The remaining parameters are mostly for debug purposes:
+
+	-V / --version		Shows the release version
+	-l / --loglevel		Sets the libsigrok/libsigrokdecode log level (max is 5)
+	-D / --dont-scan	Don't auto-scan for devices
+
+Of these, -D / --dont-scan can be useful when SmuView gets stuck during the startup device scan.
+No such scan will be performed then, allowing the program to start up but you'll have to scan for
+your acquisition device(s) manually before you can use them.
