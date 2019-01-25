@@ -218,8 +218,6 @@ Section "Uninstall"
 	Delete "$INSTDIR\smuview.exe"
 	Delete "$INSTDIR\zadig.exe"
 	Delete "$INSTDIR\zadig_xp.exe"
-	#Delete "$INSTDIR\python34.dll"
-	#Delete "$INSTDIR\python34.zip"
 
 	# Delete the URL files for the manual.
 	#Delete "$INSTDIR\SmuView HTML manual.url"
