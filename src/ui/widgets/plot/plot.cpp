@@ -270,7 +270,6 @@ int Plot::init_x_axis(widgets::plot::BaseCurveData *curve_data)
 		AxisBoundary::UpperBoundary, false));
 	axis_lock_map_.insert(make_pair(x_axis_id, locks));
 
-	this->enableAxis(x_axis_id);
 	this->setAxisTitle(x_axis_id, title);
 	this->setAxisScale(x_axis_id, min, max);
 	//this->setAxisAutoScale(x_axis_id, true); // TODO: Not working!?
