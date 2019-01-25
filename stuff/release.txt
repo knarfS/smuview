@@ -103,12 +103,6 @@ To debug the SmuView AppImage:
  $ LD_DEBUG=libs ./SmuView.AppImage
 
 
-TODO
-====
-
-- Qwt install path. /usr/local/qwt-6.1.3 not found by linuxdeployqt
-- smuview binary size (~100MB)
-
 Misc
 ====
 
