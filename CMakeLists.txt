@@ -118,6 +118,9 @@ find_package(Threads REQUIRED)
 #= System Introspection
 #-------------------------------------------------------------------------------
 
+include(memaccess)
+memaccess_check_unaligned_le(HAVE_UNALIGNED_LITTLE_ENDIAN_ACCESS)
+
 
 #===============================================================================
 #= Config Header
