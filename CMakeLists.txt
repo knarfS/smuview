@@ -132,15 +132,21 @@ set(SV_VERSION_STRING "0.0.1")
 set(SV_GLIBMM_VERSION ${PKGDEPS_glibmm-2.4_VERSION})
 
 # Append the revision hash unless we are exactly on a tagged release.
-#include(GetGitRevisionDescription)
-#git_describe(SV_TAG_VERSION_STRING --match "smuview-${SV_VERSION_STRING}" --exact-match)
-#if(NOT SV_TAG_VERSION_STRING)
-#	get_git_head_revision(SV_REVSPEC SV_HASH)
-#	if(SV_HASH)
-#		string(SUBSTRING "${SV_HASH}" 0 7 SV_SHORTHASH)
-#		set(SV_VERSION_STRING "${SV_VERSION_STRING}-git-${SV_SHORTHASH}")
-#	endif()
-#endif()
+include(GetGitRevisionDescription)
+git_describe(SV_TAG_VERSION_STRING --match "smuview-${SV_VERSION_STRING}" --exact-match)
+if(NOT SV_TAG_VERSION_STRING)
+	get_git_head_revision(SV_REVSPEC SV_HASH)
+	if(SV_HASH)
+		string(SUBSTRING "${SV_HASH}" 0 7 SV_SHORTHASH)
+		set(SV_VERSION_STRING "${SV_VERSION_STRING}-git-${SV_SHORTHASH}")
+	endif()
+
+	# Non-tagged releases use the unstable manual
+	set(SV_MANUAL_VERSION "unstable")
+else()
+	# Tagged releases use a fixed manual version
+	set(SV_MANUAL_VERSION ${SV_VERSION_STRING})
+endif()
 
 if(SV_VERSION_STRING MATCHES "^([0-9]+)\\.([0-9]+)\\.([0-9]+)(-[-0-9a-z]*)?$")
 	set(SV_VERSION_MAJOR ${CMAKE_MATCH_1})
@@ -149,7 +155,7 @@ if(SV_VERSION_STRING MATCHES "^([0-9]+)\\.([0-9]+)\\.([0-9]+)(-[-0-9a-z]*)?$")
 	set(SV_VERSION_SUFFIX ${CMAKE_MATCH_4})
 endif()
 
-message("-- ${SV_TITLE} version: ${SV_VERSION_STRING}")
+message(STATUS "${SV_TITLE} version: ${SV_VERSION_STRING}")
 
 configure_file (
 	${PROJECT_SOURCE_DIR}/config.h.in
