@@ -1,7 +1,8 @@
 Docs
 ====
 
-- https://code.launchpad.net/~richwareham/firtree/gstreamer-integration
+- https://gstreamer.freedesktop.org/data/events/gstreamer-conference/2016/Marcin%20Kolny%20-%20gstreamermm%20-%20C++%20way%20of%20doing%20GStreamer-based%20applications.pdf
+- https://gstreamer.freedesktop.org/data/events/gstreamer-conference/2015/Marcin%20Kolny%20-%20gstreamermm%20c++%20wrapper.pdf
 
 
 Pipeline editors
