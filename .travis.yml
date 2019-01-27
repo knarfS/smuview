@@ -33,7 +33,6 @@ script:
   - git checkout smuview
   - cd cross-compile/linux
   - ./sigrok-cross-linux-smuview
-  - make INSTALL_ROOT=appdir -j$(nproc) install
 
 branches:
   except:
