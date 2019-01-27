@@ -107,7 +107,7 @@ find_package(Qwt 6.1.2 REQUIRED)
 
 # Only boost::config and boost::multiprecision are required, so no need to
 # specify any boost libraries
-find_package(Boost 1.55 REQUIRED)
+find_package(Boost 1.54 REQUIRED)
 
 # Find the platform's thread library (needed for C++11 threads).
 # This will set ${CMAKE_THREAD_LIBS_INIT} to the correct, OS-specific value.
