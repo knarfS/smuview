@@ -37,7 +37,7 @@ FIND_PATH(QWT_INCLUDE_DIR NAMES qwt.h PATHS
   "${QWT_CUSTOM_INSTALL_PATH}/include"
   "$ENV{LIB_DIR}/include"
   "$ENV{INCLUDE}"
-  PATH_SUFFIXES qwt-qt5 qwt qwt6
+  PATH_SUFFIXES qwt-qt5 qt5/qwt qwt qwt6
 )
 
 IF (QWT_INCLUDE_DIR AND QWT_LIBRARY)
