@@ -189,8 +189,6 @@ void Plot::stop()
 
 void Plot::replot()
 {
-	//ReLoadProData::instance().lock();
-
 	//qWarning() << "Plot::replot()";
 
 	for (auto curve_data : curve_datas_) {
@@ -198,9 +196,6 @@ void Plot::replot()
 	}
 
 	QwtPlot::replot();
-
-
-	//ReLoadProData::instance().unlock();
 }
 
 void Plot::add_curve(widgets::plot::BaseCurveData *curve_data)
@@ -428,7 +423,6 @@ void Plot::set_all_axis_locked(bool locked)
 
 void Plot::on_axis_lock_clicked()
 {
-
 	AxisLockLabel *lock_label = qobject_cast<AxisLockLabel *>(sender());
 	if (lock_label) {
 		bool locked = is_axis_locked(
@@ -598,8 +592,6 @@ void Plot::on_legend_clicked(const QVariant &item_info, int index)
 void Plot::update_curves()
 {
 	for (plot::BaseCurveData *curve_data : curve_datas_) {
-		//ReLoadProData::instance().lock(); // TODO
-
 		const size_t painted_points = painted_points_map_[curve_data];
 		const size_t num_points = curve_data->size();
 		if (num_points > painted_points) {
@@ -633,8 +625,6 @@ void Plot::update_curves()
 
 			painted_points_map_[curve_data] = num_points;
 		}
-
-		//ReLoadProData::instance().unlock(); // TODO
 
 		//replot();
 	}
