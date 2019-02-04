@@ -47,7 +47,7 @@ QColor BaseCurveData::color() const
 	else if (y_data_unit() == "A")
 		return Qt::green;
 	else
-		return Qt::blue;
+		return Qt::yellow;
 
 	//return color_;
 }
