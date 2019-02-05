@@ -258,14 +258,11 @@ void HardwareDevice::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
 {
 	lock_guard<recursive_mutex> lock(data_mutex_);
 
-	const vector<shared_ptr<sigrok::Channel>> sr_channels = sr_analog->channels();
-	//const unsigned int channel_count = sr_channels.size();
-	//const size_t sample_count = sr_analog->num_samples() / channel_count;
-
 	unique_ptr<float> data(new float[sr_analog->num_samples()]);
 	sr_analog->get_data_as_float(data.get());
-
 	float *channel_data = data.get();
+
+	const vector<shared_ptr<sigrok::Channel>> sr_channels = sr_analog->channels();
 	for (auto sr_channel : sr_channels) {
 		/*
 		qWarning() << "HardwareDevice::feed_in_analog(): HardwareDevice = " <<
@@ -279,12 +276,6 @@ void HardwareDevice::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
 			assert("Unknown channel");
 		auto channel = static_pointer_cast<channels::HardwareChannel>(
 			sr_channel_map_[sr_channel]);
-
-		/*
-		 * TODO: Use push_interleaved_samples() as only push function
-		actual_signal->analog_data()->push_interleaved_samples(
-			channel_data, sample_count,channel_count, sr_analog->unit());
-		*/
 
 		if (frame_began_) {
 			channel->push_sample_sr_analog(

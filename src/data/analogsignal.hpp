@@ -55,7 +55,6 @@ public:
 	void clear();
 
 	size_t get_sample_count() const;
-	vector<double> get_samples(size_t start_sample, size_t end_sample) const;
 	sample_t get_sample(size_t pos, bool relative_time) const;
 
 	/**

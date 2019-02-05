@@ -81,28 +81,9 @@ size_t AnalogSignal::get_sample_count() const
 	return sample_count;
 }
 
-vector<double> AnalogSignal::get_samples(
-	size_t start_sample, size_t end_sample) const
-{
-	assert(start_sample < sample_count_);
-	assert(end_sample <= sample_count_);
-	assert(start_sample <= end_sample);
-
-	// TODO: lock_guard<recursive_mutex> lock(mutex_);
-	// TODO: relative time
-
-	vector<double>::const_iterator first = data_->begin() + start_sample;
-	vector<double>::const_iterator last = data_->begin() + end_sample; // + 1
-	vector<double> sub_samples(first, last);
-
-	return sub_samples;
-}
-
 sample_t AnalogSignal::get_sample(size_t pos, bool relative_time) const
 {
-	//assert(pos <= sample_count_);
-
-	// TODO: retrun reference (&double)?
+	// TODO: retrun reference (&double)? See get_value_at_timestamp()
 
 	//qWarning() << "AnalogSignal::get_sample(" << pos
 	//	<< "): sample_count_ = " << sample_count_;
@@ -213,34 +194,6 @@ void AnalogSignal::push_sample(void *sample, double timestamp,
 	if (digits_chngd)
 		Q_EMIT digits_changed(digits_, decimal_places_);
 }
-
-/*
-void AnalogSignal::push_interleaved_samples(/ *const* / float *samples,//void *data,
-	size_t sample_count, size_t stride, const sigrok::Unit *sr_unit)
-{
-	//assert(unit_size_ == sizeof(float));
-
-	if (sr_quantity != sr_quantity_) {
-		set_quantity(sr_quantity);
-		Q_EMIT quantity_changed(quantity_);
-	}
-
-	if (sr_unit != sr_unit_) {
-		set_unit(sr_unit);
-		Q_EMIT unit_changed(unit_);
-	}
-
-	//lock_guard<recursive_mutex> lock(mutex_);
-
-	//uint64_t prev_sample_count = sample_count_;
-
-	// Deinterleave the samples and add them
-	for (uint32_t i = 0; i < sample_count; i++) {
-		push_sample(samples);
-		samples += stride;
-	}
-}
-*/
 
 int AnalogSignal::digits() const
 {
