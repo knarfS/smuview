@@ -54,9 +54,9 @@ XYCurveData::XYCurveData(shared_ptr<sv::data::AnalogSignal> x_t_signal,
 	// Prefill data vectors
 	this->on_sample_appended();
 
-	connect(x_t_signal_.get(), SIGNAL(sample_added()),
+	connect(x_t_signal_.get(), SIGNAL(sample_appended()),
 		this, SLOT(on_sample_appended()));
-	connect(y_t_signal_.get(), SIGNAL(sample_added()),
+	connect(y_t_signal_.get(), SIGNAL(sample_appended()),
 		this, SLOT(on_sample_appended()));
 }
 

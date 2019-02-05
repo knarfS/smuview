@@ -110,7 +110,7 @@ void DataView::setup_toolbar()
 
 void DataView::connect_signals()
 {
-	connect(signal_.get(), SIGNAL(sample_added()),
+	connect(signal_.get(), SIGNAL(sample_appended()),
 		this, SLOT(populate_table()));
 }
 

@@ -114,7 +114,7 @@ public Q_SLOTS:
 Q_SIGNALS:
 	void signal_start_timestamp_changed(double);
 	void samples_cleared();
-	void sample_added();
+	void sample_appended();
 	void digits_changed(const int, const int);
 
 };

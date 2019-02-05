@@ -57,8 +57,8 @@ IntegrateChannel::IntegrateChannel(
 
 	connect(this, SIGNAL(channel_start_timestamp_changed(double)),
 		this, SLOT(on_channel_start_timestamp_changed(double)));
-	connect(int_signal_.get(), SIGNAL(sample_added()),
-		this, SLOT(on_sample_added()));
+	connect(int_signal_.get(), SIGNAL(sample_appended()),
+		this, SLOT(on_sample_appended()));
 }
 
 void IntegrateChannel::on_channel_start_timestamp_changed(double timestamp)
@@ -68,7 +68,7 @@ void IntegrateChannel::on_channel_start_timestamp_changed(double timestamp)
 		last_timestamp_ = timestamp;
 }
 
-void IntegrateChannel::on_sample_added()
+void IntegrateChannel::on_sample_appended()
 {
 	// Integrate
 	size_t int_signal_sample_count = int_signal_->get_sample_count();

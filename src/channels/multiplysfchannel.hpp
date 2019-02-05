@@ -66,7 +66,7 @@ private:
 	size_t next_signal_pos_;
 
 private Q_SLOTS:
-	void on_sample_added();
+	void on_sample_appended();
 
 };
 

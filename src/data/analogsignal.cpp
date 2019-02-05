@@ -199,7 +199,7 @@ void AnalogSignal::push_sample(void *sample, double timestamp,
 	time_->push_back(timestamp);
 	data_->push_back(dsample);
 	sample_count_++;
-	Q_EMIT sample_added();
+	Q_EMIT sample_appended();
 
 	bool digits_chngd = false;
 	if (digits != digits_) {

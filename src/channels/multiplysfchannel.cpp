@@ -55,11 +55,11 @@ MultiplySFChannel::MultiplySFChannel(
 	digits_ = signal_->digits();
 	decimal_places_ = signal_->decimal_places();
 
-	connect(signal_.get(), SIGNAL(sample_added()),
-		this, SLOT(on_sample_added()));
+	connect(signal_.get(), SIGNAL(sample_appended()),
+		this, SLOT(on_sample_appended()));
 }
 
-void MultiplySFChannel::on_sample_added()
+void MultiplySFChannel::on_sample_appended()
 {
 	size_t signal_sample_count = signal_->get_sample_count();
 	while (next_signal_pos_ < signal_sample_count) {
