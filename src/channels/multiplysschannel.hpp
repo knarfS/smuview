@@ -21,6 +21,7 @@
 #define CHANNELS_MULTIPLYSSCHANNEL_HPP
 
 #include <memory>
+#include <mutex>
 #include <set>
 
 #include <QObject>
@@ -29,6 +30,7 @@
 #include "src/channels/userchannel.hpp"
 #include "src/data/datautil.hpp"
 
+using std::mutex;
 using std::set;
 using std::shared_ptr;
 
@@ -53,23 +55,22 @@ public:
 		data::Quantity quantity,
 		set<data::QuantityFlag> quantity_flags,
 		data::Unit unit,
-		shared_ptr<data::AnalogSignal> signal_1,
-		shared_ptr<data::AnalogSignal> signal_2,
+		shared_ptr<data::AnalogSignal> signal1,
+		shared_ptr<data::AnalogSignal> signal2,
 		shared_ptr<devices::BaseDevice> parent_device,
 		const QString channel_group_name,
 		QString channel_name,
 		double channel_start_timestamp);
 
 private:
-	shared_ptr<data::AnalogSignal> signal_1_;
-	shared_ptr<data::AnalogSignal> signal_2_;
-	size_t next_signal_1_pos_;
-	size_t next_signal_2_pos_;
-	double last_signal_1_value_;
-	double last_signal_2_value_;
+	shared_ptr<data::AnalogSignal> signal1_;
+	shared_ptr<data::AnalogSignal> signal2_;
+	size_t signal1_pos_;
+	size_t signal2_pos_;
+	mutex sample_append_mutex_;
 
 private Q_SLOTS:
-	void on_sample_added();
+	void on_sample_appended();
 
 };
 

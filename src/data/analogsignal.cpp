@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <algorithm>
 #include <cassert>
 #include <memory>
 #include <set>
@@ -97,18 +98,18 @@ vector<double> AnalogSignal::get_samples(
 	return sub_samples;
 }
 
-sample_t AnalogSignal::get_sample(size_t pos, bool is_relative_time) const
+sample_t AnalogSignal::get_sample(size_t pos, bool relative_time) const
 {
 	//assert(pos <= sample_count_);
 
- 	// TODO: retrun reference (&double)?
+	// TODO: retrun reference (&double)?
 
 	//qWarning() << "AnalogSignal::get_sample(" << pos
 	//	<< "): sample_count_ = " << sample_count_;
 
 	if (pos < sample_count_) {
 		double timestamp = time_->at(pos);
-		if (is_relative_time)
+		if (relative_time)
 			timestamp -= signal_start_timestamp_;
 		//qWarning() << "AnalogSignal::get_sample(" << pos
 		//	<< "): sample = " << timestamp << ", " << data_->at(pos);
@@ -116,6 +117,47 @@ sample_t AnalogSignal::get_sample(size_t pos, bool is_relative_time) const
 	}
 
 	return make_pair(0., 0.);
+}
+
+bool AnalogSignal::get_value_at_timestamp(
+	double timestamp, double &value, bool relative_time) const
+{
+	if (time_->size() == 0)
+		return false;
+	if (timestamp < time_->at(0))
+		return false;
+	if (timestamp > time_->back())
+		return false;
+
+	if (relative_time)
+		timestamp += signal_start_timestamp_;
+
+	auto lower = std::lower_bound(time_->begin(), time_->end(), timestamp);
+
+	// Check if timestamp and found timestamp match
+	if (timestamp == *lower) {
+		value = *lower;
+		return true;
+	}
+
+	size_t lower_pos = lower - time_->begin();
+
+	// Get the previous timestamp for linear interpolation
+	if (lower_pos > 0)
+		--lower_pos;
+
+	double lower_ts = time_->at(lower_pos);
+	double lower_data = data_->at(lower_pos);
+	size_t upper_pos = lower_pos + 1;
+	double upper_ts = time_->at(upper_pos);
+
+	// Use linear interpolation to get the value beetween time stamps
+	double ts_factor = (timestamp - lower_ts) / (upper_ts - lower_ts);
+	double data_diff = data_->at(upper_pos) - lower_data;
+	double lininter_data = lower_data + (data_diff * ts_factor);
+
+	value = lininter_data;
+	return true;
 }
 
 void AnalogSignal::push_sample(void *sample, double timestamp,
@@ -258,6 +300,87 @@ void AnalogSignal::on_channel_start_timestamp_changed(double timestamp)
 {
 	signal_start_timestamp_ = timestamp;
 	Q_EMIT signal_start_timestamp_changed(timestamp);
+}
+
+void AnalogSignal::combine_signals(
+	shared_ptr<AnalogSignal> signal1, size_t &signal1_pos,
+	shared_ptr<AnalogSignal> signal2, size_t &signal2_pos,
+	shared_ptr<vector<double>> time_vector,
+	shared_ptr<vector<double>> data1_vector,
+	shared_ptr<vector<double>> data2_vector)
+{
+	// Ignore the first sample(s)
+	// TODO: Use last of the ignored samples?
+	if (signal1_pos == 0 && signal2_pos == 0) {
+		if (signal1->get_sample_count() <= signal1_pos ||
+			signal2->get_sample_count() <= signal2_pos)
+			return;
+
+		double signal1_ts = signal1->get_sample(signal1_pos, false).first;
+		double signal2_ts = signal2->get_sample(signal2_pos, false).first;
+		if (signal1_ts < signal2_ts) {
+			while (signal1_ts < signal2_ts)
+				signal1_ts = signal1->get_sample(++signal1_pos, false).first;
+		}
+		else if (signal1_ts > signal2_ts) {
+			while (signal1_ts > signal2_ts)
+				signal2_ts = signal2->get_sample(++signal2_pos, false).first;
+		}
+	}
+
+	while (true) {
+		if (signal1->get_sample_count() <= signal1_pos ||
+			signal2->get_sample_count() <= signal2_pos)
+			break;
+
+		/*
+		qWarning() << "AnalogSignal::merge_signals(): signal1_size = "
+				<< signal1->get_sample_count() << ", signal1_pos = "
+				<< signal1_pos;
+		qWarning() << "AnalogSignal::merge_signals(): signal2_size = "
+				<< signal2->get_sample_count() << ", signal2_pos = "
+				<< signal2_pos;
+		*/
+
+		double time;
+		double value1;
+		double value2;
+
+		sample_t signal1_sample = signal1->get_sample(signal1_pos, false);
+		sample_t signal2_sample = signal2->get_sample(signal2_pos, false);
+		if (signal1_sample.first == signal2_sample.first) {
+			time = signal1_sample.first;
+			value1 = signal1_sample.second;
+			value2 = signal2_sample.second;
+			++signal1_pos;
+			++signal2_pos;
+		}
+		else if (signal1_sample.first < signal2_sample.first &&
+			signal2->get_sample_count() > signal2_pos+1) {
+
+			time = signal1_sample.first;
+			value1 = signal1_sample.second;
+			if (!signal2->get_value_at_timestamp(time, value2, false))
+				return;
+			++signal1_pos;
+		}
+		else if (signal1_sample.first > signal2_sample.first &&
+			signal1->get_sample_count() > signal1_pos+1) {
+
+			time = signal2_sample.first;
+			if (!signal1->get_value_at_timestamp(time, value1, false))
+				return;
+			value2 = signal2_sample.second;
+			++signal2_pos;
+		}
+		else {
+			return;
+		}
+
+		time_vector->push_back(time);
+		data1_vector->push_back(value1);
+		data2_vector->push_back(value2);
+	}
 }
 
 } // namespace data

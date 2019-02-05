@@ -19,6 +19,7 @@
 
 #include <cassert>
 #include <memory>
+#include <mutex>
 #include <set>
 
 #include <QDebug>
@@ -29,6 +30,10 @@
 #include "src/data/analogsignal.hpp"
 #include "src/data/datautil.hpp"
 #include "src/devices/basedevice.hpp"
+
+using std::lock_guard;
+using std::make_shared;
+using std::mutex;
 
 namespace sv {
 namespace channels {
@@ -48,8 +53,8 @@ DivideChannel::DivideChannel(
 		channel_start_timestamp),
 	dividend_signal_(dividend_signal),
 	divisor_signal_(divisor_signal),
-	next_dividend_signal_pos_(0),
-	next_divisor_signal_pos_(0)
+	dividend_signal_pos_(0),
+	divisor_signal_pos_(0)
 {
 	assert(dividend_signal_);
 	assert(divisor_signal_);
@@ -65,101 +70,39 @@ DivideChannel::DivideChannel(
 		decimal_places_ = divisor_signal->decimal_places();
 
 	connect(dividend_signal_.get(), SIGNAL(sample_added()),
-		this, SLOT(on_sample_added()));
+		this, SLOT(on_sample_appended()));
 	connect(divisor_signal_.get(), SIGNAL(sample_added()),
-		this, SLOT(on_sample_added()));
+		this, SLOT(on_sample_appended()));
 }
 
-void DivideChannel::on_sample_added()
+void DivideChannel::on_sample_appended()
 {
-	// Divide
-	size_t dividend_signal_sample_count = dividend_signal_->get_sample_count();
-	size_t divisor_signal_sample_count = divisor_signal_->get_sample_count();
+	lock_guard<mutex> lock(sample_append_mutex_);
 
-	while (next_dividend_signal_pos_ < dividend_signal_sample_count ||
-			next_divisor_signal_pos_ < divisor_signal_sample_count) {
+	shared_ptr<vector<double>> time = make_shared<vector<double>>();
+	shared_ptr<vector<double>> dividend_data = make_shared<vector<double>>();
+	shared_ptr<vector<double>> divisor_data = make_shared<vector<double>>();
 
-		bool has_sample_1 = false;
-		data::sample_t sample_1;
-		if (next_dividend_signal_pos_ < dividend_signal_sample_count) {
-			sample_1 = dividend_signal_->get_sample(
-				next_dividend_signal_pos_, false);
-			has_sample_1 = true;
-		}
+	sv::data::AnalogSignal::combine_signals(
+		dividend_signal_, dividend_signal_pos_,
+		divisor_signal_, divisor_signal_pos_,
+		time, dividend_data, divisor_data);
 
-		bool has_sample_2 = false;
-		data::sample_t sample_2;
-		if (next_divisor_signal_pos_ < divisor_signal_sample_count) {
-			sample_2 = divisor_signal_->get_sample(
-				next_divisor_signal_pos_, false);
-			has_sample_2 = true;
-		}
-
-		double time = 0;
-		if (has_sample_1 && !has_sample_2 && next_divisor_signal_pos_ == 0) {
-			last_dividend_value_ = sample_1.second;
-			++next_dividend_signal_pos_;
-			continue;
-		}
-		else if (has_sample_2 && !has_sample_1 && next_dividend_signal_pos_ == 0) {
-			last_divisor_value_ = sample_2.second;
-			++next_divisor_signal_pos_;
-			continue;
-		}
-		else if (has_sample_1 && !has_sample_2) {
-			time = sample_1.first;
-			last_dividend_value_ = sample_1.second;
-			++next_dividend_signal_pos_;
-		}
-		else if (has_sample_2 && !has_sample_1) {
-			time = sample_2.first;
-			last_divisor_value_ = sample_2.second;
-			++next_divisor_signal_pos_;
-		}
-		else if (has_sample_1 && has_sample_2) {
-			double time_1 = sample_1.first;
-			double time_2 = sample_2.first;
-			if (time_1 == time_2) {
-				time = time_1;
-				last_dividend_value_ = sample_1.second;
-				last_divisor_value_ = sample_2.second;
-				++next_dividend_signal_pos_;
-				++next_divisor_signal_pos_;
-			}
-			else if (time_1 < time_2) {
-				time = time_1;
-				last_dividend_value_ = sample_1.second;
-				++next_dividend_signal_pos_;
-			}
-			else if (time_2 < time_1) {
-				time = time_2;
-				last_divisor_value_ = sample_2.second;
-				++next_divisor_signal_pos_;
-			}
-			else {
-				// Something is wrong here...
-				qWarning() << "MultiplySSChannel::on_sample_added(): " <<
-					"Could not match the two signals!";
-			}
-		}
-		else {
-			// Something is wrong here...
-			qWarning() << "MultiplySSChannel::on_sample_added(): " <<
-				"Could not match the two signals!";
-		}
-
+	for (size_t i=0; i<time->size(); i++) {
+		// Division
 		double value;
-		if (last_divisor_value_ == 0) {
-			if (last_dividend_value_ > 0)
+		if (divisor_data->at(i) == 0) {
+			if (dividend_data->at(i) > 0)
 				// TODO: use infinity() instead?
 				value = std::numeric_limits<double>::max();
 			else
 				// TODO: use -1 * infinity() instead?
 				value = std::numeric_limits<double>::lowest();
 		}
-		else
-			value = last_dividend_value_ / last_divisor_value_;
-		push_sample(value, time);
+		else {
+			value = dividend_data->at(i) / divisor_data->at(i);
+		}
+		push_sample(value, time->at(i));
 	}
 }
 

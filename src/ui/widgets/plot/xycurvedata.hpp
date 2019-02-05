@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,8 @@
 #define UI_WIDGETS_PLOT_XYCURVEDATA_HPP
 
 #include <memory>
+#include <mutex>
+#include <vector>
 
 #include <QPointF>
 #include <QRectF>
@@ -28,7 +30,9 @@
 
 #include "src/ui/widgets/plot/basecurvedata.hpp"
 
+using std::mutex;
 using std::shared_ptr;
+using std::vector;
 
 namespace sv {
 
@@ -40,12 +44,17 @@ namespace ui {
 namespace widgets {
 namespace plot {
 
-class XYCurveData : public BaseCurveData
+/*
+ * NOTE: XYCurveData must also inherit QObject (Important: first QObject,
+ *       then BaseCurvedata), to get signals/slots working!
+ */
+class XYCurveData : public QObject, public BaseCurveData
 {
+	Q_OBJECT
 
 public:
-	XYCurveData(shared_ptr<sv::data::AnalogSignal> x_signal,
-		shared_ptr<sv::data::AnalogSignal> y_signal);
+	XYCurveData(shared_ptr<sv::data::AnalogSignal> x_t_signal,
+		shared_ptr<sv::data::AnalogSignal> y_t_signal);
 
 	QPointF sample(size_t i) const override;
 	size_t size() const override;
@@ -61,8 +70,17 @@ public:
 	QString y_data_title() const override;
 
 private:
-	shared_ptr<sv::data::AnalogSignal> x_signal_;
-	shared_ptr<sv::data::AnalogSignal> y_signal_;
+	shared_ptr<sv::data::AnalogSignal> x_t_signal_;
+	shared_ptr<sv::data::AnalogSignal> y_t_signal_;
+	size_t x_t_signal_pos_;
+	size_t y_t_signal_pos_;
+	// TODO: use some sort of AnalogSignal instead of 2 vectors?
+	shared_ptr<vector<double>> x_data_;
+	shared_ptr<vector<double>> y_data_;
+	mutex sample_append_mutex_;
+
+private Q_SLOTS:
+	void on_sample_appended();
 
 };
 

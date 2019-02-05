@@ -19,6 +19,7 @@
 
 #include <cassert>
 #include <memory>
+#include <mutex>
 #include <set>
 
 #include <QDebug>
@@ -30,6 +31,10 @@
 #include "src/data/datautil.hpp"
 #include "src/devices/basedevice.hpp"
 
+using std::lock_guard;
+using std::make_shared;
+using std::mutex;
+
 namespace sv {
 namespace channels {
 
@@ -37,8 +42,8 @@ MultiplySSChannel::MultiplySSChannel(
 		data::Quantity quantity,
 		set<data::QuantityFlag> quantity_flags,
 		data::Unit unit,
-		shared_ptr<data::AnalogSignal> signal_1,
-		shared_ptr<data::AnalogSignal> signal_2,
+		shared_ptr<data::AnalogSignal> signal1,
+		shared_ptr<data::AnalogSignal> signal2,
 		shared_ptr<devices::BaseDevice> parent_device,
 		const QString channel_group_name,
 		QString channel_name,
@@ -46,107 +51,45 @@ MultiplySSChannel::MultiplySSChannel(
 	UserChannel(quantity, quantity_flags, unit,
 		parent_device, channel_group_name, channel_name,
 		channel_start_timestamp),
-	signal_1_(signal_1),
-	signal_2_(signal_2),
-	next_signal_1_pos_(0),
-	next_signal_2_pos_(0)
+	signal1_(signal1),
+	signal2_(signal2),
+	signal1_pos_(0),
+	signal2_pos_(0)
 {
-	assert(signal_1_);
-	assert(signal_2_);
+	assert(signal1_);
+	assert(signal2_);
 
-	if (signal_1_->digits() >= signal_2_->digits())
-		digits_ = signal_1_->digits();
+	if (signal1_->digits() >= signal2_->digits())
+		digits_ = signal1_->digits();
 	else
-		digits_ = signal_2_->digits();
+		digits_ = signal2_->digits();
 
-	if (signal_1_->decimal_places() >= signal_2_->decimal_places())
-		decimal_places_ = signal_1_->decimal_places();
+	if (signal1_->decimal_places() >= signal2_->decimal_places())
+		decimal_places_ = signal1_->decimal_places();
 	else
-		decimal_places_ = signal_2_->decimal_places();
+		decimal_places_ = signal2_->decimal_places();
 
-	connect(signal_1_.get(), SIGNAL(sample_added()),
-		this, SLOT(on_sample_added()));
-	connect(signal_2_.get(), SIGNAL(sample_added()),
-		this, SLOT(on_sample_added()));
+	connect(signal1_.get(), SIGNAL(sample_added()),
+		this, SLOT(on_sample_appended()));
+	connect(signal2_.get(), SIGNAL(sample_added()),
+		this, SLOT(on_sample_appended()));
 }
 
-void MultiplySSChannel::on_sample_added()
+void MultiplySSChannel::on_sample_appended()
 {
-	// Multiply
-	size_t signal_1_sample_count = signal_1_->get_sample_count();
-	size_t signal_2_sample_count = signal_2_->get_sample_count();
+	lock_guard<mutex> lock(sample_append_mutex_);
 
-	while (next_signal_1_pos_ < signal_1_sample_count ||
-			next_signal_2_pos_ < signal_2_sample_count) {
+	shared_ptr<vector<double>> time = make_shared<vector<double>>();
+	shared_ptr<vector<double>> signal1_data = make_shared<vector<double>>();
+	shared_ptr<vector<double>> signal2_data = make_shared<vector<double>>();
 
-		bool has_sample_1 = false;
-		data::sample_t sample_1;
-		if (next_signal_1_pos_ < signal_1_sample_count) {
-			sample_1 = signal_1_->get_sample(next_signal_1_pos_, false);
-			has_sample_1 = true;
-		}
+	sv::data::AnalogSignal::combine_signals(
+		signal1_, signal1_pos_,
+		signal2_, signal2_pos_,
+		time, signal1_data, signal2_data);
 
-		bool has_sample_2 = false;
-		data::sample_t sample_2;
-		if (next_signal_2_pos_ < signal_2_sample_count) {
-			sample_2 = signal_2_->get_sample(next_signal_2_pos_, false);
-			has_sample_2 = true;
-		}
-
-		double time = 0;
-		if (has_sample_1 && !has_sample_2 && next_signal_2_pos_ == 0) {
-			last_signal_1_value_ = sample_1.second;
-			++next_signal_1_pos_;
-			continue;
-		}
-		else if (has_sample_2 && !has_sample_1 && next_signal_1_pos_ == 0) {
-			last_signal_2_value_ = sample_2.second;
-			++next_signal_2_pos_;
-			continue;
-		}
-		else if (has_sample_1 && !has_sample_2) {
-			time = sample_1.first;
-			last_signal_1_value_ = sample_1.second;
-			++next_signal_1_pos_;
-		}
-		else if (has_sample_2 && !has_sample_1) {
-			time = sample_2.first;
-			last_signal_2_value_ = sample_2.second;
-			++next_signal_2_pos_;
-		}
-		else if (has_sample_1 && has_sample_2) {
-			double time_1 = sample_1.first;
-			double time_2 = sample_2.first;
-			if (time_1 == time_2) {
-				time = time_1;
-				last_signal_1_value_ = sample_1.second;
-				last_signal_2_value_ = sample_2.second;
-				++next_signal_1_pos_;
-				++next_signal_2_pos_;
-			}
-			else if (time_1 < time_2) {
-				time = time_1;
-				last_signal_1_value_ = sample_1.second;
-				++next_signal_1_pos_;
-			}
-			else if (time_2 < time_1) {
-				time = time_2;
-				last_signal_2_value_ = sample_2.second;
-				++next_signal_2_pos_;
-			}
-			else {
-				// Something is wrong here...
-				qWarning() << "MultiplySSChannel::on_sample_added(): " <<
-					"Could not match the two signals!";
-			}
-		}
-		else {
-			// Something is wrong here...
-			qWarning() << "MultiplySSChannel::on_sample_added(): " <<
-				"Could not match the two signals!";
-		}
-
-		push_sample(last_signal_1_value_ * last_signal_2_value_, time);
+	for (size_t i=0; i<time->size(); i++) {
+		push_sample(signal1_data->at(i) * signal2_data->at(i), time->at(i));
 	}
 }
 

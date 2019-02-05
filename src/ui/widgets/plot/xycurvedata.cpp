@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,8 @@
  */
 
 #include <memory>
+#include <mutex>
+#include <vector>
 
 #include <QPointF>
 #include <QRectF>
@@ -27,49 +29,54 @@
 #include "src/data/analogsignal.hpp"
 #include "src/ui/widgets/plot/basecurvedata.hpp"
 
+using std::lock_guard;
+using std::make_shared;
+using std::mutex;
 using std::shared_ptr;
+using sv::data::sample_t;
 
 namespace sv {
 namespace ui {
 namespace widgets {
 namespace plot {
 
-XYCurveData::XYCurveData(shared_ptr<sv::data::AnalogSignal> x_signal,
-		shared_ptr<sv::data::AnalogSignal> y_signal) :
+XYCurveData::XYCurveData(shared_ptr<sv::data::AnalogSignal> x_t_signal,
+		shared_ptr<sv::data::AnalogSignal> y_t_signal) :
 	BaseCurveData(CurveType::XYCurve),
-	x_signal_(x_signal),
-	y_signal_(y_signal)
+	x_t_signal_(x_t_signal),
+	y_t_signal_(y_t_signal),
+	x_t_signal_pos_(0),
+	y_t_signal_pos_(0)
 {
+	x_data_ = make_shared<vector<double>>();
+	y_data_ = make_shared<vector<double>>();
+
+	// Prefill data vectors
+	this->on_sample_appended();
+
+	connect(x_t_signal_.get(), SIGNAL(sample_added()),
+		this, SLOT(on_sample_appended()));
+	connect(y_t_signal_.get(), SIGNAL(sample_added()),
+		this, SLOT(on_sample_appended()));
 }
 
 QPointF XYCurveData::sample(size_t i) const
 {
-	//signal_data_->lock();
-
-	// TODO: synchronize timestamps between signals, that are not
-	//       from the same frame
-	data::sample_t x_sample = x_signal_->get_sample(i, relative_time_);
-	data::sample_t y_sample = y_signal_->get_sample(i, relative_time_);
-
-	QPointF sample_point(x_sample.second, y_sample.second);
-
-	//signal_data_->.unlock();
-
+	QPointF sample_point(x_data_->at(i), y_data_->at(i));
 	return sample_point;
 }
 
 size_t XYCurveData::size() const
 {
-	// TODO: Synchronize x/y sample data
-	return x_signal_->get_sample_count();
+	return x_data_->size();
 }
 
 QRectF XYCurveData::boundingRect() const
 {
 	// top left, bottom right
 	return QRectF(
-		QPointF(x_signal_->min_value(), y_signal_->max_value()),
-		QPointF(x_signal_->max_value(), y_signal_->min_value()));
+		QPointF(x_t_signal_->min_value(), y_t_signal_->max_value()),
+		QPointF(x_t_signal_->max_value(), y_t_signal_->min_value()));
 }
 
 QPointF XYCurveData::closest_point(const QPointF &pos, double *dist) const
@@ -99,17 +106,17 @@ QPointF XYCurveData::closest_point(const QPointF &pos, double *dist) const
 
 QString XYCurveData::name() const
 {
-	return y_signal_->name().append(" -> ").append(x_signal_->name());
+	return y_t_signal_->name().append(" -> ").append(x_t_signal_->name());
 }
 
 QString XYCurveData::x_data_quantity() const
 {
-	return x_signal_->quantity_name();
+	return x_t_signal_->quantity_name();
 }
 
 QString XYCurveData::x_data_unit() const
 {
-	return x_signal_->unit_name();
+	return x_t_signal_->unit_name();
 }
 
 QString XYCurveData::x_data_title() const
@@ -119,17 +126,28 @@ QString XYCurveData::x_data_title() const
 
 QString XYCurveData::y_data_quantity() const
 {
-	return y_signal_->quantity_name();
+	return y_t_signal_->quantity_name();
 }
 
 QString XYCurveData::y_data_unit() const
 {
-	return y_signal_->unit_name();
+	return y_t_signal_->unit_name();
 }
 
 QString XYCurveData::y_data_title() const
 {
 	return QString("%1 [%2]").arg(y_data_quantity()).arg(y_data_unit());
+}
+
+void XYCurveData::on_sample_appended()
+{
+	lock_guard<mutex> lock(sample_append_mutex_);
+
+	shared_ptr<vector<double>> time = make_shared<vector<double>>();
+	sv::data::AnalogSignal::combine_signals(
+		x_t_signal_, x_t_signal_pos_,
+		y_t_signal_, y_t_signal_pos_,
+		time, x_data_, y_data_);
 }
 
 } // namespace plot

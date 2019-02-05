@@ -21,6 +21,7 @@
 #define CHANNELS_DIVIDECHANNEL_HPP
 
 #include <memory>
+#include <mutex>
 #include <set>
 
 #include <QObject>
@@ -29,6 +30,7 @@
 #include "src/channels/userchannel.hpp"
 #include "src/data/datautil.hpp"
 
+using std::mutex;
 using std::set;
 using std::shared_ptr;
 
@@ -63,13 +65,12 @@ public:
 private:
 	shared_ptr<data::AnalogSignal> dividend_signal_;
 	shared_ptr<data::AnalogSignal> divisor_signal_;
-	size_t next_dividend_signal_pos_;
-	size_t next_divisor_signal_pos_;
-	double last_dividend_value_;
-	double last_divisor_value_;
+	size_t dividend_signal_pos_;
+	size_t divisor_signal_pos_;
+	mutex sample_append_mutex_;
 
 private Q_SLOTS:
-	void on_sample_added();
+	void on_sample_appended();
 
 };
 
