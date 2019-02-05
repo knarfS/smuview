@@ -26,7 +26,8 @@
 #include <QDebug>
 
 #include "session.hpp"
-#include "devices/basedevice.hpp"
+#include "src/util.hpp"
+#include "src/devices/basedevice.hpp"
 
 using std::function;
 using std::shared_ptr;
@@ -40,6 +41,7 @@ class Context;
 namespace sv {
 
 shared_ptr<sigrok::Context> Session::sr_context;
+double Session::session_start_timestamp = .0;
 
 Session::Session(DeviceManager &device_manager) :
 	device_manager_(device_manager)

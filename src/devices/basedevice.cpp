@@ -2,7 +2,7 @@
  * This file is part of the SmuView project.
  *
  * Copyright (C) 2015 Joel Holdsworth <joel@airwebreathe.org.uk>
- * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,6 @@
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
-#include <QDateTime>
 #include <QDebug>
 #include <QString>
 
@@ -57,8 +56,12 @@ BaseDevice::BaseDevice(const shared_ptr<sigrok::Context> sr_context,
 	out_of_memory_(false),
 	frame_began_(false)
 {
-	aquisition_start_timestamp_ =
-		QDateTime::currentMSecsSinceEpoch() / (double)1000;
+	/*
+	 * NOTE: Get the start timestamp from the session.
+	 *       This way, combining signals from different devices (export as
+	 *       CSV, XY-Plots) can be displayed with relative timestamps.
+	 */
+	aquisition_start_timestamp_ = sv::Session::session_start_timestamp;
 
 	// Set up the session
 	sr_session_ = sv::Session::sr_context->create_session();
@@ -271,7 +274,8 @@ void BaseDevice::data_feed_in(shared_ptr<sigrok::Device> sr_device,
 	shared_ptr<sigrok::Packet> sr_packet)
 {
 	/*
-	qWarning() << "data_feed_in(): sr_packet->type()->id() = " << sr_packet->type()->id();
+	qWarning() << "data_feed_in(): sr_packet->type()->id() = "
+		<< sr_packet->type()->id();
 	qWarning() << "data_feed_in(): sr_device->model() = "
 		<< QString::fromStdString(sr_device->model())
 		<< ", this->model() = " << QString::fromStdString(sr_device_->model());
@@ -363,10 +367,13 @@ void BaseDevice::aquisition_thread_proc(
 	}
 
 	aquisition_state_ = aquisition_state::Running;
+	/*
 	// TODO: use std::chrono / std::time
+	// NOTE: ATM only the session start timestamp is used!
 	aquisition_start_timestamp_ =
 		QDateTime::currentMSecsSinceEpoch() / (double)1000;
 	Q_EMIT aquisition_start_timestamp_changed(aquisition_start_timestamp_);
+	*/
 
 	qWarning()
 		<< "Start aquisition for " << short_name()

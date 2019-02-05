@@ -2,7 +2,7 @@
  * This file is part of the SmuView project.
  *
  * Copyright (C) 2012 Joel Holdsworth <joel@airwebreathe.org.uk>
- * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
+#include <QDateTime>
 #include <QDebug>
 #include <QSettings>
 
@@ -177,6 +178,12 @@ int main(int argc, char *argv[])
 
 	do {
 		try {
+			// Initialize global start timestamp
+			// TODO: use std::chrono / std::time
+			sv::Session::session_start_timestamp =
+				QDateTime::currentMSecsSinceEpoch() / (double)1000;
+
+
 			// Create the device manager, initialise the drivers
 			sv::DeviceManager device_manager(context, drivers, do_scan);
 

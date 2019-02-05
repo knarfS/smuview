@@ -51,6 +51,8 @@ class Session : public QObject
 
 public:
 	static shared_ptr<sigrok::Context> sr_context;
+	// TODO: use std::chrono / std::time
+	static double session_start_timestamp;
 
 public:
 	Session(DeviceManager &device_manager);
