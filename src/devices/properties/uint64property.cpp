@@ -42,12 +42,6 @@ UInt64Property::UInt64Property(shared_ptr<devices::Configurable> configurable,
 {
 	if (is_listable_)
 		list_config();
-
-	/*
-	if (unit_ != data::Unit::Unknown && unit_ != data::Unit::Unitless) {
-		this->setSuffix(QString(" %1").arg(data::datautil::format_unit(unit_)));
-	}
-	*/
 }
 
 QVariant UInt64Property::value() const

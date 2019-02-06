@@ -45,6 +45,12 @@ DoubleProperty::DoubleProperty(shared_ptr<devices::Configurable> configurable,
 			decimal_places_ = util::get_decimal_places(step_);
 		}
 	}
+
+	/*
+	if (unit_ != data::Unit::Unknown && unit_ != data::Unit::Unitless) {
+		this->setSuffix(QString(" %1").arg(data::datautil::format_unit(unit_)));
+	}
+	*/
 }
 
 QVariant DoubleProperty::value() const
