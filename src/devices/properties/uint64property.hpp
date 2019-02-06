@@ -55,6 +55,7 @@ public:
 	uint64_t min() const;
 	uint64_t max() const;
 	uint64_t step() const;
+	vector<uint64_t> values() const;
 
 private:
 	bool list_config();
@@ -62,6 +63,7 @@ private:
 	uint64_t min_;
 	uint64_t max_;
 	uint64_t step_;
+	vector<uint64_t> values_;
 
 public Q_SLOTS:
 	void change_value(const QVariant) override;

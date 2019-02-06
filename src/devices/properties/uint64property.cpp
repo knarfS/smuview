@@ -18,6 +18,7 @@
  */
 
 #include <limits>
+#include <string>
 
 #include <QDebug>
 #include <QString>
@@ -25,6 +26,8 @@
 
 #include "uint64property.hpp"
 #include "src/devices/configurable.hpp"
+
+using std::string;
 
 namespace sv {
 namespace devices {
@@ -77,19 +80,52 @@ uint64_t UInt64Property::step() const
 	return step_;
 }
 
+vector<uint64_t> UInt64Property::values() const
+{
+	return values_;
+}
+
 bool UInt64Property::list_config()
 {
 	Glib::VariantContainerBase gvar;
 	if (!configurable_->list_config(config_key_, gvar))
 		return false;
 
-	Glib::VariantIter iter(gvar);
-	iter.next_value(gvar);
-	min_ = Glib::VariantBase::cast_dynamic<Glib::Variant<uint64_t>>(gvar).get();
-	iter.next_value(gvar);
-	max_ = Glib::VariantBase::cast_dynamic<Glib::Variant<uint64_t>>(gvar).get();
-	iter.next_value(gvar);
-	step_ = Glib::VariantBase::cast_dynamic<Glib::Variant<uint64_t>>(gvar).get();
+	if (config_key_ == ConfigKey::Samplerate) {
+		GVariant *gvar_list;
+		const uint64_t *elements = nullptr;
+		gsize num_elements;
+		if ((gvar_list = g_variant_lookup_value(gvar.gobj(),
+				"samplerate-steps", G_VARIANT_TYPE("at")))) {
+			elements = (const uint64_t *)g_variant_get_fixed_array(
+				gvar_list, &num_elements, sizeof(uint64_t));
+			min_ = elements[0];
+			max_ = elements[1];
+			step_ = elements[2];
+			g_variant_unref(gvar_list);
+		}
+		else if ((gvar_list = g_variant_lookup_value(gvar.gobj(),
+				"samplerates", G_VARIANT_TYPE("at")))) {
+			elements = (const uint64_t *)g_variant_get_fixed_array(
+				gvar_list, &num_elements, sizeof(uint64_t));
+			for (size_t i=0; i<num_elements; i++) {
+				values_.push_back(elements[i]);
+			}
+			g_variant_unref(gvar_list);
+		}
+		else {
+			return false;
+		}
+	}
+	else {
+		Glib::VariantIter iter(gvar);
+		iter.next_value(gvar);
+		min_ = Glib::VariantBase::cast_dynamic<Glib::Variant<uint64_t>>(gvar).get();
+		iter.next_value(gvar);
+		max_ = Glib::VariantBase::cast_dynamic<Glib::Variant<uint64_t>>(gvar).get();
+		iter.next_value(gvar);
+		step_ = Glib::VariantBase::cast_dynamic<Glib::Variant<uint64_t>>(gvar).get();
+	}
 
 	return true;
 }
