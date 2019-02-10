@@ -738,11 +738,21 @@ QString format_measured_quantity(measured_quantity_t measured_quantity);
 /**
  * Formats a Unit to a string
  *
- * @param unit The Quantity to format.
+ * @param unit The quantity to format.
  *
  * @return The formatted unit.
  */
 QString format_unit(Unit unit);
+
+/**
+ * Formats a Unit to a string and adds AC/DC for voltage and current
+ *
+ * @param unit The quantity to format.
+ * @param quantity_flags The quantity flags.
+ *
+ * @return The formatted unit.
+ */
+QString format_unit(Unit unit, set<QuantityFlag> quantity_flags);
 
 /**
  * Returns the (SI) units for the given quantity

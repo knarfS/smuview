@@ -216,6 +216,22 @@ QString format_unit(Unit unit)
 	return unit_name_map[Unit::Unknown];
 }
 
+QString format_unit(Unit unit, set<QuantityFlag> quantity_flags)
+{
+	QString unit_str = format_unit(unit);
+	if (unit == Unit::Volt || unit == Unit::Ampere) {
+		if (quantity_flags.count(QuantityFlag::AC)) {
+			unit_str = unit_str.append(" ").append(
+				format_quantity_flag(QuantityFlag::AC));
+		}
+		if (quantity_flags.count(QuantityFlag::DC)) {
+			unit_str = unit_str.append(" ").append(
+				format_quantity_flag(QuantityFlag::DC));
+		}
+	}
+	return unit_str;
+}
+
 set<data::Unit> get_units_from_quantity(data::Quantity quantity)
 {
 	set<data::Unit> units;
