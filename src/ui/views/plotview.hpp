@@ -53,6 +53,11 @@ class Plot;
 
 namespace views {
 
+enum class PlotType {
+	TimePlot,
+	XYPlot,
+};
+
 class PlotView : public BaseView
 {
 	Q_OBJECT
@@ -93,6 +98,7 @@ private:
 	QAction *const action_config_plot_;
 	QToolBar *toolbar_;
 	widgets::plot::Plot *plot_;
+	PlotType plot_type_;
 
 private Q_SLOTS:
 	void on_signal_changed();

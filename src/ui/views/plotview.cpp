@@ -54,7 +54,8 @@ PlotView::PlotView(const Session &session,
 	action_add_diff_marker_(new QAction(this)),
 	action_zoom_best_fit_(new QAction(this)),
 	action_add_signal_(new QAction(this)),
-	action_config_plot_(new QAction(this))
+	action_config_plot_(new QAction(this)),
+	plot_type_(PlotType::TimePlot)
 {
 	assert(initial_channel_);
 
@@ -93,7 +94,8 @@ PlotView::PlotView(const Session& session,
 	action_add_diff_marker_(new QAction(this)),
 	action_zoom_best_fit_(new QAction(this)),
 	action_add_signal_(new QAction(this)),
-	action_config_plot_(new QAction(this))
+	action_config_plot_(new QAction(this)),
+	plot_type_(PlotType::TimePlot)
 {
 	assert(signal);
 
@@ -117,7 +119,8 @@ PlotView::PlotView(const Session& session,
 	action_add_diff_marker_(new QAction(this)),
 	action_zoom_best_fit_(new QAction(this)),
 	action_add_signal_(new QAction(this)),
-	action_config_plot_(new QAction(this))
+	action_config_plot_(new QAction(this)),
+	plot_type_(PlotType::XYPlot)
 {
 	assert(x_signal);
 	assert(y_signal);
@@ -312,8 +315,15 @@ void PlotView::on_action_add_signal_triggered()
 	if (!dlg.exec())
 		return;
 
-	for (auto signal : dlg.signals())
-		add_time_curve(dynamic_pointer_cast<sv::data::AnalogSignal>(signal));
+	for (auto signal : dlg.signals()) {
+		if (plot_type_ == PlotType::TimePlot) {
+			add_time_curve(
+				dynamic_pointer_cast<sv::data::AnalogSignal>(signal));
+		}
+		else {
+			// TODO
+		}
+	}
 }
 
 void PlotView::on_action_config_plot_triggered()
