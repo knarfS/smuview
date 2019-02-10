@@ -21,6 +21,7 @@
 #define UI_VIEWS_PLOTVIEW_HPP
 
 #include <memory>
+#include <vector>
 
 #include <QAction>
 #include <QMenu>
@@ -30,6 +31,7 @@
 #include "src/ui/views/baseview.hpp"
 
 using std::shared_ptr;
+using std::vector;
 
 namespace sv {
 
@@ -87,7 +89,7 @@ private:
 	void init_values();
 
 	shared_ptr<channels::BaseChannel> initial_channel_;
-	widgets::plot::BaseCurveData *curve_data_; // TODO: to vector
+	vector<widgets::plot::BaseCurveData *>curves_;
 
 	QMenu *add_marker_menu_;
 	QToolButton *add_marker_button_;
