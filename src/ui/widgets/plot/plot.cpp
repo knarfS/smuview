@@ -218,7 +218,7 @@ void Plot::add_curve(widgets::plot::BaseCurveData *curve_data)
 	pen.setStyle(Qt::SolidLine);
 	pen.setCosmetic(false);
 
-	QwtPlotCurve *plot_curve = new QwtPlotCurve(curve_data->y_data_quantity());
+	QwtPlotCurve *plot_curve = new QwtPlotCurve(curve_data->name());
 	//plot_curve->setXAxis(QwtAxisId(QwtAxis::yLeft, 0)); // TODO: Multiaxis
 	plot_curve->setYAxis(y_axis_id);
 	plot_curve->setXAxis(x_axis_id);
