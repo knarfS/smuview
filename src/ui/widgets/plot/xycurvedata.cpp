@@ -116,7 +116,9 @@ QString XYCurveData::x_data_quantity() const
 
 QString XYCurveData::x_data_unit() const
 {
-	return x_t_signal_->unit_name();
+	// Don't use x_t_signal_->unit_name(), so we can add AC/DC to axis label
+	return data::datautil::format_unit(
+		x_t_signal_->unit(), x_t_signal_->quantity_flags());
 }
 
 QString XYCurveData::x_data_title() const
@@ -131,7 +133,9 @@ QString XYCurveData::y_data_quantity() const
 
 QString XYCurveData::y_data_unit() const
 {
-	return y_t_signal_->unit_name();
+	// Don't use y_t_signal_->unit_name(), so we can add AC/DC to axis label
+	return data::datautil::format_unit(
+		y_t_signal_->unit(), y_t_signal_->quantity_flags());
 }
 
 QString XYCurveData::y_data_title() const

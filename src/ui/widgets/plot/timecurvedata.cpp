@@ -133,7 +133,9 @@ QString TimeCurveData::y_data_quantity() const
 
 QString TimeCurveData::y_data_unit() const
 {
-	return signal_->unit_name();
+	// Don't use signal_->unit_name(), so we can add AC/DC to axis label
+	return data::datautil::format_unit(
+		signal_->unit(), signal_->quantity_flags());
 }
 
 QString TimeCurveData::y_data_title() const
