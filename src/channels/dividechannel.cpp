@@ -71,7 +71,7 @@ DivideChannel::DivideChannel(
 
 	connect(dividend_signal_.get(), SIGNAL(sample_appended()),
 		this, SLOT(on_sample_appended()));
-	connect(divisor_signal_.get(), SIGNAL(sample_appended),
+	connect(divisor_signal_.get(), SIGNAL(sample_appended()),
 		this, SLOT(on_sample_appended()));
 }
 
