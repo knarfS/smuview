@@ -21,6 +21,7 @@
 
 #include <QMainWindow>
 #include <QMenu>
+#include <QMessageBox>
 #include <QToolButton>
 #include <QVBoxLayout>
 
@@ -153,18 +154,30 @@ QString PlotView::title() const
 void PlotView::add_time_curve(shared_ptr<sv::data::AnalogSignal> signal)
 {
 	auto curve = new widgets::plot::TimeCurveData(signal);
-	curves_.push_back(curve);
-	plot_->add_curve(curve);
-	update_add_marker_menu();
+	if (plot_->add_curve(curve)) {
+		curves_.push_back(curve);
+		update_add_marker_menu();
+	}
+	else {
+		QMessageBox::warning(this,
+			tr("Cannot add signal"), tr("Cannot add time signal to plot!"),
+			QMessageBox::Ok);
+	}
 }
 
 void PlotView::add_xy_curve(shared_ptr<sv::data::AnalogSignal> x_signal,
 	shared_ptr<sv::data::AnalogSignal> y_signal)
 {
 	auto curve = new widgets::plot::XYCurveData(x_signal, y_signal);
-	curves_.push_back(curve);
-	plot_->add_curve(curve);
-	update_add_marker_menu();
+	if (plot_->add_curve(curve)) {
+		curves_.push_back(curve);
+		update_add_marker_menu();
+	}
+	else {
+		QMessageBox::warning(this,
+			tr("Cannot add signal"), tr("Cannot add XY-signal to plot!"),
+			QMessageBox::Ok);
+	}
 }
 
 void PlotView::setup_ui()
@@ -175,7 +188,7 @@ void PlotView::setup_ui()
 	plot_->set_update_mode(widgets::plot::PlotUpdateMode::Additive);
 	plot_->set_plot_interval(200); // 200ms
 
-	for (auto curve : curves_)
+	for (const auto &curve : curves_)
 		plot_->add_curve(curve);
 
 	layout->addWidget(plot_);
@@ -247,7 +260,7 @@ void PlotView::update_add_marker_menu()
 	}
 
 	// One add marker action for each curve
-	for (auto curve : curves_) {
+	for (const auto &curve : curves_) {
 		QAction *action = new QAction(this);
 		action->setText(curve->name());
 		action->setData(QVariant::fromValue(curve));
@@ -279,9 +292,10 @@ void PlotView::on_signal_changed()
 
 	if (signal) {
 		auto curve = new widgets::plot::TimeCurveData(signal);
-		curves_.push_back(curve);
-		plot_->add_curve(curve);
-		update_add_marker_menu();
+		if (plot_->add_curve(curve)) {
+			curves_.push_back(curve);
+			update_add_marker_menu();
+		}
 	}
 }
 

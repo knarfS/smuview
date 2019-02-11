@@ -79,7 +79,7 @@ public:
 
 	virtual void replot() override;
 	virtual bool eventFilter(QObject * object, QEvent *event) override;
-	void add_curve(plot::BaseCurveData *curve_data);
+	bool add_curve(plot::BaseCurveData *curve_data);
 	vector<plot::BaseCurveData *> curve_datas() { return curve_datas_; }
 	bool is_axis_locked(int axis_id, AxisBoundary axis_boundary) { return axis_lock_map_[axis_id][axis_boundary]; }
 	void set_axis_locked(int axis_id, AxisBoundary axis_boundary, bool locked);
