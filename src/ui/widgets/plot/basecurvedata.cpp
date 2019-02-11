@@ -42,9 +42,9 @@ CurveType BaseCurveData::curve_type() const
 QColor BaseCurveData::color() const
 {
 	// TODO
-	if (y_data_unit() == "V")
+	if (y_data_unit().startsWith("V ") || y_data_unit() == "V")
 		return Qt::red;
-	else if (y_data_unit() == "A")
+	else if (y_data_unit().startsWith("A ") || y_data_unit() == "A")
 		return Qt::green;
 	else
 		return Qt::yellow;
