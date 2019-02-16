@@ -25,6 +25,8 @@
 #include <stdexcept>
 #include <string>
 
+#include <glib.h>
+
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
 #include <QApplication>
@@ -192,11 +194,11 @@ DeviceManager::user_spec_devices() const
  *
  * @return Map of options suitable for Driver::scan().
  */
-map<const sigrok::ConfigKey *, Glib::VariantBase>
+map<const sigrok::ConfigKey *, VariantBase>
 DeviceManager::driver_scan_options(vector<string> user_spec,
 	set<const sigrok::ConfigKey *> driver_opts)
 {
-	map<const sigrok::ConfigKey *, Glib::VariantBase> result;
+	map<const sigrok::ConfigKey *, VariantBase> result;
 
 	for (auto entry : user_spec) {
 		/*
