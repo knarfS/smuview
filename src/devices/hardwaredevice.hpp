@@ -87,7 +87,7 @@ public:
 	/**
 	 * Inits all configurables for this hardware device.
 	 */
-	void init();
+	void init() override;
 
 	/**
 	 * Returns the sigrok hardware device
@@ -99,7 +99,7 @@ public:
 	 * @param device_manager a reference to the device manager is needed
 	 * so that other similarly titled devices can be detected.
 	 */
-	QString display_name(const DeviceManager &device_manager) const;
+	QString display_name(const DeviceManager &device_manager) const override;
 
 	vector<shared_ptr<devices::Configurable>> configurables() const;
 	// TODO: typdef?
@@ -109,7 +109,7 @@ protected:
 	/**
 	 * Inits all channles of this hardware device
 	 */
-	void init_channels();
+	void init_channels() override;
 
 	/**
 	 * Adds a channel to the device
@@ -117,13 +117,13 @@ protected:
 	shared_ptr<channels::BaseChannel> init_channel(
 		shared_ptr<sigrok::Channel> sr_channel, QString channel_group_name);
 
-	void feed_in_header();
-	void feed_in_trigger();
-	void feed_in_meta(shared_ptr<sigrok::Meta> sr_meta);
-	void feed_in_frame_begin();
-	void feed_in_frame_end();
-	void feed_in_logic(shared_ptr<sigrok::Logic> sr_logic);
-	void feed_in_analog(shared_ptr<sigrok::Analog> sr_analog);
+	void feed_in_header() override;
+	void feed_in_trigger() override;
+	void feed_in_meta(shared_ptr<sigrok::Meta> sr_meta) override;
+	void feed_in_frame_begin() override;
+	void feed_in_frame_end() override;
+	void feed_in_logic(shared_ptr<sigrok::Logic> sr_logic) override;
+	void feed_in_analog(shared_ptr<sigrok::Analog> sr_analog) override;
 
 	vector<shared_ptr<devices::Configurable>> configurables_;
 	// TODO: typdef?
