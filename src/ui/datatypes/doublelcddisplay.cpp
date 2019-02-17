@@ -37,7 +37,7 @@ DoubleLcdDisplay::DoubleLcdDisplay(
 		shared_ptr<sv::devices::properties::BaseProperty> property,
 		 const bool auto_update, QWidget *parent) :
 	widgets::LcdDisplay(5/*Dummy*/, 3/*Dummy*/, false,
-		QString("Dummy"), QString(""), QString(""), false, parent),
+		QString(""), QString(""), QString(""), false, parent),
 	BaseWidget(property, false, auto_update)
 {
 	// Check property
