@@ -25,6 +25,7 @@
 #include "src/devices/deviceutil.hpp"
 #include "src/ui/views/baseview.hpp"
 #include "src/ui/views/demodmmcontrolview.hpp"
+#include "src/ui/views/genericcontrolview.hpp"
 #include "src/ui/views/measurementcontrolview.hpp"
 #include "src/ui/views/sourcesinkcontrolview.hpp"
 
@@ -95,6 +96,13 @@ BaseView *get_view_for_configurable(const Session &session,
 		configurable->has_set_config(ConfigKey::MeasuredQuantity))) {
 
 		return new MeasurementControlView(session, configurable);
+	}
+
+	// Generic control view
+	if (configurable->getable_configs().size() > 0 ||
+		configurable->setable_configs().size() > 0) {
+
+		return new GenericControlView(session, configurable);
 	}
 
 	return nullptr;

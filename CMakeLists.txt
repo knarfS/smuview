@@ -250,6 +250,7 @@ set(smuview_SOURCES
   src/ui/views/baseview.cpp
   src/ui/views/dataview.cpp
   src/ui/views/demodmmcontrolview.cpp
+  src/ui/views/genericcontrolview.cpp
   src/ui/views/measurementcontrolview.cpp
   src/ui/views/plotview.cpp
   src/ui/views/powerpanelview.cpp
