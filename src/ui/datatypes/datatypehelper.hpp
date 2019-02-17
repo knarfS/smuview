@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,7 +48,8 @@ namespace datatypehelper {
  * @return The generic widget for the property type
  */
 QWidget *get_widget_for_property(
-	shared_ptr<sv::devices::properties::BaseProperty>, bool, bool);
+	shared_ptr<sv::devices::properties::BaseProperty>property,
+	bool auto_commit, bool auto_update);
 
 } // namespace datatypehelper
 } // namespace datatypes

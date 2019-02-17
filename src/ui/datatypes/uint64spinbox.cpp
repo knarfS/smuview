@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ UInt64SpinBox::UInt64SpinBox(
 {
 	// Check property
 	if (property_ != nullptr &&
-			property_->data_type() != devices::DataType::Int32) {
+			property_->data_type() != devices::DataType::UInt64) {
 
 		QString msg = QString("UInt64SpinBox with property of type ").append(
 			devices::deviceutil::format_data_type(property_->data_type()));
@@ -86,16 +86,16 @@ void UInt64SpinBox::connect_signals()
 void UInt64SpinBox::connect_widget_2_prop_signals()
 {
 	if (auto_commit_ && property_ != nullptr && property_->is_setable()) {
-		connect(this, SIGNAL(valueChanged(double)),
-			this, SLOT(value_changed(const double)));
+		connect(this, SIGNAL(valueChanged(int)),
+			this, SLOT(value_changed()));
 	}
 }
 
 void UInt64SpinBox::disconnect_widget_2_prop_signals()
 {
 	if (auto_commit_ && property_ != nullptr && property_->is_setable()) {
-		disconnect(this, SIGNAL(valueChanged(double)),
-			this, SLOT(value_changed(const double)));
+		disconnect(this, SIGNAL(valueChanged(int)),
+			this, SLOT(value_changed()));
 	}
 }
 
@@ -104,10 +104,12 @@ QVariant UInt64SpinBox::variant_value() const
 	return QVariant(this->value());
 }
 
-void UInt64SpinBox::value_changed(const uint64_t value)
+void UInt64SpinBox::value_changed()
 {
-	if (property_ != nullptr)
+	if (property_ != nullptr) {
+		uint64_t value = this->value();
 		property_->change_value(QVariant((qulonglong)value));
+	}
 }
 
 void UInt64SpinBox::on_value_changed(const QVariant value)

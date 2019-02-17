@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -91,16 +91,16 @@ void Int32SpinBox::connect_signals()
 void Int32SpinBox::connect_widget_2_prop_signals()
 {
 	if (auto_commit_ && property_ != nullptr && property_->is_setable()) {
-		connect(this, SIGNAL(valueChanged(double)),
-			this, SLOT(value_changed(const double)));
+		connect(this, SIGNAL(valueChanged(int)),
+			this, SLOT(value_changed(const int32_t)));
 	}
 }
 
 void Int32SpinBox::disconnect_widget_2_prop_signals()
 {
 	if (auto_commit_ && property_ != nullptr && property_->is_setable()) {
-		disconnect(this, SIGNAL(valueChanged(double)),
-			this, SLOT(value_changed(const double)));
+		disconnect(this, SIGNAL(valueChanged(int)),
+			this, SLOT(value_changed(const int32_t)));
 	}
 }
 

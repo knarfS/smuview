@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,16 +74,16 @@ void BoolCheckBox::connect_signals()
 void BoolCheckBox::connect_widget_2_prop_signals()
 {
 	if (auto_commit_ && property_ != nullptr && property_->is_setable()) {
-		connect(this, SIGNAL(stateChanged(bool)),
-			this, SLOT(value_changed(const bool)));
+		connect(this, SIGNAL(stateChanged(int)),
+			this, SLOT(value_changed()));
 	}
 }
 
 void BoolCheckBox::disconnect_widget_2_prop_signals()
 {
 	if (auto_commit_ && property_ != nullptr && property_->is_setable()) {
-		disconnect(this, SIGNAL(stateChanged(bool)),
-			this, SLOT(value_changed(const bool)));
+		disconnect(this, SIGNAL(stateChanged(int)),
+			this, SLOT(value_changed()));
 	}
 }
 
@@ -92,10 +92,12 @@ QVariant BoolCheckBox::variant_value() const
 	return QVariant(this->isChecked());
 }
 
-void BoolCheckBox::value_changed(const bool value)
+void BoolCheckBox::value_changed()
 {
-	if (property_ != nullptr)
+	if (property_ != nullptr) {
+		bool value = this->isChecked();
 		property_->change_value(QVariant(value));
+	}
 }
 
 void BoolCheckBox::on_value_changed(const QVariant value)
