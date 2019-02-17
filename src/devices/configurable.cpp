@@ -25,7 +25,7 @@
 #include <string>
 #include <utility>
 
-#include <glib.h>
+#include <glibmm.h>
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
@@ -235,6 +235,7 @@ template void Configurable::set_config(devices::ConfigKey, const int32_t);
 template void Configurable::set_config(devices::ConfigKey, const uint64_t);
 template void Configurable::set_config(devices::ConfigKey, const double);
 template void Configurable::set_config(devices::ConfigKey, const std::string);
+template void Configurable::set_config(devices::ConfigKey, const Glib::ustring);
 template<typename T> void Configurable::set_config(
 	devices::ConfigKey key, const T value)
 {

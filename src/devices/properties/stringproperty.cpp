@@ -19,6 +19,8 @@
 
 #include <string>
 
+#include <glibmm.h>
+
 #include <QDebug>
 #include <QString>
 #include <QVariant>
@@ -81,7 +83,10 @@ bool StringProperty::list_config()
 
 void StringProperty::change_value(const QVariant qvar)
 {
-	configurable_->set_config(config_key_, qvar.toString().toStdString());
+	// We have to use Glib::ustring here, to get a variant type of 's'.
+	// std::string will create a variant type of 'ay'
+	configurable_->set_config<Glib::ustring>(
+		config_key_, Glib::ustring(qvar.toString().toStdString()));
 	Q_EMIT value_changed(qvar);
 }
 
