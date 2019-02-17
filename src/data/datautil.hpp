@@ -197,9 +197,11 @@ enum class Unit
 	Henry,
 	Gram,
 	Carat,
+	/** Avoirdupois ounce (oz) */
 	Ounce,
+	/** Troy ounce (oz t) */
 	TroyOunce,
-	/** TODO: Pound (lb) or Metric Pound (lbm)? */
+	/** Avoirdupois pound (lb) */
 	Pound,
 	Pennyweight,
 	Grain,
