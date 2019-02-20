@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,6 +40,7 @@ class QuantityFlagsList : public QListWidget
 public:
 	QuantityFlagsList(QWidget *parent = nullptr);
 
+	void select_quantity_flags(set<sv::data::QuantityFlag> quantity_flags);
 	set<sv::data::QuantityFlag> selected_quantity_flags();
 
 private:

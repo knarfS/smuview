@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,6 +34,12 @@ UnitComboBox::UnitComboBox(QWidget *parent) :
 	QComboBox(parent)
 {
 	setup_ui();
+}
+
+void UnitComboBox::select_unit(sv::data::Unit unit)
+{
+	QString name = sv::data::datautil::format_unit(unit);
+	this->setCurrentText(name);
 }
 
 sv::data::Unit UnitComboBox::selected_unit()

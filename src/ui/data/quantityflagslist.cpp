@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,6 +35,21 @@ QuantityFlagsList::QuantityFlagsList(QWidget *parent) :
 	QListWidget(parent)
 {
 	setup_ui();
+}
+
+void QuantityFlagsList::select_quantity_flags(
+	set<sv::data::QuantityFlag> quantity_flags)
+{
+	for (int i = 0; i < this->count(); ++i) {
+		QListWidgetItem* item = this->item(i);
+		sv::data::QuantityFlag qf =
+			item->data(Qt::UserRole).value<sv::data::QuantityFlag>();
+
+		if (quantity_flags.count(qf) > 0)
+			this->item(i)->setSelected(true);
+		else
+			this->item(i)->setSelected(false);
+	}
 }
 
 set<sv::data::QuantityFlag> QuantityFlagsList::selected_quantity_flags()
