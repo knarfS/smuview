@@ -74,6 +74,10 @@ class BaseSignal;
 
 namespace devices {
 
+namespace properties {
+class UInt64Property;
+}
+
 class Configurable;
 
 class HardwareDevice : public BaseDevice
@@ -139,6 +143,7 @@ protected:
 
 private:
 	double frame_start_timestamp_;
+	shared_ptr<properties::UInt64Property> samplerate_prop_;
 
 Q_SIGNALS:
 	void channel_changed(QString);

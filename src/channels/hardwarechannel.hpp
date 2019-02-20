@@ -98,10 +98,19 @@ public:
 		data::Unit unit);
 
 	/**
-	 * Add a single sample with timestamp to the channel
+	 * Add a single sample with timestamp to the channel.
+	 *
+	 * TODO: Can this be removed?
 	 */
 	void push_sample_sr_analog(
 		void *sample, double timestamp, shared_ptr<sigrok::Analog> sr_analog);
+
+	/**
+	 * Add one or more interleaved samples with timestamps to the channel
+	 */
+	void push_interleaved_samples(const float *data, size_t sample_count,
+		size_t stride, double timestamp, uint64_t samplerate,
+		shared_ptr<sigrok::Analog> sr_analog);
 
 protected:
 	shared_ptr<sigrok::Channel> sr_channel_;

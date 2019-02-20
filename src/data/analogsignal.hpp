@@ -73,8 +73,19 @@ public:
 	bool get_value_at_timestamp(
 		double timestamp, double &value, bool relative_time) const;
 
+	/**
+	 * Push a single sample to the signal.
+	 *
+	 * TODO: Can this be removed?
+	 */
 	void push_sample(void *sample, double timestamp,
 		size_t unit_size, int digits, int decimal_places);
+
+	/**
+	 * Push multiple samples to the signal.
+	 */
+	void push_samples(void *data, uint64_t samples, double timestamp,
+		uint64_t samplerate, size_t unit_size, int digits, int decimal_places);
 
 	int digits() const;
 	int decimal_places() const;

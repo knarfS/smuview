@@ -195,6 +195,73 @@ void AnalogSignal::push_sample(void *sample, double timestamp,
 		Q_EMIT digits_changed(digits_, decimal_places_);
 }
 
+void AnalogSignal::push_samples(void *data, uint64_t samples, double timestamp,
+	uint64_t samplerate, size_t unit_size, int digits, int decimal_places)
+{
+	//lock_guard<recursive_mutex> lock(mutex_);
+
+	double dsample;
+
+	uint64_t pos = 0;
+	double time_stride = 0;
+	if (samplerate > 0)
+		time_stride = 1 / (double)samplerate;
+
+	/*
+	if (timestamp < last_timestamp_) {
+		qWarning() << "AnalogSignal::push_samples(): samples = " << samples
+			<<  ", timestamp < last_timestamp = "
+			<< timestamp-signal_start_timestamp_ << " < "
+			<< last_timestamp_-signal_start_timestamp_;
+	}
+	*/
+
+	while (pos < samples) {
+		if (unit_size == size_of_float_)
+			dsample = (double) ((float *)data)[pos];
+		else if (unit_size == size_of_double_)
+			dsample = ((double *)data)[pos];
+
+		/*
+		qWarning() << "AnalogSignal::push_samples(): " << name_
+			<< ": sample = " << dsample << " @ "
+			<<  timestamp - signal_start_timestamp_;
+		qWarning() << "AnalogSignal::push_samples(): " << name_
+			<< ": remaining_samples = " << remaining_samples;
+		*/
+
+		// TODO: Mutex?
+		if (min_value_ > dsample)
+			min_value_ = dsample;
+		if (max_value_ < dsample)
+			max_value_ = dsample;
+
+		// TODO: Limit memory!
+		time_->push_back(timestamp);
+		data_->push_back(dsample);
+
+		timestamp += time_stride;
+		++pos;
+		++sample_count_;
+	}
+
+	last_timestamp_ = timestamp - time_stride;
+	last_value_ = dsample;
+	Q_EMIT sample_appended();
+
+	bool digits_chngd = false;
+	if (digits != digits_) {
+		digits_ = digits;
+		digits_chngd = true;
+	}
+	if (decimal_places != decimal_places_) {
+		decimal_places_ = decimal_places;
+		digits_chngd = true;
+	}
+	if (digits_chngd)
+		Q_EMIT digits_changed(digits_, decimal_places_);
+}
+
 int AnalogSignal::digits() const
 {
 	return digits_;

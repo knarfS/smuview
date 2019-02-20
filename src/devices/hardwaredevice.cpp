@@ -42,6 +42,7 @@
 #include "src/devices/basedevice.hpp"
 #include "src/devices/configurable.hpp"
 #include "src/devices/deviceutil.hpp"
+#include "src/devices/properties/uint64property.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
 
@@ -110,6 +111,12 @@ void HardwareDevice::init()
 	// Init Configurable from Device
 	auto d_c = Configurable::create(sr_device_, short_name(), device_type_);
 	configurables_.push_back(d_c);
+
+	// Sample rate for interleaved samples
+	if (d_c->has_get_config(ConfigKey::Samplerate)) {
+		samplerate_prop_ = static_pointer_cast<properties::UInt64Property>(
+			d_c->get_property(ConfigKey::Samplerate));
+	}
 }
 
 string HardwareDevice::id() const
@@ -287,13 +294,22 @@ void HardwareDevice::feed_in_logic(shared_ptr<sigrok::Logic> sr_logic)
 
 void HardwareDevice::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
 {
+	size_t num_samples = sr_analog->num_samples();
+	if (num_samples == 0)
+		return;
+
 	lock_guard<recursive_mutex> lock(data_mutex_);
 
-	unique_ptr<float> data(new float[sr_analog->num_samples()]);
+	uint64_t samplerate = 0;
+	if (samplerate_prop_ != nullptr)
+		samplerate = samplerate_prop_->uint64_value();
+
+	const vector<shared_ptr<sigrok::Channel>> sr_channels = sr_analog->channels();
+
+	unique_ptr<float[]> data(new float[num_samples * sr_channels.size()]);
 	sr_analog->get_data_as_float(data.get());
 	float *channel_data = data.get();
 
-	const vector<shared_ptr<sigrok::Channel>> sr_channels = sr_analog->channels();
 	for (const auto &sr_channel : sr_channels) {
 		/*
 		qWarning() << "HardwareDevice::feed_in_analog(): HardwareDevice = " <<
@@ -308,17 +324,16 @@ void HardwareDevice::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
 		auto channel = static_pointer_cast<channels::HardwareChannel>(
 			sr_channel_map_[sr_channel]);
 
-		if (frame_began_) {
-			channel->push_sample_sr_analog(
-				channel_data, frame_start_timestamp_, sr_analog);
-		}
-		else {
-			// TODO: use std::chrono / std::time
-			double timestamp =
-				QDateTime::currentMSecsSinceEpoch() / (double)1000;
-			channel->push_sample_sr_analog(channel_data, timestamp, sr_analog);
-		}
-		channel_data++;
+		// TODO: use std::chrono / std::time
+		double timestamp;
+		if (frame_began_)
+			timestamp = frame_start_timestamp_;
+		else
+			timestamp = QDateTime::currentMSecsSinceEpoch() / (double)1000;
+
+		//channel->push_sample_sr_analog(channel_data++, timestamp, sr_analog);
+		channel->push_interleaved_samples(channel_data++, num_samples,
+			sr_channels.size(), timestamp, samplerate, sr_analog);
 	}
 }
 
