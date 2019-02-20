@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -81,7 +81,8 @@ bool is_measurement_driver(shared_ptr<sigrok::Driver> sr_driver)
 		| keys.count(sigrok::ConfigKey::ENERGYMETER)
 		| keys.count(sigrok::ConfigKey::LCRMETER)
 		| keys.count(sigrok::ConfigKey::SCALE)
-		| keys.count(sigrok::ConfigKey::POWERMETER);
+		| keys.count(sigrok::ConfigKey::POWERMETER)
+		| keys.count(sigrok::ConfigKey::DEMO_DEV);
 }
 
 

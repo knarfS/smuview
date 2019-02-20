@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UI_VIEWS_DEMODMMCONTROLVIEW_HPP
-#define UI_VIEWS_DEMODMMCONTROLVIEW_HPP
+#ifndef UI_VIEWS_DEMOCONTROLVIEW_HPP
+#define UI_VIEWS_DEMOCONTROLVIEW_HPP
 
 #include <memory>
 
@@ -49,12 +49,12 @@ class DoubleControl;
 
 namespace views {
 
-class DemoDMMControlView : public BaseView
+class DemoControlView : public BaseView
 {
 	Q_OBJECT
 
 public:
-	DemoDMMControlView(const Session& session,
+	DemoControlView(const Session& session,
 		shared_ptr<sv::devices::Configurable> configurable,
 		QWidget* parent = nullptr);
 
@@ -81,4 +81,4 @@ private Q_SLOTS:
 } // namespace ui
 } // namespace sv
 
-#endif // UI_VIEWS_DEMODMMCONTROLVIEW_HPP
+#endif // UI_VIEWS_DEMOCONTROLVIEW_HPP

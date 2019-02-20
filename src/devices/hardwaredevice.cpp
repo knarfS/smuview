@@ -2,7 +2,7 @@
  * This file is part of the SmuView project.
  *
  * Copyright (C) 2015 Joel Holdsworth <joel@airwebreathe.org.uk>
- * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,9 +20,11 @@
 
 #include <algorithm>
 #include <cassert>
-#include <glib.h>
+#include <functional>
 #include <thread>
 #include <utility>
+
+#include <glib.h>
 
 #include <QDateTime>
 #include <QDebug>
@@ -44,6 +46,7 @@
 using std::bad_alloc;
 using std::dynamic_pointer_cast;
 using std::find;
+using std::function;
 using std::lock_guard;
 using std::make_pair;
 using std::make_shared;
@@ -163,6 +166,19 @@ QString HardwareDevice::display_name(
 	}
 
 	return name;
+}
+
+void HardwareDevice::open(function<void (const QString)> error_handler)
+{
+	BaseDevice::open(error_handler);
+
+	// Special handling for device "demo": Set a initial moderate samplerate of
+	// 5 samples per second, to slow down the analog channels.
+	if (sr_hardware_device()->driver()->name() == "demo") {
+		sr_device_->config_set(
+			sigrok::ConfigKey::SAMPLERATE,
+			Glib::Variant<uint64_t>::create(5));
+	}
 }
 
 shared_ptr<sigrok::HardwareDevice> HardwareDevice::sr_hardware_device() const

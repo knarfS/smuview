@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@
 #include "src/devices/configurable.hpp"
 #include "src/devices/deviceutil.hpp"
 #include "src/ui/views/baseview.hpp"
-#include "src/ui/views/demodmmcontrolview.hpp"
+#include "src/ui/views/democontrolview.hpp"
 #include "src/ui/views/genericcontrolview.hpp"
 #include "src/ui/views/measurementcontrolview.hpp"
 #include "src/ui/views/sourcesinkcontrolview.hpp"
@@ -80,7 +80,7 @@ BaseView *get_view_for_configurable(const Session &session,
 		configurable->has_get_config(ConfigKey::Offset) ||
 		configurable->has_set_config(ConfigKey::Offset)	*/ )) {
 
-		return new DemoDMMControlView(session, configurable);
+		return new DemoControlView(session, configurable);
 	}
 
 	// Measurement devices like DMMs, scales, LCR meters, etc.

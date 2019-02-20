@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -116,7 +116,19 @@ shared_ptr<data::BaseSignal> HardwareChannel::init_signal(
 void HardwareChannel::push_sample_sr_analog(
 	void *sample, double timestamp, shared_ptr<sigrok::Analog> sr_analog)
 {
-	data::Quantity quantity = data::datautil::get_quantity(sr_analog->mq());
+	/*
+	 * NOTE: Sometimes the mq is not set (e.g. for the demo driver in
+	 *       sigrok 6.0.0) and mq() just throws an exception, without a
+	 *       possibility to check if mq is set or not.
+	 */
+	data::Quantity quantity;
+	try {
+		quantity = data::datautil::get_quantity(sr_analog->mq());
+	}
+	catch(sigrok::Error &e) {
+		quantity = data::Quantity::Unknown;
+	}
+
 	set<data::QuantityFlag> quantity_flags =
 		data::datautil::get_quantity_flags(sr_analog->mq_flags());
 	quantity_t q_qf = make_pair(quantity, quantity_flags);

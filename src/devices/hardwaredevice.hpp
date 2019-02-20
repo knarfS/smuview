@@ -2,7 +2,7 @@
  * This file is part of the SmuView project.
  *
  * Copyright (C) 2015 Joel Holdsworth <joel@airwebreathe.org.uk>
- * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,6 +44,7 @@ using std::string;
 using std::vector;
 using std::unique_ptr;
 
+using std::function;
 using std::map;
 using std::mutex;
 using std::recursive_mutex;
@@ -100,6 +101,8 @@ public:
 	 * so that other similarly titled devices can be detected.
 	 */
 	QString display_name(const DeviceManager &device_manager) const override;
+
+	void open(function<void (const QString)> error_handler) override;
 
 	vector<shared_ptr<devices::Configurable>> configurables() const;
 	// TODO: typdef?
