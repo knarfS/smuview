@@ -45,6 +45,7 @@ class QuantityFlagsList;
 }
 namespace datatypes {
 class DoubleControl;
+class StringComboBox;
 }
 
 namespace views {
@@ -66,6 +67,7 @@ private:
 	ui::data::QuantityComboBox *quantity_box_;
 	ui::data::QuantityFlagsList *quantity_flags_list_;
 	QPushButton *set_button_;
+	ui::datatypes::StringComboBox *pattern_control_;
 	ui::datatypes::DoubleControl *amplitude_control_;
 	ui::datatypes::DoubleControl *offset_control_;
 

@@ -35,6 +35,7 @@
 #include "src/ui/data/quantitycombobox.hpp"
 #include "src/ui/data/quantityflagslist.hpp"
 #include "src/ui/datatypes/doublecontrol.hpp"
+#include "src/ui/datatypes/stringcombobox.hpp"
 
 using std::static_pointer_cast;
 using sv::devices::ConfigKey;
@@ -86,6 +87,14 @@ void DemoControlView::setup_ui()
 		layout->addWidget(set_button_, 0);
 	}
 
+	if (configurable_->has_get_config(ConfigKey::PatternMode) ||
+		configurable_->has_set_config(ConfigKey::PatternMode)) {
+
+		pattern_control_ = new ui::datatypes::StringComboBox(
+			configurable_->get_property(ConfigKey::PatternMode), true, true);
+		layout->addWidget(pattern_control_);
+	}
+
 	QHBoxLayout *controls_layout = new QHBoxLayout();
 
 	amplitude_control_ = new ui::datatypes::DoubleControl(
@@ -108,7 +117,12 @@ void DemoControlView::setup_ui()
 void DemoControlView::connect_signals()
 {
 	// Control elements -> Device
-	connect(set_button_, SIGNAL(clicked(bool)), this, SLOT(on_quantity_set()));
+	if (configurable_->has_get_config(ConfigKey::MeasuredQuantity) ||
+		configurable_->has_set_config(ConfigKey::MeasuredQuantity)) {
+
+		connect(set_button_, SIGNAL(clicked(bool)),
+			this, SLOT(on_quantity_set()));
+	}
 
 	// Device -> control elements
 }
