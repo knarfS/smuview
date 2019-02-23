@@ -90,9 +90,9 @@ void DemoControlView::setup_ui()
 	if (configurable_->has_get_config(ConfigKey::PatternMode) ||
 		configurable_->has_set_config(ConfigKey::PatternMode)) {
 
-		pattern_control_ = new ui::datatypes::StringComboBox(
+		pattern_box_ = new ui::datatypes::StringComboBox(
 			configurable_->get_property(ConfigKey::PatternMode), true, true);
-		layout->addWidget(pattern_control_);
+		layout->addWidget(pattern_box_);
 	}
 
 	QHBoxLayout *controls_layout = new QHBoxLayout();

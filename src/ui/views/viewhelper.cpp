@@ -71,7 +71,7 @@ BaseView *get_view_for_configurable(const Session &session,
 		return new SourceSinkControlView(session, configurable);
 	}
 
-	// View for DemoDMM Device
+	// View for Demo Device
 	if (configurable->device_type() == DeviceType::DemoDev &&
 		(configurable->has_get_config(ConfigKey::MeasuredQuantity) ||
 		configurable->has_set_config(ConfigKey::MeasuredQuantity) ||
