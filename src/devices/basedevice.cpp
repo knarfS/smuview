@@ -241,15 +241,7 @@ vector<shared_ptr<data::AnalogSignal>> BaseDevice::all_signals() const
 
 void BaseDevice::free_unused_memory()
 {
-	/* TODO
-	for (shared_ptr<data::BaseData> data : all_signal_data_) {
-		const vector< shared_ptr<data::Segment> > segments = data->segments();
-
-		for (shared_ptr<data::Segment> segment : segments) {
-			segment->free_unused_memory();
-		}
-	}
-	*/
+	// TODO
 }
 
 void BaseDevice::add_channel(shared_ptr<channels::BaseChannel> channel,
