@@ -70,7 +70,7 @@ void SignalComboBox::setup_ui()
 	if (channel_ == nullptr)
 		return;
 
-	for (auto signal_pair : channel_->signal_map()) {
+	for (const auto &signal_pair : channel_->signal_map()) {
 		auto signal = signal_pair.second;
 		this->addItem(signal->name(), QVariant::fromValue(signal));
 	}

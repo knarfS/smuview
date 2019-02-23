@@ -59,7 +59,7 @@ void PlotDiffMarkerDialog::setup_ui()
 	QFormLayout *form_layout = new QFormLayout();
 
 	marker_1_combobox_ = new QComboBox();
-	for (auto markers_pair : plot_->markers()) {
+	for (const auto &markers_pair : plot_->markers()) {
 		marker_1_combobox_->addItem(
 			markers_pair.first->title().text(),
 			QVariant::fromValue(markers_pair.first));
@@ -67,7 +67,7 @@ void PlotDiffMarkerDialog::setup_ui()
 	form_layout->addRow(tr("Marker 1"), marker_1_combobox_);
 
 	marker_2_combobox_ = new QComboBox();
-	for (auto markers_pair : plot_->markers()) {
+	for (const auto &markers_pair : plot_->markers()) {
 		marker_2_combobox_->addItem(
 			markers_pair.first->title().text(),
 			QVariant::fromValue(markers_pair.first));

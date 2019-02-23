@@ -61,7 +61,7 @@ void PlotConfigDialog::setup_ui()
 
 	plot_update_mode_combobox_ = new QComboBox();
 	size_t cb_index = 0;
-	for (auto update_mode_pair : widgets::plot::plot_update_mode_name_map) {
+	for (const auto &update_mode_pair : widgets::plot::plot_update_mode_name_map) {
 		plot_update_mode_combobox_->addItem(
 			update_mode_pair.second,
 			QVariant::fromValue(update_mode_pair.first));

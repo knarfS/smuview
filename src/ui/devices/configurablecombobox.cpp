@@ -73,7 +73,7 @@ void ConfigurableComboBox::setup_ui()
 	if (!hw_device)
 		return;
 
-	for (auto configurable : hw_device->configurables()) {
+	for (const auto &configurable : hw_device->configurables()) {
 		// Only show configurables that either are getable, setable or listable.
 		if (!configurable->is_controllable())
 			continue;

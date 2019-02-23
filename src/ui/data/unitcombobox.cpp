@@ -50,7 +50,7 @@ sv::data::Unit UnitComboBox::selected_unit()
 
 void UnitComboBox::setup_ui()
 {
-	for (auto u_name_pair : sv::data::datautil::get_unit_name_map()) {
+	for (const auto &u_name_pair : sv::data::datautil::get_unit_name_map()) {
 		this->addItem(
 			u_name_pair.second, QVariant::fromValue(u_name_pair.first));
 	}

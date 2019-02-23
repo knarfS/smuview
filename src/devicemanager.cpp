@@ -75,7 +75,7 @@ DeviceManager::DeviceManager(shared_ptr<sigrok::Context> context,
 	 */
 	multimap<string, vector<string> > user_drvs_name_opts;
 	if (!drivers.empty()) {
-		for (string driver : drivers) {
+		for (const auto &driver : drivers) {
 			vector<string> user_drv_opts = sv::util::split_string(driver, ":");
 			string user_drv_name = user_drv_opts.front();
 			user_drv_opts.erase(user_drv_opts.begin());
@@ -89,7 +89,7 @@ DeviceManager::DeviceManager(shared_ptr<sigrok::Context> context,
 	 * Scan for devices. No specific options apply here, this is
 	 * best effort auto detection.
 	 */
-	for (auto entry : context->drivers()) {
+	for (const auto &entry : context->drivers()) {
 		if (!do_scan)
 			break;
 
@@ -200,7 +200,7 @@ DeviceManager::driver_scan_options(vector<string> user_spec,
 {
 	map<const sigrok::ConfigKey *, VariantBase> result;
 
-	for (auto entry : user_spec) {
+	for (const auto &entry : user_spec) {
 		/*
 		 * Split key=value specs. Accept entries without separator
 		 * (for simplified boolean specifications).
@@ -257,7 +257,7 @@ DeviceManager::driver_scan(
 	auto sr_devices = sr_driver->scan(drvopts);
 
 	// Add the scanned devices to the main list, set display names and sort.
-	for (shared_ptr<sigrok::HardwareDevice> sr_device : sr_devices) {
+	for (const auto &sr_device : sr_devices) {
 		if (devices::deviceutil::is_source_sink_driver(sr_driver)) {
 			driver_devices.push_back(
 				devices::SourceSinkDevice::create(context_, sr_device));
@@ -304,7 +304,7 @@ const shared_ptr<devices::HardwareDevice> DeviceManager::find_device_from_info(
 	shared_ptr<devices::HardwareDevice> last_resort_dev;
 	map<string, string> dev_info;
 
-	for (shared_ptr<devices::HardwareDevice> dev : devices_) {
+	for (const auto &dev : devices_) {
 		assert(dev);
 		dev_info = get_device_info(dev);
 

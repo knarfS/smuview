@@ -71,7 +71,7 @@ HardwareDevice::HardwareDevice(
 	// TODO: Multiple DeviceTypes per HardwareDevice
 	device_type_ = DeviceType::Unknown;
 	const auto sr_keys = sr_device->driver()->config_keys();
-	for (auto sr_key : sr_keys) {
+	for (const auto &sr_key : sr_keys) {
 		DeviceType dt = deviceutil::get_device_type(sr_key);
 		if (dt == DeviceType::PowerSupply ||
 				dt == DeviceType::ElectronicLoad ||
@@ -98,7 +98,7 @@ void HardwareDevice::init()
 	map<string, shared_ptr<sigrok::ChannelGroup>> sr_channel_groups =
 		sr_device_->channel_groups();
 	if (sr_channel_groups.size() > 0) {
-		for (auto sr_cg_pair : sr_channel_groups) {
+		for (const auto &sr_cg_pair : sr_channel_groups) {
 			auto sr_cg = sr_cg_pair.second;
 			auto cg_c = Configurable::create(sr_cg, short_name(), device_type_);
 			configurables_.push_back(cg_c);
@@ -204,10 +204,10 @@ void HardwareDevice::init_channels()
 
 	// Init Channels from Sigrok Channel Groups
 	if (sr_channel_groups.size() > 0) {
-		for (auto sr_cg_pair : sr_channel_groups) {
+		for (const auto &sr_cg_pair : sr_channel_groups) {
 			shared_ptr<sigrok::ChannelGroup> sr_cg = sr_cg_pair.second;
 			QString cg_name = QString::fromStdString(sr_cg->name());
-			for (auto sr_channel : sr_cg->channels()) {
+			for (const auto &sr_channel : sr_cg->channels()) {
 				init_channel(sr_channel, cg_name);
 			}
 		}
@@ -215,7 +215,7 @@ void HardwareDevice::init_channels()
 
 	// Init Channels that are not in a channel group
 	vector<shared_ptr<sigrok::Channel>> sr_channels = sr_device_->channels();
-	for (auto sr_channel : sr_channels) {
+	for (const auto &sr_channel : sr_channels) {
 		if (sr_channel_map_.count(sr_channel) > 0)
 			continue;
 		init_channel(sr_channel, QString(""));
@@ -279,7 +279,7 @@ void HardwareDevice::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
 	float *channel_data = data.get();
 
 	const vector<shared_ptr<sigrok::Channel>> sr_channels = sr_analog->channels();
-	for (auto sr_channel : sr_channels) {
+	for (const auto &sr_channel : sr_channels) {
 		/*
 		qWarning() << "HardwareDevice::feed_in_analog(): HardwareDevice = " <<
 			QString::fromStdString(sr_device_->model()) <<

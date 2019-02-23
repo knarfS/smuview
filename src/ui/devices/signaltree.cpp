@@ -59,7 +59,7 @@ vector<shared_ptr<channels::BaseChannel>> SignalTree::selected_channels()
 {
 	vector<shared_ptr<channels::BaseChannel>> channels;
 	auto items = this->checked_items();
-	for (auto item : items) {
+	for (const auto &item : items) {
 		QVariant data = item->data(0, Qt::UserRole);
 		if (data.isNull())
 			continue;
@@ -74,7 +74,7 @@ vector<shared_ptr<channels::BaseChannel>> SignalTree::selected_channels()
 vector<shared_ptr<sv::data::BaseSignal>> SignalTree::selected_signals()
 {
 	vector<shared_ptr<sv::data::BaseSignal>> signals;
-	for (auto item : this->checked_items()) {
+	for (const auto &item : this->checked_items()) {
 		QVariant data = item->data(0, Qt::UserRole);
 		if (data.isNull())
 			continue;
@@ -99,7 +99,7 @@ void SignalTree::setup_ui()
 	else if (selected_device_)
 		devices.insert(selected_device_);
 
-	for (auto device : devices) {
+	for (const auto &device : devices) {
 		bool expanded = true;
 		/*
 		bool expanded = false;
@@ -107,7 +107,7 @@ void SignalTree::setup_ui()
 			expanded = true;
 		*/
 		/* TODO
-		for (auto sel_signal : selected_signals_) {
+		for (const auto &sel_signal : selected_signals_) {
 			if (sel_signal.get() == signal.get()) {
 				signal_item->setSelected(true);
 				break;
@@ -135,8 +135,8 @@ void SignalTree::add_device(shared_ptr<sv::devices::BaseDevice> device,
 	device_map_.insert(make_pair(device, device_item));
 
 	auto chg_name_channels_map = device->channel_group_name_map();
-	for (auto chg_name_channels_pair : chg_name_channels_map) {
-		for (auto channel : chg_name_channels_pair.second) {
+	for (const auto &chg_name_channels_pair : chg_name_channels_map) {
+		for (const auto &channel : chg_name_channels_pair.second) {
 			add_channel(channel, chg_name_channels_pair.first,
 				expanded, device_item);
 		}
@@ -183,7 +183,7 @@ void SignalTree::add_channel(shared_ptr<channels::BaseChannel> channel,
 		channel_map_.insert(make_pair(channel, ch_item));
 
 		if (show_signals_) {
-			for (auto signal_pair : channel->signal_map())
+			for (const auto &signal_pair : channel->signal_map())
 				add_signal(signal_pair.second, ch_item);
 		}
 

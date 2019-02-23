@@ -50,7 +50,7 @@ Session::Session(DeviceManager &device_manager) :
 
 Session::~Session()
 {
-	for (auto device : devices_)
+	for (auto &device : devices_)
 		device->close();
 }
 

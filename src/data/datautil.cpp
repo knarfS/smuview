@@ -90,7 +90,7 @@ set<QuantityFlag> get_quantity_flags(
 	vector<const sigrok::QuantityFlag *> sr_quantity_flags)
 {
 	set<data::QuantityFlag> quantity_flag_set;
-	for (auto sr_qf : sr_quantity_flags) {
+	for (const auto &sr_qf : sr_quantity_flags) {
 		quantity_flag_set.insert(get_quantity_flag(sr_qf));
 	}
 	return quantity_flag_set;
@@ -114,7 +114,7 @@ set<QuantityFlag> get_quantity_flags(uint64_t sr_quantity_flags)
 uint64_t get_sr_quantity_flags_id(set<QuantityFlag> quantity_flags)
 {
 	uint64_t sr_qfs_id = 0;
-	for (QuantityFlag qunatity_flag : quantity_flags) {
+	for (const auto &qunatity_flag : quantity_flags) {
 		sr_qfs_id |= get_sr_quantity_flag_id(qunatity_flag);
 	}
 	return sr_qfs_id;
@@ -181,7 +181,7 @@ QString format_quantity_flags(set<QuantityFlag> quantity_flags,
 	}
 
 	// And now the rest of the flags
-	for (auto qf : quantity_flags) {
+	for (const auto &qf : quantity_flags) {
 		if (qf == QuantityFlag::AC || qf == QuantityFlag::DC ||
 				qf == QuantityFlag::RMS || qf == QuantityFlag::Min ||
 				qf == QuantityFlag::Max || qf == QuantityFlag::Avg)

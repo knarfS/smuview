@@ -71,7 +71,7 @@ void MeasuredQuantityComboBox::setup_ui()
 				property_);
 
 		auto mq_list = mq_prop->list_values();
-		for (auto mq : mq_list) {
+		for (const auto &mq : mq_list) {
 			this->addItem(
 				data::datautil::format_measured_quantity(mq),
 				QVariant::fromValue(mq));

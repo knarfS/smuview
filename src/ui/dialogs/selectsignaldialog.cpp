@@ -83,7 +83,7 @@ vector<shared_ptr<sv::data::BaseSignal>> SelectSignalDialog::signals()
 
 void SelectSignalDialog::accept()
 {
-	for (auto signal : signal_tree_->selected_signals()) {
+	for (const auto &signal : signal_tree_->selected_signals()) {
 		signals_.push_back(signal);
 	}
 

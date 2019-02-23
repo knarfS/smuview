@@ -52,8 +52,8 @@ void SourceSinkDevice::init_channels()
 	HardwareDevice::init_channels();
 
 	// Preinitialize known fixed channels with a signal
-	for (auto chg_name_channels_pair : channel_group_name_map_) {
-		for (auto channel : chg_name_channels_pair.second) {
+	for (const auto &chg_name_channels_pair : channel_group_name_map_) {
+		for (const auto &channel : chg_name_channels_pair.second) {
 			if (channel->type() != channels::ChannelType::AnalogChannel)
 				continue;
 
@@ -101,7 +101,7 @@ void SourceSinkDevice::init_channels()
 		shared_ptr<data::AnalogSignal> voltage_signal;
 		shared_ptr<data::AnalogSignal> current_signal;
 		shared_ptr<data::AnalogSignal> power_signal;
-		for (auto channel : chg_name_channels_pair.second) {
+		for (const auto &channel : chg_name_channels_pair.second) {
 			if (!channel->has_fixed_signal())
 				continue;
 			auto signal = channel->actual_signal();

@@ -116,7 +116,7 @@ void SaveDialog::save(QString file_name)
 	QString chg_name_header_line("");
 	QString ch_name_header_line("");
 	QString signal_name_header_line("");
-	for (auto signal : signals) {
+	for (const auto &signal : signals) {
 		size_t sample_count = signal->get_sample_count();
 		if (sample_count > max_sample_count)
 			max_sample_count = sample_count;
@@ -203,7 +203,7 @@ void SaveDialog::save_combined(QString file_name)
 	QString chg_name_header_line("Time"); // Time
 	QString ch_name_header_line("Time"); // Time
 	QString signal_name_header_line("Time"); // Time
-	for (auto signal : signals) {
+	for (const auto &signal : signals) {
 		auto a_signal = static_pointer_cast<data::AnalogSignal>(signal);
 		sample_counts.push_back(a_signal->get_sample_count());
 		sample_pos.push_back(0);

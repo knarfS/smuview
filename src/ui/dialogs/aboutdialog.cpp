@@ -175,7 +175,7 @@ QWidget *AboutDialog::get_about_page(QWidget *parent) const
 	s.append("<tr><td colspan=\"2\"></td></tr>");
 	s.append("<tr><td colspan=\"2\"><b>" +
 		tr("Supported hardware drivers:") + "</b></td></tr>");
-	for (auto entry : context->drivers()) {
+	for (const auto &entry : context->drivers()) {
 		s.append(QString("<tr><td class=\"id\"><i>%1</i></td><td>%2</td></tr>")
 			.arg(QString::fromUtf8(entry.first.c_str()),
 				QString::fromUtf8(entry.second->long_name().c_str())));
@@ -186,7 +186,7 @@ QWidget *AboutDialog::get_about_page(QWidget *parent) const
 	s.append("<tr><td colspan=\"2\"></td></tr>");
 	s.append("<tr><td colspan=\"2\"><b>" +
 		tr("Supported input formats:") + "</b></td></tr>");
-	for (auto entry : context->input_formats()) {
+	for (const auto &entry : context->input_formats()) {
 		s.append(QString("<tr><td class=\"id\"><i>%1</i></td><td>%2</td></tr>")
 			.arg(QString::fromUtf8(entry.first.c_str()),
 				QString::fromUtf8(entry.second->description().c_str())));
@@ -198,7 +198,7 @@ QWidget *AboutDialog::get_about_page(QWidget *parent) const
 	s.append("<tr><td colspan=\"2\"></td></tr>");
 	s.append("<tr><td colspan=\"2\"><b>" +
 		tr("Supported output formats:") + "</b></td></tr>");
-	for (auto entry : context->output_formats()) {
+	for (const auto &entry : context->output_formats()) {
 		s.append(QString("<tr><td class=\"id\"><i>%1</i></td><td>%2</td></tr>")
 			.arg(QString::fromUtf8(entry.first.c_str()),
 				QString::fromUtf8(entry.second->description().c_str())));
@@ -272,7 +272,7 @@ QWidget *AboutDialog::get_device_page(QWidget *parent) const
 	if (sr_hw_device) {
 		const auto sr_keys = sr_hw_device->driver()->config_keys();
 		QString sep("");
-		for (auto sr_key : sr_keys) {
+		for (const auto &sr_key : sr_keys) {
 				s.append(sep).append(
 					QString::fromStdString(sr_key->description()));
 				sep = QString(", ");
@@ -291,13 +291,13 @@ QWidget *AboutDialog::get_device_page(QWidget *parent) const
 			tr("SmuView device configurables and properties:") +
 			"</b></td></tr>");
 		const auto configurables = hw_device->configurables();
-		for (auto cnf : configurables) {
+		for (const auto &cnf : configurables) {
 			s.append(QString("<tr><td>&nbsp;</td><td>%1</td>").
 				arg(cnf->name()));
 			s.append(QString("<td>GET</td><td>Value</td><td>SET</td>"));
 			s.append(QString("<td>LIST</td><td>Values</td></tr>"));
 			auto props = cnf->properties();
-			for (auto prop : props) {
+			for (const auto &prop : props) {
 				s.append(QString("<tr><td>&nbsp;</td>"));
 				s.append(QString("<td><i>%1</i></td>").arg(
 					devices::deviceutil::format_config_key(prop.first)));
@@ -332,7 +332,7 @@ QWidget *AboutDialog::get_device_page(QWidget *parent) const
 		tr("SmuView device signals (device->all_signals()):") +
 		"</b></td></tr>");
 	const auto signals = device_->all_signals();
-	for (shared_ptr<data::AnalogSignal> signal : signals) {
+	for (const auto &signal : signals) {
 		s.append(QString("<tr><td>%1</td><td>%2</td></tr>").arg(
 			signal->name(), signal->name()));
 	}
@@ -343,7 +343,7 @@ QWidget *AboutDialog::get_device_page(QWidget *parent) const
 		tr("SmuView channel name and channel (device->channel_name_map()):") +
 		"</b></td></tr>");
 	const auto ch_name_signal_map = device_->channel_name_map();
-	for (auto ch_name_signal_pair : ch_name_signal_map) {
+	for (const auto &ch_name_signal_pair : ch_name_signal_map) {
 		s.append(QString("<tr><td>%1</td><td>%2</td></tr>").
 			arg(ch_name_signal_pair.first).
 			arg(ch_name_signal_pair.second->name()));
@@ -357,10 +357,10 @@ QWidget *AboutDialog::get_device_page(QWidget *parent) const
 		tr("SmuView channel group name and channels (device->channel_group_name_map()):") +
 		"</b></td></tr>");
 	const auto cg_name_channel_map = device_->channel_group_name_map();
-	for (auto cg_name_channel_pair : cg_name_channel_map) {
+	for (const auto &cg_name_channel_pair : cg_name_channel_map) {
 		s.append(QString("<tr><td>%1</td><td></td></tr>").arg(
 			cg_name_channel_pair.first));
-		for (auto channel : cg_name_channel_pair.second) {
+		for (const auto &channel : cg_name_channel_pair.second) {
 			s.append(QString("<tr><td></td><td>%1</td></tr>").arg(
 				channel->name()));
 		}
@@ -370,11 +370,11 @@ QWidget *AboutDialog::get_device_page(QWidget *parent) const
 	s.append("<tr><td colspan=\"2\"><b>" +
 		tr("Sigrok channel groups and channels:") + "</b></td></tr>");
 	const auto sr_cgs = sr_device->channel_groups();
-	for (auto sr_cg_pair : sr_cgs) {
+	for (const auto &sr_cg_pair : sr_cgs) {
 		QString channel_names("");
 		QString sep("");
 		shared_ptr<sigrok::ChannelGroup> sr_cg = sr_cg_pair.second;
-		for (auto sr_ch : sr_cg->channels()) {
+		for (const auto &sr_ch : sr_cg->channels()) {
 			channel_names.append(sep);
 			channel_names.append(QString::fromStdString(sr_ch->name()));
 			sep = QString(" ");
@@ -387,7 +387,7 @@ QWidget *AboutDialog::get_device_page(QWidget *parent) const
 	s.append("<tr><td colspan=\"2\"><b>" +
 		tr("Sigrok device channels:") + "</b></td></tr>");
 	const auto sr_channels = sr_device->channels();
-	for (auto sr_channel : sr_channels) {
+	for (const auto &sr_channel : sr_channels) {
 		s.append(QString("<tr><td><i>%1</i></td><td></td></tr>").arg(
 			QString::fromStdString(sr_channel->name())));
 	}

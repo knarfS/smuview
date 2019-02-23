@@ -92,7 +92,7 @@ void MainWindow::init_default_session()
 		return;
 	}
 
-	for (auto user_device : device_manager_.user_spec_devices())
+	for (const auto &user_device : device_manager_.user_spec_devices())
 		add_hw_device_tab(user_device);
 }
 

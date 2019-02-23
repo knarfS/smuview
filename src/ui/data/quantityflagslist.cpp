@@ -56,7 +56,7 @@ set<sv::data::QuantityFlag> QuantityFlagsList::selected_quantity_flags()
 {
 	set<sv::data::QuantityFlag> flags;
 	auto items = this->selectedItems();
-	for (auto item : items) {
+	for (const auto &item : items) {
 		QVariant data = item->data(Qt::UserRole);
 		if (data.isNull())
 			continue;
@@ -70,7 +70,7 @@ void QuantityFlagsList::setup_ui()
 {
 	this->setSelectionMode(QListView::MultiSelection);
 
-	for (auto qf_name_pair : sv::data::datautil::get_quantity_flag_name_map()) {
+	for (const auto &qf_name_pair : sv::data::datautil::get_quantity_flag_name_map()) {
 		QListWidgetItem *item = new QListWidgetItem();
 		item->setText(qf_name_pair.second);
 		item->setFlags(item->flags() | Qt::ItemIsUserCheckable);

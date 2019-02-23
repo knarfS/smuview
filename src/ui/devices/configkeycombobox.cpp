@@ -77,7 +77,7 @@ void ConfigKeyComboBox::fill_config_keys()
 		return;
 
 	// TODO: Filter for getable, setable, listable
-	for (auto config_key : configurable_->setable_configs()) {
+	for (const auto &config_key : configurable_->setable_configs()) {
 		this->addItem(
 			sv::devices::deviceutil::format_config_key(config_key),
 			QVariant::fromValue(config_key));

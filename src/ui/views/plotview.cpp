@@ -326,7 +326,7 @@ void PlotView::on_action_add_signal_triggered()
 	if (!dlg.exec())
 		return;
 
-	for (auto signal : dlg.signals()) {
+	for (const auto &signal : dlg.signals()) {
 		if (plot_type_ == PlotType::TimePlot) {
 			add_time_curve(
 				dynamic_pointer_cast<sv::data::AnalogSignal>(signal));

@@ -52,7 +52,7 @@ void SourceSinkTab::setup_ui()
 	auto hw_device = static_pointer_cast<sv::devices::HardwareDevice>(device_);
 
 	// Device control(s)
-	for (auto c : hw_device->configurables()) {
+	for (const auto &c : hw_device->configurables()) {
 		if (!c->is_controllable())
 			continue;
 
@@ -63,12 +63,12 @@ void SourceSinkTab::setup_ui()
 
 	// Get signals by their channel group. The signals in a channel are "fixed"
 	// for power supplys and loads.
-	for (auto chg_name_signals_pair : device_->channel_group_name_map()) {
+	for (const auto &chg_name_signals_pair : device_->channel_group_name_map()) {
 		ui::views::PlotView *plot_view = NULL;
 		shared_ptr<data::AnalogSignal> voltage_signal;
 		shared_ptr<data::AnalogSignal> current_signal;
 		auto channels = chg_name_signals_pair.second;
-		for (auto channel : channels) {
+		for (const auto &channel : channels) {
 			if (channel->has_fixed_signal()) {
 				auto signal = static_pointer_cast<data::AnalogSignal>(
 					channel->actual_signal());

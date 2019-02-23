@@ -79,7 +79,7 @@ shared_ptr<Configurable> Configurable::create(Arg&&...arg)
 void Configurable::init()
 {
 	const auto sr_config_keys = sr_configurable_->config_keys();
-	for (auto sr_config_key : sr_config_keys) {
+	for (const auto &sr_config_key : sr_config_keys) {
 		ConfigKey config_key = deviceutil::get_config_key(sr_config_key);
 		if (config_key == ConfigKey::Unknown)
 			continue;
@@ -379,7 +379,7 @@ bool Configurable::is_controllable() const
 
 void Configurable::feed_in_meta(shared_ptr<sigrok::Meta> sr_meta)
 {
-	for (auto entry : sr_meta->config()) {
+	for (const auto &entry : sr_meta->config()) {
 		devices::ConfigKey config_key =
 			devices::deviceutil::get_config_key(entry.first);
 
