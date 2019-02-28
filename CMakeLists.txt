@@ -113,6 +113,9 @@ find_package(Boost 1.54 REQUIRED)
 # This will set ${CMAKE_THREAD_LIBS_INIT} to the correct, OS-specific value.
 find_package(Threads REQUIRED)
 
+# SmuView has its own copy of pybind11 2.2.4
+add_subdirectory(external/pybind11)
+
 
 #===============================================================================
 #= System Introspection
@@ -356,6 +359,7 @@ set(SMUVIEW_LINK_LIBS
 	${QWT_LIBRARY}
 	${CMAKE_THREAD_LIBS_INIT}
 #	${LIBATOMIC_LIBRARY}
+	pybind11::embed
 )
 
 if(STATIC_PKGDEPS_LIBS)
