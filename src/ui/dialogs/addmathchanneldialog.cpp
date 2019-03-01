@@ -32,6 +32,7 @@
 #include <QWidget>
 
 #include "addmathchanneldialog.hpp"
+#include "src/channels/addscchannel.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/channels/dividechannel.hpp"
 #include "src/channels/integratechannel.hpp"
@@ -117,6 +118,7 @@ void AddMathChannelDialog::setup_ui()
 	this->setup_ui_multiply_signals_tab();
 	this->setup_ui_multiply_signal_tab();
 	this->setup_ui_divide_signals_tab();
+	this->setup_ui_add_signal_tab();
 	this->setup_ui_integrate_signal_tab();
 	tab_widget_->setCurrentIndex(0);
 	main_layout->addWidget(tab_widget_);
@@ -204,6 +206,30 @@ void AddMathChannelDialog::setup_ui_divide_signals_tab()
 	s2_layout->addWidget(d_ss_signal2_);
 	signal2_group->setLayout(s2_layout);
 	layout->addWidget(signal2_group);
+
+	widget->setLayout(layout);
+	tab_widget_->addTab(widget, title);
+}
+
+void AddMathChannelDialog::setup_ui_add_signal_tab()
+{
+	QString title(tr("S(t) + c"));
+
+	QWidget *widget = new QWidget();
+	QVBoxLayout *layout = new QVBoxLayout();
+
+	QGroupBox *signal_group = new QGroupBox(tr("Signal"));
+	QVBoxLayout *s_layout = new QVBoxLayout();
+	a_sc_signal_ = new ui::devices::SelectSignalWidget(session_);
+	a_sc_signal_->select_device(device_);
+	s_layout->addWidget(a_sc_signal_);
+	signal_group->setLayout(s_layout);
+	layout->addWidget(signal_group);
+
+	QFormLayout *c_layout = new QFormLayout();
+	a_sc_constant_edit_ = new QLineEdit();
+	c_layout->addRow(tr("Constant"), a_sc_constant_edit_);
+	layout->addLayout(c_layout);
 
 	widget->setLayout(layout);
 	tab_widget_->addTab(widget, title);
@@ -356,6 +382,44 @@ void AddMathChannelDialog::accept()
 		}
 		break;
 	case 3: {
+			if (a_sc_signal_->selected_signal() == nullptr) {
+				QMessageBox::warning(this,
+					tr("Signal missing"),
+					tr("Please choose a signal for the constant addition."),
+					QMessageBox::Ok);
+				return;
+			}
+			auto signal = static_pointer_cast<sv::data::AnalogSignal>(
+				a_sc_signal_->selected_signal());
+
+			if (a_sc_constant_edit_->text().size() == 0) {
+				QMessageBox::warning(this,
+					tr("Constant missing"),
+					tr("Please enter a constant for the constant addition."),
+					QMessageBox::Ok);
+				return;
+			}
+
+			bool ok;
+			double constant = QString(a_sc_constant_edit_->text()).toDouble(&ok);
+			if (!ok) {
+				QMessageBox::warning(this,
+					tr("Constant not a number"),
+					tr("Please enter a number as constant for the constant addition."),
+					QMessageBox::Ok);
+				return;
+			}
+
+			channel_ = make_shared<channels::AddSCChannel>(
+				quantity_box_->selected_quantity(),
+				quantity_flags_list_->selected_quantity_flags(),
+				unit_box_->selected_unit(),
+				signal, constant,
+				device, channel_group_name, name_edit_->text(),
+				signal->signal_start_timestamp());
+		}
+		break;
+	case 4: {
 			if (i_s_signal_->selected_signal() == nullptr) {
 				QMessageBox::warning(this,
 					tr("Signal missing"),

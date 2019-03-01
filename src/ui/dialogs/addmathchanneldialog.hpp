@@ -72,6 +72,7 @@ private:
 	void setup_ui_multiply_signal_tab();
 	void setup_ui_divide_signals_tab();
 	void setup_ui_divide_signal_tab();
+	void setup_ui_add_signal_tab();
 	void setup_ui_integrate_signal_tab();
 
 	const Session &session_;
@@ -91,6 +92,8 @@ private:
 	QLineEdit *m_sf_factor_edit_;
 	ui::devices::SelectSignalWidget *d_ss_signal1_;
 	ui::devices::SelectSignalWidget *d_ss_signal2_;
+	ui::devices::SelectSignalWidget *a_sc_signal_;
+	QLineEdit *a_sc_constant_edit_;
 	ui::devices::SelectSignalWidget *i_s_signal_;
 	QDialogButtonBox *button_box_;
 

@@ -174,6 +174,7 @@ set(smuview_SOURCES
   src/mainwindow.cpp
   src/session.cpp
   src/util.cpp
+  src/channels/addscchannel.cpp
   src/channels/basechannel.cpp
   src/channels/dividechannel.cpp
   src/channels/hardwarechannel.cpp
