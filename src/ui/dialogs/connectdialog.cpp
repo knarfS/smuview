@@ -156,6 +156,9 @@ ConnectDialog::ConnectDialog(sv::DeviceManager &device_manager,
 
 	layout_.addWidget(&form_);
 	layout_.addWidget(&button_box_);
+
+	// Initially populate serials for current selected device
+	driver_selected(drivers_.currentIndex());
 }
 
 shared_ptr<HardwareDevice> ConnectDialog::get_selected_device() const
