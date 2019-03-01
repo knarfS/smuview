@@ -209,6 +209,8 @@ set(smuview_SOURCES
   src/devices/sourcesinkdevice.cpp
   src/devices/userdevice.cpp
 
+  src/python/smuscript.cpp
+
   src/ui/data/quantitycombobox.cpp
   src/ui/data/quantityflagslist.cpp
   src/ui/data/unitcombobox.cpp
