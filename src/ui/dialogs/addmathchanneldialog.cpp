@@ -27,6 +27,7 @@
 #include <QHBoxLayout>
 #include <QMessageBox>
 #include <QSizePolicy>
+#include <QSpinBox>
 #include <QString>
 #include <QVBoxLayout>
 #include <QWidget>
@@ -36,6 +37,7 @@
 #include "src/channels/basechannel.hpp"
 #include "src/channels/dividechannel.hpp"
 #include "src/channels/integratechannel.hpp"
+#include "src/channels/movingavgchannel.hpp"
 #include "src/channels/userchannel.hpp"
 #include "src/channels/multiplysfchannel.hpp"
 #include "src/channels/multiplysschannel.hpp"
@@ -120,6 +122,7 @@ void AddMathChannelDialog::setup_ui()
 	this->setup_ui_divide_signals_tab();
 	this->setup_ui_add_signal_tab();
 	this->setup_ui_integrate_signal_tab();
+	this->setup_ui_movingavg_signal_tab();
 	tab_widget_->setCurrentIndex(0);
 	main_layout->addWidget(tab_widget_);
 
@@ -249,6 +252,31 @@ void AddMathChannelDialog::setup_ui_integrate_signal_tab()
 	s_layout->addWidget(i_s_signal_);
 	signal_group->setLayout(s_layout);
 	layout->addWidget(signal_group);
+
+	widget->setLayout(layout);
+	tab_widget_->addTab(widget, title);
+}
+
+void AddMathChannelDialog::setup_ui_movingavg_signal_tab()
+{
+	QString title(tr("Moving Average"));
+
+	QWidget *widget = new QWidget();
+	QVBoxLayout *layout = new QVBoxLayout();
+
+	QGroupBox *signal_group = new QGroupBox(tr("Signal"));
+	QVBoxLayout *s_layout = new QVBoxLayout();
+	ma_signal_ = new ui::devices::SelectSignalWidget(session_);
+	ma_signal_->select_device(device_);
+	s_layout->addWidget(ma_signal_);
+	signal_group->setLayout(s_layout);
+	layout->addWidget(signal_group);
+
+	QFormLayout *ac_layout = new QFormLayout();
+	ma_num_samples_box_ = new QSpinBox();
+	ma_num_samples_box_->setMinimum(1);
+	ac_layout->addRow(tr("Sample count"), ma_num_samples_box_);
+	layout->addLayout(ac_layout);
 
 	widget->setLayout(layout);
 	tab_widget_->addTab(widget, title);
@@ -435,6 +463,28 @@ void AddMathChannelDialog::accept()
 				quantity_flags_list_->selected_quantity_flags(),
 				unit_box_->selected_unit(),
 				signal,
+				device, channel_group_name, name_edit_->text(),
+				signal->signal_start_timestamp());
+		}
+		break;
+	case 5: {
+			if (ma_signal_->selected_signal() == nullptr) {
+				QMessageBox::warning(this,
+					tr("Signal missing"),
+					tr("Please choose a signal for the moving average."),
+					QMessageBox::Ok);
+				return;
+			}
+			auto signal = static_pointer_cast<sv::data::AnalogSignal>(
+				ma_signal_->selected_signal());
+
+			uint num_samples = ma_num_samples_box_->value();
+
+			channel_ = make_shared<channels::MovingAvgChannel>(
+				quantity_box_->selected_quantity(),
+				quantity_flags_list_->selected_quantity_flags(),
+				unit_box_->selected_unit(),
+				signal, num_samples,
 				device, channel_group_name, name_edit_->text(),
 				signal->signal_start_timestamp());
 		}

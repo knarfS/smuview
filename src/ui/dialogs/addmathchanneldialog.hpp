@@ -25,6 +25,7 @@
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QLineEdit>
+#include <QSpinBox>
 #include <QTabWidget>
 
 #include "src/session.hpp"
@@ -74,6 +75,7 @@ private:
 	void setup_ui_divide_signal_tab();
 	void setup_ui_add_signal_tab();
 	void setup_ui_integrate_signal_tab();
+	void setup_ui_movingavg_signal_tab();
 
 	const Session &session_;
 	shared_ptr<sv::devices::BaseDevice> device_;
@@ -95,6 +97,8 @@ private:
 	ui::devices::SelectSignalWidget *a_sc_signal_;
 	QLineEdit *a_sc_constant_edit_;
 	ui::devices::SelectSignalWidget *i_s_signal_;
+	ui::devices::SelectSignalWidget *ma_signal_;
+	QSpinBox *ma_num_samples_box_;
 	QDialogButtonBox *button_box_;
 
 public Q_SLOTS:

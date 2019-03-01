@@ -179,6 +179,7 @@ set(smuview_SOURCES
   src/channels/dividechannel.cpp
   src/channels/hardwarechannel.cpp
   src/channels/integratechannel.cpp
+  src/channels/movingavgchannel.cpp
   src/channels/multiplysfchannel.cpp
   src/channels/multiplysschannel.cpp
   src/channels/userchannel.cpp
