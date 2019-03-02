@@ -36,8 +36,7 @@ PYBIND11_EMBEDDED_MODULE(smuview, m) {
         .def("devices", &sv::Session::devices);
 
 	py::class_<sv::devices::BaseDevice, std::shared_ptr<sv::devices::BaseDevice>>(m, "BaseDevice")
-		.def("name", &sv::devices::BaseDevice::name)
-		.def("name_str", &sv::devices::BaseDevice::name_str);
+		.def("id", &sv::devices::BaseDevice::id);
 
 	//py::class_<sv::devices::HardwareDevice, std::shared_ptr<sv::devices::HardwareDevice>>(m, "HardwareDevice")
 	//	.def("name", &sv::devices::HardwareDevice::name);

@@ -3,6 +3,6 @@ import time
 
 devices = Session.devices()
 
-for d in devices:
-    print("device.name_str() = "+d.name_str())
-    time.sleep(5)
+for key in devices:
+    print("key   = "+key)
+    print("value = "+devices[key].id())
