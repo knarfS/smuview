@@ -122,6 +122,12 @@ void HardwareDevice::init()
 string HardwareDevice::id() const
 {
 	// TODO: Add index, when more then one of the same device exists.
+	return sr_hardware_device()->driver()->long_name();
+}
+
+string HardwareDevice::id() const
+{
+	// TODO: Add index, when more then one of the same device exists.
 	return sr_hardware_device()->driver()->name();
 }
 
