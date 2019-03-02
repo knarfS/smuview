@@ -61,9 +61,11 @@ shared_ptr<sv::devices::BaseDevice> DeviceComboBox::selected_device() const
 
 void DeviceComboBox::setup_ui()
 {
-	for (const auto &device : session_.devices()) {
+	for (const auto &device_pair : session_.devices()) {
+
 		this->addItem(
-			device->full_name(), QVariant::fromValue(device));
+			device_pair.second->full_name(),
+			QVariant::fromValue(device_pair.second));
 	}
 }
 

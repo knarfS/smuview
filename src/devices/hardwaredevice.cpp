@@ -106,9 +106,14 @@ void HardwareDevice::init()
 	}
 
 	// Init Configurable from Device
-	// TODO: Only if there are no channel groups?
 	auto d_c = Configurable::create(sr_device_, short_name(), device_type_);
 	configurables_.push_back(d_c);
+}
+
+string HardwareDevice::id() const
+{
+	// TODO: Add index, when more then one of the same device exists.
+	return sr_hardware_device()->driver()->name();
 }
 
 QString HardwareDevice::display_name(

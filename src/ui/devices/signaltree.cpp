@@ -17,7 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <unordered_set>
+#include <map>
+#include <string>
 #include <utility>
 
 #include <QDebug>
@@ -32,8 +33,9 @@
 using std::dynamic_pointer_cast;
 using std::make_pair;
 using std::make_shared;
+using std::map;
 using std::static_pointer_cast;
-using std::unordered_set;
+using std::string;
 
 Q_DECLARE_SMART_POINTER_METATYPE(std::shared_ptr)
 
@@ -93,17 +95,17 @@ void SignalTree::setup_ui()
 	if (multiselect_)
 		this->setSelectionMode(QTreeView::MultiSelection);
 
-	unordered_set<shared_ptr<sv::devices::BaseDevice>> devices;
+	map<string, shared_ptr<sv::devices::BaseDevice>> devices;
 	if (!selected_device_)
 		devices = session_.devices();
 	else if (selected_device_)
-		devices.insert(selected_device_);
+		devices.insert(make_pair(selected_device_->id(), selected_device_));
 
 	for (const auto &device : devices) {
 		bool expanded = true;
 		/*
 		bool expanded = false;
-		if (selected_device_ && selected_device_.get() == device.get())
+		if (selected_device_ && selected_device_.get() == device.second.get())
 			expanded = true;
 		*/
 		/* TODO
@@ -115,7 +117,7 @@ void SignalTree::setup_ui()
 		}
 		*/
 
-		add_device(device, expanded);
+		add_device(device.second, expanded);
 	}
 
 	// Resize all columns

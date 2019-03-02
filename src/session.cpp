@@ -19,9 +19,10 @@
 
 #include <cassert>
 #include <functional>
+#include <map>
 #include <memory>
 #include <string>
-#include <unordered_set>
+#include <utility>
 
 #include <QDebug>
 
@@ -30,9 +31,10 @@
 #include "src/devices/basedevice.hpp"
 
 using std::function;
+using std::make_pair;
+using std::map;
 using std::shared_ptr;
 using std::string;
-using std::unordered_set;
 
 namespace sigrok {
 class Context;
@@ -51,7 +53,7 @@ Session::Session(DeviceManager &device_manager) :
 Session::~Session()
 {
 	for (auto &device : devices_)
-		device->close();
+		device.second->close();
 }
 
 DeviceManager& Session::device_manager()
@@ -78,7 +80,7 @@ void Session::restore_settings(QSettings &settings)
 	// TODO: Restore all signal data from settings?
 }
 
-unordered_set<shared_ptr<devices::BaseDevice>> Session::devices() const
+map<string, shared_ptr<devices::BaseDevice>> Session::devices() const
 {
 	return devices_;
 }
@@ -96,7 +98,8 @@ void Session::add_device(shared_ptr<devices::BaseDevice> device,
 		device.reset();
 	}
 
-	devices_.insert(device);
+
+	devices_.insert(make_pair(device->id(), device));
 
 	Q_EMIT device_added(device);
 }
@@ -106,7 +109,7 @@ void Session::remove_device(shared_ptr<devices::BaseDevice> device)
 	if (device)
 		device->close();
 
-	devices_.erase(device);
+	devices_.erase(device->id());
 }
 
 } // namespace sv

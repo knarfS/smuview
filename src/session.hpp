@@ -21,17 +21,17 @@
 #define SESSION_HPP
 
 #include <functional>
+#include <map>
 #include <memory>
 #include <string>
-#include <unordered_set>
 
 #include <QObject>
 #include <QSettings>
 
 using std::function;
+using std::map;
 using std::shared_ptr;
 using std::string;
-using std::unordered_set;
 
 namespace sigrok {
 class Context;
@@ -64,7 +64,7 @@ public:
 	void save_settings(QSettings &settings) const;
 	void restore_settings(QSettings &settings);
 
-	unordered_set<shared_ptr<devices::BaseDevice>> devices() const;
+	map<string, shared_ptr<devices::BaseDevice>> devices() const;
 	void add_device(shared_ptr<devices::BaseDevice> device,
 		function<void (const QString)> error_handler);
 	void remove_device(shared_ptr<devices::BaseDevice> device);
@@ -73,7 +73,7 @@ public:
 
 private:
 	DeviceManager &device_manager_;
-	unordered_set<shared_ptr<devices::BaseDevice>> devices_;
+	map<string, shared_ptr<devices::BaseDevice>> devices_;
 
 	void free_unused_memory();
 

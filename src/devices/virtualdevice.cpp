@@ -55,6 +55,12 @@ void VirtualDevice::init()
 {
 }
 
+string VirtualDevice::id() const
+{
+	// TODO: Add index, when more then one virtual devices exist.
+	return name().toStdString();
+}
+
 QString VirtualDevice::name() const
 {
 	return short_name();
