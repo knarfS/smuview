@@ -49,9 +49,6 @@ namespace ui {
 namespace devices {
 class SignalTree;
 }
-namespace processing {
-class ProcessingWidget;
-}
 }
 
 class MainWindow : public QMainWindow
@@ -89,7 +86,6 @@ private:
 	QToolButton *add_user_tab_button_;
 	QWidget *central_widget_;
 	ui::devices::SignalTree *signal_tree_;
-	ui::processing::ProcessingWidget * processing_widget_;
 	QTabWidget *tab_widget_;
 	QWidget *tab_widget_toolbar_;
 

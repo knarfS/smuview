@@ -239,9 +239,6 @@ set(smuview_SOURCES
   src/ui/dialogs/plotdiffmarkerdialog.cpp
   src/ui/dialogs/savedialog.cpp
   src/ui/dialogs/selectsignaldialog.cpp
-  src/ui/processing/processingwidget.cpp
-  src/ui/processing/processthreadwidget.cpp
-  src/ui/processing/blocks/sequencesinblock.cpp
   src/ui/tabs/basetab.cpp
   src/ui/tabs/devicetab.cpp
   src/ui/tabs/measurementtab.cpp
