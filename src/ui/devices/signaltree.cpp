@@ -275,7 +275,9 @@ void SignalTree::on_device_removed()
 void SignalTree::on_channel_added(shared_ptr<channels::BaseChannel> channel)
 {
 	auto parent_item = device_map_[channel->parent_device()];
-	add_channel(channel, channel->channel_group_name(), true, parent_item);
+	for (const auto &chg_name : channel->channel_group_names()) {
+		add_channel(channel, chg_name, true, parent_item);
+	}
 }
 
 void SignalTree::on_channel_removed()

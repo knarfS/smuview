@@ -45,9 +45,9 @@ namespace channels {
 HardwareChannel::HardwareChannel(
 		shared_ptr<sigrok::Channel> sr_channel,
 		shared_ptr<devices::BaseDevice> parent_device,
-		const QString channel_group_name,
+		set<QString> channel_group_names,
 		double channel_start_timestamp) :
-	BaseChannel(parent_device, channel_group_name, channel_start_timestamp),
+	BaseChannel(parent_device, channel_group_names, channel_start_timestamp),
 	sr_channel_(sr_channel)
 {
 	assert(sr_channel);

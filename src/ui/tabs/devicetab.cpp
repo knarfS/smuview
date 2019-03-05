@@ -201,7 +201,7 @@ void DeviceTab::on_action_add_math_channel_triggered()
 
 	auto channel = dlg.channel();
 	if (channel != nullptr)
-		device_->add_channel(channel, channel->channel_group_name());
+		device_->add_channel(channel, dlg.channel_group_name());
 }
 
 void DeviceTab::on_action_reset_data_triggered()

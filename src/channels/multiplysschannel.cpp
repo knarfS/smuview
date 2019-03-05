@@ -34,6 +34,7 @@
 using std::lock_guard;
 using std::make_shared;
 using std::mutex;
+using std::set;
 
 namespace sv {
 namespace channels {
@@ -45,11 +46,11 @@ MultiplySSChannel::MultiplySSChannel(
 		shared_ptr<data::AnalogSignal> signal1,
 		shared_ptr<data::AnalogSignal> signal2,
 		shared_ptr<devices::BaseDevice> parent_device,
-		const QString channel_group_name,
+		set<QString> channel_group_names,
 		QString channel_name,
 		double channel_start_timestamp) :
 	UserChannel(quantity, quantity_flags, unit,
-		parent_device, channel_group_name, channel_name,
+		parent_device, channel_group_names, channel_name,
 		channel_start_timestamp),
 	signal1_(signal1),
 	signal2_(signal2),

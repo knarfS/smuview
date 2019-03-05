@@ -168,7 +168,7 @@ protected:
 	// TODO: Doxy
 	map<QString, shared_ptr<channels::BaseChannel>> channel_name_map_;
 	map<QString, vector<shared_ptr<channels::BaseChannel>>> channel_group_name_map_;
-	vector<shared_ptr<data::AnalogSignal>> all_signals_;
+	vector<shared_ptr<data::AnalogSignal>> all_signals_; // TODO: Is empty! Fill in Hardware/Virtual!
 
 	mutable mutex aquisition_mutex_; //!< Protects access to capture_state_. // TODO
 	mutable recursive_mutex data_mutex_; // TODO

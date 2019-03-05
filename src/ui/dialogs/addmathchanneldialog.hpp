@@ -65,7 +65,8 @@ public:
 		shared_ptr<sv::devices::BaseDevice> device,
 		QWidget *parent = nullptr);
 
-	shared_ptr<channels::UserChannel> channel();
+	shared_ptr<channels::UserChannel> channel() const;
+	QString channel_group_name() const;
 
 private:
 	void setup_ui();

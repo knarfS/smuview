@@ -20,6 +20,7 @@
  */
 
 #include <cassert>
+#include <set>
 
 #include <QDebug>
 
@@ -34,19 +35,20 @@
 
 using std::make_pair;
 using std::make_shared;
+using std::set;
 
 namespace sv {
 namespace channels {
 
 BaseChannel::BaseChannel(
 		shared_ptr<devices::BaseDevice> parent_device,
-		const QString channel_group_name,
+		set<QString> channel_group_names,
 		double channel_start_timestamp) :
 	channel_start_timestamp_(channel_start_timestamp),
 	has_fixed_signal_(false),
 	actual_signal_(nullptr),
 	parent_device_(parent_device),
-	channel_group_name_(channel_group_name),
+	channel_group_names_(channel_group_names),
 	name_("")
 {
 	qWarning() << "Init channel " << name_
@@ -83,9 +85,14 @@ shared_ptr<devices::BaseDevice> BaseChannel::parent_device()
 	return parent_device_;
 }
 
-QString BaseChannel::channel_group_name() const
+void BaseChannel::add_channel_group_name(QString channel_group_name)
 {
-	return channel_group_name_;
+	channel_group_names_.insert(channel_group_name);
+}
+
+set<QString> BaseChannel::channel_group_names() const
+{
+	return channel_group_names_;
 }
 
 QString BaseChannel::name() const

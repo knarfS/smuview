@@ -25,7 +25,6 @@
 #include <memory>
 #include <set>
 #include <utility>
-#include <vector>
 
 #include <QColor>
 #include <QObject>
@@ -37,7 +36,6 @@ using std::map;
 using std::pair;
 using std::set;
 using std::shared_ptr;
-using std::vector;
 
 namespace sv {
 
@@ -71,7 +69,7 @@ class BaseChannel :
 public:
 	BaseChannel(
 		shared_ptr<devices::BaseDevice> parent_device,
-		const QString channel_group_name, // TODO: replace with ? object?
+		set<QString> channel_group_names,
 		double channel_start_timestamp);
 	virtual ~BaseChannel();
 
@@ -127,13 +125,15 @@ public:
 	shared_ptr<devices::BaseDevice> parent_device();
 
 	/**
+	 * Add a channel group name
+	 */
+	void add_channel_group_name(QString channel_group_name);
+
+	/**
 	 * Get the channel group name, the channel is in. Returns "" if the channel
 	 * is not in a channel group.
-	 *
-	 * TODO: Change to vector<QString>, bc the channel can be in more than one
-	 *       channel group (see "demo" driver)
 	 */
-	QString channel_group_name() const;
+	set<QString> channel_group_names() const;
 
 	/**
 	 * Gets the name of this channel, i.e. how the device calls it.
@@ -184,7 +184,7 @@ protected:
 	map<quantity_t, shared_ptr<data::BaseSignal>> signal_map_;
 
 	shared_ptr<devices::BaseDevice> parent_device_;
-	const QString channel_group_name_; // TODO: better way?
+	set<QString> channel_group_names_;
 	QString name_;
 	QColor colour_;
 

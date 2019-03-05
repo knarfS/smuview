@@ -19,6 +19,7 @@
 
 #include <cassert>
 #include <memory>
+#include <set>
 
 #include <QComboBox>
 #include <QDebug>
@@ -51,6 +52,7 @@
 #include "src/ui/devices/selectsignalwidget.hpp"
 
 using std::make_shared;
+using std::set;
 using std::static_pointer_cast;
 
 Q_DECLARE_SMART_POINTER_METATYPE(std::shared_ptr)
@@ -282,9 +284,14 @@ void AddMathChannelDialog::setup_ui_movingavg_signal_tab()
 	tab_widget_->addTab(widget, title);
 }
 
-shared_ptr<channels::UserChannel> AddMathChannelDialog::channel()
+shared_ptr<channels::UserChannel> AddMathChannelDialog::channel() const
 {
 	return channel_;
+}
+
+QString AddMathChannelDialog::channel_group_name() const
+{
+	return channel_group_box_->selected_channel_group();
 }
 
 void AddMathChannelDialog::accept()
@@ -298,7 +305,8 @@ void AddMathChannelDialog::accept()
 	}
 
 	auto device = device_box_->selected_device();
-	QString channel_group_name = channel_group_box_->selected_channel_group();
+	set<QString> channel_group_names
+		{ channel_group_box_->selected_channel_group() };
 
 	switch (tab_widget_->currentIndex()) {
 	case 0: {
@@ -333,7 +341,7 @@ void AddMathChannelDialog::accept()
 				quantity_flags_list_->selected_quantity_flags(),
 				unit_box_->selected_unit(),
 				signal_1, signal_2,
-				device, channel_group_name, name_edit_->text(),
+				device, channel_group_names, name_edit_->text(),
 				start_timestamp);
 		}
 		break;
@@ -371,7 +379,7 @@ void AddMathChannelDialog::accept()
 				quantity_flags_list_->selected_quantity_flags(),
 				unit_box_->selected_unit(),
 				signal, factor,
-				device, channel_group_name, name_edit_->text(),
+				device, channel_group_names, name_edit_->text(),
 				signal->signal_start_timestamp());
 		}
 		break;
@@ -405,7 +413,7 @@ void AddMathChannelDialog::accept()
 				quantity_flags_list_->selected_quantity_flags(),
 				unit_box_->selected_unit(),
 				signal1, signal2,
-				device, channel_group_name, name_edit_->text(),
+				device, channel_group_names, name_edit_->text(),
 				start_timestamp);
 		}
 		break;
@@ -443,7 +451,7 @@ void AddMathChannelDialog::accept()
 				quantity_flags_list_->selected_quantity_flags(),
 				unit_box_->selected_unit(),
 				signal, constant,
-				device, channel_group_name, name_edit_->text(),
+				device, channel_group_names, name_edit_->text(),
 				signal->signal_start_timestamp());
 		}
 		break;
@@ -463,7 +471,7 @@ void AddMathChannelDialog::accept()
 				quantity_flags_list_->selected_quantity_flags(),
 				unit_box_->selected_unit(),
 				signal,
-				device, channel_group_name, name_edit_->text(),
+				device, channel_group_names, name_edit_->text(),
 				signal->signal_start_timestamp());
 		}
 		break;
@@ -485,7 +493,7 @@ void AddMathChannelDialog::accept()
 				quantity_flags_list_->selected_quantity_flags(),
 				unit_box_->selected_unit(),
 				signal, num_samples,
-				device, channel_group_name, name_edit_->text(),
+				device, channel_group_names, name_edit_->text(),
 				signal->signal_start_timestamp());
 		}
 		break;

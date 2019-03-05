@@ -128,15 +128,24 @@ void SaveDialog::save(QString file_name)
 		qWarning() << "SaveDialog::save(): signal.parent_channel().parent_device().name() = " <<
 			signal->parent_channel()->parent_device()->name();
 
+		QString chg_names("");
+		QString chg_sep("");
+		for (const auto &chg_name : signal->parent_channel()->channel_group_names()) {
+			chg_names.append(chg_sep);
+			if (chg_name.isEmpty())
+				chg_names.append("\"\"");
+			else
+				chg_names.append(chg_name);
+			chg_sep = QString(", ");
+		}
+
 		device_header_line.append(start_sep).append(
 			signal->parent_channel()->parent_device()->name()); // Time
 
 		device_header_line.append(sep).append(
 			signal->parent_channel()->parent_device()->name()); // Value
-		chg_name_header_line.append(start_sep).append(
-			signal->parent_channel()->channel_group_name()); // Time
-		chg_name_header_line.append(sep).append(
-			signal->parent_channel()->channel_group_name()); // Value
+		chg_name_header_line.append(start_sep).append(chg_names); // Time
+		chg_name_header_line.append(sep).append(chg_names); // Value
 		ch_name_header_line.append(start_sep).append(
 			signal->parent_channel()->name()); // Time
 		ch_name_header_line.append(sep).append(
@@ -208,10 +217,20 @@ void SaveDialog::save_combined(QString file_name)
 		sample_counts.push_back(a_signal->get_sample_count());
 		sample_pos.push_back(0);
 
+		QString chg_names("");
+		QString chg_sep("");
+		for (const auto &chg_name : signal->parent_channel()->channel_group_names()) {
+			chg_names.append(chg_sep);
+			if (chg_name.isEmpty())
+				chg_names.append("\"\"");
+			else
+				chg_names.append(chg_name);
+			chg_sep = QString(", ");
+		}
+
 		device_header_line.append(sep).append(
 			signal->parent_channel()->parent_device()->name()); // Value
-		chg_name_header_line.append(sep).append(
-			signal->parent_channel()->channel_group_name()); // Value
+		chg_name_header_line.append(sep).append(chg_names); // Value
 		ch_name_header_line.append(sep).append(
 			signal->parent_channel()->name()); // Value
 		signal_name_header_line.append(sep).append(signal->name()); // Value

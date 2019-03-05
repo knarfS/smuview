@@ -57,7 +57,7 @@ public:
 	HardwareChannel(
 		shared_ptr<sigrok::Channel> sr_channel,
 		shared_ptr<devices::BaseDevice> parent_device,
-		const QString channel_group_name,
+		set<QString> channel_group_names,
 		double channel_start_timestamp);
 
 public:

@@ -55,7 +55,7 @@ public:
 		data::Unit unit,
 		shared_ptr<data::AnalogSignal> int_signal,
 		shared_ptr<devices::BaseDevice> parent_device,
-		const QString channel_group_name,
+		set<QString> channel_group_names,
 		QString channel_name,
 		double channel_start_timestamp);
 

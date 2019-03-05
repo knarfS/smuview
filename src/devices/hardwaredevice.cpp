@@ -21,8 +21,10 @@
 #include <algorithm>
 #include <cassert>
 #include <functional>
+#include <set>
 #include <thread>
 #include <utility>
+#include <vector>
 
 #include <glib.h>
 
@@ -56,8 +58,8 @@ using std::set;
 using std::shared_ptr;
 using std::static_pointer_cast;
 using std::string;
-using std::vector;
 using std::unique_ptr;
+using std::vector;
 
 namespace sv {
 namespace devices {
@@ -230,14 +232,22 @@ void HardwareDevice::init_channels()
 shared_ptr<channels::BaseChannel> HardwareDevice::init_channel(
 	shared_ptr<sigrok::Channel> sr_channel, QString channel_group_name)
 {
-	shared_ptr<channels::HardwareChannel> channel =
-		make_shared<channels::HardwareChannel>(sr_channel,
-			shared_from_this(), channel_group_name, aquisition_start_timestamp_);
+	// Check if channel already exists.
+	// NOTE: Channel names are unique per device.
+	shared_ptr<channels::BaseChannel> channel;
+	if (channel_name_map_.count(QString::fromStdString(sr_channel->name())) > 0) {
+		channel = channel_name_map()[QString::fromStdString(sr_channel->name())];
+	}
+	else {
+		set<QString> chg_names { channel_group_name };
+		channel = make_shared<channels::HardwareChannel>(sr_channel,
+			shared_from_this(), chg_names, aquisition_start_timestamp_);
+
+		// map<shared_ptr<sigrok::Channel>, shared_ptr<channels::BaseChannel>> sr_channel_map_;
+		sr_channel_map_.insert(make_pair(sr_channel, channel));
+	}
 
 	add_channel(channel, channel_group_name);
-
-	// map<shared_ptr<sigrok::Channel>, shared_ptr<channels::BaseChannel>> sr_channel_map_;
-	sr_channel_map_.insert(make_pair(sr_channel, channel));
 
 	return channel;
 }

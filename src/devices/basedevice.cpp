@@ -247,17 +247,25 @@ void BaseDevice::free_unused_memory()
 void BaseDevice::add_channel(shared_ptr<channels::BaseChannel> channel,
 	QString channel_group_name)
 {
-	connect(this, SIGNAL(aquisition_start_timestamp_changed(double)),
+	// Check if channel already exists. Channel names are unique per device.
+	if (channel_name_map_.count(channel->name()) == 0) {
+		connect(this, SIGNAL(aquisition_start_timestamp_changed(double)),
 			channel.get(), SLOT(on_aquisition_start_timestamp_changed(double)));
 
-	// map<QString, shared_ptr<channels::BaseChannel>> channel_name_map_;
-	channel_name_map_.insert(make_pair(channel->name(), channel));
+		// map<QString, shared_ptr<channels::BaseChannel>> channel_name_map_;
+		channel_name_map_.insert(make_pair(channel->name(), channel));
+	}
 
 	// map<QString, vector<shared_ptr<channels::BaseChannel>>> channel_group_name_map_;
-	if (channel_group_name_map_.count(channel_group_name) == 0)
+	if (channel_group_name_map_.count(channel_group_name) == 0) {
 		channel_group_name_map_.insert(make_pair(
 			channel_group_name, vector<shared_ptr<channels::BaseChannel>>()));
+	}
 	channel_group_name_map_[channel_group_name].push_back(channel);
+
+	if (channel->channel_group_names().count(channel_group_name) == 0) {
+		channel->add_channel_group_name(channel_group_name);
+	}
 
 	Q_EMIT channel_added(channel);
 }

@@ -98,6 +98,7 @@ void SourceSinkDevice::init_channels()
 
 		// Math Channels
 		QString chg_name = chg_name_channels_pair.first;
+		set<QString> chg_names { chg_name };
 		shared_ptr<data::AnalogSignal> voltage_signal;
 		shared_ptr<data::AnalogSignal> current_signal;
 		shared_ptr<data::AnalogSignal> power_signal;
@@ -121,7 +122,7 @@ void SourceSinkDevice::init_channels()
 					set<data::QuantityFlag>(),
 					data::Unit::Watt,
 					voltage_signal, current_signal,
-					shared_from_this(), chg_name, tr("P"),
+					shared_from_this(), chg_names, tr("P"),
 					aquisition_start_timestamp_);
 			power_channel->init_signal();
 			power_signal = static_pointer_cast<data::AnalogSignal>(
@@ -137,7 +138,7 @@ void SourceSinkDevice::init_channels()
 					set<data::QuantityFlag>(),
 					data::Unit::Ohm,
 					voltage_signal, current_signal,
-					shared_from_this(), chg_name, tr("R"),
+					shared_from_this(), chg_names, tr("R"),
 					aquisition_start_timestamp_);
 			resistance_channel->init_signal();
 			BaseDevice::add_channel(resistance_channel, chg_name);
@@ -151,7 +152,7 @@ void SourceSinkDevice::init_channels()
 					set<data::QuantityFlag>(),
 					data::Unit::WattHour,
 					power_signal,
-					shared_from_this(), chg_name, tr("Wh"),
+					shared_from_this(), chg_names, tr("Wh"),
 					aquisition_start_timestamp_);
 			wh_channel->init_signal();
 			BaseDevice::add_channel(wh_channel, chg_name);
@@ -165,7 +166,7 @@ void SourceSinkDevice::init_channels()
 					set<data::QuantityFlag>(),
 					data::Unit::AmpereHour,
 					current_signal,
-					shared_from_this(), chg_name, tr("Ah"),
+					shared_from_this(), chg_names, tr("Ah"),
 					aquisition_start_timestamp_);
 			ah_channel->init_signal();
 			BaseDevice::add_channel(ah_channel, chg_name);

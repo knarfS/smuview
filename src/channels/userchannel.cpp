@@ -42,10 +42,10 @@ UserChannel::UserChannel(
 		set<data::QuantityFlag> quantity_flags,
 		data::Unit unit,
 		shared_ptr<devices::BaseDevice> parent_device,
-		const QString channel_group_name,
+		set<QString> channel_group_names,
 		QString channel_name,
 		double channel_start_timestamp) :
-	BaseChannel(parent_device, channel_group_name, channel_start_timestamp),
+	BaseChannel(parent_device, channel_group_names, channel_start_timestamp),
 	digits_(7),
 	decimal_places_(-1),
 	quantity_(quantity),
