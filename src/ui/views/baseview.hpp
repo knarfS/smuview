@@ -34,7 +34,7 @@ namespace views {
 enum class ViewType {
 	DataView,
 	DemoControlView,
-	FlowView,
+	DeviceTreeView,
 	MeasurementControlView,
 	PlotView,
 	PowerPanelView,
