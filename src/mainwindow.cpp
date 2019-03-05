@@ -41,11 +41,11 @@
 #include "src/devices/measurementdevice.hpp"
 #include "src/devices/sourcesinkdevice.hpp"
 #include "src/devices/virtualdevice.hpp"
-#include "src/ui/devices/signaltree.hpp"
 #include "src/ui/dialogs/connectdialog.hpp"
 #include "src/ui/tabs/basetab.hpp"
 #include "src/ui/tabs/tabhelper.hpp"
 #include "src/ui/tabs/welcometab.hpp"
+#include "src/ui/views/devicetreeview.hpp"
 
 using std::make_pair;
 using std::make_shared;
@@ -258,13 +258,10 @@ void MainWindow::setup_ui()
 
 	this->setCentralWidget(central_widget_);
 
-	// Signal Tree Dock
-	signal_tree_ = new ui::devices::SignalTree(
-		*session_, true, false, false, nullptr);
-	signal_tree_->setSizePolicy(
+	// DeviceTreeView Dock
+	device_tree_view_ = new ui::views::DeviceTreeView(*session_);
+	device_tree_view_->setSizePolicy(
 		QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);
-	connect(session_.get(), SIGNAL(device_added(shared_ptr<sv::devices::BaseDevice>)),
-		signal_tree_, SLOT(on_device_added(shared_ptr<sv::devices::BaseDevice>)));
 
 	// A layout must be set to the central widget of the main window
 	// before ds_dock->setWidget() is called.
@@ -273,7 +270,7 @@ void MainWindow::setup_ui()
 	ds_dock->setContextMenuPolicy(Qt::PreventContextMenu);
 	ds_dock->setFeatures(QDockWidget::DockWidgetMovable |
 		QDockWidget::DockWidgetFloatable);
-	ds_dock->setWidget(signal_tree_);
+	ds_dock->setWidget(device_tree_view_);
 	this->addDockWidget(Qt::LeftDockWidgetArea, ds_dock);
 
 	// This fixes a qt bug. See: https://bugreports.qt.io/browse/QTBUG-65592

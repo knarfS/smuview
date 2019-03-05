@@ -46,8 +46,8 @@ class BaseTab;
 }
 
 namespace ui {
-namespace devices {
-class SignalTree;
+namespace views {
+class DeviceTreeView;
 }
 }
 
@@ -85,7 +85,7 @@ private:
 	QToolButton *add_device_button_;
 	QToolButton *add_user_tab_button_;
 	QWidget *central_widget_;
-	ui::devices::SignalTree *signal_tree_;
+	ui::views::DeviceTreeView *device_tree_view_;
 	QTabWidget *tab_widget_;
 	QWidget *tab_widget_toolbar_;
 

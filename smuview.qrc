@@ -21,12 +21,15 @@
 		<file>icons/media-playback-start.png</file>
 		<file>icons/media-playback-stop.png</file>
 		<file>icons/mixer-front.png</file>
+		<file>icons/network-connect.png</file>
+		<file>icons/network-disconnect.png</file>
 		<file>icons/office-chart-area.png</file>
 		<file>icons/office-chart-line-percentage.png</file>
 		<file>icons/office-chart-line.png</file>
 		<file>icons/snap-guideline.png</file>
 		<file>icons/snap-orthogonal.png</file>
 		<file>icons/tab-new-background.png</file>
+		<file>icons/user-identity.png</file>
 		<file>icons/view-refresh.png</file>
 		<file>icons/window-new.png</file>
 		<file>icons/zoom-fit-best.png</file>

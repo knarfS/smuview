@@ -228,6 +228,9 @@ set(smuview_SOURCES
   src/ui/devices/selectsignalwidget.cpp
   src/ui/devices/signalcombobox.cpp
   src/ui/devices/signaltree.cpp
+  src/ui/devices/devicetree/devicetreemodel.cpp
+  src/ui/devices/devicetree/devicetreeview.cpp
+  src/ui/devices/devicetree/treeitem.cpp
   src/ui/dialogs/aboutdialog.cpp
   src/ui/dialogs/addmathchanneldialog.cpp
   src/ui/dialogs/adduserchanneldialog.cpp
@@ -248,6 +251,7 @@ set(smuview_SOURCES
   src/ui/tabs/welcometab.cpp
   src/ui/views/baseview.cpp
   src/ui/views/dataview.cpp
+  src/ui/views/devicetreeview.cpp
   src/ui/views/democontrolview.cpp
   src/ui/views/genericcontrolview.cpp
   src/ui/views/measurementcontrolview.cpp
