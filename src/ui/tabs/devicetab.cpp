@@ -57,6 +57,7 @@ void DeviceTab::clear_signals()
 
 void DeviceTab::setup_toolbar()
 {
+	/* TODO
 	action_open_->setText(tr("&Open..."));
 	action_open_->setIcon(
 		QIcon::fromTheme("document-open",
@@ -64,6 +65,7 @@ void DeviceTab::setup_toolbar()
 	action_open_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_O));
 	connect(action_open_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_open_triggered()));
+	*/
 
 	action_save_as_->setText(tr("&Save As..."));
 	action_save_as_->setIcon(
@@ -122,7 +124,7 @@ void DeviceTab::setup_toolbar()
 		this, SLOT(on_action_about_triggered()));
 
 	toolbar = new QToolBar("Device Toolbar");
-	toolbar->addAction(action_open_);
+	//toolbar->addAction(action_open_); // TODO
 	toolbar->addAction(action_save_as_);
 	toolbar->addSeparator();
 	toolbar->addAction(action_reset_data_);
