@@ -17,6 +17,9 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QDebug>
+#include <QToolButton>
+
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
 #include "devicetab.hpp"
@@ -39,6 +42,7 @@ DeviceTab::DeviceTab(Session &session,
 		shared_ptr<sv::devices::BaseDevice> device, QMainWindow *parent) :
 	BaseTab(session, parent),
 	device_(device),
+	action_aquire_(new QAction(this)),
 	action_open_(new QAction(this)),
 	action_save_as_(new QAction(this)),
 	action_add_control_view_(new QAction(this)),
@@ -57,6 +61,20 @@ void DeviceTab::clear_signals()
 
 void DeviceTab::setup_toolbar()
 {
+	/* TODO: See BaseDevice::stop_aquisition()
+	action_aquire_->setText(tr("Stop"));
+	action_aquire_->setIconText(tr("Stop"));
+	action_aquire_->setIcon(QIcon(":/icons/status-green.svg"));
+	action_aquire_->setCheckable(true);
+	action_aquire_->setChecked(true);
+	connect(action_aquire_, SIGNAL(triggered(bool)),
+		this, SLOT(on_action_aquire_triggered()));
+
+	QToolButton *aquire_button_ = new QToolButton();
+	aquire_button_->setDefaultAction(action_aquire_);
+	aquire_button_->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+	*/
+
 	/* TODO
 	action_open_->setText(tr("&Open..."));
 	action_open_->setIcon(
@@ -68,6 +86,7 @@ void DeviceTab::setup_toolbar()
 	*/
 
 	action_save_as_->setText(tr("&Save As..."));
+	action_save_as_->setIconText("");
 	action_save_as_->setIcon(
 		QIcon::fromTheme("document-save",
 		QIcon(":/icons/document-save.png")));
@@ -124,6 +143,8 @@ void DeviceTab::setup_toolbar()
 		this, SLOT(on_action_about_triggered()));
 
 	toolbar = new QToolBar("Device Toolbar");
+	//toolbar->addWidget(aquire_button_); // TODO: See BaseDevice::stop_aquisition()
+	//toolbar->addSeparator();
 	//toolbar->addAction(action_open_); // TODO
 	toolbar->addAction(action_save_as_);
 	toolbar->addSeparator();
@@ -137,6 +158,22 @@ void DeviceTab::setup_toolbar()
 	toolbar->addSeparator();
 	toolbar->addAction(action_about_);
 	parent_->addToolBar(Qt::TopToolBarArea, toolbar);
+}
+
+void DeviceTab::on_action_aquire_triggered()
+{
+	if (action_aquire_->isChecked()) {
+		action_aquire_->setText(tr("Stop"));
+		action_aquire_->setIconText(tr("Stop"));
+		action_aquire_->setIcon(QIcon(":/icons/status-green.svg"));
+		device_->start_aquisition();
+	}
+	else {
+		action_aquire_->setText(tr("Start"));
+		action_aquire_->setIconText(tr("Start"));
+		action_aquire_->setIcon(QIcon(":/icons/status-red.svg"));
+		device_->stop_aquisition();
+	}
 }
 
 void DeviceTab::on_action_open_triggered()

@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,6 +58,7 @@ protected:
 private:
 	void setup_toolbar();
 
+	QAction *const action_aquire_;
 	QAction *const action_open_;
 	QAction *const action_save_as_;
 	QAction *const action_add_control_view_;
@@ -71,6 +72,7 @@ private:
 public Q_SLOTS:
 
 private Q_SLOTS:
+	void on_action_aquire_triggered();
 	void on_action_open_triggered();
 	void on_action_save_as_triggered();
 	void on_action_add_control_view_triggered();

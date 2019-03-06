@@ -85,6 +85,8 @@ DeviceType BaseDevice::type() const
 
 void BaseDevice::open(function<void (const QString)> error_handler)
 {
+	aquisition_thread_error_handler_ = error_handler; // TODO: not as parameter
+
 	if (device_open_)
 		close();
 
@@ -98,21 +100,17 @@ void BaseDevice::open(function<void (const QString)> error_handler)
 	// Add device to session (do this in constructor??)
 	sr_session_->add_device(sr_device_);
 
-	sr_session_->add_datafeed_callback([=]
-		(shared_ptr<sigrok::Device> sr_device, shared_ptr<sigrok::Packet> sr_packet) {
-			data_feed_in(sr_device, sr_packet);
-		});
-
 	device_open_ = true;
 
 	// Init all channels
 	init_channels();
 
 	// Start aquisition
-	aquisition_thread_ = std::thread(
-		&BaseDevice::aquisition_thread_proc, this, error_handler);
-
-	aquisition_state_ = aquisition_state::Running;
+	sr_session_->add_datafeed_callback([=]
+		(shared_ptr<sigrok::Device> sr_device, shared_ptr<sigrok::Packet> sr_packet) {
+			data_feed_in(sr_device, sr_packet);
+		});
+	this->start_aquisition();
 }
 
 void BaseDevice::close()
@@ -124,20 +122,36 @@ void BaseDevice::close()
 
 	qWarning() << "Closing device " << full_name();
 
+	// Stop aquisition
 	sr_session_->remove_datafeed_callbacks();
-
-	if (aquisition_state_ != aquisition_state::Stopped) {
-		sr_session_->stop();
-		aquisition_state_ = aquisition_state::Stopped;
-	}
-
-	// Check that sampling stopped
-	if (aquisition_thread_.joinable())
-		aquisition_thread_.join();
+	this->stop_aquisition();
 
 	sr_session_->remove_devices();
 	sr_device_->close();
 	device_open_ = false;
+}
+
+void BaseDevice::start_aquisition()
+{
+	aquisition_thread_ = std::thread(
+		&BaseDevice::aquisition_thread_proc, this,
+		aquisition_thread_error_handler_);
+
+	aquisition_state_ = AquisitionState::Running;
+}
+
+void BaseDevice::stop_aquisition()
+{
+	// TODO: Stopping the session is not working. A restart will fail with the
+	// message: "device closed but should be open"
+	if (aquisition_state_ != AquisitionState::Stopped)
+		sr_session_->stop();
+
+	// Wait for aquisition to stop
+	if (aquisition_thread_.joinable())
+		aquisition_thread_.join();
+
+	aquisition_state_ = AquisitionState::Stopped;
 }
 
 QString BaseDevice::name() const
@@ -366,7 +380,7 @@ void BaseDevice::aquisition_thread_proc(
 		return;
 	}
 
-	aquisition_state_ = aquisition_state::Running;
+	aquisition_state_ = AquisitionState::Running;
 	/*
 	// TODO: use std::chrono / std::time
 	// NOTE: ATM only the session start timestamp is used!
@@ -385,11 +399,11 @@ void BaseDevice::aquisition_thread_proc(
 	}
 	catch (sigrok::Error &e) {
 		error_handler(e.what());
-		aquisition_state_ = aquisition_state::Stopped;
+		aquisition_state_ = AquisitionState::Stopped;
 		return;
 	}
 
-	aquisition_state_ = aquisition_state::Stopped;
+	aquisition_state_ = AquisitionState::Stopped;
 
 	// Optimize memory usage
 	free_unused_memory();

@@ -65,6 +65,12 @@ class BaseSignal;
 
 namespace devices {
 
+enum class AquisitionState {
+	Stopped,
+	AwaitingTrigger,
+	Running
+};
+
 class BaseDevice :
 	public QObject,
 	public std::enable_shared_from_this<BaseDevice>
@@ -75,12 +81,6 @@ public:
 	BaseDevice(const shared_ptr<sigrok::Context> sr_context,
 		shared_ptr<sigrok::Device> sr_device);
 	virtual ~BaseDevice();
-
-	enum aquisition_state {
-		Stopped,
-		AwaitingTrigger,
-		Running
-	};
 
 	/**
 	 * Inits all configurables for this device. Implemented in the
@@ -126,9 +126,34 @@ public:
 	virtual QString display_name(
 		const DeviceManager &device_manager) const = 0;
 
+	/**
+	 * Open the device.
+	 */
 	virtual void open(function<void (const QString)> error_handler);
+
+	/**
+	 * Close the device.
+	 */
 	virtual void close();
 
+	/**
+	 * Start data aquisition from device.
+	 */
+	virtual void start_aquisition();
+
+	/**
+	 * Stop data aquisition from device.
+	 */
+	virtual void stop_aquisition();
+
+	/**
+	 * Get the aquisition state.
+	 */
+	AquisitionState aquisition_state();
+
+	/**
+	 * Add channel to device
+	 */
 	virtual void add_channel(shared_ptr<channels::BaseChannel> channel,
 		QString channel_group_name);
 
@@ -171,7 +196,7 @@ protected:
 
 	mutable mutex aquisition_mutex_; //!< Protects access to capture_state_. // TODO
 	mutable recursive_mutex data_mutex_; // TODO
-	aquisition_state aquisition_state_;
+	AquisitionState aquisition_state_;
 	double aquisition_start_timestamp_;
 
 	bool out_of_memory_;
@@ -180,6 +205,7 @@ protected:
 private:
 	void aquisition_thread_proc(function<void (const QString)> error_handler);
 
+	function<void (const QString)> aquisition_thread_error_handler_;
 	std::thread aquisition_thread_;
 
 Q_SIGNALS:
