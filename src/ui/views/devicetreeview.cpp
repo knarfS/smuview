@@ -28,6 +28,7 @@
 #include "src/session.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/ui/devices/devicetree/devicetreeview.hpp"
+#include "src/ui/dialogs/connectdialog.hpp"
 #include "src/ui/views/baseview.hpp"
 
 using std::shared_ptr;
@@ -36,7 +37,7 @@ namespace sv {
 namespace ui {
 namespace views {
 
-DeviceTreeView::DeviceTreeView(const Session &session,
+DeviceTreeView::DeviceTreeView(Session &session,
 		QWidget *parent) :
 	BaseView(session, parent),
 	action_add_device_(new QAction(this)),

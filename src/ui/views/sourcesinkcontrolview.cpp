@@ -36,7 +36,7 @@ namespace sv {
 namespace ui {
 namespace views {
 
-SourceSinkControlView::SourceSinkControlView(const Session &session,
+SourceSinkControlView::SourceSinkControlView(Session &session,
 		shared_ptr<sv::devices::Configurable> configurable, QWidget *parent) :
 	BaseView(session, parent),
 	configurable_(configurable)

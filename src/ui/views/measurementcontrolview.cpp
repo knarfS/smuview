@@ -32,7 +32,7 @@ namespace sv {
 namespace ui {
 namespace views {
 
-MeasurementControlView::MeasurementControlView(const Session &session,
+MeasurementControlView::MeasurementControlView(Session &session,
 		shared_ptr<sv::devices::Configurable> configurable, QWidget *parent) :
 	BaseView(session, parent),
 	configurable_(configurable)

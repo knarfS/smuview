@@ -57,7 +57,7 @@ class AddViewDialog : public QDialog
 	Q_OBJECT
 
 public:
-	AddViewDialog(const Session &session,
+	AddViewDialog(Session &session,
 		const shared_ptr<sv::devices::BaseDevice> device,
 		int selected_tab,
 		QWidget *parent = nullptr);
@@ -72,7 +72,7 @@ private:
 	void setup_ui_xy_plot_tab();
 	void setup_ui_table_tab();
 
-	const Session &session_;
+	Session &session_;
 	const shared_ptr<sv::devices::BaseDevice> device_;
 	int selected_tab_;
 	vector<ui::views::BaseView *> views_;

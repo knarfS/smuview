@@ -24,7 +24,7 @@ namespace sv {
 namespace ui {
 namespace views {
 
-BaseView::BaseView(const Session &session, QWidget *parent) :
+BaseView::BaseView(Session &session, QWidget *parent) :
 	QMainWindow(parent),
 	session_(session)
 {
@@ -36,7 +36,13 @@ BaseView::BaseView(const Session &session, QWidget *parent) :
 	this->setCentralWidget(central_widget_);
 }
 
-const Session& BaseView::session() const
+
+Session &BaseView::session()
+{
+	return session_;
+}
+
+const Session &BaseView::session() const
 {
 	return session_;
 }

@@ -46,7 +46,7 @@ namespace sv {
 namespace ui {
 namespace views {
 
-PlotView::PlotView(const Session &session,
+PlotView::PlotView(Session &session,
 		shared_ptr<channels::BaseChannel> channel,
 		QWidget *parent) :
 	BaseView(session, parent),
@@ -84,7 +84,7 @@ PlotView::PlotView(const Session &session,
 	plot_->start();
 }
 
-PlotView::PlotView(const Session& session,
+PlotView::PlotView(Session& session,
 		shared_ptr<sv::data::AnalogSignal> signal,
 		QWidget* parent) :
 	BaseView(session, parent),
@@ -108,7 +108,7 @@ PlotView::PlotView(const Session& session,
 	plot_->start();
 }
 
-PlotView::PlotView(const Session& session,
+PlotView::PlotView(Session& session,
 		shared_ptr<sv::data::AnalogSignal> x_signal,
 		shared_ptr<sv::data::AnalogSignal> y_signal,
 		QWidget* parent) :

@@ -46,7 +46,7 @@ class DataView : public BaseView
 	Q_OBJECT
 
 public:
-	DataView(const Session& session,
+	DataView(Session& session,
 		shared_ptr<sv::data::AnalogSignal> signal,
 		QWidget* parent = nullptr);
 

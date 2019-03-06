@@ -51,7 +51,7 @@ class PowerPanelView : public BaseView
 	Q_OBJECT
 
 public:
-	PowerPanelView(const Session& session,
+	PowerPanelView(Session& session,
 		shared_ptr<sv::data::AnalogSignal> voltage_signal,
 		shared_ptr<sv::data::AnalogSignal> current_signal,
 		QWidget* parent = nullptr);

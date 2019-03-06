@@ -55,7 +55,7 @@ class DemoControlView : public BaseView
 	Q_OBJECT
 
 public:
-	DemoControlView(const Session& session,
+	DemoControlView(Session& session,
 		shared_ptr<sv::devices::Configurable> configurable,
 		QWidget* parent = nullptr);
 

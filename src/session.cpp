@@ -56,12 +56,12 @@ Session::~Session()
 		device.second->close();
 }
 
-DeviceManager& Session::device_manager()
+DeviceManager &Session::device_manager()
 {
 	return device_manager_;
 }
 
-const DeviceManager& Session::device_manager() const
+const DeviceManager &Session::device_manager() const
 {
 	return device_manager_;
 }

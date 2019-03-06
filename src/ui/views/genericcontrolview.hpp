@@ -45,7 +45,7 @@ class GenericControlView : public BaseView
 	Q_OBJECT
 
 public:
-	GenericControlView(const Session& session,
+	GenericControlView(Session& session,
 		shared_ptr<sv::devices::Configurable> configurable,
 		QWidget* parent = nullptr);
 

@@ -65,13 +65,13 @@ class PlotView : public BaseView
 	Q_OBJECT
 
 public:
-	PlotView(const Session& session,
+	PlotView(Session& session,
 		shared_ptr<channels::BaseChannel> channel,
 		QWidget* parent = nullptr);
-	PlotView(const Session& session,
+	PlotView(Session& session,
 		shared_ptr<sv::data::AnalogSignal> signal,
 		QWidget* parent = nullptr);
-	PlotView(const Session& session,
+	PlotView(Session& session,
 		shared_ptr<sv::data::AnalogSignal> x_signal,
 		shared_ptr<sv::data::AnalogSignal> y_signal,
 		QWidget* parent = nullptr);

@@ -49,7 +49,7 @@ class DeviceTreeView : public BaseView
 	Q_OBJECT
 
 public:
-	DeviceTreeView(const Session &session,
+	DeviceTreeView(Session &session,
 		QWidget *parent = nullptr);
 
 	QString title() const;

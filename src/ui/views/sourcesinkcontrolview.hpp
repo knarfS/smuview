@@ -52,7 +52,7 @@ class SourceSinkControlView : public BaseView
 	Q_OBJECT
 
 public:
-	SourceSinkControlView(const Session& session,
+	SourceSinkControlView(Session& session,
 		std::shared_ptr<sv::devices::Configurable> configurable,
 		QWidget* parent = nullptr);
 

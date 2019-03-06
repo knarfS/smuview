@@ -33,7 +33,7 @@ namespace sv {
 namespace ui {
 namespace views {
 
-DataView::DataView(const Session &session,
+DataView::DataView(Session &session,
 		shared_ptr<sv::data::AnalogSignal> signal,
 		QWidget *parent) :
 	BaseView(session, parent),

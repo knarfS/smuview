@@ -41,7 +41,7 @@ namespace sv {
 namespace ui {
 namespace views {
 
-ValuePanelView::ValuePanelView(const Session &session,
+ValuePanelView::ValuePanelView(Session &session,
 		shared_ptr<channels::BaseChannel> channel,
 		QWidget *parent) :
 	BaseView(session, parent),
@@ -79,7 +79,7 @@ ValuePanelView::ValuePanelView(const Session &session,
 }
 
 
-ValuePanelView::ValuePanelView(const Session& session,
+ValuePanelView::ValuePanelView(Session& session,
 		shared_ptr<sv::data::AnalogSignal> signal,
 		QWidget* parent) :
 	BaseView(session, parent),

@@ -47,16 +47,18 @@ class BaseView : public QMainWindow
 	Q_OBJECT
 
 public:
-	explicit BaseView(const Session &session, QWidget *parent = nullptr);
+	explicit BaseView(Session &session, QWidget *parent = nullptr);
 
-	const Session& session() const;
+	Session &session();
+	const Session &session() const;
+
 	virtual QString title() const = 0;
 
 	virtual void save_settings(QSettings &settings) const;
 	virtual void restore_settings(QSettings &settings);
 
 protected:
-	const Session &session_;
+	Session &session_;
 	QWidget *central_widget_;
 
 };

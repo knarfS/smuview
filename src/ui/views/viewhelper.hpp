@@ -48,7 +48,7 @@ namespace viewhelper {
  *
  * @return The control view for the configurable
  */
-BaseView *get_view_for_configurable(const Session &session,
+BaseView *get_view_for_configurable(Session &session,
 	shared_ptr<sv::devices::Configurable> configurable);
 
 } // namespace viewhelper

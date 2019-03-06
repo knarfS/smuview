@@ -58,8 +58,8 @@ public:
 	Session(DeviceManager &device_manager);
 	~Session();
 
-	DeviceManager& device_manager();
-	const DeviceManager& device_manager() const;
+	DeviceManager &device_manager();
+	const DeviceManager &device_manager() const;
 
 	void save_settings(QSettings &settings) const;
 	void restore_settings(QSettings &settings);

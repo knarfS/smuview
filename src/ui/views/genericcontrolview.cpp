@@ -35,7 +35,7 @@ namespace sv {
 namespace ui {
 namespace views {
 
-GenericControlView::GenericControlView(const Session &session,
+GenericControlView::GenericControlView(Session &session,
 		shared_ptr<sv::devices::Configurable> configurable, QWidget *parent) :
 	BaseView(session, parent),
 	configurable_(configurable)

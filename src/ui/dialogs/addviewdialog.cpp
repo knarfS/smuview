@@ -47,7 +47,7 @@ namespace sv {
 namespace ui {
 namespace dialogs {
 
-AddViewDialog::AddViewDialog(const Session &session,
+AddViewDialog::AddViewDialog(Session &session,
 		const shared_ptr<sv::devices::BaseDevice> device,
 		int selected_tab,
 		QWidget *parent) :
