@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ class SelectSignalDialog : public QDialog
 
 public:
 	SelectSignalDialog(const Session &session,
-		const shared_ptr<sv::devices::BaseDevice> device,
+		const shared_ptr<sv::devices::BaseDevice> expanded_device,
 		QWidget *parent = nullptr);
 
 	vector<shared_ptr<sv::data::BaseSignal>> signals();
@@ -65,7 +65,7 @@ private:
 	void setup_ui();
 
 	const Session &session_;
-	const shared_ptr<sv::devices::BaseDevice> device_;
+	const shared_ptr<sv::devices::BaseDevice> expanded_device_;
 	vector<shared_ptr<sv::data::BaseSignal>> signals_;
 
 	ui::devices::devicetree::DeviceTreeView *device_tree_;

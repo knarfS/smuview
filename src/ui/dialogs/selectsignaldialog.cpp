@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,11 +43,11 @@ namespace ui {
 namespace dialogs {
 
 SelectSignalDialog::SelectSignalDialog(const Session &session,
-		const shared_ptr<sv::devices::BaseDevice> device,
+		const shared_ptr<sv::devices::BaseDevice> expanded_device,
 		QWidget *parent) :
 	QDialog(parent),
 	session_(session),
-	device_(device)
+	expanded_device_(expanded_device)
 {
 	setup_ui();
 }
@@ -64,7 +64,7 @@ void SelectSignalDialog::setup_ui()
 	QVBoxLayout *main_layout = new QVBoxLayout;
 
 	device_tree_ = new devices::devicetree::DeviceTreeView(session_,
-		false, false, false, true, false, false);
+		false, false, false, true, false, false, expanded_device_);
 	main_layout->addWidget(device_tree_);
 
 	button_box_ = new QDialogButtonBox(

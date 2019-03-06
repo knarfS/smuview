@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -322,7 +322,11 @@ void PlotView::on_action_zoom_best_fit_triggered()
 
 void PlotView::on_action_add_signal_triggered()
 {
-	ui::dialogs::SelectSignalDialog dlg(session(), nullptr);
+	shared_ptr<sv::devices::BaseDevice> selected_device;
+	if (initial_channel_)
+		selected_device = initial_channel_->parent_device();
+
+	ui::dialogs::SelectSignalDialog dlg(session(), selected_device);
 	if (!dlg.exec())
 		return;
 
