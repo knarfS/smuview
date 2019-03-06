@@ -60,7 +60,6 @@ class BaseChannel;
 }
 
 namespace data {
-class AnalogSignal;
 class BaseSignal;
 }
 
@@ -137,7 +136,7 @@ public:
 	// TODO: Doxy
 	map<QString, shared_ptr<channels::BaseChannel>> channel_name_map() const;
 	map<QString, vector<shared_ptr<channels::BaseChannel>>> channel_group_name_map() const;
-	vector<shared_ptr<data::AnalogSignal>> all_signals() const;
+	vector<shared_ptr<data::BaseSignal>> all_signals() const;
 
 	virtual void free_unused_memory();
 
@@ -168,7 +167,7 @@ protected:
 	// TODO: Doxy
 	map<QString, shared_ptr<channels::BaseChannel>> channel_name_map_;
 	map<QString, vector<shared_ptr<channels::BaseChannel>>> channel_group_name_map_;
-	vector<shared_ptr<data::AnalogSignal>> all_signals_; // TODO: Is empty! Fill in Hardware/Virtual!
+	vector<shared_ptr<data::BaseSignal>> all_signals_; // TODO: Is empty! Fill in Hardware/Virtual!
 
 	mutable mutex aquisition_mutex_; //!< Protects access to capture_state_. // TODO
 	mutable recursive_mutex data_mutex_; // TODO

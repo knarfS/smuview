@@ -38,13 +38,15 @@ using std::vector;
 namespace sv {
 
 namespace data {
-class AnalogSignal;
+class BaseSignal;
 }
 
 namespace ui {
 
 namespace devices {
-class SignalTree;
+namespace devicetree {
+class DeviceTreeView;
+}
 }
 
 namespace dialogs {
@@ -55,7 +57,7 @@ class SaveDialog : public QDialog
 
 public:
 	SaveDialog(const Session &session,
-		const vector<shared_ptr<sv::data::AnalogSignal>> selected_signals,
+		const vector<shared_ptr<sv::data::BaseSignal>> selected_signals,
 		QWidget *parent = nullptr);
 
 private:
@@ -64,9 +66,9 @@ private:
 	void save_combined(QString file_name);
 
 	const Session &session_;
-	const vector<shared_ptr<sv::data::AnalogSignal>> selected_signals_;
+	const vector<shared_ptr<sv::data::BaseSignal>> selected_signals_;
 
-	ui::devices::SignalTree *signal_tree_;
+	ui::devices::devicetree::DeviceTreeView *device_tree_;
 	QCheckBox *timestamps_combined_;
 	QCheckBox *time_absolut_;
 	QLineEdit *separator_edit_;

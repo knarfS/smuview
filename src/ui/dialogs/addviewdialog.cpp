@@ -32,7 +32,7 @@
 #include "src/devices/deviceutil.hpp"
 #include "src/ui/devices/selectconfigurableform.hpp"
 #include "src/ui/devices/selectsignalwidget.hpp"
-#include "src/ui/devices/signaltree.hpp"
+#include "src/ui/devices/devicetree/devicetreeview.hpp"
 #include "src/ui/views/baseview.hpp"
 #include "src/ui/views/dataview.hpp"
 #include "src/ui/views/plotview.hpp"
@@ -49,12 +49,12 @@ namespace dialogs {
 
 AddViewDialog::AddViewDialog(const Session &session,
 		const shared_ptr<sv::devices::BaseDevice> device,
-		int selected_view_type,
+		int selected_tab,
 		QWidget *parent) :
 	QDialog(parent),
 	session_(session),
 	device_(device),
-	selected_view_type_(selected_view_type)
+	selected_tab_(selected_tab)
 {
 	setup_ui();
 }
@@ -76,7 +76,7 @@ void AddViewDialog::setup_ui()
 	this->setup_ui_time_plot_tab();
 	this->setup_ui_xy_plot_tab();
 	this->setup_ui_table_tab();
-	tab_widget_->setCurrentIndex(selected_view_type_);
+	tab_widget_->setCurrentIndex(selected_tab_);
 	main_layout->addWidget(tab_widget_);
 
 	button_box_ = new QDialogButtonBox(
@@ -107,8 +107,9 @@ void AddViewDialog::setup_ui_panel_tab()
 	QVBoxLayout *layout = new QVBoxLayout();
 	panel_widget->setLayout(layout);
 
-	panel_channel_tree_ = new ui::devices::SignalTree(
-		session_, false, true, true, device_);
+	panel_channel_tree_ = new ui::devices::devicetree::DeviceTreeView(
+		session_, false, false, true, false, false, false, device_);
+
 	layout->addWidget(panel_channel_tree_);
 
 	tab_widget_->addTab(panel_widget, title);
@@ -121,8 +122,9 @@ void AddViewDialog::setup_ui_time_plot_tab()
 	QVBoxLayout *layout = new QVBoxLayout();
 	plot_widget->setLayout(layout);
 
-	time_plot_channel_tree_ = new ui::devices::SignalTree(
-		session_, true, true, true, device_);
+	time_plot_channel_tree_ = new ui::devices::devicetree::DeviceTreeView(
+		session_, false, false, true, true, false, false, device_);
+
 	layout->addWidget(time_plot_channel_tree_);
 
 	tab_widget_->addTab(plot_widget, title);
@@ -161,8 +163,8 @@ void AddViewDialog::setup_ui_table_tab()
 	QVBoxLayout *layout = new QVBoxLayout();
 	table_widget->setLayout(layout);
 
-	table_signal_tree_ = new ui::devices::SignalTree(
-		session_, true, true, true, device_);
+	table_signal_tree_ = new ui::devices::devicetree::DeviceTreeView(
+		session_, false, false, false, true, false, false, device_);
 	layout->addWidget(table_signal_tree_);
 
 	tab_widget_->addTab(table_widget, title);

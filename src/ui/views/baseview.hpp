@@ -38,7 +38,6 @@ enum class ViewType {
 	MeasurementControlView,
 	PlotView,
 	PowerPanelView,
-	SignalTreeView,
 	SourceSinkControlView,
 	ValuePanelView
 };

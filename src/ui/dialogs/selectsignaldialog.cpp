@@ -33,7 +33,7 @@
 #include "src/session.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/devices/basedevice.hpp"
-#include "src/ui/devices/signaltree.hpp"
+#include "src/ui/devices/devicetree/devicetreeview.hpp"
 
 using std::shared_ptr;
 using std::vector;
@@ -63,9 +63,9 @@ void SelectSignalDialog::setup_ui()
 
 	QVBoxLayout *main_layout = new QVBoxLayout;
 
-	signal_tree_ = new ui::devices::SignalTree(
-		session_, true, true, true, device_);
-	main_layout->addWidget(signal_tree_);
+	device_tree_ = new devices::devicetree::DeviceTreeView(session_,
+		false, false, false, true, false, false);
+	main_layout->addWidget(device_tree_);
 
 	button_box_ = new QDialogButtonBox(
 		QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
@@ -83,7 +83,7 @@ vector<shared_ptr<sv::data::BaseSignal>> SelectSignalDialog::signals()
 
 void SelectSignalDialog::accept()
 {
-	for (const auto &signal : signal_tree_->selected_signals()) {
+	for (const auto &signal : device_tree_->selected_signals()) {
 		signals_.push_back(signal);
 	}
 

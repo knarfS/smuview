@@ -19,6 +19,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <memory>
 #include <string>
 
 #include <QDebug>
@@ -31,13 +32,14 @@
 
 #include "savedialog.hpp"
 #include "src/util.hpp"
-#include "src/data/analogsignal.hpp"
+#include "src/channels/basechannel.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/devices/hardwaredevice.hpp"
-#include "src/ui/devices/signaltree.hpp"
+#include "src/ui/devices/devicetree/devicetreeview.hpp"
 
+using std::dynamic_pointer_cast;
 using std::ofstream;
 using std::string;
 
@@ -48,7 +50,7 @@ namespace ui {
 namespace dialogs {
 
 SaveDialog::SaveDialog(const Session &session,
-		const vector<shared_ptr<sv::data::AnalogSignal>> selected_signals,
+		const vector<shared_ptr<sv::data::BaseSignal>> selected_signals,
 		QWidget *parent) :
 	QDialog(parent),
 	session_(session),
@@ -69,9 +71,10 @@ void SaveDialog::setup_ui()
 
 	QVBoxLayout *main_layout = new QVBoxLayout;
 
-	signal_tree_ = new ui::devices::SignalTree(
-		session_, true, true, true, nullptr);
-	main_layout->addWidget(signal_tree_);
+	device_tree_ = new ui::devices::devicetree::DeviceTreeView(
+		session_, false, false, false, true, false, false);
+	device_tree_->select_signals(selected_signals_);
+	main_layout->addWidget(device_tree_);
 
 	QFormLayout *form_layout = new QFormLayout();
 
@@ -105,7 +108,7 @@ void SaveDialog::save(QString file_name)
 
 	output_file.open(str_file_name);
 
-	auto signals = signal_tree_->selected_signals();
+	auto signals = device_tree_->selected_signals();
 	bool relative_time = !time_absolut_->isChecked();
 	QString sep = separator_edit_->text();
 	size_t max_sample_count = 0;
@@ -117,20 +120,30 @@ void SaveDialog::save(QString file_name)
 	QString ch_name_header_line("");
 	QString signal_name_header_line("");
 	for (const auto &signal : signals) {
-		size_t sample_count = signal->get_sample_count();
+		// Only handle AnalogSignals
+		auto analog_signal =
+			dynamic_pointer_cast<sv::data::AnalogSignal>(signal);
+		if (!analog_signal)
+			continue;
+
+		size_t sample_count = analog_signal->get_sample_count();
 		if (sample_count > max_sample_count)
 			max_sample_count = sample_count;
 		sample_counts.push_back(sample_count);
 
-		qWarning() << "SaveDialog::save(): signal.name() = " << signal->name();
+		QString name = analog_signal->name();
+		shared_ptr<sv::channels::BaseChannel> parent_channel =
+			analog_signal->parent_channel();
+
+		qWarning() << "SaveDialog::save(): signal.name() = " << name;
 		qWarning() << "SaveDialog::save(): signal.parent_channel().name() = " <<
-			signal->parent_channel()->name();
+			parent_channel->name();
 		qWarning() << "SaveDialog::save(): signal.parent_channel().parent_device().name() = " <<
-			signal->parent_channel()->parent_device()->name();
+			parent_channel->parent_device()->name();
 
 		QString chg_names("");
 		QString chg_sep("");
-		for (const auto &chg_name : signal->parent_channel()->channel_group_names()) {
+		for (const auto &chg_name : parent_channel->channel_group_names()) {
 			chg_names.append(chg_sep);
 			if (chg_name.isEmpty())
 				chg_names.append("\"\"");
@@ -140,19 +153,17 @@ void SaveDialog::save(QString file_name)
 		}
 
 		device_header_line.append(start_sep).append(
-			signal->parent_channel()->parent_device()->name()); // Time
+			parent_channel->parent_device()->name()); // Time
 
 		device_header_line.append(sep).append(
-			signal->parent_channel()->parent_device()->name()); // Value
+			parent_channel->parent_device()->name()); // Value
 		chg_name_header_line.append(start_sep).append(chg_names); // Time
 		chg_name_header_line.append(sep).append(chg_names); // Value
-		ch_name_header_line.append(start_sep).append(
-			signal->parent_channel()->name()); // Time
-		ch_name_header_line.append(sep).append(
-			signal->parent_channel()->name()); // Value
+		ch_name_header_line.append(start_sep).append(parent_channel->name()); // Time
+		ch_name_header_line.append(sep).append(parent_channel->name()); // Value
 		signal_name_header_line.append(start_sep).
-			append("Time ").append(signal->name()); // Time
-		signal_name_header_line.append(sep).append(signal->name()); // Value
+			append("Time ").append(name); // Time
+		signal_name_header_line.append(sep).append(name); // Value
 
 		start_sep = sep;
 	}
@@ -166,16 +177,22 @@ void SaveDialog::save(QString file_name)
 	for (size_t i = 0; i < max_sample_count; i++) {
 		start_sep = "";
 		QString line("");
-		for (size_t j = 0; j < signals.size(); j++) {
+		int j = 0;
+		for (const auto &signal : signals) {
+			// Only handle AnalogSignals
+			auto analog_signal =
+				dynamic_pointer_cast<sv::data::AnalogSignal>(signal);
+			if (!analog_signal)
+				continue;
+
 			QString time("");
 			QString value("");
 
 			size_t sample_count = sample_counts[j];
 			if (i < sample_count-1) {
 				// More samples for this signal
-				auto a_signal = static_pointer_cast<data::AnalogSignal>(
-					signals.at(j));
-				data::sample_t sample = a_signal->get_sample(i, relative_time);
+				data::sample_t sample =
+					analog_signal->get_sample(i, relative_time);
 				value = QString("%1").arg(sample.second);
 				if (relative_time)
 					time = QString("%1").arg(sample.first);
@@ -186,6 +203,8 @@ void SaveDialog::save(QString file_name)
 			line.append(QString("%1%2%3%4").arg(start_sep).arg(time).
 				arg(sep).arg(value));
 			start_sep = sep;
+
+			++j;
 		}
 		output_file << line.toStdString() << std::endl;
 	}
@@ -203,7 +222,7 @@ void SaveDialog::save_combined(QString file_name)
 
 	output_file.open(str_file_name);
 
-	auto signals = signal_tree_->selected_signals();
+	auto signals = device_tree_->selected_signals();
 	bool relative_time = !time_absolut_->isChecked();
 	QString sep = separator_edit_->text();
 
@@ -213,13 +232,22 @@ void SaveDialog::save_combined(QString file_name)
 	QString ch_name_header_line("Time"); // Time
 	QString signal_name_header_line("Time"); // Time
 	for (const auto &signal : signals) {
-		auto a_signal = static_pointer_cast<data::AnalogSignal>(signal);
-		sample_counts.push_back(a_signal->get_sample_count());
+		// Only handle AnalogSignals
+		auto analog_signal =
+			dynamic_pointer_cast<sv::data::AnalogSignal>(signal);
+		if (!analog_signal)
+			continue;
+
+		QString name = analog_signal->name();
+		shared_ptr<sv::channels::BaseChannel> parent_channel =
+			analog_signal->parent_channel();
+
+		sample_counts.push_back(analog_signal->get_sample_count());
 		sample_pos.push_back(0);
 
 		QString chg_names("");
 		QString chg_sep("");
-		for (const auto &chg_name : signal->parent_channel()->channel_group_names()) {
+		for (const auto &chg_name : parent_channel->channel_group_names()) {
 			chg_names.append(chg_sep);
 			if (chg_name.isEmpty())
 				chg_names.append("\"\"");
@@ -229,11 +257,10 @@ void SaveDialog::save_combined(QString file_name)
 		}
 
 		device_header_line.append(sep).append(
-			signal->parent_channel()->parent_device()->name()); // Value
+			parent_channel->parent_device()->name()); // Value
 		chg_name_header_line.append(sep).append(chg_names); // Value
-		ch_name_header_line.append(sep).append(
-			signal->parent_channel()->name()); // Value
-		signal_name_header_line.append(sep).append(signal->name()); // Value
+		ch_name_header_line.append(sep).append(parent_channel->name()); // Value
+		signal_name_header_line.append(sep).append(name); // Value
 	}
 	output_file << device_header_line.toStdString() << std::endl;
 	output_file << chg_name_header_line.toStdString() << std::endl;
@@ -243,15 +270,23 @@ void SaveDialog::save_combined(QString file_name)
 	// Data
 	while (true) {
 		double next_timestamp = -1;
-		for (size_t i=0; i<signals.size(); i++) {
+		int i = 0;
+		for (const auto &signal : signals) {
+			// Only handle AnalogSignals
+			auto analog_signal =
+				dynamic_pointer_cast<sv::data::AnalogSignal>(signal);
+			if (!analog_signal)
+				continue;
+
 			if (sample_pos[i] >= sample_counts[i]-1)
 				continue;
 
-			auto a_signal = static_pointer_cast<data::AnalogSignal>(signals[i]);
 			double timestamp =
-				a_signal->get_sample(sample_pos[i], relative_time).first;
+				analog_signal->get_sample(sample_pos[i], relative_time).first;
 			if (next_timestamp < 0 || timestamp < next_timestamp)
 				next_timestamp = timestamp;
+
+			++i;
 		}
 
 		if (next_timestamp < 0)
@@ -265,17 +300,25 @@ void SaveDialog::save_combined(QString file_name)
 			line = util::format_time_date(next_timestamp);
 
 		// Values
-		for (size_t i=0; i<signals.size(); i++) {
+		i = 0;
+		for (const auto &signal : signals) {
+			// Only handle AnalogSignals
+			auto analog_signal =
+				dynamic_pointer_cast<sv::data::AnalogSignal>(signal);
+			if (!analog_signal)
+				continue;
+
 			line.append(sep);
 
-			auto a_signal = static_pointer_cast<data::AnalogSignal>(signals[i]);
 			data::sample_t sample =
-				a_signal->get_sample(sample_pos[i], relative_time);
+				analog_signal->get_sample(sample_pos[i], relative_time);
 			double timestamp = sample.first;
 			if (timestamp == next_timestamp) {
 				line.append(QString("%1").arg(sample.second, 0, 'g', -1));
 				++sample_pos[i];
 			}
+
+			++i;
 		}
 		output_file << line.toStdString() << std::endl;
 	}

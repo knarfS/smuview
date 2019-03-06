@@ -234,7 +234,7 @@ map<QString, vector<shared_ptr<channels::BaseChannel>>>
 	return channel_group_name_map_;
 }
 
-vector<shared_ptr<data::AnalogSignal>> BaseDevice::all_signals() const
+vector<shared_ptr<data::BaseSignal>> BaseDevice::all_signals() const
 {
 	return all_signals_;
 }

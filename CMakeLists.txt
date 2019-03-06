@@ -227,7 +227,6 @@ set(smuview_SOURCES
   src/ui/devices/selectpropertyform.cpp
   src/ui/devices/selectsignalwidget.cpp
   src/ui/devices/signalcombobox.cpp
-  src/ui/devices/signaltree.cpp
   src/ui/devices/devicetree/devicetreemodel.cpp
   src/ui/devices/devicetree/devicetreeview.cpp
   src/ui/devices/devicetree/treeitem.cpp

@@ -42,7 +42,9 @@ namespace ui {
 namespace devices {
 class SelectConfigurableForm;
 class SelectSignalWidget;
-class SignalTree;
+namespace devicetree {
+class DeviceTreeView;
+}
 }
 namespace views {
 class BaseView;
@@ -57,7 +59,7 @@ class AddViewDialog : public QDialog
 public:
 	AddViewDialog(const Session &session,
 		const shared_ptr<sv::devices::BaseDevice> device,
-		int selected_view_type,
+		int selected_tab,
 		QWidget *parent = nullptr);
 
 	vector<ui::views::BaseView *> views();
@@ -72,16 +74,16 @@ private:
 
 	const Session &session_;
 	const shared_ptr<sv::devices::BaseDevice> device_;
-	int selected_view_type_; // TODO
+	int selected_tab_;
 	vector<ui::views::BaseView *> views_;
 
 	QTabWidget *tab_widget_;
 	ui::devices::SelectConfigurableForm *configurable_configurable_form_;
-	ui::devices::SignalTree *panel_channel_tree_;
-	ui::devices::SignalTree *time_plot_channel_tree_;
+	ui::devices::devicetree::DeviceTreeView *panel_channel_tree_;
+	ui::devices::devicetree::DeviceTreeView *time_plot_channel_tree_;
 	ui::devices::SelectSignalWidget *xy_plot_x_signal_widget_;
 	ui::devices::SelectSignalWidget *xy_plot_y_signal_widget_;
-	ui::devices::SignalTree *table_signal_tree_;
+	ui::devices::devicetree::DeviceTreeView *table_signal_tree_;
 	QDialogButtonBox *button_box_;
 
 public Q_SLOTS:
