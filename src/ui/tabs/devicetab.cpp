@@ -61,7 +61,6 @@ void DeviceTab::clear_signals()
 
 void DeviceTab::setup_toolbar()
 {
-	/* TODO: See BaseDevice::stop_aquisition()
 	action_aquire_->setText(tr("Stop"));
 	action_aquire_->setIconText(tr("Stop"));
 	action_aquire_->setIcon(QIcon(":/icons/status-green.svg"));
@@ -73,7 +72,6 @@ void DeviceTab::setup_toolbar()
 	QToolButton *aquire_button_ = new QToolButton();
 	aquire_button_->setDefaultAction(action_aquire_);
 	aquire_button_->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-	*/
 
 	/* TODO
 	action_open_->setText(tr("&Open..."));
@@ -143,8 +141,8 @@ void DeviceTab::setup_toolbar()
 		this, SLOT(on_action_about_triggered()));
 
 	toolbar = new QToolBar("Device Toolbar");
-	//toolbar->addWidget(aquire_button_); // TODO: See BaseDevice::stop_aquisition()
-	//toolbar->addSeparator();
+	toolbar->addWidget(aquire_button_);
+	toolbar->addSeparator();
 	//toolbar->addAction(action_open_); // TODO
 	toolbar->addAction(action_save_as_);
 	toolbar->addSeparator();
@@ -172,7 +170,7 @@ void DeviceTab::on_action_aquire_triggered()
 		action_aquire_->setText(tr("Start"));
 		action_aquire_->setIconText(tr("Start"));
 		action_aquire_->setIcon(QIcon(":/icons/status-red.svg"));
-		device_->stop_aquisition();
+		device_->pause_aquisition();
 	}
 }
 
