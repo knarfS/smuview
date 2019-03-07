@@ -67,8 +67,8 @@ namespace devices {
 
 enum class AquisitionState {
 	Stopped,
-	AwaitingTrigger,
-	Running
+	Running,
+	Paused
 };
 
 class BaseDevice :
@@ -137,14 +137,14 @@ public:
 	virtual void close();
 
 	/**
-	 * Start data aquisition from device.
+	 * Start data aquisition from device after init or pause.
 	 */
 	virtual void start_aquisition();
 
 	/**
-	 * Stop data aquisition from device.
+	 * Pause data aquisition from device.
 	 */
-	virtual void stop_aquisition();
+	virtual void pause_aquisition();
 
 	/**
 	 * Get the aquisition state.

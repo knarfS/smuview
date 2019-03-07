@@ -141,12 +141,31 @@ void VirtualDevice::open(function<void (const QString)> error_handler)
 /* TODO: merge with Device */
 void VirtualDevice::close()
 {
+	qWarning() << "VirtualDevice::close(): Trying to close device " << full_name();
+
 	if (!device_open_)
 		return;
 
-	sr_session_->remove_devices();
-	sr_device_->close();
+	sr_session_->stop();
+
+	/*
+	 * NOTE: The device may already be closed from sr_session_->stop()
+	 *
+	 * sigrok::Session::stop() -> sr_session_stop() -> session_stop_sync() ->
+	 * sr_dev_acquisition_stop() -> via devce api dev_acquisition_stop() ->
+	 * std_serial_dev_acquisition_stop() -> sr_dev_close()
+	 */
+	try {
+		sr_device_->close();
+	}
+	catch (...) {}
+
+	if (sr_session_)
+		sr_session_->remove_devices();
+
 	device_open_ = false;
+
+	qWarning() << "VirtualDevice::close(): Device closed " << full_name();
 }
 
 void VirtualDevice::add_channel(shared_ptr<channels::BaseChannel> channel,

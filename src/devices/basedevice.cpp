@@ -69,6 +69,8 @@ BaseDevice::BaseDevice(const shared_ptr<sigrok::Context> sr_context,
 
 BaseDevice::~BaseDevice()
 {
+	// TODO: Not called!! Maybe cyclic refernece?
+	qWarning() << "BaseDevice::~BaseDevice(): " << full_name();
 	if (sr_session_)
 		close();
 }
@@ -100,58 +102,65 @@ void BaseDevice::open(function<void (const QString)> error_handler)
 	// Add device to session (do this in constructor??)
 	sr_session_->add_device(sr_device_);
 
-	device_open_ = true;
-
 	// Init all channels
-	init_channels();
+	this->init_channels();
 
-	// Start aquisition
+	// Init aquisition (TODO: Move to HardwareDevice)
 	sr_session_->add_datafeed_callback([=]
 		(shared_ptr<sigrok::Device> sr_device, shared_ptr<sigrok::Packet> sr_packet) {
 			data_feed_in(sr_device, sr_packet);
 		});
-	this->start_aquisition();
+	aquisition_thread_ = std::thread(
+		&BaseDevice::aquisition_thread_proc, this,
+		aquisition_thread_error_handler_);
+	aquisition_state_ = AquisitionState::Running;
+
+	device_open_ = true;
 }
 
 void BaseDevice::close()
 {
-	qWarning() << "Trying to close device " << full_name();
+	qWarning() << "BaseDevice::close(): Trying to close device " << full_name();
 
 	if (!device_open_)
 		return;
 
-	qWarning() << "Closing device " << full_name();
+	sr_session_->stop();
 
-	// Stop aquisition
+	// Check that sampling stopped
+	if (aquisition_thread_.joinable())
+		aquisition_thread_.join();
 	sr_session_->remove_datafeed_callbacks();
-	this->stop_aquisition();
+	aquisition_state_ = AquisitionState::Stopped;
 
-	sr_session_->remove_devices();
-	sr_device_->close();
+	/*
+	 * NOTE: The device may already be closed from sr_session_->stop()
+	 *
+	 * sigrok::Session::stop() -> sr_session_stop() -> session_stop_sync() ->
+	 * sr_dev_acquisition_stop() -> via devce api dev_acquisition_stop() ->
+	 * std_serial_dev_acquisition_stop() -> sr_dev_close()
+	 */
+	try {
+		sr_device_->close();
+	}
+	catch (...) {}
+
+	if (sr_session_)
+		sr_session_->remove_devices();
+
 	device_open_ = false;
+
+	qWarning() << "BaseDevice::close(): Device closed " << full_name();
 }
 
 void BaseDevice::start_aquisition()
 {
-	aquisition_thread_ = std::thread(
-		&BaseDevice::aquisition_thread_proc, this,
-		aquisition_thread_error_handler_);
-
 	aquisition_state_ = AquisitionState::Running;
 }
 
-void BaseDevice::stop_aquisition()
+void BaseDevice::pause_aquisition()
 {
-	// TODO: Stopping the session is not working. A restart will fail with the
-	// message: "device closed but should be open"
-	if (aquisition_state_ != AquisitionState::Stopped)
-		sr_session_->stop();
-
-	// Wait for aquisition to stop
-	if (aquisition_thread_.joinable())
-		aquisition_thread_.join();
-
-	aquisition_state_ = AquisitionState::Stopped;
+	aquisition_state_ = AquisitionState::Paused;
 }
 
 QString BaseDevice::name() const
@@ -320,6 +329,9 @@ void BaseDevice::data_feed_in(shared_ptr<sigrok::Device> sr_device,
 
 	case SR_DF_LOGIC:
 		//qWarning() << "data_feed_in(): SR_DF_LOGIC";
+		if (aquisition_state_ != AquisitionState::Running)
+			return;
+
 		try {
 			feed_in_logic(
 				dynamic_pointer_cast<sigrok::Logic>(sr_packet->payload()));
@@ -331,6 +343,9 @@ void BaseDevice::data_feed_in(shared_ptr<sigrok::Device> sr_device,
 
 	case SR_DF_ANALOG:
 		//qWarning() << "data_feed_in(): SR_DF_ANALOG";
+		if (aquisition_state_ != AquisitionState::Running)
+			return;
+
 		try {
 			feed_in_analog(
 				dynamic_pointer_cast<sigrok::Analog>(sr_packet->payload()));
