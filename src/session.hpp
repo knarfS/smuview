@@ -77,12 +77,14 @@ public:
 private:
 	DeviceManager &device_manager_;
 	map<string, shared_ptr<devices::BaseDevice>> devices_;
+	// TODO: Maybe replace with a UiController?
 	MainWindow *main_window_;
 
 	void free_unused_memory();
 
 Q_SIGNALS:
 	void device_added(shared_ptr<sv::devices::BaseDevice>);
+	void device_removed(shared_ptr<sv::devices::BaseDevice>);
 
 };
 

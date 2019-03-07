@@ -111,6 +111,8 @@ void Session::remove_device(shared_ptr<devices::BaseDevice> device)
 		device->close();
 
 	devices_.erase(device->id());
+
+	Q_EMIT device_removed(device);
 }
 
 MainWindow *Session::main_window() const
