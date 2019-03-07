@@ -64,10 +64,10 @@ public:
 		QWidget *parent = 0);
 
 
-	void select_channels(const vector<shared_ptr<sv::channels::BaseChannel>> channels);
-	vector<shared_ptr<sv::channels::BaseChannel>> selected_channels() const;
-	void select_signals(const vector<shared_ptr<sv::data::BaseSignal>> signals);
-	vector<shared_ptr<sv::data::BaseSignal>> selected_signals() const;
+	void check_channels(const vector<shared_ptr<sv::channels::BaseChannel>> channels);
+	vector<shared_ptr<sv::channels::BaseChannel>> checked_channels() const;
+	void check_signals(const vector<shared_ptr<sv::data::BaseSignal>> signals);
+	vector<shared_ptr<sv::data::BaseSignal>> checked_signals() const;
 
 private:
 	void setup_ui();

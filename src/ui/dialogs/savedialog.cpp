@@ -73,7 +73,7 @@ void SaveDialog::setup_ui()
 
 	device_tree_ = new ui::devices::devicetree::DeviceTreeView(
 		session_, false, false, false, true, false, false);
-	device_tree_->select_signals(selected_signals_);
+	device_tree_->check_signals(selected_signals_);
 	main_layout->addWidget(device_tree_);
 
 	QFormLayout *form_layout = new QFormLayout();
@@ -108,7 +108,7 @@ void SaveDialog::save(QString file_name)
 
 	output_file.open(str_file_name);
 
-	auto signals = device_tree_->selected_signals();
+	auto signals = device_tree_->checked_signals();
 	bool relative_time = !time_absolut_->isChecked();
 	QString sep = separator_edit_->text();
 	size_t max_sample_count = 0;
@@ -222,7 +222,7 @@ void SaveDialog::save_combined(QString file_name)
 
 	output_file.open(str_file_name);
 
-	auto signals = device_tree_->selected_signals();
+	auto signals = device_tree_->checked_signals();
 	bool relative_time = !time_absolut_->isChecked();
 	QString sep = separator_edit_->text();
 

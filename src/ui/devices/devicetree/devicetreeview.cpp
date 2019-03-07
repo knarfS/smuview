@@ -62,7 +62,7 @@ DeviceTreeView::DeviceTreeView(const Session &session,
 	setup_ui();
 }
 
-void DeviceTreeView::select_channels(
+void DeviceTreeView::check_channels(
 	const vector<shared_ptr<sv::channels::BaseChannel>> channels)
 {
 	if (!is_channel_checkable_)
@@ -85,7 +85,7 @@ void DeviceTreeView::select_channels(
 }
 
 vector<shared_ptr<sv::channels::BaseChannel>>
-	DeviceTreeView::selected_channels() const
+	DeviceTreeView::checked_channels() const
 {
 	vector<shared_ptr<channels::BaseChannel>> channels;
 
@@ -104,7 +104,7 @@ vector<shared_ptr<sv::channels::BaseChannel>>
 	return channels;
 }
 
-void DeviceTreeView::select_signals(
+void DeviceTreeView::check_signals(
 	const vector<shared_ptr<sv::data::BaseSignal>> signals)
 {
 	if (!is_signal_checkable_)
@@ -127,7 +127,7 @@ void DeviceTreeView::select_signals(
 }
 
 vector<shared_ptr<sv::data::BaseSignal>>
-	DeviceTreeView::selected_signals() const
+	DeviceTreeView::checked_signals() const
 {
 	vector<shared_ptr<sv::data::BaseSignal>> signals;
 

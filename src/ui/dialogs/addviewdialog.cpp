@@ -193,16 +193,16 @@ void AddViewDialog::accept()
 		break;
 	case 1:
 		// Add value panel view
-		for (const auto &channel : panel_channel_tree_->selected_channels()) {
+		for (const auto &channel : panel_channel_tree_->checked_channels()) {
 			views_.push_back(new ui::views::ValuePanelView(session_, channel));
 		}
 		break;
 	case 2:
 		// Add plot view
-		for (const auto &channel : time_plot_channel_tree_->selected_channels()) {
+		for (const auto &channel : time_plot_channel_tree_->checked_channels()) {
 			views_.push_back(new ui::views::PlotView(session_, channel));
 		}
-		for (const auto &signal : time_plot_channel_tree_->selected_signals()) {
+		for (const auto &signal : time_plot_channel_tree_->checked_signals()) {
 			auto a_signal = static_pointer_cast<data::AnalogSignal>(signal);
 			views_.push_back(new ui::views::PlotView(session_, a_signal));
 		}
@@ -223,7 +223,7 @@ void AddViewDialog::accept()
 		break;
 	case 4:
 		// Add data table view
-		for (const auto &signal : table_signal_tree_->selected_signals()) {
+		for (const auto &signal : table_signal_tree_->checked_signals()) {
 			auto a_signal = static_pointer_cast<data::AnalogSignal>(signal);
 			views_.push_back(new ui::views::DataView(session_, a_signal));
 		}
