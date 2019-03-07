@@ -45,8 +45,9 @@ namespace sv {
 shared_ptr<sigrok::Context> Session::sr_context;
 double Session::session_start_timestamp = .0;
 
-Session::Session(DeviceManager &device_manager) :
-	device_manager_(device_manager)
+Session::Session(DeviceManager &device_manager, MainWindow *main_window) :
+	device_manager_(device_manager),
+	main_window_(main_window)
 {
 }
 
@@ -110,6 +111,11 @@ void Session::remove_device(shared_ptr<devices::BaseDevice> device)
 		device->close();
 
 	devices_.erase(device->id());
+}
+
+MainWindow *Session::main_window() const
+{
+	return main_window_;
 }
 
 } // namespace sv

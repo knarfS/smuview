@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,15 +67,16 @@ public:
 	void save_session();
 	void restore_session();
 
+	void add_virtual_device_tab();
+	void add_hw_device_tab(shared_ptr<devices::HardwareDevice> device);
+	void remove_tab(int tab_index);
+
 private:
 	void setup_ui();
 	void connect_signals();
 	void session_error(const QString text, const QString info_text);
 	void add_tab(QMainWindow *tab_window, QString title);
 	void add_welcome_tab();
-	void add_virtual_device_tab();
-	void add_hw_device_tab(shared_ptr<devices::HardwareDevice> device);
-	void remove_tab(int tab_index);
 
 	DeviceManager &device_manager_;
 	shared_ptr<Session> session_;

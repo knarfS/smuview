@@ -40,6 +40,7 @@ class Context;
 namespace sv {
 
 class DeviceManager;
+class MainWindow;
 
 namespace devices {
 class BaseDevice;
@@ -55,7 +56,7 @@ public:
 	static double session_start_timestamp;
 
 public:
-	Session(DeviceManager &device_manager);
+	Session(DeviceManager &device_manager, MainWindow *main_window);
 	~Session();
 
 	DeviceManager &device_manager();
@@ -71,9 +72,12 @@ public:
 
 	void load_init_file(const string &file_name, const string &format);
 
+	MainWindow *main_window() const;
+
 private:
 	DeviceManager &device_manager_;
 	map<string, shared_ptr<devices::BaseDevice>> devices_;
+	MainWindow *main_window_;
 
 	void free_unused_memory();
 
