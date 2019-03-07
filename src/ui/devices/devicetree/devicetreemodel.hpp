@@ -55,6 +55,9 @@ public:
 
 	TreeItem *find_device(shared_ptr<sv::devices::BaseDevice> device) const;
 
+	const static int DataRole = Qt::UserRole + 1;
+	const static int SortRole = Qt::UserRole + 2;
+
 private:
 	void setup_model();
 	void add_device(shared_ptr<sv::devices::BaseDevice> device);
@@ -68,9 +71,6 @@ private:
 		set<QString> channel_group_names, TreeItem *parent_item) const;
 	TreeItem *find_signal(shared_ptr<sv::data::BaseSignal> signal,
 		TreeItem *parent_item) const;
-
-	const static int DataRole = Qt::UserRole + 1;
-	const static int SortRole = Qt::UserRole + 2;
 
 	const Session &session_;
 	bool is_device_checkable_;

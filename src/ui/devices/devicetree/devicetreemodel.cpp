@@ -88,8 +88,7 @@ void DeviceTreeModel::add_device(shared_ptr<sv::devices::BaseDevice> device)
 	// Look for existing device
 	TreeItem *device_item = find_device(device);
 	if (!device_item) {
-		QModelIndex root_index = indexFromItem(invisibleRootItem());
-		beginInsertRows(root_index,
+		beginInsertRows(invisibleRootItem()->index(),
 			invisibleRootItem()->rowCount(), invisibleRootItem()->rowCount()+1);
 		device_item = new TreeItem(TreeItemType::DeviceItem);
 		device_item->setText(device->full_name());
@@ -138,8 +137,7 @@ void DeviceTreeModel::add_channel(shared_ptr<channels::BaseChannel> channel,
 			// Look for already existing channel group
 			new_parent_item = find_channel_group(chg_name, parent_item);
 			if (!new_parent_item) {
-				QModelIndex device_index = indexFromItem(parent_item);
-				beginInsertRows(device_index,
+				beginInsertRows(parent_item->index(),
 					parent_item->rowCount(), parent_item->rowCount()+1);
 				new_parent_item = new TreeItem(TreeItemType::ChannelGroupItem);
 				new_parent_item->setText(chg_name);
@@ -159,8 +157,7 @@ void DeviceTreeModel::add_channel(shared_ptr<channels::BaseChannel> channel,
 		set<QString> chg_names { chg_name };
 		TreeItem *channel_item = find_channel(channel, chg_names, parent_item);
 		if (!channel_item) {
-			QModelIndex parent_index = indexFromItem(new_parent_item);
-			beginInsertRows(parent_index,
+			beginInsertRows(new_parent_item->index(),
 				new_parent_item->rowCount(), new_parent_item->rowCount()+1);
 			channel_item = new TreeItem(TreeItemType::ChannelItem);
 			channel_item->setText(channel->name());
@@ -188,8 +185,7 @@ void DeviceTreeModel::add_signal(shared_ptr<sv::data::BaseSignal> signal,
 	// Look for existing signal
 	TreeItem *signal_item = find_signal(signal, parent_item);
 	if (!signal_item) {
-		QModelIndex parent_index = indexFromItem(parent_item);
-		beginInsertRows(parent_index,
+		beginInsertRows(parent_item->index(),
 			parent_item->rowCount(), parent_item->rowCount()+1);
 		signal_item = new TreeItem(TreeItemType::SignalItem);
 		signal_item->setText(signal->name());
