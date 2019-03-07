@@ -63,6 +63,8 @@ public:
 		shared_ptr<sv::devices::BaseDevice> expanded_device = 0,
 		QWidget *parent = 0);
 
+	void select_item(TreeItem *item);
+	TreeItem *selected_item() const;
 
 	void check_channels(const vector<shared_ptr<sv::channels::BaseChannel>> channels);
 	vector<shared_ptr<sv::channels::BaseChannel>> checked_channels() const;

@@ -20,6 +20,7 @@
 #include <memory>
 
 #include <QDebug>
+#include <QItemSelectionModel>
 #include <QList>
 #include <QModelIndex>
 #include <QModelIndexList>
@@ -60,6 +61,24 @@ DeviceTreeView::DeviceTreeView(const Session &session,
 	expanded_device_(expanded_device)
 {
 	setup_ui();
+}
+
+
+void DeviceTreeView::select_item(TreeItem *item)
+{
+	selectionModel()->select(item->index(), QItemSelectionModel::Select);
+}
+
+TreeItem *DeviceTreeView::selected_item() const
+{
+	QModelIndex index = selectionModel()->currentIndex();
+	if (!index.isValid())
+		return nullptr;
+
+	// We can't use item->internalPointer() here, because somehow it points
+	// to the parent item!?
+	return static_cast<TreeItem *>(static_cast<QStandardItemModel *>(model())->
+		itemFromIndex(index));
 }
 
 void DeviceTreeView::check_channels(
