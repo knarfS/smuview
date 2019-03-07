@@ -68,6 +68,9 @@ void DeviceTreeModel::setup_model()
 	connect(
 		&session_, SIGNAL(device_added(shared_ptr<sv::devices::BaseDevice>)),
 		this, SLOT(on_device_added(shared_ptr<sv::devices::BaseDevice>)));
+	connect(
+		&session_, SIGNAL(device_removed(shared_ptr<sv::devices::BaseDevice>)),
+		this, SLOT(on_device_removed(shared_ptr<sv::devices::BaseDevice>)));
 
 	for (const auto &device_pair : session_.devices()) {
 		shared_ptr<sv::devices::BaseDevice> device = device_pair.second;
@@ -277,8 +280,14 @@ void DeviceTreeModel::on_device_added(shared_ptr<sv::devices::BaseDevice> device
 	add_device(device);
 }
 
-void DeviceTreeModel::on_device_removed()
+void DeviceTreeModel::on_device_removed(shared_ptr<sv::devices::BaseDevice> device)
 {
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
+
+	TreeItem *item = find_device(device);
+	if (item) {
+		removeRow(item->row(), invisibleRootItem()->index());
+	}
 }
 
 void DeviceTreeModel::on_channel_added(shared_ptr<channels::BaseChannel> channel)
@@ -289,8 +298,10 @@ void DeviceTreeModel::on_channel_added(shared_ptr<channels::BaseChannel> channel
 	add_channel(channel, channel->channel_group_names(), device_item);
 }
 
-void DeviceTreeModel::on_channel_removed()
+void DeviceTreeModel::on_channel_removed(shared_ptr<channels::BaseChannel> channel)
 {
+	(void)channel;
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
 }
 
 void DeviceTreeModel::on_signal_added(shared_ptr<sv::data::BaseSignal> signal)
@@ -299,8 +310,10 @@ void DeviceTreeModel::on_signal_added(shared_ptr<sv::data::BaseSignal> signal)
 	on_channel_added(channel);
 }
 
-void DeviceTreeModel::on_signal_removed()
+void DeviceTreeModel::on_signal_removed(shared_ptr<sv::data::BaseSignal> signal)
 {
+	(void)signal;
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
 }
 
 } // namespace devicetree

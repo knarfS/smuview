@@ -83,11 +83,11 @@ private:
 
 private Q_SLOTS:
 	void on_device_added(shared_ptr<sv::devices::BaseDevice> device);
-	void on_device_removed();
+	void on_device_removed(shared_ptr<sv::devices::BaseDevice> device);
 	void on_channel_added(shared_ptr<channels::BaseChannel> channel);
-	void on_channel_removed();
+	void on_channel_removed(shared_ptr<channels::BaseChannel> channel);
 	void on_signal_added(shared_ptr<sv::data::BaseSignal> signal);
-	void on_signal_removed();
+	void on_signal_removed(shared_ptr<sv::data::BaseSignal> signal);
 
 };
 
