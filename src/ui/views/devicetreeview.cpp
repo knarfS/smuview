@@ -21,7 +21,7 @@
 
 #include <QAction>
 #include <QDebug>
-#include <QModelIndex>
+#include <QMessageBox>
 #include <QToolBar>
 #include <QVBoxLayout>
 
@@ -29,6 +29,7 @@
 #include "src/devicemanager.hpp"
 #include "src/mainwindow.hpp"
 #include "src/session.hpp"
+#include "src/data/basesignal.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/ui/devices/devicetree/devicetreemodel.hpp"
 #include "src/ui/devices/devicetree/devicetreeview.hpp"
@@ -77,31 +78,31 @@ void DeviceTreeView::setup_ui()
 
 void DeviceTreeView::setup_toolbar()
 {
-
 	action_add_device_->setText(tr("Add device"));
 	action_add_device_->setIcon(
-		QIcon::fromTheme("network-connect",
-		QIcon(":/icons/network-connect.png")));
+		QIcon::fromTheme("document-new",
+		QIcon(":/icons/document-new.png")));
 	connect(action_add_device_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_add_device_triggered()));
 
 	action_add_virtualdevice_->setText(tr("Add virtual device"));
 	action_add_virtualdevice_->setIcon(
-		QIcon::fromTheme("user-identity",
-		QIcon(":/icons/user-identity.png")));
+		QIcon::fromTheme("tab-new-background",
+		QIcon(":/icons/tab-new-background.png")));
 	connect(action_add_virtualdevice_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_add_virtualdevice_triggered()));
 
 	action_disconnect_device_->setText(tr("Disconnect device"));
 	action_disconnect_device_->setIcon(
-		QIcon::fromTheme("network-disconnect",
-		QIcon(":/icons/network-disconnect.png")));
+		QIcon::fromTheme("edit-delete",
+		QIcon(":/icons/edit-delete.png")));
 	connect(action_disconnect_device_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_disconnect_device_triggered()));
 
 	toolbar_ = new QToolBar("Device Tree Toolbar");
 	toolbar_->addAction(action_add_device_);
 	toolbar_->addAction(action_add_virtualdevice_);
+	toolbar_->addSeparator();
 	toolbar_->addAction(action_disconnect_device_);
 	this->addToolBar(Qt::TopToolBarArea, toolbar_);
 }
@@ -125,19 +126,38 @@ void DeviceTreeView::on_action_add_virtualdevice_triggered()
 
 void DeviceTreeView::on_action_disconnect_device_triggered()
 {
-	QModelIndex selected_index = device_tree_->selectionModel()->currentIndex();
-	qWarning() << "DeviceTreeView::on_action_disconnect_device_triggered(): index = " << selected_index.row() << "/" << selected_index.column();
-	qWarning() << "DeviceTreeView::on_action_disconnect_device_triggered(): index text = " << selected_index.data(Qt::DisplayRole);
-	TreeItem *selected_item = static_cast<TreeItem *>(selected_index.internalPointer());
-	qWarning() << "DeviceTreeView::on_action_disconnect_device_triggered(): item = " << selected_item->text();
+	TreeItem *item = device_tree_->selected_item();
+	if (!item)
+		return;
 
-	if (selected_item->type() == (int)TreeItemType::DeviceItem) {
-		auto device = selected_item->data(DeviceTreeModel::DataRole).
+	if (item->type() == (int)TreeItemType::DeviceItem) {
+		auto device = item->data(DeviceTreeModel::DataRole).
 			value<shared_ptr<sv::devices::BaseDevice>>();
-		qWarning() << "DeviceTreeView::on_action_disconnect_device_triggered(): device = " << device->full_name();
 
-		//device->close();
-		//session().main_window()->remove_tab(0);
+		QMessageBox::StandardButton reply = QMessageBox::question(this,
+			tr("Close device"),
+			tr("Closing the device will also delete all aquired data!"),
+			QMessageBox::Yes | QMessageBox::Cancel);
+
+		if (reply == QMessageBox::Yes) {
+			session().main_window()->remove_tab(device->id());
+			session().remove_device(device);
+		}
+	}
+	else if (item->type() == (int)TreeItemType::SignalItem) {
+		/*
+		auto signal = item->data(DeviceTreeModel::DataRole).
+			value<shared_ptr<sv::data::BaseSignal>>();
+
+		QMessageBox::StandardButton reply = QMessageBox::question(this,
+			tr("Delete signal"),
+			tr("Deleting the signal will also delete all aquired data!"),
+			QMessageBox::Yes | QMessageBox::Cancel);
+
+		if (reply == QMessageBox::Yes) {
+			//signal->clear_samples();
+		}
+		*/
 	}
 }
 

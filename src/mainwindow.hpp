@@ -20,17 +20,15 @@
 #ifndef MAINWINDOW_HPP
 #define MAINWINDOW_HPP
 
+#include <map>
 #include <memory>
 #include <string>
-#include <vector>
 
-#include <QToolBar>
-#include <QToolButton>
 #include <QMainWindow>
 
+using std::map;
 using std::shared_ptr;
 using std::string;
-using std::vector;
 
 namespace sv {
 
@@ -38,7 +36,6 @@ class DeviceManager;
 class Session;
 
 namespace devices {
-class BaseDevice;
 class HardwareDevice;
 }
 namespace tabs {
@@ -69,31 +66,28 @@ public:
 
 	void add_virtual_device_tab();
 	void add_hw_device_tab(shared_ptr<devices::HardwareDevice> device);
-	void remove_tab(int tab_index);
+	void remove_tab(string id);
 
 private:
 	void setup_ui();
 	void connect_signals();
 	void session_error(const QString text, const QString info_text);
-	void add_tab(QMainWindow *tab_window, QString title);
+	void add_tab(QMainWindow *tab_window, QString title, string id);
 	void add_welcome_tab();
+	void remove_tab(int tab_index);
 
 	DeviceManager &device_manager_;
 	shared_ptr<Session> session_;
 
-	vector<QMainWindow *> tab_windows_;
-
-	QToolButton *add_device_button_;
-	QToolButton *add_user_tab_button_;
+	map<string, QMainWindow *> tab_window_map_;
 	QWidget *central_widget_;
 	ui::views::DeviceTreeView *device_tree_view_;
 	QTabWidget *tab_widget_;
-	QWidget *tab_widget_toolbar_;
 
 private Q_SLOTS:
 	void show_session_error(const QString text, const QString info_text);
-	void on_action_add_device_tab_triggered();
-	void on_action_add_virtual_tab_triggered();
+	void on_action_add_device_tab_triggered(); // TODO: Maybe use slot in DeviceTreeView?
+	void on_action_add_virtual_tab_triggered(); // TODO: Maybe use slot in DeviceTreeView?
 	void on_tab_close_requested(int);
 
 };

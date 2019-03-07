@@ -17,7 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <map>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include <QApplication>
@@ -49,7 +51,9 @@
 
 using std::make_pair;
 using std::make_shared;
+using std::map;
 using std::shared_ptr;
+using std::string;
 
 Q_DECLARE_SMART_POINTER_METATYPE(std::shared_ptr)
 Q_DECLARE_METATYPE(std::shared_ptr<sv::data::BaseSignal>)
@@ -82,11 +86,9 @@ void MainWindow::init_session()
 
 void MainWindow::init_default_session()
 {
-	// Display a "UserTab" if no "DeviceTab"s have been opend. This is because
-	// without a tab in the QTabWidget the tab tool bar (CornerWidget) doesn't
-	// show up. Collapsing the tool bar to 0 is prevented in the cose_tab()
-	// function.
 	if (device_manager_.user_spec_devices().empty()) {
+		// Display the WelcomeTab if no DeviceTabs will be opened, because
+		// without a tab in the QTabWidget the main window looks so empty...
 		add_welcome_tab();
 		return;
 	}
@@ -123,12 +125,12 @@ void MainWindow::restore_session()
 	settings.endGroup();
 }
 
-void MainWindow::add_tab(QMainWindow *tab_window, QString title)
+void MainWindow::add_tab(QMainWindow *tab_window, QString title, string id)
 {
 	int index = tab_widget_->addTab(tab_window, title);
 	tab_widget_->setCurrentIndex(index);
 
-	tab_windows_.push_back(tab_window);
+	tab_window_map_.insert(make_pair(id, tab_window));
 }
 
 void MainWindow::add_welcome_tab()
@@ -139,7 +141,7 @@ void MainWindow::add_welcome_tab()
 	tab_window->setCentralWidget(
 		new ui::tabs::WelcomeTab(*session_, tab_window));
 
-	add_tab(tab_window, tr("Welcome"));
+	add_tab(tab_window, tr("Welcome"), "welcometab");
 }
 
 void MainWindow::add_virtual_device_tab()
@@ -160,7 +162,7 @@ void MainWindow::add_virtual_device_tab()
 	tab_window->setCentralWidget(
 		ui::tabs::tabhelper::get_tab_for_device(*session_, device, tab_window));
 
-	add_tab(tab_window, device->short_name());
+	add_tab(tab_window, device->short_name(), device->id());
 }
 
 void MainWindow::add_hw_device_tab(
@@ -179,29 +181,29 @@ void MainWindow::add_hw_device_tab(
 	tab_window->setCentralWidget(
 		ui::tabs::tabhelper::get_tab_for_device(*session_, device, tab_window));
 
-	add_tab(tab_window, device->short_name());
+	add_tab(tab_window, device->short_name(), device->id());
+}
+
+void MainWindow::remove_tab(string id)
+{
+	remove_tab(tab_widget_->indexOf(tab_window_map_[id]));
 }
 
 void MainWindow::remove_tab(int tab_index)
 {
-	// Determine the height of the button before it collapses
-	//int h = add_device_button_->height();
+	QWidget *tab_window = tab_widget_->widget(tab_index);
 
 	tab_widget_->removeTab(tab_index);
-	QMainWindow * tab_window = tab_windows_[tab_index];
-	tab_windows_.erase(tab_windows_.begin() + tab_index);
-	tab_window->deleteLater();
 
-	if (tab_windows_.empty()) {
-		/* TODO: not working!
-		// When there are no more tabs, the height of the QTabWidget
-		// drops to zero. We must prevent this to keep the toolbar visible
-		for (QWidget *w : tab_widget_toolbar_->findChildren<QWidget*>())
-			w->setMinimumHeight(h);
-		int margin = tab_widget_toolbar_->layout()->contentsMargins().bottom();
-		tab_widget_toolbar_->setMinimumHeight(h + 2*margin);
-		tab_widget_->setMinimumHeight(h + 2*margin);
-		*/
+	for (const auto &pair : tab_window_map_) {
+		if (pair.second == tab_window)
+			tab_window_map_.erase(pair.first);
+	}
+	//tab_window->deleteLater();
+	delete tab_window;
+
+	if (tab_window_map_.empty()) {
+		// When there are no more tabs, display the WelcomeTab
 		add_welcome_tab();
 	}
 }
@@ -222,35 +224,8 @@ void MainWindow::setup_ui()
 	central_widget_ = new QWidget();
 	central_widget_->setLayout(centralLayout);
 
-	// Tab Toolbar
-	add_device_button_ = new QToolButton();
-	add_device_button_->setIcon(
-		QIcon::fromTheme("document-new",
-		QIcon(":/icons/document-new.png")));
-	add_device_button_->setToolTip(tr("Add new device"));
-	add_device_button_->setAutoRaise(true);
-	connect(add_device_button_, SIGNAL(clicked(bool)),
-		this, SLOT(on_action_add_device_tab_triggered()));
-
-	add_user_tab_button_ = new QToolButton();
-	add_user_tab_button_->setIcon(
-		QIcon::fromTheme("tab-new-background",
-		QIcon(":/icons/tab-new-background.png")));
-	add_user_tab_button_->setToolTip(tr("Add new user tab"));
-	add_user_tab_button_->setAutoRaise(true);
-	connect(add_user_tab_button_, SIGNAL(clicked(bool)),
-		this, SLOT(on_action_add_virtual_tab_triggered()));
-
-	QHBoxLayout* toolbar_layout = new QHBoxLayout();
-	toolbar_layout->setContentsMargins(2, 2, 2, 2);
-	toolbar_layout->addWidget(add_device_button_);
-	toolbar_layout->addWidget(add_user_tab_button_);
-	tab_widget_toolbar_ = new QWidget();
-	tab_widget_toolbar_->setLayout(toolbar_layout);
-
 	// Tab Widget
 	tab_widget_ = new QTabWidget();
-	tab_widget_->setCornerWidget(tab_widget_toolbar_, Qt::TopLeftCorner);
 	tab_widget_->setTabsClosable(true);
 	connect(tab_widget_, SIGNAL(tabCloseRequested(int)),
 		this, SLOT(on_tab_close_requested(int)));
@@ -265,7 +240,7 @@ void MainWindow::setup_ui()
 
 	// A layout must be set to the central widget of the main window
 	// before ds_dock->setWidget() is called.
-	QDockWidget* ds_dock = new QDockWidget(tr("Devices && Signals"));
+	QDockWidget* ds_dock = new QDockWidget(device_tree_view_->title());
 	ds_dock->setAllowedAreas(Qt::AllDockWidgetAreas);
 	ds_dock->setContextMenuPolicy(Qt::PreventContextMenu);
 	ds_dock->setFeatures(QDockWidget::DockWidgetMovable |
@@ -319,11 +294,9 @@ void MainWindow::on_action_add_virtual_tab_triggered()
 void MainWindow::on_tab_close_requested(int index)
 {
 	QMessageBox::StandardButton reply = QMessageBox::question(this,
-		tr("Close device"),
+		tr("Close device tab"),
 		tr("Closing the device tab will leave the device connected!"),
 		QMessageBox::Yes | QMessageBox::Cancel);
-
-	// TODO: Disconnect device and clear signal data?
 
 	if (reply == QMessageBox::Yes)
 		remove_tab(index);
