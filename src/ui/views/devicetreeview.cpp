@@ -21,17 +21,27 @@
 
 #include <QAction>
 #include <QDebug>
+#include <QModelIndex>
 #include <QToolBar>
 #include <QVBoxLayout>
 
 #include "devicetreeview.hpp"
+#include "src/devicemanager.hpp"
+#include "src/mainwindow.hpp"
 #include "src/session.hpp"
 #include "src/devices/basedevice.hpp"
+#include "src/ui/devices/devicetree/devicetreemodel.hpp"
 #include "src/ui/devices/devicetree/devicetreeview.hpp"
+#include "src/ui/devices/devicetree/treeitem.hpp"
 #include "src/ui/dialogs/connectdialog.hpp"
 #include "src/ui/views/baseview.hpp"
 
 using std::shared_ptr;
+using sv::ui::devices::devicetree::DeviceTreeModel;
+using sv::ui::devices::devicetree::TreeItem;
+using sv::ui::devices::devicetree::TreeItemType;
+
+Q_DECLARE_SMART_POINTER_METATYPE(std::shared_ptr)
 
 namespace sv {
 namespace ui {
@@ -102,14 +112,33 @@ void DeviceTreeView::connect_signals()
 
 void DeviceTreeView::on_action_add_device_triggered()
 {
+	ui::dialogs::ConnectDialog dlg(session().device_manager());
+	if (dlg.exec()) {
+		session().main_window()->add_hw_device_tab(dlg.get_selected_device());
+	}
 }
 
 void DeviceTreeView::on_action_add_virtualdevice_triggered()
 {
+	session().main_window()->add_virtual_device_tab();
 }
 
 void DeviceTreeView::on_action_disconnect_device_triggered()
 {
+	QModelIndex selected_index = device_tree_->selectionModel()->currentIndex();
+	qWarning() << "DeviceTreeView::on_action_disconnect_device_triggered(): index = " << selected_index.row() << "/" << selected_index.column();
+	qWarning() << "DeviceTreeView::on_action_disconnect_device_triggered(): index text = " << selected_index.data(Qt::DisplayRole);
+	TreeItem *selected_item = static_cast<TreeItem *>(selected_index.internalPointer());
+	qWarning() << "DeviceTreeView::on_action_disconnect_device_triggered(): item = " << selected_item->text();
+
+	if (selected_item->type() == (int)TreeItemType::DeviceItem) {
+		auto device = selected_item->data(DeviceTreeModel::DataRole).
+			value<shared_ptr<sv::devices::BaseDevice>>();
+		qWarning() << "DeviceTreeView::on_action_disconnect_device_triggered(): device = " << device->full_name();
+
+		//device->close();
+		//session().main_window()->remove_tab(0);
+	}
 }
 
 } // namespace views
