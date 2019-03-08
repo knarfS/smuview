@@ -22,6 +22,7 @@
 #include <cassert>
 #include <functional>
 #include <set>
+#include <string>
 #include <thread>
 #include <utility>
 #include <vector>
@@ -121,14 +122,7 @@ void HardwareDevice::init()
 
 string HardwareDevice::id() const
 {
-	// TODO: Add index, when more then one of the same device exists.
-	return sr_hardware_device()->driver()->long_name();
-}
-
-string HardwareDevice::id() const
-{
-	// TODO: Add index, when more then one of the same device exists.
-	return sr_hardware_device()->driver()->name();
+	return sr_hardware_device()->driver()->name() + ":" + sr_device()->connection_id();
 }
 
 QString HardwareDevice::display_name(

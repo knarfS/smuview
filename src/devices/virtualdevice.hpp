@@ -97,10 +97,13 @@ protected:
 	void feed_in_analog(shared_ptr<sigrok::Analog> sr_analog) override;
 
 private:
+	static unsigned int virtual_device_counter_;
+
 	double frame_start_timestamp_;
 	QString vendor_;
 	QString model_;
 	QString version_;
+	unsigned int device_index_;
 	unsigned int channel_index_;
 
 Q_SIGNALS:

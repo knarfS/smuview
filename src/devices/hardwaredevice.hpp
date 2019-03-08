@@ -24,6 +24,7 @@
 #include <functional>
 #include <map>
 #include <mutex>
+#include <string>
 #include <unordered_set>
 
 #include <libsigrokcxx/libsigrokcxx.hpp>

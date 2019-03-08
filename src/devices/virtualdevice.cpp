@@ -36,6 +36,8 @@ using std::static_pointer_cast;
 namespace sv {
 namespace devices {
 
+unsigned int VirtualDevice::virtual_device_counter_ = 0;
+
 VirtualDevice::VirtualDevice(
 		const shared_ptr<sigrok::Context> &sr_context,
 		QString vendor, QString model, QString version) :
@@ -49,6 +51,7 @@ VirtualDevice::VirtualDevice(
 		vendor_.toStdString(), model_.toStdString(), version_.toStdString());
 	sr_device_ = sr_device;
 	device_type_ = DeviceType::VirtualDevice;
+	device_index_ = VirtualDevice::virtual_device_counter_++;
 }
 
 void VirtualDevice::init()
@@ -57,8 +60,7 @@ void VirtualDevice::init()
 
 string VirtualDevice::id() const
 {
-	// TODO: Add index, when more then one virtual devices exist.
-	return name().toStdString();
+	return "virtualdevice:" + std::to_string(device_index_);
 }
 
 QString VirtualDevice::name() const
