@@ -45,6 +45,7 @@ class BaseTab;
 namespace ui {
 namespace views {
 class DevicesView;
+class SmuScriptView;
 }
 }
 
@@ -82,6 +83,7 @@ private:
 	map<string, QMainWindow *> tab_window_map_;
 	QWidget *central_widget_;
 	ui::views::DevicesView *devices_view_;
+	ui::views::SmuScriptView *smu_script_view_;
 	QTabWidget *tab_widget_;
 
 private Q_SLOTS:

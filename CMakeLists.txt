@@ -275,6 +275,7 @@ set(smuview_SOURCES
   src/ui/views/measurementcontrolview.cpp
   src/ui/views/plotview.cpp
   src/ui/views/powerpanelview.cpp
+  src/ui/views/smuscriptview.cpp
   src/ui/views/sourcesinkcontrolview.cpp
   src/ui/views/valuepanelview.cpp
   src/ui/views/viewhelper.cpp

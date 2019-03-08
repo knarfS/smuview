@@ -49,6 +49,7 @@
 #include "src/ui/tabs/tabhelper.hpp"
 #include "src/ui/tabs/welcometab.hpp"
 #include "src/ui/views/devicesview.hpp"
+#include "src/ui/views/smuscriptview.hpp"
 
 using std::make_pair;
 using std::make_shared;
@@ -254,7 +255,18 @@ void MainWindow::setup_ui()
 	// resizeDocks() was introduced in Qt 5.6.
 	this->resizeDocks({dev_dock}, {40}, Qt::Horizontal);
 
-	// Select devices and signal dock tab
+	// SmuScript Dock
+	smu_script_view_ = new ui::views::SmuScriptView(*session_);
+
+	QDockWidget* script_dock = new QDockWidget(smu_script_view_->title());
+	script_dock->setAllowedAreas(Qt::AllDockWidgetAreas);
+	script_dock->setContextMenuPolicy(Qt::PreventContextMenu);
+	script_dock->setFeatures(QDockWidget::DockWidgetMovable |
+		QDockWidget::DockWidgetFloatable);
+	script_dock->setWidget(smu_script_view_);
+	this->tabifyDockWidget(dev_dock, script_dock);
+
+	// Select device tree dock tab
 	dev_dock->show();
 	dev_dock->raise();
 }
