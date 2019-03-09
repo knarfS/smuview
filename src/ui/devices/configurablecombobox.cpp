@@ -73,8 +73,9 @@ void ConfigurableComboBox::setup_ui()
 	if (!hw_device)
 		return;
 
-	for (const auto &configurable : hw_device->configurables()) {
+	for (const auto &c_pair : hw_device->configurables()) {
 		// Only show configurables that either are getable, setable or listable.
+		auto configurable = c_pair.second;
 		if (!configurable->is_controllable())
 			continue;
 		this->addItem(configurable->name(), QVariant::fromValue(configurable));

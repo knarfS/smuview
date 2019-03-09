@@ -50,11 +50,13 @@ void MeasurementTab::setup_ui()
 
 	// Device controls
 	size_t i = 0;
-	for (const auto &c : hw_device->configurables()) {
-		if (!c->is_controllable())
+	for (const auto &c_pair : hw_device->configurables()) {
+		auto configurable = c_pair.second;
+		if (!configurable->is_controllable())
 			continue;
 
-		auto view = views::viewhelper::get_view_for_configurable(session_, c);
+		auto view = views::viewhelper::get_view_for_configurable(
+			session_, configurable);
 		if (view != NULL) {
 			add_view(view, Qt::TopDockWidgetArea);
 

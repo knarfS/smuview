@@ -105,13 +105,13 @@ void HardwareDevice::init()
 		for (const auto &sr_cg_pair : sr_channel_groups) {
 			auto sr_cg = sr_cg_pair.second;
 			auto cg_c = Configurable::create(sr_cg, short_name(), device_type_);
-			configurables_.push_back(cg_c);
+			configurables_.insert(make_pair(sr_cg_pair.first, cg_c));
 		}
 	}
 
 	// Init Configurable from Device
 	auto d_c = Configurable::create(sr_device_, short_name(), device_type_);
-	configurables_.push_back(d_c);
+	configurables_.insert(make_pair("", d_c));
 
 	// Sample rate for interleaved samples
 	if (d_c->has_get_config(ConfigKey::Samplerate)) {
@@ -200,11 +200,6 @@ shared_ptr<sigrok::HardwareDevice> HardwareDevice::sr_hardware_device() const
 	return static_pointer_cast<sigrok::HardwareDevice>(sr_device_);
 }
 
-vector<shared_ptr<devices::Configurable>> HardwareDevice::configurables() const
-{
-	return configurables_;
-}
-
 map<shared_ptr<sigrok::Channel>, shared_ptr<channels::BaseChannel>>
 	HardwareDevice::sr_channel_map() const
 {
@@ -269,10 +264,17 @@ void HardwareDevice::feed_in_trigger()
 
 void HardwareDevice::feed_in_meta(shared_ptr<sigrok::Meta> sr_meta)
 {
-	// TODO: The meta packet is missing the information, to which
-	// channel group the config key belongs.
-	if (configurables_.size() > 0)
-		configurables_.front()->feed_in_meta(sr_meta);
+	for (const auto &c_pair : configurables_) {
+		// TODO: The meta packet is missing the information, to which
+		// channel group the config key belongs.
+		// Workaround: Use a configurable from a channel group if available,
+		// else use the device configurable ("")
+		if (c_pair.first == "" && configurables_.size() > 1)
+			continue;
+
+		c_pair.second->feed_in_meta(sr_meta);
+		break;
+	}
 }
 
 void HardwareDevice::feed_in_frame_begin()

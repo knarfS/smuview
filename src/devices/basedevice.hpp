@@ -22,6 +22,7 @@
 #define DEVICES_BASEDEVICE_HPP
 
 #include <functional>
+#include <map>
 #include <memory>
 #include <mutex>
 #include <string>
@@ -64,6 +65,8 @@ class BaseSignal;
 }
 
 namespace devices {
+
+class Configurable;
 
 enum class AquisitionState {
 	Stopped,
@@ -152,6 +155,11 @@ public:
 	AquisitionState aquisition_state();
 
 	/**
+	 * Returns a map with all configurables of this device
+	 */
+	map<string, shared_ptr<devices::Configurable>> configurables() const;
+
+	/**
 	 * Add channel to device
 	 */
 	virtual void add_channel(shared_ptr<channels::BaseChannel> channel,
@@ -187,6 +195,8 @@ protected:
 	shared_ptr<sigrok::Device> sr_device_;
 	DeviceType device_type_;
 	bool device_open_;
+
+	map<string, shared_ptr<devices::Configurable>> configurables_;
 
 	// TODO: typdefs?
 	// TODO: Doxy

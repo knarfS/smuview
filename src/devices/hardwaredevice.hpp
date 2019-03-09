@@ -114,8 +114,8 @@ public:
 
 	void open(function<void (const QString)> error_handler) override;
 
-	vector<shared_ptr<devices::Configurable>> configurables() const;
 	// TODO: typdef?
+	// TODO: move to BaseDevice?
 	map<shared_ptr<sigrok::Channel>, shared_ptr<channels::BaseChannel>> sr_channel_map() const;
 
 protected:
@@ -138,8 +138,8 @@ protected:
 	void feed_in_logic(shared_ptr<sigrok::Logic> sr_logic) override;
 	void feed_in_analog(shared_ptr<sigrok::Analog> sr_analog) override;
 
-	vector<shared_ptr<devices::Configurable>> configurables_;
 	// TODO: typdef?
+	// TODO: move to BaseDevice?
 	map<shared_ptr<sigrok::Channel>, shared_ptr<channels::BaseChannel>> sr_channel_map_;
 
 private:

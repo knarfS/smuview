@@ -19,6 +19,7 @@
  */
 
 #include <cassert>
+#include <map>
 #include <glib.h>
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
@@ -32,11 +33,13 @@
 #include "src/channels/basechannel.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
+#include "src/devices/configurable.hpp"
 
 using std::bad_alloc;
 using std::dynamic_pointer_cast;
 using std::lock_guard;
 using std::make_shared;
+using std::map;
 using std::pair;
 using std::set;
 using std::shared_ptr;
@@ -243,6 +246,11 @@ QString BaseDevice::short_name() const
 	}
 
 	return name;
+}
+
+map<string, shared_ptr<devices::Configurable>> BaseDevice::configurables() const
+{
+	return configurables_;
 }
 
 map<QString, shared_ptr<channels::BaseChannel>>

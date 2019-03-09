@@ -291,12 +291,13 @@ QWidget *AboutDialog::get_device_page(QWidget *parent) const
 			tr("SmuView device configurables and properties:") +
 			"</b></td></tr>");
 		const auto configurables = hw_device->configurables();
-		for (const auto &cnf : configurables) {
+		for (const auto &c_pair : configurables) {
+			auto configurable = c_pair.second;
 			s.append(QString("<tr><td>&nbsp;</td><td>%1</td>").
-				arg(cnf->name()));
+				arg(configurable->name()));
 			s.append(QString("<td>GET</td><td>Value</td><td>SET</td>"));
 			s.append(QString("<td>LIST</td><td>Values</td></tr>"));
-			auto props = cnf->properties();
+			auto props = configurable->properties();
 			for (const auto &prop : props) {
 				s.append(QString("<tr><td>&nbsp;</td>"));
 				s.append(QString("<td><i>%1</i></td>").arg(
