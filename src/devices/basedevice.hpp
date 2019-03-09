@@ -220,7 +220,7 @@ private:
 
 Q_SIGNALS:
 	void aquisition_start_timestamp_changed(double);
-	void channel_added(shared_ptr<channels::BaseChannel>);
+	void channel_added(shared_ptr<sv::channels::BaseChannel>);
 
 };
 

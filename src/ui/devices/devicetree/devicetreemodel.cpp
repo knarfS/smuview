@@ -104,8 +104,9 @@ void DeviceTreeModel::add_device(shared_ptr<sv::devices::BaseDevice> device)
 		invisibleRootItem()->sortChildren(0);
 
 		connect(
-			device.get(), SIGNAL(channel_added(shared_ptr<channels::BaseChannel>)),
-			this, SLOT(on_channel_added(shared_ptr<channels::BaseChannel>)));
+			device.get(),
+			SIGNAL(channel_added(shared_ptr<sv::channels::BaseChannel>)),
+			this, SLOT(on_channel_added(shared_ptr<sv::channels::BaseChannel>)));
 	}
 
 	// Channels and ChannelGroups
