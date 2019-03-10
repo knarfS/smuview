@@ -62,8 +62,9 @@ const QString ChannelGroupComboBox::selected_channel_group()
 void ChannelGroupComboBox::setup_ui()
 {
 	if (device_) {
-		for (const auto &cg_name_map : device_->channel_group_name_map())
-			this->addItem(cg_name_map.first);
+		for (const auto &cg_name_map : device_->channel_group_name_map()) {
+			this->addItem(QString::fromStdString(cg_name_map.first));
+		}
 	}
 }
 
@@ -71,8 +72,9 @@ void ChannelGroupComboBox::change_device(
 	shared_ptr<sv::devices::BaseDevice> device)
 {
 	device_ = device;
-	for (int i = this->count(); i >= 0; --i)
+	for (int i = this->count(); i >= 0; --i) {
 		this->removeItem(i);
+	}
 	this->setup_ui();
 }
 

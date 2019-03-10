@@ -52,9 +52,19 @@ public:
 		shared_ptr<channels::BaseChannel> parent_channel,
 		double signal_start_timestamp);
 
-	void clear();
+	/**
+	 * Clears all samples from this signal.
+	 */
+	void clear() override;
 
-	size_t get_sample_count() const;
+	/**
+	 * Returns the number of samples in this signal.
+	 */
+	size_t get_sample_count() const override;
+
+	/**
+	 * Returns the sample at the given position.
+	 */
 	sample_t get_sample(size_t pos, bool relative_time) const;
 
 	/**

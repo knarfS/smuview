@@ -109,7 +109,7 @@ public:
 	/**
 	 * Builds the name
 	 */
-	virtual QString name() const;
+	virtual string name() const;
 
 	/**
 	 * Builds the full name. It only contains all the fields.
@@ -160,18 +160,45 @@ public:
 	map<string, shared_ptr<devices::Configurable>> configurables() const;
 
 	/**
-	 * Add channel to device
+	 * Add a sv::channels:.Channel to the device
 	 */
 	virtual void add_channel(shared_ptr<channels::BaseChannel> channel,
-		QString channel_group_name);
+		string channel_group_name);
 
-	// TODO: typdefs?
-	// TODO: Doxy
-	map<QString, shared_ptr<channels::BaseChannel>> channel_name_map() const;
-	map<QString, vector<shared_ptr<channels::BaseChannel>>> channel_group_name_map() const;
+	/**
+	 * Add a sigrok::Channel to the device.
+	 */
+	shared_ptr<channels::BaseChannel> add_sr_channel(
+		shared_ptr<sigrok::Channel> sr_channel, string channel_group_name);
+
+	/**
+	 * Add an user channel to the device
+	 */
+	shared_ptr<channels::BaseChannel> add_user_channel(
+		string channel_name, string channel_group_name,
+		data::Quantity quantity, set<data::QuantityFlag> quantity_flags,
+		data::Unit unit);
+
+	/**
+	 * Returns a map with all channels of this device
+	 */
+	map<string, shared_ptr<channels::BaseChannel>> channel_name_map() const;
+
+	/**
+	 * Returns a map with all channel groups of this device
+	 */
+	map<string, vector<shared_ptr<channels::BaseChannel>>> channel_group_name_map() const;
+
+	/**
+	 * Get the map which maps sigrok::Channel and sv::Channels::BaseChannel
+	 */
+	map<shared_ptr<sigrok::Channel>, shared_ptr<channels::BaseChannel>> sr_channel_map() const;
+
+	/**
+	 * Returns all signals of this device
+	 */
 	vector<shared_ptr<data::BaseSignal>> all_signals() const;
 
-	virtual void free_unused_memory();
 
 protected:
 	/**
@@ -198,10 +225,9 @@ protected:
 
 	map<string, shared_ptr<devices::Configurable>> configurables_;
 
-	// TODO: typdefs?
-	// TODO: Doxy
-	map<QString, shared_ptr<channels::BaseChannel>> channel_name_map_;
-	map<QString, vector<shared_ptr<channels::BaseChannel>>> channel_group_name_map_;
+	map<string, shared_ptr<channels::BaseChannel>> channel_name_map_;
+	map<string, vector<shared_ptr<channels::BaseChannel>>> channel_group_name_map_;
+	map<shared_ptr<sigrok::Channel>, shared_ptr<channels::BaseChannel>> sr_channel_map_;
 	vector<shared_ptr<data::BaseSignal>> all_signals_; // TODO: Is empty! Fill in Hardware/Virtual!
 
 	mutable mutex aquisition_mutex_; //!< Protects access to capture_state_. // TODO
@@ -209,7 +235,6 @@ protected:
 	AquisitionState aquisition_state_;
 	double aquisition_start_timestamp_;
 
-	bool out_of_memory_;
 	bool frame_began_;
 
 private:

@@ -20,6 +20,7 @@
 #include <cassert>
 #include <map>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include <QDebug>
@@ -31,6 +32,7 @@
 #include "src/devices/basedevice.hpp"
 
 using std::shared_ptr;
+using std::string;
 using std::vector;
 
 Q_DECLARE_METATYPE(shared_ptr<sv::channels::BaseChannel>)
@@ -41,11 +43,11 @@ namespace devices {
 
 ChannelComboBox::ChannelComboBox(
 		const Session &session, shared_ptr<sv::devices::BaseDevice> device,
-		QString channel_group, QWidget *parent) :
+		QString channel_group_name, QWidget *parent) :
 	QComboBox(parent),
 	session_(session),
 	device_(device),
-	channel_group_(channel_group)
+	channel_group_name_(channel_group_name)
 {
 	setup_ui();
 }
@@ -74,28 +76,32 @@ void ChannelComboBox::setup_ui()
 	assert(device_);
 
 	vector<shared_ptr<sv::channels::BaseChannel>> channels;
-	if (channel_group_ == nullptr || channel_group_.isEmpty()) {
+	if (channel_group_name_ == nullptr || channel_group_name_.isEmpty()) {
 		for (const auto &ch_name_pair : device_->channel_name_map()) {
 			this->addItem(
-				ch_name_pair.first, QVariant::fromValue(ch_name_pair.second));
+				QString::fromStdString(ch_name_pair.first),
+				QVariant::fromValue(ch_name_pair.second));
 		}
 	}
 	else {
-		if (!device_->channel_group_name_map().count(channel_group_))
+		string chg_name_str = channel_group_name_.toStdString();
+		if (!device_->channel_group_name_map().count(chg_name_str))
 			return;
 
-		auto ch_list = device_->channel_group_name_map()[channel_group_];
+		auto ch_list = device_->channel_group_name_map()[chg_name_str];
 		for (const auto &ch : ch_list) {
-			this->addItem(ch->name(), QVariant::fromValue(ch));
+			this->addItem(
+				QString::fromStdString(ch->name()),
+				QVariant::fromValue(ch));
 		}
 	}
 }
 
 void ChannelComboBox::change_device_channel_group(
-	shared_ptr<sv::devices::BaseDevice> device, QString channel_group)
+	shared_ptr<sv::devices::BaseDevice> device, QString channel_group_name)
 {
 	device_ = device;
-	channel_group_ = channel_group;
+	channel_group_name_ = channel_group_name;
 	for (int i = this->count(); i >= 0; --i)
 		this->removeItem(i);
 	this->setup_ui();

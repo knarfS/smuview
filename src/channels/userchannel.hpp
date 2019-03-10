@@ -22,6 +22,7 @@
 
 #include <memory>
 #include <set>
+#include <string>
 #include <vector>
 
 #include <QObject>
@@ -31,6 +32,7 @@
 
 using std::set;
 using std::shared_ptr;
+using std::string;
 using std::vector;
 
 namespace sv {
@@ -61,20 +63,20 @@ public:
 		set<data::QuantityFlag> quantity_flags,
 		data::Unit unit,
 		shared_ptr<devices::BaseDevice> parent_device,
-		set<QString> channel_group_names,
-		QString channel_name,
+		set<string> channel_group_names,
+		string channel_name,
 		double channel_start_timestamp);
 
 public:
 	/**
 	 * Gets the index number of this channel
-	 *
-	 * TODO: Can be removed (also from base class)?
 	 */
 	unsigned int index() const;
 
 	/**
 	 * Inits a signal
+	 *
+	 * TODO
 	 */
 	/*
 	shared_ptr<data::BaseSignal> init_signal(

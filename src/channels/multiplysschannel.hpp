@@ -23,6 +23,7 @@
 #include <memory>
 #include <mutex>
 #include <set>
+#include <string>
 
 #include <QObject>
 
@@ -33,6 +34,7 @@
 using std::mutex;
 using std::set;
 using std::shared_ptr;
+using std::string;
 
 namespace sv {
 
@@ -58,8 +60,8 @@ public:
 		shared_ptr<data::AnalogSignal> signal1,
 		shared_ptr<data::AnalogSignal> signal2,
 		shared_ptr<devices::BaseDevice> parent_device,
-		set<QString> channel_group_names,
-		QString channel_name,
+		set<string> channel_group_names,
+		string channel_name,
 		double channel_start_timestamp);
 
 private:

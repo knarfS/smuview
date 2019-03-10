@@ -20,6 +20,7 @@
 #include <cassert>
 #include <memory>
 #include <set>
+#include <string>
 
 #include <QDebug>
 
@@ -31,6 +32,7 @@
 #include "src/devices/basedevice.hpp"
 
 using std::set;
+using std::string;
 
 namespace sv {
 namespace channels {
@@ -41,8 +43,8 @@ IntegrateChannel::IntegrateChannel(
 		data::Unit unit,
 		shared_ptr<data::AnalogSignal> int_signal,
 		shared_ptr<devices::BaseDevice> parent_device,
-		set<QString> channel_group_names,
-		QString channel_name,
+		set<string> channel_group_names,
+		string channel_name,
 		double channel_start_timestamp) :
 	UserChannel(quantity, quantity_flags, unit,
 		parent_device, channel_group_names, channel_name,

@@ -51,7 +51,7 @@ public:
 	ChannelComboBox(
 		const Session &session,
 		shared_ptr<sv::devices::BaseDevice> device,
-		QString channel_group = nullptr, QWidget *parent = nullptr);
+		QString channel_group_name = nullptr, QWidget *parent = nullptr);
 
 	void select_channel(shared_ptr<sv::channels::BaseChannel> channel);
 	shared_ptr<sv::channels::BaseChannel> selected_channel() const;
@@ -59,7 +59,7 @@ public:
 private:
 	const Session &session_;
 	shared_ptr<sv::devices::BaseDevice> device_;
-	QString channel_group_;
+	QString channel_group_name_;
 
 	void setup_ui();
 

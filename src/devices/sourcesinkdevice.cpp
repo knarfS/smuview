@@ -19,6 +19,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <string>
 
 #include <QDebug>
 
@@ -36,6 +37,7 @@
 #include "src/devices/configurable.hpp"
 
 using std::static_pointer_cast;
+using std::string;
 
 namespace sv {
 namespace devices {
@@ -63,26 +65,26 @@ void SourceSinkDevice::init_channels()
 			data::Quantity quantity;
 			set<data::QuantityFlag> quantity_flags;
 			data::Unit unit;
-			if (channel->name().startsWith("V")) {
+			if (channel->name().rfind("V", 0) == 0) {
 				quantity = data::Quantity::Voltage;
 				// TODO: Set AC for AC Sources
 				quantity_flags.insert(data::QuantityFlag::DC);
 				unit = data::Unit::Volt;
 				init = true;
 			}
-			else if (channel->name().startsWith("I")) {
+			else if (channel->name().rfind("I", 0) == 0) {
 				quantity = data::Quantity::Current;
 				// TODO: Set AC for AC Sources
 				quantity_flags.insert(data::QuantityFlag::DC);
 				unit = data::Unit::Ampere;
 				init = true;
 			}
-			else if (channel->name().startsWith("P")) {
+			else if (channel->name().rfind("P", 0) == 0) {
 				quantity = data::Quantity::Power;
 				unit = data::Unit::Watt;
 				init = true;
 			}
-			else if (channel->name().startsWith("F")) {
+			else if (channel->name().rfind("F", 0) == 0) {
 				quantity = data::Quantity::Frequency;
 				unit = data::Unit::Hertz;
 				init = true;
@@ -97,8 +99,8 @@ void SourceSinkDevice::init_channels()
 		}
 
 		// Math Channels
-		QString chg_name = chg_name_channels_pair.first;
-		set<QString> chg_names { chg_name };
+		string chg_name = chg_name_channels_pair.first;
+		set<string> chg_names { chg_name };
 		shared_ptr<data::AnalogSignal> voltage_signal;
 		shared_ptr<data::AnalogSignal> current_signal;
 		shared_ptr<data::AnalogSignal> power_signal;
@@ -122,7 +124,8 @@ void SourceSinkDevice::init_channels()
 					set<data::QuantityFlag>(),
 					data::Unit::Watt,
 					voltage_signal, current_signal,
-					shared_from_this(), chg_names, tr("P"),
+					shared_from_this(),
+					chg_names, tr("P").toStdString(),
 					aquisition_start_timestamp_);
 			power_channel->init_signal();
 			power_signal = static_pointer_cast<data::AnalogSignal>(
@@ -138,7 +141,8 @@ void SourceSinkDevice::init_channels()
 					set<data::QuantityFlag>(),
 					data::Unit::Ohm,
 					voltage_signal, current_signal,
-					shared_from_this(), chg_names, tr("R"),
+					shared_from_this(),
+					chg_names, tr("R").toStdString(),
 					aquisition_start_timestamp_);
 			resistance_channel->init_signal();
 			BaseDevice::add_channel(resistance_channel, chg_name);
@@ -152,7 +156,8 @@ void SourceSinkDevice::init_channels()
 					set<data::QuantityFlag>(),
 					data::Unit::WattHour,
 					power_signal,
-					shared_from_this(), chg_names, tr("Wh"),
+					shared_from_this(),
+					chg_names, tr("Wh").toStdString(),
 					aquisition_start_timestamp_);
 			wh_channel->init_signal();
 			BaseDevice::add_channel(wh_channel, chg_name);
@@ -166,7 +171,8 @@ void SourceSinkDevice::init_channels()
 					set<data::QuantityFlag>(),
 					data::Unit::AmpereHour,
 					current_signal,
-					shared_from_this(), chg_names, tr("Ah"),
+					shared_from_this(),
+					chg_names, tr("Ah").toStdString(),
 					aquisition_start_timestamp_);
 			ah_channel->init_signal();
 			BaseDevice::add_channel(ah_channel, chg_name);

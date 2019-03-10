@@ -22,6 +22,7 @@
 
 #include <memory>
 #include <set>
+#include <string>
 
 #include <QObject>
 
@@ -31,6 +32,7 @@
 
 using std::set;
 using std::shared_ptr;
+using std::string;
 
 namespace sv {
 
@@ -55,8 +57,8 @@ public:
 		data::Unit unit,
 		shared_ptr<data::AnalogSignal> int_signal,
 		shared_ptr<devices::BaseDevice> parent_device,
-		set<QString> channel_group_names,
-		QString channel_name,
+		set<string> channel_group_names,
+		string channel_name,
 		double channel_start_timestamp);
 
 private:

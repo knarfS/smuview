@@ -22,6 +22,7 @@
 
 #include <memory>
 #include <mutex>
+#include <string>
 #include <vector>
 
 #include <QStandardItem>
@@ -30,6 +31,7 @@
 #include "src/devices/basedevice.hpp"
 
 using std::shared_ptr;
+using std::string;
 using std::vector;
 
 namespace sv {
@@ -62,13 +64,13 @@ private:
 	void setup_model();
 	void add_device(shared_ptr<sv::devices::BaseDevice> device);
 	void add_channel(shared_ptr<channels::BaseChannel> channel,
-		set<QString> channel_group_names, TreeItem *parent_item);
+		set<string> channel_group_names, TreeItem *parent_item);
 	void add_signal(shared_ptr<sv::data::BaseSignal> signal,
 		TreeItem *parent_item);
-	TreeItem *find_channel_group(QString channel_group_name,
+	TreeItem *find_channel_group(string channel_group_name,
 		TreeItem *parent_item) const;
 	TreeItem *find_channel(shared_ptr<sv::channels::BaseChannel> channel,
-		set<QString> channel_group_names, TreeItem *parent_item) const;
+		set<string> channel_group_names, TreeItem *parent_item) const;
 	TreeItem *find_signal(shared_ptr<sv::data::BaseSignal> signal,
 		TreeItem *parent_item) const;
 

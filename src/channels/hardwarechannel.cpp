@@ -20,6 +20,7 @@
 #include <cassert>
 #include <memory>
 #include <set>
+#include <string>
 
 #include <QDebug>
 
@@ -36,6 +37,7 @@ using std::make_pair;
 using std::make_shared;
 using std::set;
 using std::static_pointer_cast;
+using std::string;
 using std::unique_ptr;
 
 Q_DECLARE_METATYPE(std::shared_ptr<sv::data::BaseSignal>)
@@ -46,7 +48,7 @@ namespace channels {
 HardwareChannel::HardwareChannel(
 		shared_ptr<sigrok::Channel> sr_channel,
 		shared_ptr<devices::BaseDevice> parent_device,
-		set<QString> channel_group_names,
+		set<string> channel_group_names,
 		double channel_start_timestamp) :
 	BaseChannel(parent_device, channel_group_names, channel_start_timestamp),
 	sr_channel_(sr_channel)
@@ -54,7 +56,7 @@ HardwareChannel::HardwareChannel(
 	assert(sr_channel);
 
 	channel_type_ = ChannelType::AnalogChannel;
-	name_ = QString::fromStdString(sr_channel_->name());
+	name_ = sr_channel_->name();
 }
 
 bool HardwareChannel::enabled() const
@@ -75,10 +77,10 @@ unsigned int HardwareChannel::index() const
 	return (sr_channel_) ? sr_channel_->index() : 0;
 }
 
-void HardwareChannel::set_name(QString name)
+void HardwareChannel::set_name(string name)
 {
 	if (sr_channel_)
-		sr_channel_->set_name(name.toUtf8().constData());
+		sr_channel_->set_name(name);
 
 	BaseChannel::set_name(name);
 }
@@ -136,7 +138,8 @@ void HardwareChannel::push_sample_sr_analog(
 	if (signal_map_.count(q_qf) == 0) {
 		data::Unit unit = data::datautil::get_unit(sr_analog->unit());
 		init_signal(quantity, quantity_flags, unit);
-		qWarning() << "HardwareChannel::push_sample_sr_analog(): " << name_ <<
+		qWarning() << "HardwareChannel::push_sample_sr_analog(): " <<
+			QString::fromStdString(name_) <<
 			" - No signal found: " << actual_signal_->name();
 	}
 
@@ -185,7 +188,8 @@ void HardwareChannel::push_interleaved_samples(const float *data,
 	if (signal_map_.count(q_qf) == 0) {
 		data::Unit unit = data::datautil::get_unit(sr_analog->unit());
 		init_signal(quantity, quantity_flags, unit);
-		qWarning() << "HardwareChannel::push_sample_sr_analog(): " << name_ <<
+		qWarning() << "HardwareChannel::push_sample_sr_analog(): " <<
+			QString::fromStdString(name_) <<
 			" - No signal found: " << actual_signal_->name();
 	}
 

@@ -114,21 +114,11 @@ public:
 
 	void open(function<void (const QString)> error_handler) override;
 
-	// TODO: typdef?
-	// TODO: move to BaseDevice?
-	map<shared_ptr<sigrok::Channel>, shared_ptr<channels::BaseChannel>> sr_channel_map() const;
-
 protected:
 	/**
-	 * Inits all channles of this hardware device
+	 * Init all sigrok channles for this hardware device
 	 */
 	void init_channels() override;
-
-	/**
-	 * Adds a channel to the device
-	 */
-	shared_ptr<channels::BaseChannel> init_channel(
-		shared_ptr<sigrok::Channel> sr_channel, QString channel_group_name);
 
 	void feed_in_header() override;
 	void feed_in_trigger() override;
@@ -137,10 +127,6 @@ protected:
 	void feed_in_frame_end() override;
 	void feed_in_logic(shared_ptr<sigrok::Logic> sr_logic) override;
 	void feed_in_analog(shared_ptr<sigrok::Analog> sr_analog) override;
-
-	// TODO: typdef?
-	// TODO: move to BaseDevice?
-	map<shared_ptr<sigrok::Channel>, shared_ptr<channels::BaseChannel>> sr_channel_map_;
 
 private:
 	double frame_start_timestamp_;

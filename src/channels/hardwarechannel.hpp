@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,15 +22,16 @@
 
 #include <memory>
 #include <set>
+#include <string>
 
 #include <QObject>
-#include <QString>
 
 #include "src/channels/basechannel.hpp"
 #include "src/data/datautil.hpp"
 
 using std::set;
 using std::shared_ptr;
+using std::string;
 
 namespace sigrok {
 class Analog;
@@ -57,30 +58,30 @@ public:
 	HardwareChannel(
 		shared_ptr<sigrok::Channel> sr_channel,
 		shared_ptr<devices::BaseDevice> parent_device,
-		set<QString> channel_group_names,
+		set<string> channel_group_names,
 		double channel_start_timestamp);
 
 public:
 	/**
 	 * Returns enabled status of this channel.
 	 */
-	bool enabled() const;
+	bool enabled() const override;
 
 	/**
 	 * Sets the enabled status of this channel.
 	 * @param value Boolean value to set.
 	 */
-	void set_enabled(bool value);
+	void set_enabled(bool value) override;
 
 	/**
 	 * Gets the index number of this sigrok channel
 	 */
-	unsigned int index() const;
+	unsigned int index() const override;
 
 	/**
 	 * Sets the name of the signal.
 	 */
-	void set_name(QString name);
+	void set_name(string name) override;
 
 	/**
 	 * Returns the underlying SR channel.

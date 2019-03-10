@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2012 Joel Holdsworth <joel@airwebreathe.org.uk>
  * Copyright (C) 2016 Soeren Apel <soeren@apelpie.net>
- * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,11 +55,18 @@ public:
 	virtual ~BaseSignal();
 
 public:
+	/**
+	 * Clears all samples from this signal.
+	 */
 	virtual void clear() = 0;
+
+	/**
+	 * Returns the number of samples in this signal.
+	 */
 	virtual size_t get_sample_count() const = 0;
 
 	/**
-	 * Returns the qunatity of this signal
+	 * Returns the qunatity of this signal.
 	 */
 	data::Quantity quantity() const;
 

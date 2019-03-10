@@ -20,6 +20,7 @@
 #include <cassert>
 #include <memory>
 #include <set>
+#include <string>
 
 #include <QComboBox>
 #include <QDateTime>
@@ -46,6 +47,7 @@
 using std::make_shared;
 using std::set;
 using std::static_pointer_cast;
+using std::string;
 
 Q_DECLARE_SMART_POINTER_METATYPE(std::shared_ptr)
 
@@ -135,8 +137,8 @@ void AddUserChannelDialog::accept()
 	}
 
 	auto device = device_box_->selected_device();
-	set<QString> channel_group_names
-		{ channel_group_box_->selected_channel_group() };
+	set<string> channel_group_names
+		{ channel_group_box_->selected_channel_group().toStdString() };
 
 	// TODO: use std::chrono / std::time
 	double start_timestamp = QDateTime::currentMSecsSinceEpoch() / (double)1000;
@@ -145,7 +147,8 @@ void AddUserChannelDialog::accept()
 		quantity_box_->selected_quantity(),
 		quantity_flags_list_->selected_quantity_flags(),
 		unit_box_->selected_unit(),
-		device, channel_group_names, name_edit_->text(),
+		device,
+		channel_group_names, name_edit_->text().toStdString(),
 		start_timestamp);
 	channel_->init_signal();
 

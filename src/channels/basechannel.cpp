@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2012 Joel Holdsworth <joel@airwebreathe.org.uk>
  * Copyright (C) 2016 Soeren Apel <soeren@apelpie.net>
- * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,13 +23,13 @@
 #include <set>
 
 #include <QDebug>
+#include <QString>
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
 #include "basechannel.hpp"
 #include "src/util.hpp"
 #include "src/channels/basechannel.hpp"
-#include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/devices/basedevice.hpp"
 
@@ -42,7 +42,7 @@ namespace channels {
 
 BaseChannel::BaseChannel(
 		shared_ptr<devices::BaseDevice> parent_device,
-		set<QString> channel_group_names,
+		set<string> channel_group_names,
 		double channel_start_timestamp) :
 	channel_start_timestamp_(channel_start_timestamp),
 	has_fixed_signal_(false),
@@ -51,13 +51,15 @@ BaseChannel::BaseChannel(
 	channel_group_names_(channel_group_names),
 	name_("")
 {
-	qWarning() << "Init channel " << name_
+	qWarning() << "Init channel " << QString::fromStdString(name_)
 		<< ", channel_start_timestamp = "
 		<< util::format_time_date(channel_start_timestamp);
 }
 
 BaseChannel::~BaseChannel()
 {
+	qWarning() << "BaseChannel::~BaseChannel(): " <<
+		QString::fromStdString(name());
 }
 
 bool BaseChannel::has_fixed_signal()
@@ -85,22 +87,22 @@ shared_ptr<devices::BaseDevice> BaseChannel::parent_device()
 	return parent_device_;
 }
 
-void BaseChannel::add_channel_group_name(QString channel_group_name)
+void BaseChannel::add_channel_group_name(string channel_group_name)
 {
 	channel_group_names_.insert(channel_group_name);
 }
 
-set<QString> BaseChannel::channel_group_names() const
+set<string> BaseChannel::channel_group_names() const
 {
 	return channel_group_names_;
 }
 
-QString BaseChannel::name() const
+string BaseChannel::name() const
 {
 	return name_;
 }
 
-void BaseChannel::set_name(QString name)
+void BaseChannel::set_name(string name)
 {
 	name_ = name;
 	name_changed(name);
@@ -108,7 +110,7 @@ void BaseChannel::set_name(QString name)
 
 QString BaseChannel::display_name() const
 {
-	return name_;
+	return QString::fromStdString(name_);
 }
 
 bool BaseChannel::enabled() const
@@ -126,29 +128,16 @@ ChannelType BaseChannel::type() const
 	return channel_type_;
 }
 
-QColor BaseChannel::colour() const
-{
-	return colour_;
-}
-
-void BaseChannel::set_colour(QColor colour)
-{
-	colour_ = colour;
-	colour_changed(colour);
-}
-
 void BaseChannel::save_settings(QSettings &settings) const
 {
-	settings.setValue("name", name());
+	settings.setValue("name", QString::fromStdString(name()));
 	settings.setValue("enabled", enabled());
-	settings.setValue("colour", colour());
 }
 
 void BaseChannel::restore_settings(QSettings &settings)
 {
-	set_name(settings.value("name").toString());
+	set_name(settings.value("name").toString().toStdString());
 	set_enabled(settings.value("enabled").toBool());
-	set_colour(settings.value("colour").value<QColor>());
 }
 
 void BaseChannel::on_aquisition_start_timestamp_changed(double timestamp)

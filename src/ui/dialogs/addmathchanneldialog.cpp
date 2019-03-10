@@ -20,6 +20,7 @@
 #include <cassert>
 #include <memory>
 #include <set>
+#include <string>
 
 #include <QComboBox>
 #include <QDebug>
@@ -54,6 +55,7 @@
 using std::make_shared;
 using std::set;
 using std::static_pointer_cast;
+using std::string;
 
 Q_DECLARE_SMART_POINTER_METATYPE(std::shared_ptr)
 
@@ -305,8 +307,8 @@ void AddMathChannelDialog::accept()
 	}
 
 	auto device = device_box_->selected_device();
-	set<QString> channel_group_names
-		{ channel_group_box_->selected_channel_group() };
+	set<string> channel_group_names
+		{ channel_group_box_->selected_channel_group().toStdString() };
 
 	switch (tab_widget_->currentIndex()) {
 	case 0: {
@@ -341,7 +343,7 @@ void AddMathChannelDialog::accept()
 				quantity_flags_list_->selected_quantity_flags(),
 				unit_box_->selected_unit(),
 				signal_1, signal_2,
-				device, channel_group_names, name_edit_->text(),
+				device, channel_group_names, name_edit_->text().toStdString(),
 				start_timestamp);
 		}
 		break;
@@ -379,7 +381,7 @@ void AddMathChannelDialog::accept()
 				quantity_flags_list_->selected_quantity_flags(),
 				unit_box_->selected_unit(),
 				signal, factor,
-				device, channel_group_names, name_edit_->text(),
+				device, channel_group_names, name_edit_->text().toStdString(),
 				signal->signal_start_timestamp());
 		}
 		break;
@@ -413,7 +415,7 @@ void AddMathChannelDialog::accept()
 				quantity_flags_list_->selected_quantity_flags(),
 				unit_box_->selected_unit(),
 				signal1, signal2,
-				device, channel_group_names, name_edit_->text(),
+				device, channel_group_names, name_edit_->text().toStdString(),
 				start_timestamp);
 		}
 		break;
@@ -451,7 +453,7 @@ void AddMathChannelDialog::accept()
 				quantity_flags_list_->selected_quantity_flags(),
 				unit_box_->selected_unit(),
 				signal, constant,
-				device, channel_group_names, name_edit_->text(),
+				device, channel_group_names, name_edit_->text().toStdString(),
 				signal->signal_start_timestamp());
 		}
 		break;
@@ -471,7 +473,7 @@ void AddMathChannelDialog::accept()
 				quantity_flags_list_->selected_quantity_flags(),
 				unit_box_->selected_unit(),
 				signal,
-				device, channel_group_names, name_edit_->text(),
+				device, channel_group_names, name_edit_->text().toStdString(),
 				signal->signal_start_timestamp());
 		}
 		break;
@@ -493,7 +495,7 @@ void AddMathChannelDialog::accept()
 				quantity_flags_list_->selected_quantity_flags(),
 				unit_box_->selected_unit(),
 				signal, num_samples,
-				device, channel_group_names, name_edit_->text(),
+				device, channel_group_names, name_edit_->text().toStdString(),
 				signal->signal_start_timestamp());
 		}
 		break;

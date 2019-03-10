@@ -54,7 +54,7 @@ public:
 	/**
 	 * Builds the name
 	 */
-	QString name() const override;
+	string name() const override;
 
 	/**
 	 * Builds the full name. It only contains all the fields.
@@ -81,7 +81,7 @@ public:
 	void open(function<void (const QString)> error_handler) override;
 	void close() override;
 	void add_channel(shared_ptr<channels::BaseChannel> channel,
-		QString channel_group_name) override;
+		string channel_group_name) override;
 
 protected:
 	/**

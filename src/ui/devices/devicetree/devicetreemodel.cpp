@@ -19,10 +19,12 @@
 
 #include <memory>
 #include <mutex>
+#include <string>
 
 #include <QDebug>
 #include <QStandardItem>
 #include <QStandardItemModel>
+#include <QString>
 #include <QVariant>
 
 #include "devicetreemodel.hpp"
@@ -33,6 +35,7 @@
 #include "src/ui/devices/devicetree/treeitem.hpp"
 
 using std::shared_ptr;
+using std::string;
 
 Q_DECLARE_SMART_POINTER_METATYPE(std::shared_ptr)
 
@@ -123,7 +126,7 @@ void DeviceTreeModel::add_device(shared_ptr<sv::devices::BaseDevice> device)
 }
 
 void DeviceTreeModel::add_channel(shared_ptr<channels::BaseChannel> channel,
-	set<QString> channel_group_names, TreeItem *parent_item)
+	set<string> channel_group_names, TreeItem *parent_item)
 {
 	std::lock_guard<std::recursive_mutex> lock(mutex_);
 
@@ -137,16 +140,17 @@ void DeviceTreeModel::add_channel(shared_ptr<channels::BaseChannel> channel,
 
 	for (const auto &chg_name : channel_group_names) {
 		TreeItem *new_parent_item = nullptr;
-		if (!chg_name.isEmpty()) {
+		if (!chg_name.empty()) {
 			// Look for already existing channel group
 			new_parent_item = find_channel_group(chg_name, parent_item);
 			if (!new_parent_item) {
+				QString chg_name_qstr = QString::fromStdString(chg_name);
 				beginInsertRows(parent_item->index(),
 					parent_item->rowCount(), parent_item->rowCount()+1);
 				new_parent_item = new TreeItem(TreeItemType::ChannelGroupItem);
-				new_parent_item->setText(chg_name);
-				new_parent_item->setData(chg_name, DeviceTreeModel::DataRole);
-				new_parent_item->setData(chg_name, DeviceTreeModel::SortRole);
+				new_parent_item->setText(chg_name_qstr);
+				new_parent_item->setData(chg_name_qstr, DeviceTreeModel::DataRole);
+				new_parent_item->setData(chg_name_qstr, DeviceTreeModel::SortRole);
 				new_parent_item->setCheckable(is_channel_group_checkable_);
 				parent_item->appendRow(new_parent_item);
 				endInsertRows();
@@ -158,13 +162,13 @@ void DeviceTreeModel::add_channel(shared_ptr<channels::BaseChannel> channel,
 			new_parent_item = parent_item;
 
 		// Look for existing channel
-		set<QString> chg_names { chg_name };
+		set<string> chg_names { chg_name };
 		TreeItem *channel_item = find_channel(channel, chg_names, parent_item);
 		if (!channel_item) {
 			beginInsertRows(new_parent_item->index(),
 				new_parent_item->rowCount(), new_parent_item->rowCount()+1);
 			channel_item = new TreeItem(TreeItemType::ChannelItem);
-			channel_item->setText(channel->name());
+			channel_item->setText(QString::fromStdString(channel->name()));
 			channel_item->setData(QVariant::fromValue(channel), DeviceTreeModel::DataRole);
 			channel_item->setData(channel->index(), DeviceTreeModel::SortRole);
 			channel_item->setCheckable(is_channel_checkable_);
@@ -218,7 +222,7 @@ TreeItem *DeviceTreeModel::find_device(
 	return nullptr;
 }
 
-TreeItem *DeviceTreeModel::find_channel_group(QString channel_group_name,
+TreeItem *DeviceTreeModel::find_channel_group(string channel_group_name,
 	TreeItem *parent_item) const
 {
 	for (int i=0; i<parent_item->rowCount(); ++i) {
@@ -226,8 +230,8 @@ TreeItem *DeviceTreeModel::find_channel_group(QString channel_group_name,
 		if (child->type() != (int)TreeItemType::ChannelGroupItem)
 			continue;
 
-		if (channel_group_name == child->data(DeviceTreeModel::DataRole).
-				toString())
+		QString chg_name_qstr = QString::fromStdString(channel_group_name);
+		if (chg_name_qstr == child->data(DeviceTreeModel::DataRole).toString())
 			return (TreeItem *)child;
 	}
 	return nullptr;
@@ -235,12 +239,12 @@ TreeItem *DeviceTreeModel::find_channel_group(QString channel_group_name,
 
 TreeItem *DeviceTreeModel::find_channel(
 	shared_ptr<sv::channels::BaseChannel> channel,
-	set<QString> channel_group_names, TreeItem *parent_item) const
+	set<string> channel_group_names, TreeItem *parent_item) const
 {
 	vector<TreeItem *> channels;
 	TreeItem *new_parent_item;
 	for (const auto &chg_name : channel_group_names) {
-		if (!chg_name.isEmpty()) {
+		if (!chg_name.empty()) {
 			new_parent_item = find_channel_group(chg_name, parent_item);
 			if (!new_parent_item)
 				continue;

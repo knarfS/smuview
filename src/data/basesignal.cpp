@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2012 Joel Holdsworth <joel@airwebreathe.org.uk>
  * Copyright (C) 2016 Soeren Apel <soeren@apelpie.net>
- * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,7 +54,8 @@ BaseSignal::BaseSignal(
 		quantity_flags_, QString(" "));
 	unit_name_ = data::datautil::format_unit(unit_);
 
-	name_ = QString(parent_channel_->name()).append(" [").append(unit_name_);
+	name_ = QString::fromStdString(parent_channel_->name()).
+		append(" [").append(unit_name_);
 	if (quantity_flags_.size() > 0)
 		name_ = name_.append(" ").append(quantity_flags_name_);
 	name_ = name_.append("]");
@@ -62,6 +63,7 @@ BaseSignal::BaseSignal(
 
 BaseSignal::~BaseSignal()
 {
+	qWarning() << "BaseSignal::~BaseSignal(): " << name_;
 }
 
 data::Quantity BaseSignal::quantity() const

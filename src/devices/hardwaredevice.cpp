@@ -200,12 +200,6 @@ shared_ptr<sigrok::HardwareDevice> HardwareDevice::sr_hardware_device() const
 	return static_pointer_cast<sigrok::HardwareDevice>(sr_device_);
 }
 
-map<shared_ptr<sigrok::Channel>, shared_ptr<channels::BaseChannel>>
-	HardwareDevice::sr_channel_map() const
-{
-	return sr_channel_map_;
-}
-
 void HardwareDevice::init_channels()
 {
 	map<string, shared_ptr<sigrok::ChannelGroup>> sr_channel_groups =
@@ -215,9 +209,8 @@ void HardwareDevice::init_channels()
 	if (sr_channel_groups.size() > 0) {
 		for (const auto &sr_cg_pair : sr_channel_groups) {
 			shared_ptr<sigrok::ChannelGroup> sr_cg = sr_cg_pair.second;
-			QString cg_name = QString::fromStdString(sr_cg->name());
 			for (const auto &sr_channel : sr_cg->channels()) {
-				init_channel(sr_channel, cg_name);
+				add_sr_channel(sr_channel, sr_cg->name());
 			}
 		}
 	}
@@ -227,31 +220,8 @@ void HardwareDevice::init_channels()
 	for (const auto &sr_channel : sr_channels) {
 		if (sr_channel_map_.count(sr_channel) > 0)
 			continue;
-		init_channel(sr_channel, QString(""));
+		add_sr_channel(sr_channel, "");
 	}
-}
-
-shared_ptr<channels::BaseChannel> HardwareDevice::init_channel(
-	shared_ptr<sigrok::Channel> sr_channel, QString channel_group_name)
-{
-	// Check if channel already exists.
-	// NOTE: Channel names are unique per device.
-	shared_ptr<channels::BaseChannel> channel;
-	if (channel_name_map_.count(QString::fromStdString(sr_channel->name())) > 0) {
-		channel = channel_name_map()[QString::fromStdString(sr_channel->name())];
-	}
-	else {
-		set<QString> chg_names { channel_group_name };
-		channel = make_shared<channels::HardwareChannel>(sr_channel,
-			shared_from_this(), chg_names, aquisition_start_timestamp_);
-
-		// map<shared_ptr<sigrok::Channel>, shared_ptr<channels::BaseChannel>> sr_channel_map_;
-		sr_channel_map_.insert(make_pair(sr_channel, channel));
-	}
-
-	add_channel(channel, channel_group_name);
-
-	return channel;
 }
 
 void HardwareDevice::feed_in_header()

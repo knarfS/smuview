@@ -63,9 +63,9 @@ string VirtualDevice::id() const
 	return "virtualdevice:" + std::to_string(device_index_);
 }
 
-QString VirtualDevice::name() const
+string VirtualDevice::name() const
 {
-	return short_name();
+	return short_name().toStdString();
 }
 
 QString VirtualDevice::full_name() const
@@ -171,11 +171,11 @@ void VirtualDevice::close()
 }
 
 void VirtualDevice::add_channel(shared_ptr<channels::BaseChannel> channel,
-	QString channel_group_name)
+	string channel_group_name)
 {
 	auto sr_user_device = static_pointer_cast<sigrok::UserDevice>(sr_device_);
 	sr_user_device->add_channel(
-		channel_index_, sigrok::ChannelType::ANALOG, name().toStdString());
+		channel_index_, sigrok::ChannelType::ANALOG, name());
 	channel_index_++;
 	BaseDevice::add_channel(channel, channel_group_name);
 }

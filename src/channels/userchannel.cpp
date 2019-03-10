@@ -20,6 +20,7 @@
 #include <cassert>
 #include <memory>
 #include <set>
+#include <string>
 
 #include <QDebug>
 
@@ -33,6 +34,7 @@ using std::make_pair;
 using std::make_shared;
 using std::set;
 using std::static_pointer_cast;
+using std::string;
 
 namespace sv {
 namespace channels {
@@ -42,8 +44,8 @@ UserChannel::UserChannel(
 		set<data::QuantityFlag> quantity_flags,
 		data::Unit unit,
 		shared_ptr<devices::BaseDevice> parent_device,
-		set<QString> channel_group_names,
-		QString channel_name,
+		set<string> channel_group_names,
+		string channel_name,
 		double channel_start_timestamp) :
 	BaseChannel(parent_device, channel_group_names, channel_start_timestamp),
 	digits_(7),
@@ -52,7 +54,7 @@ UserChannel::UserChannel(
 	quantity_flags_(quantity_flags),
 	unit_(unit)
 {
-	channel_type_ = ChannelType::MathChannel;
+	channel_type_ = ChannelType::UserChannel;
 	has_fixed_signal_ = true;
 	name_ = channel_name;
 }

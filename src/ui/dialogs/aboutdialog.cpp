@@ -346,8 +346,8 @@ QWidget *AboutDialog::get_device_page(QWidget *parent) const
 	const auto ch_name_signal_map = device_->channel_name_map();
 	for (const auto &ch_name_signal_pair : ch_name_signal_map) {
 		s.append(QString("<tr><td>%1</td><td>%2</td></tr>").
-			arg(ch_name_signal_pair.first).
-			arg(ch_name_signal_pair.second->name()));
+			arg(QString::fromStdString(ch_name_signal_pair.first)).
+			arg(QString::fromStdString(ch_name_signal_pair.second->name())));
 	}
 
 	//map<shared_ptr<sigrok::Channel>, shared_ptr<devices::Channel>> sr_channel_map();
@@ -360,10 +360,10 @@ QWidget *AboutDialog::get_device_page(QWidget *parent) const
 	const auto cg_name_channel_map = device_->channel_group_name_map();
 	for (const auto &cg_name_channel_pair : cg_name_channel_map) {
 		s.append(QString("<tr><td>%1</td><td></td></tr>").arg(
-			cg_name_channel_pair.first));
+			QString::fromStdString(cg_name_channel_pair.first)));
 		for (const auto &channel : cg_name_channel_pair.second) {
 			s.append(QString("<tr><td></td><td>%1</td></tr>").arg(
-				channel->name()));
+				QString::fromStdString(channel->name())));
 		}
 	}
 

@@ -31,6 +31,8 @@
 #include "src/session.hpp"
 #include "src/util.hpp"
 #include "src/channels/basechannel.hpp"
+#include "src/channels/hardwarechannel.hpp"
+#include "src/channels/userchannel.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/devices/configurable.hpp"
@@ -56,7 +58,6 @@ BaseDevice::BaseDevice(const shared_ptr<sigrok::Context> sr_context,
 	sr_context_(sr_context),
 	sr_device_(sr_device),
 	device_open_(false),
-	out_of_memory_(false),
 	frame_began_(false)
 {
 	/*
@@ -166,27 +167,23 @@ void BaseDevice::pause_aquisition()
 	aquisition_state_ = AquisitionState::Paused;
 }
 
-QString BaseDevice::name() const
+string BaseDevice::name() const
 {
-	QString sep("");
-	QString name("");
+	string sep("");
+	string name("");
 
 	if (sr_device_->vendor().length() > 0) {
-		name.append(QString::fromStdString(sr_device_->vendor()));
-		sep = QString(" ");
+		name += sr_device_->vendor();
+		sep = " ";
 	}
 
 	if (sr_device_->model().length() > 0) {
-		name.append(sep);
-		name.append(QString::fromStdString(sr_device_->model()));
-		sep = QString(" ");
+		name += sep + sr_device_->model();
+		sep = " ";
 	}
 
 	if (sr_device_->connection_id().length() > 0) {
-		name.append(sep);
-		name.append("(");
-		name.append(QString::fromStdString(sr_device_->connection_id()));
-		name.append(")");
+		name += sep + "(" + sr_device_->connection_id() + ")";
 	}
 
 	return name;
@@ -253,16 +250,22 @@ map<string, shared_ptr<devices::Configurable>> BaseDevice::configurables() const
 	return configurables_;
 }
 
-map<QString, shared_ptr<channels::BaseChannel>>
+map<string, shared_ptr<channels::BaseChannel>>
 	BaseDevice::channel_name_map() const
 {
 	return channel_name_map_;
 }
 
-map<QString, vector<shared_ptr<channels::BaseChannel>>>
+map<string, vector<shared_ptr<channels::BaseChannel>>>
 	BaseDevice::channel_group_name_map() const
 {
 	return channel_group_name_map_;
+}
+
+map<shared_ptr<sigrok::Channel>, shared_ptr<channels::BaseChannel>>
+	BaseDevice::sr_channel_map() const
+{
+	return sr_channel_map_;
 }
 
 vector<shared_ptr<data::BaseSignal>> BaseDevice::all_signals() const
@@ -270,13 +273,8 @@ vector<shared_ptr<data::BaseSignal>> BaseDevice::all_signals() const
 	return all_signals_;
 }
 
-void BaseDevice::free_unused_memory()
-{
-	// TODO
-}
-
 void BaseDevice::add_channel(shared_ptr<channels::BaseChannel> channel,
-	QString channel_group_name)
+	string channel_group_name)
 {
 	// Check if channel already exists. Channel names are unique per device.
 	if (channel_name_map_.count(channel->name()) == 0) {
@@ -299,6 +297,44 @@ void BaseDevice::add_channel(shared_ptr<channels::BaseChannel> channel,
 	}
 
 	Q_EMIT channel_added(channel);
+}
+
+shared_ptr<channels::BaseChannel> BaseDevice::add_sr_channel(
+	shared_ptr<sigrok::Channel> sr_channel, string channel_group_name)
+{
+	// Check if channel already exists.
+	// NOTE: Channel names are unique per device.
+	shared_ptr<channels::BaseChannel> channel;
+	if (channel_name_map_.count(sr_channel->name()) > 0) {
+		channel = channel_name_map()[sr_channel->name()];
+	}
+	else {
+		set<string> chg_names { channel_group_name };
+		channel = make_shared<channels::HardwareChannel>(sr_channel,
+			shared_from_this(), chg_names, aquisition_start_timestamp_);
+
+		// map<shared_ptr<sigrok::Channel>, shared_ptr<channels::BaseChannel>> sr_channel_map_;
+		sr_channel_map_.insert(make_pair(sr_channel, channel));
+	}
+
+	add_channel(channel, channel_group_name);
+
+	return channel;
+}
+
+shared_ptr<channels::BaseChannel> BaseDevice::add_user_channel(
+	string channel_name, string channel_group_name,
+	data::Quantity quantity, set<data::QuantityFlag> quantity_flags,
+	data::Unit unit)
+{
+	shared_ptr<channels::BaseChannel> channel =
+		make_shared<channels::UserChannel>(
+			quantity, quantity_flags, unit, shared_from_this(),
+			set<string> { channel_group_name }, channel_name,
+			aquisition_start_timestamp_);
+	add_channel(channel, channel_group_name);
+
+	return channel;
 }
 
 void BaseDevice::data_feed_in(shared_ptr<sigrok::Device> sr_device,
@@ -344,7 +380,7 @@ void BaseDevice::data_feed_in(shared_ptr<sigrok::Device> sr_device,
 			feed_in_logic(
 				dynamic_pointer_cast<sigrok::Logic>(sr_packet->payload()));
 		} catch (bad_alloc &) {
-			out_of_memory_ = true;
+			//out_of_memory_ = true;
 			// TODO: sr_session->stop();
 		}
 		break;
@@ -358,7 +394,7 @@ void BaseDevice::data_feed_in(shared_ptr<sigrok::Device> sr_device,
 			feed_in_analog(
 				dynamic_pointer_cast<sigrok::Analog>(sr_packet->payload()));
 		} catch (bad_alloc &) {
-			out_of_memory_ = true;
+			//out_of_memory_ = true;
 			// TODO: sr_session->stop();
 		}
 		break;
@@ -393,8 +429,6 @@ void BaseDevice::aquisition_thread_proc(
 {
 	assert(error_handler);
 
-	out_of_memory_ = false;
-
 	try {
 		sr_session_->start();
 	}
@@ -425,23 +459,7 @@ void BaseDevice::aquisition_thread_proc(
 		aquisition_state_ = AquisitionState::Stopped;
 		return;
 	}
-
 	aquisition_state_ = AquisitionState::Stopped;
-
-	// Optimize memory usage
-	free_unused_memory();
-
-	/*
-	// We now have unsaved data unless we just "captured" from a file
-	shared_ptr<devices::File> file_device =
-		dynamic_pointer_cast<devices::File>(device_);
-
-	if (!file_device)
-		data_saved_ = false;
-	*/
-
-	if (out_of_memory_)
-		error_handler(tr("Out of memory, acquisition stopped."));
 }
 
 } // namespace devices
