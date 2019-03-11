@@ -140,22 +140,22 @@ void DeviceTab::setup_toolbar()
 	connect(action_about_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_about_triggered()));
 
-	toolbar = new QToolBar("Device Toolbar");
-	toolbar->addWidget(aquire_button_);
-	toolbar->addSeparator();
-	//toolbar->addAction(action_open_); // TODO
-	toolbar->addAction(action_save_as_);
-	toolbar->addSeparator();
-	toolbar->addAction(action_reset_data_);
-	toolbar->addSeparator();
-	toolbar->addAction(action_add_control_view_);
-	toolbar->addAction(action_add_panel_view_);
-	toolbar->addAction(action_add_plot_view_);
-	toolbar->addSeparator();
-	toolbar->addAction(action_add_math_channel_);
-	toolbar->addSeparator();
-	toolbar->addAction(action_about_);
-	parent_->addToolBar(Qt::TopToolBarArea, toolbar);
+	toolbar_ = new QToolBar("Device Toolbar");
+	toolbar_->addWidget(aquire_button_);
+	toolbar_->addSeparator();
+	//toolbar_->addAction(action_open_); // TODO
+	toolbar_->addAction(action_save_as_);
+	toolbar_->addSeparator();
+	toolbar_->addAction(action_reset_data_);
+	toolbar_->addSeparator();
+	toolbar_->addAction(action_add_control_view_);
+	toolbar_->addAction(action_add_panel_view_);
+	toolbar_->addAction(action_add_plot_view_);
+	toolbar_->addSeparator();
+	toolbar_->addAction(action_add_math_channel_);
+	toolbar_->addSeparator();
+	toolbar_->addAction(action_about_);
+	parent_->addToolBar(Qt::TopToolBarArea, toolbar_);
 }
 
 void DeviceTab::on_action_aquire_triggered()

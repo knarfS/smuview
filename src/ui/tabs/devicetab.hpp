@@ -67,7 +67,7 @@ private:
 	QAction *const action_add_math_channel_;
 	QAction *const action_reset_data_;
 	QAction *const action_about_;
-	QToolBar *toolbar;
+	QToolBar *toolbar_;
 
 public Q_SLOTS:
 
