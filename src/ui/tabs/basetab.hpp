@@ -41,7 +41,7 @@ namespace tabs {
 enum class TabType {
 	MeasurementTab,
 	SourceSinkTab,
-	VirtualTab,
+	UserTab,
 	WelcomeTab
 };
 

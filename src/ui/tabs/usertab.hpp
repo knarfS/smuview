@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UI_TABS_VIRTUALTAB_HPP
-#define UI_TABS_VIRTUALTAB_HPP
+#ifndef UI_TABS_USERTAB_HPP
+#define UI_TABS_USERTAB_HPP
 
 #include <QObject>
 
@@ -29,19 +29,19 @@ namespace sv {
 class Session;
 
 namespace devices {
-class VirtualDevice;
+class UserDevice;
 }
 
 namespace ui {
 namespace tabs {
 
-class VirtualTab : public DeviceTab
+class UserTab : public DeviceTab
 {
 	Q_OBJECT
 
 public:
-	VirtualTab(Session &session,
- 		shared_ptr<sv::devices::VirtualDevice> device,  QMainWindow *parent);
+	UserTab(Session &session,
+ 		shared_ptr<sv::devices::UserDevice> device,  QMainWindow *parent);
 
 };
 
@@ -49,4 +49,4 @@ public:
 } // namespace ui
 } // namespace sv
 
-#endif // UI_TABS_VIRTUALTAB_HPP
+#endif // UI_TABS_USERTAB_HPP

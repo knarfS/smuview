@@ -42,7 +42,7 @@
 #include "src/devices/hardwaredevice.hpp"
 #include "src/devices/measurementdevice.hpp"
 #include "src/devices/sourcesinkdevice.hpp"
-#include "src/devices/virtualdevice.hpp"
+#include "src/devices/userdevice.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/ui/dialogs/connectdialog.hpp"
 #include "src/ui/tabs/basetab.hpp"
@@ -147,13 +147,13 @@ void MainWindow::add_welcome_tab()
 	add_tab(tab_window, tr("Welcome"), "welcometab");
 }
 
-void MainWindow::add_virtual_device_tab()
+void MainWindow::add_user_device_tab()
 {
 	QString vendor(tr("SmuView"));
 	QString model(tr("User Device")); // TODO: enumerate
 	QString version(SV_VERSION_STRING);
 
-	auto device = make_shared<devices::VirtualDevice>(
+	auto device = make_shared<devices::UserDevice>(
 		session_->sr_context, vendor, model, version);
 	session_->add_device(device, [&](QString message) {
 		session_error("Aquisition failed", message);
@@ -291,9 +291,9 @@ void MainWindow::on_action_add_device_tab_triggered()
 		add_hw_device_tab(dlg.get_selected_device());
 }
 
-void MainWindow::on_action_add_virtual_tab_triggered()
+void MainWindow::on_action_add_user_tab_triggered()
 {
-	this->add_virtual_device_tab();
+	this->add_user_device_tab();
 }
 
 void MainWindow::on_tab_close_requested(int index)

@@ -64,7 +64,7 @@ public:
 	void save_session();
 	void restore_session();
 
-	void add_virtual_device_tab();
+	void add_user_device_tab();
 	void add_hw_device_tab(shared_ptr<devices::HardwareDevice> device);
 	void remove_tab(string id);
 
@@ -87,7 +87,7 @@ private:
 private Q_SLOTS:
 	void show_session_error(const QString text, const QString info_text);
 	void on_action_add_device_tab_triggered(); // TODO: Maybe use slot in DeviceTreeView?
-	void on_action_add_virtual_tab_triggered(); // TODO: Maybe use slot in DeviceTreeView?
+	void on_action_add_user_tab_triggered(); // TODO: Maybe use slot in DeviceTreeView?
 	void on_tab_close_requested(int);
 
 };

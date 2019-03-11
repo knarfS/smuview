@@ -53,7 +53,7 @@ DeviceTreeView::DeviceTreeView(Session &session,
 		QWidget *parent) :
 	BaseView(session, parent),
 	action_add_device_(new QAction(this)),
-	action_add_virtualdevice_(new QAction(this)),
+	action_add_userdevice_(new QAction(this)),
 	action_disconnect_device_(new QAction(this))
 {
 	setup_ui();
@@ -86,12 +86,12 @@ void DeviceTreeView::setup_toolbar()
 	connect(action_add_device_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_add_device_triggered()));
 
-	action_add_virtualdevice_->setText(tr("Add virtual device"));
-	action_add_virtualdevice_->setIcon(
+	action_add_userdevice_->setText(tr("Add virtual user device"));
+	action_add_userdevice_->setIcon(
 		QIcon::fromTheme("tab-new-background",
 		QIcon(":/icons/tab-new-background.png")));
-	connect(action_add_virtualdevice_, SIGNAL(triggered(bool)),
-		this, SLOT(on_action_add_virtualdevice_triggered()));
+	connect(action_add_userdevice_, SIGNAL(triggered(bool)),
+		this, SLOT(on_action_add_userdevice_triggered()));
 
 	action_disconnect_device_->setText(tr("Disconnect device"));
 	action_disconnect_device_->setIcon(
@@ -102,7 +102,7 @@ void DeviceTreeView::setup_toolbar()
 
 	toolbar_ = new QToolBar("Device Tree Toolbar");
 	toolbar_->addAction(action_add_device_);
-	toolbar_->addAction(action_add_virtualdevice_);
+	toolbar_->addAction(action_add_userdevice_);
 	toolbar_->addSeparator();
 	toolbar_->addAction(action_disconnect_device_);
 	this->addToolBar(Qt::TopToolBarArea, toolbar_);
@@ -120,9 +120,9 @@ void DeviceTreeView::on_action_add_device_triggered()
 	}
 }
 
-void DeviceTreeView::on_action_add_virtualdevice_triggered()
+void DeviceTreeView::on_action_add_userdevice_triggered()
 {
-	session().main_window()->add_virtual_device_tab();
+	session().main_window()->add_user_device_tab();
 }
 
 void DeviceTreeView::on_action_disconnect_device_triggered()

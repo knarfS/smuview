@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DEVICES_VIRTUALDEVICE_HPP
-#define DEVICES_VIRTUALDEVICE_HPP
+#ifndef DEVICES_USERDEVICE_HPP
+#define DEVICES_USERDEVICE_HPP
 
 #include <memory>
 #include <string>
@@ -38,12 +38,12 @@ class Context;
 namespace sv {
 namespace devices {
 
-class VirtualDevice : public BaseDevice
+class UserDevice : public BaseDevice
 {
 	Q_OBJECT
 
 public:
-	VirtualDevice(const shared_ptr<sigrok::Context> &sr_context,
+	UserDevice(const shared_ptr<sigrok::Context> &sr_context,
 		QString vendor, QString model, QString version);
 
 	/**
@@ -97,7 +97,7 @@ protected:
 	void feed_in_analog(shared_ptr<sigrok::Analog> sr_analog) override;
 
 private:
-	static unsigned int virtual_device_counter_;
+	static unsigned int user_device_counter_;
 
 	double frame_start_timestamp_;
 	QString vendor_;
@@ -114,4 +114,4 @@ Q_SIGNALS:
 } // namespace devices
 } // namespace sv
 
-#endif // DEVICES_VIRTUALDEVICE_HPP
+#endif // DEVICES_USERDEVICE_HPP

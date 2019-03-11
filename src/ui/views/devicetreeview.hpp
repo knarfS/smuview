@@ -56,7 +56,7 @@ public:
 
 private:
 	QAction *const action_add_device_;
-	QAction *const action_add_virtualdevice_;
+	QAction *const action_add_userdevice_;
 	QAction *const action_disconnect_device_;
 	QToolBar *toolbar_;
 	devices::devicetree::DeviceTreeView  *device_tree_;
@@ -67,7 +67,7 @@ private:
 
 private Q_SLOTS:
 	void on_action_add_device_triggered();
-	void on_action_add_virtualdevice_triggered();
+	void on_action_add_userdevice_triggered();
 	void on_action_disconnect_device_triggered();
 
 };

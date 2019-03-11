@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
 
 #include <QDebug>
 
-#include "virtualdevice.hpp"
+#include "userdevice.hpp"
 #include "src/session.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/data/analogsignal.hpp"
@@ -36,9 +36,9 @@ using std::static_pointer_cast;
 namespace sv {
 namespace devices {
 
-unsigned int VirtualDevice::virtual_device_counter_ = 0;
+unsigned int UserDevice::user_device_counter_ = 0;
 
-VirtualDevice::VirtualDevice(
+UserDevice::UserDevice(
 		const shared_ptr<sigrok::Context> &sr_context,
 		QString vendor, QString model, QString version) :
 	BaseDevice(sr_context, nullptr),
@@ -50,25 +50,25 @@ VirtualDevice::VirtualDevice(
 	auto sr_device = sr_context_->create_user_device(
 		vendor_.toStdString(), model_.toStdString(), version_.toStdString());
 	sr_device_ = sr_device;
-	device_type_ = DeviceType::VirtualDevice;
-	device_index_ = VirtualDevice::virtual_device_counter_++;
+	device_type_ = DeviceType::UserDevice;
+	device_index_ = UserDevice::user_device_counter_++;
 }
 
-void VirtualDevice::init()
+void UserDevice::init()
 {
 }
 
-string VirtualDevice::id() const
+string UserDevice::id() const
 {
-	return "virtualdevice:" + std::to_string(device_index_);
+	return "userdevice:" + std::to_string(device_index_);
 }
 
-string VirtualDevice::name() const
+string UserDevice::name() const
 {
 	return short_name().toStdString();
 }
 
-QString VirtualDevice::full_name() const
+QString UserDevice::full_name() const
 {
 	QString sep("");
 	QString name("");
@@ -93,7 +93,7 @@ QString VirtualDevice::full_name() const
 	return name;
 }
 
-QString VirtualDevice::short_name() const
+QString UserDevice::short_name() const
 {
 	QString sep("");
 	QString name("");
@@ -111,7 +111,7 @@ QString VirtualDevice::short_name() const
 	return name;
 }
 
-QString VirtualDevice::display_name(
+QString UserDevice::display_name(
 	const DeviceManager &device_manager) const
 {
 	(void)device_manager;
@@ -119,7 +119,7 @@ QString VirtualDevice::display_name(
 }
 
 /* TODO: merge with Device */
-void VirtualDevice::open(function<void (const QString)> error_handler)
+void UserDevice::open(function<void (const QString)> error_handler)
 {
 	(void)error_handler;
 
@@ -141,9 +141,9 @@ void VirtualDevice::open(function<void (const QString)> error_handler)
 }
 
 /* TODO: merge with Device */
-void VirtualDevice::close()
+void UserDevice::close()
 {
-	qWarning() << "VirtualDevice::close(): Trying to close device " << full_name();
+	qWarning() << "UserDevice::close(): Trying to close device " << full_name();
 
 	if (!device_open_)
 		return;
@@ -167,10 +167,10 @@ void VirtualDevice::close()
 
 	device_open_ = false;
 
-	qWarning() << "VirtualDevice::close(): Device closed " << full_name();
+	qWarning() << "UserDevice::close(): Device closed " << full_name();
 }
 
-void VirtualDevice::add_channel(shared_ptr<channels::BaseChannel> channel,
+void UserDevice::add_channel(shared_ptr<channels::BaseChannel> channel,
 	string channel_group_name)
 {
 	auto sr_user_device = static_pointer_cast<sigrok::UserDevice>(sr_device_);
@@ -180,37 +180,37 @@ void VirtualDevice::add_channel(shared_ptr<channels::BaseChannel> channel,
 	BaseDevice::add_channel(channel, channel_group_name);
 }
 
-void VirtualDevice::init_channels()
+void UserDevice::init_channels()
 {
 }
 
-void VirtualDevice::feed_in_header()
+void UserDevice::feed_in_header()
 {
 }
 
-void VirtualDevice::feed_in_trigger()
+void UserDevice::feed_in_trigger()
 {
 }
 
-void VirtualDevice::feed_in_meta(shared_ptr<sigrok::Meta> sr_meta)
+void UserDevice::feed_in_meta(shared_ptr<sigrok::Meta> sr_meta)
 {
 	(void)sr_meta;
 }
 
-void VirtualDevice::feed_in_frame_begin()
+void UserDevice::feed_in_frame_begin()
 {
 }
 
-void VirtualDevice::feed_in_frame_end()
+void UserDevice::feed_in_frame_end()
 {
 }
 
-void VirtualDevice::feed_in_logic(shared_ptr<sigrok::Logic> sr_logic)
+void UserDevice::feed_in_logic(shared_ptr<sigrok::Logic> sr_logic)
 {
 	(void)sr_logic;
 }
 
-void VirtualDevice::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
+void UserDevice::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
 {
 	(void)sr_analog;
 }

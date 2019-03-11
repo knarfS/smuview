@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,8 +76,8 @@ enum class DeviceType
 	SignalGenerator,
 	/** The device can measure power. */
 	Powermeter,
-	/** Virtual (SmuView) device */
-	VirtualDevice,
+	/** User device */
+	UserDevice,
 	/** Unknown device. */
 	Unknown,
 };
@@ -287,7 +287,7 @@ device_type_name_map_t device_type_name_map = {
 	{ DeviceType::Scale, QString("Scale") },
 	{ DeviceType::SignalGenerator, QString("Signal Generator") },
 	{ DeviceType::Powermeter, QString("Power Meter") },
-	{ DeviceType::VirtualDevice, QString("Virtual SmuView Device") },
+	{ DeviceType::UserDevice, QString("Virtual User Device") },
 	{ DeviceType::Unknown, QString("Unknown") },
 };
 

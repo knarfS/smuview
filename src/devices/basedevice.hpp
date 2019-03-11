@@ -228,7 +228,7 @@ protected:
 	map<string, shared_ptr<channels::BaseChannel>> channel_name_map_;
 	map<string, vector<shared_ptr<channels::BaseChannel>>> channel_group_name_map_;
 	map<shared_ptr<sigrok::Channel>, shared_ptr<channels::BaseChannel>> sr_channel_map_;
-	vector<shared_ptr<data::BaseSignal>> all_signals_; // TODO: Is empty! Fill in Hardware/Virtual!
+	vector<shared_ptr<data::BaseSignal>> all_signals_; // TODO: Is empty! Fill in HardwareDevice/UserDevice!
 
 	mutable mutex aquisition_mutex_; //!< Protects access to capture_state_. // TODO
 	mutable recursive_mutex data_mutex_; // TODO

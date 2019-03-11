@@ -187,7 +187,7 @@ void DeviceTab::on_action_save_as_triggered()
 void DeviceTab::on_action_add_control_view_triggered()
 {
 	shared_ptr<sv::devices::BaseDevice> d = nullptr;
-	if (device_->type() != sv::devices::DeviceType::VirtualDevice)
+	if (device_->type() != sv::devices::DeviceType::UserDevice)
 		d = device_;
 
 	ui::dialogs::AddViewDialog dlg(session(), d, 0);
@@ -200,11 +200,7 @@ void DeviceTab::on_action_add_control_view_triggered()
 
 void DeviceTab::on_action_add_panel_view_triggered()
 {
-	shared_ptr<sv::devices::BaseDevice> d = nullptr;
-	if (device_->type() != sv::devices::DeviceType::VirtualDevice)
-		d = device_;
-
-	ui::dialogs::AddViewDialog dlg(session(), d, 1);
+	ui::dialogs::AddViewDialog dlg(session(), device_, 1);
 	if (!dlg.exec())
 		return;
 
@@ -214,11 +210,7 @@ void DeviceTab::on_action_add_panel_view_triggered()
 
 void DeviceTab::on_action_add_plot_view_triggered()
 {
-	shared_ptr<sv::devices::BaseDevice> d = nullptr;
-	if (device_->type() != sv::devices::DeviceType::VirtualDevice)
-		d = device_;
-
-	ui::dialogs::AddViewDialog dlg(session(), d, 2);
+	ui::dialogs::AddViewDialog dlg(session(), device_, 2);
 	if (!dlg.exec())
 		return;
 
@@ -228,11 +220,7 @@ void DeviceTab::on_action_add_plot_view_triggered()
 
 void DeviceTab::on_action_add_math_channel_triggered()
 {
-	shared_ptr<sv::devices::BaseDevice> d = nullptr;
-	if (device_->type() != sv::devices::DeviceType::VirtualDevice)
-		d = device_;
-
-	ui::dialogs::AddMathChannelDialog dlg(session(), d);
+	ui::dialogs::AddMathChannelDialog dlg(session(), device_);
 	if (!dlg.exec())
 		return;
 

@@ -192,7 +192,7 @@ set(smuview_SOURCES
   src/devices/hardwaredevice.cpp
   src/devices/measurementdevice.cpp
   src/devices/sourcesinkdevice.cpp
-  src/devices/virtualdevice.cpp
+  src/devices/userdevice.cpp
   src/devices/properties/baseproperty.cpp
   src/devices/properties/boolproperty.cpp
   src/devices/properties/doubleproperty.cpp
@@ -246,7 +246,7 @@ set(smuview_SOURCES
   src/ui/tabs/measurementtab.cpp
   src/ui/tabs/tabhelper.cpp
   src/ui/tabs/sourcesinktab.cpp
-  src/ui/tabs/virtualtab.cpp
+  src/ui/tabs/usertab.cpp
   src/ui/tabs/welcometab.cpp
   src/ui/views/baseview.cpp
   src/ui/views/dataview.cpp

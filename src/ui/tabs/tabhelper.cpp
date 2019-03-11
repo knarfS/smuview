@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,11 +27,11 @@
 #include "src/devices/deviceutil.hpp"
 #include "src/devices/measurementdevice.hpp"
 #include "src/devices/sourcesinkdevice.hpp"
-#include "src/devices/virtualdevice.hpp"
+#include "src/devices/userdevice.hpp"
 #include "src/ui/tabs/basetab.hpp"
 #include "src/ui/tabs/measurementtab.hpp"
 #include "src/ui/tabs/sourcesinktab.hpp"
-#include "src/ui/tabs/virtualtab.hpp"
+#include "src/ui/tabs/usertab.hpp"
 
 using std::shared_ptr;
 using std::static_pointer_cast;
@@ -72,10 +72,10 @@ BaseTab *get_tab_for_device(Session &session,
 			static_pointer_cast<devices::MeasurementDevice>(device), parent);
 	}
 
-	// Virtual device tab
-	if (device->type() == DeviceType::VirtualDevice) {
-		return new VirtualTab(session,
-			static_pointer_cast<devices::VirtualDevice>(device), parent);
+	// User device tab
+	if (device->type() == DeviceType::UserDevice) {
+		return new UserTab(session,
+			static_pointer_cast<devices::UserDevice>(device), parent);
 	}
 
 	return nullptr;
