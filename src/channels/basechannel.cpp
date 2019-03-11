@@ -82,6 +82,15 @@ map<BaseChannel::quantity_t, shared_ptr<data::BaseSignal>> BaseChannel::signal_m
 	return signal_map_;
 }
 
+void BaseChannel::clear_signals()
+{
+	/* TODO
+	for (const auto &signal_pair : signal_map_) {
+		signal_pair.second->
+	}
+	*/
+}
+
 shared_ptr<devices::BaseDevice> BaseChannel::parent_device()
 {
 	return parent_device_;

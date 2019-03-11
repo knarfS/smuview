@@ -29,6 +29,7 @@
 #include "src/devicemanager.hpp"
 #include "src/mainwindow.hpp"
 #include "src/session.hpp"
+#include "src/channels/basechannel.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/ui/devices/devicetree/devicetreemodel.hpp"
@@ -136,7 +137,8 @@ void DeviceTreeView::on_action_disconnect_device_triggered()
 
 		QMessageBox::StandardButton reply = QMessageBox::question(this,
 			tr("Close device"),
-			tr("Closing the device will also delete all aquired data!"),
+			tr("Closing the device \"%1\" will also delete all aquired data!").
+				arg(device->short_name()),
 			QMessageBox::Yes | QMessageBox::Cancel);
 
 		if (reply == QMessageBox::Yes) {
@@ -144,20 +146,35 @@ void DeviceTreeView::on_action_disconnect_device_triggered()
 			session().remove_device(device);
 		}
 	}
+	else if (item->type() == (int)TreeItemType::ChannelItem) {
+		/* TODO
+		auto channel = item->data(DeviceTreeModel::DataRole).
+			value<shared_ptr<sv::channels::BaseChannel>>();
+
+		QMessageBox::StandardButton reply = QMessageBox::question(this,
+			tr("Delete signals from channel"),
+			tr("Deleting all signals from channel \"%1\" will also delete all aquired data!").
+				arg(QString::fromStdString(channel->name())),
+			QMessageBox::Yes | QMessageBox::Cancel);
+
+		if (reply == QMessageBox::Yes) {
+			channel->clear_signals();
+		}
+		*/
+	}
 	else if (item->type() == (int)TreeItemType::SignalItem) {
-		/*
 		auto signal = item->data(DeviceTreeModel::DataRole).
 			value<shared_ptr<sv::data::BaseSignal>>();
 
 		QMessageBox::StandardButton reply = QMessageBox::question(this,
 			tr("Delete signal"),
-			tr("Deleting the signal will also delete all aquired data!"),
+			tr("Deleting the signal \"%1\" will also delete all aquired data!").
+				arg(signal->name()),
 			QMessageBox::Yes | QMessageBox::Cancel);
 
 		if (reply == QMessageBox::Yes) {
-			//signal->clear_samples();
+			signal->clear();
 		}
-		*/
 	}
 }
 

@@ -122,6 +122,11 @@ public:
 	map<quantity_t, shared_ptr<data::BaseSignal>> signal_map();
 
 	/**
+	 * Delete all signals from this channel
+	 */
+	void clear_signals();
+
+	/**
 	 * Returns the device, this channel belongs to.
 	 */
 	shared_ptr<devices::BaseDevice> parent_device();

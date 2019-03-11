@@ -70,7 +70,7 @@ void AnalogSignal::clear()
 	data_->clear();
 	sample_count_ = 0;
 
-	samples_cleared();
+	Q_EMIT samples_cleared();
 }
 
 size_t AnalogSignal::get_sample_count() const
