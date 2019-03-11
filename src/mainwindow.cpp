@@ -199,8 +199,10 @@ void MainWindow::remove_tab(int tab_index)
 	tab_widget_->removeTab(tab_index);
 
 	for (const auto &pair : tab_window_map_) {
-		if (pair.second == tab_window)
+		if (pair.second == tab_window) {
 			tab_window_map_.erase(pair.first);
+			break;
+		}
 	}
 	//tab_window->deleteLater();
 	delete tab_window;
