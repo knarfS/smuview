@@ -44,6 +44,7 @@ class MainWindow;
 
 namespace devices {
 class BaseDevice;
+class UserDevice;
 }
 
 class Session : public QObject
@@ -67,6 +68,8 @@ public:
 
 	map<string, shared_ptr<devices::BaseDevice>> devices() const;
 	void add_device(shared_ptr<devices::BaseDevice> device,
+		function<void (const QString)> error_handler);
+	shared_ptr<devices::UserDevice> add_user_device(
 		function<void (const QString)> error_handler);
 	void remove_device(shared_ptr<devices::BaseDevice> device);
 

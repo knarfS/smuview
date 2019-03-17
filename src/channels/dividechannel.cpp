@@ -27,7 +27,7 @@
 
 #include "dividechannel.hpp"
 #include "src/channels/basechannel.hpp"
-#include "src/channels/userchannel.hpp"
+#include "src/channels/mathchannel.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/data/datautil.hpp"
 #include "src/devices/basedevice.hpp"
@@ -51,7 +51,7 @@ DivideChannel::DivideChannel(
 		set<string> channel_group_names,
 		string channel_name,
 		double channel_start_timestamp) :
-	UserChannel(quantity, quantity_flags, unit,
+	MathChannel(quantity, quantity_flags, unit,
 		parent_device, channel_group_names, channel_name,
 		channel_start_timestamp),
 	dividend_signal_(dividend_signal),
@@ -96,10 +96,8 @@ void DivideChannel::on_sample_appended()
 		double value;
 		if (divisor_data->at(i) == 0) {
 			if (dividend_data->at(i) > 0)
-				// TODO: use infinity() instead?
 				value = std::numeric_limits<double>::max();
 			else
-				// TODO: use -1 * infinity() instead?
 				value = std::numeric_limits<double>::lowest();
 		}
 		else {

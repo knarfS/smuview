@@ -20,6 +20,10 @@
 
 #include <cassert>
 #include <map>
+#include <memory>
+#include <mutex>
+#include <string>
+#include <vector>
 #include <glib.h>
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
@@ -32,43 +36,49 @@
 #include "src/util.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/channels/hardwarechannel.hpp"
+#include "src/channels/mathchannel.hpp"
 #include "src/channels/userchannel.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/devices/configurable.hpp"
+
+#define USER_CHANNEL_START_INDEX 1000
 
 using std::bad_alloc;
 using std::dynamic_pointer_cast;
 using std::lock_guard;
 using std::make_shared;
 using std::map;
-using std::pair;
 using std::set;
 using std::shared_ptr;
-using std::static_pointer_cast;
 using std::string;
 using std::vector;
-using std::unique_ptr;
 
 namespace sv {
 namespace devices {
+
+unsigned int BaseDevice::device_counter = 0;
 
 BaseDevice::BaseDevice(const shared_ptr<sigrok::Context> sr_context,
 		shared_ptr<sigrok::Device> sr_device) :
 	sr_context_(sr_context),
 	sr_device_(sr_device),
 	device_open_(false),
+	next_channel_index_(USER_CHANNEL_START_INDEX),
 	frame_began_(false)
 {
+	// Set up a sigrok session per smuvierw device
+	sr_session_ = sv::Session::sr_context->create_session();
+
+	// Every device gets its own unique index
+	device_index_ = BaseDevice::device_counter++;
+
 	/*
 	 * NOTE: Get the start timestamp from the session.
 	 *       This way, combining signals from different devices (export as
 	 *       CSV, XY-Plots) can be displayed with relative timestamps.
 	 */
 	aquisition_start_timestamp_ = sv::Session::session_start_timestamp;
-
-	// Set up the session
-	sr_session_ = sv::Session::sr_context->create_session();
 }
 
 BaseDevice::~BaseDevice()
@@ -109,7 +119,7 @@ void BaseDevice::open(function<void (const QString)> error_handler)
 	// Init all channels
 	this->init_channels();
 
-	// Init aquisition (TODO: Move to HardwareDevice)
+	// Init aquisition
 	sr_session_->add_datafeed_callback([=]
 		(shared_ptr<sigrok::Device> sr_device, shared_ptr<sigrok::Packet> sr_packet) {
 			data_feed_in(sr_device, sr_packet);
@@ -245,21 +255,21 @@ QString BaseDevice::short_name() const
 	return name;
 }
 
-map<string, shared_ptr<devices::Configurable>> BaseDevice::configurables() const
+map<string, shared_ptr<devices::Configurable>>
+	BaseDevice::configurable_map() const
 {
-	return configurables_;
+	return configurable_map_;
 }
 
-map<string, shared_ptr<channels::BaseChannel>>
-	BaseDevice::channel_name_map() const
+map<string, shared_ptr<channels::BaseChannel>> BaseDevice::channel_map() const
 {
-	return channel_name_map_;
+	return channel_map_;
 }
 
 map<string, vector<shared_ptr<channels::BaseChannel>>>
-	BaseDevice::channel_group_name_map() const
+	BaseDevice::channel_group_map() const
 {
-	return channel_group_name_map_;
+	return channel_group_map_;
 }
 
 map<shared_ptr<sigrok::Channel>, shared_ptr<channels::BaseChannel>>
@@ -268,29 +278,43 @@ map<shared_ptr<sigrok::Channel>, shared_ptr<channels::BaseChannel>>
 	return sr_channel_map_;
 }
 
-vector<shared_ptr<data::BaseSignal>> BaseDevice::all_signals() const
+vector<shared_ptr<data::BaseSignal>> BaseDevice::signals() const
 {
-	return all_signals_;
+	vector<shared_ptr<sv::data::BaseSignal>> signals;
+	for (const auto &ch_pair : channel_map_) {
+		for (const auto &signal_pair : ch_pair.second->signal_map()) {
+			for (const auto &signal : signal_pair.second) {
+				signals.push_back(signal);
+			}
+		}
+	}
+	return signals;
 }
+
+unsigned int BaseDevice::next_channel_index()
+{
+	return next_channel_index_++;
+}
+
 
 void BaseDevice::add_channel(shared_ptr<channels::BaseChannel> channel,
 	string channel_group_name)
 {
 	// Check if channel already exists. Channel names are unique per device.
-	if (channel_name_map_.count(channel->name()) == 0) {
+	if (channel_map_.count(channel->name()) == 0) {
 		connect(this, SIGNAL(aquisition_start_timestamp_changed(double)),
 			channel.get(), SLOT(on_aquisition_start_timestamp_changed(double)));
 
 		// map<QString, shared_ptr<channels::BaseChannel>> channel_name_map_;
-		channel_name_map_.insert(make_pair(channel->name(), channel));
+		channel_map_.insert(make_pair(channel->name(), channel));
 	}
 
 	// map<QString, vector<shared_ptr<channels::BaseChannel>>> channel_group_name_map_;
-	if (channel_group_name_map_.count(channel_group_name) == 0) {
-		channel_group_name_map_.insert(make_pair(
+	if (channel_group_map_.count(channel_group_name) == 0) {
+		channel_group_map_.insert(make_pair(
 			channel_group_name, vector<shared_ptr<channels::BaseChannel>>()));
 	}
-	channel_group_name_map_[channel_group_name].push_back(channel);
+	channel_group_map_[channel_group_name].push_back(channel);
 
 	if (channel->channel_group_names().count(channel_group_name) == 0) {
 		channel->add_channel_group_name(channel_group_name);
@@ -305,8 +329,8 @@ shared_ptr<channels::BaseChannel> BaseDevice::add_sr_channel(
 	// Check if channel already exists.
 	// NOTE: Channel names are unique per device.
 	shared_ptr<channels::BaseChannel> channel;
-	if (channel_name_map_.count(sr_channel->name()) > 0) {
-		channel = channel_name_map()[sr_channel->name()];
+	if (channel_map_.count(sr_channel->name()) > 0) {
+		channel = channel_map()[sr_channel->name()];
 	}
 	else {
 		set<string> chg_names { channel_group_name };
@@ -322,16 +346,28 @@ shared_ptr<channels::BaseChannel> BaseDevice::add_sr_channel(
 	return channel;
 }
 
-shared_ptr<channels::BaseChannel> BaseDevice::add_user_channel(
-	string channel_name, string channel_group_name,
-	data::Quantity quantity, set<data::QuantityFlag> quantity_flags,
-	data::Unit unit)
+void BaseDevice::add_math_channel(
+	shared_ptr<channels::MathChannel> math_channel, string channel_group_name)
 {
-	shared_ptr<channels::BaseChannel> channel =
+	add_channel(math_channel, channel_group_name);
+
+	/*
+	 * TODO: Remove shared_from_this() / (channel pointer in signal), so that
+	 *       "add_signal()" can be called from MathChannel ctor.
+	 */
+	math_channel->add_signal(
+		math_channel->quantity(),
+		math_channel->quantity_flags(),
+		math_channel->unit());
+}
+
+shared_ptr<channels::UserChannel> BaseDevice::add_user_channel(
+	string channel_name, string channel_group_name)
+{
+	shared_ptr<channels::UserChannel> channel =
 		make_shared<channels::UserChannel>(
-			quantity, quantity_flags, unit, shared_from_this(),
-			set<string> { channel_group_name }, channel_name,
-			aquisition_start_timestamp_);
+			channel_name, set<string> { channel_group_name },
+			shared_from_this(), aquisition_start_timestamp_);
 	add_channel(channel, channel_group_name);
 
 	return channel;
@@ -381,7 +417,6 @@ void BaseDevice::data_feed_in(shared_ptr<sigrok::Device> sr_device,
 				dynamic_pointer_cast<sigrok::Logic>(sr_packet->payload()));
 		} catch (bad_alloc &) {
 			//out_of_memory_ = true;
-			// TODO: sr_session->stop();
 		}
 		break;
 
@@ -395,7 +430,6 @@ void BaseDevice::data_feed_in(shared_ptr<sigrok::Device> sr_device,
 				dynamic_pointer_cast<sigrok::Analog>(sr_packet->payload()));
 		} catch (bad_alloc &) {
 			//out_of_memory_ = true;
-			// TODO: sr_session->stop();
 		}
 		break;
 

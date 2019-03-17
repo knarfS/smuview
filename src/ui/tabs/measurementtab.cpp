@@ -50,7 +50,7 @@ void MeasurementTab::setup_ui()
 
 	// Device controls
 	size_t i = 0;
-	for (const auto &c_pair : hw_device->configurables()) {
+	for (const auto &c_pair : hw_device->configurable_map()) {
 		auto configurable = c_pair.second;
 		if (!configurable->is_controllable())
 			continue;
@@ -68,8 +68,8 @@ void MeasurementTab::setup_ui()
 	}
 
 	i = 0;
-	for (const auto &chn_ch_pair : measurement_device_->channel_name_map()) {
-		auto channel = chn_ch_pair.second;
+	for (const auto &ch_pair : measurement_device_->channel_map()) {
+		auto channel = ch_pair.second;
 
 		// Value panel(s)
 		ui::views::BaseView *value_panel_view =

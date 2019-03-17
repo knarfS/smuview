@@ -38,7 +38,7 @@ namespace devices {
 class BaseDevice;
 }
 namespace channels {
-class UserChannel;
+class MathChannel;
 }
 
 namespace ui {
@@ -65,7 +65,7 @@ public:
 		shared_ptr<sv::devices::BaseDevice> device,
 		QWidget *parent = nullptr);
 
-	shared_ptr<channels::UserChannel> channel() const;
+	shared_ptr<channels::MathChannel> channel() const;
 	QString channel_group_name() const;
 
 private:
@@ -80,7 +80,7 @@ private:
 
 	const Session &session_;
 	shared_ptr<sv::devices::BaseDevice> device_;
-	shared_ptr<channels::UserChannel> channel_;
+	shared_ptr<channels::MathChannel> channel_;
 
 	QTabWidget *tab_widget_;
 	QLineEdit *name_edit_;

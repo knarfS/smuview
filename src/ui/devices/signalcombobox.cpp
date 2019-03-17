@@ -71,8 +71,9 @@ void SignalComboBox::setup_ui()
 		return;
 
 	for (const auto &signal_pair : channel_->signal_map()) {
-		auto signal = signal_pair.second;
-		this->addItem(signal->name(), QVariant::fromValue(signal));
+		for (const auto &signal : signal_pair.second) {
+			this->addItem(signal->name(), QVariant::fromValue(signal));
+		}
 	}
 }
 

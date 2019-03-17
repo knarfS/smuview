@@ -27,7 +27,7 @@
 #include <QObject>
 
 #include "src/channels/basechannel.hpp"
-#include "src/channels/userchannel.hpp"
+#include "src/channels/mathchannel.hpp"
 #include "src/data/datautil.hpp"
 
 using std::set;
@@ -46,7 +46,7 @@ class BaseDevice;
 
 namespace channels {
 
-class IntegrateChannel : public UserChannel
+class IntegrateChannel : public MathChannel
 {
 	Q_OBJECT
 

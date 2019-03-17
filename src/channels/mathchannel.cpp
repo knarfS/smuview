@@ -24,7 +24,7 @@
 
 #include <QDebug>
 
-#include "userchannel.hpp"
+#include "mathchannel.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
@@ -36,22 +36,31 @@ using std::make_shared;
 using std::set;
 using std::static_pointer_cast;
 using std::string;
+using sv::data::measured_quantity_t;
 
 namespace sv {
 namespace channels {
 
-UserChannel::UserChannel(
-		string channel_name,
-		set<string> channel_group_names,
+MathChannel::MathChannel(
+		data::Quantity quantity,
+		set<data::QuantityFlag> quantity_flags,
+		data::Unit unit,
 		shared_ptr<devices::BaseDevice> parent_device,
+		set<string> channel_group_names,
+		string channel_name,
 		double channel_start_timestamp) :
 	BaseChannel(nullptr, parent_device, channel_group_names,
-		channel_start_timestamp)
+			channel_start_timestamp),
+	digits_(7),
+	decimal_places_(-1),
+	quantity_(quantity),
+	quantity_flags_(quantity_flags),
+	unit_(unit)
 {
 	name_ = channel_name;
-	channel_type_ = ChannelType::UserChannel;
+	channel_type_ = ChannelType::MathChannel;
 	channel_index_ = parent_device->next_channel_index();
-	fixed_signal_ = false;
+	fixed_signal_ = true;
 
 	if (parent_device_->type() == devices::DeviceType::UserDevice) {
 		auto sr_udev = static_pointer_cast<sigrok::UserDevice>(
@@ -59,35 +68,36 @@ UserChannel::UserChannel(
 		sr_channel_ = sr_udev->add_channel(
 			channel_index_, sigrok::ChannelType::ANALOG, name_);
 	}
+
+	/*
+	 * TODO: Remove shared_from_this() / (channel pointer in signal), so that
+	 *       "add_signal()" can be called from MathChannel ctor.
+	 *       But are the signals channel_added() and signal_added() in
+	 *       the correct order then?
+	add_signal(quantity_, quantity_flags_, unit_);
+	 */
 }
 
-void UserChannel::push_sample(double sample, double timestamp,
-	data::Quantity quantity, set<data::QuantityFlag> quantity_flags,
-	data::Unit unit)
+data::Quantity MathChannel::quantity()
 {
-	measured_quantity_t mq = make_pair(quantity, quantity_flags);
-	size_t signals_count = signal_map_.count(mq);
-	if (signals_count == 0) {
-		add_signal(quantity, quantity_flags, unit);
-		qWarning() << "UserChannel::push_sample(): " <<
-			QString::fromStdString(name_) <<
-			" - No signal found: " << actual_signal_->name();
-	}
-	else if (signals_count > 1) {
-		throw ("More than one signal found for " + name());
-	}
+	return quantity_;
+}
 
-	auto signal = static_pointer_cast<data::AnalogSignal>(signal_map_[mq][0]);
-	if (signal.get() != actual_signal_.get()) {
-		actual_signal_ = signal;
-		Q_EMIT signal_changed(actual_signal_);
-	}
+set<data::QuantityFlag> MathChannel::quantity_flags()
+{
+	return quantity_flags_;
+}
 
-	int digits = 7; // TODO
-	int decimal_places = -1; // TODO
+data::Unit MathChannel::unit()
+{
+	return unit_;
+}
 
-	signal->push_sample(&sample, timestamp, size_of_double_,
-		digits, decimal_places);
+void MathChannel::push_sample(double sample, double timestamp)
+{
+	auto signal = static_pointer_cast<data::AnalogSignal>(actual_signal_);
+	signal->push_sample(&sample, timestamp,
+		size_of_double_, digits_, decimal_places_);
 }
 
 } // namespace devices

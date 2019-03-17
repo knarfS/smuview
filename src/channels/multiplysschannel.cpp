@@ -27,7 +27,7 @@
 
 #include "multiplysschannel.hpp"
 #include "src/channels/basechannel.hpp"
-#include "src/channels/userchannel.hpp"
+#include "src/channels/mathchannel.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/data/datautil.hpp"
 #include "src/devices/basedevice.hpp"
@@ -51,7 +51,7 @@ MultiplySSChannel::MultiplySSChannel(
 		set<string> channel_group_names,
 		string channel_name,
 		double channel_start_timestamp) :
-	UserChannel(quantity, quantity_flags, unit,
+	MathChannel(quantity, quantity_flags, unit,
 		parent_device, channel_group_names, channel_name,
 		channel_start_timestamp),
 	signal1_(signal1),

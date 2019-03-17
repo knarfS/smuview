@@ -113,8 +113,7 @@ void DeviceTreeModel::add_device(shared_ptr<sv::devices::BaseDevice> device)
 	}
 
 	// Channels and ChannelGroups
-	auto channel_map = device->channel_name_map();
-	for (const auto &channel_pair : channel_map) {
+	for (const auto &channel_pair : device->channel_map()) {
 		add_channel(channel_pair.second,
 			channel_pair.second->channel_group_names(), device_item);
 	}
@@ -180,7 +179,9 @@ void DeviceTreeModel::add_channel(shared_ptr<channels::BaseChannel> channel,
 
 		// Signals
 		for (const auto &signal_pair : channel->signal_map()) {
-			add_signal(signal_pair.second, channel_item);
+			for (const auto &signal : signal_pair.second) {
+				add_signal(signal, channel_item);
+			}
 		}
 	}
 }

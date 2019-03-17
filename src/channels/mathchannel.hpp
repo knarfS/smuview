@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2019 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,27 +17,28 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CHANNELS_ADDSCCHANNEL_HPP
-#define CHANNELS_ADDSCCHANNEL_HPP
+#ifndef CHANNELS_MATHCHANNEL_HPP
+#define CHANNELS_MATHCHANNEL_HPP
 
 #include <memory>
 #include <set>
 #include <string>
+#include <vector>
 
 #include <QObject>
 
 #include "src/channels/basechannel.hpp"
-#include "src/channels/mathchannel.hpp"
 #include "src/data/datautil.hpp"
 
 using std::set;
 using std::shared_ptr;
 using std::string;
+using std::vector;
 
 namespace sv {
 
 namespace data {
-class AnalogSignal;
+class BaseSignal;
 }
 
 namespace devices {
@@ -46,33 +47,53 @@ class BaseDevice;
 
 namespace channels {
 
-class AddSCChannel : public MathChannel
+class MathChannel : public BaseChannel
 {
 	Q_OBJECT
 
 public:
-	AddSCChannel(
+	MathChannel(
 		data::Quantity quantity,
 		set<data::QuantityFlag> quantity_flags,
 		data::Unit unit,
-		shared_ptr<data::AnalogSignal> signal,
-		double constant,
 		shared_ptr<devices::BaseDevice> parent_device,
 		set<string> channel_group_names,
 		string channel_name,
 		double channel_start_timestamp);
 
-private:
-	shared_ptr<data::AnalogSignal> signal_;
-	double constant_;
-	size_t next_signal_pos_;
+	/**
+	 * Get the quantity of the math channel.
+	 * TODO: remove when add_signal() is calles in the MathChannel ctor
+	 */
+	data::Quantity quantity();
 
-private Q_SLOTS:
-	void on_sample_appended();
+	/**
+	 * Get the quantity flags of the math channel.
+	 * TODO: remove when add_signal() is calles in the MathChannel ctor
+	 */
+	set<data::QuantityFlag> quantity_flags();
+
+	/**
+	 * Get the unit of the math channel
+	 * TODO: remove when add_signal() is calles in the MathChannel ctor
+	 */
+	data::Unit unit();
+
+protected:
+	/**
+	 * Add a single sample with timestamp to the channel/signal
+	 */
+	void push_sample(double sample, double timestamp);
+
+	int digits_;
+	int decimal_places_;
+	data::Quantity quantity_;
+	set<data::QuantityFlag> quantity_flags_;
+	data::Unit unit_;
 
 };
 
 } // namespace channels
 } // namespace sv
 
-#endif // CHANNELS_ADDSCCHANNEL_HPP
+#endif // CHANNELS_MATHCHANNEL_HPP

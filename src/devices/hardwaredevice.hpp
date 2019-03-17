@@ -132,9 +132,6 @@ private:
 	double frame_start_timestamp_;
 	shared_ptr<properties::UInt64Property> samplerate_prop_;
 
-Q_SIGNALS:
-	void channel_changed(QString);
-
 };
 
 } // namespace devices

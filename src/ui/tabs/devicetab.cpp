@@ -17,6 +17,9 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <memory>
+#include <vector>
+
 #include <QDebug>
 #include <QToolButton>
 
@@ -33,6 +36,9 @@
 #include "src/ui/dialogs/addmathchanneldialog.hpp"
 #include "src/ui/dialogs/addviewdialog.hpp"
 #include "src/ui/dialogs/savedialog.hpp"
+
+using std::shared_ptr;
+using std::vector;
 
 namespace sv {
 namespace ui {
@@ -180,7 +186,7 @@ void DeviceTab::on_action_open_triggered()
 
 void DeviceTab::on_action_save_as_triggered()
 {
-	ui::dialogs::SaveDialog dlg(session(), device_->all_signals());
+	ui::dialogs::SaveDialog dlg(session(), device_->signals());
 	dlg.exec();
 }
 
@@ -225,8 +231,10 @@ void DeviceTab::on_action_add_math_channel_triggered()
 		return;
 
 	auto channel = dlg.channel();
-	if (channel != nullptr)
-		device_->add_channel(channel, dlg.channel_group_name().toStdString());
+	if (channel != nullptr) {
+		device_->add_math_channel(
+			channel, dlg.channel_group_name().toStdString());
+	}
 }
 
 void DeviceTab::on_action_reset_data_triggered()

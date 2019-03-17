@@ -35,7 +35,6 @@
 #include <QWidget>
 
 #include "adduserchanneldialog.hpp"
-#include "src/channels/basechannel.hpp"
 #include "src/channels/userchannel.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/ui/data/quantitycombobox.hpp"
@@ -137,20 +136,10 @@ void AddUserChannelDialog::accept()
 	}
 
 	auto device = device_box_->selected_device();
-	set<string> channel_group_names
-		{ channel_group_box_->selected_channel_group().toStdString() };
 
-	// TODO: use std::chrono / std::time
-	double start_timestamp = QDateTime::currentMSecsSinceEpoch() / (double)1000;
-
-	channel_ = make_shared<channels::UserChannel>(
-		quantity_box_->selected_quantity(),
-		quantity_flags_list_->selected_quantity_flags(),
-		unit_box_->selected_unit(),
-		device,
-		channel_group_names, name_edit_->text().toStdString(),
-		start_timestamp);
-	channel_->init_signal();
+	channel_ = device->add_user_channel(
+		name_edit_->text().toStdString(),
+		channel_group_box_->selected_channel_group().toStdString());
 
 	QDialog::accept();
 }

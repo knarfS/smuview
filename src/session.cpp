@@ -27,11 +27,14 @@
 #include <QDebug>
 
 #include "session.hpp"
+#include "config.h"
 #include "src/util.hpp"
 #include "src/devices/basedevice.hpp"
+#include "src/devices/userdevice.hpp"
 
 using std::function;
 using std::make_pair;
+using std::make_shared;
 using std::map;
 using std::shared_ptr;
 using std::string;
@@ -103,6 +106,20 @@ void Session::add_device(shared_ptr<devices::BaseDevice> device,
 	devices_.insert(make_pair(device->id(), device));
 
 	Q_EMIT device_added(device);
+}
+
+shared_ptr<devices::UserDevice> Session::add_user_device(
+	function<void (const QString)> error_handler)
+{
+	string vendor = "SmuView";
+	string model = "User Device";
+	string version = SV_VERSION_STRING;
+
+	auto device = make_shared<devices::UserDevice>(
+		sr_context, vendor, model, version);
+	this->add_device(device, error_handler);
+
+	return device;
 }
 
 void Session::remove_device(shared_ptr<devices::BaseDevice> device)

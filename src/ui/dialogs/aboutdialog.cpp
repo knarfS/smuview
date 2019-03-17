@@ -290,8 +290,7 @@ QWidget *AboutDialog::get_device_page(QWidget *parent) const
 		s.append("<tr><td colspan=\"7\"><b>" +
 			tr("SmuView device configurables and properties:") +
 			"</b></td></tr>");
-		const auto configurables = hw_device->configurables();
-		for (const auto &c_pair : configurables) {
+		for (const auto &c_pair : hw_device->configurable_map()) {
 			auto configurable = c_pair.second;
 			s.append(QString("<tr><td>&nbsp;</td><td>%1</td>").
 				arg(configurable->name()));
@@ -327,27 +326,15 @@ QWidget *AboutDialog::get_device_page(QWidget *parent) const
 		s.append("<tr><td colspan=\"7\">&nbsp;</td></tr>");
 	}
 
-	// SmuView all device signals
-	// vector<shared_ptr<data::AnalogSignal>> all_signals()
-	s.append("<tr><td colspan=\"2\"><b>" +
-		tr("SmuView device signals (device->all_signals()):") +
-		"</b></td></tr>");
-	const auto signals = device_->all_signals();
-	for (const auto &signal : signals) {
-		s.append(QString("<tr><td>%1</td><td>%2</td></tr>").arg(
-			signal->name(), signal->name()));
-	}
-
 	// SmuView channel name + channel
 	// map<QString, shared_ptr<devices::Channel>> channel_name_map();
 	s.append("<tr><td colspan=\"2\"><b>" +
 		tr("SmuView channel name and channel (device->channel_name_map()):") +
 		"</b></td></tr>");
-	const auto ch_name_signal_map = device_->channel_name_map();
-	for (const auto &ch_name_signal_pair : ch_name_signal_map) {
+	for (const auto &ch_pair : device_->channel_map()) {
 		s.append(QString("<tr><td>%1</td><td>%2</td></tr>").
-			arg(QString::fromStdString(ch_name_signal_pair.first)).
-			arg(QString::fromStdString(ch_name_signal_pair.second->name())));
+			arg(QString::fromStdString(ch_pair.first)).
+			arg(QString::fromStdString(ch_pair.second->name())));
 	}
 
 	//map<shared_ptr<sigrok::Channel>, shared_ptr<devices::Channel>> sr_channel_map();
@@ -357,11 +344,10 @@ QWidget *AboutDialog::get_device_page(QWidget *parent) const
 	s.append("<tr><td colspan=\"2\"><b>" +
 		tr("SmuView channel group name and channels (device->channel_group_name_map()):") +
 		"</b></td></tr>");
-	const auto cg_name_channel_map = device_->channel_group_name_map();
-	for (const auto &cg_name_channel_pair : cg_name_channel_map) {
+	for (const auto &chg_pair : device_->channel_group_map()) {
 		s.append(QString("<tr><td>%1</td><td></td></tr>").arg(
-			QString::fromStdString(cg_name_channel_pair.first)));
-		for (const auto &channel : cg_name_channel_pair.second) {
+			QString::fromStdString(chg_pair.first)));
+		for (const auto &channel : chg_pair.second) {
 			s.append(QString("<tr><td></td><td>%1</td></tr>").arg(
 				QString::fromStdString(channel->name())));
 		}

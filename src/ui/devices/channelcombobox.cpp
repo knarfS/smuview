@@ -77,18 +77,18 @@ void ChannelComboBox::setup_ui()
 
 	vector<shared_ptr<sv::channels::BaseChannel>> channels;
 	if (channel_group_name_ == nullptr || channel_group_name_.isEmpty()) {
-		for (const auto &ch_name_pair : device_->channel_name_map()) {
+		for (const auto &ch_pair : device_->channel_map()) {
 			this->addItem(
-				QString::fromStdString(ch_name_pair.first),
-				QVariant::fromValue(ch_name_pair.second));
+				QString::fromStdString(ch_pair.first),
+				QVariant::fromValue(ch_pair.second));
 		}
 	}
 	else {
 		string chg_name_str = channel_group_name_.toStdString();
-		if (!device_->channel_group_name_map().count(chg_name_str))
+		if (!device_->channel_group_map().count(chg_name_str))
 			return;
 
-		auto ch_list = device_->channel_group_name_map()[chg_name_str];
+		auto ch_list = device_->channel_group_map()[chg_name_str];
 		for (const auto &ch : ch_list) {
 			this->addItem(
 				QString::fromStdString(ch->name()),

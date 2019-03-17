@@ -58,6 +58,8 @@ class DeviceManager;
 
 namespace channels {
 class BaseChannel;
+class MathChannel;
+class UserChannel;
 }
 
 namespace data {
@@ -155,9 +157,9 @@ public:
 	AquisitionState aquisition_state();
 
 	/**
-	 * Returns a map with all configurables of this device
+	 * Get the next index for a new channel.
 	 */
-	map<string, shared_ptr<devices::Configurable>> configurables() const;
+	unsigned int next_channel_index();
 
 	/**
 	 * Add a sv::channels:.Channel to the device
@@ -172,32 +174,41 @@ public:
 		shared_ptr<sigrok::Channel> sr_channel, string channel_group_name);
 
 	/**
-	 * Add an user channel to the device
+	 * Add a math channel to the device
 	 */
-	shared_ptr<channels::BaseChannel> add_user_channel(
-		string channel_name, string channel_group_name,
-		data::Quantity quantity, set<data::QuantityFlag> quantity_flags,
-		data::Unit unit);
+	void add_math_channel(shared_ptr<channels::MathChannel> math_channel,
+		string channel_group_name);
+
+	/**
+	 * Add a user channel to the device
+	 */
+	shared_ptr<channels::UserChannel> add_user_channel(
+		string channel_name, string channel_group_name);
+
+	/**
+	 * Returns a map with all configurables of this device
+	 */
+	map<string, shared_ptr<devices::Configurable>> configurable_map() const;
 
 	/**
 	 * Returns a map with all channels of this device
 	 */
-	map<string, shared_ptr<channels::BaseChannel>> channel_name_map() const;
+	map<string, shared_ptr<channels::BaseChannel>> channel_map() const;
 
 	/**
 	 * Returns a map with all channel groups of this device
 	 */
-	map<string, vector<shared_ptr<channels::BaseChannel>>> channel_group_name_map() const;
+	map<string, vector<shared_ptr<channels::BaseChannel>>> channel_group_map() const;
 
 	/**
-	 * Get the map which maps sigrok::Channel and sv::Channels::BaseChannel
+	 * Get the map between sigrok::Channel and sv::Channels::BaseChannel
 	 */
 	map<shared_ptr<sigrok::Channel>, shared_ptr<channels::BaseChannel>> sr_channel_map() const;
 
 	/**
 	 * Returns all signals of this device
 	 */
-	vector<shared_ptr<data::BaseSignal>> all_signals() const;
+	vector<shared_ptr<data::BaseSignal>> signals() const;
 
 
 protected:
@@ -217,18 +228,21 @@ protected:
 	void data_feed_in(shared_ptr<sigrok::Device> sr_device,
 		shared_ptr<sigrok::Packet> sr_packet);
 
+	static unsigned int device_counter;
+
 	const shared_ptr<sigrok::Context> sr_context_;
 	shared_ptr<sigrok::Session> sr_session_;
 	shared_ptr<sigrok::Device> sr_device_;
 	DeviceType device_type_;
+	unsigned int device_index_;
 	bool device_open_;
 
-	map<string, shared_ptr<devices::Configurable>> configurables_;
+	unsigned int next_channel_index_;
 
-	map<string, shared_ptr<channels::BaseChannel>> channel_name_map_;
-	map<string, vector<shared_ptr<channels::BaseChannel>>> channel_group_name_map_;
+	map<string, shared_ptr<devices::Configurable>> configurable_map_;
+	map<string, shared_ptr<channels::BaseChannel>> channel_map_;
+	map<string, vector<shared_ptr<channels::BaseChannel>>> channel_group_map_;
 	map<shared_ptr<sigrok::Channel>, shared_ptr<channels::BaseChannel>> sr_channel_map_;
-	vector<shared_ptr<data::BaseSignal>> all_signals_; // TODO: Is empty! Fill in HardwareDevice/UserDevice!
 
 	mutable mutex aquisition_mutex_; //!< Protects access to capture_state_. // TODO
 	mutable recursive_mutex data_mutex_; // TODO

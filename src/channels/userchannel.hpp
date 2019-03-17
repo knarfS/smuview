@@ -47,68 +47,25 @@ class BaseDevice;
 
 namespace channels {
 
-enum class MathChannelType {
-		MultiplyChannel,
-		DivideChannel,
-		IntegrateChannel
-};
-
 class UserChannel : public BaseChannel
 {
 	Q_OBJECT
 
 public:
 	UserChannel(
-		data::Quantity quantity,
-		set<data::QuantityFlag> quantity_flags,
-		data::Unit unit,
-		shared_ptr<devices::BaseDevice> parent_device,
-		set<string> channel_group_names,
 		string channel_name,
+		set<string> channel_group_names,
+		shared_ptr<devices::BaseDevice> parent_device,
 		double channel_start_timestamp);
-
-public:
-	/**
-	 * Gets the index number of this channel
-	 */
-	unsigned int index() const;
-
-	/**
-	 * Inits a signal
-	 *
-	 * TODO
-	 */
-	/*
-	shared_ptr<data::BaseSignal> init_signal(
-		data::Quantity quantity,
-		set<data::QuantityFlag> quantity_flags,
-		data::Unit unit,);
-	*/
-
-	/**
-	 * Inits a signal.
-	 *
-	 * Must be called after instanziation of the object, because of the use of
-	 * shared_from_this() in here! init_signal().
-	 *
-	 * TODO: Move to base
-	 * TODO: Reinmplement, so that init_signal() can be called from ctor
-	 */
-	shared_ptr<data::BaseSignal> init_signal();
 
 protected:
 	/**
 	 * Add a single sample with timestamp to the channel/signal
+	 * TODO: Move to base?
 	 */
-	void push_sample(double sample, double timestamp);
-
-	int digits_;
-	int decimal_places_;
-	data::Quantity quantity_;
-	set<data::QuantityFlag> quantity_flags_;
-	data::Unit unit_;
-
-	static const size_t size_of_double_ = sizeof(double);
+	void push_sample(double sample, double timestamp,
+		data::Quantity quantity, set<data::QuantityFlag> quantity_flags,
+		data::Unit unit);
 
 };
 

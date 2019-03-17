@@ -30,8 +30,8 @@
 #include "src/channels/dividechannel.hpp"
 #include "src/channels/hardwarechannel.hpp"
 #include "src/channels/integratechannel.hpp"
+#include "src/channels/mathchannel.hpp"
 #include "src/channels/multiplysschannel.hpp"
-#include "src/channels/userchannel.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/devices/configurable.hpp"
@@ -54,7 +54,7 @@ void SourceSinkDevice::init_channels()
 	HardwareDevice::init_channels();
 
 	// Preinitialize known fixed channels with a signal
-	for (const auto &chg_name_channels_pair : channel_group_name_map_) {
+	for (const auto &chg_name_channels_pair : channel_group_map_) {
 		for (const auto &channel : chg_name_channels_pair.second) {
 			if (channel->type() != channels::ChannelType::AnalogChannel)
 				continue;
@@ -94,7 +94,7 @@ void SourceSinkDevice::init_channels()
 				auto hw_channel =
 					static_pointer_cast<channels::HardwareChannel>(channel);
 				hw_channel->set_fixed_signal(true);
-				hw_channel->init_signal(quantity, quantity_flags, unit);
+				hw_channel->add_signal(quantity, quantity_flags, unit);
 			}
 		}
 
@@ -105,7 +105,7 @@ void SourceSinkDevice::init_channels()
 		shared_ptr<data::AnalogSignal> current_signal;
 		shared_ptr<data::AnalogSignal> power_signal;
 		for (const auto &channel : chg_name_channels_pair.second) {
-			if (!channel->has_fixed_signal())
+			if (!channel->fixed_signal())
 				continue;
 			auto signal = channel->actual_signal();
 			if (signal->quantity() == data::Quantity::Voltage)
@@ -127,10 +127,9 @@ void SourceSinkDevice::init_channels()
 					shared_from_this(),
 					chg_names, tr("P").toStdString(),
 					aquisition_start_timestamp_);
-			power_channel->init_signal();
+			BaseDevice::add_math_channel(power_channel, chg_name);
 			power_signal = static_pointer_cast<data::AnalogSignal>(
 				power_channel->actual_signal());
-			BaseDevice::add_channel(power_channel, chg_name);
 		}
 
 		// Create resistance channel
@@ -144,8 +143,7 @@ void SourceSinkDevice::init_channels()
 					shared_from_this(),
 					chg_names, tr("R").toStdString(),
 					aquisition_start_timestamp_);
-			resistance_channel->init_signal();
-			BaseDevice::add_channel(resistance_channel, chg_name);
+			BaseDevice::add_math_channel(resistance_channel, chg_name);
 		}
 
 		// Create Wh channel
@@ -159,8 +157,7 @@ void SourceSinkDevice::init_channels()
 					shared_from_this(),
 					chg_names, tr("Wh").toStdString(),
 					aquisition_start_timestamp_);
-			wh_channel->init_signal();
-			BaseDevice::add_channel(wh_channel, chg_name);
+			BaseDevice::add_math_channel(wh_channel, chg_name);
 		}
 
 		// Create Ah channel
@@ -174,8 +171,7 @@ void SourceSinkDevice::init_channels()
 					shared_from_this(),
 					chg_names, tr("Ah").toStdString(),
 					aquisition_start_timestamp_);
-			ah_channel->init_signal();
-			BaseDevice::add_channel(ah_channel, chg_name);
+			BaseDevice::add_math_channel(ah_channel, chg_name);
 		}
 	}
 }

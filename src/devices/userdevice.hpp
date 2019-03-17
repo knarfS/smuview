@@ -44,7 +44,7 @@ class UserDevice : public BaseDevice
 
 public:
 	UserDevice(const shared_ptr<sigrok::Context> &sr_context,
-		QString vendor, QString model, QString version);
+		string vendor, string model, string version);
 
 	/**
 	 * Inits all configurables for this hardware device. Not used in here!
@@ -97,17 +97,12 @@ protected:
 	void feed_in_analog(shared_ptr<sigrok::Analog> sr_analog) override;
 
 private:
-	static unsigned int user_device_counter_;
-
 	double frame_start_timestamp_;
-	QString vendor_;
-	QString model_;
-	QString version_;
+	string vendor_;
+	string model_;
+	string version_;
 	unsigned int device_index_;
 	unsigned int channel_index_;
-
-Q_SIGNALS:
-	void channel_changed(QString);
 
 };
 

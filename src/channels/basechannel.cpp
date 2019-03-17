@@ -20,7 +20,11 @@
  */
 
 #include <cassert>
+#include <memory>
 #include <set>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include <QDebug>
 #include <QString>
@@ -29,27 +33,36 @@
 
 #include "basechannel.hpp"
 #include "src/util.hpp"
-#include "src/channels/basechannel.hpp"
+#include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
+#include "src/data/datautil.hpp"
 #include "src/devices/basedevice.hpp"
 
 using std::make_pair;
 using std::make_shared;
 using std::set;
+using std::shared_ptr;
+using std::string;
+using std::vector;
+using sv::data::measured_quantity_t;
+
+Q_DECLARE_METATYPE(std::shared_ptr<sv::data::BaseSignal>)
 
 namespace sv {
 namespace channels {
 
 BaseChannel::BaseChannel(
+		shared_ptr<sigrok::Channel> sr_channel,
 		shared_ptr<devices::BaseDevice> parent_device,
 		set<string> channel_group_names,
 		double channel_start_timestamp) :
+	sr_channel_(sr_channel),
+	name_(""),
 	channel_start_timestamp_(channel_start_timestamp),
-	has_fixed_signal_(false),
-	actual_signal_(nullptr),
 	parent_device_(parent_device),
 	channel_group_names_(channel_group_names),
-	name_("")
+	fixed_signal_(false),
+	actual_signal_(nullptr)
 {
 	qWarning() << "Init channel " << QString::fromStdString(name_)
 		<< ", channel_start_timestamp = "
@@ -62,14 +75,119 @@ BaseChannel::~BaseChannel()
 		QString::fromStdString(name());
 }
 
-bool BaseChannel::has_fixed_signal()
+shared_ptr<sigrok::Channel> BaseChannel::sr_channel() const
 {
-	return has_fixed_signal_;
+	return sr_channel_;
 }
 
-void BaseChannel::set_fixed_signal(bool has_fixed_signal)
+string BaseChannel::name() const
 {
-	has_fixed_signal_ = has_fixed_signal;
+	return (sr_channel_) ? sr_channel_->name() : name_;
+}
+
+void BaseChannel::set_name(string name)
+{
+	if (sr_channel_)
+		sr_channel_->set_name(name);
+
+	name_ = name;
+	Q_EMIT name_changed(name);
+}
+
+QString BaseChannel::display_name() const
+{
+	return QString::fromStdString(name_);
+}
+
+unsigned int BaseChannel::index() const
+{
+	return (sr_channel_) ? sr_channel_->index() : channel_index_;
+}
+
+ChannelType BaseChannel::type() const
+{
+	return channel_type_;
+}
+
+bool BaseChannel::enabled() const
+{
+	return (sr_channel_) ? sr_channel_->enabled() : true;
+}
+
+void BaseChannel::set_enabled(bool enabled)
+{
+	if (sr_channel_) {
+		sr_channel_->set_enabled(enabled);
+		Q_EMIT enabled_changed(enabled);
+	}
+}
+
+bool BaseChannel::fixed_signal()
+{
+	return fixed_signal_;
+}
+
+void BaseChannel::set_fixed_signal(bool fixed_signal)
+{
+	fixed_signal_ = fixed_signal;
+}
+
+shared_ptr<devices::BaseDevice> BaseChannel::parent_device()
+{
+	return parent_device_;
+}
+
+set<string> BaseChannel::channel_group_names() const
+{
+	return channel_group_names_;
+}
+
+void BaseChannel::add_channel_group_name(string channel_group_name)
+{
+	channel_group_names_.insert(channel_group_name);
+}
+
+void BaseChannel::add_signal(shared_ptr<data::AnalogSignal> signal)
+{
+	if (signal_map_.size() > 0 && fixed_signal_) {
+		qWarning() << "Can't add new signal " << signal->name() <<
+			"to fixed channel " << QString::fromStdString(name());
+		return;
+	}
+
+	connect(this, SIGNAL(channel_start_timestamp_changed(double)),
+			signal.get(), SLOT(on_channel_start_timestamp_changed(double)));
+
+	measured_quantity_t mq = make_pair(
+		signal->quantity(), signal->quantity_flags());
+	if (signal_map_.count(mq) > 0) {
+		signal_map_[mq].push_back(signal);
+	}
+	else {
+		signal_map_.insert(
+			make_pair(mq, vector<shared_ptr<data::BaseSignal>> { signal }));
+	}
+
+	actual_signal_ = signal;
+	Q_EMIT signal_added(signal);
+}
+
+shared_ptr<data::BaseSignal> BaseChannel::add_signal(
+	data::Quantity quantity,
+	set<data::QuantityFlag> quantity_flags,
+	data::Unit unit)
+{
+	/*
+	 * TODO: Remove shared_from_this() / (channel pointer in signal), so that
+	 *       "add_signal()" can be called from MathChannel ctor.
+	 */
+	shared_ptr<data::AnalogSignal> signal = make_shared<data::AnalogSignal>(
+		quantity, quantity_flags, unit,
+		shared_from_this(), channel_start_timestamp_);
+
+	this->add_signal(signal);
+
+	return signal;
 }
 
 shared_ptr<data::BaseSignal> BaseChannel::actual_signal()
@@ -77,7 +195,8 @@ shared_ptr<data::BaseSignal> BaseChannel::actual_signal()
 	return actual_signal_;
 }
 
-map<BaseChannel::quantity_t, shared_ptr<data::BaseSignal>> BaseChannel::signal_map()
+map<measured_quantity_t, vector<shared_ptr<data::BaseSignal>>>
+	BaseChannel::signal_map()
 {
 	return signal_map_;
 }
@@ -89,52 +208,6 @@ void BaseChannel::clear_signals()
 		signal_pair.second->
 	}
 	*/
-}
-
-shared_ptr<devices::BaseDevice> BaseChannel::parent_device()
-{
-	return parent_device_;
-}
-
-void BaseChannel::add_channel_group_name(string channel_group_name)
-{
-	channel_group_names_.insert(channel_group_name);
-}
-
-set<string> BaseChannel::channel_group_names() const
-{
-	return channel_group_names_;
-}
-
-string BaseChannel::name() const
-{
-	return name_;
-}
-
-void BaseChannel::set_name(string name)
-{
-	name_ = name;
-	name_changed(name);
-}
-
-QString BaseChannel::display_name() const
-{
-	return QString::fromStdString(name_);
-}
-
-bool BaseChannel::enabled() const
-{
-	return true;
-}
-
-void BaseChannel::set_enabled(bool value)
-{
-	(void)value;
-}
-
-ChannelType BaseChannel::type() const
-{
-	return channel_type_;
 }
 
 void BaseChannel::save_settings(QSettings &settings) const

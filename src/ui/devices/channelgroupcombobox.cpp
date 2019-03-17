@@ -62,8 +62,8 @@ const QString ChannelGroupComboBox::selected_channel_group()
 void ChannelGroupComboBox::setup_ui()
 {
 	if (device_) {
-		for (const auto &cg_name_map : device_->channel_group_name_map()) {
-			this->addItem(QString::fromStdString(cg_name_map.first));
+		for (const auto &chg_pair : device_->channel_group_map()) {
+			this->addItem(QString::fromStdString(chg_pair.first));
 		}
 	}
 }

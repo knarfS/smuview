@@ -36,22 +36,18 @@ using std::static_pointer_cast;
 namespace sv {
 namespace devices {
 
-unsigned int UserDevice::user_device_counter_ = 0;
-
 UserDevice::UserDevice(
 		const shared_ptr<sigrok::Context> &sr_context,
-		QString vendor, QString model, QString version) :
+		string vendor, string model, string version) :
 	BaseDevice(sr_context, nullptr),
 	vendor_(vendor),
 	model_(model),
 	version_(version),
 	channel_index_(0)
 {
-	auto sr_device = sr_context_->create_user_device(
-		vendor_.toStdString(), model_.toStdString(), version_.toStdString());
+	auto sr_device = sr_context_->create_user_device(vendor_, model_, version_);
 	sr_device_ = sr_device;
 	device_type_ = DeviceType::UserDevice;
-	device_index_ = UserDevice::user_device_counter_++;
 }
 
 void UserDevice::init()
@@ -60,7 +56,13 @@ void UserDevice::init()
 
 string UserDevice::id() const
 {
-	return "userdevice:" + std::to_string(device_index_);
+	string conn_id = sr_device()->connection_id();
+	if (conn_id.empty()) {
+		// NOTE: sigrok doesn't alway return a connection_id.
+		conn_id = std::to_string(device_index_);
+	}
+
+	return "userdevice:" + conn_id;
 }
 
 string UserDevice::name() const

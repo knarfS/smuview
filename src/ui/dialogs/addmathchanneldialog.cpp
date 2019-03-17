@@ -39,11 +39,12 @@
 #include "src/channels/basechannel.hpp"
 #include "src/channels/dividechannel.hpp"
 #include "src/channels/integratechannel.hpp"
+#include "src/channels/mathchannel.hpp"
 #include "src/channels/movingavgchannel.hpp"
-#include "src/channels/userchannel.hpp"
 #include "src/channels/multiplysfchannel.hpp"
 #include "src/channels/multiplysschannel.hpp"
 #include "src/data/analogsignal.hpp"
+#include "src/data/datautil.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/ui/data/quantitycombobox.hpp"
 #include "src/ui/data/quantityflagslist.hpp"
@@ -286,7 +287,7 @@ void AddMathChannelDialog::setup_ui_movingavg_signal_tab()
 	tab_widget_->addTab(widget, title);
 }
 
-shared_ptr<channels::UserChannel> AddMathChannelDialog::channel() const
+shared_ptr<channels::MathChannel> AddMathChannelDialog::channel() const
 {
 	return channel_;
 }
@@ -307,8 +308,12 @@ void AddMathChannelDialog::accept()
 	}
 
 	auto device = device_box_->selected_device();
-	set<string> channel_group_names
-		{ channel_group_box_->selected_channel_group().toStdString() };
+	string chg_name = channel_group_name().toStdString();
+	set<string> channel_group_names { chg_name };
+
+	auto quantity = quantity_box_->selected_quantity();
+	auto quantity_flags = quantity_flags_list_->selected_quantity_flags();
+	auto unit = unit_box_->selected_unit();
 
 	switch (tab_widget_->currentIndex()) {
 	case 0: {
@@ -319,7 +324,6 @@ void AddMathChannelDialog::accept()
 					QMessageBox::Ok);
 				return;
 			}
-			// TODO: Try to use BaseSignal without cast.
 			auto signal_1 = static_pointer_cast<sv::data::AnalogSignal>(
 				m_ss_signal1_->selected_signal());
 
@@ -337,11 +341,8 @@ void AddMathChannelDialog::accept()
 			if (signal_2->signal_start_timestamp() < start_timestamp)
 				start_timestamp = signal_2->signal_start_timestamp();
 
-			// TODO: Try to use BaseSignals
 			channel_ = make_shared<channels::MultiplySSChannel>(
-				quantity_box_->selected_quantity(),
-				quantity_flags_list_->selected_quantity_flags(),
-				unit_box_->selected_unit(),
+				quantity, quantity_flags, unit,
 				signal_1, signal_2,
 				device, channel_group_names, name_edit_->text().toStdString(),
 				start_timestamp);
@@ -377,9 +378,7 @@ void AddMathChannelDialog::accept()
 			}
 
 			channel_ = make_shared<channels::MultiplySFChannel>(
-				quantity_box_->selected_quantity(),
-				quantity_flags_list_->selected_quantity_flags(),
-				unit_box_->selected_unit(),
+				quantity, quantity_flags, unit,
 				signal, factor,
 				device, channel_group_names, name_edit_->text().toStdString(),
 				signal->signal_start_timestamp());
@@ -411,9 +410,7 @@ void AddMathChannelDialog::accept()
 				start_timestamp = signal2->signal_start_timestamp();
 
 			channel_ = make_shared<channels::DivideChannel>(
-				quantity_box_->selected_quantity(),
-				quantity_flags_list_->selected_quantity_flags(),
-				unit_box_->selected_unit(),
+				quantity, quantity_flags, unit,
 				signal1, signal2,
 				device, channel_group_names, name_edit_->text().toStdString(),
 				start_timestamp);
@@ -449,9 +446,7 @@ void AddMathChannelDialog::accept()
 			}
 
 			channel_ = make_shared<channels::AddSCChannel>(
-				quantity_box_->selected_quantity(),
-				quantity_flags_list_->selected_quantity_flags(),
-				unit_box_->selected_unit(),
+				quantity, quantity_flags, unit,
 				signal, constant,
 				device, channel_group_names, name_edit_->text().toStdString(),
 				signal->signal_start_timestamp());
@@ -469,9 +464,7 @@ void AddMathChannelDialog::accept()
 				i_s_signal_->selected_signal());
 
 			channel_ = make_shared<channels::IntegrateChannel>(
-				quantity_box_->selected_quantity(),
-				quantity_flags_list_->selected_quantity_flags(),
-				unit_box_->selected_unit(),
+				quantity, quantity_flags, unit,
 				signal,
 				device, channel_group_names, name_edit_->text().toStdString(),
 				signal->signal_start_timestamp());
@@ -491,9 +484,7 @@ void AddMathChannelDialog::accept()
 			uint num_samples = ma_num_samples_box_->value();
 
 			channel_ = make_shared<channels::MovingAvgChannel>(
-				quantity_box_->selected_quantity(),
-				quantity_flags_list_->selected_quantity_flags(),
-				unit_box_->selected_unit(),
+				quantity, quantity_flags, unit,
 				signal, num_samples,
 				device, channel_group_names, name_edit_->text().toStdString(),
 				signal->signal_start_timestamp());
@@ -503,7 +494,7 @@ void AddMathChannelDialog::accept()
 		break;
 	}
 
-	channel_->init_signal();
+	device_->add_math_channel(channel_, chg_name);
 
 	QDialog::accept();
 }

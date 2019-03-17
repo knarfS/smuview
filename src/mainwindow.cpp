@@ -149,13 +149,10 @@ void MainWindow::add_welcome_tab()
 
 void MainWindow::add_user_device_tab()
 {
-	QString vendor(tr("SmuView"));
-	QString model(tr("User Device")); // TODO: enumerate
-	QString version(SV_VERSION_STRING);
-
-	auto device = make_shared<devices::UserDevice>(
-		session_->sr_context, vendor, model, version);
-	session_->add_device(device, [&](QString message) {
+	// TODO: handle in session/device. Must be called, before the device tab
+	//       tries to access the device (device is not opend yet).
+	// TODO: Pass the error_handler somehow in main.cpp?
+	auto device = session_->add_user_device([&](QString message) {
 		session_error("Aquisition failed", message);
 	});
 

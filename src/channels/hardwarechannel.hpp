@@ -27,7 +27,6 @@
 #include <QObject>
 
 #include "src/channels/basechannel.hpp"
-#include "src/data/datautil.hpp"
 
 using std::set;
 using std::shared_ptr;
@@ -40,10 +39,6 @@ class Channel;
 
 namespace sv {
 
-namespace data {
-class BaseSignal;
-}
-
 namespace devices {
 class BaseDevice;
 }
@@ -55,6 +50,10 @@ class HardwareChannel : public BaseChannel
 	Q_OBJECT
 
 public:
+	/**
+	 * A HardwareChannel does handle interleaved samples from a
+	 * (hardware) device.
+	 */
 	HardwareChannel(
 		shared_ptr<sigrok::Channel> sr_channel,
 		shared_ptr<devices::BaseDevice> parent_device,
@@ -63,58 +62,11 @@ public:
 
 public:
 	/**
-	 * Returns enabled status of this channel.
-	 */
-	bool enabled() const override;
-
-	/**
-	 * Sets the enabled status of this channel.
-	 * @param value Boolean value to set.
-	 */
-	void set_enabled(bool value) override;
-
-	/**
-	 * Gets the index number of this sigrok channel
-	 */
-	unsigned int index() const override;
-
-	/**
-	 * Sets the name of the signal.
-	 */
-	void set_name(string name) override;
-
-	/**
-	 * Returns the underlying SR channel.
-	 */
-	shared_ptr<sigrok::Channel> sr_channel() const;
-
-	/**
-	 * Inits a signal
-	 *
-	 * TODO: Move to base!
-	 */
-	shared_ptr<data::BaseSignal> init_signal(
-		data::Quantity quantity,
-		set<data::QuantityFlag> quantity_flags,
-		data::Unit unit);
-
-	/**
-	 * Add a single sample with timestamp to the channel.
-	 *
-	 * TODO: Can this be removed?
-	 */
-	void push_sample_sr_analog(
-		void *sample, double timestamp, shared_ptr<sigrok::Analog> sr_analog);
-
-	/**
 	 * Add one or more interleaved samples with timestamps to the channel
 	 */
 	void push_interleaved_samples(const float *data, size_t sample_count,
 		size_t stride, double timestamp, uint64_t samplerate,
 		shared_ptr<sigrok::Analog> sr_analog);
-
-protected:
-	shared_ptr<sigrok::Channel> sr_channel_;
 
 };
 

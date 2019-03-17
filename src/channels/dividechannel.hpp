@@ -28,7 +28,7 @@
 #include <QObject>
 
 #include "src/channels/basechannel.hpp"
-#include "src/channels/userchannel.hpp"
+#include "src/channels/mathchannel.hpp"
 #include "src/data/datautil.hpp"
 
 using std::mutex;
@@ -48,7 +48,7 @@ class BaseDevice;
 
 namespace channels {
 
-class DivideChannel : public UserChannel
+class DivideChannel : public MathChannel
 {
 	Q_OBJECT
 
