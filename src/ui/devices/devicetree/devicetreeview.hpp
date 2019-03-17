@@ -60,8 +60,9 @@ public:
 		bool is_device_checkable, bool is_channel_group_checkable,
 		bool is_channel_checkable, bool is_signal_checkable,
 		bool is_configurable_checkable, bool is_config_key_checkable,
-		shared_ptr<sv::devices::BaseDevice> expanded_device = 0,
-		QWidget *parent = 0);
+		bool is_auto_expand, QWidget *parent = 0);
+
+	void select_device(shared_ptr<sv::devices::BaseDevice> device);
 
 	void select_item(TreeItem *item);
 	TreeItem *selected_item() const;
@@ -70,6 +71,8 @@ public:
 	vector<shared_ptr<sv::channels::BaseChannel>> checked_channels() const;
 	void check_signals(const vector<shared_ptr<sv::data::BaseSignal>> signals);
 	vector<shared_ptr<sv::data::BaseSignal>> checked_signals() const;
+
+	void expand_device(shared_ptr<sv::devices::BaseDevice> device);
 
 private:
 	void setup_ui();
@@ -82,7 +85,7 @@ private:
 	bool is_signal_checkable_;
 	bool is_configurable_checkable_;
 	bool is_config_key_checkable_;
-	shared_ptr<sv::devices::BaseDevice> expanded_device_;
+	bool is_auto_expand_;
 	DeviceTreeModel *tree_model_;
 
 private Q_SLOTS:

@@ -48,8 +48,7 @@ DeviceTreeView::DeviceTreeView(const Session &session,
 		bool is_device_checkable, bool is_channel_group_checkable,
 		bool is_channel_checkable, bool is_signal_checkable,
 		bool is_configurable_checkable, bool is_config_key_checkable,
-		shared_ptr<sv::devices::BaseDevice> expanded_device,
-		QWidget *parent) :
+		bool is_auto_expand, QWidget *parent) :
 	QTreeView(parent),
 	session_(session),
 	is_device_checkable_(is_device_checkable),
@@ -58,11 +57,17 @@ DeviceTreeView::DeviceTreeView(const Session &session,
 	is_signal_checkable_(is_signal_checkable),
 	is_configurable_checkable_(is_configurable_checkable),
 	is_config_key_checkable_(is_config_key_checkable),
-	expanded_device_(expanded_device)
+	is_auto_expand_(is_auto_expand)
 {
 	setup_ui();
 }
 
+
+void DeviceTreeView::select_device(shared_ptr<sv::devices::BaseDevice> device)
+{
+	TreeItem *item = tree_model_->find_device(device);
+	this->select_item(item);
+}
 
 void DeviceTreeView::select_item(TreeItem *item)
 {
@@ -179,6 +184,12 @@ vector<shared_ptr<sv::data::BaseSignal>>
 	return signals;
 }
 
+void DeviceTreeView::expand_device(shared_ptr<sv::devices::BaseDevice> device)
+{
+	TreeItem *item = tree_model_->find_device(device);
+	this->expand_recursive(item);
+}
+
 void DeviceTreeView::setup_ui()
 {
 	tree_model_ = new DeviceTreeModel(session_,
@@ -189,13 +200,10 @@ void DeviceTreeView::setup_ui()
     this->setModel(tree_model_);
 	this->setHeaderHidden(true);
 
-	if (expanded_device_) {
-		TreeItem *item = tree_model_->find_device(expanded_device_);
-		this->expand_recursive(item);
-	}
-	else {
+	if (is_auto_expand_)
 		this->expandAll();
-	}
+	else
+		this->collapseAll();
 
 	connect(tree_model_, SIGNAL(rowsInserted(const QModelIndex &, int, int)),
 		this, SLOT(on_rows_inserted(const QModelIndex &, int, int)));
@@ -218,7 +226,7 @@ void DeviceTreeView::on_rows_inserted(const QModelIndex &model_index,
 	(void)first;
 	(void)last;
 
-	if (!expanded_device_)
+	if (is_auto_expand_)
 		this->expand_recursive(tree_model_->itemFromIndex(model_index));
 }
 

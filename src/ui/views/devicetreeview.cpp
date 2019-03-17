@@ -70,7 +70,7 @@ void DeviceTreeView::setup_ui()
 {
 	QVBoxLayout *layout = new QVBoxLayout();
 	device_tree_ = new devices::devicetree::DeviceTreeView(session(),
-		false, false, false, false, false, false);
+		false, false, false, false, false, false, true);
 	layout->addWidget(device_tree_);
 	layout->setContentsMargins(2, 2, 2, 2);
 

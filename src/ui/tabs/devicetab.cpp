@@ -186,7 +186,7 @@ void DeviceTab::on_action_open_triggered()
 
 void DeviceTab::on_action_save_as_triggered()
 {
-	ui::dialogs::SaveDialog dlg(session(), device_->signals());
+	ui::dialogs::SaveDialog dlg(session(), device_);
 	dlg.exec();
 }
 

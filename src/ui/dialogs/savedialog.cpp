@@ -50,11 +50,11 @@ namespace ui {
 namespace dialogs {
 
 SaveDialog::SaveDialog(const Session &session,
-		const vector<shared_ptr<sv::data::BaseSignal>> selected_signals,
+		const shared_ptr<sv::devices::BaseDevice> selected_device,
 		QWidget *parent) :
 	QDialog(parent),
 	session_(session),
-	selected_signals_(selected_signals)
+	selected_device_(selected_device)
 {
 	setup_ui();
 }
@@ -72,8 +72,9 @@ void SaveDialog::setup_ui()
 	QVBoxLayout *main_layout = new QVBoxLayout;
 
 	device_tree_ = new ui::devices::devicetree::DeviceTreeView(
-		session_, false, false, false, true, false, false);
-	device_tree_->check_signals(selected_signals_);
+		session_, false, false, false, true, false, false, false);
+	device_tree_->expand_device(selected_device_);
+	device_tree_->check_signals(selected_device_->signals());
 	main_layout->addWidget(device_tree_);
 
 	QFormLayout *form_layout = new QFormLayout();
