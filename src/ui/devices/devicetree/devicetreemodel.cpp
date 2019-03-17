@@ -101,6 +101,7 @@ void DeviceTreeModel::add_device(shared_ptr<sv::devices::BaseDevice> device)
 		device_item->setData(QVariant::fromValue(device), DeviceTreeModel::DataRole);
 		device_item->setData(device->full_name(), DeviceTreeModel::SortRole);
 		device_item->setCheckable(is_device_checkable_);
+		device_item->setEditable(false);
 		invisibleRootItem()->appendRow(device_item);
 		endInsertRows();
 
@@ -151,6 +152,7 @@ void DeviceTreeModel::add_channel(shared_ptr<channels::BaseChannel> channel,
 				new_parent_item->setData(chg_name_qstr, DeviceTreeModel::DataRole);
 				new_parent_item->setData(chg_name_qstr, DeviceTreeModel::SortRole);
 				new_parent_item->setCheckable(is_channel_group_checkable_);
+				new_parent_item->setEditable(false);
 				parent_item->appendRow(new_parent_item);
 				endInsertRows();
 
@@ -171,6 +173,7 @@ void DeviceTreeModel::add_channel(shared_ptr<channels::BaseChannel> channel,
 			channel_item->setData(QVariant::fromValue(channel), DeviceTreeModel::DataRole);
 			channel_item->setData(channel->index(), DeviceTreeModel::SortRole);
 			channel_item->setCheckable(is_channel_checkable_);
+			channel_item->setEditable(false);
 			new_parent_item->appendRow(channel_item);
 			endInsertRows();
 
@@ -201,6 +204,7 @@ void DeviceTreeModel::add_signal(shared_ptr<sv::data::BaseSignal> signal,
 		signal_item->setData(QVariant::fromValue(signal), DeviceTreeModel::DataRole);
 		signal_item->setData(signal->name(), DeviceTreeModel::SortRole);
 		signal_item->setCheckable(is_signal_checkable_);
+		signal_item->setEditable(false);
 		parent_item->appendRow(signal_item);
 		endInsertRows();
 
