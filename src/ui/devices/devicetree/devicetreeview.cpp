@@ -89,6 +89,15 @@ void DeviceTreeView::check_channels(
 
 	QList<QStandardItem *> all_items =
 		tree_model_->findItems("", Qt::MatchContains | Qt::MatchRecursive);
+
+	// First uncheck all channels
+	for (const auto &item : all_items) {
+		if (item->type() == (int)TreeItemType::ChannelItem) {
+			item->setCheckState(Qt::Unchecked);
+		}
+	}
+
+	// Now check all channels that are in the channels vector
 	for (const auto &item : all_items) {
 		if (item->type() == (int)TreeItemType::ChannelItem) {
 			auto item_data =
@@ -96,8 +105,6 @@ void DeviceTreeView::check_channels(
 			for (const auto &channel :channels) {
 				if (item_data.get() == channel.get())
 					item->setCheckState(Qt::Checked);
-				else
-					item->setCheckState(Qt::Unchecked);
 			}
 		}
 	}
@@ -131,6 +138,15 @@ void DeviceTreeView::check_signals(
 
 	QList<QStandardItem *> all_items =
 		tree_model_->findItems("", Qt::MatchContains | Qt::MatchRecursive);
+
+	// First uncheck all signals
+	for (const auto &item : all_items) {
+		if (item->type() == (int)TreeItemType::SignalItem) {
+			item->setCheckState(Qt::Unchecked);
+		}
+	}
+
+	// Now check all signals that are in the signals vector
 	for (const auto &item : all_items) {
 		if (item->type() == (int)TreeItemType::SignalItem) {
 			auto item_data =
@@ -138,8 +154,6 @@ void DeviceTreeView::check_signals(
 			for (const auto &signal : signals) {
 				if (item_data.get() == signal.get())
 					item->setCheckState(Qt::Checked);
-				else
-					item->setCheckState(Qt::Unchecked);
 			}
 		}
 	}
