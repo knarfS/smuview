@@ -17,10 +17,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <string>
+
 #include <QDebug>
 
 #include "baseproperty.hpp"
 #include "src/devices/configurable.hpp"
+#include "src/devices/deviceutil.hpp"
+
+using std::string;
 
 namespace sv {
 namespace devices {
@@ -71,6 +76,16 @@ bool BaseProperty::is_setable() const
 bool BaseProperty::is_listable() const
 {
 	return is_listable_;
+}
+
+string BaseProperty::name() const
+{
+	return deviceutil::format_config_key(config_key_).toStdString();
+}
+
+QString BaseProperty::display_name() const
+{
+	return deviceutil::format_config_key(config_key_);
 }
 
 } // namespace properties

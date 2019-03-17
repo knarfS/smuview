@@ -23,6 +23,7 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -41,6 +42,7 @@ using std::map;
 using std::pair;
 using std::set;
 using std::shared_ptr;
+using std::string;
 using std::vector;
 
 namespace sigrok {
@@ -66,7 +68,8 @@ class Configurable :
 
 private:
 	Configurable(const shared_ptr<sigrok::Configurable> sr_configurable,
-		const QString device_name, const DeviceType device_type);
+		unsigned int configurable_index,
+		const string device_name, const DeviceType device_type);
 
 public:
 	template<typename ...Arg>
@@ -111,7 +114,24 @@ public:
 	bool has_list_config(devices::ConfigKey) const;
 	bool list_config(devices::ConfigKey, Glib::VariantContainerBase &);
 
-	QString name() const;
+	/**
+	 * Get the name of this configurable.
+	 */
+	string name() const;
+
+	/**
+	 * Get the display name of this configurable.
+	 */
+	QString display_name() const;
+
+	/**
+	 * Get the unique index number of this configurable.
+	 */
+	unsigned int index() const;
+
+	/**
+	 * Get the type of this configurable.
+	 */
 	DeviceType device_type() const;
 
 	set<devices::ConfigKey> getable_configs() const;
@@ -127,7 +147,8 @@ public:
 
 private:
 	const shared_ptr<sigrok::Configurable> sr_configurable_;
-	const QString device_name_;
+	unsigned int configurable_index_;
+	const string device_name_;
 	const DeviceType device_type_;
 
 	set<devices::ConfigKey> getable_configs_;

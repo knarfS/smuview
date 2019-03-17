@@ -57,7 +57,7 @@ DemoControlView::DemoControlView(Session &session,
 
 QString DemoControlView::title() const
 {
-	return configurable_->name() + " " + tr("Control");
+	return tr("Control") + " " + configurable_->display_name();
 }
 
 void DemoControlView::setup_ui()

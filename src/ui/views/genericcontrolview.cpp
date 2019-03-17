@@ -46,7 +46,7 @@ GenericControlView::GenericControlView(Session &session,
 
 QString GenericControlView::title() const
 {
-	return configurable_->name() + " " + tr("Control");
+	return tr("Control") + " " + configurable_->display_name();
 }
 
 void GenericControlView::setup_ui()

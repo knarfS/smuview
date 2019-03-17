@@ -293,7 +293,7 @@ QWidget *AboutDialog::get_device_page(QWidget *parent) const
 		for (const auto &c_pair : hw_device->configurable_map()) {
 			auto configurable = c_pair.second;
 			s.append(QString("<tr><td>&nbsp;</td><td>%1</td>").
-				arg(configurable->name()));
+				arg(configurable->display_name()));
 			s.append(QString("<td>GET</td><td>Value</td><td>SET</td>"));
 			s.append(QString("<td>LIST</td><td>Values</td></tr>"));
 			auto props = configurable->properties();

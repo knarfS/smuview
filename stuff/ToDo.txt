@@ -1,0 +1,1 @@
+- Configurable: use std::string (name_, ....)

@@ -22,14 +22,14 @@
 
 #include <memory>
 #include <mutex>
+#include <set>
 #include <string>
 #include <vector>
 
 #include <QStandardItem>
 #include <QStandardItemModel>
 
-#include "src/devices/basedevice.hpp"
-
+using std::set;
 using std::shared_ptr;
 using std::string;
 using std::vector;
@@ -37,6 +37,20 @@ using std::vector;
 namespace sv {
 
 class Session;
+
+namespace channels {
+class BaseChannel;
+}
+namespace data {
+class BaseSignal;
+}
+namespace devices {
+class BaseDevice;
+class Configurable;
+namespace properties {
+class BaseProperty;
+}
+}
 
 namespace ui {
 namespace devices {
@@ -53,7 +67,7 @@ public:
 		bool is_device_checkable, bool is_channel_group_checkable,
 		bool is_channel_checkable, bool is_signal_checkable,
 		bool is_configurable_checkable, bool is_config_key_checkable,
-		QObject *parent = 0);
+		bool show_configurable, QObject *parent = 0);
 
 	TreeItem *find_device(shared_ptr<sv::devices::BaseDevice> device) const;
 
@@ -62,17 +76,31 @@ public:
 
 private:
 	void setup_model();
+
 	void add_device(shared_ptr<sv::devices::BaseDevice> device);
-	void add_channel(shared_ptr<channels::BaseChannel> channel,
+	TreeItem *add_channel_group(
+		string channel_group_name, TreeItem *device_item);
+	void add_channel(shared_ptr<sv::channels::BaseChannel> channel,
 		set<string> channel_group_names, TreeItem *parent_item);
 	void add_signal(shared_ptr<sv::data::BaseSignal> signal,
 		TreeItem *parent_item);
+	void add_configurable(shared_ptr<sv::devices::Configurable> configurable,
+		TreeItem *device_item);
+	void add_property(shared_ptr<sv::devices::properties::BaseProperty> property,
+		TreeItem *configurable_item);
+
 	TreeItem *find_channel_group(string channel_group_name,
 		TreeItem *parent_item) const;
 	TreeItem *find_channel(shared_ptr<sv::channels::BaseChannel> channel,
 		set<string> channel_group_names, TreeItem *parent_item) const;
 	TreeItem *find_signal(shared_ptr<sv::data::BaseSignal> signal,
 		TreeItem *parent_item) const;
+	TreeItem *find_configurable(
+		shared_ptr<sv::devices::Configurable> configurable,
+		TreeItem *device_item) const;
+	TreeItem *find_property(
+		shared_ptr<sv::devices::properties::BaseProperty> property,
+		TreeItem *configurable_item) const;
 
 	const Session &session_;
 	bool is_device_checkable_;
@@ -81,6 +109,7 @@ private:
 	bool is_signal_checkable_;
 	bool is_configurable_checkable_;
 	bool is_config_key_checkable_;
+	bool show_configurable_;
 	std::recursive_mutex mutex_;
 
 private Q_SLOTS:

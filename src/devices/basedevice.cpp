@@ -43,6 +43,7 @@
 #include "src/devices/configurable.hpp"
 
 #define USER_CHANNEL_START_INDEX 1000
+#define CONFIGURABLE_START_INDEX 5000
 
 using std::bad_alloc;
 using std::dynamic_pointer_cast;
@@ -65,6 +66,7 @@ BaseDevice::BaseDevice(const shared_ptr<sigrok::Context> sr_context,
 	sr_device_(sr_device),
 	device_open_(false),
 	next_channel_index_(USER_CHANNEL_START_INDEX),
+	next_configurable_index_(CONFIGURABLE_START_INDEX),
 	frame_began_(false)
 {
 	// Set up a sigrok session per smuvierw device

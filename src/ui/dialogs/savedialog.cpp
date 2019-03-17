@@ -72,7 +72,7 @@ void SaveDialog::setup_ui()
 	QVBoxLayout *main_layout = new QVBoxLayout;
 
 	device_tree_ = new ui::devices::devicetree::DeviceTreeView(
-		session_, false, false, false, true, false, false, false);
+		session_, false, false, false, true, false, false, false, false);
 	device_tree_->expand_device(selected_device_);
 	device_tree_->check_signals(selected_device_->signals());
 	main_layout->addWidget(device_tree_);

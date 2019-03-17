@@ -104,13 +104,17 @@ void HardwareDevice::init()
 	if (sr_channel_groups.size() > 0) {
 		for (const auto &sr_cg_pair : sr_channel_groups) {
 			auto sr_cg = sr_cg_pair.second;
-			auto cg_c = Configurable::create(sr_cg, short_name(), device_type_);
+			auto cg_c = Configurable::create(
+				sr_cg, next_configurable_index_++,
+				short_name().toStdString(), device_type_);
 			configurable_map_.insert(make_pair(sr_cg_pair.first, cg_c));
 		}
 	}
 
 	// Init Configurable from Device
-	auto d_c = Configurable::create(sr_device_, short_name(), device_type_);
+	auto d_c = Configurable::create(
+		sr_device_, next_configurable_index_++,
+		short_name().toStdString(), device_type_);
 	configurable_map_.insert(make_pair("", d_c));
 
 	// Sample rate for interleaved samples

@@ -195,8 +195,8 @@ protected:
 
 	shared_ptr<sigrok::Channel> sr_channel_;
 	string name_;
-	ChannelType channel_type_;
 	unsigned int channel_index_;
+	ChannelType channel_type_;
 	double channel_start_timestamp_;
 
 	shared_ptr<devices::BaseDevice> parent_device_;

@@ -64,7 +64,7 @@ void SelectSignalDialog::setup_ui()
 	QVBoxLayout *main_layout = new QVBoxLayout;
 
 	device_tree_ = new devices::devicetree::DeviceTreeView(session_,
-		false, false, false, true, false, false, false);
+		false, false, false, true, false, false, false, false);
 	device_tree_->expand_device(expanded_device_);
 	main_layout->addWidget(device_tree_);
 

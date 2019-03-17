@@ -238,6 +238,7 @@ protected:
 	bool device_open_;
 
 	unsigned int next_channel_index_;
+	unsigned int next_configurable_index_;
 
 	map<string, shared_ptr<devices::Configurable>> configurable_map_;
 	map<string, shared_ptr<channels::BaseChannel>> channel_map_;

@@ -60,7 +60,7 @@ public:
 		bool is_device_checkable, bool is_channel_group_checkable,
 		bool is_channel_checkable, bool is_signal_checkable,
 		bool is_configurable_checkable, bool is_config_key_checkable,
-		bool is_auto_expand, QWidget *parent = 0);
+		bool show_configurable, bool is_auto_expand, QWidget *parent = 0);
 
 	void select_device(shared_ptr<sv::devices::BaseDevice> device);
 
@@ -85,6 +85,7 @@ private:
 	bool is_signal_checkable_;
 	bool is_configurable_checkable_;
 	bool is_config_key_checkable_;
+	bool show_configurable_;
 	bool is_auto_expand_;
 	DeviceTreeModel *tree_model_;
 

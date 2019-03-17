@@ -30,6 +30,7 @@
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
 #include <QDebug>
+#include <QString>
 
 #include "configurable.hpp"
 #include "src/data/datautil.hpp"
@@ -53,8 +54,10 @@ namespace devices {
 
 Configurable::Configurable(
 		const shared_ptr<sigrok::Configurable> sr_configurable,
-		const QString device_name, const DeviceType device_type):
+		unsigned int configurable_index,
+		const string device_name, const DeviceType device_type):
 	sr_configurable_(sr_configurable),
+	configurable_index_(configurable_index),
 	device_name_(device_name),
 	device_type_(device_type)
 {
@@ -84,8 +87,8 @@ void Configurable::init()
 		if (config_key == ConfigKey::Unknown)
 			continue;
 
-		qWarning() << "Configurable::init(): Init " << name() << " - key " <<
-			deviceutil::format_config_key(config_key);
+		qWarning() << "Configurable::init(): Init " << display_name() <<
+			" - key " << deviceutil::format_config_key(config_key);
 
 		const auto sr_capabilities =
 			sr_configurable_->config_capabilities(sr_config_key);
@@ -319,17 +322,30 @@ bool Configurable::list_config(devices::ConfigKey key,
 	return true;
 }
 
-QString Configurable::name() const
+string Configurable::name() const
 {
-	QString name("?");
+	string name = "";
 	if (auto sr = dynamic_pointer_cast<sigrok::HardwareDevice>(sr_configurable_)) {
-		name = device_name_;
+		name = "";
 	}
 	else if (auto sr = dynamic_pointer_cast<sigrok::ChannelGroup>(sr_configurable_)) {
-		name = QString("%1 - %2").arg(device_name_).
-			arg(QString::fromStdString(sr->name()));
+		name = sr->name();
 	}
 	return name;
+}
+
+QString Configurable::display_name() const
+{
+	QString name = QString::fromStdString(this->name());
+	if (name.isEmpty())
+		name = QString::fromStdString(device_name_);
+
+	return name;
+}
+
+unsigned int Configurable::index() const
+{
+	return configurable_index_;
 }
 
 DeviceType Configurable::device_type() const

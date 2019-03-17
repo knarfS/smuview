@@ -48,7 +48,7 @@ DeviceTreeView::DeviceTreeView(const Session &session,
 		bool is_device_checkable, bool is_channel_group_checkable,
 		bool is_channel_checkable, bool is_signal_checkable,
 		bool is_configurable_checkable, bool is_config_key_checkable,
-		bool is_auto_expand, QWidget *parent) :
+		bool show_configurable, bool is_auto_expand, QWidget *parent) :
 	QTreeView(parent),
 	session_(session),
 	is_device_checkable_(is_device_checkable),
@@ -57,6 +57,7 @@ DeviceTreeView::DeviceTreeView(const Session &session,
 	is_signal_checkable_(is_signal_checkable),
 	is_configurable_checkable_(is_configurable_checkable),
 	is_config_key_checkable_(is_config_key_checkable),
+	show_configurable_(show_configurable),
 	is_auto_expand_(is_auto_expand)
 {
 	setup_ui();
@@ -195,13 +196,14 @@ void DeviceTreeView::setup_ui()
 	tree_model_ = new DeviceTreeModel(session_,
 		is_device_checkable_, is_channel_group_checkable_,
 		is_channel_checkable_, is_signal_checkable_,
-		is_configurable_checkable_, is_config_key_checkable_);
+		is_configurable_checkable_, is_config_key_checkable_,
+		show_configurable_);
 
     this->setModel(tree_model_);
 	this->setHeaderHidden(true);
 
 	if (is_auto_expand_)
-		this->expandAll();
+		this->expand_recursive(tree_model_->invisibleRootItem());
 	else
 		this->collapseAll();
 
@@ -212,6 +214,9 @@ void DeviceTreeView::setup_ui()
 void DeviceTreeView::expand_recursive(QStandardItem *item)
 {
 	if (!item)
+		return;
+
+	if (item->type() == (int)TreeItemType::ConfigurableItem)
 		return;
 
 	this->expand(tree_model_->indexFromItem(item));

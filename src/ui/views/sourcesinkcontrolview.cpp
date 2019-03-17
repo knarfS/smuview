@@ -46,7 +46,7 @@ SourceSinkControlView::SourceSinkControlView(Session &session,
 
 QString SourceSinkControlView::title() const
 {
-	return configurable_->name() + " " + tr("Control");
+	return tr("Control") + " " + configurable_->display_name();
 }
 
 void SourceSinkControlView::setup_ui()

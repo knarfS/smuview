@@ -78,7 +78,10 @@ void ConfigurableComboBox::setup_ui()
 		auto configurable = c_pair.second;
 		if (!configurable->is_controllable())
 			continue;
-		this->addItem(configurable->name(), QVariant::fromValue(configurable));
+
+		this->addItem(
+			configurable->display_name(),
+			QVariant::fromValue(configurable));
 	}
 
 }

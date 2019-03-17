@@ -42,7 +42,7 @@ MeasurementControlView::MeasurementControlView(Session &session,
 
 QString MeasurementControlView::title() const
 {
-	return configurable_->name() + " " + tr("Control");
+	return tr("Control") + " " + configurable_->display_name();
 }
 
 void MeasurementControlView::setup_ui()

@@ -19,6 +19,7 @@
 
 #include <memory>
 #include <mutex>
+#include <set>
 #include <string>
 
 #include <QDebug>
@@ -29,11 +30,14 @@
 
 #include "devicetreemodel.hpp"
 #include "src/session.hpp"
-#include "src/devices/basedevice.hpp"
-#include "src/channels/basechannel.hpp"
 #include "src/data/basesignal.hpp"
+#include "src/devices/basedevice.hpp"
+#include "src/devices/configurable.hpp"
+#include "src/devices/properties/baseproperty.hpp"
+#include "src/channels/basechannel.hpp"
 #include "src/ui/devices/devicetree/treeitem.hpp"
 
+using std::set;
 using std::shared_ptr;
 using std::string;
 
@@ -48,7 +52,7 @@ DeviceTreeModel::DeviceTreeModel(const Session &session,
 		bool is_device_checkable, bool is_channel_group_checkable,
 		bool is_channel_checkable, bool is_signal_checkable,
 		bool is_configurable_checkable, bool is_config_key_checkable,
-		QObject *parent) :
+		bool show_configurable, QObject *parent) :
 	QStandardItemModel(parent),
 	session_(session),
 	is_device_checkable_(is_device_checkable),
@@ -56,7 +60,8 @@ DeviceTreeModel::DeviceTreeModel(const Session &session,
 	is_channel_checkable_(is_channel_checkable),
 	is_signal_checkable_(is_signal_checkable),
 	is_configurable_checkable_(is_configurable_checkable),
-	is_config_key_checkable_(is_config_key_checkable)
+	is_config_key_checkable_(is_config_key_checkable),
+	show_configurable_(show_configurable)
 {
 	this->itemPrototype();
 	setup_model();
@@ -119,10 +124,40 @@ void DeviceTreeModel::add_device(shared_ptr<sv::devices::BaseDevice> device)
 			channel_pair.second->channel_group_names(), device_item);
 	}
 
-	// Configurbles and ConfigKeys
-	/* TODO
-	auto configurables_map = device->configurable();
-	*/
+	// Configurables and ConfigKeys
+	for (const auto &configurable_pair : device->configurable_map()) {
+		add_configurable(configurable_pair.second, device_item);
+	}
+}
+
+TreeItem *DeviceTreeModel::add_channel_group(string channel_group_name,
+	TreeItem *device_item)
+{
+	if (channel_group_name.empty())
+		return device_item;
+
+	// Look for already existing channel group
+	TreeItem *chg_item = find_channel_group(channel_group_name, device_item);
+	if (chg_item)
+		return chg_item;
+
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
+
+	QString chg_name_qstr = QString::fromStdString(channel_group_name);
+	beginInsertRows(device_item->index(),
+		device_item->rowCount(), device_item->rowCount()+1);
+	chg_item = new TreeItem(TreeItemType::ChannelGroupItem);
+	chg_item->setText(chg_name_qstr);
+	chg_item->setData(chg_name_qstr, DeviceTreeModel::DataRole);
+	chg_item->setData(chg_name_qstr, DeviceTreeModel::SortRole);
+	chg_item->setCheckable(is_channel_group_checkable_);
+	chg_item->setEditable(false);
+	device_item->appendRow(chg_item);
+	endInsertRows();
+
+	device_item->sortChildren(0);
+
+	return chg_item;
 }
 
 void DeviceTreeModel::add_channel(shared_ptr<channels::BaseChannel> channel,
@@ -139,28 +174,7 @@ void DeviceTreeModel::add_channel(shared_ptr<channels::BaseChannel> channel,
 	}
 
 	for (const auto &chg_name : channel_group_names) {
-		TreeItem *new_parent_item = nullptr;
-		if (!chg_name.empty()) {
-			// Look for already existing channel group
-			new_parent_item = find_channel_group(chg_name, parent_item);
-			if (!new_parent_item) {
-				QString chg_name_qstr = QString::fromStdString(chg_name);
-				beginInsertRows(parent_item->index(),
-					parent_item->rowCount(), parent_item->rowCount()+1);
-				new_parent_item = new TreeItem(TreeItemType::ChannelGroupItem);
-				new_parent_item->setText(chg_name_qstr);
-				new_parent_item->setData(chg_name_qstr, DeviceTreeModel::DataRole);
-				new_parent_item->setData(chg_name_qstr, DeviceTreeModel::SortRole);
-				new_parent_item->setCheckable(is_channel_group_checkable_);
-				new_parent_item->setEditable(false);
-				parent_item->appendRow(new_parent_item);
-				endInsertRows();
-
-				parent_item->sortChildren(0);
-			}
-		}
-		else
-			new_parent_item = parent_item;
+		TreeItem *new_parent_item = add_channel_group(chg_name, parent_item);
 
 		// Look for existing channel
 		set<string> chg_names { chg_name };
@@ -209,6 +223,68 @@ void DeviceTreeModel::add_signal(shared_ptr<sv::data::BaseSignal> signal,
 		endInsertRows();
 
 		parent_item->sortChildren(0);
+	}
+}
+
+void DeviceTreeModel::add_configurable(
+	shared_ptr<sv::devices::Configurable> configurable, TreeItem *device_item)
+{
+	if (!show_configurable_)
+		return;
+
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
+
+	// Find existing configurable in device and all channel groups
+	TreeItem *conf_item = find_configurable(configurable, device_item);
+	if (!conf_item) {
+		TreeItem *new_parent_item = add_channel_group(
+			configurable->name(), device_item);
+
+		// Add configurable item
+		beginInsertRows(new_parent_item->index(),
+			new_parent_item->rowCount(), new_parent_item->rowCount()+1);
+		conf_item = new TreeItem(TreeItemType::ConfigurableItem);
+		conf_item->setText(configurable->display_name());
+		conf_item->setData(QVariant::fromValue(configurable), DeviceTreeModel::DataRole);
+		conf_item->setData(configurable->index(), DeviceTreeModel::SortRole);
+		conf_item->setCheckable(false);
+		conf_item->setEditable(false);
+		new_parent_item->appendRow(conf_item);
+		endInsertRows();
+
+		new_parent_item->sortChildren(0);
+	}
+
+	// ConfigKeys
+	for (const auto &property_pair : configurable->properties()) {
+		add_property(property_pair.second, conf_item);
+	}
+}
+
+void DeviceTreeModel::add_property(
+	shared_ptr<sv::devices::properties::BaseProperty> property,
+	TreeItem *configurable_item)
+{
+	if (!show_configurable_)
+		return;
+
+	std::lock_guard<std::recursive_mutex> lock(mutex_);
+
+	// Look for existing property
+	TreeItem *property_item = find_property(property, configurable_item);
+	if (!property_item) {
+		beginInsertRows(configurable_item->index(),
+			configurable_item->rowCount(), configurable_item->rowCount()+1);
+		property_item = new TreeItem(TreeItemType::PropertyItem);
+		property_item->setText(property->display_name());
+		property_item->setData(QVariant::fromValue(property), DeviceTreeModel::DataRole);
+		property_item->setData(property->display_name(), DeviceTreeModel::SortRole);
+		property_item->setCheckable(is_signal_checkable_);
+		property_item->setEditable(false);
+		configurable_item->appendRow(property_item);
+		endInsertRows();
+
+		configurable_item->sortChildren(0);
 	}
 }
 
@@ -285,12 +361,56 @@ TreeItem *DeviceTreeModel::find_signal (
 	return nullptr;
 }
 
-void DeviceTreeModel::on_device_added(shared_ptr<sv::devices::BaseDevice> device)
+TreeItem *DeviceTreeModel::find_configurable(
+	shared_ptr<sv::devices::Configurable> configurable,
+	TreeItem *device_item) const
+{
+	TreeItem *new_parent_item;
+	if (!configurable->name().empty()) {
+		new_parent_item = find_channel_group(configurable->name(), device_item);
+		if (!new_parent_item)
+			return nullptr;
+	}
+	else {
+		new_parent_item = device_item;
+	}
+
+	for (int i=0; i<new_parent_item->rowCount(); ++i) {
+		auto child = new_parent_item->child(i);
+		if (child->type() != (int)TreeItemType::ConfigurableItem)
+			continue;
+
+		if (configurable.get() == child->data(DeviceTreeModel::DataRole).
+				value<shared_ptr<sv::devices::Configurable>>().get())
+			return (TreeItem *)child;
+	}
+	return nullptr;
+}
+
+TreeItem *DeviceTreeModel::find_property(
+	shared_ptr<sv::devices::properties::BaseProperty> property,
+	TreeItem *configurable_item) const
+{
+	for (int i=0; i<configurable_item->rowCount(); ++i) {
+		auto child = configurable_item->child(i);
+		if (child->type() != (int)TreeItemType::PropertyItem)
+			continue;
+
+		if (property.get() == child->data(DeviceTreeModel::DataRole).
+				value<shared_ptr<sv::devices::properties::BaseProperty>>().get())
+			return (TreeItem *)child;
+	}
+	return nullptr;
+}
+
+void DeviceTreeModel::on_device_added(
+	shared_ptr<sv::devices::BaseDevice> device)
 {
 	add_device(device);
 }
 
-void DeviceTreeModel::on_device_removed(shared_ptr<sv::devices::BaseDevice> device)
+void DeviceTreeModel::on_device_removed(
+	shared_ptr<sv::devices::BaseDevice> device)
 {
 	std::lock_guard<std::recursive_mutex> lock(mutex_);
 
@@ -300,7 +420,8 @@ void DeviceTreeModel::on_device_removed(shared_ptr<sv::devices::BaseDevice> devi
 	}
 }
 
-void DeviceTreeModel::on_channel_added(shared_ptr<channels::BaseChannel> channel)
+void DeviceTreeModel::on_channel_added(
+	shared_ptr<channels::BaseChannel> channel)
 {
 	shared_ptr<sv::devices::BaseDevice> device = channel->parent_device();
 	// Device must exist
@@ -308,7 +429,8 @@ void DeviceTreeModel::on_channel_added(shared_ptr<channels::BaseChannel> channel
 	add_channel(channel, channel->channel_group_names(), device_item);
 }
 
-void DeviceTreeModel::on_channel_removed(shared_ptr<channels::BaseChannel> channel)
+void DeviceTreeModel::on_channel_removed(
+	shared_ptr<channels::BaseChannel> channel)
 {
 	(void)channel;
 	std::lock_guard<std::recursive_mutex> lock(mutex_);

@@ -21,6 +21,7 @@
 #define DEVICES_PROPERTIES_BASEPROPERTY_HPP
 
 #include <memory>
+#include <string>
 
 #include <glib.h>
 
@@ -31,6 +32,7 @@
 #include "src/devices/deviceutil.hpp"
 
 using std::shared_ptr;
+using std::string;
 
 namespace sv {
 namespace devices {
@@ -54,6 +56,8 @@ public:
 	bool is_getable() const;
 	bool is_setable() const;
 	bool is_listable() const;
+	string name() const;
+	QString display_name() const;
 	virtual QVariant value() const = 0;
 	virtual QString to_string() const = 0;
 

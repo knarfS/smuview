@@ -47,10 +47,12 @@ TreeItem::TreeItem(TreeItemType type) :
 			QIcon(":/icons/office-chart-line.png")));
 	}
 	else if (type == TreeItemType::ConfigurableItem) {
-		setIcon(QIcon(":/icons/smuview.png"));
+		setIcon(QIcon::fromTheme("mixer-front",
+			QIcon(":/icons/mixer-front.png")));
 	}
-	else if (type == TreeItemType::ConfigKeyItem) {
-		setIcon(QIcon(":/icons/smuview.png"));
+	else if (type == TreeItemType::PropertyItem) {
+		setIcon(QIcon::fromTheme("configure",
+			QIcon(":/icons/configure.png")));
 	}
 }
 

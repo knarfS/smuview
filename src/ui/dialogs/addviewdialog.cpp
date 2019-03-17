@@ -108,7 +108,7 @@ void AddViewDialog::setup_ui_panel_tab()
 	panel_widget->setLayout(layout);
 
 	panel_channel_tree_ = new ui::devices::devicetree::DeviceTreeView(
-		session_, false, false, true, false, false, false, false);
+		session_, false, false, true, false, false, false, false, false);
 	panel_channel_tree_->expand_device(device_);
 
 	layout->addWidget(panel_channel_tree_);
@@ -124,7 +124,7 @@ void AddViewDialog::setup_ui_time_plot_tab()
 	plot_widget->setLayout(layout);
 
 	time_plot_channel_tree_ = new ui::devices::devicetree::DeviceTreeView(
-		session_, false, false, true, true, false, false, false);
+		session_, false, false, true, true, false, false, false, false);
 	time_plot_channel_tree_->expand_device(device_);
 
 	layout->addWidget(time_plot_channel_tree_);
@@ -166,7 +166,7 @@ void AddViewDialog::setup_ui_table_tab()
 	table_widget->setLayout(layout);
 
 	table_signal_tree_ = new ui::devices::devicetree::DeviceTreeView(
-		session_, false, false, false, true, false, false, false);
+		session_, false, false, false, true, false, false, false, false);
 	table_signal_tree_->expand_device(device_);
 
 	layout->addWidget(table_signal_tree_);
