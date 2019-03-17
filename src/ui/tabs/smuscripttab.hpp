@@ -17,16 +17,17 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UI_VIEWS_SMUSCRIPTVIEW_HPP
-#define UI_VIEWS_SMUSCRIPTVIEW_HPP
+#ifndef UI_TABS_SMUSCRIPTTAB_HPP
+#define UI_TABS_SMUSCRIPTTAB_HPP
 
 #include <memory>
 
 #include <QAction>
-#include <QString>
+#include <QMainWindow>
+#include <QTextEdit>
 #include <QToolBar>
 
-#include "src/ui/views/baseview.hpp"
+#include "src/ui/tabs/basetab.hpp"
 
 using std::shared_ptr;
 
@@ -39,34 +40,46 @@ class SmuScript;
 }
 
 namespace ui {
-namespace views {
 
-class SmuScriptView : public BaseView
+namespace widgets {
+namespace scripteditor {
+class PythonSyntaxHighlighter;
+}
+}
+
+namespace tabs {
+
+class SmuScriptTab : public BaseTab
 {
 	Q_OBJECT
 
-public:
-	SmuScriptView(Session &session, QWidget *parent = nullptr);
+private:
 
-	QString title() const;
+public:
+	SmuScriptTab(Session &session, QMainWindow *parent);
 
 private:
-	QAction *const action_start_script_;
-	QToolBar *toolbar_;
-	shared_ptr<python::SmuScript> smu_script_; // TODO: Use unique_ptr instead?
-
 	void setup_ui();
 	void setup_toolbar();
-	void connect_signals();
+
+	QAction *const action_open_;
+	QAction *const action_save_;
+	QAction *const action_run_;
+	QToolBar *toolbar_;
+	shared_ptr<python::SmuScript> smu_script_; // TODO: Use unique_ptr instead?
+    QTextEdit *editor_;
+    widgets::scripteditor::PythonSyntaxHighlighter *highlighter_;
 
 private Q_SLOTS:
-	void on_action_start_script_triggered();
+	void on_action_open_triggered();
+	void on_action_save_triggered();
+	void on_action_run_triggered();
 	void on_script_error(QString);
 
 };
 
-} // namespace views
+} // namespace tabs
 } // namespace ui
 } // namespace sv
 
-#endif // UI_VIEWS_SMUSCRIPTVIEW_HPP
+#endif // UI_TABS_SMUSCRIPTTAB_HPP

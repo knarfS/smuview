@@ -17,30 +17,19 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <memory>
 #include <string>
 #include <thread>
 #include <pybind11/embed.h>
 #include <pybind11/stl.h>
 
+#include <QString>
+
 #include "smuscript.hpp"
 #include "src/session.hpp"
-#include "src/devices/basedevice.hpp"
-#include "src/devices/hardwaredevice.hpp"
+#include "src/python/bindings.hpp"
 
 using namespace pybind11::literals; // for the ""_a
 namespace py = pybind11;
-
-PYBIND11_EMBEDDED_MODULE(smuview, m) {
-    py::class_<sv::Session>(m, "Session")
-        .def("devices", &sv::Session::devices);
-
-	py::class_<sv::devices::BaseDevice, std::shared_ptr<sv::devices::BaseDevice>>(m, "BaseDevice")
-		.def("id", &sv::devices::BaseDevice::id);
-
-	//py::class_<sv::devices::HardwareDevice, std::shared_ptr<sv::devices::HardwareDevice>>(m, "HardwareDevice")
-	//	.def("name", &sv::devices::HardwareDevice::name);
-}
 
 namespace sv {
 namespace python {
@@ -50,12 +39,19 @@ SmuScript::SmuScript(Session &session) :
 {
 }
 
+SmuScript::~SmuScript()
+{
+	/*
+	if (script_thread_.joinable())
+		script_thread_.join();
+	*/
+}
+
 void SmuScript::run(std::string file_name)
 {
 	script_file_name_ = file_name;
-
-	script_thread_ = std::thread(&SmuScript::script_thread_proc, this);
-	script_thread_.join();
+	std::thread script_thread = std::thread(&SmuScript::script_thread_proc, this);
+	script_thread.detach();
 }
 
 void SmuScript::stop()
@@ -70,7 +66,12 @@ void SmuScript::script_thread_proc()
 	auto locals = py::dict(
 		"Session"_a=py::cast(session_, py::return_value_policy::reference));
 
-    py::eval_file(script_file_name_, py::globals(), locals);
+	try {
+		py::eval_file(script_file_name_, py::globals(), locals);
+	}
+	catch (py::error_already_set &ex) {
+		Q_EMIT script_error(QString(ex.what()));
+	}
 }
 
 } // namespace python

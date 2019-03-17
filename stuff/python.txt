@@ -1,0 +1,29 @@
+C++, Python, boost::python, ...
+===============================
+
+Introduction
+------------
+
+
+Passing C++ class instances to python
+-------------------------------------
+
+https://stackoverflow.com/questions/5055443/boost-python-how-to-pass-a-c-class-instance-to-a-python-class
+https://stackoverflow.com/questions/8225934/exposing-a-c-class-instance-to-a-python-embedded-interpreter
+https://stackoverflow.com/questions/9062152/pass-c-object-to-python-function-by-boostpython
+
+
+Examples
+--------
+
+https://github.com/TNG/boost-python-examples/tree/master/10-Embedding
+https://github.com/wynemo/boost-python-embed
+
+std::shard_ptr
+--------------
+
+https://stackoverflow.com/questions/13986581/using-boost-python-stdshared-ptr
+https://wiki.python.org/moin/boost.python/PointersAndSmartPointers
+https://www.boost.org/doc/libs/1_45_0/libs/python/doc/v2/register_ptr_to_python.html
+http://yyc.solvcon.net/writing/2016/resource/
+https://codereview.stackexchange.com/questions/130044/same-pyobject-for-a-shared-ptr-c-object

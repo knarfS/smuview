@@ -17,45 +17,19 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PYTHON_SMUSCRIPT_HPP
-#define PYTHON_SMUSCRIPT_HPP
+#ifndef PYTHON_BINDINGS_HPP
+#define PYTHON_BINDINGS_HPP
 
-#include <string>
-#include <thread>
+#include "pybind11/pybind11.h"
 
-#include <QObject>
-#include <QString>
+namespace py = pybind11;
 
-namespace sv {
+void init_Session(py::module &m);
+void init_Device(py::module &m);
+void init_Channel(py::module &m);
+void init_Signal(py::module &m);
+void init_Configurable(py::module &m);
+void init_Enums(py::module &m);
+void init_UI(py::module &m);
 
-class Session;
-
-namespace python {
-
-class SmuScript : public QObject
-{
-	Q_OBJECT
-
-public:
-	SmuScript(Session &session);
-	~SmuScript();
-
-	void run(std::string file_name);
-	void stop();
-
-private:
-	void script_thread_proc(/*function<void (const QString)> error_handler*/); // TODO: signal?
-
-	Session &session_;
-	std::string script_file_name_;
-	std::thread script_thread_;
-
-Q_SIGNALS:
-	void script_error(QString); // TODO: error_handler?
-
-};
-
-} // namespace python
-} // namespace sv
-
-#endif // PYTHON_SMUSCRIPT_HPP
+#endif // PYTHON_BINDINGS_HPP

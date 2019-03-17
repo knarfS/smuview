@@ -46,6 +46,7 @@
 #include "src/channels/basechannel.hpp"
 #include "src/ui/dialogs/connectdialog.hpp"
 #include "src/ui/tabs/basetab.hpp"
+#include "src/ui/tabs/smuscripttab.hpp"
 #include "src/ui/tabs/tabhelper.hpp"
 #include "src/ui/tabs/welcometab.hpp"
 #include "src/ui/views/devicesview.hpp"
@@ -99,6 +100,9 @@ void MainWindow::init_default_session()
 
 	for (const auto &user_device : device_manager_.user_spec_devices())
 		add_hw_device_tab(user_device);
+
+	// TODO
+	add_smuscript_tab();
 }
 
 void MainWindow::init_session_with_file(
@@ -183,6 +187,17 @@ void MainWindow::add_hw_device_tab(
 		ui::tabs::tabhelper::get_tab_for_device(*session_, device, tab_window));
 
 	add_tab(tab_window, device->short_name(), device->id());
+}
+
+void MainWindow::add_smuscript_tab()
+{
+	QMainWindow *tab_window = new QMainWindow();
+	tab_window->setWindowFlags(Qt::Widget);  // Remove Qt::Window flag
+	tab_window->setDockNestingEnabled(true);
+	tab_window->setCentralWidget(
+		new ui::tabs::SmuScriptTab(*session_, tab_window));
+
+	add_tab(tab_window, tr("SmuScript"), "smuscripttab");
 }
 
 void MainWindow::remove_tab(string id)

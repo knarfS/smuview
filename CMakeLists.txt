@@ -209,6 +209,7 @@ set(smuview_SOURCES
   src/devices/sourcesinkdevice.cpp
   src/devices/userdevice.cpp
 
+  src/python/bindings.cpp
   src/python/smuscript.cpp
 
   src/ui/data/quantitycombobox.cpp
@@ -263,6 +264,7 @@ set(smuview_SOURCES
   src/ui/tabs/basetab.cpp
   src/ui/tabs/devicetab.cpp
   src/ui/tabs/measurementtab.cpp
+  src/ui/tabs/smuscripttab.cpp
   src/ui/tabs/tabhelper.cpp
   src/ui/tabs/sourcesinktab.cpp
   src/ui/tabs/usertab.cpp
@@ -293,6 +295,7 @@ set(smuview_SOURCES
   src/ui/widgets/plot/plotscalepicker.cpp
   src/ui/widgets/plot/timecurvedata.cpp
   src/ui/widgets/plot/xycurvedata.cpp
+  src/ui/widgets/scripteditor/pythonsyntaxhighlighter.cpp
 )
 
 if(ENABLE_SIGNALS)

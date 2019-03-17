@@ -1,0 +1,6 @@
+TODO:
+
+- UserChannel -> MathChannel, Add UserChannel
+- Use std::string instead of QString wherever possible to make things better usable in Python bindings
+
+- Reduce/Simplyfy BaseDevice name methods
