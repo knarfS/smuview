@@ -50,7 +50,7 @@ DataView::DataView(Session &session,
 
 QString DataView::title() const
 {
-	return signal_->name() + " " + tr("Data");
+	return signal_->display_name() + " " + tr("Data");
 }
 
 void DataView::setup_ui()

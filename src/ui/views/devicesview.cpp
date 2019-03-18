@@ -169,7 +169,7 @@ void DevicesView::on_action_disconnect_device_triggered()
 		QMessageBox::StandardButton reply = QMessageBox::question(this,
 			tr("Delete signal"),
 			tr("Deleting the signal \"%1\" will also delete all aquired data!").
-				arg(signal->name()),
+				arg(signal->display_name()),
 			QMessageBox::Yes | QMessageBox::Cancel);
 
 		if (reply == QMessageBox::Yes) {

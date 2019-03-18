@@ -20,6 +20,7 @@
  */
 
 #include <cassert>
+#include <string>
 
 #include <QDebug>
 #include <QString>
@@ -30,6 +31,7 @@
 
 using std::set;
 using std::shared_ptr;
+using std::string;
 
 namespace sv {
 namespace data {
@@ -54,16 +56,15 @@ BaseSignal::BaseSignal(
 		quantity_flags_, QString(" "));
 	unit_name_ = data::datautil::format_unit(unit_);
 
-	name_ = QString::fromStdString(parent_channel_->name()).
-		append(" [").append(unit_name_);
+	name_ = parent_channel_->name() + " [" + unit_name_.toStdString();
 	if (quantity_flags_.size() > 0)
-		name_ = name_.append(" ").append(quantity_flags_name_);
-	name_ = name_.append("]");
+		name_ += " " + quantity_flags_name_.toStdString();
+	name_ += "]";
 }
 
 BaseSignal::~BaseSignal()
 {
-	qWarning() << "BaseSignal::~BaseSignal(): " << name_;
+	qWarning() << "BaseSignal::~BaseSignal(): " << display_name();
 }
 
 data::Quantity BaseSignal::quantity() const
@@ -101,9 +102,14 @@ shared_ptr<channels::BaseChannel> BaseSignal::parent_channel() const
 	return parent_channel_;
 }
 
-QString BaseSignal::name() const
+string BaseSignal::name() const
 {
 	return name_;
+}
+
+QString BaseSignal::display_name() const
+{
+	return QString::fromStdString(name_);
 }
 
 } // namespace data

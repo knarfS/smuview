@@ -86,8 +86,8 @@ void HardwareChannel::push_interleaved_samples(const float *data,
 		data::Unit unit = data::datautil::get_unit(sr_analog->unit());
 		add_signal(quantity, quantity_flags, unit);
 		qWarning() << "HardwareChannel::push_sample_sr_analog(): " <<
-			QString::fromStdString(name_) <<
-			" - No signal found: " << actual_signal_->name();
+			display_name() << " - No signal found: " <<
+			actual_signal_->display_name();
 	}
 	else if (signals_count > 1) {
 		throw ("More than one signal found for " + name());

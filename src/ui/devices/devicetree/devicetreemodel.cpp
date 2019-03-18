@@ -214,9 +214,9 @@ void DeviceTreeModel::add_signal(shared_ptr<sv::data::BaseSignal> signal,
 		beginInsertRows(parent_item->index(),
 			parent_item->rowCount(), parent_item->rowCount()+1);
 		signal_item = new TreeItem(TreeItemType::SignalItem);
-		signal_item->setText(signal->name());
+		signal_item->setText(signal->display_name());
 		signal_item->setData(QVariant::fromValue(signal), DeviceTreeModel::DataRole);
-		signal_item->setData(signal->name(), DeviceTreeModel::SortRole);
+		signal_item->setData(signal->display_name(), DeviceTreeModel::SortRole); // TODO: signal->index()
 		signal_item->setCheckable(is_signal_checkable_);
 		signal_item->setEditable(false);
 		parent_item->appendRow(signal_item);

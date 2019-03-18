@@ -69,9 +69,8 @@ void UserChannel::push_sample(double sample, double timestamp,
 	size_t signals_count = signal_map_.count(mq);
 	if (signals_count == 0) {
 		add_signal(quantity, quantity_flags, unit);
-		qWarning() << "UserChannel::push_sample(): " <<
-			QString::fromStdString(name_) <<
-			" - No signal found: " << actual_signal_->name();
+		qWarning() << "UserChannel::push_sample(): " << display_name() <<
+			" - No signal found: " << actual_signal_->display_name();
 	}
 	else if (signals_count > 1) {
 		throw ("More than one signal found for " + name());

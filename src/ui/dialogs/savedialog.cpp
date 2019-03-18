@@ -131,12 +131,12 @@ void SaveDialog::save(QString file_name)
 			max_sample_count = sample_count;
 		sample_counts.push_back(sample_count);
 
-		string name = analog_signal->name().toStdString();
+		string name = analog_signal->name();
 		shared_ptr<sv::channels::BaseChannel> parent_channel =
 			analog_signal->parent_channel();
 
 		qWarning() << "SaveDialog::save(): signal.name() = " <<
-			analog_signal->name();
+			QString::fromStdString(name);
 		qWarning() << "SaveDialog::save(): signal.parent_channel().name() = " <<
 			QString::fromStdString(parent_channel->name());
 		qWarning() << "SaveDialog::save(): signal.parent_channel().parent_device().name() = " <<
@@ -235,7 +235,6 @@ void SaveDialog::save_combined(QString file_name)
 		if (!analog_signal)
 			continue;
 
-		string name = analog_signal->name().toStdString();
 		shared_ptr<sv::channels::BaseChannel> parent_channel =
 			analog_signal->parent_channel();
 
@@ -256,7 +255,7 @@ void SaveDialog::save_combined(QString file_name)
 		device_header_line += sep + parent_channel->parent_device()->name(); // Value
 		chg_name_header_line += sep + chg_names; // Value
 		ch_name_header_line += sep + parent_channel->name(); // Value
-		signal_name_header_line += sep + name; // Value
+		signal_name_header_line += sep + analog_signal->name(); // Value
 	}
 	output_file << device_header_line << std::endl;
 	output_file << chg_name_header_line << std::endl;

@@ -24,6 +24,7 @@
 
 #include <memory>
 #include <set>
+#include <string>
 
 #include <QColor>
 #include <QObject>
@@ -33,6 +34,7 @@
 
 using std::set;
 using std::shared_ptr;
+using std::string;
 
 namespace sv {
 
@@ -56,54 +58,59 @@ public:
 
 public:
 	/**
-	 * Clears all samples from this signal.
+	 * Clear all samples from this signal.
 	 */
 	virtual void clear() = 0;
 
 	/**
-	 * Returns the number of samples in this signal.
+	 * Return the number of samples in this signal.
 	 */
 	virtual size_t get_sample_count() const = 0;
 
 	/**
-	 * Returns the qunatity of this signal.
+	 * Return the qunatity of this signal.
 	 */
 	data::Quantity quantity() const;
 
 	/**
-	 * Returns the qunatity of this signal as string
+	 * Return the qunatity of this signal as string
 	 */
 	QString quantity_name() const;
 
 	/**
-	 * Returns the quantity flags of this signal as set
+	 * Return the quantity flags of this signal as set
 	 */
 	set<data::QuantityFlag> quantity_flags() const;
 
 	/**
-	 * Returns the qunatity flags of this signal as string
+	 * Return the qunatity flags of this signal as string
 	 */
 	QString quantity_flags_name() const;
 
 	/**
-	 * Returns the unit of this signal
+	 * Return the unit of this signal
 	 */
 	data::Unit unit() const;
 
 	/**
-	 * Returns the unit of this signal as string
+	 * Return the unit of this signal as string
 	 */
 	QString unit_name() const;
 
 	/**
-	 * Returns the parent channel, this signal belongs to
+	 * Return the parent channel, this signal belongs to
 	 */
 	shared_ptr<channels::BaseChannel> parent_channel() const;
 
 	/**
-	 * Gets the name of this signal.
+	 * Get the name of this signal.
 	 */
-	QString name() const;
+	string name() const;
+
+	/**
+	 * Get the display name of this signal.
+	 */
+	QString display_name() const;
 
 protected:
 	data::Quantity quantity_;
@@ -114,7 +121,7 @@ protected:
 	QString unit_name_;
 	shared_ptr<channels::BaseChannel> parent_channel_;
 
-	QString name_;
+	string name_;
 
 };
 

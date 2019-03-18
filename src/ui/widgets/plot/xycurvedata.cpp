@@ -118,7 +118,8 @@ QPointF XYCurveData::closest_point(const QPointF &pos, double *dist) const
 
 QString XYCurveData::name() const
 {
-	return y_t_signal_->name().append(" -> ").append(x_t_signal_->name());
+	return y_t_signal_->display_name().append(" -> ").
+		append(x_t_signal_->display_name());
 }
 
 QString XYCurveData::x_data_quantity() const

@@ -119,7 +119,7 @@ QPointF TimeCurveData::closest_point(const QPointF &pos, double *dist) const
 
 QString TimeCurveData::name() const
 {
-	return signal_->name();
+	return signal_->display_name();
 }
 
 QString TimeCurveData::x_data_quantity() const

@@ -79,7 +79,7 @@ void SignalComboBox::fill_signals()
 
 	for (const auto &signal_pair : channel_->signal_map()) {
 		for (const auto &signal : signal_pair.second) {
-			this->addItem(signal->name(), QVariant::fromValue(signal));
+			this->addItem(signal->display_name(), QVariant::fromValue(signal));
 		}
 	}
 }

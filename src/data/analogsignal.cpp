@@ -57,7 +57,7 @@ AnalogSignal::AnalogSignal(
 	max_value_(std::numeric_limits<double>::lowest())
 {
 	qWarning()
-		<< "Init analog signal " << name_
+		<< "Init analog signal " << display_name()
 		<< ", signal_start_timestamp_ = "
 		<< util::format_time_date(signal_start_timestamp_);
 

@@ -124,7 +124,7 @@ QString ValuePanelView::title() const
 		title = tr("Signal");
 
 	if (signal_)
-		title = title.append(" ").append(signal_->name());
+		title = title.append(" ").append(signal_->display_name());
 	else if (channel_)
 		title = title.append(" ").append(channel_->display_name());
 
