@@ -62,13 +62,14 @@ void init_Session(py::module &m)
 
 void init_Device(py::module &m)
 {
-	py::class_<sv::devices::BaseDevice, std::shared_ptr<sv::devices::BaseDevice>>(m, "BaseDevice")
-		.def("id", &sv::devices::BaseDevice::id)
-		.def("channels", &sv::devices::BaseDevice::channel_map)
-		.def("configurables", &sv::devices::BaseDevice::configurable_map)
-		.def("add_user_channel", &sv::devices::BaseDevice::add_user_channel);
+	py::class_<sv::devices::BaseDevice, std::shared_ptr<sv::devices::BaseDevice>> base_device(m, "BaseDevice");
+	base_device.def("name", &sv::devices::BaseDevice::name);
+	base_device.def("id", &sv::devices::BaseDevice::id);
+	base_device.def("channels", &sv::devices::BaseDevice::channel_map);
+	base_device.def("configurables", &sv::devices::BaseDevice::configurable_map);
+	base_device.def("add_user_channel", &sv::devices::BaseDevice::add_user_channel);
 
-	py::class_<sv::devices::UserDevice, std::shared_ptr<sv::devices::UserDevice>>(m, "UserDevice");
+	py::class_<sv::devices::UserDevice, std::shared_ptr<sv::devices::UserDevice>>(m, "UserDevice", base_device);
 }
 
 void init_Channel(py::module &m)
@@ -76,18 +77,20 @@ void init_Channel(py::module &m)
 	/*
 	 * TODO:
 	 *  - push sample
-	 *  - get signal
 	 */
 
-	py::class_<sv::channels::BaseChannel, std::shared_ptr<sv::channels::BaseChannel>>(m, "BaseChannel")
-		.def("add_signal",
-			 (shared_ptr<sv::data::BaseSignal> (sv::channels::BaseChannel::*)
-			 (sv::data::Quantity, set<sv::data::QuantityFlag>, sv::data::Unit))
-			 &sv::channels::BaseChannel::add_signal);
+	py::class_<sv::channels::BaseChannel, std::shared_ptr<sv::channels::BaseChannel>> base_channel(m, "BaseChannel");
+	base_channel.def("name", &sv::channels::BaseChannel::name);
+	base_channel.def("add_signal",
+		(shared_ptr<sv::data::BaseSignal> (sv::channels::BaseChannel::*)
+		(sv::data::Quantity, set<sv::data::QuantityFlag>, sv::data::Unit))
+			&sv::channels::BaseChannel::add_signal);
+	base_channel.def("actual_signal", &sv::channels::BaseChannel::actual_signal);
+	base_channel.def("signals", &sv::channels::BaseChannel::signal_map);
 
-	py::class_<sv::channels::HardwareChannel, std::shared_ptr<sv::channels::HardwareChannel>>(m, "HardwareChannel");
+	py::class_<sv::channels::HardwareChannel, std::shared_ptr<sv::channels::HardwareChannel>>(m, "HardwareChannel", base_channel);
 
-	py::class_<sv::channels::UserChannel, std::shared_ptr<sv::channels::UserChannel>>(m, "UserChannel");
+	py::class_<sv::channels::UserChannel, std::shared_ptr<sv::channels::UserChannel>>(m, "UserChannel", base_channel);
 }
 
 void init_Signal(py::module &m)
@@ -97,9 +100,11 @@ void init_Signal(py::module &m)
 	 *  - push sample
 	 */
 
-	py::class_<sv::data::BaseSignal, std::shared_ptr<sv::data::BaseSignal>>(m, "BaseSignal");
+	py::class_<sv::data::BaseSignal, std::shared_ptr<sv::data::BaseSignal>> base_signal(m, "BaseSignal");
+	base_signal.def("name", &sv::data::BaseSignal::name);
 
-	py::class_<sv::data::AnalogSignal, std::shared_ptr<sv::data::AnalogSignal>>(m, "AnalogSignal");
+	py::class_<sv::data::AnalogSignal, std::shared_ptr<sv::data::AnalogSignal>>(m, "AnalogSignal", base_signal)
+		.def("name", &sv::data::AnalogSignal::name);
 }
 
 void init_Configurable(py::module &m)
@@ -110,6 +115,7 @@ void init_Configurable(py::module &m)
 	 */
 
 	py::class_<sv::devices::Configurable, std::shared_ptr<sv::devices::Configurable>>(m, "Configurable")
+		.def("name", &sv::devices::Configurable::name)
 		.def("set_config", &sv::devices::Configurable::set_config<bool>)
 		.def("set_config", &sv::devices::Configurable::set_config<int32_t>)
 		.def("set_config", &sv::devices::Configurable::set_config<uint64_t>)
