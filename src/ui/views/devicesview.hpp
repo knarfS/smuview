@@ -17,15 +17,14 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UI_VIEWS_DEVICETREEVIEW_HPP
-#define UI_VIEWS_DEVICETREEVIEW_HPP
+#ifndef UI_VIEWS_DEVICESVIEW_HPP
+#define UI_VIEWS_DEVICESVIEW_HPP
 
 #include <memory>
 
 #include <QAction>
 #include <QToolBar>
 
-#include "src/ui/devices/devicetree/devicetreemodel.hpp"
 #include "src/ui/views/baseview.hpp"
 
 using std::shared_ptr;
@@ -44,13 +43,12 @@ class DeviceTreeView;
 
 namespace views {
 
-class DeviceTreeView : public BaseView
+class DevicesView : public BaseView
 {
 	Q_OBJECT
 
 public:
-	DeviceTreeView(Session &session,
-		QWidget *parent = nullptr);
+	DevicesView(Session &session, QWidget *parent = nullptr);
 
 	QString title() const;
 
@@ -76,4 +74,4 @@ private Q_SLOTS:
 } // namespace ui
 } // namespace sv
 
-#endif // UI_VIEWS_DEVICETREEVIEW_HPP
+#endif // UI_VIEWS_DEVICESVIEW_HPP

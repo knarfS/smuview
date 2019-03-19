@@ -48,7 +48,7 @@
 #include "src/ui/tabs/basetab.hpp"
 #include "src/ui/tabs/tabhelper.hpp"
 #include "src/ui/tabs/welcometab.hpp"
-#include "src/ui/views/devicetreeview.hpp"
+#include "src/ui/views/devicesview.hpp"
 
 using std::make_pair;
 using std::make_shared;
@@ -236,18 +236,18 @@ void MainWindow::setup_ui()
 	this->setCentralWidget(central_widget_);
 
 	// DeviceTreeView Dock
-	device_tree_view_ = new ui::views::DeviceTreeView(*session_);
-	device_tree_view_->setSizePolicy(
+	devices_view_ = new ui::views::DevicesView(*session_);
+	devices_view_->setSizePolicy(
 		QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);
 
 	// A layout must be set to the central widget of the main window
 	// before ds_dock->setWidget() is called.
-	QDockWidget* ds_dock = new QDockWidget(device_tree_view_->title());
+	QDockWidget* ds_dock = new QDockWidget(devices_view_->title());
 	ds_dock->setAllowedAreas(Qt::AllDockWidgetAreas);
 	ds_dock->setContextMenuPolicy(Qt::PreventContextMenu);
 	ds_dock->setFeatures(QDockWidget::DockWidgetMovable |
 		QDockWidget::DockWidgetFloatable);
-	ds_dock->setWidget(device_tree_view_);
+	ds_dock->setWidget(devices_view_);
 	this->addDockWidget(Qt::LeftDockWidgetArea, ds_dock);
 
 	// This fixes a qt bug. See: https://bugreports.qt.io/browse/QTBUG-65592

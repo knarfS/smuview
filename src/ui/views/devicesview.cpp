@@ -25,7 +25,7 @@
 #include <QToolBar>
 #include <QVBoxLayout>
 
-#include "devicetreeview.hpp"
+#include "devicesview.hpp"
 #include "src/devicemanager.hpp"
 #include "src/mainwindow.hpp"
 #include "src/session.hpp"
@@ -49,7 +49,7 @@ namespace sv {
 namespace ui {
 namespace views {
 
-DeviceTreeView::DeviceTreeView(Session &session,
+DevicesView::DevicesView(Session &session,
 		QWidget *parent) :
 	BaseView(session, parent),
 	action_add_device_(new QAction(this)),
@@ -61,12 +61,12 @@ DeviceTreeView::DeviceTreeView(Session &session,
 	connect_signals();
 }
 
-QString DeviceTreeView::title() const
+QString DevicesView::title() const
 {
 	return tr("Device Tree");
 }
 
-void DeviceTreeView::setup_ui()
+void DevicesView::setup_ui()
 {
 	QVBoxLayout *layout = new QVBoxLayout();
 	device_tree_ = new devices::devicetree::DeviceTreeView(session(),
@@ -77,7 +77,7 @@ void DeviceTreeView::setup_ui()
 	this->central_widget_->setLayout(layout);
 }
 
-void DeviceTreeView::setup_toolbar()
+void DevicesView::setup_toolbar()
 {
 	action_add_device_->setText(tr("Add device"));
 	action_add_device_->setIcon(
@@ -108,11 +108,11 @@ void DeviceTreeView::setup_toolbar()
 	this->addToolBar(Qt::TopToolBarArea, toolbar_);
 }
 
-void DeviceTreeView::connect_signals()
+void DevicesView::connect_signals()
 {
 }
 
-void DeviceTreeView::on_action_add_device_triggered()
+void DevicesView::on_action_add_device_triggered()
 {
 	ui::dialogs::ConnectDialog dlg(session().device_manager());
 	if (dlg.exec()) {
@@ -120,12 +120,12 @@ void DeviceTreeView::on_action_add_device_triggered()
 	}
 }
 
-void DeviceTreeView::on_action_add_userdevice_triggered()
+void DevicesView::on_action_add_userdevice_triggered()
 {
 	session().main_window()->add_user_device_tab();
 }
 
-void DeviceTreeView::on_action_disconnect_device_triggered()
+void DevicesView::on_action_disconnect_device_triggered()
 {
 	TreeItem *item = device_tree_->selected_item();
 	if (!item)
@@ -181,4 +181,3 @@ void DeviceTreeView::on_action_disconnect_device_triggered()
 } // namespace views
 } // namespace ui
 } // namespace sv
-

@@ -251,7 +251,7 @@ set(smuview_SOURCES
   src/ui/tabs/welcometab.cpp
   src/ui/views/baseview.cpp
   src/ui/views/dataview.cpp
-  src/ui/views/devicetreeview.cpp
+  src/ui/views/devicesview.cpp
   src/ui/views/democontrolview.cpp
   src/ui/views/genericcontrolview.cpp
   src/ui/views/measurementcontrolview.cpp
