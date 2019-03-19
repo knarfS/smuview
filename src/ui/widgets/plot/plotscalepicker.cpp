@@ -2,7 +2,7 @@
  * This file is part of the SmuView project.
  * This file is based on the QWT EventFilter Example.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <math.h>
+#include <cmath>
 
 #include <QEvent>
 #include <QDebug>
@@ -135,11 +135,11 @@ bool PlotScalePicker::eventFilter(QObject *object, QEvent *event)
 		if (scale_widget) {
 			QWheelEvent *wheel_event = static_cast<QWheelEvent *>(event);
 			if (wheel_event) {
-				double factor = pow(
-					wheel_factor_, abs(wheel_event->delta() / 120.0));
+				double factor = std::pow(
+					wheel_factor_, std::fabs(wheel_event->delta() / 120.0));
 				if (wheel_event->delta() > 0)
 					factor = 1 / factor;
-				factor = abs(factor);
+				factor = std::fabs(factor);
 				if (factor == 1.0 || factor == 0.0)
 					return true;
 
