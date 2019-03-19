@@ -241,22 +241,22 @@ void MainWindow::setup_ui()
 		QSizePolicy::MinimumExpanding, QSizePolicy::Expanding);
 
 	// A layout must be set to the central widget of the main window
-	// before ds_dock->setWidget() is called.
-	QDockWidget* ds_dock = new QDockWidget(devices_view_->title());
-	ds_dock->setAllowedAreas(Qt::AllDockWidgetAreas);
-	ds_dock->setContextMenuPolicy(Qt::PreventContextMenu);
-	ds_dock->setFeatures(QDockWidget::DockWidgetMovable |
+	// before dev_dock->setWidget() is called.
+	QDockWidget* dev_dock = new QDockWidget(devices_view_->title());
+	dev_dock->setAllowedAreas(Qt::AllDockWidgetAreas);
+	dev_dock->setContextMenuPolicy(Qt::PreventContextMenu);
+	dev_dock->setFeatures(QDockWidget::DockWidgetMovable |
 		QDockWidget::DockWidgetFloatable);
-	ds_dock->setWidget(devices_view_);
-	this->addDockWidget(Qt::LeftDockWidgetArea, ds_dock);
+	dev_dock->setWidget(devices_view_);
+	this->addDockWidget(Qt::LeftDockWidgetArea, dev_dock);
 
 	// This fixes a qt bug. See: https://bugreports.qt.io/browse/QTBUG-65592
 	// resizeDocks() was introduced in Qt 5.6.
-	this->resizeDocks({ds_dock}, {40}, Qt::Horizontal);
+	this->resizeDocks({dev_dock}, {40}, Qt::Horizontal);
 
 	// Select devices and signal dock tab
-	ds_dock->show();
-	ds_dock->raise();
+	dev_dock->show();
+	dev_dock->raise();
 }
 
 void MainWindow::connect_signals()
