@@ -280,19 +280,6 @@ void MainWindow::show_session_error(const QString text, const QString info_text)
 	msg.exec();
 }
 
-void MainWindow::on_action_add_device_tab_triggered()
-{
-	ui::dialogs::ConnectDialog dlg(device_manager_);
-
-	if (dlg.exec())
-		add_hw_device_tab(dlg.get_selected_device());
-}
-
-void MainWindow::on_action_add_user_tab_triggered()
-{
-	this->add_user_device_tab();
-}
-
 void MainWindow::on_tab_close_requested(int index)
 {
 	QMessageBox::StandardButton reply = QMessageBox::question(this,

@@ -86,8 +86,6 @@ private:
 
 private Q_SLOTS:
 	void show_session_error(const QString text, const QString info_text);
-	void on_action_add_device_tab_triggered(); // TODO: Maybe use slot in DevicesView?
-	void on_action_add_user_tab_triggered(); // TODO: Maybe use slot in DevicesView?
 	void on_tab_close_requested(int);
 
 };
