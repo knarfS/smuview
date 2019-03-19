@@ -30,12 +30,9 @@ using std::shared_ptr;
 
 namespace sv {
 
-class Session;
-
 namespace channels {
 class BaseChannel;
 }
-
 namespace devices {
 class BaseDevice;
 }
@@ -49,19 +46,18 @@ class ChannelComboBox : public QComboBox
 
 public:
 	ChannelComboBox(
-		const Session &session,
 		shared_ptr<sv::devices::BaseDevice> device,
-		QString channel_group_name = nullptr, QWidget *parent = nullptr);
+		QString channel_group_name, QWidget *parent = nullptr);
 
 	void select_channel(shared_ptr<sv::channels::BaseChannel> channel);
 	shared_ptr<sv::channels::BaseChannel> selected_channel() const;
 
 private:
-	const Session &session_;
+	void setup_ui();
+	void fill_channels();
+
 	shared_ptr<sv::devices::BaseDevice> device_;
 	QString channel_group_name_;
-
-	void setup_ui();
 
 public Q_SLOTS:
 	void change_device_channel_group(

@@ -63,7 +63,7 @@ void SelectConfigurableForm::setup_ui()
 	device_box_ = new DeviceComboBox(session_);
 	this->addRow(tr("Device"), device_box_);
 
-	configurable_box_ = new ConfigurableComboBox(session_,
+	configurable_box_ = new ConfigurableComboBox(
 		device_box_->selected_device());
 	this->addRow(tr("Configurable"), configurable_box_);
 }

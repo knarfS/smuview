@@ -69,17 +69,16 @@ void SelectSignalWidget::setup_ui()
 	device_box_ = new DeviceComboBox(session_);
 	layout->addWidget(device_box_);
 
-	channel_group_box_ = new ChannelGroupComboBox(session_,
+	channel_group_box_ = new ChannelGroupComboBox(
 		device_box_->selected_device());
 	layout->addWidget(channel_group_box_);
 
-	channel_box_ = new ChannelComboBox(session_,
+	channel_box_ = new ChannelComboBox(
 		device_box_->selected_device(),
 		channel_group_box_->selected_channel_group());
 	layout->addWidget(channel_box_);
 
-	signal_box_ = new SignalComboBox(session_,
-		channel_box_->selected_channel());
+	signal_box_ = new SignalComboBox(channel_box_->selected_channel());
 	layout->addWidget(signal_box_);
 
 	this->setLayout(layout);

@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,19 +23,15 @@
 #include <memory>
 
 #include <QComboBox>
-#include <QString>
 #include <QWidget>
 
 using std::shared_ptr;
 
 namespace sv {
 
-class Session;
-
 namespace channels {
 class BaseChannel;
 }
-
 namespace data {
 class BaseSignal;
 }
@@ -49,20 +45,21 @@ class SignalComboBox : public QComboBox
 
 public:
 	SignalComboBox(
-		const Session &session, shared_ptr<sv::channels::BaseChannel> channel,
+		shared_ptr<sv::channels::BaseChannel> channel,
 		QWidget *parent = nullptr);
 
 	void select_signal(shared_ptr<sv::data::BaseSignal>);
 	shared_ptr<sv::data::BaseSignal> selected_signal() const;
 
 private:
-	const Session &session_;
-	shared_ptr<sv::channels::BaseChannel> channel_;
-
 	void setup_ui();
+	void fill_signals();
+
+	shared_ptr<sv::channels::BaseChannel> channel_;
 
 public Q_SLOTS:
 	void change_channel(shared_ptr<sv::channels::BaseChannel>);
+
 };
 
 } // namespace devices

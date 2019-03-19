@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,17 +17,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cassert>
 #include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
+#include <QComboBox>
 #include <QDebug>
+#include <QString>
 #include <QVariant>
 
 #include "channelcombobox.hpp"
-#include "src/session.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/devices/basedevice.hpp"
 
@@ -42,10 +42,9 @@ namespace ui {
 namespace devices {
 
 ChannelComboBox::ChannelComboBox(
-		const Session &session, shared_ptr<sv::devices::BaseDevice> device,
+		shared_ptr<sv::devices::BaseDevice> device,
 		QString channel_group_name, QWidget *parent) :
 	QComboBox(parent),
-	session_(session),
 	device_(device),
 	channel_group_name_(channel_group_name)
 {
@@ -73,27 +72,29 @@ shared_ptr<sv::channels::BaseChannel> ChannelComboBox::selected_channel() const
 
 void ChannelComboBox::setup_ui()
 {
-	assert(device_);
+	this->setSizeAdjustPolicy(QComboBox::AdjustToContents);
+	this->fill_channels();
+}
 
-	vector<shared_ptr<sv::channels::BaseChannel>> channels;
-	if (channel_group_name_ == nullptr || channel_group_name_.isEmpty()) {
-		for (const auto &ch_pair : device_->channel_map()) {
-			this->addItem(
-				QString::fromStdString(ch_pair.first),
-				QVariant::fromValue(ch_pair.second));
-		}
-	}
-	else {
-		string chg_name_str = channel_group_name_.toStdString();
-		if (!device_->channel_group_map().count(chg_name_str))
-			return;
+void ChannelComboBox::fill_channels()
+{
+	this->clear();
 
-		auto ch_list = device_->channel_group_map()[chg_name_str];
-		for (const auto &ch : ch_list) {
-			this->addItem(
-				QString::fromStdString(ch->name()),
-				QVariant::fromValue(ch));
-		}
+	if (device_ == nullptr)
+		return;
+
+	if (channel_group_name_ == nullptr)
+		channel_group_name_ = "";
+
+	string chg_name_str = channel_group_name_.toStdString();
+	if (!device_->channel_group_map().count(chg_name_str))
+		return;
+
+	auto ch_list = device_->channel_group_map()[chg_name_str];
+	for (const auto &ch : ch_list) {
+		this->addItem(
+			QString::fromStdString(ch->name()),
+			QVariant::fromValue(ch));
 	}
 }
 
@@ -102,9 +103,7 @@ void ChannelComboBox::change_device_channel_group(
 {
 	device_ = device;
 	channel_group_name_ = channel_group_name;
-	for (int i = this->count(); i >= 0; --i)
-		this->removeItem(i);
-	this->setup_ui();
+	this->fill_channels();
 }
 
 } // namespace devices

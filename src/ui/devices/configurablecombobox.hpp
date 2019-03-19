@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,8 +29,6 @@ using std::shared_ptr;
 
 namespace sv {
 
-class Session;
-
 namespace devices {
 class BaseDevice;
 class Configurable;
@@ -44,19 +42,18 @@ class ConfigurableComboBox : public QComboBox
 	Q_OBJECT
 
 public:
-	ConfigurableComboBox(const Session &session,
-		shared_ptr<sv::devices::BaseDevice> device = nullptr,
+	ConfigurableComboBox(
+		shared_ptr<sv::devices::BaseDevice> device,
 		QWidget *parent = nullptr);
 
 	void select_configurable(shared_ptr<sv::devices::Configurable>);
 	shared_ptr<sv::devices::Configurable> selected_configurable() const;
 
 private:
-	const Session &session_;
-	shared_ptr<sv::devices::BaseDevice> device_;
-
 	void setup_ui();
+	void fill_configurables();
 
+	shared_ptr<sv::devices::BaseDevice> device_;
 
 public Q_SLOTS:
 	void change_device(shared_ptr<sv::devices::BaseDevice>);

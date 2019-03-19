@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,11 +20,12 @@
 #include <map>
 #include <memory>
 
+#include <QComboBox>
 #include <QDebug>
 #include <QString>
+#include <QVariant>
 
 #include "channelgroupcombobox.hpp"
-#include "src/session.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/devices/basedevice.hpp"
 
@@ -34,10 +35,9 @@ namespace sv {
 namespace ui {
 namespace devices {
 
-ChannelGroupComboBox::ChannelGroupComboBox(const Session &session,
+ChannelGroupComboBox::ChannelGroupComboBox(
 		shared_ptr<sv::devices::BaseDevice> device,  QWidget *parent) :
 	QComboBox(parent),
-	session_(session),
 	device_(device)
 {
 	this->setup_ui();
@@ -54,17 +54,26 @@ void ChannelGroupComboBox::select_channel_group(QString channel_group)
 	}
 }
 
-const QString ChannelGroupComboBox::selected_channel_group()
+const QString ChannelGroupComboBox::selected_channel_group() const
 {
 	return this->currentText();
 }
 
 void ChannelGroupComboBox::setup_ui()
 {
-	if (device_) {
-		for (const auto &chg_pair : device_->channel_group_map()) {
-			this->addItem(QString::fromStdString(chg_pair.first));
-		}
+	this->setSizeAdjustPolicy(QComboBox::AdjustToContents);
+	this->fill_channel_groups();
+}
+
+void ChannelGroupComboBox::fill_channel_groups()
+{
+	this->clear();
+
+	if (device_ == nullptr)
+		return;
+
+	for (const auto &chg_pair : device_->channel_group_map()) {
+		this->addItem(QString::fromStdString(chg_pair.first));
 	}
 }
 
@@ -72,10 +81,7 @@ void ChannelGroupComboBox::change_device(
 	shared_ptr<sv::devices::BaseDevice> device)
 {
 	device_ = device;
-	for (int i = this->count(); i >= 0; --i) {
-		this->removeItem(i);
-	}
-	this->setup_ui();
+	this->fill_channel_groups();
 }
 
 } // namespace devices

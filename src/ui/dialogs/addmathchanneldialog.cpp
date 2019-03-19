@@ -111,8 +111,7 @@ void AddMathChannelDialog::setup_ui()
 	device_box_ = new ui::devices::DeviceComboBox(session_);
 	device_box_->select_device(device_);
 	add_to_layout->addRow(tr("Device"), device_box_);
-	channel_group_box_ =
-		new ui::devices::ChannelGroupComboBox(session_, device_);
+	channel_group_box_ = new ui::devices::ChannelGroupComboBox(device_);
 	channel_group_box_->addItem(QString(tr("Math")));
 	connect(device_box_, SIGNAL(currentIndexChanged(int)),
 		this, SLOT(on_device_changed()));

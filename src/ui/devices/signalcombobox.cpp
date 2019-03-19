@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,11 +20,11 @@
 #include <map>
 #include <memory>
 
+#include <QComboBox>
 #include <QDebug>
 #include <QVariant>
 
 #include "signalcombobox.hpp"
-#include "src/session.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/channels/basechannel.hpp"
 
@@ -37,10 +37,9 @@ namespace ui {
 namespace devices {
 
 SignalComboBox::SignalComboBox(
-		const Session &session, shared_ptr<sv::channels::BaseChannel> channel,
+		shared_ptr<sv::channels::BaseChannel> channel,
 		QWidget *parent) :
 	QComboBox(parent),
-	session_(session),
 	channel_(channel)
 {
 	setup_ui();
@@ -67,6 +66,14 @@ shared_ptr<sv::data::BaseSignal> SignalComboBox::selected_signal() const
 
 void SignalComboBox::setup_ui()
 {
+	this->setSizeAdjustPolicy(QComboBox::AdjustToContents);
+	this->fill_signals();
+}
+
+void SignalComboBox::fill_signals()
+{
+	this->clear();
+
 	if (channel_ == nullptr)
 		return;
 
@@ -81,9 +88,7 @@ void SignalComboBox::change_channel(
 	shared_ptr<sv::channels::BaseChannel> channel)
 {
 	channel_ = channel;
-	for (int i = this->count(); i >= 0; --i)
-		this->removeItem(i);
-	this->setup_ui();
+	this->fill_signals();
 }
 
 } // namespace devices

@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,8 +30,6 @@ using std::shared_ptr;
 
 namespace sv {
 
-class Session;
-
 namespace devices {
 class BaseDevice;
 }
@@ -44,17 +42,17 @@ class ChannelGroupComboBox : public QComboBox
 	Q_OBJECT
 
 public:
-	ChannelGroupComboBox(const Session &session,
-		shared_ptr<sv::devices::BaseDevice> device = nullptr,
+	ChannelGroupComboBox(
+		shared_ptr<sv::devices::BaseDevice> device,
 		QWidget *parent = nullptr);
 
 	void select_channel_group(QString);
-	const QString selected_channel_group();
+	const QString selected_channel_group() const;
 
 private:
 	void setup_ui();
+	void fill_channel_groups();
 
-	const Session &session_;
 	shared_ptr<sv::devices::BaseDevice> device_;
 
 public Q_SLOTS:

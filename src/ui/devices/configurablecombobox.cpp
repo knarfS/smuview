@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,16 +17,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <map>
+#include <memory>
+
+#include <QComboBox>
 #include <QDebug>
 #include <QVariant>
 
 #include "configurablecombobox.hpp"
-#include "src/session.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/devices/configurable.hpp"
-#include "src/devices/hardwaredevice.hpp"
 
-using std::dynamic_pointer_cast;
+using std::shared_ptr;
 
 Q_DECLARE_SMART_POINTER_METATYPE(std::shared_ptr)
 
@@ -34,11 +36,10 @@ namespace sv {
 namespace ui {
 namespace devices {
 
-ConfigurableComboBox::ConfigurableComboBox(const Session &session,
+ConfigurableComboBox::ConfigurableComboBox(
 		shared_ptr<sv::devices::BaseDevice> device,
 		QWidget *parent) :
 	QComboBox(parent),
-	session_(session),
 	device_(device)
 {
 	setup_ui();
@@ -66,14 +67,18 @@ shared_ptr<sv::devices::Configurable>
 
 void ConfigurableComboBox::setup_ui()
 {
+	this->setSizeAdjustPolicy(QComboBox::AdjustToContents);
+	this->fill_configurables();
+}
+
+void ConfigurableComboBox::fill_configurables()
+{
+	this->clear();
+
 	if (device_ == nullptr)
 		return;
 
-	auto hw_device = dynamic_pointer_cast<sv::devices::HardwareDevice>(device_);
-	if (!hw_device)
-		return;
-
-	for (const auto &c_pair : hw_device->configurable_map()) {
+	for (const auto &c_pair : device_->configurable_map()) {
 		// Only show configurables that either are getable, setable or listable.
 		auto configurable = c_pair.second;
 		if (!configurable->is_controllable())
@@ -83,16 +88,13 @@ void ConfigurableComboBox::setup_ui()
 			configurable->display_name(),
 			QVariant::fromValue(configurable));
 	}
-
 }
 
 void ConfigurableComboBox::change_device(
 	shared_ptr<sv::devices::BaseDevice> device)
 {
 	device_ = device;
-	for (int i = this->count(); i >= 0; --i)
-		this->removeItem(i);
-	this->setup_ui();
+	this->fill_configurables();
 }
 
 } // namespace devices

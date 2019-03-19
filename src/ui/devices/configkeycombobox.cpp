@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,12 +17,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <memory>
+
+#include <QComboBox>
 #include <QDebug>
 #include <QVariant>
 
 #include "configkeycombobox.hpp"
 #include "src/devices/deviceutil.hpp"
 #include "src/devices/configurable.hpp"
+
+using std::shared_ptr;
 
 Q_DECLARE_METATYPE(sv::devices::ConfigKey)
 
@@ -37,13 +42,6 @@ ConfigKeyComboBox::ConfigKeyComboBox(
 	configurable_(configurable)
 {
 	setup_ui();
-}
-
-void ConfigKeyComboBox::set_configurable(
-	shared_ptr<sv::devices::Configurable> configurable)
-{
-	configurable_ = configurable;
-	fill_config_keys();
 }
 
 void ConfigKeyComboBox::select_config_key(sv::devices::ConfigKey config_key)
@@ -66,14 +64,15 @@ sv::devices::ConfigKey ConfigKeyComboBox::selected_config_key() const
 
 void ConfigKeyComboBox::setup_ui()
 {
-	fill_config_keys();
+	this->setSizeAdjustPolicy(QComboBox::AdjustToContents);
+	this->fill_config_keys();
 }
 
 void ConfigKeyComboBox::fill_config_keys()
 {
 	this->clear();
 
-	if (!configurable_)
+	if (configurable_ == nullptr)
 		return;
 
 	// TODO: Filter for getable, setable, listable
@@ -82,6 +81,13 @@ void ConfigKeyComboBox::fill_config_keys()
 			sv::devices::deviceutil::format_config_key(config_key),
 			QVariant::fromValue(config_key));
 	}
+}
+
+void ConfigKeyComboBox::change_configurable(
+	shared_ptr<sv::devices::Configurable> configurable)
+{
+	configurable_ = configurable;
+	this->fill_config_keys();
 }
 
 } // namespace devices

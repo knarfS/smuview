@@ -93,7 +93,7 @@ void SelectPropertyForm::setup_ui()
 	device_box_ = new DeviceComboBox(session_);
 	this->addRow(tr("Device"), device_box_);
 
-	configurable_box_ = new ConfigurableComboBox(session_,
+	configurable_box_ = new ConfigurableComboBox(
 		device_box_->selected_device());
 	this->addRow(tr("Configurable"), configurable_box_);
 
@@ -117,7 +117,7 @@ void SelectPropertyForm::on_device_changed()
 
 void SelectPropertyForm::on_configurable_changed()
 {
-	config_key_box_->set_configurable(
+	config_key_box_->change_configurable(
 		configurable_box_->selected_configurable());
 }
 

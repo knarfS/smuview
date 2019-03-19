@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,10 +43,10 @@ class ConfigKeyComboBox : public QComboBox
 	Q_OBJECT
 
 public:
-	ConfigKeyComboBox(shared_ptr<sv::devices::Configurable> configurable,
+	ConfigKeyComboBox(
+		shared_ptr<sv::devices::Configurable> configurable,
 		QWidget *parent = nullptr);
 
-	void set_configurable(shared_ptr<sv::devices::Configurable> configurable);
 	void select_config_key(sv::devices::ConfigKey config_key);
 	sv::devices::ConfigKey selected_config_key() const;
 
@@ -55,6 +55,10 @@ private:
 	void fill_config_keys();
 
 	shared_ptr<sv::devices::Configurable> configurable_;
+
+public Q_SLOTS:
+	void change_configurable(
+		shared_ptr<sv::devices::Configurable> configurable);
 
 };
 
