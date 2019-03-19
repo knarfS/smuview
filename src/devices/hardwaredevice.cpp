@@ -99,17 +99,29 @@ HardwareDevice::HardwareDevice(
 void HardwareDevice::init()
 {
 	// Init Configurables from Channel Groups
-	map<string, shared_ptr<sigrok::ChannelGroup>> sr_channel_groups =
-		sr_device_->channel_groups();
-	if (sr_channel_groups.size() > 0) {
-		for (const auto &sr_cg_pair : sr_channel_groups) {
-			auto sr_cg = sr_cg_pair.second;
-			auto cg_c = Configurable::create(
-				sr_cg, next_configurable_index_++,
-				short_name().toStdString(), device_type_);
-			configurable_map_.insert(make_pair(sr_cg_pair.first, cg_c));
-		}
+	for (const auto &sr_cg_pair : sr_device_->channel_groups()) {
+		auto sr_cg = sr_cg_pair.second;
+		if (sr_cg->config_keys().size() == 0)
+			continue;
+
+		auto cg_c = Configurable::create(
+			sr_cg, next_configurable_index_++,
+			short_name().toStdString(), device_type_);
+		configurable_map_.insert(make_pair(sr_cg_pair.first, cg_c));
 	}
+
+	/*
+	 * Check if the device configurable has any config key of use for us.
+	 * We will ignore the common device config keys like "continuous",
+	 * "limit_samples" and "limit_time"
+	 */
+	size_t device_ck_cnt = 0;
+	for (const auto &key : sr_device_->config_keys()) {
+		if (deviceutil::get_config_key(key) != ConfigKey::Unknown)
+			++device_ck_cnt;
+	}
+	if (device_ck_cnt == 0)
+		return;
 
 	// Init Configurable from Device
 	auto d_c = Configurable::create(

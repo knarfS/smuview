@@ -1,2 +1,0 @@
-- Configurable: use std::string (name_, ....)
-- Only create a Configurable when there are COnfigKeys
