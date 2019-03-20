@@ -126,8 +126,20 @@ bool UInt64Property::list_config()
 
 void UInt64Property::change_value(const QVariant qvar)
 {
-	configurable_->set_config(config_key_, (uint64_t)qvar.toULongLong());
-	Q_EMIT value_changed(qvar);
+	/*
+	 * TODO: This is a dirty hack to limit the sample rate of the (demo) device
+	 *       to 20 kSamples/s to prevent memory overflow.
+	 *       To fix this hack, a proper memory management has to be implemented!
+	 */
+	QVariant new_qvar = qvar;
+	if (config_key_ == ConfigKey::Samplerate) {
+		uint64_t sample_rate = (uint64_t)new_qvar.toULongLong();
+		if (sample_rate > 20000)
+			new_qvar.setValue((qulonglong)20000);
+	}
+
+	configurable_->set_config(config_key_, (uint64_t)new_qvar.toULongLong());
+	Q_EMIT value_changed(new_qvar);
 }
 
 void UInt64Property::on_value_changed(Glib::VariantBase g_var)
