@@ -57,13 +57,14 @@ BaseChannel::BaseChannel(
 		set<string> channel_group_names,
 		double channel_start_timestamp) :
 	sr_channel_(sr_channel),
-	name_(""),
 	channel_start_timestamp_(channel_start_timestamp),
 	parent_device_(parent_device),
 	channel_group_names_(channel_group_names),
 	fixed_signal_(false),
 	actual_signal_(nullptr)
 {
+	name_ = (sr_channel_) ? sr_channel_->name() : "";
+
 	qWarning() << "Init channel " << QString::fromStdString(name_)
 		<< ", channel_start_timestamp = "
 		<< util::format_time_date(channel_start_timestamp);
