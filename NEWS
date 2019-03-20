@@ -1,0 +1,37 @@
+0.0.2 (2019-03-21)
+------------------
+
+For a detailed list of changes, please see the git commit history.
+
+ * Add manpage
+ * Add Fedora support (Thanks to gvegidy)
+ * Plot view:
+   - Curve colors
+   - Better legend titles
+   - Add AC/DC to curve unit names (axis labels)
+   - Use one axis for data with the same qunatity / qunatity flags
+   - Fix non working mouse wheel over axis
+ * Use linear interpolation to combine signals with different time intervals:
+   - Used in math channles
+   - Used in x/y-plot view
+ * Use session start timestamp as start timestamp for channels and signals
+ * Fix bug when listing ConfigKey SAMPLERATE
+ * Fix bugs in ui datatype widgets
+ * Add GenericControlView
+ * Add support for the demo device
+ * Initially populate serial connections in the connection dialog
+ * Add "addition with constant" math channel
+ * Add "moving average" math channel
+ * New device tree
+ * Move "add device" and "add user device" to new device tree
+ * Add start/stop aquisition to device tab
+ * Add disconnect device in device tree
+ * Add clear signal to device tree
+ * Add configurabel and config keys to device tree
+ * Add support for interleaved samples (demo device and oscilloscopes)
+ * Auto resize (device) combo boxes
+
+0.0.1 (2019-01-21)
+------------------
+
+ * Initial release.
