@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QSizePolicy>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 
@@ -104,6 +105,12 @@ void SourceSinkControlView::setup_ui()
 		voltage_control_ = new ui::datatypes::DoubleControl(
 			configurable_->get_property(ConfigKey::VoltageTarget),
 			true, true, tr("Voltage"));
+		/*
+		 * The voltage control and the current control might vary in height,
+		 * because the scale numbering of the knobs are probably different.
+		 */
+		voltage_control_->setSizePolicy(
+			QSizePolicy::Fixed, QSizePolicy::MinimumExpanding);
 		ctrl_layout->addWidget(voltage_control_);
 	}
 
@@ -114,6 +121,9 @@ void SourceSinkControlView::setup_ui()
 		current_control_ = new ui::datatypes::DoubleControl(
 			configurable_->get_property(ConfigKey::CurrentLimit),
 			true, true, tr("Current"));
+		// See above
+		current_control_->setSizePolicy(
+			QSizePolicy::Fixed, QSizePolicy::MinimumExpanding);
 		ctrl_layout->addWidget(current_control_, 1, Qt::AlignLeft);
 	}
 

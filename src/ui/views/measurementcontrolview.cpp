@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
  */
 
 #include <QDebug>
-#include <QVBoxLayout>
+#include <QFormLayout>
 
 #include "measurementcontrolview.hpp"
 #include "src/session.hpp"
@@ -47,11 +47,11 @@ QString MeasurementControlView::title() const
 
 void MeasurementControlView::setup_ui()
 {
-	QHBoxLayout *layout = new QHBoxLayout();
+	QFormLayout *layout = new QFormLayout();
 
 	measured_quantity_box_ = new ui::datatypes::MeasuredQuantityComboBox(
 		configurable_->get_property(ConfigKey::MeasuredQuantity), true, true);
-	layout->addWidget(measured_quantity_box_);
+	layout->addRow(tr("Quantity"), measured_quantity_box_);
 
 	this->central_widget_->setLayout(layout);
 }
