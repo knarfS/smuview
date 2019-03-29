@@ -102,10 +102,6 @@ bool PlotScalePicker::eventFilter(QObject *object, QEvent *event)
 					p_value = pos.x();
 					break;
 				}
-				plot_->set_axis_locked(
-					axis_id, AxisBoundary::LowerBoundary, true);
-				plot_->set_axis_locked(
-					axis_id, AxisBoundary::UpperBoundary, true);
 
 				const bool auto_replot = plot_->autoReplot();
 				plot_->setAutoReplot(false);
@@ -121,6 +117,11 @@ bool PlotScalePicker::eventFilter(QObject *object, QEvent *event)
 				double s1 = scale_map.invTransform(p1 - p_diff);
 				double s2 = scale_map.invTransform(p2 - p_diff);
 				last_pan_p_value_ = p_value;
+
+				plot_->set_axis_locked(
+					axis_id, AxisBoundary::LowerBoundary, true);
+				plot_->set_axis_locked(
+					axis_id, AxisBoundary::UpperBoundary, true);
 
 				plot_->setAxisScale(axis_id, s1, s2);
 				plot_->setAutoReplot(auto_replot);
@@ -143,9 +144,6 @@ bool PlotScalePicker::eventFilter(QObject *object, QEvent *event)
 				if (factor == 1.0 || factor == 0.0)
 					return true;
 
-				const bool auto_replot = plot_->autoReplot();
-				plot_->setAutoReplot(false);
-
 				int axis_id = -1;
 				double mouse_pos = -1; // Mouse position in the scale widget.
 				switch (scale_widget->alignment()) {
@@ -167,6 +165,9 @@ bool PlotScalePicker::eventFilter(QObject *object, QEvent *event)
 					break;
 				}
 
+				const bool auto_replot = plot_->autoReplot();
+				plot_->setAutoReplot(false);
+
 				const QwtScaleMap scale_map = plot_->canvasMap(axis_id);
 				double v1 = scale_map.s1();
 				double v2 = scale_map.s2();
@@ -186,9 +187,14 @@ bool PlotScalePicker::eventFilter(QObject *object, QEvent *event)
 					v2 = scale_map.invTransform(v2);
 				}
 
+				plot_->set_axis_locked(
+					axis_id, AxisBoundary::LowerBoundary, true);
+				plot_->set_axis_locked(
+					axis_id, AxisBoundary::UpperBoundary, true);
+
 				plot_->setAxisScale(axis_id, v1, v2);
-				plot_->replot();
 				plot_->setAutoReplot(auto_replot);
+				plot_->replot();
 
 				return true;
 			}

@@ -1,8 +1,7 @@
 /*
  * This file is part of the SmuView project.
- * This file is based on the QWT EventFilter Example.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,39 +17,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UI_WIDGETS_PLOT_PLOTSCALEPICKER_HPP
-#define UI_WIDGETS_PLOT_PLOTSCALEPICKER_HPP
+#include <QWidget>
+#include <qwt_plot_magnifier.h>
 
-#include <QEvent>
-#include <QObject>
+#include "plotmagnifier.hpp"
 
 namespace sv {
 namespace ui {
 namespace widgets {
 namespace plot {
 
-class Plot;
-
-class PlotScalePicker : public QObject
+PlotMagnifier::PlotMagnifier(QWidget *canvas) :
+	QwtPlotMagnifier(canvas)
 {
-	Q_OBJECT
+}
 
-public:
-	PlotScalePicker(Plot *plot);
-
-	virtual bool eventFilter(QObject *object, QEvent *event);
-
-private:
-	Plot *plot_;
-	bool is_double_clicked;
-	int last_pan_p_value_;
-	double wheel_factor_;
-
-};
+void PlotMagnifier::rescale(double factor)
+{
+	QwtPlotMagnifier::rescale(factor);
+	Q_EMIT magnified(factor);
+}
 
 } // namespace plot
 } // namespace widgets
 } // namespace ui
 } // namespace sv
-
-#endif // UI_WIDGETS_PLOT_PLOTSCALEPICKER_HPP

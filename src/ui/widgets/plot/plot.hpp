@@ -2,7 +2,7 @@
  * This file is part of the SmuView project.
  * This file is based on the QWT Oscilloscope Example.
  *
- * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UI_WIDGETS_PLOT_HPP
-#define UI_WIDGETS_PLOT_HPP
+#ifndef UI_WIDGETS_PLOT_PLOT_HPP
+#define UI_WIDGETS_PLOT_PLOT_HPP
 
 #include <map>
 #include <vector>
@@ -47,6 +47,7 @@ namespace widgets {
 namespace plot {
 
 class BaseCurveData;
+class PlotMagnifier;
 
 enum class AxisBoundary {
 	LowerBoundary,
@@ -98,9 +99,8 @@ public Q_SLOTS:
 	void stop();
 	int init_x_axis(plot::BaseCurveData *curve_data);
 	int init_y_axis(plot::BaseCurveData *curve_data);
-	void set_x_interval(double x_start, double x_end);
-	void set_y_interval(int y_axis_id, double y_start, double y_end);
 	void add_axis_icons(const int axis_id);
+	void lock_all_axis();
 	void on_axis_lock_clicked();
 	void add_marker(plot::BaseCurveData *curve_data);
 	void add_diff_marker(QwtPlotMarker *marker1, QwtPlotMarker *marker2);
@@ -127,12 +127,8 @@ private:
 	vector<plot::BaseCurveData *> curve_datas_;
 	map<plot::BaseCurveData *, QwtPlotCurve *> plot_curve_map_;
 	map<plot::BaseCurveData *, QwtPlotDirectPainter *> plot_direct_painter_map_;
-	map<plot::BaseCurveData *, QwtInterval *> y_interval_map_;
 	map<plot::BaseCurveData *, int> y_axis_id_map_;
 	map<plot::BaseCurveData *, size_t> painted_points_map_;
-
-	map<int, QwtInterval *> y_axis_interval_map_;
-	QwtInterval x_interval_;
 
 	map<int, map<AxisBoundary, bool>> axis_lock_map_; // map<axis_id, map<AxisBoundary, locked>>
 	int plot_interval_;
@@ -142,6 +138,7 @@ private:
 	double add_time_;
 
 	QwtPlotPanner *plot_panner_;
+	PlotMagnifier *plot_magnifier_;
 
 	vector<QwtPlotMarker *> markers_;
 	vector<pair<QwtPlotMarker *, QwtPlotMarker *>> diff_markers_;
@@ -158,4 +155,4 @@ private:
 } // namespace ui
 } // namespace sv
 
-#endif // UI_WIDGETS_PLOT_HPP
+#endif // UI_WIDGETS_PLOT_PLOT_HPP

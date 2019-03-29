@@ -2,7 +2,7 @@
  * This file is part of the SmuView project.
  * This file is based on the QWT Oscilloscope Example.
  *
- * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,7 +46,6 @@
 #include <qwt_plot_textlabel.h>
 #include <qwt_plot_panner.h>
 #include <qwt_plot_picker.h>
-#include <qwt_plot_magnifier.h>
 #include <qwt_scale_draw.h>
 #include <qwt_scale_widget.h>
 #include <qwt_symbol.h>
@@ -55,6 +54,7 @@
 #include "src/ui/dialogs/plotcurveconfigdialog.hpp"
 #include "src/ui/widgets/plot/axislocklabel.hpp"
 #include "src/ui/widgets/plot/basecurvedata.hpp"
+#include "src/ui/widgets/plot/plotmagnifier.hpp"
 #include "src/ui/widgets/plot/plotscalepicker.hpp"
 
 using std::make_pair;
@@ -159,12 +159,22 @@ Plot::Plot(QWidget *parent) : QwtPlot(parent),
 	grid->enableYMin(false);
 	grid->attach(this);
 
+	// Disable all y axis to have a known state for init_y_axis()
+	this->enableAxis(QwtPlot::yLeft, false);
+	this->enableAxis(QwtPlot::yRight, false);
+
 	// Zooming and panning via the axes
 	(void)new PlotScalePicker(this);
+
 	// Panning via the canvas
 	plot_panner_ = new QwtPlotPanner(this->canvas());
+	connect(plot_panner_, SIGNAL(panned(int, int)),
+		this, SLOT(lock_all_axis()));
+
 	// Zooming via the canvas
-	(void)new QwtPlotMagnifier(this->canvas());
+	plot_magnifier_ = new PlotMagnifier(this->canvas());
+	connect(plot_magnifier_, SIGNAL(magnified(double)),
+		this, SLOT(lock_all_axis()));
 }
 
 Plot::~Plot()
@@ -221,7 +231,6 @@ bool Plot::add_curve(widgets::plot::BaseCurveData *curve_data)
 	pen.setCosmetic(false);
 
 	QwtPlotCurve *plot_curve = new QwtPlotCurve(curve_data->name());
-	//plot_curve->setXAxis(QwtAxisId(QwtAxis::yLeft, 0)); // TODO: Multiaxis
 	plot_curve->setYAxis(y_axis_id);
 	plot_curve->setXAxis(x_axis_id);
 	plot_curve->setStyle(QwtPlotCurve::Lines);
@@ -288,8 +297,6 @@ int Plot::init_x_axis(widgets::plot::BaseCurveData *curve_data)
 			!curve_data->is_relative_time())
 		this->setAxisScaleEngine(x_axis_id, new QwtDateScaleEngine());
 
-	x_interval_.setInterval(min, max);
-
 	return x_axis_id;
 }
 
@@ -299,7 +306,7 @@ int Plot::init_y_axis(widgets::plot::BaseCurveData *curve_data)
 
 	bool do_init = false;
 	int y_axis_id = -1;
-	if (y_axis_interval_map_.size() == 0) {
+	if (!this->axisEnabled(QwtPlot::yLeft)) {
 		y_axis_id = QwtPlot::yLeft;
 		do_init = true;
 	}
@@ -313,7 +320,7 @@ int Plot::init_y_axis(widgets::plot::BaseCurveData *curve_data)
 		}
 	}
 	if (y_axis_id < 0) {
-		if (y_axis_interval_map_.size() == 1) {
+		if (!this->axisEnabled(QwtPlot::yRight)) {
 			y_axis_id = QwtPlot::yRight;
 			do_init = true;
 		}
@@ -321,11 +328,6 @@ int Plot::init_y_axis(widgets::plot::BaseCurveData *curve_data)
 			return y_axis_id;
 	}
 
-	double min = 0.;
-	double max = 0.;
-
-	QwtInterval *y_interval = new QwtInterval(min, max);
-	y_interval_map_.insert(make_pair(curve_data, y_interval));
 	y_axis_id_map_.insert(make_pair(curve_data, y_axis_id));
 
 	if (do_init) {
@@ -336,62 +338,14 @@ int Plot::init_y_axis(widgets::plot::BaseCurveData *curve_data)
 			AxisBoundary::UpperBoundary, false));
 		axis_lock_map_.insert(make_pair(y_axis_id, locks));
 
-		//setAxesCount(QwtPlot::yLeft, 2); // TODO: Multiaxis
-		//QwtAxisId y_axis_id = QwtAxisId(QwtAxis::yLeft, 0); // TODO: Multiaxis
-
-		//this->setAxisVisible(y_axis_id, true); // TODO: Multiaxis
 		this->setAxisTitle(y_axis_id, curve_data->y_data_title());
-		this->setAxisScale(y_axis_id, min, max);
+		this->setAxisScale(y_axis_id, 0., 0.);
 		this->setAxisAutoScale(y_axis_id, false); // TODO: Not working!?
 		this->enableAxis(y_axis_id);
 		this->add_axis_icons(y_axis_id);
-
-		y_axis_interval_map_.insert(make_pair(y_axis_id, y_interval));
 	}
 
 	return y_axis_id;
-}
-
-void Plot::set_x_interval(double x_start, double x_end)
-{
-	bool interval_changed = false;
-	if (x_start != x_interval_.minValue()) {
-		interval_changed = true;
-		set_axis_locked(QwtPlot::xBottom, AxisBoundary::LowerBoundary, true);
-	}
-	if (x_end != x_interval_.maxValue()) {
-		interval_changed = true;
-		set_axis_locked(QwtPlot::xBottom, AxisBoundary::UpperBoundary, true);
-	}
-
-	if (interval_changed) {
-		x_interval_.setInterval(x_start, x_end);
-		setAxisScale(QwtPlot::xBottom,
-			x_interval_.minValue(), x_interval_.maxValue());
-
-		replot();
-	}
-}
-
-void Plot::set_y_interval(int y_axis_id, double y_start, double y_end)
-{
-	QwtInterval *y_interval = y_axis_interval_map_[y_axis_id];
-	bool interval_changed = false;
-	if (y_start != y_interval->minValue()) {
-		interval_changed = true;
-		set_axis_locked(y_axis_id, AxisBoundary::LowerBoundary, true);
-	}
-	if (y_end != y_interval->maxValue()) {
-		interval_changed = true;
-		set_axis_locked(y_axis_id, AxisBoundary::UpperBoundary, true);
-	}
-
-	if (interval_changed) {
-		y_interval->setInterval(y_start, y_end);
-		setAxisScale(y_axis_id, y_interval->minValue(), y_interval->maxValue());
-
-		replot();
-	}
 }
 
 void Plot::add_axis_icons(const int axis_id)
@@ -450,6 +404,11 @@ void Plot::set_all_axis_locked(bool locked)
 		set_axis_locked(p.first, AxisBoundary::LowerBoundary, locked);
 		set_axis_locked(p.first, AxisBoundary::UpperBoundary, locked);
 	}
+}
+
+void Plot::lock_all_axis()
+{
+	this->set_all_axis_locked(true);
 }
 
 void Plot::on_axis_lock_clicked()
@@ -684,30 +643,30 @@ bool Plot::update_x_interval(plot::BaseCurveData *curve_data)
 
 	bool interval_changed = false;
 	QRectF boundaries = curve_data->boundingRect();
+	QwtInterval x_interval = this->axisInterval(QwtPlot::xBottom);
+	double min = x_interval.minValue();
+	double max = x_interval.maxValue();
 
 	if (update_mode_ == PlotUpdateMode::Additive) {
 		/*
 		qWarning() << "Plot::update_x_interval() for b.left < x_int.min = " <<
-			boundaries.left() << " < " << x_interval_.minValue();
+			boundaries.left() << " < " << min;
 		qWarning() << "Plot::update_x_interval() for b.right > x_int.max = " <<
-			boundaries.right() << " > " << x_interval_.maxValue();
+			boundaries.right() << " > " << max;
 		*/
 
 		if (axis_lock_map_[QwtPlot::xBottom][AxisBoundary::LowerBoundary] == false &&
-				boundaries.left() < x_interval_.minValue()) {
+				boundaries.left() < min) {
 			// new value + 10%
-			double min = boundaries.left() + (boundaries.left() * 0.1);
-			x_interval_.setMinValue(min);
+			min = boundaries.left() + (boundaries.left() * 0.1);
 			interval_changed = true;
 		}
 		if (axis_lock_map_[QwtPlot::xBottom][AxisBoundary::UpperBoundary] == false &&
-				boundaries.right() > x_interval_.maxValue()) {
-			double max;
+				boundaries.right() > max) {
 			if (curve_data->curve_type() == CurveType::TimeCurve)
-				max = x_interval_.maxValue() + add_time_;
+				max = x_interval.maxValue() + add_time_;
 			else
 				max = boundaries.right() + (boundaries.right() * 0.1);
-			x_interval_.setMaxValue(max);
 			interval_changed = true;
 		}
 
@@ -715,46 +674,38 @@ bool Plot::update_x_interval(plot::BaseCurveData *curve_data)
 			/*
 			qWarning() <<
 				QString("Plot::update_x_interval(): new min = %1, new max = %2").
-				arg(x_interval_.minValue()).arg(x_interval_.maxValue());
+				arg(min).arg(max);
 			*/
-			setAxisScale(QwtPlot::xBottom,
-				x_interval_.minValue(), x_interval_.maxValue());
+			setAxisScale(QwtPlot::xBottom, min, max);
 		}
 
 		return interval_changed;
 	}
 	else if (update_mode_ == PlotUpdateMode::Rolling) {
 		// TODO: axis locking. Lock/Unlock both upper and lower together!
-		if (boundaries.right() <= x_interval_.maxValue())
+		if (boundaries.right() <= max)
 			return false;
 
-		//double diff = boundaries.right() - x_interval_.maxValue();
-		x_interval_.setMinValue(x_interval_.minValue() + add_time_);
-		x_interval_.setMaxValue(x_interval_.maxValue() + add_time_);
+		//double diff = boundaries.right() - max;
+		min += add_time_;
+		max += add_time_;
 
 		/*
-		qWarning() << "Plot::timerEvent() for x_interval_.minValue() = " <<
-			x_interval_.minValue() << ", x_interval_.maxValue() = " <<
-			x_interval_.maxValue();
+		qWarning() << "Plot::timerEvent() for x_interval.minValue() = " <<
+			min << ", x_interval.maxValue() = " << max;
 		*/
-
-		setAxisScale(QwtPlot::xBottom,
-			x_interval_.minValue(), x_interval_.maxValue());
+		setAxisScale(QwtPlot::xBottom, min, max);
 
 		return true;
 	}
 	else if (update_mode_ == PlotUpdateMode::Oscilloscope) {
 		// TODO: axis locking. Lock/Unlock both upper and lower together?
-		if (boundaries.right() <= x_interval_.maxValue())
+		if (boundaries.right() <= max)
 			return false;
 
-		x_interval_ = QwtInterval(x_interval_.maxValue(),
-			x_interval_.maxValue() + time_span_);
-
 		/*
-		qWarning() << "Plot::timerEvent() for x_interval_.minValue() = " <<
-			x_interval_.minValue() << ", x_interval_.maxValue() = " <<
-			x_interval_.maxValue();
+		qWarning() << "Plot::timerEvent() for x_interval.minValue() = " <<
+			max << ", x_interval.maxValue() = " << max + time_span_;
 		*/
 
 		/*
@@ -763,12 +714,12 @@ bool Plot::update_x_interval(plot::BaseCurveData *curve_data)
 		 * of the ticks and shift them manually instead.
 		 */
 		QwtScaleDiv scaleDiv = axisScaleDiv(QwtPlot::xBottom);
-		scaleDiv.setInterval(x_interval_);
+		scaleDiv.setInterval(max, max + time_span_);
 
 		for (int i = 0; i < QwtScaleDiv::NTickTypes; i++) {
 			QList<double> ticks = scaleDiv.ticks(i);
 			for (int j = 0; j < ticks.size(); j++) {
-				ticks[j] += x_interval_.width();
+				ticks[j] += x_interval.width();
 			}
 			scaleDiv.setTicks(i, ticks);
 		}
@@ -788,29 +739,29 @@ bool Plot::update_y_interval(plot::BaseCurveData *curve_data)
 			axis_lock_map_[y_axis_id][AxisBoundary::UpperBoundary] == true)
 		return false;
 
-	bool interval_changed = false;
 	QRectF boundaries = curve_data->boundingRect();
-	QwtInterval *y_interval = y_interval_map_[curve_data];
+	QwtInterval y_interval = this->axisInterval(y_axis_id);
+	double min = y_interval.minValue();
+	double max = y_interval.maxValue();
+	bool interval_changed = false;
 
 	/*
 	qWarning() << "Plot::update_y_interval() for b.bottom < y_int.min = " <<
-		boundaries.bottom() << " < " << y_interval->minValue();
+		boundaries.bottom() << " < " << min;
 	qWarning() << "Plot::update_y_interval() for b.top > y_int.max = " <<
-		boundaries.top() << " > " << y_interval->maxValue();
+		boundaries.top() << " > " << max;
 	*/
 
 	if (axis_lock_map_[y_axis_id][AxisBoundary::LowerBoundary] == false &&
-			boundaries.bottom() < y_interval->minValue()) {
+			boundaries.bottom() < min) {
 		// new value + 10%
-		double min = boundaries.bottom() + (boundaries.bottom() * 0.1);
-		y_interval->setMinValue(min);
+		min = boundaries.bottom() + (boundaries.bottom() * 0.1);
 		interval_changed = true;
 	}
 	if (axis_lock_map_[y_axis_id][AxisBoundary::UpperBoundary] == false &&
-			boundaries.top() > y_interval->maxValue()) {
+			boundaries.top() > max) {
 		// new value + 10%
-		double max = boundaries.top() + (boundaries.top() * 0.1);
-		y_interval->setMaxValue(max);
+		max = boundaries.top() + (boundaries.top() * 0.1);
 		interval_changed = true;
 	}
 
@@ -818,9 +769,9 @@ bool Plot::update_y_interval(plot::BaseCurveData *curve_data)
 		/*
 		qWarning() <<
 			QString("Plot::update_y_interval(): new min = %1, new max = %2").
-			arg(y_interval->minValue()).arg(y_interval->maxValue());
+			arg(min).arg(max);
 		*/
-		setAxisScale(y_axis_id, y_interval->minValue(), y_interval->maxValue());
+		setAxisScale(y_axis_id, min, max);
 	}
 
 	return interval_changed;

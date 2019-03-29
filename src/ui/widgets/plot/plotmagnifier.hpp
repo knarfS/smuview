@@ -1,8 +1,7 @@
 /*
  * This file is part of the SmuView project.
- * This file is based on the QWT EventFilter Example.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,33 +17,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UI_WIDGETS_PLOT_PLOTSCALEPICKER_HPP
-#define UI_WIDGETS_PLOT_PLOTSCALEPICKER_HPP
+#ifndef UI_WIDGETS_PLOT_PLOTMAGNIFIER_HPP
+#define UI_WIDGETS_PLOT_PLOTMAGNIFIER_HPP
 
-#include <QEvent>
-#include <QObject>
+#include <QWidget>
+#include <qwt_plot_magnifier.h>
 
 namespace sv {
 namespace ui {
 namespace widgets {
 namespace plot {
 
-class Plot;
-
-class PlotScalePicker : public QObject
+/**
+ * QwtPlotMagnifier doesn't have signals, so we have to create them.
+ *
+ * TODO: Reimplement to zomm in/out at the mouse pointer position, not only
+ * at the center of the canvas.
+ */
+class PlotMagnifier : public QwtPlotMagnifier
 {
-	Q_OBJECT
+    Q_OBJECT
 
 public:
-	PlotScalePicker(Plot *plot);
+	PlotMagnifier(QWidget *canvas);
 
-	virtual bool eventFilter(QObject *object, QEvent *event);
+protected:
+	void rescale(double factor) override;
 
-private:
-	Plot *plot_;
-	bool is_double_clicked;
-	int last_pan_p_value_;
-	double wheel_factor_;
+Q_SIGNALS:
+	void magnified(double factor);
 
 };
 
@@ -53,4 +54,4 @@ private:
 } // namespace ui
 } // namespace sv
 
-#endif // UI_WIDGETS_PLOT_PLOTSCALEPICKER_HPP
+#endif // UI_WIDGETS_PLOT_PLOTMAGNIFIER_HPP
