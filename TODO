@@ -8,7 +8,6 @@ ToDo
 - License headers are not the same
 - Plot: Sampling
 - Mutex for aquisition_state_?
-- QWT Multiaxis
 - Save session, save all data (gnuplot, octave, ...)
 	- add a saveutil.cpp
 - Configurable:
@@ -18,7 +17,6 @@ ToDo
 	- Enhance ThresholdControl widget (e.g for re:load pro). Maybe a dedicated property?
 		- Dedicated SvDoubleSpinBox and SvBoolButton?
 - Refactore:
-	- src/data -> src/signals
 	- src/data/datautil.cpp -> src/data/
 	- src/devices/deviceutil.cpp -> src/data/
 	- src/devices/properties/ -> src/data/
@@ -30,10 +28,9 @@ ToDo
 - Use new connect/disconnet variant whenever possible
 - Lookup: std::atomic, std::condition_variable, std::mutex
 - Remove "const Session &session" form ui::devices::* ctors and more??
-- Remove all items in combo box when parent has changed and setup_ui() is recalled?	see ConfigKeyComboBox and ConfigurableComboBox
+- Maybe: In all ctors "Session &session" -> "const Session &session"
 - DataView: add signal (into this table) action
 - Resize the DockWidgets/Views to their best sizes (value panels minimum, plot views max, ...). Maybe with QMainWindow->resizeDocks, SizePolicy in QDockWidget does not work....
-- Maybe: In all ctors "Session &session" -> "const Session &session"
 - boost::stacktrace, see pv
 - BaseDevice open()/close(): move aquisition stuff to HardwareDevice, move VirtualDevice stuff to BaseDevice
 - util.cpp: use cmath instead of math.h, but Timestamp is boost and only works with non std::?
@@ -79,12 +76,16 @@ Done
 - Autoscale plot. Plot doesn't always auto-update scale (rlp without load)
 - Remove "hp3478a" from gpib_libgpib_name_ and list all available names.
 - DataView: Add toolbar with "StayAtBottom" switchable action.
+- Remove all items in combo box when parent has changed and setup_ui() is recalled?	see ConfigKeyComboBox and ConfigurableComboBox
 
 ------------------------
 
-Search for:
+Won't fix
 
-pulse
+- QWT Multiaxis
+- Refactore:
+	- src/data -> src/signals
+
 
 
 
@@ -102,24 +103,15 @@ libsigrok
 - Re:load Pro: how to clear otp_active and uvc_active?
 - hp3478a: device isn't closed after stopping acquisition
 - scpi-pps: protocol.c -> scpi_pps_receive_data() uses double, but output (e.g. analog) and DF_ANALOG receivers use hardcoded float. Using sr_analog_encoding.unitsize and .is_float to define the datatype (and size) (.unitsize = sizeof(double) (or by lurchi_: .unitsize=8 + float is double)) in the receiver functions!
-- use mutex around ibwrt() and ibrd() (scpi_libgpib.c) per device, so they are thread safe
-- use mutex around scpi_cmd_resp() and scpi_cmd() (helpers.c), so when a request has a response, they are thread safe.
 - dev_acquisition_start() has to do first measurement (3478a, scpi-pps, reload(?)), because 1. DF_HEADER, 2. trigger measurement
 	- If not: 3378a use scpi_cmd_resp() for use of mutex (wrt+read);
 - Can't add 2x scpi_libgpib devices: scpi_libgpib.c -> scpi_gpib_source_add() calls session.c -> sr_session_source_add() with fd = -1. This calls session.c -> sr_session_fd_source_add() with key = GINT_TO_POINTER(fd) and finally throws an error in session.c -> sr_session_source_add_internal() because "Event source with key %p already exists."
 - scpi-pps's have channel groups but options/keys/_lists_ (voltage_target, ...) apply to device
 - scpi-pps: when in acquisition send one write ":MEAS:VOLT?;:MEAS:CURR?" instead of 2 writes when possible
-- scpi-pps: add otp/ovp/ocp to pps_profiles[] (or to channel(group)) for HP 663xx
-- Mutex of scpi/helpers.c:
-	- find all ocurrence of (sr_scpi_send_variadic(), sr_scpi_send(), scpi_cmd(), scpi_cmd_resp(), rigol_ds_config_set(), ....) and check if thread safe
-	- Any functions missing, that need the mutex
-	- Valid for SCPI over something something?
-- Mutex of scpi_libgpib: Add to other transport variants (serial, tcp, ...), if so is the mutex in scpi/helpers.c enough?
 - Add channel.meaning.mq, channel.meaning.mqflags, channel.meaning.unit (+channel.fixed) to PPU and load channels, to make it easy to init signals in smuview
 - Re:load Pro: Don't use "monitor 200", Instead "read" values every aquisition cycle with serial "read line blocking" and use a mutex around every read, write and write+read
-- HP3478A: Implement SPoll,
-- Add missing confg key sigok::ConfigKey::OFFSET
 - Add missing units: sigrok::Unit::DECIBEL, sigrok::Unit::JOULE, sigrok::Unit::AMPEREHOUR, sigrok::Unit::COULOMB, sigrok::Unit::(HECTO)PASCAL
+- Add mqflags (AC/DC) to channel_group_spec for scpi-pps
 
 Done
 ----
@@ -133,6 +125,17 @@ Done
 	- scpi/scpi.c: sr_atod(response, scpi_response) -> sr_atod_ascii(response, scpi_response)
 - hp3478a: acquisition doesn't stop (sigrok-cli/smuview must be killed)
 - Tests for convertion (st_ascii_tod) for locale "bugs"
+- use mutex around ibwrt() and ibrd() (scpi_libgpib.c) per device, so they are thread safe
+- use mutex around scpi_cmd_resp() and scpi_cmd() (helpers.c), so when a request has a response, they are thread safe.
+- Mutex of scpi/helpers.c:
+	- find all ocurrence of (sr_scpi_send_variadic(), sr_scpi_send(), scpi_cmd(), scpi_cmd_resp(), rigol_ds_config_set(), ....) and check if thread safe
+	- Any functions missing, that need the mutex
+	- Valid for SCPI over something something?
+- Mutex of scpi_libgpib: Add to other transport variants (serial, tcp, ...), if so is the mutex in scpi/helpers.c enough?
+- scpi-pps: add otp/ovp/ocp to pps_profiles[] (or to channel(group)) for HP 663xx
+- HP3478A: Implement SPoll,
+- Add missing confg key sigok::ConfigKey::OFFSET
+
 
 
 
@@ -140,6 +143,7 @@ Doku
 ====
 
 - Link API to the psu and load wiki pages
+
 
 
 
