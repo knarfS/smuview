@@ -86,7 +86,7 @@ void UInt64SpinBox::connect_signals()
 void UInt64SpinBox::connect_widget_2_prop_signals()
 {
 	if (auto_commit_ && property_ != nullptr && property_->is_setable()) {
-		connect(this, SIGNAL(valueChanged(int)),
+		connect(this, SIGNAL(editingFinished()),
 			this, SLOT(value_changed()));
 	}
 }
@@ -94,7 +94,7 @@ void UInt64SpinBox::connect_widget_2_prop_signals()
 void UInt64SpinBox::disconnect_widget_2_prop_signals()
 {
 	if (auto_commit_ && property_ != nullptr && property_->is_setable()) {
-		disconnect(this, SIGNAL(valueChanged(int)),
+		disconnect(this, SIGNAL(editingFinished()),
 			this, SLOT(value_changed()));
 	}
 }

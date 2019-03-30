@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -95,16 +95,16 @@ void DoubleSpinBox::connect_signals()
 void DoubleSpinBox::connect_widget_2_prop_signals()
 {
 	if (auto_commit_ && property_ != nullptr && property_->is_setable()) {
-		connect(this, SIGNAL(valueChanged(double)),
-			this, SLOT(value_changed(const double)));
+		connect(this, SIGNAL(editingFinished()),
+			this, SLOT(value_changed()));
 	}
 }
 
 void DoubleSpinBox::disconnect_widget_2_prop_signals()
 {
 	if (auto_commit_ && property_ != nullptr && property_->is_setable()) {
-		disconnect(this, SIGNAL(valueChanged(double)),
-			this, SLOT(value_changed(const double)));
+		disconnect(this, SIGNAL(editingFinished()),
+			this, SLOT(value_changed()));
 	}
 }
 
@@ -113,10 +113,10 @@ QVariant DoubleSpinBox::variant_value() const
 	return QVariant(this->value());
 }
 
-void DoubleSpinBox::value_changed(const double value)
+void DoubleSpinBox::value_changed()
 {
 	if (property_ != nullptr)
-		property_->change_value(QVariant(value));
+		property_->change_value(QVariant(this->value()));
 }
 
 void DoubleSpinBox::on_value_changed(const QVariant qvar)
