@@ -212,6 +212,12 @@ bool Plot::add_curve(widgets::plot::BaseCurveData *curve_data)
 {
 	assert(curve_data);
 
+	// Check if curve already has been added
+	for (const auto &cd : curve_datas_) {
+		if (cd->is_equal(curve_data))
+			return true;
+	}
+
 	// Check y axis
 	int y_axis_id = this->init_y_axis(curve_data);
 	if (y_axis_id < 0)

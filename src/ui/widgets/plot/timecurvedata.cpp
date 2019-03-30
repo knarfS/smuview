@@ -41,6 +41,17 @@ TimeCurveData::TimeCurveData(shared_ptr<sv::data::AnalogSignal> signal) :
 {
 }
 
+bool TimeCurveData::is_equal(const BaseCurveData *other) const
+{
+	const TimeCurveData *tcd = dynamic_cast<const TimeCurveData *>(other);
+	if (tcd != nullptr) {
+		return (signal_ == tcd->signal());
+	}
+	else {
+		return false;
+	}
+}
+
 QPointF TimeCurveData::sample(size_t i) const
 {
 	//signal_data_->lock();
@@ -141,6 +152,11 @@ QString TimeCurveData::y_data_unit() const
 QString TimeCurveData::y_data_title() const
 {
 	return QString("%1 [%2]").arg(y_data_quantity()).arg(y_data_unit());
+}
+
+shared_ptr<sv::data::AnalogSignal> TimeCurveData::signal() const
+{
+	return signal_;
 }
 
 } // namespace plot

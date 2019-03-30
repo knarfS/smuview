@@ -60,6 +60,18 @@ XYCurveData::XYCurveData(shared_ptr<sv::data::AnalogSignal> x_t_signal,
 		this, SLOT(on_sample_appended()));
 }
 
+bool XYCurveData::is_equal(const BaseCurveData *other) const
+{
+	const XYCurveData *xycd = dynamic_cast<const XYCurveData *>(other);
+	if (xycd != nullptr) {
+		return (x_t_signal_ == xycd->x_t_signal()) &&
+			(y_t_signal_ == xycd->y_t_signal());
+	}
+	else {
+		return false;
+	}
+}
+
 QPointF XYCurveData::sample(size_t i) const
 {
 	QPointF sample_point(x_data_->at(i), y_data_->at(i));
@@ -141,6 +153,16 @@ QString XYCurveData::y_data_unit() const
 QString XYCurveData::y_data_title() const
 {
 	return QString("%1 [%2]").arg(y_data_quantity()).arg(y_data_unit());
+}
+
+shared_ptr<sv::data::AnalogSignal> XYCurveData::x_t_signal() const
+{
+	return x_t_signal_;
+}
+
+shared_ptr<sv::data::AnalogSignal> XYCurveData::y_t_signal() const
+{
+	return y_t_signal_;
 }
 
 void XYCurveData::on_sample_appended()

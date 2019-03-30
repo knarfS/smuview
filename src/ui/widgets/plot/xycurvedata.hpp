@@ -56,6 +56,8 @@ public:
 	XYCurveData(shared_ptr<sv::data::AnalogSignal> x_t_signal,
 		shared_ptr<sv::data::AnalogSignal> y_t_signal);
 
+	bool is_equal(const BaseCurveData *other) const override;
+
 	QPointF sample(size_t i) const override;
 	size_t size() const override;
 	QRectF boundingRect() const override;
@@ -68,6 +70,9 @@ public:
 	QString y_data_quantity() const override;
 	QString y_data_unit() const override;
 	QString y_data_title() const override;
+
+	shared_ptr<sv::data::AnalogSignal> x_t_signal() const;
+	shared_ptr<sv::data::AnalogSignal> y_t_signal() const;
 
 private:
 	shared_ptr<sv::data::AnalogSignal> x_t_signal_;

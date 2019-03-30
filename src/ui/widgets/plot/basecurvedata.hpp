@@ -43,6 +43,8 @@ public:
 	BaseCurveData(CurveType curve_type);
 	virtual ~BaseCurveData() = default;
 
+	virtual bool is_equal(const BaseCurveData *other) const = 0;
+
 	CurveType curve_type() const;
 	QColor color() const;
 	void set_relative_time(bool is_relative_time);
