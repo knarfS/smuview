@@ -98,7 +98,7 @@ void MonoFontDisplay::setup_ui()
 
 	// Unit
 	unit_label_ = new QLabel();
-	QFont unit_font(monospace_font);
+	QFont unit_font;
 	unit_font.setPointSize(unit_font_size_);
 	unit_label_->setFont(unit_font);
 	unit_label_->setAlignment(Qt::AlignRight | Qt::AlignBottom);
@@ -134,7 +134,12 @@ void MonoFontDisplay::update_extra_widget_dimensions()
 
 void MonoFontDisplay::update_unit_widget_dimensions()
 {
-	QString str = QString("X%1").arg(unit_);
+	QString str;
+	if (auto_range_) {
+		// 'm' is the widest character for non monospace fonts
+		str.append("m");
+	}
+	str.append(unit_);
 	if (!unit_suffix_.isEmpty()) {
 		str.append(" ").append(unit_suffix_);
 	}

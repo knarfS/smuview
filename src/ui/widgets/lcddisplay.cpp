@@ -126,7 +126,12 @@ void LcdDisplay::update_extra_widget_dimensions()
 
 void LcdDisplay::update_unit_widget_dimensions()
 {
-	QString str = QString("X%1").arg(unit_);
+	QString str;
+	if (auto_range_) {
+		// 'm' is the widest character for non monospace fonts
+		str.append("m");
+	}
+	str.append(unit_);
 	if (!unit_suffix_.isEmpty()) {
 		str.append(" ").append(unit_suffix_);
 	}
