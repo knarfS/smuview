@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
 #include "doublecontrol.hpp"
 #include "src/devices/properties/baseproperty.hpp"
 #include "src/ui/datatypes/doubleknob.hpp"
-#include "src/ui/datatypes/doublelcddisplay.hpp"
+#include "src/ui/datatypes/doubledisplay.hpp"
 #include "src/ui/datatypes/doublespinbox.hpp"
 
 namespace sv {
@@ -52,8 +52,8 @@ void DoubleControl::setup_ui()
 
 	QVBoxLayout *layout = new QVBoxLayout();
 
-	lcd_display_ = new DoubleLcdDisplay(property_, true);
-	layout->addWidget(lcd_display_, 0, Qt::AlignRight);
+	display_ = new DoubleDisplay(property_, true);
+	layout->addWidget(display_, 0, Qt::AlignRight);
 
 	QHBoxLayout *controls_layout = new QHBoxLayout();
 

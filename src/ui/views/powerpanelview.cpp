@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@
 #include "src/util.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/data/datautil.hpp"
-#include "src/ui/widgets/lcddisplay.hpp"
+#include "src/ui/widgets/monofontdisplay.hpp"
 
 using std::set;
 using sv::data::QuantityFlag;
@@ -99,15 +99,15 @@ void PowerPanelView::setup_ui()
 	set<QuantityFlag> voltage_qfs_max = voltage_qfs;
 	voltage_qfs_max.insert(QuantityFlag::Max);
 
-	voltage_display_ = new widgets::LcdDisplay(
+	voltage_display_ = new widgets::MonoFontDisplay(
 		voltage_signal_->digits(), voltage_signal_->decimal_places(), false,
 		voltage_signal_->unit_name(), voltage_unit_suffix,
 		sv::data::datautil::format_quantity_flags(voltage_qfs, "\n"), false);
-	voltage_min_display_ = new widgets::LcdDisplay(
+	voltage_min_display_ = new widgets::MonoFontDisplay(
 		voltage_signal_->digits(), voltage_signal_->decimal_places(), false,
 		voltage_signal_->unit_name(), voltage_unit_suffix,
 		sv::data::datautil::format_quantity_flags(voltage_qfs_min, "\n"), true);
-	voltage_max_display_ = new widgets::LcdDisplay(
+	voltage_max_display_ = new widgets::MonoFontDisplay(
 		voltage_signal_->digits(), voltage_signal_->decimal_places(), false,
 		voltage_signal_->unit_name(), voltage_unit_suffix,
 		sv::data::datautil::format_quantity_flags(voltage_qfs_max, "\n"), true);
@@ -129,15 +129,15 @@ void PowerPanelView::setup_ui()
 	set<QuantityFlag> current_qfs_max = current_qfs;
 	current_qfs_max.insert(QuantityFlag::Max);
 
-	current_display_ = new widgets::LcdDisplay(
+	current_display_ = new widgets::MonoFontDisplay(
 		current_signal_->digits(), current_signal_->decimal_places(), false,
 		current_signal_->unit_name(), current_unit_suffix,
 		sv::data::datautil::format_quantity_flags(current_qfs, "\n"), false);
-	current_min_display_ = new widgets::LcdDisplay(
+	current_min_display_ = new widgets::MonoFontDisplay(
 		current_signal_->digits(), current_signal_->decimal_places(), false,
 		current_signal_->unit_name(), current_unit_suffix,
 		sv::data::datautil::format_quantity_flags(current_qfs_min, "\n"), true);
-	current_max_display_ = new widgets::LcdDisplay(
+	current_max_display_ = new widgets::MonoFontDisplay(
 		current_signal_->digits(), current_signal_->decimal_places(), false,
 		current_signal_->unit_name(), current_unit_suffix,
 		sv::data::datautil::format_quantity_flags(current_qfs_max, "\n"), true);
@@ -153,38 +153,34 @@ void PowerPanelView::setup_ui()
 	else
 		decimal_places = current_signal_->decimal_places();
 
-	resistance_display_ = new widgets::LcdDisplay(
+	resistance_display_ = new widgets::MonoFontDisplay(
 		digits, decimal_places, true,
 		sv::data::datautil::format_unit(data::Unit::Ohm), "", "", false);
-	resistance_min_display_ = new widgets::LcdDisplay(
+	resistance_min_display_ = new widgets::MonoFontDisplay(
 		digits, decimal_places, true,
 		sv::data::datautil::format_unit(data::Unit::Ohm), "",
-		sv::data::datautil::format_quantity_flag(QuantityFlag::Min),
-		true);
-	resistance_max_display_ = new widgets::LcdDisplay(
+		sv::data::datautil::format_quantity_flag(QuantityFlag::Min), true);
+	resistance_max_display_ = new widgets::MonoFontDisplay(
 		digits, decimal_places, true,
 		sv::data::datautil::format_unit(data::Unit::Ohm), "",
-		sv::data::datautil::format_quantity_flag(QuantityFlag::Max),
-		true);
+		sv::data::datautil::format_quantity_flag(QuantityFlag::Max), true);
 
-	power_display_ = new widgets::LcdDisplay(
+	power_display_ = new widgets::MonoFontDisplay(
 		digits, decimal_places, true,
 		sv::data::datautil::format_unit(data::Unit::Watt), "", "", false);
-	power_min_display_ = new widgets::LcdDisplay(
+	power_min_display_ = new widgets::MonoFontDisplay(
 		digits, decimal_places, true,
 		sv::data::datautil::format_unit(data::Unit::Watt), "",
-		sv::data::datautil::format_quantity_flag(QuantityFlag::Min),
-		true);
-	power_max_display_ = new widgets::LcdDisplay(
+		sv::data::datautil::format_quantity_flag(QuantityFlag::Min), true);
+	power_max_display_ = new widgets::MonoFontDisplay(
 		digits, decimal_places, true,
 		sv::data::datautil::format_unit(data::Unit::Watt), "",
-		sv::data::datautil::format_quantity_flag(QuantityFlag::Max),
-		true);
+		sv::data::datautil::format_quantity_flag(QuantityFlag::Max), true);
 
-	amp_hour_display_ = new widgets::LcdDisplay(
+	amp_hour_display_ = new widgets::MonoFontDisplay(
 		digits, decimal_places, true,
 		sv::data::datautil::format_unit(data::Unit::AmpereHour), "", "", false);
-	watt_hour_display_ = new widgets::LcdDisplay(
+	watt_hour_display_ = new widgets::MonoFontDisplay(
 		digits, decimal_places, true,
 		sv::data::datautil::format_unit(data::Unit::WattHour), "", "", false);
 

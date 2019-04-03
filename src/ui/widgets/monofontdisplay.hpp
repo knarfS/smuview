@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,11 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UI_WIDGETS_LCDDISPLAY_HPP
-#define UI_WIDGETS_LCDDISPLAY_HPP
+#ifndef UI_WIDGETS_MONOFONTDISPLAY_HPP
+#define UI_WIDGETS_MONOFONTDISPLAY_HPP
 
 #include <QLabel>
-#include <QLCDNumber>
 #include <QString>
 
 #include "src/ui/widgets/valuedisplay.hpp"
@@ -30,21 +29,22 @@ namespace sv {
 namespace ui {
 namespace widgets {
 
-class LcdDisplay : public ValueDisplay
+class MonoFontDisplay : public ValueDisplay
 {
 	Q_OBJECT
 
 public:
-	LcdDisplay(
+	MonoFontDisplay(
 		int digits, int decimal_places, const bool auto_range,
 		const QString unit, const QString unit_suffix, const QString extra_text,
 		const bool small, QWidget *parent = nullptr);
 
 private:
-	uint height_;
-	uint width_scale_factor_;
+	int value_font_size_;
+	int extra_font_size_;
+	int unit_font_size_;
 
-	QLCDNumber *value_lcd_;
+	QLabel *value_label_;
 	QLabel *extra_label_;
 	QLabel *unit_label_;
 
@@ -62,4 +62,4 @@ private:
 } // namespace ui
 } // namespace sv
 
-#endif // UI_WIDGETS_LCDDISPLAY_HPP
+#endif // UI_WIDGETS_MONOFONTDISPLAY_HPP

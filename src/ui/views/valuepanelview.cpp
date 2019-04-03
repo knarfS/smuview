@@ -32,7 +32,7 @@
 #include "src/channels/basechannel.hpp"
 #include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
-#include "src/ui/widgets/lcddisplay.hpp"
+#include "src/ui/widgets/monofontdisplay.hpp"
 
 using std::dynamic_pointer_cast;
 using std::set;
@@ -57,11 +57,15 @@ ValuePanelView::ValuePanelView(Session &session,
 	signal_ = dynamic_pointer_cast<sv::data::AnalogSignal>(
 		channel_->actual_signal());
 
-	digits_ = 7; // TODO
-	decimal_places_ = -1; // TODO
-
-	if (signal_)
+	if (signal_) {
+		digits_ = signal_->digits();
+		decimal_places_ = signal_->decimal_places();
 		setup_unit();
+	}
+	else {
+		digits_ = 7; // TODO
+		decimal_places_ = 3;
+	}
 
 	setup_ui();
 	setup_toolbar();
@@ -77,7 +81,6 @@ ValuePanelView::ValuePanelView(Session &session,
 	timer_ = new QTimer(this);
 	init_timer();
 }
-
 
 ValuePanelView::ValuePanelView(Session& session,
 		shared_ptr<sv::data::AnalogSignal> signal,
@@ -158,15 +161,15 @@ void ValuePanelView::setup_ui()
 
 	QGridLayout *panel_layout = new QGridLayout();
 
-	value_display_ = new widgets::LcdDisplay(
+	value_display_ = new widgets::MonoFontDisplay(
 		digits_, decimal_places_, true, unit_, unit_suffix_,
 		sv::data::datautil::format_quantity_flags(quantity_flags_, "\n"),
 		false);
-	value_min_display_ = new widgets::LcdDisplay(
+	value_min_display_ = new widgets::MonoFontDisplay(
 		digits_, decimal_places_, true, unit_, unit_suffix_,
 		sv::data::datautil::format_quantity_flags(quantity_flags_min_, "\n"),
 		true);
-	value_max_display_ = new widgets::LcdDisplay(
+	value_max_display_ = new widgets::MonoFontDisplay(
 		digits_, decimal_places_, true, unit_, unit_suffix_,
 		sv::data::datautil::format_quantity_flags(quantity_flags_max_, "\n"),
 		true);
@@ -276,6 +279,8 @@ void ValuePanelView::on_signal_changed()
 
 	signal_ = dynamic_pointer_cast<sv::data::AnalogSignal>(
 		channel_->actual_signal());
+	if (!signal_)
+		return;
 
 	setup_unit();
 	digits_ = signal_->digits();

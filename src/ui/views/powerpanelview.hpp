@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ class AnalogSignal;
 namespace ui {
 
 namespace widgets {
-class LcdDisplay;
+class ValueDisplay;
 }
 
 namespace views {
@@ -81,20 +81,20 @@ private:
 
 	QAction *const action_reset_displays_;
 	QToolBar *toolbar_;
-	widgets::LcdDisplay *voltage_display_;
-	widgets::LcdDisplay *voltage_min_display_;
-	widgets::LcdDisplay *voltage_max_display_;
-	widgets::LcdDisplay *current_display_;
-	widgets::LcdDisplay *current_min_display_;
-	widgets::LcdDisplay *current_max_display_;
-	widgets::LcdDisplay *resistance_display_;
-	widgets::LcdDisplay *resistance_min_display_;
-	widgets::LcdDisplay *resistance_max_display_;
-	widgets::LcdDisplay *power_display_;
-	widgets::LcdDisplay *power_min_display_;
-	widgets::LcdDisplay *power_max_display_;
-	widgets::LcdDisplay *amp_hour_display_;
-	widgets::LcdDisplay *watt_hour_display_;
+	widgets::ValueDisplay *voltage_display_;
+	widgets::ValueDisplay *voltage_min_display_;
+	widgets::ValueDisplay *voltage_max_display_;
+	widgets::ValueDisplay *current_display_;
+	widgets::ValueDisplay *current_min_display_;
+	widgets::ValueDisplay *current_max_display_;
+	widgets::ValueDisplay *resistance_display_;
+	widgets::ValueDisplay *resistance_min_display_;
+	widgets::ValueDisplay *resistance_max_display_;
+	widgets::ValueDisplay *power_display_;
+	widgets::ValueDisplay *power_min_display_;
+	widgets::ValueDisplay *power_max_display_;
+	widgets::ValueDisplay *amp_hour_display_;
+	widgets::ValueDisplay *watt_hour_display_;
 
 	void setup_ui();
 	void setup_toolbar();

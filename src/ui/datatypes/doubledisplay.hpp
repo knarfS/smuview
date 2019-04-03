@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,15 +17,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UI_DATATYPES_DOUBLELCDDISPLAY_HPP
-#define UI_DATATYPES_DOUBLELCDDISPLAY_HPP
+#ifndef UI_DATATYPES_DOUBLEDISPLAY_HPP
+#define UI_DATATYPES_DOUBLEDISPLAY_HPP
 
 #include <memory>
 
 #include <QVariant>
 
 #include "src/ui/datatypes/basewidget.hpp"
-#include "src/ui/widgets/lcddisplay.hpp"
+#include "src/ui/widgets/monofontdisplay.hpp"
 
 using std::shared_ptr;
 
@@ -40,12 +40,12 @@ class BaseProperty;
 namespace ui {
 namespace datatypes {
 
-class DoubleLcdDisplay : public widgets::LcdDisplay, public BaseWidget
+class DoubleDisplay : public widgets::MonoFontDisplay, public BaseWidget
 {
 	Q_OBJECT
 
 public:
-	DoubleLcdDisplay(
+	DoubleDisplay(
 		shared_ptr<sv::devices::properties::BaseProperty> property,
 		const bool auto_update, QWidget *parent = nullptr);
 
@@ -71,4 +71,4 @@ private Q_SLOTS:
 } // namespace ui
 } // namespece sv
 
-#endif // UI_DATATYPES_DOUBLELCDDISPLAY_HPP
+#endif // UI_DATATYPES_DOUBLEDISPLAY_HPP

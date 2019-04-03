@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,11 +21,12 @@
 
 #include <QDebug>
 
-#include "doublelcddisplay.hpp"
+#include "doubledisplay.hpp"
 #include "src/util.hpp"
 #include "src/devices/configurable.hpp"
 #include "src/devices/properties/baseproperty.hpp"
 #include "src/devices/properties/doubleproperty.hpp"
+#include "src/ui/widgets/monofontdisplay.hpp"
 
 using std::dynamic_pointer_cast;
 
@@ -33,10 +34,10 @@ namespace sv {
 namespace ui {
 namespace datatypes {
 
-DoubleLcdDisplay::DoubleLcdDisplay(
+DoubleDisplay::DoubleDisplay(
 		shared_ptr<sv::devices::properties::BaseProperty> property,
-		 const bool auto_update, QWidget *parent) :
-	widgets::LcdDisplay(5/*Dummy*/, 3/*Dummy*/, false,
+		const bool auto_update, QWidget *parent) :
+	widgets::MonoFontDisplay(5/*Dummy*/, 3/*Dummy*/, false,
 		QString(""), QString(""), QString(""), false, parent),
 	BaseWidget(property, false, auto_update)
 {
@@ -53,7 +54,7 @@ DoubleLcdDisplay::DoubleLcdDisplay(
 	connect_signals();
 }
 
-void DoubleLcdDisplay::setup_ui()
+void DoubleDisplay::setup_ui()
 {
 	this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
 	if (property_ != nullptr && property_->is_listable()) {
@@ -64,8 +65,7 @@ void DoubleLcdDisplay::setup_ui()
 	}
 	if (property_ != nullptr && property_->unit() != data::Unit::Unknown &&
 			property_->unit() != data::Unit::Unitless) {
-		this->set_unit(
-			QString(" %1").arg(data::datautil::format_unit(property_->unit())));
+		this->set_unit(data::datautil::format_unit(property_->unit()));
 	}
 	if (property_ != nullptr && property_->is_getable())
 		on_value_changed(property_->value());
@@ -73,7 +73,7 @@ void DoubleLcdDisplay::setup_ui()
 		on_value_changed(QVariant(.0));
 }
 
-void DoubleLcdDisplay::connect_signals()
+void DoubleDisplay::connect_signals()
 {
 	// Property -> Widget
 	if (auto_update_ && property_ != nullptr) {
@@ -82,17 +82,17 @@ void DoubleLcdDisplay::connect_signals()
 	}
 }
 
-QVariant DoubleLcdDisplay::variant_value() const
+QVariant DoubleDisplay::variant_value() const
 {
 	return QVariant(this->value());
 }
 
-void DoubleLcdDisplay::value_changed(const double value)
+void DoubleDisplay::value_changed(const double value)
 {
 	(void)value;
 }
 
-void DoubleLcdDisplay::on_value_changed(const QVariant qvar)
+void DoubleDisplay::on_value_changed(const QVariant qvar)
 {
 	this->set_value(qvar.toDouble());
 }
