@@ -76,9 +76,9 @@ BaseView *get_view_for_configurable(Session &session,
 		(configurable->has_get_config(ConfigKey::MeasuredQuantity) ||
 		configurable->has_set_config(ConfigKey::MeasuredQuantity) ||
 		configurable->has_get_config(ConfigKey::Amplitude) ||
-		configurable->has_set_config(ConfigKey::Amplitude) /* ||
+		configurable->has_set_config(ConfigKey::Amplitude) ||
 		configurable->has_get_config(ConfigKey::Offset) ||
-		configurable->has_set_config(ConfigKey::Offset)	*/ )) {
+		configurable->has_set_config(ConfigKey::Offset))) {
 
 		return new DemoControlView(session, configurable);
 	}

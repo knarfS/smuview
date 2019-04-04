@@ -102,12 +102,10 @@ void DemoControlView::setup_ui()
 		true, true, tr("Amplitude"));
 	controls_layout->addWidget(amplitude_control_);
 
-	/*
 	offset_control_ = new ui::datatypes::DoubleControl(
 		configurable_->get_property(ConfigKey::Offset),
 		true, true, tr("Offset"));
 	controls_layout->addWidget(offset_control_);
-	*/
 
 	layout->addLayout(controls_layout);
 
