@@ -53,7 +53,7 @@ void DoubleControl::setup_ui()
 	QVBoxLayout *layout = new QVBoxLayout();
 
 	display_ = new DoubleDisplay(property_, true);
-	layout->addWidget(display_, 0, Qt::AlignRight);
+	layout->addWidget(display_, 0, Qt::AlignCenter);
 
 	QHBoxLayout *controls_layout = new QHBoxLayout();
 
@@ -72,54 +72,6 @@ QVariant DoubleControl::variant_value() const
 {
 	return QVariant(spin_box_->value());
 }
-
-/*
-void DoubleControl::change_value(const double value)
-{
-	if (value == value_)
-		return;
-
-	disconnect(knob, SIGNAL(valueChanged(double)),
-		this, SLOT(on_value_changed(const double)));
-	disconnect(doubleSpinBox, SIGNAL(valueChanged(double)),
-		this, SLOT(on_value_changed(const double)));
-
-	value_ = value;
-
-	lcdDisplay->set_value(value);
-	doubleSpinBox->setValue(value);
-	knob->setValue(value);
-
-	connect(knob, SIGNAL(valueChanged(double)),
-		this, SLOT(on_value_changed(const double)));
-	connect(doubleSpinBox, SIGNAL(valueChanged(double)),
-		this, SLOT(on_value_changed(const double)));
-}
-
-void DoubleControl::on_value_changed(const double value)
-{
-	if (value == value_)
-		return;
-
-	disconnect(knob, SIGNAL(valueChanged(double)),
-		this, SLOT(on_value_changed(const double)));
-	disconnect(doubleSpinBox, SIGNAL(valueChanged(double)),
-		this, SLOT(on_value_changed(const double)));
-
-	value_ = value;
-
-	lcdDisplay->set_value(value);
-	doubleSpinBox->setValue(value);
-	knob->setValue(value);
-
-	Q_EMIT value_changed(value);
-
-	connect(knob, SIGNAL(valueChanged(double)),
-		this, SLOT(on_value_changed(const double)));
-	connect(doubleSpinBox, SIGNAL(valueChanged(double)),
-		this, SLOT(on_value_changed(const double)));
-}
-*/
 
 } // namespace widgets
 } // namespace ui
