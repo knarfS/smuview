@@ -213,6 +213,7 @@ set(smuview_SOURCES
   src/ui/datatypes/doublecontrol.cpp
   src/ui/datatypes/doubledisplay.cpp
   src/ui/datatypes/doubleknob.cpp
+  src/ui/datatypes/doublesmallcontrol.cpp
   src/ui/datatypes/doublespinbox.cpp
   src/ui/datatypes/int32spinbox.cpp
   src/ui/datatypes/measuredquantitycombobox.cpp
