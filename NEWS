@@ -1,3 +1,18 @@
+0.0.3 (2019-04-04)
+------------------
+
+For a detailed list of changes, please see the git commit history.
+
+ * Various layout improvements
+ * Revert "feature" that only one signal can be added to fixed channels
+ * Plot view:
+   - Improve axis locking
+   - Improve axis scale updates
+   - Add the same signal only once
+ * Commit spin box values only when enter is pressed or widget is leaved
+ * Use a monospace font instead of the LCD font for various views
+ * Add ConfigKey OFFSET
+
 0.0.2 (2019-03-21)
 ------------------
 
