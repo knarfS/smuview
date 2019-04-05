@@ -44,44 +44,25 @@ AnalogSampleSignal::AnalogSampleSignal(
 		data::Quantity quantity,
 		set<data::QuantityFlag> quantity_flags,
 		data::Unit unit,
-		shared_ptr<channels::BaseChannel> parent_channel,
-		double signal_start_timestamp) :
-	BaseSignal(quantity, quantity_flags, unit, parent_channel),
-	sample_count_(0),
-	digits_(7), // A good start value for digits
-	decimal_places_(-1), // A good start value for decimal places
-	signal_start_timestamp_(signal_start_timestamp),
-	last_sample_(0),
-	last_value_(0.),
-	min_value_(std::numeric_limits<double>::max()),
-	max_value_(std::numeric_limits<double>::lowest())
+		shared_ptr<channels::BaseChannel> parent_channel) :
+	AnalogBaseSignal(quantity, quantity_flags, unit, parent_channel),
+	last_pos_(0)
 {
-	qWarning()
-		<< "Init analog sample signal " << name_
-		<< ", signal_start_timestamp_ = "
-		<< util::format_time_date(signal_start_timestamp_);
-
+	qWarning() << "Init analog sample signal " << display_name();
 	pos_ = make_shared<vector<uint32_t>>();
-	data_ = make_shared<vector<double>>();
 }
 
 void AnalogSampleSignal::clear()
 {
+	// TODO: mutex
+	pos_->clear();
 	data_->clear();
 	sample_count_ = 0;
 
 	Q_EMIT samples_cleared();
 }
 
-size_t AnalogSampleSignal::get_sample_count() const
-{
-	size_t sample_count = sample_count_;
-	//qWarning() << "AnalogSampleSignal::get_sample_count(): sample_count_ = "
-	//	<< sample_count;
-	return sample_count;
-}
-
-sample_t AnalogSampleSignal::get_sample(size_t pos, bool relative_time) const
+analog_pos_sample_t AnalogSampleSignal::get_sample(uint32_t pos) const
 {
 	// TODO: retrun reference (&double)? See get_value_at_timestamp()
 
@@ -89,60 +70,16 @@ sample_t AnalogSampleSignal::get_sample(size_t pos, bool relative_time) const
 	//	<< "): sample_count_ = " << sample_count_;
 
 	if (pos < sample_count_) {
-		double timestamp = time_->at(pos);
-		if (relative_time)
-			timestamp -= signal_start_timestamp_;
 		//qWarning() << "AnalogSampleSignal::get_sample(" << pos
-		//	<< "): sample = " << timestamp << ", " << data_->at(pos);
-		return make_pair(timestamp, data_->at(pos));
+		//	<< "): value = " << data_->at(pos);
+		return make_pair(pos, data_->at(pos));
 	}
 
-	return make_pair(0., 0);
+	return make_pair(0, 0.);
 }
 
-bool AnalogSampleSignal::get_value_at_timestamp(
-	double timestamp, double &value, bool relative_time) const
-{
-	if (time_->size() == 0)
-		return false;
-	if (timestamp < time_->at(0))
-		return false;
-	if (timestamp > time_->back())
-		return false;
-
-	if (relative_time)
-		timestamp += signal_start_timestamp_;
-
-	auto lower = std::lower_bound(time_->begin(), time_->end(), timestamp);
-
-	// Check if timestamp and found timestamp match
-	if (timestamp == *lower) {
-		value = *lower;
-		return true;
-	}
-
-	size_t lower_pos = lower - time_->begin();
-
-	// Get the previous timestamp for linear interpolation
-	if (lower_pos > 0)
-		--lower_pos;
-
-	double lower_ts = time_->at(lower_pos);
-	double lower_data = data_->at(lower_pos);
-	size_t upper_pos = lower_pos + 1;
-	double upper_ts = time_->at(upper_pos);
-
-	// Use linear interpolation to get the value beetween time stamps
-	double ts_factor = (timestamp - lower_ts) / (upper_ts - lower_ts);
-	double data_diff = data_->at(upper_pos) - lower_data;
-	double lininter_data = lower_data + (data_diff * ts_factor);
-
-	value = lininter_data;
-	return true;
-}
-
-void AnalogSampleSignal::push_sample(void *sample, double timestamp,
-	size_t unit_size, int digits, int decimal_places)
+void AnalogSampleSignal::push_sample(void *sample, uint32_t pos,
+		size_t unit_size, int digits, int decimal_places)
 {
 	double dsample = 0.;
 	if (unit_size == size_of_float_)
@@ -152,13 +89,13 @@ void AnalogSampleSignal::push_sample(void *sample, double timestamp,
 
 	/*
 	qWarning() << "AnalogSampleSignal::push_sample(): " << name_
-		<< ": sample = " << dsample << " @ " <<  timestamp;
+		<< ": sample = " << dsample << " @ " <<  pos;
 	qWarning() << "AnalogSampleSignal::push_sample(): " << name_
 		<< ": sample_count_ = " << sample_count_+1;
 	*/
 
 	// TODO: Mutex?
-	last_timestamp_ = timestamp;
+	last_pos_ = pos;
 	last_value_ = dsample;
 	if (min_value_ > dsample)
 		min_value_ = dsample;
@@ -167,7 +104,7 @@ void AnalogSampleSignal::push_sample(void *sample, double timestamp,
 
 	/*
 	qWarning() << "AnalogSampleSignal::push_sample(): " << name_
-		<< ":last_timestamp_ = " << last_timestamp_;
+		<< ":last_pos_ = " << last_pos_;
 	qWarning() << "AnalogSampleSignal::push_sample(): " << name_
 		<< ":last_value_ = " << last_value_;
 	qWarning() << "AnalogSampleSignal::push_sample(): " << name_
@@ -177,7 +114,7 @@ void AnalogSampleSignal::push_sample(void *sample, double timestamp,
 	*/
 
 	// TODO: Mutex?
-	time_->push_back(timestamp);
+	pos_->push_back(pos);
 	data_->push_back(dsample);
 	sample_count_++;
 	Q_EMIT sample_appended();
@@ -195,137 +132,27 @@ void AnalogSampleSignal::push_sample(void *sample, double timestamp,
 		Q_EMIT digits_changed(digits_, decimal_places_);
 }
 
-void AnalogSampleSignal::push_samples(void *data, uint64_t samples, double timestamp,
-	uint64_t samplerate, size_t unit_size, int digits, int decimal_places)
+uint32_t AnalogSampleSignal::first_pos() const
 {
-	//lock_guard<recursive_mutex> lock(mutex_);
+	if (pos_->size() == 0)
+		return 0;
 
-	double dsample;
-
-	uint64_t pos = 0;
-	double time_stride = 0;
-	if (samplerate > 0)
-		time_stride = 1 / (double)samplerate;
-
-	/*
-	if (timestamp < last_timestamp_) {
-		qWarning() << "AnalogSampleSignal::push_samples(): samples = " << samples
-			<<  ", timestamp < last_timestamp = "
-			<< timestamp-signal_start_timestamp_ << " < "
-			<< last_timestamp_-signal_start_timestamp_;
-	}
-	*/
-
-	while (pos < samples) {
-		if (unit_size == size_of_float_)
-			dsample = (double) ((float *)data)[pos];
-		else if (unit_size == size_of_double_)
-			dsample = ((double *)data)[pos];
-
-		/*
-		qWarning() << "AnalogSampleSignal::push_samples(): " << name_
-			<< ": sample = " << dsample << " @ "
-			<<  timestamp - signal_start_timestamp_;
-		qWarning() << "AnalogSampleSignal::push_samples(): " << name_
-			<< ": remaining_samples = " << remaining_samples;
-		*/
-
-		// TODO: Mutex?
-		if (min_value_ > dsample)
-			min_value_ = dsample;
-		if (max_value_ < dsample)
-			max_value_ = dsample;
-
-		// TODO: Limit memory!
-		time_->push_back(timestamp);
-		data_->push_back(dsample);
-
-		timestamp += time_stride;
-		++pos;
-		++sample_count_;
-	}
-
-	last_timestamp_ = timestamp - time_stride;
-	last_value_ = dsample;
-	Q_EMIT sample_appended();
-
-	bool digits_chngd = false;
-	if (digits != digits_) {
-		digits_ = digits;
-		digits_chngd = true;
-	}
-	if (decimal_places != decimal_places_) {
-		decimal_places_ = decimal_places;
-		digits_chngd = true;
-	}
-	if (digits_chngd)
-		Q_EMIT digits_changed(digits_, decimal_places_);
+	return pos_->front();
 }
 
-int AnalogSampleSignal::digits() const
+uint32_t AnalogSampleSignal::last_pos() const
 {
-	return digits_;
+	if (pos_->size() == 0)
+		return 0;
+
+	return last_pos_;
 }
 
-int AnalogSampleSignal::decimal_places() const
-{
-	return decimal_places_;
-}
-
-double AnalogSampleSignal::signal_start_timestamp() const
-{
-	return signal_start_timestamp_;
-}
-
-double AnalogSampleSignal::first_timestamp(bool relative_time) const
-{
-	if (time_->size() == 0)
-		return 0.;
-
-	if (relative_time)
-		return time_->front() - signal_start_timestamp_;
-	else
-		return time_->front();
-}
-
-double AnalogSampleSignal::last_timestamp(bool relative_time) const
-{
-	if (time_->size() == 0)
-		return 0.;
-
-	if (relative_time)
-		return last_timestamp_ - signal_start_timestamp_;
-	else
-		return last_timestamp_;
-
-	return last_timestamp_;
-}
-
-double AnalogSampleSignal::last_value() const
-{
-	return last_value_;
-}
-
-double AnalogSampleSignal::min_value() const
-{
-	return min_value_;
-}
-
-double AnalogSampleSignal::max_value() const
-{
-	return max_value_;
-}
-
-void AnalogSampleSignal::on_channel_start_timestamp_changed(double timestamp)
-{
-	signal_start_timestamp_ = timestamp;
-	Q_EMIT signal_start_timestamp_changed(timestamp);
-}
-
+/*
 void AnalogSampleSignal::combine_signals(
 	shared_ptr<AnalogSampleSignal> signal1, size_t &signal1_pos,
 	shared_ptr<AnalogSampleSignal> signal2, size_t &signal2_pos,
-	shared_ptr<vector<double>> time_vector,
+	shared_ptr<vector<uint32_t>> pos_vector,
 	shared_ptr<vector<double>> data1_vector,
 	shared_ptr<vector<double>> data2_vector)
 {
@@ -353,14 +180,14 @@ void AnalogSampleSignal::combine_signals(
 			signal2->get_sample_count() <= signal2_pos)
 			break;
 
-		/*
+		/ *
 		qWarning() << "AnalogSampleSignal::merge_signals(): signal1_size = "
 				<< signal1->get_sample_count() << ", signal1_pos = "
 				<< signal1_pos;
 		qWarning() << "AnalogSampleSignal::merge_signals(): signal2_size = "
 				<< signal2->get_sample_count() << ", signal2_pos = "
 				<< signal2_pos;
-		*/
+		* /
 
 		double time;
 		double value1;
@@ -402,6 +229,7 @@ void AnalogSampleSignal::combine_signals(
 		data2_vector->push_back(value2);
 	}
 }
+*/
 
 } // namespace data
 } // namespace sv

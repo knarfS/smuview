@@ -27,7 +27,7 @@
 
 #include <QObject>
 
-#include "src/data/basesignal.hpp"
+#include "src/data/analogbasesignal.hpp"
 #include "src/data/datautil.hpp"
 
 using std::pair;
@@ -38,9 +38,9 @@ using std::vector;
 namespace sv {
 namespace data {
 
-typedef pair<double, uint32_t> analog_sample_sample_t;
+typedef pair<uint32_t, double> analog_pos_sample_t;
 
-class AnalogSampleSignal : public BaseSignal
+class AnalogSampleSignal : public AnalogBaseSignal
 {
 	Q_OBJECT
 
@@ -49,8 +49,7 @@ public:
 		data::Quantity quantity,
 		set<data::QuantityFlag> quantity_flags,
 		data::Unit unit,
-		shared_ptr<channels::BaseChannel> parent_channel,
-		double signal_start_timestamp);
+		shared_ptr<channels::BaseChannel> parent_channel);
 
 	/**
 	 * Clears all samples from this signal.
@@ -58,14 +57,9 @@ public:
 	void clear() override;
 
 	/**
-	 * Returns the number of samples in this signal.
-	 */
-	size_t get_sample_count() const override;
-
-	/**
 	 * Returns the sample at the given position.
 	 */
-	sample_t get_sample(uint32_t pos) const;
+	analog_pos_sample_t get_sample(uint32_t pos) const;
 
 	/**
 	 * Push a single sample to the signal.
@@ -73,45 +67,21 @@ public:
 	void push_sample(void *sample, uint32_t pos,
 		size_t unit_size, int digits, int decimal_places);
 
-	int digits() const;
-	int decimal_places() const;
-	double signal_start_timestamp() const;
-	double first_sample() const;
-	double last_sample() const;
-	double last_value() const;
-	double min_value() const;
-	double max_value() const;
+	uint32_t first_pos() const;
+	uint32_t last_pos() const;
 
+	/*
 	static void combine_signals(
 		shared_ptr<AnalogSampleSignal> signal1, size_t &signal1_pos,
 		shared_ptr<AnalogSampleSignal> signal2, size_t &signal2_pos,
-		shared_ptr<vector<uint32_t>> sample_vector,
+		shared_ptr<vector<uint32_t>> pos_vector,
 		shared_ptr<vector<double>> data1_vector,
 		shared_ptr<vector<double>> data2_vector);
+	*/
 
 private:
 	shared_ptr<vector<uint32_t>> pos_;
-	shared_ptr<vector<double>> data_;
-	size_t sample_count_;
-	int digits_;
-	int decimal_places_;
-	double signal_start_timestamp_;
-	double last_sample_;
-	double last_value_;
-	double min_value_;
-	double max_value_;
-
-	static const size_t size_of_float_ = sizeof(float);
-	static const size_t size_of_double_ = sizeof(double);
-
-public Q_SLOTS:
-	void on_channel_start_timestamp_changed(double);
-
-Q_SIGNALS:
-	void signal_start_timestamp_changed(double);
-	void samples_cleared();
-	void sample_appended();
-	void digits_changed(const int, const int);
+	uint32_t last_pos_;
 
 };
 
