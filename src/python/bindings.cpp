@@ -87,7 +87,7 @@ void init_Channel(py::module &m)
 		(sv::data::Quantity, set<sv::data::QuantityFlag>, sv::data::Unit))
 			&sv::channels::BaseChannel::add_signal);
 	base_channel.def("actual_signal", &sv::channels::BaseChannel::actual_signal);
-	base_channel.def("signals", &sv::channels::BaseChannel::signal_map);
+	base_channel.def("signals", &sv::channels::BaseChannel::signals);
 
 	py::class_<sv::channels::HardwareChannel, std::shared_ptr<sv::channels::HardwareChannel>>(m, "HardwareChannel", base_channel);
 
