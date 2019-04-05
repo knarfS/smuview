@@ -24,7 +24,7 @@
 
 #include <QString>
 
-#include "smuscript.hpp"
+#include "smuscriptrunner.hpp"
 #include "src/session.hpp"
 #include "src/python/bindings.hpp"
 
@@ -34,12 +34,12 @@ namespace py = pybind11;
 namespace sv {
 namespace python {
 
-SmuScript::SmuScript(Session &session) :
+SmuScriptRunner::SmuScriptRunner(Session &session) :
 	session_(session)
 {
 }
 
-SmuScript::~SmuScript()
+SmuScriptRunner::~SmuScriptRunner()
 {
 	/*
 	if (script_thread_.joinable())
@@ -47,18 +47,19 @@ SmuScript::~SmuScript()
 	*/
 }
 
-void SmuScript::run(std::string file_name)
+void SmuScriptRunner::run(std::string file_name)
 {
 	script_file_name_ = file_name;
-	std::thread script_thread = std::thread(&SmuScript::script_thread_proc, this);
+	std::thread script_thread =
+		std::thread(&SmuScriptRunner::script_thread_proc, this);
 	script_thread.detach();
 }
 
-void SmuScript::stop()
+void SmuScriptRunner::stop()
 {
 }
 
-void SmuScript::script_thread_proc()
+void SmuScriptRunner::script_thread_proc()
 {
 	py::scoped_interpreter guard{};
 

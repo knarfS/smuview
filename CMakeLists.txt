@@ -211,7 +211,7 @@ set(smuview_SOURCES
   src/devices/userdevice.cpp
 
   src/python/bindings.cpp
-  src/python/smuscript.cpp
+  src/python/smuscriptrunner.cpp
 
   src/ui/data/quantitycombobox.cpp
   src/ui/data/quantityflagslist.cpp

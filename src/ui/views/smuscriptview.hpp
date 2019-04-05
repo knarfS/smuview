@@ -35,7 +35,7 @@ namespace sv {
 class Session;
 
 namespace python {
-class SmuScript;
+class SmuScriptRunner;
 }
 
 namespace ui {
@@ -53,7 +53,7 @@ public:
 private:
 	QAction *const action_start_script_;
 	QToolBar *toolbar_;
-	shared_ptr<python::SmuScript> smu_script_; // TODO: Use unique_ptr instead?
+	shared_ptr<python::SmuScriptRunner> smu_script_runner_; // TODO: Use unique_ptr instead?
 
 	void setup_ui();
 	void setup_toolbar();

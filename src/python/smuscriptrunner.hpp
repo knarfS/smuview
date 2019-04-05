@@ -17,8 +17,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PYTHON_SMUSCRIPT_HPP
-#define PYTHON_SMUSCRIPT_HPP
+#ifndef PYTHON_SMUSCRIPTRUNNER_HPP
+#define PYTHON_SMUSCRIPTRUNNER_HPP
 
 #include <string>
 #include <thread>
@@ -32,13 +32,13 @@ class Session;
 
 namespace python {
 
-class SmuScript : public QObject
+class SmuScriptRunner : public QObject
 {
 	Q_OBJECT
 
 public:
-	SmuScript(Session &session);
-	~SmuScript();
+	SmuScriptRunner(Session &session);
+	~SmuScriptRunner();
 
 	void run(std::string file_name);
 	void stop();
@@ -58,4 +58,4 @@ Q_SIGNALS:
 } // namespace python
 } // namespace sv
 
-#endif // PYTHON_SMUSCRIPT_HPP
+#endif // PYTHON_SMUSCRIPTRUNNER_HPP

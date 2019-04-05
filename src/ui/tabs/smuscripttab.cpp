@@ -30,7 +30,7 @@
 
 #include "smuscripttab.hpp"
 #include "src/session.hpp"
-#include "src/python/smuscript.hpp"
+#include "src/python/smuscriptrunner.hpp"
 #include "src/ui/tabs/basetab.hpp"
 #include "src/ui/widgets/scripteditor/smuscripteditor.hpp"
 
@@ -47,8 +47,8 @@ SmuScriptTab::SmuScriptTab(Session &session, QMainWindow *parent) :
 	action_save_(new QAction(this)),
 	action_run_(new QAction(this))
 {
-	smu_script_ = make_shared<python::SmuScript>(session_);
-	connect(smu_script_.get(), SIGNAL(script_error(QString)),
+	smu_script_runner_ = make_shared<python::SmuScriptRunner>(session_);
+	connect(smu_script_runner_.get(), SIGNAL(script_error(QString)),
 		this, SLOT(on_script_error(QString)));
 
 	setup_ui();
@@ -132,7 +132,7 @@ void SmuScriptTab::on_action_run_triggered()
 		string file_name =
 			"/home/frank/Projekte/elektronik/sigrok/smuview/smuscript/test1.py";
 			//"/home/frank/Projekte/elektronik/sigrok/smuview/smuscript/example1.py";
-		smu_script_->run(file_name);
+		smu_script_runner_->run(file_name);
 	}
 	else {
 		action_run_->setText(tr("Start"));
