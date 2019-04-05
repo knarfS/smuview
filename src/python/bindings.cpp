@@ -27,7 +27,8 @@
 #include "src/channels/basechannel.hpp"
 #include "src/channels/hardwarechannel.hpp"
 #include "src/channels/userchannel.hpp"
-#include "src/data/analogsignal.hpp"
+#include "src/data/analogsamplesignal.hpp"
+#include "src/data/analogtimesignal.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/data/datautil.hpp"
 #include "src/devices/basedevice.hpp"
@@ -103,8 +104,8 @@ void init_Signal(py::module &m)
 	py::class_<sv::data::BaseSignal, std::shared_ptr<sv::data::BaseSignal>> base_signal(m, "BaseSignal");
 	base_signal.def("name", &sv::data::BaseSignal::name);
 
-	py::class_<sv::data::AnalogSignal, std::shared_ptr<sv::data::AnalogSignal>>(m, "AnalogSignal", base_signal)
-		.def("name", &sv::data::AnalogSignal::name);
+	py::class_<sv::data::AnalogTimeSignal, std::shared_ptr<sv::data::AnalogTimeSignal>>(m, "AnalogTimeSignal", base_signal)
+		.def("name", &sv::data::AnalogTimeSignal::name);
 }
 
 void init_Configurable(py::module &m)
