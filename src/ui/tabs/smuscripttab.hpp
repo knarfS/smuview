@@ -24,7 +24,6 @@
 
 #include <QAction>
 #include <QMainWindow>
-#include <QTextEdit>
 #include <QToolBar>
 
 #include "src/ui/tabs/basetab.hpp"
@@ -43,7 +42,7 @@ namespace ui {
 
 namespace widgets {
 namespace scripteditor {
-class PythonSyntaxHighlighter;
+class SmuScriptEditor;
 }
 }
 
@@ -67,8 +66,7 @@ private:
 	QAction *const action_run_;
 	QToolBar *toolbar_;
 	shared_ptr<python::SmuScript> smu_script_; // TODO: Use unique_ptr instead?
-    QTextEdit *editor_;
-    widgets::scripteditor::PythonSyntaxHighlighter *highlighter_;
+	widgets::scripteditor::SmuScriptEditor *editor_;
 
 private Q_SLOTS:
 	void on_action_open_triggered();

@@ -22,7 +22,6 @@
 #include <QFont>
 #include <QMessageBox>
 #include <QString>
-#include <QTextEdit>
 #include <QTextStream>
 #include <QToolButton>
 #include <QVBoxLayout>
@@ -33,7 +32,7 @@
 #include "src/session.hpp"
 #include "src/python/smuscript.hpp"
 #include "src/ui/tabs/basetab.hpp"
-#include "src/ui/widgets/scripteditor/pythonsyntaxhighlighter.hpp"
+#include "src/ui/widgets/scripteditor/smuscripteditor.hpp"
 
 using std::make_shared;
 using std::shared_ptr;
@@ -58,18 +57,8 @@ SmuScriptTab::SmuScriptTab(Session &session, QMainWindow *parent) :
 
 void SmuScriptTab::setup_ui()
 {
-    QFont font;
-    font.setFamily("Courier");
-    font.setFixedPitch(true);
-    font.setPointSize(10);
-
-    editor_ = new QTextEdit();
-    editor_->setFont(font);
-
-    highlighter_ = new widgets::scripteditor::PythonSyntaxHighlighter(
-		editor_->document());
-
 	QVBoxLayout *layout = new QVBoxLayout();
+	editor_ = new widgets::scripteditor::SmuScriptEditor();
 	layout->addWidget(editor_);
 
 	// Show the central widget of the tab (hidden by BaseTab)
