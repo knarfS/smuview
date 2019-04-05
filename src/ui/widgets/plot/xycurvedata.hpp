@@ -37,7 +37,7 @@ using std::vector;
 namespace sv {
 
 namespace data {
-class AnalogSignal;
+class AnalogTimeSignal;
 }
 
 namespace ui {
@@ -53,8 +53,8 @@ class XYCurveData : public QObject, public BaseCurveData
 	Q_OBJECT
 
 public:
-	XYCurveData(shared_ptr<sv::data::AnalogSignal> x_t_signal,
-		shared_ptr<sv::data::AnalogSignal> y_t_signal);
+	XYCurveData(shared_ptr<sv::data::AnalogTimeSignal> x_t_signal,
+		shared_ptr<sv::data::AnalogTimeSignal> y_t_signal);
 
 	bool is_equal(const BaseCurveData *other) const override;
 
@@ -71,12 +71,12 @@ public:
 	QString y_data_unit() const override;
 	QString y_data_title() const override;
 
-	shared_ptr<sv::data::AnalogSignal> x_t_signal() const;
-	shared_ptr<sv::data::AnalogSignal> y_t_signal() const;
+	shared_ptr<sv::data::AnalogTimeSignal> x_t_signal() const;
+	shared_ptr<sv::data::AnalogTimeSignal> y_t_signal() const;
 
 private:
-	shared_ptr<sv::data::AnalogSignal> x_t_signal_;
-	shared_ptr<sv::data::AnalogSignal> y_t_signal_;
+	shared_ptr<sv::data::AnalogTimeSignal> x_t_signal_;
+	shared_ptr<sv::data::AnalogTimeSignal> y_t_signal_;
 	size_t x_t_signal_pos_;
 	size_t y_t_signal_pos_;
 	// TODO: use some sort of AnalogSignal instead of 2 vectors?

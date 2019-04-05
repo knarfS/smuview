@@ -17,8 +17,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DATA_ANALOGSIGNAL_HPP
-#define DATA_ANALOGSIGNAL_HPP
+#ifndef DATA_ANALOGBASESIGNAL_HPP
+#define DATA_ANALOGBASESIGNAL_HPP
 
 #include <memory>
 #include <set>
@@ -38,24 +38,16 @@ using std::vector;
 namespace sv {
 namespace data {
 
-typedef pair<double, double> analog_time_sample_t;
-
-class AnalogSignal : public BaseSignal
+class AnalogBaseSignal : public BaseSignal
 {
 	Q_OBJECT
 
 public:
-	AnalogSignal(
+	AnalogBaseSignal(
 		data::Quantity quantity,
 		set<data::QuantityFlag> quantity_flags,
 		data::Unit unit,
-		shared_ptr<channels::BaseChannel> parent_channel,
-		double signal_start_timestamp);
-
-	/**
-	 * Clears all samples from this signal.
-	 */
-	void clear() override;
+		shared_ptr<channels::BaseChannel> parent_channel);
 
 	/**
 	 * Returns the number of samples in this signal.
@@ -64,8 +56,8 @@ public:
 
 	/**
 	 * Returns the sample at the given position.
-	 */
 	analog_time_sample_t get_sample(size_t pos, bool relative_time) const;
+	 */
 
 	/**
 	 * Returns the value at the given timestamp in &value. If there is no
@@ -79,48 +71,38 @@ public:
 	 * @param relative_time Use time relative to the session start time.
 	 *
 	 * @return true if a value was found/interpolated, false if not.
-	 */
 	bool get_value_at_timestamp(
 		double timestamp, double &value, bool relative_time) const;
+	 */
 
 	/**
 	 * Push a single sample to the signal.
 	 *
 	 * TODO: Can this be removed?
-	 */
 	void push_sample(void *sample, double timestamp,
 		size_t unit_size, int digits, int decimal_places);
-
-	/**
-	 * Push multiple samples to the signal.
 	 */
-	void push_samples(void *data, uint64_t samples, double timestamp,
-		uint64_t samplerate, size_t unit_size, int digits, int decimal_places);
 
 	int digits() const;
 	int decimal_places() const;
-	double signal_start_timestamp() const;
-	double first_timestamp(bool relative_time) const;
-	double last_timestamp(bool relative_time) const;
 	double last_value() const;
 	double min_value() const;
 	double max_value() const;
 
+	/*
 	static void combine_signals(
 		shared_ptr<AnalogSignal> signal1, size_t &signal1_pos,
 		shared_ptr<AnalogSignal> signal2, size_t &signal2_pos,
 		shared_ptr<vector<double>> time_vector,
 		shared_ptr<vector<double>> data1_vector,
 		shared_ptr<vector<double>> data2_vector);
+	*/
 
-private:
-	shared_ptr<vector<double>> time_;
+protected:
 	shared_ptr<vector<double>> data_;
 	size_t sample_count_;
 	int digits_;
 	int decimal_places_;
-	double signal_start_timestamp_;
-	double last_timestamp_;
 	double last_value_;
 	double min_value_;
 	double max_value_;
@@ -128,11 +110,7 @@ private:
 	static const size_t size_of_float_ = sizeof(float);
 	static const size_t size_of_double_ = sizeof(double);
 
-public Q_SLOTS:
-	void on_channel_start_timestamp_changed(double);
-
 Q_SIGNALS:
-	void signal_start_timestamp_changed(double);
 	void samples_cleared();
 	void sample_appended();
 	void digits_changed(const int, const int);
@@ -142,4 +120,4 @@ Q_SIGNALS:
 } // namespace data
 } // namespace sv
 
-#endif // DATA_ANALOGSIGNAL_HPP
+#endif // DATA_ANALOGBASESIGNAL_HPP

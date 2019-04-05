@@ -31,7 +31,7 @@
 #include "src/session.hpp"
 #include "src/util.hpp"
 #include "src/channels/basechannel.hpp"
-#include "src/data/analogsignal.hpp"
+#include "src/data/analogtimesignal.hpp"
 #include "src/data/datautil.hpp"
 #include "src/devices/basedevice.hpp"
 
@@ -93,7 +93,7 @@ void HardwareChannel::push_interleaved_samples(const float *data,
 		throw ("More than one signal found for " + name());
 	}
 
-	auto signal = static_pointer_cast<data::AnalogSignal>(signal_map_[mq][0]);
+	auto signal = static_pointer_cast<data::AnalogTimeSignal>(signal_map_[mq][0]);
 	if (signal.get() != actual_signal_.get()) {
 		actual_signal_ = signal;
 		Q_EMIT signal_changed(actual_signal_);

@@ -27,7 +27,7 @@
 #include "integratechannel.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/channels/mathchannel.hpp"
-#include "src/data/analogsignal.hpp"
+#include "src/data/analogtimesignal.hpp"
 #include "src/data/datautil.hpp"
 #include "src/devices/basedevice.hpp"
 
@@ -41,7 +41,7 @@ IntegrateChannel::IntegrateChannel(
 		data::Quantity quantity,
 		set<data::QuantityFlag> quantity_flags,
 		data::Unit unit,
-		shared_ptr<data::AnalogSignal> int_signal,
+		shared_ptr<data::AnalogTimeSignal> int_signal,
 		shared_ptr<devices::BaseDevice> parent_device,
 		set<string> channel_group_names,
 		string channel_name,

@@ -26,8 +26,6 @@
 #include "userdevice.hpp"
 #include "src/session.hpp"
 #include "src/channels/basechannel.hpp"
-#include "src/data/analogsignal.hpp"
-#include "src/data/basesignal.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/devices/deviceutil.hpp"
 

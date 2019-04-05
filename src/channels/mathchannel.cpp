@@ -26,7 +26,7 @@
 
 #include "mathchannel.hpp"
 #include "src/channels/basechannel.hpp"
-#include "src/data/analogsignal.hpp"
+#include "src/data/analogtimesignal.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/data/datautil.hpp"
 #include "src/devices/basedevice.hpp"
@@ -95,7 +95,7 @@ data::Unit MathChannel::unit()
 
 void MathChannel::push_sample(double sample, double timestamp)
 {
-	auto signal = static_pointer_cast<data::AnalogSignal>(actual_signal_);
+	auto signal = static_pointer_cast<data::AnalogTimeSignal>(actual_signal_);
 	signal->push_sample(&sample, timestamp,
 		size_of_double_, digits_, decimal_places_);
 }

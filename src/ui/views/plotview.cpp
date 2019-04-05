@@ -28,7 +28,7 @@
 #include "plotview.hpp"
 #include "src/session.hpp"
 #include "src/channels/basechannel.hpp"
-#include "src/data/analogsignal.hpp"
+#include "src/data/analogtimesignal.hpp"
 #include "src/ui/dialogs/plotconfigdialog.hpp"
 #include "src/ui/dialogs/plotdiffmarkerdialog.hpp"
 #include "src/ui/dialogs/selectsignaldialog.hpp"
@@ -60,9 +60,9 @@ PlotView::PlotView(Session &session,
 {
 	assert(initial_channel_);
 
-	shared_ptr<data::AnalogSignal> signal;
+	shared_ptr<data::AnalogTimeSignal> signal;
 	if (initial_channel_->actual_signal())
-		signal = static_pointer_cast<data::AnalogSignal>(
+		signal = static_pointer_cast<data::AnalogTimeSignal>(
 			initial_channel_->actual_signal());
 
 	if (signal)
@@ -85,7 +85,7 @@ PlotView::PlotView(Session &session,
 }
 
 PlotView::PlotView(Session& session,
-		shared_ptr<sv::data::AnalogSignal> signal,
+		shared_ptr<sv::data::AnalogTimeSignal> signal,
 		QWidget* parent) :
 	BaseView(session, parent),
 	initial_channel_(nullptr),
@@ -109,8 +109,8 @@ PlotView::PlotView(Session& session,
 }
 
 PlotView::PlotView(Session& session,
-		shared_ptr<sv::data::AnalogSignal> x_signal,
-		shared_ptr<sv::data::AnalogSignal> y_signal,
+		shared_ptr<sv::data::AnalogTimeSignal> x_signal,
+		shared_ptr<sv::data::AnalogTimeSignal> y_signal,
 		QWidget* parent) :
 	BaseView(session, parent),
 	initial_channel_(nullptr),
@@ -151,7 +151,7 @@ QString PlotView::title() const
 	return title;
 }
 
-void PlotView::add_time_curve(shared_ptr<sv::data::AnalogSignal> signal)
+void PlotView::add_time_curve(shared_ptr<sv::data::AnalogTimeSignal> signal)
 {
 	auto curve = new widgets::plot::TimeCurveData(signal);
 	if (plot_->add_curve(curve)) {
@@ -165,8 +165,8 @@ void PlotView::add_time_curve(shared_ptr<sv::data::AnalogSignal> signal)
 	}
 }
 
-void PlotView::add_xy_curve(shared_ptr<sv::data::AnalogSignal> x_signal,
-	shared_ptr<sv::data::AnalogSignal> y_signal)
+void PlotView::add_xy_curve(shared_ptr<sv::data::AnalogTimeSignal> x_signal,
+	shared_ptr<sv::data::AnalogTimeSignal> y_signal)
 {
 	auto curve = new widgets::plot::XYCurveData(x_signal, y_signal);
 	if (plot_->add_curve(curve)) {
@@ -283,9 +283,9 @@ void PlotView::on_signal_changed()
 	if (!initial_channel_)
 		return;
 
-	shared_ptr<sv::data::AnalogSignal> signal;
+	shared_ptr<sv::data::AnalogTimeSignal> signal;
 	if (initial_channel_->actual_signal())
-		signal = dynamic_pointer_cast<sv::data::AnalogSignal>(
+		signal = dynamic_pointer_cast<sv::data::AnalogTimeSignal>(
 			initial_channel_->actual_signal());
 
 	this->parentWidget()->setWindowTitle(this->title());
@@ -333,7 +333,7 @@ void PlotView::on_action_add_signal_triggered()
 	for (const auto &signal : dlg.signals()) {
 		if (plot_type_ == PlotType::TimePlot) {
 			add_time_curve(
-				dynamic_pointer_cast<sv::data::AnalogSignal>(signal));
+				dynamic_pointer_cast<sv::data::AnalogTimeSignal>(signal));
 		}
 		else {
 			// TODO

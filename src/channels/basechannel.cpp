@@ -33,7 +33,7 @@
 
 #include "basechannel.hpp"
 #include "src/util.hpp"
-#include "src/data/analogsignal.hpp"
+#include "src/data/analogtimesignal.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/data/datautil.hpp"
 #include "src/devices/basedevice.hpp"
@@ -148,7 +148,7 @@ void BaseChannel::add_channel_group_name(string channel_group_name)
 	channel_group_names_.insert(channel_group_name);
 }
 
-void BaseChannel::add_signal(shared_ptr<data::AnalogSignal> signal)
+void BaseChannel::add_signal(shared_ptr<data::AnalogTimeSignal> signal)
 {
 	if (signal_map_.size() > 0 && fixed_signal_) {
 		qWarning() << "Warning: Adding new signal " << signal->display_name() <<
@@ -183,7 +183,7 @@ shared_ptr<data::BaseSignal> BaseChannel::add_signal(
 	 * TODO: Remove shared_from_this() / (channel pointer in signal), so that
 	 *       "add_signal()" can be called from MathChannel ctor.
 	 */
-	shared_ptr<data::AnalogSignal> signal = make_shared<data::AnalogSignal>(
+	auto signal = make_shared<data::AnalogTimeSignal>(
 		quantity, quantity_flags, unit,
 		shared_from_this(), channel_start_timestamp_);
 

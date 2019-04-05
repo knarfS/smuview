@@ -26,7 +26,7 @@
 #include <QString>
 
 #include "xycurvedata.hpp"
-#include "src/data/analogsignal.hpp"
+#include "src/data/analogtimesignal.hpp"
 #include "src/ui/widgets/plot/basecurvedata.hpp"
 
 using std::lock_guard;
@@ -39,8 +39,8 @@ namespace ui {
 namespace widgets {
 namespace plot {
 
-XYCurveData::XYCurveData(shared_ptr<sv::data::AnalogSignal> x_t_signal,
-		shared_ptr<sv::data::AnalogSignal> y_t_signal) :
+XYCurveData::XYCurveData(shared_ptr<sv::data::AnalogTimeSignal> x_t_signal,
+		shared_ptr<sv::data::AnalogTimeSignal> y_t_signal) :
 	BaseCurveData(CurveType::XYCurve),
 	x_t_signal_(x_t_signal),
 	y_t_signal_(y_t_signal),
@@ -155,12 +155,12 @@ QString XYCurveData::y_data_title() const
 	return QString("%1 [%2]").arg(y_data_quantity()).arg(y_data_unit());
 }
 
-shared_ptr<sv::data::AnalogSignal> XYCurveData::x_t_signal() const
+shared_ptr<sv::data::AnalogTimeSignal> XYCurveData::x_t_signal() const
 {
 	return x_t_signal_;
 }
 
-shared_ptr<sv::data::AnalogSignal> XYCurveData::y_t_signal() const
+shared_ptr<sv::data::AnalogTimeSignal> XYCurveData::y_t_signal() const
 {
 	return y_t_signal_;
 }
@@ -170,7 +170,7 @@ void XYCurveData::on_sample_appended()
 	lock_guard<mutex> lock(sample_append_mutex_);
 
 	shared_ptr<vector<double>> time = make_shared<vector<double>>();
-	sv::data::AnalogSignal::combine_signals(
+	sv::data::AnalogTimeSignal::combine_signals(
 		x_t_signal_, x_t_signal_pos_,
 		y_t_signal_, y_t_signal_pos_,
 		time, x_data_, y_data_);

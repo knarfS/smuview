@@ -42,7 +42,7 @@ namespace channels {
 class BaseChannel;
 }
 namespace data {
-class AnalogSignal;
+class AnalogTimeSignal;
 }
 
 namespace ui {
@@ -63,7 +63,7 @@ public:
 		QWidget* parent = nullptr);
 
 	ValuePanelView(Session& session,
-		shared_ptr<sv::data::AnalogSignal> signal,
+		shared_ptr<sv::data::AnalogTimeSignal> signal,
 		QWidget* parent = nullptr);
 
 	~ValuePanelView();
@@ -72,7 +72,7 @@ public:
 
 private:
 	shared_ptr<channels::BaseChannel> channel_;
-	shared_ptr<sv::data::AnalogSignal> signal_;
+	shared_ptr<sv::data::AnalogTimeSignal> signal_;
 	QString unit_;
 	QString unit_suffix_;
 	set<sv::data::QuantityFlag> quantity_flags_;

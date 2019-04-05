@@ -28,7 +28,7 @@
 #include "multiplysschannel.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/channels/mathchannel.hpp"
-#include "src/data/analogsignal.hpp"
+#include "src/data/analogtimesignal.hpp"
 #include "src/data/datautil.hpp"
 #include "src/devices/basedevice.hpp"
 
@@ -45,8 +45,8 @@ MultiplySSChannel::MultiplySSChannel(
 		data::Quantity quantity,
 		set<data::QuantityFlag> quantity_flags,
 		data::Unit unit,
-		shared_ptr<data::AnalogSignal> signal1,
-		shared_ptr<data::AnalogSignal> signal2,
+		shared_ptr<data::AnalogTimeSignal> signal1,
+		shared_ptr<data::AnalogTimeSignal> signal2,
 		shared_ptr<devices::BaseDevice> parent_device,
 		set<string> channel_group_names,
 		string channel_name,
@@ -86,7 +86,7 @@ void MultiplySSChannel::on_sample_appended()
 	shared_ptr<vector<double>> signal1_data = make_shared<vector<double>>();
 	shared_ptr<vector<double>> signal2_data = make_shared<vector<double>>();
 
-	sv::data::AnalogSignal::combine_signals(
+	sv::data::AnalogTimeSignal::combine_signals(
 		signal1_, signal1_pos_,
 		signal2_, signal2_pos_,
 		time, signal1_data, signal2_data);

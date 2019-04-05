@@ -38,7 +38,6 @@
 #include "src/channels/hardwarechannel.hpp"
 #include "src/channels/mathchannel.hpp"
 #include "src/channels/userchannel.hpp"
-#include "src/data/analogsignal.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/devices/configurable.hpp"
 

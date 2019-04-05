@@ -43,7 +43,7 @@
 #include "src/channels/movingavgchannel.hpp"
 #include "src/channels/multiplysfchannel.hpp"
 #include "src/channels/multiplysschannel.hpp"
-#include "src/data/analogsignal.hpp"
+#include "src/data/analogtimesignal.hpp"
 #include "src/data/datautil.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/ui/data/quantitycombobox.hpp"
@@ -323,7 +323,7 @@ void AddMathChannelDialog::accept()
 					QMessageBox::Ok);
 				return;
 			}
-			auto signal_1 = static_pointer_cast<sv::data::AnalogSignal>(
+			auto signal_1 = static_pointer_cast<sv::data::AnalogTimeSignal>(
 				m_ss_signal1_->selected_signal());
 
 			if (m_ss_signal2_->selected_signal() == nullptr) {
@@ -333,7 +333,7 @@ void AddMathChannelDialog::accept()
 					QMessageBox::Ok);
 				return;
 			}
-			auto signal_2 = static_pointer_cast<sv::data::AnalogSignal>(
+			auto signal_2 = static_pointer_cast<sv::data::AnalogTimeSignal>(
 				m_ss_signal2_->selected_signal());
 
 			double start_timestamp = signal_1->signal_start_timestamp();
@@ -355,7 +355,7 @@ void AddMathChannelDialog::accept()
 					QMessageBox::Ok);
 				return;
 			}
-			auto signal = static_pointer_cast<sv::data::AnalogSignal>(
+			auto signal = static_pointer_cast<sv::data::AnalogTimeSignal>(
 				m_sf_signal_->selected_signal());
 
 			if (m_sf_factor_edit_->text().size() == 0) {
@@ -391,7 +391,7 @@ void AddMathChannelDialog::accept()
 					QMessageBox::Ok);
 				return;
 			}
-			auto signal1 = static_pointer_cast<sv::data::AnalogSignal>(
+			auto signal1 = static_pointer_cast<sv::data::AnalogTimeSignal>(
 				d_ss_signal1_->selected_signal());
 
 			if (d_ss_signal2_->selected_signal() == nullptr) {
@@ -401,7 +401,7 @@ void AddMathChannelDialog::accept()
 					QMessageBox::Ok);
 				return;
 			}
-			auto signal2 = static_pointer_cast<sv::data::AnalogSignal>(
+			auto signal2 = static_pointer_cast<sv::data::AnalogTimeSignal>(
 				d_ss_signal2_->selected_signal());
 
 			double start_timestamp = signal1->signal_start_timestamp();
@@ -423,7 +423,7 @@ void AddMathChannelDialog::accept()
 					QMessageBox::Ok);
 				return;
 			}
-			auto signal = static_pointer_cast<sv::data::AnalogSignal>(
+			auto signal = static_pointer_cast<sv::data::AnalogTimeSignal>(
 				a_sc_signal_->selected_signal());
 
 			if (a_sc_constant_edit_->text().size() == 0) {
@@ -459,7 +459,7 @@ void AddMathChannelDialog::accept()
 					QMessageBox::Ok);
 				return;
 			}
-			auto signal = static_pointer_cast<sv::data::AnalogSignal>(
+			auto signal = static_pointer_cast<sv::data::AnalogTimeSignal>(
 				i_s_signal_->selected_signal());
 
 			channel_ = make_shared<channels::IntegrateChannel>(
@@ -477,7 +477,7 @@ void AddMathChannelDialog::accept()
 					QMessageBox::Ok);
 				return;
 			}
-			auto signal = static_pointer_cast<sv::data::AnalogSignal>(
+			auto signal = static_pointer_cast<sv::data::AnalogTimeSignal>(
 				ma_signal_->selected_signal());
 
 			uint num_samples = ma_num_samples_box_->value();

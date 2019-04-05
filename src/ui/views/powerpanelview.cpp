@@ -26,7 +26,7 @@
 #include "powerpanelview.hpp"
 #include "src/session.hpp"
 #include "src/util.hpp"
-#include "src/data/analogsignal.hpp"
+#include "src/data/analogtimesignal.hpp"
 #include "src/data/datautil.hpp"
 #include "src/ui/widgets/monofontdisplay.hpp"
 
@@ -38,8 +38,8 @@ namespace ui {
 namespace views {
 
 PowerPanelView::PowerPanelView(Session &session,
-		shared_ptr<sv::data::AnalogSignal> voltage_signal,
-		shared_ptr<sv::data::AnalogSignal> current_signal,
+		shared_ptr<sv::data::AnalogTimeSignal> voltage_signal,
+		shared_ptr<sv::data::AnalogTimeSignal> current_signal,
 		QWidget *parent) :
 	BaseView(session, parent),
 	voltage_signal_(voltage_signal),

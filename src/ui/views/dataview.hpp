@@ -35,7 +35,7 @@ namespace sv {
 class Session;
 
 namespace data {
-class AnalogSignal;
+class AnalogTimeSignal;
 }
 
 namespace ui {
@@ -47,13 +47,13 @@ class DataView : public BaseView
 
 public:
 	DataView(Session& session,
-		shared_ptr<sv::data::AnalogSignal> signal,
+		shared_ptr<sv::data::AnalogTimeSignal> signal,
 		QWidget* parent = nullptr);
 
 	QString title() const;
 
 private:
-	shared_ptr<sv::data::AnalogSignal> signal_;
+	shared_ptr<sv::data::AnalogTimeSignal> signal_;
 	size_t next_signal_pos_;
 	bool auto_scroll_;
 

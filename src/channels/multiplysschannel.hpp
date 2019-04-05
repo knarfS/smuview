@@ -39,7 +39,7 @@ using std::string;
 namespace sv {
 
 namespace data {
-class AnalogSignal;
+class AnalogTimeSignal;
 }
 
 namespace devices {
@@ -57,16 +57,16 @@ public:
 		data::Quantity quantity,
 		set<data::QuantityFlag> quantity_flags,
 		data::Unit unit,
-		shared_ptr<data::AnalogSignal> signal1,
-		shared_ptr<data::AnalogSignal> signal2,
+		shared_ptr<data::AnalogTimeSignal> signal1,
+		shared_ptr<data::AnalogTimeSignal> signal2,
 		shared_ptr<devices::BaseDevice> parent_device,
 		set<string> channel_group_names,
 		string channel_name,
 		double channel_start_timestamp);
 
 private:
-	shared_ptr<data::AnalogSignal> signal1_;
-	shared_ptr<data::AnalogSignal> signal2_;
+	shared_ptr<data::AnalogTimeSignal> signal1_;
+	shared_ptr<data::AnalogTimeSignal> signal2_;
 	size_t signal1_pos_;
 	size_t signal2_pos_;
 	mutex sample_append_mutex_;

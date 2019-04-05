@@ -26,7 +26,7 @@
 
 #include "addviewdialog.hpp"
 #include "src/channels/basechannel.hpp"
-#include "src/data/analogsignal.hpp"
+#include "src/data/analogtimesignal.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/devices/configurable.hpp"
 #include "src/devices/deviceutil.hpp"
@@ -207,7 +207,7 @@ void AddViewDialog::accept()
 			views_.push_back(new ui::views::PlotView(session_, channel));
 		}
 		for (const auto &signal : time_plot_channel_tree_->checked_signals()) {
-			auto a_signal = static_pointer_cast<data::AnalogSignal>(signal);
+			auto a_signal = static_pointer_cast<data::AnalogTimeSignal>(signal);
 			views_.push_back(new ui::views::PlotView(session_, a_signal));
 		}
 
@@ -220,15 +220,15 @@ void AddViewDialog::accept()
 
 			if (x_signal != nullptr && y_signal != nullptr) {
 				views_.push_back(new ui::views::PlotView(session_,
-					static_pointer_cast<data::AnalogSignal>(x_signal),
-					static_pointer_cast<data::AnalogSignal>(y_signal)));
+					static_pointer_cast<data::AnalogTimeSignal>(x_signal),
+					static_pointer_cast<data::AnalogTimeSignal>(y_signal)));
 			}
 		}
 		break;
 	case 4:
 		// Add data table view
 		for (const auto &signal : table_signal_tree_->checked_signals()) {
-			auto a_signal = static_pointer_cast<data::AnalogSignal>(signal);
+			auto a_signal = static_pointer_cast<data::AnalogTimeSignal>(signal);
 			views_.push_back(new ui::views::DataView(session_, a_signal));
 		}
 

@@ -34,6 +34,7 @@ ToDo
 - boost::stacktrace, see pv
 - BaseDevice open()/close(): move aquisition stuff to HardwareDevice, move VirtualDevice stuff to BaseDevice
 - util.cpp: use cmath instead of math.h, but Timestamp is boost and only works with non std::?
+- Use AnalogBaseSignal in all(?) Channel classes, in View classes and in Plot classes
 
 ------------------------
 

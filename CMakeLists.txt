@@ -184,7 +184,8 @@ set(smuview_SOURCES
   src/channels/multiplysfchannel.cpp
   src/channels/multiplysschannel.cpp
   src/channels/userchannel.cpp
-  src/data/analogsignal.cpp
+  src/data/analogbasesignal.cpp
+  src/data/analogtimesignal.cpp
   src/data/basesignal.cpp
   src/data/datautil.cpp
   src/devices/basedevice.cpp

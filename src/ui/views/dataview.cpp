@@ -27,14 +27,14 @@
 
 #include "dataview.hpp"
 #include "src/session.hpp"
-#include "src/data/analogsignal.hpp"
+#include "src/data/analogtimesignal.hpp"
 
 namespace sv {
 namespace ui {
 namespace views {
 
 DataView::DataView(Session &session,
-		shared_ptr<sv::data::AnalogSignal> signal,
+		shared_ptr<sv::data::AnalogTimeSignal> signal,
 		QWidget *parent) :
 	BaseView(session, parent),
 	signal_(signal),

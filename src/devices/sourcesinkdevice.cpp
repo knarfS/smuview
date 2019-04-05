@@ -32,7 +32,7 @@
 #include "src/channels/integratechannel.hpp"
 #include "src/channels/mathchannel.hpp"
 #include "src/channels/multiplysschannel.hpp"
-#include "src/data/analogsignal.hpp"
+#include "src/data/analogtimesignal.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/devices/configurable.hpp"
 
@@ -101,19 +101,25 @@ void SourceSinkDevice::init_channels()
 		// Math Channels
 		string chg_name = chg_name_channels_pair.first;
 		set<string> chg_names { chg_name };
-		shared_ptr<data::AnalogSignal> voltage_signal;
-		shared_ptr<data::AnalogSignal> current_signal;
-		shared_ptr<data::AnalogSignal> power_signal;
+		shared_ptr<data::AnalogTimeSignal> voltage_signal;
+		shared_ptr<data::AnalogTimeSignal> current_signal;
+		shared_ptr<data::AnalogTimeSignal> power_signal;
 		for (const auto &channel : chg_name_channels_pair.second) {
 			if (!channel->fixed_signal())
 				continue;
 			auto signal = channel->actual_signal();
-			if (signal->quantity() == data::Quantity::Voltage)
-				voltage_signal = static_pointer_cast<data::AnalogSignal>(signal);
-			else if (signal->quantity() == data::Quantity::Current)
-				current_signal = static_pointer_cast<data::AnalogSignal>(signal);
-			else if (signal->quantity() == data::Quantity::Power)
-				power_signal = static_pointer_cast<data::AnalogSignal>(signal);
+			if (signal->quantity() == data::Quantity::Voltage) {
+				voltage_signal =
+					static_pointer_cast<data::AnalogTimeSignal>(signal);
+			}
+			else if (signal->quantity() == data::Quantity::Current) {
+				current_signal =
+					static_pointer_cast<data::AnalogTimeSignal>(signal);
+			}
+			else if (signal->quantity() == data::Quantity::Power) {
+				power_signal =
+					static_pointer_cast<data::AnalogTimeSignal>(signal);
+			}
 		}
 
 		// Create power channel
@@ -128,7 +134,7 @@ void SourceSinkDevice::init_channels()
 					chg_names, tr("P").toStdString(),
 					aquisition_start_timestamp_);
 			BaseDevice::add_math_channel(power_channel, chg_name);
-			power_signal = static_pointer_cast<data::AnalogSignal>(
+			power_signal = static_pointer_cast<data::AnalogTimeSignal>(
 				power_channel->actual_signal());
 		}
 

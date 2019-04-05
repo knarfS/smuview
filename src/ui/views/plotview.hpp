@@ -41,7 +41,7 @@ namespace channels {
 class BaseChannel;
 }
 namespace data {
-class AnalogSignal;
+class AnalogTimeSignal;
 }
 
 namespace ui {
@@ -69,17 +69,17 @@ public:
 		shared_ptr<channels::BaseChannel> channel,
 		QWidget* parent = nullptr);
 	PlotView(Session& session,
-		shared_ptr<sv::data::AnalogSignal> signal,
+		shared_ptr<sv::data::AnalogTimeSignal> signal,
 		QWidget* parent = nullptr);
 	PlotView(Session& session,
-		shared_ptr<sv::data::AnalogSignal> x_signal,
-		shared_ptr<sv::data::AnalogSignal> y_signal,
+		shared_ptr<sv::data::AnalogTimeSignal> x_signal,
+		shared_ptr<sv::data::AnalogTimeSignal> y_signal,
 		QWidget* parent = nullptr);
 
 	QString title() const;
-	void add_time_curve(shared_ptr<sv::data::AnalogSignal> signal);
-	void add_xy_curve(shared_ptr<sv::data::AnalogSignal> x_signal,
-		shared_ptr<sv::data::AnalogSignal> y_signal);
+	void add_time_curve(shared_ptr<sv::data::AnalogTimeSignal> signal);
+	void add_xy_curve(shared_ptr<sv::data::AnalogTimeSignal> x_signal,
+		shared_ptr<sv::data::AnalogTimeSignal> y_signal);
 
 private:
 	void setup_ui();

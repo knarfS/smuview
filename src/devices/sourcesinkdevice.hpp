@@ -38,12 +38,6 @@ class Meta;
 }
 
 namespace sv {
-
-namespace data {
-class AnalogSignal;
-class BaseSignal;
-}
-
 namespace devices {
 
 class SourceSinkDevice : public HardwareDevice

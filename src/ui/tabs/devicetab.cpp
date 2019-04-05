@@ -28,8 +28,6 @@
 #include "devicetab.hpp"
 #include "src/session.hpp"
 #include "src/channels/userchannel.hpp"
-#include "src/data/analogsignal.hpp"
-#include "src/data/basesignal.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/devices/deviceutil.hpp"
 #include "src/ui/dialogs/aboutdialog.hpp"

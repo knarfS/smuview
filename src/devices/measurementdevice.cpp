@@ -24,8 +24,6 @@
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
 #include "measurementdevice.hpp"
-#include "src/data/analogsignal.hpp"
-#include "src/data/basesignal.hpp"
 #include "src/devices/configurable.hpp"
 
 namespace sv {

@@ -44,8 +44,6 @@
 #include "src/devices/configurable.hpp"
 #include "src/devices/deviceutil.hpp"
 #include "src/devices/properties/uint64property.hpp"
-#include "src/data/analogsignal.hpp"
-#include "src/data/basesignal.hpp"
 
 using std::bad_alloc;
 using std::dynamic_pointer_cast;

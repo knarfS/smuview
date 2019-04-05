@@ -47,7 +47,7 @@ class Channel;
 namespace sv {
 
 namespace data {
-class AnalogSignal;
+class AnalogTimeSignal;
 class BaseSignal;
 }
 
@@ -158,9 +158,10 @@ public:
 	void add_channel_group_name(string channel_group_name);
 
 	/**
-	 * Add a signal to the channel. For now only AnalogSignals are supported.
+	 * Add a signal to the channel. For now only AnalogTimeSignals
+	 * are supported.
 	 */
-	void add_signal(shared_ptr<data::AnalogSignal> signal);
+	void add_signal(shared_ptr<data::AnalogTimeSignal> signal);
 
 	/**
 	 * Add a signal by its quantity, quantity_flags and unit.

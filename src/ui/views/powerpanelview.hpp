@@ -35,7 +35,7 @@ namespace sv {
 class Session;
 
 namespace data {
-class AnalogSignal;
+class AnalogTimeSignal;
 }
 
 namespace ui {
@@ -52,16 +52,16 @@ class PowerPanelView : public BaseView
 
 public:
 	PowerPanelView(Session& session,
-		shared_ptr<sv::data::AnalogSignal> voltage_signal,
-		shared_ptr<sv::data::AnalogSignal> current_signal,
+		shared_ptr<sv::data::AnalogTimeSignal> voltage_signal,
+		shared_ptr<sv::data::AnalogTimeSignal> current_signal,
 		QWidget* parent = nullptr);
 	~PowerPanelView();
 
 	QString title() const;
 
 private:
-	shared_ptr<sv::data::AnalogSignal> voltage_signal_;
-	shared_ptr<sv::data::AnalogSignal> current_signal_;
+	shared_ptr<sv::data::AnalogTimeSignal> voltage_signal_;
+	shared_ptr<sv::data::AnalogTimeSignal> current_signal_;
 
 	QTimer *timer_;
 	qint64 start_time_;

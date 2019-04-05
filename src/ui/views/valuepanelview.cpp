@@ -30,7 +30,7 @@
 #include "valuepanelview.hpp"
 #include "src/session.hpp"
 #include "src/channels/basechannel.hpp"
-#include "src/data/analogsignal.hpp"
+#include "src/data/analogtimesignal.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/ui/widgets/monofontdisplay.hpp"
 
@@ -54,7 +54,7 @@ ValuePanelView::ValuePanelView(Session &session,
 {
 	assert(channel_);
 
-	signal_ = dynamic_pointer_cast<sv::data::AnalogSignal>(
+	signal_ = dynamic_pointer_cast<sv::data::AnalogTimeSignal>(
 		channel_->actual_signal());
 
 	if (signal_) {
@@ -83,7 +83,7 @@ ValuePanelView::ValuePanelView(Session &session,
 }
 
 ValuePanelView::ValuePanelView(Session& session,
-		shared_ptr<sv::data::AnalogSignal> signal,
+		shared_ptr<sv::data::AnalogTimeSignal> signal,
 		QWidget* parent) :
 	BaseView(session, parent),
 	channel_(nullptr),
@@ -277,7 +277,7 @@ void ValuePanelView::on_signal_changed()
 
 	disconnect_signals_displays();
 
-	signal_ = dynamic_pointer_cast<sv::data::AnalogSignal>(
+	signal_ = dynamic_pointer_cast<sv::data::AnalogTimeSignal>(
 		channel_->actual_signal());
 	if (!signal_)
 		return;

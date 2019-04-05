@@ -37,7 +37,6 @@
 #include "config.h"
 #include "src/util.hpp"
 #include "src/channels/basechannel.hpp"
-#include "src/data/analogsignal.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/devices/configurable.hpp"
 #include "src/devices/deviceutil.hpp"

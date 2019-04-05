@@ -25,7 +25,7 @@
 
 #include "sourcesinktab.hpp"
 #include "src/channels/basechannel.hpp"
-#include "src/data/analogsignal.hpp"
+#include "src/data/analogtimesignal.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/data/datautil.hpp"
 #include "src/devices/basedevice.hpp"
@@ -67,11 +67,11 @@ void SourceSinkTab::setup_ui()
 	// for power supplys and loads.
 	for (const auto &chg_pair : device_->channel_group_map()) {
 		ui::views::PlotView *plot_view = NULL;
-		shared_ptr<data::AnalogSignal> voltage_signal;
-		shared_ptr<data::AnalogSignal> current_signal;
+		shared_ptr<data::AnalogTimeSignal> voltage_signal;
+		shared_ptr<data::AnalogTimeSignal> current_signal;
 		for (const auto &channel : chg_pair.second) {
 			if (channel->fixed_signal()) {
-				auto signal = static_pointer_cast<data::AnalogSignal>(
+				auto signal = static_pointer_cast<data::AnalogTimeSignal>(
 					channel->actual_signal());
 
 				// Only plot voltage and current

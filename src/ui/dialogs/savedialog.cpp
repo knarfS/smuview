@@ -33,7 +33,7 @@
 #include "savedialog.hpp"
 #include "src/util.hpp"
 #include "src/channels/basechannel.hpp"
-#include "src/data/analogsignal.hpp"
+#include "src/data/analogtimesignal.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/devices/hardwaredevice.hpp"
@@ -122,7 +122,7 @@ void SaveDialog::save(QString file_name)
 	for (const auto &signal : signals) {
 		// Only handle AnalogSignals
 		auto analog_signal =
-			dynamic_pointer_cast<sv::data::AnalogSignal>(signal);
+			dynamic_pointer_cast<sv::data::AnalogTimeSignal>(signal);
 		if (!analog_signal)
 			continue;
 
@@ -178,7 +178,7 @@ void SaveDialog::save(QString file_name)
 		for (const auto &signal : signals) {
 			// Only handle AnalogSignals
 			auto analog_signal =
-				dynamic_pointer_cast<sv::data::AnalogSignal>(signal);
+				dynamic_pointer_cast<sv::data::AnalogTimeSignal>(signal);
 			if (!analog_signal)
 				continue;
 
@@ -230,7 +230,7 @@ void SaveDialog::save_combined(QString file_name)
 	for (const auto &signal : signals) {
 		// Only handle AnalogSignals
 		auto analog_signal =
-			dynamic_pointer_cast<sv::data::AnalogSignal>(signal);
+			dynamic_pointer_cast<sv::data::AnalogTimeSignal>(signal);
 		if (!analog_signal)
 			continue;
 
@@ -268,7 +268,7 @@ void SaveDialog::save_combined(QString file_name)
 		for (const auto &signal : signals) {
 			// Only handle AnalogSignals
 			auto analog_signal =
-				dynamic_pointer_cast<sv::data::AnalogSignal>(signal);
+				dynamic_pointer_cast<sv::data::AnalogTimeSignal>(signal);
 			if (!analog_signal)
 				continue;
 
@@ -298,7 +298,7 @@ void SaveDialog::save_combined(QString file_name)
 		for (const auto &signal : signals) {
 			// Only handle AnalogSignals
 			auto analog_signal =
-				dynamic_pointer_cast<sv::data::AnalogSignal>(signal);
+				dynamic_pointer_cast<sv::data::AnalogTimeSignal>(signal);
 			if (!analog_signal)
 				continue;
 

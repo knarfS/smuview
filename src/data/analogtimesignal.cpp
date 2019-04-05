@@ -25,7 +25,7 @@
 #include <QDebug>
 #include <QString>
 
-#include "analogsignal.hpp"
+#include "analogtimesignal.hpp"
 #include "src/util.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/data/basesignal.hpp"
@@ -40,48 +40,34 @@ using std::vector;
 namespace sv {
 namespace data {
 
-AnalogSignal::AnalogSignal(
+AnalogTimeSignal::AnalogTimeSignal(
 		data::Quantity quantity,
 		set<data::QuantityFlag> quantity_flags,
 		data::Unit unit,
 		shared_ptr<channels::BaseChannel> parent_channel,
 		double signal_start_timestamp) :
-	BaseSignal(quantity, quantity_flags, unit, parent_channel),
-	sample_count_(0),
-	digits_(7), // A good start value for digits
-	decimal_places_(-1), // A good start value for decimal places
+	AnalogBaseSignal(quantity, quantity_flags, unit, parent_channel),
 	signal_start_timestamp_(signal_start_timestamp),
-	last_timestamp_(0.),
-	last_value_(0.),
-	min_value_(std::numeric_limits<double>::max()),
-	max_value_(std::numeric_limits<double>::lowest())
+	last_timestamp_(0.)
 {
-	qWarning()
-		<< "Init analog signal " << display_name()
+	qWarning() << "Init analog time signal " << display_name()
 		<< ", signal_start_timestamp_ = "
 		<< util::format_time_date(signal_start_timestamp_);
 
 	time_ = make_shared<vector<double>>();
-	data_ = make_shared<vector<double>>();
 }
 
-void AnalogSignal::clear()
+void AnalogTimeSignal::clear()
 {
+	// TODO: mutex
+	time_->clear();
 	data_->clear();
 	sample_count_ = 0;
 
 	Q_EMIT samples_cleared();
 }
 
-size_t AnalogSignal::get_sample_count() const
-{
-	size_t sample_count = sample_count_;
-	//qWarning() << "AnalogSignal::get_sample_count(): sample_count_ = "
-	//	<< sample_count;
-	return sample_count;
-}
-
-analog_time_sample_t AnalogSignal::get_sample(
+analog_time_sample_t AnalogTimeSignal::get_sample(
 	size_t pos, bool relative_time) const
 {
 	// TODO: retrun reference (&double)? See get_value_at_timestamp()
@@ -101,7 +87,7 @@ analog_time_sample_t AnalogSignal::get_sample(
 	return make_pair(0., 0.);
 }
 
-bool AnalogSignal::get_value_at_timestamp(
+bool AnalogTimeSignal::get_value_at_timestamp(
 	double timestamp, double &value, bool relative_time) const
 {
 	if (time_->size() == 0)
@@ -142,7 +128,7 @@ bool AnalogSignal::get_value_at_timestamp(
 	return true;
 }
 
-void AnalogSignal::push_sample(void *sample, double timestamp,
+void AnalogTimeSignal::push_sample(void *sample, double timestamp,
 	size_t unit_size, int digits, int decimal_places)
 {
 	double dsample = 0.;
@@ -196,8 +182,9 @@ void AnalogSignal::push_sample(void *sample, double timestamp,
 		Q_EMIT digits_changed(digits_, decimal_places_);
 }
 
-void AnalogSignal::push_samples(void *data, uint64_t samples, double timestamp,
-	uint64_t samplerate, size_t unit_size, int digits, int decimal_places)
+void AnalogTimeSignal::push_samples(void *data,
+	uint64_t samples, double timestamp, uint64_t samplerate, size_t unit_size,
+	int digits, int decimal_places)
 {
 	//lock_guard<recursive_mutex> lock(mutex_);
 
@@ -263,22 +250,12 @@ void AnalogSignal::push_samples(void *data, uint64_t samples, double timestamp,
 		Q_EMIT digits_changed(digits_, decimal_places_);
 }
 
-int AnalogSignal::digits() const
-{
-	return digits_;
-}
-
-int AnalogSignal::decimal_places() const
-{
-	return decimal_places_;
-}
-
-double AnalogSignal::signal_start_timestamp() const
+double AnalogTimeSignal::signal_start_timestamp() const
 {
 	return signal_start_timestamp_;
 }
 
-double AnalogSignal::first_timestamp(bool relative_time) const
+double AnalogTimeSignal::first_timestamp(bool relative_time) const
 {
 	if (time_->size() == 0)
 		return 0.;
@@ -289,7 +266,7 @@ double AnalogSignal::first_timestamp(bool relative_time) const
 		return time_->front();
 }
 
-double AnalogSignal::last_timestamp(bool relative_time) const
+double AnalogTimeSignal::last_timestamp(bool relative_time) const
 {
 	if (time_->size() == 0)
 		return 0.;
@@ -302,30 +279,15 @@ double AnalogSignal::last_timestamp(bool relative_time) const
 	return last_timestamp_;
 }
 
-double AnalogSignal::last_value() const
-{
-	return last_value_;
-}
-
-double AnalogSignal::min_value() const
-{
-	return min_value_;
-}
-
-double AnalogSignal::max_value() const
-{
-	return max_value_;
-}
-
-void AnalogSignal::on_channel_start_timestamp_changed(double timestamp)
+void AnalogTimeSignal::on_channel_start_timestamp_changed(double timestamp)
 {
 	signal_start_timestamp_ = timestamp;
 	Q_EMIT signal_start_timestamp_changed(timestamp);
 }
 
-void AnalogSignal::combine_signals(
-	shared_ptr<AnalogSignal> signal1, size_t &signal1_pos,
-	shared_ptr<AnalogSignal> signal2, size_t &signal2_pos,
+void AnalogTimeSignal::combine_signals(
+	shared_ptr<AnalogTimeSignal> signal1, size_t &signal1_pos,
+	shared_ptr<AnalogTimeSignal> signal2, size_t &signal2_pos,
 	shared_ptr<vector<double>> time_vector,
 	shared_ptr<vector<double>> data1_vector,
 	shared_ptr<vector<double>> data2_vector)

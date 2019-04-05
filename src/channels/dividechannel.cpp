@@ -28,7 +28,7 @@
 #include "dividechannel.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/channels/mathchannel.hpp"
-#include "src/data/analogsignal.hpp"
+#include "src/data/analogtimesignal.hpp"
 #include "src/data/datautil.hpp"
 #include "src/devices/basedevice.hpp"
 
@@ -45,8 +45,8 @@ DivideChannel::DivideChannel(
 		data::Quantity quantity,
 		set<data::QuantityFlag> quantity_flags,
 		data::Unit unit,
-		shared_ptr<data::AnalogSignal> dividend_signal,
-		shared_ptr<data::AnalogSignal> divisor_signal,
+		shared_ptr<data::AnalogTimeSignal> dividend_signal,
+		shared_ptr<data::AnalogTimeSignal> divisor_signal,
 		shared_ptr<devices::BaseDevice> parent_device,
 		set<string> channel_group_names,
 		string channel_name,
@@ -86,7 +86,7 @@ void DivideChannel::on_sample_appended()
 	shared_ptr<vector<double>> dividend_data = make_shared<vector<double>>();
 	shared_ptr<vector<double>> divisor_data = make_shared<vector<double>>();
 
-	sv::data::AnalogSignal::combine_signals(
+	sv::data::AnalogTimeSignal::combine_signals(
 		dividend_signal_, dividend_signal_pos_,
 		divisor_signal_, divisor_signal_pos_,
 		time, dividend_data, divisor_data);

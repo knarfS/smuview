@@ -24,7 +24,7 @@
 #include <QString>
 
 #include "timecurvedata.hpp"
-#include "src/data/analogsignal.hpp"
+#include "src/data/analogtimesignal.hpp"
 #include "src/data/datautil.hpp"
 #include "src/ui/widgets/plot/basecurvedata.hpp"
 
@@ -35,7 +35,7 @@ namespace ui {
 namespace widgets {
 namespace plot {
 
-TimeCurveData::TimeCurveData(shared_ptr<sv::data::AnalogSignal> signal) :
+TimeCurveData::TimeCurveData(shared_ptr<sv::data::AnalogTimeSignal> signal) :
 	BaseCurveData(CurveType::TimeCurve),
 	signal_(signal)
 {
@@ -154,7 +154,7 @@ QString TimeCurveData::y_data_title() const
 	return QString("%1 [%2]").arg(y_data_quantity()).arg(y_data_unit());
 }
 
-shared_ptr<sv::data::AnalogSignal> TimeCurveData::signal() const
+shared_ptr<sv::data::AnalogTimeSignal> TimeCurveData::signal() const
 {
 	return signal_;
 }

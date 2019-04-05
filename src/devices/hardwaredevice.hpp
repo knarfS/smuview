@@ -68,11 +68,6 @@ namespace channels {
 class BaseChannel;
 }
 
-namespace data {
-class AnalogSignal;
-class BaseSignal;
-}
-
 namespace devices {
 
 namespace properties {
