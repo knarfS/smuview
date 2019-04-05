@@ -94,6 +94,7 @@ void SourceSinkControlView::setup_ui()
 		configurable_->get_property(ConfigKey::UnderVoltageConditionActive),
 		true, red_icon, grey_icon, grey_icon, tr("UVC"));
 	info_layout->addWidget(uvc_led_, 1, 3, Qt::AlignLeft);
+	info_layout->setColumnStretch(4, 1);
 	layout->addLayout(info_layout, 0);
 
 	QHBoxLayout *ctrl_layout = new QHBoxLayout();
