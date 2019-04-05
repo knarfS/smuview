@@ -28,8 +28,6 @@ for deviceId in devices:
             print("    actual_signal = " + actual_signal.name())
 
         signals = channel.signals()
-        #for signalId in signals:
-        #    signal = signals[signalId]
-        #    print("")
-        #    print("    signal   = " + signal.name())
-        #    print("    signalId = " + signalId)
+        for signal in signals:
+            print("")
+            print("    signal   = " + signal.name())
