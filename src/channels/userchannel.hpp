@@ -64,7 +64,7 @@ public:
 	 */
 	void push_sample(double sample, double timestamp,
 		data::Quantity quantity, set<data::QuantityFlag> quantity_flags,
-		data::Unit unit);
+		data::Unit unit, int digits, int decimal_places);
 
 };
 

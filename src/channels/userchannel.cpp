@@ -63,7 +63,7 @@ UserChannel::UserChannel(
 
 void UserChannel::push_sample(double sample, double timestamp,
 	data::Quantity quantity, set<data::QuantityFlag> quantity_flags,
-	data::Unit unit)
+	data::Unit unit, int digits, int decimal_places)
 {
 	measured_quantity_t mq = make_pair(quantity, quantity_flags);
 	size_t signals_count = signal_map_.count(mq);
@@ -81,9 +81,6 @@ void UserChannel::push_sample(double sample, double timestamp,
 		actual_signal_ = signal;
 		Q_EMIT signal_changed(actual_signal_);
 	}
-
-	int digits = 7; // TODO
-	int decimal_places = -1; // TODO
 
 	signal->push_sample(&sample, timestamp, size_of_double_,
 		digits, decimal_places);
