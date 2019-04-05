@@ -27,6 +27,7 @@
 #include "src/channels/basechannel.hpp"
 #include "src/channels/hardwarechannel.hpp"
 #include "src/channels/userchannel.hpp"
+#include "src/data/analogbasesignal.hpp"
 #include "src/data/analogsamplesignal.hpp"
 #include "src/data/analogtimesignal.hpp"
 #include "src/data/basesignal.hpp"
@@ -45,8 +46,8 @@ PYBIND11_EMBEDDED_MODULE(smuview, m) {
 	init_Channel(m);
 	init_Signal(m);
 	init_Configurable(m);
-	init_Enums(m);
 	init_UI(m);
+	init_Enums(m);
 }
 
 void init_Session(py::module &m)
@@ -75,11 +76,6 @@ void init_Device(py::module &m)
 
 void init_Channel(py::module &m)
 {
-	/*
-	 * TODO:
-	 *  - push sample
-	 */
-
 	py::class_<sv::channels::BaseChannel, std::shared_ptr<sv::channels::BaseChannel>> base_channel(m, "BaseChannel");
 	base_channel.def("name", &sv::channels::BaseChannel::name);
 	base_channel.def("add_signal",
@@ -91,21 +87,24 @@ void init_Channel(py::module &m)
 
 	py::class_<sv::channels::HardwareChannel, std::shared_ptr<sv::channels::HardwareChannel>>(m, "HardwareChannel", base_channel);
 
-	py::class_<sv::channels::UserChannel, std::shared_ptr<sv::channels::UserChannel>>(m, "UserChannel", base_channel);
+	py::class_<sv::channels::UserChannel, std::shared_ptr<sv::channels::UserChannel>>(m, "UserChannel", base_channel)
+		.def("push_sample", &sv::channels::UserChannel::push_sample);
 }
 
 void init_Signal(py::module &m)
 {
-	/*
-	 * TODO:
-	 *  - push sample
-	 */
-
 	py::class_<sv::data::BaseSignal, std::shared_ptr<sv::data::BaseSignal>> base_signal(m, "BaseSignal");
 	base_signal.def("name", &sv::data::BaseSignal::name);
+	base_signal.def("sample_count", &sv::data::BaseSignal::sample_count);
 
 	py::class_<sv::data::AnalogTimeSignal, std::shared_ptr<sv::data::AnalogTimeSignal>>(m, "AnalogTimeSignal", base_signal)
-		.def("name", &sv::data::AnalogTimeSignal::name);
+		.def("get_sample", &sv::data::AnalogTimeSignal::get_sample)
+		.def("get_last_sample", &sv::data::AnalogTimeSignal::get_last_sample)
+		.def("push_sample", &sv::data::AnalogTimeSignal::push_sample);
+
+	py::class_<sv::data::AnalogSampleSignal, std::shared_ptr<sv::data::AnalogSampleSignal>>(m, "AnalogSampleSignal", base_signal)
+		.def("get_sample", &sv::data::AnalogSampleSignal::get_sample)
+		.def("push_sample", &sv::data::AnalogSampleSignal::push_sample);
 }
 
 void init_Configurable(py::module &m)
@@ -127,6 +126,20 @@ void init_Configurable(py::module &m)
 		.def("get_config", &sv::devices::Configurable::set_config<uint64_t>)
 		.def("get_config", &sv::devices::Configurable::set_config<double>)
 		.def("get_config", &sv::devices::Configurable::set_config<std::string>);
+}
+
+void init_UI(py::module &m)
+{
+	(void)m;
+
+	/*
+	 * TODO:
+	 *  - add device tab
+	 *  - add user device tab
+	 *  - add view
+	 *  - add plot
+	 *  - add signal to plot
+	 */
 }
 
 void init_Enums(py::module &m)
@@ -180,7 +193,7 @@ void init_Enums(py::module &m)
 		.value("UnderVoltageConditionThreshold", sv::devices::ConfigKey::UnderVoltageConditionThreshold)
 		.value("ClockEdge", sv::devices::ConfigKey::ClockEdge)
 		.value("Amplitude", sv::devices::ConfigKey::Amplitude)
-		//.value("Offset", sv::devices::ConfigKey::Offset)
+		.value("Offset", sv::devices::ConfigKey::Offset)
 		.value("Regulation", sv::devices::ConfigKey::Regulation)
 		.value("OutputFrequency", sv::devices::ConfigKey::OutputFrequency)
 		.value("OutputFrequencyTarget", sv::devices::ConfigKey::OutputFrequencyTarget)
@@ -199,7 +212,7 @@ void init_Enums(py::module &m)
 		.value("DeviceMode", sv::devices::ConfigKey::DeviceMode)
 		.value("TestMode", sv::devices::ConfigKey::TestMode)
 		.value("Unknown", sv::devices::ConfigKey::Unknown)
-		.export_values();
+		.export_values(); // TODO
 
 	py::enum_<sv::data::Quantity>(m, "Quantity")
 		.value("Voltage", sv::data::Quantity::Voltage)
@@ -307,15 +320,4 @@ void init_Enums(py::module &m)
 		.value("Tola", sv::data::Unit::Tola)
 		.value("Piece", sv::data::Unit::Piece)
 		.value("Unknown", sv::data::Unit::Unknown);
-}
-
-void init_UI(py::module &m)
-{
-	(void)m;
-
-	/*
-	 * TODO:
-	 *  - add plot
-	 *  - add signal to plot
-	 */
 }
