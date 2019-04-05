@@ -58,7 +58,6 @@ public:
 		shared_ptr<devices::BaseDevice> parent_device,
 		double channel_start_timestamp);
 
-protected:
 	/**
 	 * Add a single sample with timestamp to the channel/signal
 	 * TODO: Move to base?
