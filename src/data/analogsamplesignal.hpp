@@ -52,12 +52,12 @@ public:
 		shared_ptr<channels::BaseChannel> parent_channel);
 
 	/**
-	 * Clears all samples from this signal.
+	 * Clear all samples from this signal.
 	 */
 	void clear() override;
 
 	/**
-	 * Returns the sample at the given position.
+	 * Return the sample at the given position.
 	 */
 	analog_pos_sample_t get_sample(uint32_t pos) const;
 
