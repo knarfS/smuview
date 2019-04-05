@@ -57,10 +57,10 @@ AnalogBaseSignal::AnalogBaseSignal(
 	data_ = make_shared<vector<double>>();
 }
 
-size_t AnalogBaseSignal::get_sample_count() const
+size_t AnalogBaseSignal::sample_count() const
 {
 	size_t sample_count = sample_count_;
-	//qWarning() << "AnalogBaseSignal::get_sample_count(): sample_count_ = "
+	//qWarning() << "AnalogBaseSignal::sample_count(): sample_count_ = "
 	//	<< sample_count;
 	return sample_count;
 }

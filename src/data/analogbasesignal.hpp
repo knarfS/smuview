@@ -50,17 +50,17 @@ public:
 		shared_ptr<channels::BaseChannel> parent_channel);
 
 	/**
-	 * Returns the number of samples in this signal.
+	 * Return the number of samples in this signal.
 	 */
-	size_t get_sample_count() const override;
+	size_t sample_count() const override;
 
 	/**
-	 * Returns the sample at the given position.
+	 * Return the sample at the given position.
 	analog_time_sample_t get_sample(size_t pos, bool relative_time) const;
 	 */
 
 	/**
-	 * Returns the value at the given timestamp in &value. If there is no
+	 * Return the value at the given timestamp in &value. If there is no
 	 * exactty matching timestamp, the value is linearly interpolated. No
 	 * value can be found/interpolated, if the timestamp is smaller than the
 	 * first timestamp in the signal or bigger than the last timestamp in the

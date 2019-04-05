@@ -75,7 +75,7 @@ void IntegrateChannel::on_channel_start_timestamp_changed(double timestamp)
 void IntegrateChannel::on_sample_appended()
 {
 	// Integrate
-	size_t int_signal_sample_count = int_signal_->get_sample_count();
+	size_t int_signal_sample_count = int_signal_->sample_count();
 	while (next_int_signal_pos_ < int_signal_sample_count) {
 		auto sample = int_signal_->get_sample(next_int_signal_pos_, false);
 		double time = sample.first;

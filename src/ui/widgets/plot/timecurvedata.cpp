@@ -67,7 +67,7 @@ QPointF TimeCurveData::sample(size_t i) const
 size_t TimeCurveData::size() const
 {
 	// TODO: Synchronize x/y sample data
-	return signal_->get_sample_count();
+	return signal_->sample_count();
 }
 
 QRectF TimeCurveData::boundingRect() const

@@ -116,7 +116,7 @@ void DataView::connect_signals()
 
 void DataView::populate_table()
 {
-	size_t signal_size = signal_->get_sample_count();
+	size_t signal_size = signal_->sample_count();
 	while (next_signal_pos_ < signal_size) {
 		int row  = data_table_->rowCount();
 		data_table_->insertRow(row);

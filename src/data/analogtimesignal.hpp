@@ -53,17 +53,17 @@ public:
 		double signal_start_timestamp);
 
 	/**
-	 * Clears all samples from this signal.
+	 * Clear all samples from this signal.
 	 */
 	void clear() override;
 
 	/**
-	 * Returns the sample at the given position.
+	 * Return the sample at the given position.
 	 */
 	analog_time_sample_t get_sample(size_t pos, bool relative_time) const;
 
 	/**
-	 * Returns the value at the given timestamp in &value. If there is no
+	 * Return the value at the given timestamp in &value. If there is no
 	 * exactty matching timestamp, the value is linearly interpolated. No
 	 * value can be found/interpolated, if the timestamp is smaller than the
 	 * first timestamp in the signal or bigger than the last timestamp in the

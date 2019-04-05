@@ -252,7 +252,7 @@ void ValuePanelView::stop_timer()
 
 void ValuePanelView::on_update()
 {
-	if (!signal_ || signal_->get_sample_count() == 0)
+	if (!signal_ || signal_->sample_count() == 0)
 		return;
 
 	double value = 0;

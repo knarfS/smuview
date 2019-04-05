@@ -65,7 +65,7 @@ public:
 	/**
 	 * Return the number of samples in this signal.
 	 */
-	virtual size_t get_sample_count() const = 0;
+	virtual size_t sample_count() const = 0;
 
 	/**
 	 * Return the qunatity of this signal.

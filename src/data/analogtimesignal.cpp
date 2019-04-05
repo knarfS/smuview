@@ -295,8 +295,8 @@ void AnalogTimeSignal::combine_signals(
 	// Ignore the first sample(s)
 	// TODO: Use last of the ignored samples?
 	if (signal1_pos == 0 && signal2_pos == 0) {
-		if (signal1->get_sample_count() <= signal1_pos ||
-			signal2->get_sample_count() <= signal2_pos)
+		if (signal1->sample_count() <= signal1_pos ||
+			signal2->sample_count() <= signal2_pos)
 			return;
 
 		double signal1_ts = signal1->get_sample(signal1_pos, false).first;
@@ -312,17 +312,15 @@ void AnalogTimeSignal::combine_signals(
 	}
 
 	while (true) {
-		if (signal1->get_sample_count() <= signal1_pos ||
-			signal2->get_sample_count() <= signal2_pos)
+		if (signal1->sample_count() <= signal1_pos ||
+			signal2->sample_count() <= signal2_pos)
 			break;
 
 		/*
 		qWarning() << "AnalogSignal::merge_signals(): signal1_size = "
-				<< signal1->get_sample_count() << ", signal1_pos = "
-				<< signal1_pos;
+				<< signal1->sample_count() << ", signal1_pos = " << signal1_pos;
 		qWarning() << "AnalogSignal::merge_signals(): signal2_size = "
-				<< signal2->get_sample_count() << ", signal2_pos = "
-				<< signal2_pos;
+				<< signal2->sample_count() << ", signal2_pos = " << signal2_pos;
 		*/
 
 		double time;
@@ -339,7 +337,7 @@ void AnalogTimeSignal::combine_signals(
 			++signal2_pos;
 		}
 		else if (signal1_sample.first < signal2_sample.first &&
-			signal2->get_sample_count() > signal2_pos+1) {
+			signal2->sample_count() > signal2_pos+1) {
 
 			time = signal1_sample.first;
 			value1 = signal1_sample.second;
@@ -348,7 +346,7 @@ void AnalogTimeSignal::combine_signals(
 			++signal1_pos;
 		}
 		else if (signal1_sample.first > signal2_sample.first &&
-			signal1->get_sample_count() > signal1_pos+1) {
+			signal1->sample_count() > signal1_pos+1) {
 
 			time = signal2_sample.first;
 			if (!signal1->get_value_at_timestamp(time, value1, false))

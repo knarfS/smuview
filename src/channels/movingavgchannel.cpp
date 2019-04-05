@@ -70,7 +70,7 @@ MovingAvgChannel::MovingAvgChannel(
 
 void MovingAvgChannel::on_sample_appended()
 {
-	size_t signal_sample_count = signal_->get_sample_count();
+	size_t signal_sample_count = signal_->sample_count();
 	while (next_signal_pos_ < signal_sample_count) {
 		auto sample = signal_->get_sample(next_signal_pos_, false);
 		avg_samples_[next_signal_pos_%avg_sample_count_] = sample.second;

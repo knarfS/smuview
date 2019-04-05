@@ -299,7 +299,7 @@ void PowerPanelView::stop_timer()
 
 void PowerPanelView::on_update()
 {
-	if (voltage_signal_->get_sample_count() == 0)
+	if (voltage_signal_->sample_count() == 0)
 		return;
 
 	qint64 now = QDateTime::currentMSecsSinceEpoch();

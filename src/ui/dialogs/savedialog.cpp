@@ -126,7 +126,7 @@ void SaveDialog::save(QString file_name)
 		if (!analog_signal)
 			continue;
 
-		size_t sample_count = analog_signal->get_sample_count();
+		size_t sample_count = analog_signal->sample_count();
 		if (sample_count > max_sample_count)
 			max_sample_count = sample_count;
 		sample_counts.push_back(sample_count);
@@ -237,7 +237,7 @@ void SaveDialog::save_combined(QString file_name)
 		shared_ptr<sv::channels::BaseChannel> parent_channel =
 			analog_signal->parent_channel();
 
-		sample_counts.push_back(analog_signal->get_sample_count());
+		sample_counts.push_back(analog_signal->sample_count());
 		sample_pos.push_back(0);
 
 		string chg_names("");
