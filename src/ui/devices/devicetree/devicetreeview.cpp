@@ -127,7 +127,7 @@ vector<shared_ptr<sv::channels::BaseChannel>>
 	QList<QStandardItem *> all_items =
 		tree_model_->findItems("", Qt::MatchContains | Qt::MatchRecursive);
 	for (const auto &item : all_items) {
-		if (item->rowCount() == 0 && item->checkState() > 0 &&
+		if (item->checkState() > 0 &&
 				item->type() == (int)TreeItemType::ChannelItem) {
 			channels.push_back(
 				item->data().value<shared_ptr<sv::channels::BaseChannel>>());
@@ -176,7 +176,7 @@ vector<shared_ptr<sv::data::BaseSignal>>
 	QList<QStandardItem *> all_items =
 		tree_model_->findItems("", Qt::MatchContains | Qt::MatchRecursive);
 	for (const auto &item : all_items) {
-		if (item->rowCount() == 0 && item->checkState() > 0 &&
+		if (item->checkState() > 0 &&
 				item->type() == (int)TreeItemType::SignalItem) {
 			signals.push_back(
 				item->data().value<shared_ptr<sv::data::BaseSignal>>());
