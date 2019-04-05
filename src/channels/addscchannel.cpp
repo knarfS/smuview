@@ -67,7 +67,7 @@ void AddSCChannel::on_sample_appended()
 {
 	size_t signal_sample_count = signal_->get_sample_count();
 	while (next_signal_pos_ < signal_sample_count) {
-		data::sample_t sample = signal_->get_sample(next_signal_pos_, false);
+		auto sample = signal_->get_sample(next_signal_pos_, false);
 		double time = sample.first;
 		double value = sample.second + constant_;
 		push_sample(value, time);

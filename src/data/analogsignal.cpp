@@ -81,7 +81,8 @@ size_t AnalogSignal::get_sample_count() const
 	return sample_count;
 }
 
-sample_t AnalogSignal::get_sample(size_t pos, bool relative_time) const
+analog_time_sample_t AnalogSignal::get_sample(
+	size_t pos, bool relative_time) const
 {
 	// TODO: retrun reference (&double)? See get_value_at_timestamp()
 
@@ -366,8 +367,8 @@ void AnalogSignal::combine_signals(
 		double value1;
 		double value2;
 
-		sample_t signal1_sample = signal1->get_sample(signal1_pos, false);
-		sample_t signal2_sample = signal2->get_sample(signal2_pos, false);
+		auto signal1_sample = signal1->get_sample(signal1_pos, false);
+		auto signal2_sample = signal2->get_sample(signal2_pos, false);
 		if (signal1_sample.first == signal2_sample.first) {
 			time = signal1_sample.first;
 			value1 = signal1_sample.second;

@@ -56,7 +56,7 @@ QPointF TimeCurveData::sample(size_t i) const
 {
 	//signal_data_->lock();
 
-	data::sample_t sample = signal_->get_sample(i, relative_time_);
+	auto sample = signal_->get_sample(i, relative_time_);
 	QPointF sample_point(sample.first, sample.second);
 
 	//signal_data_->.unlock();

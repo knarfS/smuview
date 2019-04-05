@@ -121,7 +121,7 @@ void DataView::populate_table()
 		int row  = data_table_->rowCount();
 		data_table_->insertRow(row);
 
-		sv::data::sample_t sample = signal_->get_sample(next_signal_pos_, true);
+		auto sample = signal_->get_sample(next_signal_pos_, true);
 		QTableWidgetItem *time_item =
 			new QTableWidgetItem(tr("%1").arg(sample.first));
 		data_table_->setItem(row, 0, time_item);

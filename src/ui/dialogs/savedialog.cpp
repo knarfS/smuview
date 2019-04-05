@@ -188,8 +188,7 @@ void SaveDialog::save(QString file_name)
 			size_t sample_count = sample_counts[j];
 			if (i < sample_count-1) {
 				// More samples for this signal
-				data::sample_t sample =
-					analog_signal->get_sample(i, relative_time);
+				auto sample = analog_signal->get_sample(i, relative_time);
 				value = QString("%1").arg(sample.second);
 				if (relative_time)
 					time = QString("%1").arg(sample.first);
@@ -305,7 +304,7 @@ void SaveDialog::save_combined(QString file_name)
 
 			line.append(QString::fromStdString(sep));
 
-			data::sample_t sample =
+			auto sample =
 				analog_signal->get_sample(sample_pos[i], relative_time);
 			double timestamp = sample.first;
 			if (timestamp == next_timestamp) {

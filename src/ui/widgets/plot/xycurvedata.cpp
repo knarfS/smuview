@@ -33,7 +33,6 @@ using std::lock_guard;
 using std::make_shared;
 using std::mutex;
 using std::shared_ptr;
-using sv::data::sample_t;
 
 namespace sv {
 namespace ui {

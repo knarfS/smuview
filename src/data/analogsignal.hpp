@@ -38,7 +38,7 @@ using std::vector;
 namespace sv {
 namespace data {
 
-typedef pair<double, double> sample_t;
+typedef pair<double, double> analog_time_sample_t;
 
 class AnalogSignal : public BaseSignal
 {
@@ -65,7 +65,7 @@ public:
 	/**
 	 * Returns the sample at the given position.
 	 */
-	sample_t get_sample(size_t pos, bool relative_time) const;
+	analog_time_sample_t get_sample(size_t pos, bool relative_time) const;
 
 	/**
 	 * Returns the value at the given timestamp in &value. If there is no
