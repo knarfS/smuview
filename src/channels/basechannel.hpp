@@ -184,6 +184,12 @@ public:
 	map<measured_quantity_t, vector<shared_ptr<data::BaseSignal>>> signal_map();
 
 	/**
+	 * Get all signals for this channel.
+	 * This function is especially for the Python bindings.
+	 */
+	vector<shared_ptr<data::BaseSignal>> signals();
+
+	/**
 	 * Delete all signals from this channel
 	 */
 	void clear_signals();

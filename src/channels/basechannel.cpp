@@ -203,6 +203,16 @@ map<measured_quantity_t, vector<shared_ptr<data::BaseSignal>>>
 	return signal_map_;
 }
 
+vector<shared_ptr<data::BaseSignal>> BaseChannel::signals()
+{
+	vector<shared_ptr<data::BaseSignal>> signals;
+	for (const auto &signal_pair : signal_map_) {
+		signals.insert(signals.end(),
+			signal_pair.second.begin(), signal_pair.second.end());
+	}
+	return signals;
+}
+
 void BaseChannel::clear_signals()
 {
 	/* TODO
