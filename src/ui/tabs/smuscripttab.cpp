@@ -103,7 +103,7 @@ void SmuScriptTab::setup_toolbar()
 void SmuScriptTab::on_action_open_triggered()
 {
     QFile file(
-		"/home/frank/Projekte/elektronik/sigrok/smuview/smuscript/test1.py");
+		"/home/frank/Projekte/elektronik/sigrok/smuview/smuscript/test2.py");
 		//"/home/frank/Projekte/elektronik/sigrok/smuview/smuscript/example1.py");
     if (file.open(QFile::ReadOnly | QFile::Text))
         editor_->setPlainText(file.readAll());
@@ -112,7 +112,7 @@ void SmuScriptTab::on_action_open_triggered()
 void SmuScriptTab::on_action_save_triggered()
 {
 	QFile file(
-		"/home/frank/Projekte/elektronik/sigrok/smuview/smuscript/test1.py");
+		"/home/frank/Projekte/elektronik/sigrok/smuview/smuscript/test2.py");
 		//"/home/frank/Projekte/elektronik/sigrok/smuview/smuscript/example1.py");
     if (file.open(QFile::ReadWrite | QFile::Text)) { // QIODevice::ReadWrite
 		 QTextStream stream(&file);
@@ -130,7 +130,7 @@ void SmuScriptTab::on_action_run_triggered()
 			QIcon(":/icons/media-playback-stop.png")));
 
 		string file_name =
-			"/home/frank/Projekte/elektronik/sigrok/smuview/smuscript/test1.py";
+			"/home/frank/Projekte/elektronik/sigrok/smuview/smuscript/test2.py";
 			//"/home/frank/Projekte/elektronik/sigrok/smuview/smuscript/example1.py";
 		smu_script_runner_->run(file_name);
 	}
