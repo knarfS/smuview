@@ -219,6 +219,7 @@ set(smuview_SOURCES
   src/ui/datatypes/int32spinbox.cpp
   src/ui/datatypes/measuredquantitycombobox.cpp
   src/ui/datatypes/stringcombobox.cpp
+  src/ui/datatypes/stringled.cpp
   src/ui/datatypes/thresholdcontrol.cpp
   src/ui/datatypes/uint64spinbox.cpp
   src/ui/devices/channelcombobox.cpp
