@@ -87,6 +87,19 @@ analog_time_sample_t AnalogTimeSignal::get_sample(
 	return make_pair(0., 0.);
 }
 
+analog_time_sample_t AnalogTimeSignal::get_last_sample(bool relative_time) const
+{
+	// TODO: retrun reference (&double)? See get_value_at_timestamp()
+	if (sample_count_ == 0)
+		return make_pair(0., 0.);
+
+	size_t pos = sample_count_ - 1;
+	double timestamp = time_->at(pos);
+	if (relative_time)
+		timestamp -= signal_start_timestamp_;
+	return make_pair(timestamp, data_->at(pos));
+}
+
 bool AnalogTimeSignal::get_value_at_timestamp(
 	double timestamp, double &value, bool relative_time) const
 {

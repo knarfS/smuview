@@ -63,6 +63,11 @@ public:
 	analog_time_sample_t get_sample(size_t pos, bool relative_time) const;
 
 	/**
+	 * Return the last captured sample.
+	 */
+	analog_time_sample_t get_last_sample(bool relative_time) const;
+
+	/**
 	 * Return the value at the given timestamp in &value. If there is no
 	 * exactty matching timestamp, the value is linearly interpolated. No
 	 * value can be found/interpolated, if the timestamp is smaller than the
