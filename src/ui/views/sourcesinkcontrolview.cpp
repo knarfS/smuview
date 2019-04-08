@@ -29,6 +29,7 @@
 #include "src/ui/datatypes/boolled.hpp"
 #include "src/ui/datatypes/doublecontrol.hpp"
 #include "src/ui/datatypes/stringcombobox.hpp"
+#include "src/ui/datatypes/stringled.hpp"
 #include "src/ui/datatypes/thresholdcontrol.hpp"
 
 using sv::devices::ConfigKey;
@@ -67,16 +68,23 @@ void SourceSinkControlView::setup_ui()
 	info_layout->addWidget(enable_button_, 0, 0, Qt::AlignLeft);
 
 	// Regulation
-	// TODO: Find a better place. Not for sources?
-	regulation_box_ = new ui::datatypes::StringComboBox(
-		configurable_->get_property(ConfigKey::Regulation), true, true);
-	info_layout->addWidget(regulation_box_, 1, 0, Qt::AlignLeft);
-
-	// TODO
-	// CV
-	//info_layout->addWidget(cv_led_, 0, 1, Qt::AlignLeft);
-	// CC
-	//info_layout->addWidget(cc_led_, 1, 1, Qt::AlignLeft);
+	if (configurable_->device_type() == devices::DeviceType::ElectronicLoad) {
+		regulation_box_ = new ui::datatypes::StringComboBox(
+			configurable_->get_property(ConfigKey::Regulation), true, true);
+		info_layout->addWidget(regulation_box_, 1, 0, Qt::AlignLeft);
+	}
+	if (configurable_->device_type() == devices::DeviceType::PowerSupply) {
+		cv_led_ = new ui::datatypes::StringLed(
+			configurable_->get_property(ConfigKey::Regulation),
+			true, green_icon, grey_icon, grey_icon,
+			"CV", "", tr("CV"));
+		info_layout->addWidget(cv_led_, 0, 1, Qt::AlignLeft);
+		cc_led_ = new ui::datatypes::StringLed(
+			configurable_->get_property(ConfigKey::Regulation),
+			true, red_icon, grey_icon, grey_icon,
+			"CC", "", tr("CC"));
+		info_layout->addWidget(cc_led_, 1, 1, Qt::AlignLeft);
+	}
 
 	ovp_led_ = new ui::datatypes::BoolLed(
 		configurable_->get_property(ConfigKey::OverVoltageProtectionActive),

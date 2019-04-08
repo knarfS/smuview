@@ -42,6 +42,7 @@ class BoolButton;
 class BoolLed;
 class DoubleControl;
 class StringComboBox;
+class StringLed;
 class ThresholdControl;
 }
 
@@ -61,8 +62,8 @@ public:
 private:
 	shared_ptr<sv::devices::Configurable> configurable_;
 
-	ui::datatypes::BoolLed *cc_led_;
-	ui::datatypes::BoolLed *cv_led_;
+	ui::datatypes::StringLed *cc_led_;
+	ui::datatypes::StringLed *cv_led_;
 	ui::datatypes::BoolLed *ovp_led_;
 	ui::datatypes::BoolLed *ocp_led_;
 	ui::datatypes::BoolLed *otp_led_;
