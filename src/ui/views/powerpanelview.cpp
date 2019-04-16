@@ -204,6 +204,7 @@ void PowerPanelView::setup_ui()
 	panel_layout->addWidget(watt_hour_display_, 2, 4, 2, 1, Qt::AlignCenter);
 
 	layout->addLayout(panel_layout);
+	layout->addStretch(1);
 
 	this->central_widget_->setLayout(layout);
 }
