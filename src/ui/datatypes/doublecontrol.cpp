@@ -22,7 +22,7 @@
 
 #include "doublecontrol.hpp"
 #include "src/devices/properties/baseproperty.hpp"
-#include "src/ui/datatypes/doubleknob.hpp"
+#include "src/ui/datatypes/doubleslider.hpp"
 #include "src/ui/datatypes/doubledisplay.hpp"
 #include "src/ui/datatypes/doublespinbox.hpp"
 
@@ -55,15 +55,11 @@ void DoubleControl::setup_ui()
 	display_ = new DoubleDisplay(property_, true);
 	layout->addWidget(display_, 0, Qt::AlignCenter);
 
-	QHBoxLayout *controls_layout = new QHBoxLayout();
-
 	spin_box_ = new DoubleSpinBox(property_, true, true);
-	controls_layout->addWidget(spin_box_);
+	layout->addWidget(spin_box_);
 
-	knob_ = new DoubleKnob(property_, true, true);
-	controls_layout->addWidget(knob_);
-
-	layout->addItem(controls_layout);
+	slider_ = new DoubleSlider(property_, true, true);
+	layout->addWidget(slider_);
 
 	this->setLayout(layout);
 }

@@ -40,7 +40,7 @@ namespace ui {
 namespace datatypes {
 
 class DoubleDisplay;
-class DoubleKnob;
+class DoubleSlider;
 class DoubleSpinBox;
 
 class DoubleControl : public QGroupBox, public BaseWidget
@@ -53,13 +53,13 @@ public:
 		const bool auto_commit, const bool auto_update,
 		QString title, QWidget *parent = nullptr);
 
-	QVariant variant_value() const;
+	QVariant variant_value() const override;
 
 private:
 	QString title_;
 
 	DoubleSpinBox *spin_box_;
-	DoubleKnob *knob_;
+	DoubleSlider *slider_;
 	DoubleDisplay *display_;
 
 	void setup_ui();
