@@ -55,7 +55,6 @@ Int32SpinBox::Int32SpinBox(
 
 void Int32SpinBox::setup_ui()
 {
-	this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
 	this->setAlignment(Qt::AlignRight);
 	if (property_ != nullptr && property_->is_listable()) {
 		shared_ptr<devices::properties::Int32Property> int32_prop =
