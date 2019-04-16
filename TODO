@@ -2,6 +2,7 @@ SmuView
 =======
 
 ToDo
+----
 
 - Use util::Timestamp?
 - last_value_, min_value_, max_value_ -> std::atomic!
@@ -36,9 +37,8 @@ ToDo
 - util.cpp: use cmath instead of math.h, but Timestamp is boost and only works with non std::?
 - Use AnalogBaseSignal in all(?) Channel classes, in View classes and in Plot classes
 
-------------------------
-
 Done
+----
 
 - Check in connect.cpp if GPIB is part of build info (libsigrok -> backend.c)
 - Everey device must have its own session:
@@ -79,14 +79,12 @@ Done
 - DataView: Add toolbar with "StayAtBottom" switchable action.
 - Remove all items in combo box when parent has changed and setup_ui() is recalled?	see ConfigKeyComboBox and ConfigurableComboBox
 
-------------------------
-
 Won't fix
+---------
 
 - QWT Multiaxis
 - Refactore:
 	- src/data -> src/signals
-
 
 
 
@@ -95,7 +93,6 @@ libsigrok
 
 - Add GPIB address to libgpib:conn as paramenter
 - Change key naming (see load + psu wiki pages)
-- Provied SR_DF_META packets for the Re:load Pro and the HP3478A for changed values/states (e.g. output switched on/off, ovp, otp, ...)
 - Re:load Pro: when acquisition is running and we send a command (e.g. "set xxx"), there are 2 listeners (1st send_cmd() (<-serial_write_blocking) and 2nd handle_new_data() (<-serial_read_nonblocking))
 	- Make devc->acquisition_running thread safe, bool is NOT thread safe!
 - Re:load Pro: when 2 responses are send fast afer each other, serial_read_nonblocking reads them both and the \r\n gets in beetween
@@ -110,9 +107,15 @@ libsigrok
 - scpi-pps's have channel groups but options/keys/_lists_ (voltage_target, ...) apply to device
 - scpi-pps: when in acquisition send one write ":MEAS:VOLT?;:MEAS:CURR?" instead of 2 writes when possible
 - Add channel.meaning.mq, channel.meaning.mqflags, channel.meaning.unit (+channel.fixed) to PPU and load channels, to make it easy to init signals in smuview
-- Re:load Pro: Don't use "monitor 200", Instead "read" values every aquisition cycle with serial "read line blocking" and use a mutex around every read, write and write+read
 - Add missing units: sigrok::Unit::DECIBEL, sigrok::Unit::JOULE, sigrok::Unit::AMPEREHOUR, sigrok::Unit::COULOMB, sigrok::Unit::(HECTO)PASCAL
+- scpi-pps/hp66xxx: Return always TRUE for OVP_ENABLED
+
+WIP
+---
+
 - Add mqflags (AC/DC) to channel_group_spec for scpi-pps
+- scpi-pps/hp66xxB: Don't send SCPI_CMD_REMOTE and SCPI_CMD_LOCAL when GPIB is used. Will result in error 602.
+- scpi-pps/hp66xxx: Check if SPoll is faster than sending *STB? / FAULT?, if so implement and use SPoll (or SRQ) when using GPIB.
 
 Done
 ----
@@ -136,7 +139,12 @@ Done
 - scpi-pps: add otp/ovp/ocp to pps_profiles[] (or to channel(group)) for HP 663xx
 - HP3478A: Implement SPoll,
 - Add missing confg key sigok::ConfigKey::OFFSET
+- Provied SR_DF_META packets for the Re:load Pro and the HP3478A for changed values/states (e.g. output switched on/off, ovp, otp, ...)
 
+Won't fix
+---------
+
+- Re:load Pro: Don't use "monitor 200", Instead "read" values every aquisition cycle with serial "read line blocking" and use a mutex around every read, write and write+read
 
 
 
@@ -144,7 +152,6 @@ Doku
 ====
 
 - Link API to the psu and load wiki pages
-
 
 
 
