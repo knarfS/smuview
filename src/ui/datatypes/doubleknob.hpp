@@ -22,7 +22,6 @@
 
 #include <memory>
 
-#include <QDoubleSpinBox>
 #include <QVariant>
 #include <qwt_knob.h>
 
@@ -51,7 +50,7 @@ public:
 		const bool auto_commit, const bool auto_update,
 		QWidget *parent = nullptr);
 
-	QVariant variant_value() const;
+	QVariant variant_value() const override;
 
 private:
 	void setup_ui();

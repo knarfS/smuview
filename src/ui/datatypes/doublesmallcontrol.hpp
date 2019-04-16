@@ -52,7 +52,7 @@ public:
 		const bool auto_commit, const bool auto_update,
 		QString title, QWidget *parent = nullptr);
 
-	QVariant variant_value() const;
+	QVariant variant_value() const override;
 
 private:
 	QString title_;

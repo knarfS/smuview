@@ -20,6 +20,7 @@
 #include <stdexcept>
 
 #include <QDebug>
+#include <qwt_knob.h>
 
 #include "doubleknob.hpp"
 #include "src/util.hpp"

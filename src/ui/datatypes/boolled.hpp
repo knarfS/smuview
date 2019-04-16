@@ -52,7 +52,7 @@ public:
 		const QIcon on_icon, const QIcon off_icon, const QIcon dis_icon,
 		QString text = nullptr, QWidget *parent = nullptr);
 
-	QVariant variant_value() const;
+	QVariant variant_value() const override;
 
 private:
 	const QIcon on_icon_;

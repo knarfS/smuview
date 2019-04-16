@@ -53,7 +53,7 @@ public:
 		const bool auto_commit, const bool auto_update,
 		QString title, QWidget *parent = nullptr);
 
-	QVariant variant_value() const;
+	QVariant variant_value() const override;
 
 private:
 	shared_ptr<sv::devices::properties::BaseProperty> bool_prop_;

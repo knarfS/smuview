@@ -53,7 +53,7 @@ public:
 		const QString on_value, const QString off_value,
 		QString text = nullptr, QWidget *parent = nullptr);
 
-	QVariant variant_value() const;
+	QVariant variant_value() const override;
 
 private:
 	const QIcon on_icon_;
