@@ -56,6 +56,7 @@ DoubleSpinBox::DoubleSpinBox(
 void DoubleSpinBox::setup_ui()
 {
 	//this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
+	this->setAlignment(Qt::AlignRight);
 	if (property_ != nullptr && property_->is_listable()) {
 		shared_ptr<devices::properties::DoubleProperty> double_prop =
 			dynamic_pointer_cast<devices::properties::DoubleProperty>(property_);

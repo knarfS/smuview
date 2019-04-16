@@ -56,6 +56,7 @@ UInt64SpinBox::UInt64SpinBox(
 void UInt64SpinBox::setup_ui()
 {
 	this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
+	this->setAlignment(Qt::AlignRight);
 	if (property_ != nullptr && property_->is_listable()) {
 		shared_ptr<devices::properties::UInt64Property> uint64_prop =
 			dynamic_pointer_cast<devices::properties::UInt64Property>(property_);
