@@ -76,6 +76,8 @@ typedef boost::multiprecision::number<
  * @param decimal_places The number of decimal places for value_str
  * @param value_str A reference to a QString to stre the digits to.
  * @param si_prefix A reference to a QString to store the SI prefix to.
+ *
+ * TODO: move to data
  */
 void format_value_si(
 	const double value, const int digits, const int decimal_places,
@@ -98,6 +100,8 @@ void format_value_si(
  * @param sign Whether or not to add a sign also for positive numbers.
  *
  * @return The formatted value.
+ *
+ * TODO: move to data
  */
 QString format_time_si(const Timestamp& v,
 	SIPrefix prefix = SIPrefix::unspecified, unsigned precision = 0,
@@ -117,6 +121,8 @@ QString format_time_si(const Timestamp& v,
  * @param sign Whether or not to add a sign also for positive numbers.
  *
  * @return The formatted value.
+ *
+ * TODO: move to data
  */
 QString format_time_si_adjusted(const Timestamp& t, SIPrefix prefix,
 	unsigned precision = 0, QString unit = "s", bool sign = true);
@@ -133,6 +139,8 @@ QString format_time_si_adjusted(const Timestamp& t, SIPrefix prefix,
  * @param sign Whether or not to add a sign also for positive numbers.
  *
  * @return The formatted value.
+ *
+ * TODO: move to data
  */
 QString format_time_minutes(const Timestamp& t, signed precision = 0,
 	bool sign = true);
@@ -148,6 +156,8 @@ QString format_time_minutes(const Timestamp& t, signed precision = 0,
  * @param precision The number of digits after the decimal separator.
  *
  * @return The formatted value.
+ *
+ * TODO: move to data
  */
 QString format_time_date(double t);
 
