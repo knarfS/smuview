@@ -27,7 +27,7 @@
 #include "src/devices/configurable.hpp"
 
 namespace sv {
-namespace devices {
+namespace data {
 namespace properties {
 
 Int32Property::Int32Property(shared_ptr<devices::Configurable> configurable,
@@ -51,9 +51,23 @@ int32_t Int32Property::int32_value() const
 	return configurable_->get_config<int32_t>(config_key_);
 }
 
+QString Int32Property::to_string(int32_t value) const
+{
+	QString str = QString::number(value);
+	if (unit_ != data::Unit::Unknown && unit_ != data::Unit::Unitless)
+		str.append(" ").append(datautil::format_unit(unit_));
+
+	return str;
+}
+
+QString Int32Property::to_string(const QVariant qvar) const
+{
+	return this->to_string(qvar.toInt());
+}
+
 QString Int32Property::to_string() const
 {
-	return QString::number(int32_value());
+	return this->to_string(int32_value());
 }
 
 int32_t Int32Property::min() const
@@ -100,5 +114,5 @@ void Int32Property::on_value_changed(Glib::VariantBase g_var)
 }
 
 } // namespace datatypes
-} // namespace devices
+} // namespace data
 } // namespace sv

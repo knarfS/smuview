@@ -25,7 +25,7 @@
 #include "src/devices/configurable.hpp"
 
 namespace sv {
-namespace devices {
+namespace data {
 namespace properties {
 
 BoolProperty::BoolProperty(shared_ptr<devices::Configurable> configurable,
@@ -44,12 +44,19 @@ bool BoolProperty::bool_value() const
 	return configurable_->get_config<bool>(config_key_);
 }
 
+QString BoolProperty::to_string(bool value) const
+{
+	return value ? QString("true") : QString("false");
+}
+
+QString BoolProperty::to_string(const QVariant qvar) const
+{
+	return this->to_string(qvar.toBool());
+}
+
 QString BoolProperty::to_string() const
 {
-	if (bool_value())
-		return QString("true");
-	else
-		return QString("false");
+	return this->to_string(bool_value());
 }
 
 void BoolProperty::change_value(const QVariant qvar)
@@ -64,5 +71,5 @@ void BoolProperty::on_value_changed(Glib::VariantBase g_var)
 }
 
 } // namespace properties
-} // namespace devices
+} // namespace data
 } // namespace sv

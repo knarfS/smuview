@@ -19,18 +19,22 @@
 
 #include <limits>
 #include <string>
+#include <vector>
 
 #include <QDebug>
 #include <QString>
 #include <QVariant>
 
 #include "uint64property.hpp"
+#include "src/util.hpp"
 #include "src/devices/configurable.hpp"
+#include "src/devices/deviceutil.hpp"
 
 using std::string;
+using std::vector;
 
 namespace sv {
-namespace devices {
+namespace data {
 namespace properties {
 
 UInt64Property::UInt64Property(shared_ptr<devices::Configurable> configurable,
@@ -54,9 +58,27 @@ uint64_t UInt64Property::uint64_value() const
 	return configurable_->get_config<uint64_t>(config_key_);
 }
 
+QString UInt64Property::to_string(uint64_t value) const
+{
+	// TODO: calc digits+ decimal_places from min/max/step
+	QString str;
+	QString si_prefix;
+	util::format_value_si(value, -1, 1, str, si_prefix);
+	if (!si_prefix.isEmpty() ||
+			(unit_ != data::Unit::Unknown && unit_ != data::Unit::Unitless))
+		str.append(" ").append(si_prefix).append(datautil::format_unit(unit_));
+
+	return str;
+}
+
+QString UInt64Property::to_string(const QVariant qvar) const
+{
+	return this->to_string(qvar.toULongLong());
+}
+
 QString UInt64Property::to_string() const
 {
-	return QString("%1").arg(uint64_value());
+	return this->to_string(uint64_value());
 }
 
 uint64_t UInt64Property::min() const
@@ -74,9 +96,9 @@ uint64_t UInt64Property::step() const
 	return step_;
 }
 
-vector<uint64_t> UInt64Property::values() const
+vector<uint64_t> UInt64Property::list_values() const
 {
-	return values_;
+	return values_list_;
 }
 
 bool UInt64Property::list_config()
@@ -85,7 +107,7 @@ bool UInt64Property::list_config()
 	if (!configurable_->list_config(config_key_, gvar))
 		return false;
 
-	if (config_key_ == ConfigKey::Samplerate) {
+	if (config_key_ == devices::ConfigKey::Samplerate) {
 		GVariant *gvar_list;
 		const uint64_t *elements = nullptr;
 		gsize num_elements;
@@ -103,7 +125,7 @@ bool UInt64Property::list_config()
 			elements = (const uint64_t *)g_variant_get_fixed_array(
 				gvar_list, &num_elements, sizeof(uint64_t));
 			for (size_t i=0; i<num_elements; i++) {
-				values_.push_back(elements[i]);
+				values_list_.push_back(elements[i]);
 			}
 			g_variant_unref(gvar_list);
 		}
@@ -111,14 +133,26 @@ bool UInt64Property::list_config()
 			return false;
 		}
 	}
+	else if (config_key_ == devices::ConfigKey::SampleInterval) {
+		// TODO: *data = std_gvar_tuple_array(ARRAY_AND_SIZE(kecheng_kc_330b_sample_intervals));
+		Glib::VariantIter iter(gvar);
+		while (iter.next_value (gvar)) {
+			uint64_t low = Glib::VariantBase::cast_dynamic
+				<Glib::Variant<uint64_t>>(gvar.get_child(0)).get();
+			uint64_t high = Glib::VariantBase::cast_dynamic
+				<Glib::Variant<uint64_t>>(gvar.get_child(1)).get();
+
+			(void)low;
+			(void)high;
+			//values_list_.push_back(make_pair(low, high));
+		}
+	}
 	else {
 		Glib::VariantIter iter(gvar);
-		iter.next_value(gvar);
-		min_ = Glib::VariantBase::cast_dynamic<Glib::Variant<uint64_t>>(gvar).get();
-		iter.next_value(gvar);
-		max_ = Glib::VariantBase::cast_dynamic<Glib::Variant<uint64_t>>(gvar).get();
-		iter.next_value(gvar);
-		step_ = Glib::VariantBase::cast_dynamic<Glib::Variant<uint64_t>>(gvar).get();
+		while (iter.next_value (gvar)) {
+			values_list_.push_back(
+				Glib::VariantBase::cast_dynamic<Glib::Variant<guint64>>(gvar).get());
+		}
 	}
 
 	return true;
@@ -132,7 +166,7 @@ void UInt64Property::change_value(const QVariant qvar)
 	 *       To fix this hack, a proper memory management has to be implemented!
 	 */
 	QVariant new_qvar = qvar;
-	if (config_key_ == ConfigKey::Samplerate) {
+	if (config_key_ == devices::ConfigKey::Samplerate) {
 		uint64_t sample_rate = (uint64_t)new_qvar.toULongLong();
 		if (sample_rate > 20000)
 			new_qvar.setValue((qulonglong)20000);
@@ -148,6 +182,6 @@ void UInt64Property::on_value_changed(Glib::VariantBase g_var)
 		(qulonglong)g_variant_get_uint64(g_var.gobj())));
 }
 
-} // namespace datatypes
-} // namespace devices
+} // namespace properties
+} // namespace data
 } // namespace sv

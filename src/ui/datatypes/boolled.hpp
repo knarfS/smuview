@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ using std::shared_ptr;
 
 namespace sv {
 
-namespace devices {
+namespace data {
 namespace properties {
 class BaseProperty;
 }
@@ -47,7 +47,7 @@ class BoolLed : public QWidget, public BaseWidget
 	Q_OBJECT
 
 public:
-	BoolLed(shared_ptr<sv::devices::properties::BaseProperty> property,
+	BoolLed(shared_ptr<sv::data::properties::BaseProperty> property,
 		const bool auto_update,
 		const QIcon on_icon, const QIcon off_icon, const QIcon dis_icon,
 		QString text = nullptr, QWidget *parent = nullptr);

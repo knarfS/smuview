@@ -23,9 +23,10 @@
 
 #include "uint64spinbox.hpp"
 #include "src/util.hpp"
+#include "src/data/datautil.hpp"
+#include "src/data/properties/baseproperty.hpp"
+#include "src/data/properties/uint64property.hpp"
 #include "src/devices/configurable.hpp"
-#include "src/devices/properties/baseproperty.hpp"
-#include "src/devices/properties/uint64property.hpp"
 
 using std::dynamic_pointer_cast;
 
@@ -34,7 +35,7 @@ namespace ui {
 namespace datatypes {
 
 UInt64SpinBox::UInt64SpinBox(
-		shared_ptr<sv::devices::properties::BaseProperty> property,
+		shared_ptr<sv::data::properties::BaseProperty> property,
 		const bool auto_commit, const bool auto_update,
 		QWidget *parent) :
 	QSpinBox(parent),
@@ -42,10 +43,10 @@ UInt64SpinBox::UInt64SpinBox(
 {
 	// Check property
 	if (property_ != nullptr &&
-			property_->data_type() != devices::DataType::UInt64) {
+			property_->data_type() != data::DataType::UInt64) {
 
 		QString msg = QString("UInt64SpinBox with property of type ").append(
-			devices::deviceutil::format_data_type(property_->data_type()));
+			data::datautil::format_data_type(property_->data_type()));
 		throw std::runtime_error(msg.toStdString());
 	}
 
@@ -57,11 +58,16 @@ void UInt64SpinBox::setup_ui()
 {
 	this->setAlignment(Qt::AlignRight);
 	if (property_ != nullptr && property_->is_listable()) {
-		shared_ptr<devices::properties::UInt64Property> uint64_prop =
-			dynamic_pointer_cast<devices::properties::UInt64Property>(property_);
+		shared_ptr<data::properties::UInt64Property> uint64_prop =
+			dynamic_pointer_cast<data::properties::UInt64Property>(property_);
 
 		this->setRange(uint64_prop->min(), uint64_prop->max());
 		this->setSingleStep(uint64_prop->step());
+	}
+	if (property_ != nullptr && property_->unit() != data::Unit::Unknown &&
+			property_->unit() != data::Unit::Unitless) {
+		this->setSuffix(
+			QString(" %1").arg(data::datautil::format_unit(property_->unit())));
 	}
 	if (property_ == nullptr || !property_->is_setable())
 		this->setDisabled(true);

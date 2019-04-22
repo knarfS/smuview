@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DEVICES_PROPERTIES_DOUBLEPROPERTY_HPP
-#define DEVICES_PROPERTIES_DOUBLEPROPERTY_HPP
+#ifndef DATA_PROPERTIES_DOUBLEPROPERTY_HPP
+#define DATA_PROPERTIES_DOUBLEPROPERTY_HPP
 
 #include <memory>
 
@@ -28,17 +28,19 @@
 #include <QString>
 #include <QVariant>
 
+#include "src/data/properties/baseproperty.hpp"
 #include "src/data/datautil.hpp"
-#include "src/devices/properties/baseproperty.hpp"
 #include "src/devices/deviceutil.hpp"
 
 using std::shared_ptr;
 
 namespace sv {
+
 namespace devices {
-
 class Configurable;
+}
 
+namespace data {
 namespace properties {
 
 class DoubleProperty : public BaseProperty
@@ -52,6 +54,8 @@ public:
 public:
 	QVariant value() const override;
 	double double_value() const;
+	QString to_string(double value) const;
+	QString to_string(const QVariant qvar) const override;
 	QString to_string() const override;
 	double min() const;
 	double max() const;
@@ -75,7 +79,7 @@ public Q_SLOTS:
 };
 
 } // namespace properties
-} // namespace devices
+} // namespace data
 } // namespece sv
 
-#endif // DEVICES_PROPERTIES_DOUBLEPROPERTY_HPP
+#endif // DATA_PROPERTIES_DOUBLEPROPERTY_HPP

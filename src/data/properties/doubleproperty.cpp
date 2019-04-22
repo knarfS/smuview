@@ -28,7 +28,7 @@
 #include "src/devices/configurable.hpp"
 
 namespace sv {
-namespace devices {
+namespace data {
 namespace properties {
 
 DoubleProperty::DoubleProperty(shared_ptr<devices::Configurable> configurable,
@@ -45,12 +45,6 @@ DoubleProperty::DoubleProperty(shared_ptr<devices::Configurable> configurable,
 			decimal_places_ = util::get_decimal_places(step_);
 		}
 	}
-
-	/*
-	if (unit_ != data::Unit::Unknown && unit_ != data::Unit::Unitless) {
-		this->setSuffix(QString(" %1").arg(data::datautil::format_unit(unit_)));
-	}
-	*/
 }
 
 QVariant DoubleProperty::value() const
@@ -63,10 +57,23 @@ double DoubleProperty::double_value() const
 	return configurable_->get_config<double>(config_key_);
 }
 
+QString DoubleProperty::to_string(double value) const
+{
+	QString str = QString("%1").arg(value, digits_, 'f', decimal_places_);
+	if (unit_ != data::Unit::Unknown && unit_ != data::Unit::Unitless)
+		str.append(" ").append(datautil::format_unit(unit_));
+
+	return str;
+}
+
+QString DoubleProperty::to_string(const QVariant qvar) const
+{
+	return this->to_string(qvar.toDouble());
+}
+
 QString DoubleProperty::to_string() const
 {
-	// TODO: digits_, decimal_places_
-	return QString::number(double_value(), 'f');
+	return this->to_string(double_value());
 }
 
 double DoubleProperty::min() const
@@ -122,6 +129,6 @@ void DoubleProperty::on_value_changed(Glib::VariantBase g_var)
 	Q_EMIT value_changed(QVariant(g_variant_get_double(g_var.gobj())));
 }
 
-} // namespace datatypes
-} // namespace devices
+} // namespace properties
+} // namespace data
 } // namespace sv

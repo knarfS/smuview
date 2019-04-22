@@ -54,11 +54,14 @@ class Meta;
 }
 
 namespace sv {
-namespace devices {
 
+namespace data {
 namespace properties {
 class BaseProperty;
 }
+}
+
+namespace devices {
 
 class Configurable :
 	public QObject,
@@ -138,8 +141,8 @@ public:
 	set<devices::ConfigKey> setable_configs() const;
 	set<devices::ConfigKey> listable_configs() const;
 
-	map<devices::ConfigKey, shared_ptr<properties::BaseProperty>> properties() const;
-	shared_ptr<properties::BaseProperty> get_property(devices::ConfigKey) const;
+	map<devices::ConfigKey, shared_ptr<data::properties::BaseProperty>> properties() const;
+	shared_ptr<data::properties::BaseProperty> get_property(devices::ConfigKey) const;
 
 	bool is_controllable() const;
 
@@ -154,7 +157,7 @@ private:
 	set<devices::ConfigKey> getable_configs_;
 	set<devices::ConfigKey> setable_configs_;
 	set<devices::ConfigKey> listable_configs_;
-	map<devices::ConfigKey, shared_ptr<properties::BaseProperty>> properties_;
+	map<devices::ConfigKey, shared_ptr<data::properties::BaseProperty>> properties_;
 
 Q_SIGNALS:
 	void config_changed(const devices::ConfigKey, const QVariant);

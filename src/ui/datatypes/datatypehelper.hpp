@@ -28,7 +28,7 @@ using std::shared_ptr;
 
 namespace sv {
 
-namespace devices {
+namespace data {
 namespace properties {
 class BaseProperty;
 }
@@ -48,7 +48,7 @@ namespace datatypehelper {
  * @return The generic widget for the property type
  */
 QWidget *get_widget_for_property(
-	shared_ptr<sv::devices::properties::BaseProperty>property,
+	shared_ptr<sv::data::properties::BaseProperty>property,
 	bool auto_commit, bool auto_update);
 
 } // namespace datatypehelper

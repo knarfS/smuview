@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,15 +23,16 @@
 #include <QHBoxLayout>
 
 #include "boolled.hpp"
+#include "src/data/datautil.hpp"
+#include "src/data/properties/baseproperty.hpp"
 #include "src/devices/configurable.hpp"
-#include "src/devices/properties/baseproperty.hpp"
 
 namespace sv {
 namespace ui {
 namespace datatypes {
 
 BoolLed::BoolLed(
-		shared_ptr<sv::devices::properties::BaseProperty> property,
+		shared_ptr<sv::data::properties::BaseProperty> property,
 		const bool auto_update,
 		const QIcon on_icon, const QIcon off_icon, const QIcon dis_icon,
 		QString text, QWidget *parent) :
@@ -44,10 +45,10 @@ BoolLed::BoolLed(
 {
 	// Check property
 	if (property_ != nullptr &&
-			property_->data_type() != devices::DataType::Bool) {
+			property_->data_type() != data::DataType::Bool) {
 
 		QString msg = QString("BoolLed with property of type ").append(
-			devices::deviceutil::format_data_type(property_->data_type()));
+			data::datautil::format_data_type(property_->data_type()));
 		throw std::runtime_error(msg.toStdString());
 	}
 

@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,9 +24,10 @@
 
 #include "doubleknob.hpp"
 #include "src/util.hpp"
+#include "src/data/datautil.hpp"
+#include "src/data/properties/baseproperty.hpp"
+#include "src/data/properties/doubleproperty.hpp"
 #include "src/devices/configurable.hpp"
-#include "src/devices/properties/baseproperty.hpp"
-#include "src/devices/properties/doubleproperty.hpp"
 
 using std::dynamic_pointer_cast;
 
@@ -35,7 +36,7 @@ namespace ui {
 namespace datatypes {
 
 DoubleKnob::DoubleKnob(
-		shared_ptr<sv::devices::properties::BaseProperty> property,
+		shared_ptr<sv::data::properties::BaseProperty> property,
 		const bool auto_commit, const bool auto_update,
 		QWidget *parent) :
 	QwtKnob(parent),
@@ -43,10 +44,10 @@ DoubleKnob::DoubleKnob(
 {
 	// Check property
 	if (property_ != nullptr &&
-			property_->data_type() != devices::DataType::Double) {
+			property_->data_type() != data::DataType::Double) {
 
 		QString msg = QString("DoubleKnob with property of type ").append(
-			devices::deviceutil::format_data_type(property_->data_type()));
+			data::datautil::format_data_type(property_->data_type()));
 		throw std::runtime_error(msg.toStdString());
 	}
 
@@ -59,8 +60,8 @@ void DoubleKnob::setup_ui()
 	this->knobRect().setSize(QSize(100, 100));
 	this->setNumTurns(1);
 	if (property_ != nullptr && property_->is_listable()) {
-		shared_ptr<devices::properties::DoubleProperty> double_prop =
-			dynamic_pointer_cast<devices::properties::DoubleProperty>(property_);
+		shared_ptr<data::properties::DoubleProperty> double_prop =
+			dynamic_pointer_cast<data::properties::DoubleProperty>(property_);
 
 		this->setLowerBound(double_prop->min());
 		this->setUpperBound(double_prop->max());

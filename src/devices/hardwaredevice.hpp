@@ -67,12 +67,13 @@ namespace sv {
 namespace channels {
 class BaseChannel;
 }
-
-namespace devices {
-
+namespace data {
 namespace properties {
 class UInt64Property;
 }
+}
+
+namespace devices {
 
 class Configurable;
 
@@ -125,7 +126,7 @@ protected:
 
 private:
 	double frame_start_timestamp_;
-	shared_ptr<properties::UInt64Property> samplerate_prop_;
+	shared_ptr<data::properties::UInt64Property> samplerate_prop_;
 
 };
 

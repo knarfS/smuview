@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,14 +20,14 @@
 #include <stdexcept>
 
 #include <QDebug>
+#include <QLabel>
 
-#include "doubledisplay.hpp"
+#include "stringlabel.hpp"
 #include "src/util.hpp"
 #include "src/data/datautil.hpp"
 #include "src/data/properties/baseproperty.hpp"
-#include "src/data/properties/doubleproperty.hpp"
+#include "src/data/properties/stringproperty.hpp"
 #include "src/devices/configurable.hpp"
-#include "src/ui/widgets/monofontdisplay.hpp"
 
 using std::dynamic_pointer_cast;
 
@@ -35,18 +35,17 @@ namespace sv {
 namespace ui {
 namespace datatypes {
 
-DoubleDisplay::DoubleDisplay(
+StringLabel::StringLabel(
 		shared_ptr<sv::data::properties::BaseProperty> property,
 		const bool auto_update, QWidget *parent) :
-	widgets::MonoFontDisplay(5/*Dummy*/, 3/*Dummy*/, false,
-		QString(""), QString(""), QString(""), false, parent),
+	QLabel(parent),
 	BaseWidget(property, false, auto_update)
 {
 	// Check property
 	if (property_ != nullptr &&
-			property_->data_type() != data::DataType::Double) {
+			property_->data_type() != data::DataType::String) {
 
-		QString msg = QString("DoubleDisplay with property of type ").append(
+		QString msg = QString("StringLabel with property of type ").append(
 			data::datautil::format_data_type(property_->data_type()));
 		throw std::runtime_error(msg.toStdString());
 	}
@@ -55,26 +54,22 @@ DoubleDisplay::DoubleDisplay(
 	connect_signals();
 }
 
-void DoubleDisplay::setup_ui()
+void StringLabel::setup_ui()
 {
-	this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
-	if (property_ != nullptr && property_->is_listable()) {
-		shared_ptr<data::properties::DoubleProperty> double_prop =
-			dynamic_pointer_cast<data::properties::DoubleProperty>(property_);
+	//this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
+	if (property_ != nullptr && property_->is_getable()) {
+		shared_ptr<data::properties::StringProperty> string_prop =
+			dynamic_pointer_cast<data::properties::StringProperty>(property_);
 
-		this->set_digits(double_prop->digits(), double_prop->decimal_places());
+		this->setText(string_prop->string_value());
 	}
-	if (property_ != nullptr && property_->unit() != data::Unit::Unknown &&
-			property_->unit() != data::Unit::Unitless) {
-		this->set_unit(data::datautil::format_unit(property_->unit()));
+	else {
+		this->setDisabled(true);
+		this->setText(tr("-"));
 	}
-	if (property_ != nullptr && property_->is_getable())
-		on_value_changed(property_->value());
-	else
-		on_value_changed(QVariant(.0));
 }
 
-void DoubleDisplay::connect_signals()
+void StringLabel::connect_signals()
 {
 	// Property -> Widget
 	if (auto_update_ && property_ != nullptr) {
@@ -83,19 +78,19 @@ void DoubleDisplay::connect_signals()
 	}
 }
 
-QVariant DoubleDisplay::variant_value() const
+QVariant StringLabel::variant_value() const
 {
-	return QVariant(this->value());
+	return QVariant(this->text());
 }
 
-void DoubleDisplay::value_changed(const double value)
+void StringLabel::value_changed(const QString value)
 {
 	(void)value;
 }
 
-void DoubleDisplay::on_value_changed(const QVariant qvar)
+void StringLabel::on_value_changed(const QVariant value)
 {
-	this->set_value(qvar.toDouble());
+	this->setText(value.toString());
 }
 
 } // namespace datatypes

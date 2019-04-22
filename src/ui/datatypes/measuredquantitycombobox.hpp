@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ using std::shared_ptr;
 
 namespace sv {
 
-namespace devices {
+namespace data {
 namespace properties {
 class BaseProperty;
 }
@@ -46,7 +46,7 @@ class MeasuredQuantityComboBox : public QComboBox, public BaseWidget
 
 public:
 	MeasuredQuantityComboBox(
-		shared_ptr<sv::devices::properties::BaseProperty> property,
+		shared_ptr<sv::data::properties::BaseProperty> property,
 		const bool auto_commit, const bool auto_update,
 		QWidget *parent = nullptr);
 

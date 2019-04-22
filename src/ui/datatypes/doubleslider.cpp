@@ -24,9 +24,10 @@
 
 #include "doubleslider.hpp"
 #include "src/util.hpp"
+#include "src/data/datautil.hpp"
+#include "src/data/properties/baseproperty.hpp"
+#include "src/data/properties/doubleproperty.hpp"
 #include "src/devices/configurable.hpp"
-#include "src/devices/properties/baseproperty.hpp"
-#include "src/devices/properties/doubleproperty.hpp"
 
 using std::dynamic_pointer_cast;
 
@@ -35,7 +36,7 @@ namespace ui {
 namespace datatypes {
 
 DoubleSlider::DoubleSlider(
-		shared_ptr<sv::devices::properties::BaseProperty> property,
+		shared_ptr<sv::data::properties::BaseProperty> property,
 		const bool auto_commit, const bool auto_update,
 		QWidget *parent) :
 	QwtSlider(parent),
@@ -43,10 +44,10 @@ DoubleSlider::DoubleSlider(
 {
 	// Check property
 	if (property_ != nullptr &&
-			property_->data_type() != devices::DataType::Double) {
+			property_->data_type() != data::DataType::Double) {
 
 		QString msg = QString("DoubleSlider with property of type ").append(
-			devices::deviceutil::format_data_type(property_->data_type()));
+			data::datautil::format_data_type(property_->data_type()));
 		throw std::runtime_error(msg.toStdString());
 	}
 
@@ -61,8 +62,8 @@ void DoubleSlider::setup_ui()
 	this->setTrough(true);
 	this->setGroove(false);
 	if (property_ != nullptr && property_->is_listable()) {
-		shared_ptr<devices::properties::DoubleProperty> double_prop =
-			dynamic_pointer_cast<devices::properties::DoubleProperty>(property_);
+		shared_ptr<data::properties::DoubleProperty> double_prop =
+			dynamic_pointer_cast<data::properties::DoubleProperty>(property_);
 
 		this->setLowerBound(double_prop->min());
 		this->setUpperBound(double_prop->max());

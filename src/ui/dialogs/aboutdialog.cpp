@@ -37,11 +37,11 @@
 #include "config.h"
 #include "src/util.hpp"
 #include "src/channels/basechannel.hpp"
+#include "src/data/properties/baseproperty.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/devices/configurable.hpp"
 #include "src/devices/deviceutil.hpp"
 #include "src/devices/hardwaredevice.hpp"
-#include "src/devices/properties/baseproperty.hpp"
 
 using std::dynamic_pointer_cast;
 

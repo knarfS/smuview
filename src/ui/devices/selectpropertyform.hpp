@@ -32,12 +32,14 @@ namespace sv {
 
 class Session;
 
-namespace devices {
-class BaseDevice;
-class Configurable;
+namespace data {
 namespace properties {
 class BaseProperty;
 }
+}
+namespace devices {
+class BaseDevice;
+class Configurable;
 }
 
 namespace ui {
@@ -59,7 +61,7 @@ public:
 	void select_config_key(sv::devices::ConfigKey);
 	shared_ptr<sv::devices::BaseDevice> selected_device() const;
 	shared_ptr<sv::devices::Configurable> selected_configurable() const;
-	shared_ptr<sv::devices::properties::BaseProperty> selected_property() const;
+	shared_ptr<sv::data::properties::BaseProperty> selected_property() const;
 	sv::devices::ConfigKey selected_config_key() const;
 
 

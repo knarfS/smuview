@@ -40,10 +40,10 @@
 #include "src/session.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/channels/hardwarechannel.hpp"
+#include "src/data/properties/uint64property.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/devices/configurable.hpp"
 #include "src/devices/deviceutil.hpp"
-#include "src/devices/properties/uint64property.hpp"
 
 using std::bad_alloc;
 using std::dynamic_pointer_cast;
@@ -129,7 +129,7 @@ void HardwareDevice::init()
 
 	// Sample rate for interleaved samples
 	if (d_c->has_get_config(ConfigKey::Samplerate)) {
-		samplerate_prop_ = static_pointer_cast<properties::UInt64Property>(
+		samplerate_prop_ = static_pointer_cast<data::properties::UInt64Property>(
 			d_c->get_property(ConfigKey::Samplerate));
 	}
 }

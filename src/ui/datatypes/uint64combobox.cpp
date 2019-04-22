@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,11 +21,11 @@
 
 #include <QDebug>
 
-#include "int32spinbox.hpp"
+#include "uint64combobox.hpp"
 #include "src/util.hpp"
 #include "src/data/datautil.hpp"
 #include "src/data/properties/baseproperty.hpp"
-#include "src/data/properties/int32property.hpp"
+#include "src/data/properties/uint64property.hpp"
 #include "src/devices/configurable.hpp"
 
 using std::dynamic_pointer_cast;
@@ -34,18 +34,18 @@ namespace sv {
 namespace ui {
 namespace datatypes {
 
-Int32SpinBox::Int32SpinBox(
+UInt64ComboBox::UInt64ComboBox(
 		shared_ptr<sv::data::properties::BaseProperty> property,
 		const bool auto_commit, const bool auto_update,
 		QWidget *parent) :
-	QSpinBox(parent),
+	QComboBox(parent),
 	BaseWidget(property, auto_commit, auto_update)
 {
 	// Check property
 	if (property_ != nullptr &&
-			property_->data_type() != data::DataType::Int32) {
+			property_->data_type() != data::DataType::UInt64) {
 
-		QString msg = QString("Int32SpinBox with property of type ").append(
+		QString msg = QString("UInt64ComboBox with property of type ").append(
 			data::datautil::format_data_type(property_->data_type()));
 		throw std::runtime_error(msg.toStdString());
 	}
@@ -54,30 +54,29 @@ Int32SpinBox::Int32SpinBox(
 	connect_signals();
 }
 
-void Int32SpinBox::setup_ui()
+void UInt64ComboBox::setup_ui()
 {
-	this->setAlignment(Qt::AlignRight);
+	//this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
 	if (property_ != nullptr && property_->is_listable()) {
-		shared_ptr<data::properties::Int32Property> int32_prop =
-			dynamic_pointer_cast<data::properties::Int32Property>(property_);
+		shared_ptr<data::properties::UInt64Property> uint64_prop =
+			dynamic_pointer_cast<data::properties::UInt64Property>(property_);
 
-		this->setRange(int32_prop->min(), int32_prop->max());
-		this->setSingleStep(int32_prop->step());
+		for (const auto &uint64 : uint64_prop->list_values()) {
+			this->addItem(
+				uint64_prop->to_string(uint64),
+				QVariant::fromValue(uint64));
+		}
 	}
-	if (property_ != nullptr && property_->unit() != data::Unit::Unknown &&
-			property_->unit() != data::Unit::Unitless) {
-		this->setSuffix(
-			QString(" %1").arg(data::datautil::format_unit(property_->unit())));
+	else if (property_ != nullptr && property_->is_getable()) {
+		this->addItem(property_->to_string(), property_->value());
 	}
 	if (property_ == nullptr || !property_->is_setable())
 		this->setDisabled(true);
 	if (property_ != nullptr && property_->is_getable())
 		on_value_changed(property_->value());
-	else
-		on_value_changed(QVariant(0));
 }
 
-void Int32SpinBox::connect_signals()
+void UInt64ComboBox::connect_signals()
 {
 	// Widget -> Property
 	connect_widget_2_prop_signals();
@@ -89,39 +88,44 @@ void Int32SpinBox::connect_signals()
 	}
 }
 
-void Int32SpinBox::connect_widget_2_prop_signals()
+void UInt64ComboBox::connect_widget_2_prop_signals()
 {
 	if (auto_commit_ && property_ != nullptr && property_->is_setable()) {
-		connect(this, SIGNAL(editingFinished()),
-			this, SLOT(value_changed()));
+		connect(this, SIGNAL(currentIndexChanged(int)),
+			this, SLOT(value_changed(int)));
 	}
 }
 
-void Int32SpinBox::disconnect_widget_2_prop_signals()
+void UInt64ComboBox::disconnect_widget_2_prop_signals()
 {
 	if (auto_commit_ && property_ != nullptr && property_->is_setable()) {
-		disconnect(this, SIGNAL(editingFinished()),
-			this, SLOT(value_changed()));
+		disconnect(this, SIGNAL(currentIndexChanged(int)),
+			this, SLOT(value_changed(int)));
 	}
 }
 
-QVariant Int32SpinBox::variant_value() const
+QVariant UInt64ComboBox::variant_value() const
 {
-	return QVariant(this->value());
+	return this->currentData();
 }
 
-void Int32SpinBox::value_changed()
+void UInt64ComboBox::value_changed(int index)
 {
-	if (property_ != nullptr)
-		property_->change_value(QVariant(this->value()));
+	(void)index;
+
+	if (property_ != nullptr) {
+		property_->change_value(this->currentData());
+	}
 }
 
-void Int32SpinBox::on_value_changed(const QVariant value)
+void UInt64ComboBox::on_value_changed(const QVariant value)
 {
 	// Disconnect Widget -> Property signal to prevent echoing
 	disconnect_widget_2_prop_signals();
 
-	this->setValue(value.toInt());
+	shared_ptr<data::properties::UInt64Property> uint64_prop =
+		dynamic_pointer_cast<data::properties::UInt64Property>(property_);
+	this->setCurrentText(uint64_prop->to_string(value));;
 
 	connect_widget_2_prop_signals();
 }

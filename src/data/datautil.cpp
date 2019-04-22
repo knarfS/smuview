@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,6 +45,12 @@ unit_name_map_t get_unit_name_map()
 	return unit_name_map;
 }
 
+data_type_name_map_t get_data_type_name_map()
+{
+	return data_type_name_map;
+}
+
+
 Quantity get_quantity(const sigrok::Quantity *sr_quantity)
 {
 	if (sr_quantity_quantity_map.count(sr_quantity) > 0)
@@ -64,6 +70,7 @@ uint32_t get_sr_quantity_id(Quantity quantity)
 		return quantity_sr_quantity_map[quantity]->id();
 	return 0;
 }
+
 
 QuantityFlag get_quantity_flag(const sigrok::QuantityFlag *sr_quantity_flag)
 {
@@ -120,12 +127,47 @@ uint64_t get_sr_quantity_flags_id(set<QuantityFlag> quantity_flags)
 	return sr_qfs_id;
 }
 
+
 Unit get_unit(const sigrok::Unit *sr_unit)
 {
 	if (sr_unit_unit_map.count(sr_unit) > 0)
 		return sr_unit_unit_map[sr_unit];
 	return Unit::Unknown;
 }
+
+
+DataType get_data_type(const sigrok::DataType *sr_data_type)
+{
+	if (sr_data_type_data_type_map.count(sr_data_type) > 0)
+		return sr_data_type_data_type_map[sr_data_type];
+	return DataType::Unknown;
+}
+
+DataType get_data_type(uint32_t sr_data_type)
+{
+	const sigrok::DataType *sr_dt = sigrok::DataType::get(sr_data_type);
+	return get_data_type(sr_dt);
+}
+
+const sigrok::DataType *get_sr_data_type(DataType data_type)
+{
+	return data_type_sr_data_type_map[data_type];
+}
+
+uint32_t get_sr_data_type_id(DataType data_type)
+{
+	if (data_type_sr_data_type_map.count(data_type) > 0)
+		return data_type_sr_data_type_map[data_type]->id();
+	return 0;
+}
+
+bool is_valid_sr_data_type(DataType data_type)
+{
+	if (data_type_sr_data_type_map.count(data_type) > 0)
+		return true;
+	return false;
+}
+
 
 QString format_quantity(Quantity quantity)
 {
@@ -231,6 +273,14 @@ QString format_unit(Unit unit, set<QuantityFlag> quantity_flags)
 	}
 	return unit_str;
 }
+
+QString format_data_type(DataType data_type)
+{
+	if (data_type_name_map.count(data_type) > 0)
+		return data_type_name_map[data_type];
+	return data_type_name_map[DataType::Unknown];
+}
+
 
 set<data::Unit> get_units_from_quantity(data::Quantity quantity)
 {

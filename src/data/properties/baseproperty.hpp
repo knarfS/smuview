@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DEVICES_PROPERTIES_BASEPROPERTY_HPP
-#define DEVICES_PROPERTIES_BASEPROPERTY_HPP
+#ifndef DATA_PROPERTIES_BASEPROPERTY_HPP
+#define DATA_PROPERTIES_BASEPROPERTY_HPP
 
 #include <memory>
 #include <string>
@@ -29,16 +29,19 @@
 #include <QString>
 #include <QVariant>
 
+#include "src/data/datautil.hpp"
 #include "src/devices/deviceutil.hpp"
 
 using std::shared_ptr;
 using std::string;
 
 namespace sv {
+
 namespace devices {
-
 class Configurable;
+}
 
+namespace data {
 namespace properties {
 
 class BaseProperty : public QObject
@@ -51,7 +54,8 @@ public:
 
 	shared_ptr<devices::Configurable> configurable() const;
 	devices::ConfigKey config_key() const;
-	devices::DataType data_type() const;
+	data::DataType data_type() const;
+	//data::Quantity quantity() const;
 	data::Unit unit() const;
 	bool is_getable() const;
 	bool is_setable() const;
@@ -59,12 +63,14 @@ public:
 	string name() const;
 	QString display_name() const;
 	virtual QVariant value() const = 0;
+	virtual QString to_string(const QVariant qvar) const = 0;
 	virtual QString to_string() const = 0;
 
 protected:
 	shared_ptr<devices::Configurable> configurable_;
 	devices::ConfigKey config_key_;
-	devices::DataType data_type_;
+	data::DataType data_type_;
+	//data::Quantity quantity_;
 	data::Unit unit_;
 	bool is_getable_;
 	bool is_setable_;
@@ -86,7 +92,7 @@ Q_SIGNALS:
 };
 
 } // namespace properties
-} // namespace devices
+} // namespace data
 } // namespece sv
 
-#endif // DEVICES_PROPERTIES_BASEPROPERTY_HPP
+#endif // DATA_PROPERTIES_BASEPROPERTY_HPP

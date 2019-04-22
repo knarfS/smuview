@@ -240,28 +240,11 @@ enum class ConfigKey
 	Unknown,
 };
 
-enum class DataType
-{
-	UInt64,
-	String,
-	Bool,
-	Double,
-	RationalPeriod,
-	RationalVolt,
-	KeyValue,
-	Uint64Range,
-	DoubleRange,
-	Int32,
-	MQ,
-	Unknown,
-};
-
 namespace deviceutil {
 
 typedef map<DeviceType, QString> device_type_name_map_t;
 typedef map<ConnectionKey, QString> connection_key_name_map_t;
 typedef map<ConfigKey, QString> config_key_name_map_t;
-typedef map<DataType, QString> data_type_name_map_t;
 
 namespace {
 
@@ -367,21 +350,6 @@ config_key_name_map_t config_key_name_map = {
 	{ ConfigKey::DeviceMode, QString("Device Mode") },
 	{ ConfigKey::TestMode, QString("Test Mode") },
 	{ ConfigKey::Unknown, QString("Unknown") },
-};
-
-data_type_name_map_t data_type_name_map = {
-	{ DataType::UInt64, QString("UInt64") },
-	{ DataType::String, QString("String") },
-	{ DataType::Bool, QString("Boolean") },
-	{ DataType::Double, QString("Double") },
-	{ DataType::RationalPeriod, QString("Rational Period") },
-	{ DataType::RationalVolt, QString("Rational Volt") },
-	{ DataType::KeyValue, QString("Key Value") },
-	{ DataType::Uint64Range, QString("Uint64 Range") },
-	{ DataType::DoubleRange, QString("Double Range") },
-	{ DataType::Int32, QString("Int32") },
-	{ DataType::MQ, QString("Measured Quantity") },
-	{ DataType::Unknown, QString("Unknown") },
 };
 
 map<const sigrok::ConfigKey *, DeviceType> sr_config_key_device_type_map = {
@@ -578,35 +546,10 @@ map<ConfigKey, const sigrok::ConfigKey *> config_key_sr_config_key_map = {
 	{ ConfigKey::TestMode, sigrok::ConfigKey::TEST_MODE },
 };
 
-map<const sigrok::DataType *, DataType> sr_data_type_data_type_map = {
-	{ sigrok::DataType::UINT64, DataType::UInt64 },
-	{ sigrok::DataType::STRING, DataType::String },
-	{ sigrok::DataType::BOOL, DataType::Bool },
-	{ sigrok::DataType::FLOAT, DataType::Double },
-	{ sigrok::DataType::RATIONAL_PERIOD, DataType::RationalPeriod },
-	{ sigrok::DataType::RATIONAL_VOLT, DataType::RationalVolt },
-	{ sigrok::DataType::KEYVALUE, DataType::KeyValue },
-	{ sigrok::DataType::UINT64_RANGE, DataType::Uint64Range },
-	{ sigrok::DataType::DOUBLE_RANGE, DataType::DoubleRange },
-	{ sigrok::DataType::INT32, DataType::Int32 },
-	{ sigrok::DataType::MQ, DataType::MQ },
-};
-
-map<DataType, const sigrok::DataType *> data_type_sr_data_type_map = {
-	{ DataType::UInt64, sigrok::DataType::UINT64 },
-	{ DataType::String, sigrok::DataType::STRING },
-	{ DataType::Bool, sigrok::DataType::BOOL },
-	{ DataType::Double, sigrok::DataType::FLOAT },
-	{ DataType::RationalPeriod, sigrok::DataType::RATIONAL_PERIOD },
-	{ DataType::RationalVolt, sigrok::DataType::RATIONAL_VOLT },
-	{ DataType::KeyValue, sigrok::DataType::KEYVALUE },
-	{ DataType::Uint64Range, sigrok::DataType::UINT64_RANGE },
-	{ DataType::DoubleRange, sigrok::DataType::DOUBLE_RANGE },
-	{ DataType::Int32, sigrok::DataType::INT32 },
-	{ DataType::MQ, sigrok::DataType::MQ },
-};
-
-// TODO: Find a better way...
+/**
+ * TODO: Find a better way get the Unit/Q/QF from the ConfigKey.
+ * Implement in libsr: Add analog.meaning, etc. to the config_key structure.
+ */
 map<ConfigKey, data::Unit> config_key_unit_map = {
 	{ ConfigKey::Samplerate, data::Unit::Hertz },
 	{ ConfigKey::CaptureRatio, data::Unit::Unitless },
@@ -679,36 +622,29 @@ map<ConfigKey, data::Unit> config_key_unit_map = {
 } // namespace
 
 /**
- * Returns all known device type
+ * Return all known device type
  *
  * @return The device type name map
  */
 device_type_name_map_t get_device_type_name_map();
 
 /**
- * Returns all known connection keys
+ * Return all known connection keys
  *
  * @return The connection key name map
  */
 connection_key_name_map_t get_connection_key_name_map();
 
 /**
- * Returns all known config keys
+ * Return all known config keys
  *
  * @return The config key name map
  */
 config_key_name_map_t get_config_key_name_map();
 
-/**
- * Returns all known data types
- *
- * @return The data type name map
- */
-data_type_name_map_t get_data_type_name_map();
-
 
 /**
- * Checks if the driver is supported by SmuView.
+ * Check if the driver is supported by SmuView.
  *
  * @param sr_driver The sigrok Driver to check.
  *
@@ -717,7 +653,7 @@ data_type_name_map_t get_data_type_name_map();
 bool is_supported_driver(shared_ptr<sigrok::Driver> sr_driver);
 
 /**
- * Checks if the driver is a power supply or a electronic load.
+ * Check if the driver is a power supply or a electronic load.
  *
  * @param sr_driver The sigrok Driver to check.
  *
@@ -726,7 +662,7 @@ bool is_supported_driver(shared_ptr<sigrok::Driver> sr_driver);
 bool is_source_sink_driver(shared_ptr<sigrok::Driver> sr_driver);
 
 /**
- * Checks if the driver is supported a measurement device (dmm, lcr meter, ...).
+ * Check if the driver is a measurement device (dmm, lcr meter, ...).
  *
  * @param sr_driver The sigrok Driver to check.
  *
@@ -735,7 +671,7 @@ bool is_source_sink_driver(shared_ptr<sigrok::Driver> sr_driver);
  bool is_measurement_driver(shared_ptr<sigrok::Driver> sr_driver);
 
 /**
- * Returns the corresponding DeviceType for a sigrok ConfigKey
+ * Return the corresponding DeviceType for a sigrok ConfigKey
  *
  * @param sr_config_key The sigrok ConfigKey
  *
@@ -744,7 +680,7 @@ bool is_source_sink_driver(shared_ptr<sigrok::Driver> sr_driver);
 DeviceType get_device_type(const sigrok::ConfigKey *sr_config_key);
 
 /**
- * Returns the corresponding DeviceType for a sigrok ConfigKey (unit32_t)
+ * Return the corresponding DeviceType for a sigrok ConfigKey (unit32_t)
  *
  * @param sr_config_key The sigrok ConfigKey as uint32_t
  *
@@ -753,7 +689,7 @@ DeviceType get_device_type(const sigrok::ConfigKey *sr_config_key);
 DeviceType get_device_type(uint32_t sr_config_key);
 
 /**
- * Returns the corresponding sigrok ConfigKey for a DeviceType
+ * Return the corresponding sigrok ConfigKey for a DeviceType
  *
  * @param device_type The DeviceType.
  *
@@ -762,7 +698,7 @@ DeviceType get_device_type(uint32_t sr_config_key);
 const sigrok::ConfigKey *get_sr_config_key(DeviceType device_type);
 
 /**
- * Returns the corresponding sigrok ConfigKey ID for a DeviceType
+ * Return the corresponding sigrok ConfigKey ID for a DeviceType
  *
  * @param device_type The DeviceType
  *
@@ -771,7 +707,7 @@ const sigrok::ConfigKey *get_sr_config_key(DeviceType device_type);
 uint32_t get_sr_config_key_id(DeviceType device_type);
 
 /**
- * Checks if the DeviceType is a known sigrok DeviceType / ConfigKey
+ * Check if the DeviceType is a known sigrok DeviceType / ConfigKey
  *
  * @param device_type The DeviceType
  *
@@ -781,7 +717,7 @@ bool is_valid_sr_config_key(DeviceType device_type);
 
 
 /**
- * Returns the corresponding ConnectionKey for a sigrok ConfigKey
+ * Return the corresponding ConnectionKey for a sigrok ConfigKey
  *
  * @param sr_config_key The sigrok ConfigKey
  *
@@ -790,7 +726,7 @@ bool is_valid_sr_config_key(DeviceType device_type);
 ConnectionKey get_connection_key(const sigrok::ConfigKey *sr_config_key);
 
 /**
- * Returns the corresponding ConnectionKey for a sigrok ConfigKey (unit32_t)
+ * Return the corresponding ConnectionKey for a sigrok ConfigKey (unit32_t)
  *
  * @param sr_config_key The sigrok ConfigKey as uint32_t
  *
@@ -799,7 +735,7 @@ ConnectionKey get_connection_key(const sigrok::ConfigKey *sr_config_key);
 ConnectionKey get_connection_key(uint32_t sr_config_key);
 
 /**
- * Returns the corresponding sigrok ConfigKey for a ConnectionKey
+ * Return the corresponding sigrok ConfigKey for a ConnectionKey
  *
  * @param connection_key The ConnectionKey.
  *
@@ -808,7 +744,7 @@ ConnectionKey get_connection_key(uint32_t sr_config_key);
 const sigrok::ConfigKey *get_sr_config_key(ConnectionKey connection_key);
 
 /**
- * Returns the corresponding sigrok ConfigKey ID for a ConnectionKey
+ * Return the corresponding sigrok ConfigKey ID for a ConnectionKey
  *
  * @param connection_key The ConnectionKey
  *
@@ -817,7 +753,7 @@ const sigrok::ConfigKey *get_sr_config_key(ConnectionKey connection_key);
 uint32_t get_sr_config_key_id(ConnectionKey connection_key);
 
 /**
- * Checks if the ConnectionKey is a known sigrok ConnectionKey / ConfigKey
+ * Check if the ConnectionKey is a known sigrok ConnectionKey / ConfigKey
  *
  * @param connection_key The ConnectionKey
  *
@@ -827,7 +763,7 @@ bool is_valid_sr_config_key(ConnectionKey connection_key);
 
 
 /**
- * Returns the corresponding ConfigKey for a sigrok ConfigKey
+ * Return the corresponding ConfigKey for a sigrok ConfigKey
  *
  * @param sr_config_key The sigrok ConfigKey
  *
@@ -836,7 +772,7 @@ bool is_valid_sr_config_key(ConnectionKey connection_key);
 ConfigKey get_config_key(const sigrok::ConfigKey *sr_config_key);
 
 /**
- * Returns the corresponding ConfigKey for a sigrok ConfigKey (unit32_t)
+ * Return the corresponding ConfigKey for a sigrok ConfigKey (unit32_t)
  *
  * @param sr_config_key The sigrok ConfigKey as uint32_t
  *
@@ -845,7 +781,7 @@ ConfigKey get_config_key(const sigrok::ConfigKey *sr_config_key);
 ConfigKey get_config_key(uint32_t sr_config_key);
 
 /**
- * Returns the corresponding sigrok ConfigKey for a ConfigKey
+ * Return the corresponding sigrok ConfigKey for a ConfigKey
  *
  * @param config_key The ConfigKey.
  *
@@ -854,7 +790,7 @@ ConfigKey get_config_key(uint32_t sr_config_key);
 const sigrok::ConfigKey *get_sr_config_key(ConfigKey config_key);
 
 /**
- * Returns the corresponding sigrok ConfigKey ID for a ConfigKey
+ * Return the corresponding sigrok ConfigKey ID for a ConfigKey
  *
  * @param config_key The ConfigKey
  *
@@ -863,7 +799,7 @@ const sigrok::ConfigKey *get_sr_config_key(ConfigKey config_key);
 uint32_t get_sr_config_key_id(ConfigKey config_key);
 
 /**
- * Checks if the ConfigKey is a known sigrok ConfigKey
+ * Check if the ConfigKey is a known sigrok ConfigKey
  *
  * @param config_key The ConfigKey
  *
@@ -873,53 +809,7 @@ bool is_valid_sr_config_key(ConfigKey config_key);
 
 
 /**
- * Returns the corresponding DataType for a sigrok DataType
- *
- * @param sr_data_type The sigrok DataType
- *
- * @return The DataType.
- */
-DataType get_data_type(const sigrok::DataType *sr_data_type);
-
-/**
- * Returns the corresponding DataType for a sigrok DataType (unit32_t)
- *
- * @param sr_data_type The sigrok DataType as uint32_t
- *
- * @return The DataType.
- */
-DataType get_data_type(uint32_t sr_data_type);
-
-/**
- * Returns the corresponding sigrok DataType for a DataType
- *
- * @param data_type The DataType.
- *
- * @return The sigrok DataType.
- */
-const sigrok::DataType *get_sr_data_type(DataType data_type);
-
-/**
- * Returns the corresponding sigrok DataType ID for a DataType
- *
- * @param data_type The DataType
- *
- * @return The sigrok DataType ID as uint32_t.
- */
-uint32_t get_sr_data_type_id(DataType data_type);
-
-/**
- * Checks if the DataType is a known sigrok DataType
- *
- * @param data_type The DataType
- *
- * @return true if it is a known sigrok DataType
- */
-bool is_valid_sr_data_type(DataType data_type);
-
-
-/**
- * Formats a DeviceType to a string
+ * Format a DeviceType to a string
  *
  * @param device_type The DeviceType to format.
  *
@@ -928,7 +818,7 @@ bool is_valid_sr_data_type(DataType data_type);
 QString format_device_type(DeviceType device_type);
 
 /**
- * Formats a ConnectionKey to a string
+ * Format a ConnectionKey to a string
  *
  * @param connection_key The ConnectionKey to format.
  *
@@ -937,7 +827,7 @@ QString format_device_type(DeviceType device_type);
 QString format_connection_key(ConnectionKey connection_key);
 
 /**
- * Formats a ConfigKey to a string
+ * Format a ConfigKey to a string
  *
  * @param config_key The ConfigKey to format.
  *
@@ -945,27 +835,18 @@ QString format_connection_key(ConnectionKey connection_key);
  */
 QString format_config_key(ConfigKey config_key);
 
-/**
- * Formats a DataType to a string
- *
- * @param data_type The DataType to format.
- *
- * @return The formatted DataType.
- */
-QString format_data_type(DataType data_type);
-
 
 /**
- * Gets the DataType for a ConfigKey
+ * Get the DataType for a ConfigKey
  *
  * @param config_key The ConfigKey.
  *
  * @return The DataType for the ConfigKey.
  */
-DataType get_data_type_for_config_key(ConfigKey config_key);
+data::DataType get_data_type_for_config_key(ConfigKey config_key);
 
 /**
- * Gets the Unit for a ConfigKey
+ * Get the Unit for a ConfigKey
  *
  * @param config_key The ConfigKey.
  *

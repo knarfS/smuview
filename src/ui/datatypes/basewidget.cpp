@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,14 +18,14 @@
  */
 
 #include "basewidget.hpp"
-#include "src/devices/properties/baseproperty.hpp"
+#include "src/data/properties/baseproperty.hpp"
 
 namespace sv {
 namespace ui {
 namespace datatypes {
 
 BaseWidget::BaseWidget(
-		shared_ptr<sv::devices::properties::BaseProperty> property,
+		shared_ptr<sv::data::properties::BaseProperty> property,
 		const bool auto_commit, const bool auto_update) :
 	auto_commit_(auto_commit),
 	auto_update_(auto_update),

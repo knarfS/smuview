@@ -23,9 +23,10 @@
 
 #include "doublespinbox.hpp"
 #include "src/util.hpp"
+#include "src/data/datautil.hpp"
+#include "src/data/properties/baseproperty.hpp"
+#include "src/data/properties/doubleproperty.hpp"
 #include "src/devices/configurable.hpp"
-#include "src/devices/properties/baseproperty.hpp"
-#include "src/devices/properties/doubleproperty.hpp"
 
 using std::dynamic_pointer_cast;
 
@@ -34,7 +35,7 @@ namespace ui {
 namespace datatypes {
 
 DoubleSpinBox::DoubleSpinBox(
-		shared_ptr<sv::devices::properties::BaseProperty> property,
+		shared_ptr<sv::data::properties::BaseProperty> property,
 		const bool auto_commit, const bool auto_update,
 		QWidget *parent) :
 	QDoubleSpinBox(parent),
@@ -42,10 +43,10 @@ DoubleSpinBox::DoubleSpinBox(
 {
 	// Check property
 	if (property_ != nullptr &&
-			property_->data_type() != devices::DataType::Double) {
+			property_->data_type() != data::DataType::Double) {
 
 		QString msg = QString("DoubleSpinBox with property of type ").append(
-			devices::deviceutil::format_data_type(property_->data_type()));
+			data::datautil::format_data_type(property_->data_type()));
 		throw std::runtime_error(msg.toStdString());
 	}
 
@@ -57,8 +58,8 @@ void DoubleSpinBox::setup_ui()
 {
 	this->setAlignment(Qt::AlignRight);
 	if (property_ != nullptr && property_->is_listable()) {
-		shared_ptr<devices::properties::DoubleProperty> double_prop =
-			dynamic_pointer_cast<devices::properties::DoubleProperty>(property_);
+		shared_ptr<data::properties::DoubleProperty> double_prop =
+			dynamic_pointer_cast<data::properties::DoubleProperty>(property_);
 
 		this->setRange(double_prop->min(), double_prop->max());
 		this->setSingleStep(double_prop->step());

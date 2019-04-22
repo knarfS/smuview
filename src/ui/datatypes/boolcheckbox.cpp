@@ -22,15 +22,16 @@
 #include <QDebug>
 
 #include "boolcheckbox.hpp"
+#include "src/data/datautil.hpp"
+#include "src/data/properties/baseproperty.hpp"
 #include "src/devices/configurable.hpp"
-#include "src/devices/properties/baseproperty.hpp"
 
 namespace sv {
 namespace ui {
 namespace datatypes {
 
 BoolCheckBox::BoolCheckBox(
-		shared_ptr<sv::devices::properties::BaseProperty> property,
+		shared_ptr<sv::data::properties::BaseProperty> property,
 		const bool auto_commit, const bool auto_update,
 		QWidget *parent) :
 	QCheckBox(parent),
@@ -38,10 +39,10 @@ BoolCheckBox::BoolCheckBox(
 {
 	// Check property
 	if (property_ != nullptr &&
-			property_->data_type() != devices::DataType::Bool) {
+			property_->data_type() != data::DataType::Bool) {
 
 		QString msg = QString("BoolCheckBox with property of type ").append(
-			devices::deviceutil::format_data_type(property_->data_type()));
+			data::datautil::format_data_type(property_->data_type()));
 		throw std::runtime_error(msg.toStdString());
 	}
 

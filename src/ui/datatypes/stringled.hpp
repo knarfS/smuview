@@ -33,7 +33,7 @@ using std::shared_ptr;
 
 namespace sv {
 
-namespace devices {
+namespace data {
 namespace properties {
 class BaseProperty;
 }
@@ -47,7 +47,7 @@ class StringLed : public QWidget, public BaseWidget
 	Q_OBJECT
 
 public:
-	StringLed(shared_ptr<sv::devices::properties::BaseProperty> property,
+	StringLed(shared_ptr<sv::data::properties::BaseProperty> property,
 		const bool auto_update,
 		const QIcon on_icon, const QIcon off_icon, const QIcon dis_icon,
 		const QString on_value, const QString off_value,

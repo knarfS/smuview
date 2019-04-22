@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
 #include <QVBoxLayout>
 
 #include "thresholdcontrol.hpp"
-#include "src/devices/properties/baseproperty.hpp"
+#include "src/data/properties/baseproperty.hpp"
 #include "src/ui/datatypes/boolbutton.hpp"
 #include "src/ui/datatypes/doublespinbox.hpp"
 
@@ -30,8 +30,8 @@ namespace ui {
 namespace datatypes {
 
 ThresholdControl::ThresholdControl(
-		shared_ptr<sv::devices::properties::BaseProperty> property,
-		shared_ptr<sv::devices::properties::BaseProperty> bool_prop,
+		shared_ptr<sv::data::properties::BaseProperty> property,
+		shared_ptr<sv::data::properties::BaseProperty> bool_prop,
 		const bool auto_commit, const bool auto_update,
 		QString title, QWidget *parent) :
 	QGroupBox(parent),

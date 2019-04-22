@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,9 +28,9 @@
 #include "measuredquantitycombobox.hpp"
 #include "src/util.hpp"
 #include "src/data/datautil.hpp"
+#include "src/data/properties/baseproperty.hpp"
+#include "src/data/properties/measuredquantityproperty.hpp"
 #include "src/devices/configurable.hpp"
-#include "src/devices/properties/baseproperty.hpp"
-#include "src/devices/properties/measuredquantityproperty.hpp"
 
 using std::dynamic_pointer_cast;
 using std::set;
@@ -42,7 +42,7 @@ namespace ui {
 namespace datatypes {
 
 MeasuredQuantityComboBox::MeasuredQuantityComboBox(
-		shared_ptr<sv::devices::properties::BaseProperty> property,
+		shared_ptr<sv::data::properties::BaseProperty> property,
 		const bool auto_commit, const bool auto_update,
 		QWidget *parent) :
 	QComboBox(parent),
@@ -50,11 +50,11 @@ MeasuredQuantityComboBox::MeasuredQuantityComboBox(
 {
 	// Check property
 	if (property_ != nullptr &&
-			property_->data_type() != devices::DataType::MQ) {
+			property_->data_type() != data::DataType::MQ) {
 
 		QString msg =
 			QString("MeasuredQuantityComboBox with property of type ").append(
-				devices::deviceutil::format_data_type(property_->data_type()));
+				data::datautil::format_data_type(property_->data_type()));
 		throw std::runtime_error(msg.toStdString());
 	}
 
@@ -66,22 +66,18 @@ void MeasuredQuantityComboBox::setup_ui()
 {
 	//this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
 	if (property_ != nullptr && property_->is_listable()) {
-		shared_ptr<devices::properties::MeasuredQuantityProperty> mq_prop =
-			dynamic_pointer_cast<devices::properties::MeasuredQuantityProperty>(
+		shared_ptr<data::properties::MeasuredQuantityProperty> mq_prop =
+			dynamic_pointer_cast<data::properties::MeasuredQuantityProperty>(
 				property_);
 
-		auto mq_list = mq_prop->list_values();
-		for (const auto &mq : mq_list) {
+		for (const auto &mq : mq_prop->list_values()) {
 			this->addItem(
 				data::datautil::format_measured_quantity(mq),
 				QVariant::fromValue(mq));
 		}
 	}
 	else if (property_ != nullptr && property_->is_getable()) {
-		auto mq = property_->value().value<data::measured_quantity_t>();
-		this->addItem(
-			data::datautil::format_measured_quantity(mq),
-			QVariant::fromValue(mq));
+		this->addItem(property_->to_string(), property_->value());
 	}
 	if (property_ == nullptr || !property_->is_setable())
 		this->setDisabled(true);

@@ -188,6 +188,16 @@ set(smuview_SOURCES
   src/data/analogtimesignal.cpp
   src/data/basesignal.cpp
   src/data/datautil.cpp
+  src/data/properties/baseproperty.cpp
+  src/data/properties/boolproperty.cpp
+  src/data/properties/doubleproperty.cpp
+  src/data/properties/doublerangeproperty.cpp
+  src/data/properties/int32property.cpp
+  src/data/properties/measuredquantityproperty.cpp
+  src/data/properties/rationalproperty.cpp
+  src/data/properties/stringproperty.cpp
+  src/data/properties/uint64property.cpp
+  src/data/properties/uint64rangeproperty.cpp
   src/devices/basedevice.cpp
   src/devices/configurable.cpp
   src/devices/deviceutil.cpp
@@ -195,13 +205,6 @@ set(smuview_SOURCES
   src/devices/measurementdevice.cpp
   src/devices/sourcesinkdevice.cpp
   src/devices/userdevice.cpp
-  src/devices/properties/baseproperty.cpp
-  src/devices/properties/boolproperty.cpp
-  src/devices/properties/doubleproperty.cpp
-  src/devices/properties/int32property.cpp
-  src/devices/properties/measuredquantityproperty.cpp
-  src/devices/properties/stringproperty.cpp
-  src/devices/properties/uint64property.cpp
 
   src/ui/data/quantitycombobox.cpp
   src/ui/data/quantityflagslist.cpp
@@ -214,14 +217,20 @@ set(smuview_SOURCES
   src/ui/datatypes/doublecontrol.cpp
   src/ui/datatypes/doubledisplay.cpp
   src/ui/datatypes/doubleknob.cpp
+  src/ui/datatypes/doublerangecombobox.cpp
   src/ui/datatypes/doubleslider.cpp
   src/ui/datatypes/doublesmallcontrol.cpp
   src/ui/datatypes/doublespinbox.cpp
   src/ui/datatypes/int32spinbox.cpp
   src/ui/datatypes/measuredquantitycombobox.cpp
+  src/ui/datatypes/rationalcombobox.cpp
   src/ui/datatypes/stringcombobox.cpp
+  src/ui/datatypes/stringlabel.cpp
   src/ui/datatypes/stringled.cpp
   src/ui/datatypes/thresholdcontrol.cpp
+  src/ui/datatypes/uint64combobox.cpp
+  src/ui/datatypes/uint64label.cpp
+  src/ui/datatypes/uint64rangecombobox.cpp
   src/ui/datatypes/uint64spinbox.cpp
   src/ui/devices/channelcombobox.cpp
   src/ui/devices/channelgroupcombobox.cpp

@@ -24,10 +24,10 @@
 
 #include "selectpropertyform.hpp"
 #include "src/session.hpp"
+#include "src/data/properties/baseproperty.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/devices/configurable.hpp"
 #include "src/devices/deviceutil.hpp"
-#include "src/devices/properties/baseproperty.hpp"
 #include "src/ui/devices/configkeycombobox.hpp"
 #include "src/ui/devices/configurablecombobox.hpp"
 #include "src/ui/devices/devicecombobox.hpp"
@@ -76,7 +76,7 @@ shared_ptr<sv::devices::Configurable>
 	return configurable_box_->selected_configurable();
 }
 
-shared_ptr<sv::devices::properties::BaseProperty>
+shared_ptr<sv::data::properties::BaseProperty>
 	SelectPropertyForm::selected_property() const
 {
 	return configurable_box_->selected_configurable()->get_property(

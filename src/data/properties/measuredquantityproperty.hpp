@@ -17,53 +17,52 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DEVICES_PROPERTIES_UINT64PROPERTY_HPP
-#define DEVICES_PROPERTIES_UINT64PROPERTY_HPP
+#ifndef DATA_PROPERTIES_MEASUREDQUANTITYPROPERTY_HPP
+#define DATA_PROPERTIES_MEASUREDQUANTITYPROPERTY_HPP
 
 #include <memory>
-
-#include <glib.h>
+#include <vector>
 
 #include <QObject>
 #include <QString>
 #include <QVariant>
 
-#include "src/devices/properties/baseproperty.hpp"
-#include "src/devices/deviceutil.hpp"
+#include "src/data/properties/baseproperty.hpp"
+#include "src/data/datautil.hpp"
+#include "src/devices/configurable.hpp"
 
 using std::shared_ptr;
+using std::vector;
 
 namespace sv {
+
 namespace devices {
-
 class Configurable;
+}
 
+namespace data {
 namespace properties {
 
-class UInt64Property : public BaseProperty
+class MeasuredQuantityProperty : public BaseProperty
 {
 	Q_OBJECT
 
 public:
-	UInt64Property(shared_ptr<devices::Configurable> configurable,
+	MeasuredQuantityProperty(shared_ptr<devices::Configurable> configurable,
 		devices::ConfigKey config_key);
 
 public:
 	QVariant value() const override;
-	uint64_t uint64_value() const;
+	data::measured_quantity_t measured_quantity_value() const;
+	vector<data::measured_quantity_t> list_values() const;
+	QString to_string(data::measured_quantity_t value) const;
+	QString to_string(const QVariant qvar) const override;
 	QString to_string() const override;
-	uint64_t min() const;
-	uint64_t max() const;
-	uint64_t step() const;
-	vector<uint64_t> values() const;
 
 private:
 	bool list_config();
 
-	uint64_t min_;
-	uint64_t max_;
-	uint64_t step_;
-	vector<uint64_t> values_;
+	vector<data::measured_quantity_t> measured_quantity_list_;
 
 public Q_SLOTS:
 	void change_value(const QVariant) override;
@@ -72,7 +71,7 @@ public Q_SLOTS:
 };
 
 } // namespace properties
-} // namespace devices
+} // namespace data
 } // namespece sv
 
-#endif // DEVICES_PROPERTIES_UINT64PROPERTY_HPP
+#endif // DATA_PROPERTIES_MEASUREDQUANTITYPROPERTY_HPP

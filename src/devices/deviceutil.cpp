@@ -23,6 +23,7 @@
 #include <set>
 
 #include "deviceutil.hpp"
+#include "src/data/datautil.hpp"
 
 using std::map;
 using std::set;
@@ -47,15 +48,11 @@ config_key_name_map_t get_config_key_name_map()
 	return config_key_name_map;
 }
 
-data_type_name_map_t get_data_type_name_map()
-{
-	return data_type_name_map;
-}
-
 
 bool is_supported_driver(shared_ptr<sigrok::Driver> sr_driver)
 {
-	// TODO: Demo device(s)
+	assert(sr_driver);
+
 	return is_source_sink_driver(sr_driver) ||
 		is_measurement_driver(sr_driver);
 }
@@ -84,7 +81,6 @@ bool is_measurement_driver(shared_ptr<sigrok::Driver> sr_driver)
 		| keys.count(sigrok::ConfigKey::POWERMETER)
 		| keys.count(sigrok::ConfigKey::DEMO_DEV);
 }
-
 
 DeviceType get_device_type(const sigrok::ConfigKey *sr_config_key)
 {
@@ -185,39 +181,6 @@ bool is_valid_sr_config_key(ConfigKey config_key)
 }
 
 
-DataType get_data_type(const sigrok::DataType *sr_data_type)
-{
-	if (sr_data_type_data_type_map.count(sr_data_type) > 0)
-		return sr_data_type_data_type_map[sr_data_type];
-	return DataType::Unknown;
-}
-
-DataType get_data_type(uint32_t sr_data_type)
-{
-	const sigrok::DataType *sr_dt = sigrok::DataType::get(sr_data_type);
-	return get_data_type(sr_dt);
-}
-
-const sigrok::DataType *get_sr_data_type(DataType data_type)
-{
-	return data_type_sr_data_type_map[data_type];
-}
-
-uint32_t get_sr_data_type_id(DataType data_type)
-{
-	if (data_type_sr_data_type_map.count(data_type) > 0)
-		return data_type_sr_data_type_map[data_type]->id();
-	return 0;
-}
-
-bool is_valid_sr_data_type(DataType data_type)
-{
-	if (data_type_sr_data_type_map.count(data_type) > 0)
-		return true;
-	return false;
-}
-
-
 QString format_device_type(DeviceType device_type)
 {
 	if (device_type_name_map.count(device_type) > 0)
@@ -239,21 +202,14 @@ QString format_config_key(ConfigKey config_key)
 	return config_key_name_map[ConfigKey::Unknown];
 }
 
-QString format_data_type(DataType data_type)
-{
-	if (data_type_name_map.count(data_type) > 0)
-		return data_type_name_map[data_type];
-	return data_type_name_map[DataType::Unknown];
-}
 
-
-DataType get_data_type_for_config_key(ConfigKey config_key)
+data::DataType get_data_type_for_config_key(ConfigKey config_key)
 {
 	const sigrok::ConfigKey *sr_ck = get_sr_config_key(config_key);
 	if (!sr_ck)
-		return DataType::Unknown;
+		return data::DataType::Unknown;
 
-	return get_data_type(sr_ck->data_type());
+	return data::datautil::get_data_type(sr_ck->data_type());
 }
 
 data::Unit get_unit_for_config_key(ConfigKey config_key)

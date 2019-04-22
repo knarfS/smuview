@@ -30,7 +30,7 @@ using std::shared_ptr;
 
 namespace sv {
 
-namespace devices {
+namespace data {
 namespace properties {
 class BaseProperty;
 }
@@ -45,7 +45,7 @@ class BoolCheckBox : public QCheckBox, public BaseWidget
 
 public:
 	BoolCheckBox(
-		shared_ptr<sv::devices::properties::BaseProperty> property,
+		shared_ptr<sv::data::properties::BaseProperty> property,
 		const bool auto_commit, const bool auto_update,
 		QWidget *parent = nullptr);
 

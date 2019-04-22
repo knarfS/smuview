@@ -28,10 +28,10 @@
 #include "democontrolview.hpp"
 #include "src/session.hpp"
 #include "src/data/datautil.hpp"
+#include "src/data/properties/baseproperty.hpp"
+#include "src/data/properties/measuredquantityproperty.hpp"
 #include "src/devices/configurable.hpp"
 #include "src/devices/deviceutil.hpp"
-#include "src/devices/properties/baseproperty.hpp"
-#include "src/devices/properties/measuredquantityproperty.hpp"
 #include "src/ui/data/quantitycombobox.hpp"
 #include "src/ui/data/quantityflagslist.hpp"
 #include "src/ui/datatypes/doublecontrol.hpp"
@@ -70,7 +70,7 @@ void DemoControlView::setup_ui()
 		// The demo dmm device has no listable measurement quantities /
 		// qunatity flags, so we use all...
 		auto mq_prop =
-			static_pointer_cast<devices::properties::MeasuredQuantityProperty>(
+			static_pointer_cast<sv::data::properties::MeasuredQuantityProperty>(
 				configurable_->get_property(ConfigKey::MeasuredQuantity));
 
 		quantity_box_ = new ui::data::QuantityComboBox();

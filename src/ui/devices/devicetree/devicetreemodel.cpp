@@ -30,10 +30,10 @@
 
 #include "devicetreemodel.hpp"
 #include "src/session.hpp"
+#include "src/data/properties/baseproperty.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/devices/configurable.hpp"
-#include "src/devices/properties/baseproperty.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/ui/devices/devicetree/treeitem.hpp"
 
@@ -262,7 +262,7 @@ void DeviceTreeModel::add_configurable(
 }
 
 void DeviceTreeModel::add_property(
-	shared_ptr<sv::devices::properties::BaseProperty> property,
+	shared_ptr<sv::data::properties::BaseProperty> property,
 	TreeItem *configurable_item)
 {
 	if (!show_configurable_)
@@ -388,7 +388,7 @@ TreeItem *DeviceTreeModel::find_configurable(
 }
 
 TreeItem *DeviceTreeModel::find_property(
-	shared_ptr<sv::devices::properties::BaseProperty> property,
+	shared_ptr<sv::data::properties::BaseProperty> property,
 	TreeItem *configurable_item) const
 {
 	for (int i=0; i<configurable_item->rowCount(); ++i) {
@@ -397,7 +397,7 @@ TreeItem *DeviceTreeModel::find_property(
 			continue;
 
 		if (property.get() == child->data(DeviceTreeModel::DataRole).
-				value<shared_ptr<sv::devices::properties::BaseProperty>>().get())
+				value<shared_ptr<sv::data::properties::BaseProperty>>().get())
 			return (TreeItem *)child;
 	}
 	return nullptr;

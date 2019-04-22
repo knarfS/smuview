@@ -34,13 +34,16 @@
 
 #include "configurable.hpp"
 #include "src/data/datautil.hpp"
-#include "src/devices/properties/baseproperty.hpp"
-#include "src/devices/properties/boolproperty.hpp"
-#include "src/devices/properties/doubleproperty.hpp"
-#include "src/devices/properties/int32property.hpp"
-#include "src/devices/properties/measuredquantityproperty.hpp"
-#include "src/devices/properties/stringproperty.hpp"
-#include "src/devices/properties/uint64property.hpp"
+#include "src/data/properties/baseproperty.hpp"
+#include "src/data/properties/boolproperty.hpp"
+#include "src/data/properties/doubleproperty.hpp"
+#include "src/data/properties/doublerangeproperty.hpp"
+#include "src/data/properties/int32property.hpp"
+#include "src/data/properties/measuredquantityproperty.hpp"
+#include "src/data/properties/rationalproperty.hpp"
+#include "src/data/properties/stringproperty.hpp"
+#include "src/data/properties/uint64property.hpp"
+#include "src/data/properties/uint64rangeproperty.hpp"
 
 using std::dynamic_pointer_cast;
 using std::forward;
@@ -99,44 +102,53 @@ void Configurable::init()
 		if (sr_capabilities.count(sigrok::Capability::LIST))
 			listable_configs_.insert(config_key);
 
-		shared_ptr<properties::BaseProperty> property;
-		const DataType data_type =
+		shared_ptr<data::properties::BaseProperty> property;
+		const data::DataType data_type =
 			deviceutil::get_data_type_for_config_key(config_key);
 		switch (data_type) {
-		case devices::DataType::Int32:
-			property = make_shared<properties::Int32Property>(
+		case data::DataType::Int32:
+			property = make_shared<data::properties::Int32Property>(
 				shared_from_this(), config_key);
 			break;
-		case devices::DataType::UInt64:
-			property = make_shared<properties::UInt64Property>(
+		case data::DataType::UInt64:
+			property = make_shared<data::properties::UInt64Property>(
 				shared_from_this(), config_key);
 			break;
-		case devices::DataType::Double:
-			property = make_shared<properties::DoubleProperty>(
+		case data::DataType::Double:
+			property = make_shared<data::properties::DoubleProperty>(
 				shared_from_this(), config_key);
 			break;
-		case devices::DataType::String:
-			property = make_shared<properties::StringProperty>(
+		case data::DataType::String:
+			property = make_shared<data::properties::StringProperty>(
 				shared_from_this(), config_key);
 			break;
-		case devices::DataType::Bool:
-			property = make_shared<properties::BoolProperty>(
+		case data::DataType::Bool:
+			property = make_shared<data::properties::BoolProperty>(
 				shared_from_this(), config_key);
 			break;
-		case devices::DataType::MQ:
-			property = make_shared<properties::MeasuredQuantityProperty>(
+		case data::DataType::MQ:
+			property = make_shared<data::properties::MeasuredQuantityProperty>(
 				shared_from_this(), config_key);
 			break;
-		case devices::DataType::RationalPeriod:
-		case devices::DataType::RationalVolt:
-		case devices::DataType::Uint64Range:
-		case devices::DataType::DoubleRange:
-			//qvar = QVariant(g_variant_get_tuple(entry.second.gobj()));
-			//break;
-		case devices::DataType::KeyValue:
-			//qvar = QVariant(g_variant_get_dictionary(entry.second.gobj()));
-			//break;
-		case devices::DataType::Unknown:
+		case data::DataType::RationalPeriod:
+			property = make_shared<data::properties::RationalProperty>(
+				shared_from_this(), config_key);
+			break;
+		case data::DataType::RationalVolt:
+			property = make_shared<data::properties::RationalProperty>(
+				shared_from_this(), config_key);
+			break;
+		case data::DataType::Uint64Range:
+			property = make_shared<data::properties::UInt64RangeProperty>(
+				shared_from_this(), config_key);
+			break;
+		case data::DataType::DoubleRange:
+			property = make_shared<data::properties::DoubleRangeProperty>(
+				shared_from_this(), config_key);
+			break;
+		case data::DataType::KeyValue:
+			// TODO: What is KeyValue?
+		case data::DataType::Unknown:
 		default:
 			assert("Unknown DataType");
 		}
@@ -368,13 +380,13 @@ set<devices::ConfigKey> Configurable::listable_configs() const
 	return listable_configs_;
 }
 
-map<devices::ConfigKey, shared_ptr<properties::BaseProperty>>
+map<devices::ConfigKey, shared_ptr<data::properties::BaseProperty>>
 	Configurable::properties() const
 {
 	return properties_;
 }
 
-shared_ptr<properties::BaseProperty>
+shared_ptr<data::properties::BaseProperty>
 	Configurable::get_property(devices::ConfigKey config_key) const
 {
 	if (!properties_.count(config_key))

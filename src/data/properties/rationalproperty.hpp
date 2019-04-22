@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,50 +17,53 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DEVICES_PROPERTIES_STRINGPROPERTY_HPP
-#define DEVICES_PROPERTIES_STRINGPROPERTY_HPP
+#ifndef DATA_PROPERTIES_RATIONALPROPERTY_HPP
+#define DATA_PROPERTIES_RATIONALPROPERTY_HPP
 
-#include <map>
 #include <memory>
+#include <utility>
 
 #include <glib.h>
 
 #include <QObject>
 #include <QString>
-#include <QStringList>
 #include <QVariant>
 
-#include "src/devices/properties/baseproperty.hpp"
+#include "src/data/properties/baseproperty.hpp"
+#include "src/data/datautil.hpp"
 #include "src/devices/deviceutil.hpp"
 
-using std::map;
 using std::shared_ptr;
 
 namespace sv {
+
 namespace devices {
-
 class Configurable;
+}
 
+namespace data {
 namespace properties {
 
-class StringProperty : public BaseProperty
+class RationalProperty : public BaseProperty
 {
 	Q_OBJECT
 
 public:
-	StringProperty(shared_ptr<devices::Configurable> configurable,
+	RationalProperty(shared_ptr<devices::Configurable> configurable,
 		devices::ConfigKey config_key);
 
 public:
 	QVariant value() const override;
-	QString string_value() const;
-	QStringList list_values() const;
+	data::rational_t rational_value() const;
+	QString to_string(data::rational_t value) const;
+	QString to_string(const QVariant qvar) const override;
 	QString to_string() const override;
+	vector<data::rational_t> list_values() const;
 
 private:
 	bool list_config();
 
-	QStringList string_list_;
+	vector<data::rational_t> values_list_;
 
 public Q_SLOTS:
 	void change_value(const QVariant) override;
@@ -69,7 +72,7 @@ public Q_SLOTS:
 };
 
 } // namespace properties
-} // namespace devices
+} // namespace data
 } // namespece sv
 
-#endif // DEVICES_PROPERTIES_STRINGPROPERTY_HPP
+#endif // DATA_PROPERTIES_RATIONALPROPERTY_HPP

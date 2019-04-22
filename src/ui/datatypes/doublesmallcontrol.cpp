@@ -21,7 +21,7 @@
 #include <QVBoxLayout>
 
 #include "doublesmallcontrol.hpp"
-#include "src/devices/properties/baseproperty.hpp"
+#include "src/data/properties/baseproperty.hpp"
 #include "src/ui/datatypes/doubleknob.hpp"
 #include "src/ui/datatypes/doublespinbox.hpp"
 
@@ -30,7 +30,7 @@ namespace ui {
 namespace datatypes {
 
 DoubleSmallControl::DoubleSmallControl(
-		shared_ptr<sv::devices::properties::BaseProperty> property,
+		shared_ptr<sv::data::properties::BaseProperty> property,
 		const bool auto_commit, const bool auto_update,
 		QString title, QWidget *parent) :
 	QGroupBox(parent),

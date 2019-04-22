@@ -23,15 +23,16 @@
 #include <QHBoxLayout>
 
 #include "stringled.hpp"
+#include "src/data/datautil.hpp"
+#include "src/data/properties/baseproperty.hpp"
 #include "src/devices/configurable.hpp"
-#include "src/devices/properties/baseproperty.hpp"
 
 namespace sv {
 namespace ui {
 namespace datatypes {
 
 StringLed::StringLed(
-		shared_ptr<sv::devices::properties::BaseProperty> property,
+		shared_ptr<sv::data::properties::BaseProperty> property,
 		const bool auto_update,
 		const QIcon on_icon, const QIcon off_icon, const QIcon dis_icon,
 		const QString on_value, const QString off_value,
@@ -47,10 +48,10 @@ StringLed::StringLed(
 {
 	// Check property
 	if (property_ != nullptr &&
-			property_->data_type() != devices::DataType::String) {
+			property_->data_type() != data::DataType::String) {
 
 		QString msg = QString("StringLed with property of type ").append(
-			devices::deviceutil::format_data_type(property_->data_type()));
+			data::datautil::format_data_type(property_->data_type()));
 		throw std::runtime_error(msg.toStdString());
 	}
 

@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2012 Joel Holdsworth <joel@airwebreathe.org.uk>
  * Copyright (C) 2016 Soeren Apel <soeren@apelpie.net>
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -212,13 +212,37 @@ enum class Unit
 	Unknown,
 };
 
+enum class DataType
+{
+	UInt64,
+	String,
+	Bool,
+	Double,
+	RationalPeriod,
+	RationalVolt,
+	KeyValue,
+	Uint64Range,
+	DoubleRange,
+	Int32,
+	MQ,
+	Unknown,
+};
+
 typedef pair<Quantity, set<QuantityFlag>> measured_quantity_t;
+typedef pair<double, double> double_range_t;
+/**
+ * Normaly <int64_t, uint64_t> should be used, but <uint64_t, uint64_t>
+ * is transfered in the config keys
+ */
+typedef pair<uint64_t, uint64_t> rational_t;
+typedef pair<uint64_t, uint64_t> uint64_range_t;
 
 namespace datautil {
 
 typedef map<Quantity, QString> quantity_name_map_t;
 typedef map<QuantityFlag, QString> quantity_flag_name_map_t;
 typedef map<Unit, QString> unit_name_map_t;
+typedef map<DataType, QString> data_type_name_map_t;
 
 namespace {
 
@@ -335,6 +359,21 @@ unit_name_map_t unit_name_map = {
 	{ Unit::Tola, QString("tola") },
 	{ Unit::Piece, QString("pc.") },
 	{ Unit::Unknown, QString("??") },
+};
+
+data_type_name_map_t data_type_name_map = {
+	{ DataType::UInt64, QString("UInt64") },
+	{ DataType::String, QString("String") },
+	{ DataType::Bool, QString("Boolean") },
+	{ DataType::Double, QString("Double") },
+	{ DataType::RationalPeriod, QString("Rational Period") },
+	{ DataType::RationalVolt, QString("Rational Volt") },
+	{ DataType::KeyValue, QString("Key Value") },
+	{ DataType::Uint64Range, QString("Uint64 Range") },
+	{ DataType::DoubleRange, QString("Double Range") },
+	{ DataType::Int32, QString("Int32") },
+	{ DataType::MQ, QString("Measured Quantity") },
+	{ DataType::Unknown, QString("Unknown") },
 };
 
 map<const sigrok::Quantity *, Quantity> sr_quantity_quantity_map = {
@@ -539,6 +578,34 @@ map<Unit, const sigrok::Unit *> unit_sr_unit_map = {
 	{ Unit::Piece, sigrok::Unit::PIECE },
 };
 
+map<const sigrok::DataType *, DataType> sr_data_type_data_type_map = {
+	{ sigrok::DataType::UINT64, DataType::UInt64 },
+	{ sigrok::DataType::STRING, DataType::String },
+	{ sigrok::DataType::BOOL, DataType::Bool },
+	{ sigrok::DataType::FLOAT, DataType::Double },
+	{ sigrok::DataType::RATIONAL_PERIOD, DataType::RationalPeriod },
+	{ sigrok::DataType::RATIONAL_VOLT, DataType::RationalVolt },
+	{ sigrok::DataType::KEYVALUE, DataType::KeyValue },
+	{ sigrok::DataType::UINT64_RANGE, DataType::Uint64Range },
+	{ sigrok::DataType::DOUBLE_RANGE, DataType::DoubleRange },
+	{ sigrok::DataType::INT32, DataType::Int32 },
+	{ sigrok::DataType::MQ, DataType::MQ },
+};
+
+map<DataType, const sigrok::DataType *> data_type_sr_data_type_map = {
+	{ DataType::UInt64, sigrok::DataType::UINT64 },
+	{ DataType::String, sigrok::DataType::STRING },
+	{ DataType::Bool, sigrok::DataType::BOOL },
+	{ DataType::Double, sigrok::DataType::FLOAT },
+	{ DataType::RationalPeriod, sigrok::DataType::RATIONAL_PERIOD },
+	{ DataType::RationalVolt, sigrok::DataType::RATIONAL_VOLT },
+	{ DataType::KeyValue, sigrok::DataType::KEYVALUE },
+	{ DataType::Uint64Range, sigrok::DataType::UINT64_RANGE },
+	{ DataType::DoubleRange, sigrok::DataType::DOUBLE_RANGE },
+	{ DataType::Int32, sigrok::DataType::INT32 },
+	{ DataType::MQ, sigrok::DataType::MQ },
+};
+
 quantity_unit_map_t quantity_unit_map = {
 	{ Quantity::Voltage, { Unit::Volt } },
 	{ Quantity::Current, { Unit::Ampere } },
@@ -582,29 +649,36 @@ quantity_unit_map_t quantity_unit_map = {
 } // namespace
 
 /**
- * Returns all known quantities
+ * Return all known quantities
  *
  * @return The quantity name map
  */
 quantity_name_map_t get_quantity_name_map();
 
 /**
- * Returns all known quantity flags
+ * Return all known quantity flags
  *
  * @return The quantity flags name map
  */
 quantity_flag_name_map_t get_quantity_flag_name_map();
 
 /**
- * Returns all known units
+ * Return all known units
  *
  * @return The unit name map
  */
 unit_name_map_t get_unit_name_map();
 
+/**
+ * Return all known data types
+ *
+ * @return The data type name map
+ */
+data_type_name_map_t get_data_type_name_map();
+
 
 /**
- * Returns the corresponding Quantity for a sigrok Quantity
+ * Return the corresponding Quantity for a sigrok Quantity
  *
  * @param sr_quantity The sigrok Quantity
  *
@@ -613,7 +687,7 @@ unit_name_map_t get_unit_name_map();
 Quantity get_quantity(const sigrok::Quantity *sr_quantity);
 
 /**
- * Returns the corresponding Quantity for a sigrok Quantity (unit32_t)
+ * Return the corresponding Quantity for a sigrok Quantity (unit32_t)
  *
  * @param sr_quantity The sigrok Quantity as uint32_t
  *
@@ -622,7 +696,7 @@ Quantity get_quantity(const sigrok::Quantity *sr_quantity);
 Quantity get_quantity(uint32_t sr_quantity);
 
 /**
- * Returns the corresponding sigrok Quantity ID for a Quantity
+ * Return the corresponding sigrok Quantity ID for a Quantity
  *
  * @param quantity The Quantity
  *
@@ -631,7 +705,7 @@ Quantity get_quantity(uint32_t sr_quantity);
 uint32_t get_sr_quantity_id(Quantity quantity);
 
 /**
- * Checks if the quantity is a known sigrok quantity
+ * Check if the quantity is a known sigrok quantity
  *
  * @param quantity The quantity
  *
@@ -641,7 +715,7 @@ bool is_valid_sr_quantity(data::Quantity quantity);
 
 
 /**
- * Returns the corresponding QunatityFlag for a sigrok QuantityFlag
+ * Return the corresponding QunatityFlag for a sigrok QuantityFlag
  *
  * @param sr_quantity_flag The sigrok QuantityFlag
  *
@@ -650,7 +724,7 @@ bool is_valid_sr_quantity(data::Quantity quantity);
 QuantityFlag get_quantity_flag(const sigrok::QuantityFlag *sr_quantity_flag);
 
 /**
- * Returns the corresponding sigrok QuantityFlag ID for a QuantityFlag
+ * Return the corresponding sigrok QuantityFlag ID for a QuantityFlag
  *
  * @param quantity_flag The QuantityFlag
  *
@@ -659,7 +733,7 @@ QuantityFlag get_quantity_flag(const sigrok::QuantityFlag *sr_quantity_flag);
 uint64_t get_sr_quantity_flag_id(QuantityFlag quantity_flag);
 
 /**
- * Returns the corresponding QunatityFlags as a set for the
+ * Return the corresponding QunatityFlags as a set for the
  * sigrok QuantityFlags vector
  *
  * @param sr_quantity_flags The sigrok QuantityFlags as vector
@@ -670,7 +744,7 @@ set<QuantityFlag> get_quantity_flags(
 	vector<const sigrok::QuantityFlag *> sr_quantity_flags);
 
 /**
- * Returns the corresponding QunatityFlags as a set for the
+ * Return the corresponding QunatityFlags as a set for the
  * sigrok QuantityFlags (uint64_t)
  *
  * @param sr_quantity_flags The sigrok QuantityFlags as uint64_t
@@ -680,7 +754,7 @@ set<QuantityFlag> get_quantity_flags(
 set<QuantityFlag> get_quantity_flags(uint64_t sr_quantity_flags);
 
 /**
- * Returns the corresponding QunatityFlags as an uint64_t
+ * Return the corresponding QunatityFlags as an uint64_t
  *
  * @param quantity_flags The QuantityFlags as set
  *
@@ -690,7 +764,7 @@ uint64_t get_sr_quantity_flags_id(set<QuantityFlag> quantity_flags);
 
 
 /**
- * Returns the corresponding Unit for a sigrok Unit
+ * Return the corresponding Unit for a sigrok Unit
  *
  * @param sr_unit The sigrok Unit
  *
@@ -700,7 +774,53 @@ Unit get_unit(const sigrok::Unit *sr_unit);
 
 
 /**
- * Formats a Quantity to a string
+ * Return the corresponding DataType for a sigrok DataType
+ *
+ * @param sr_data_type The sigrok DataType
+ *
+ * @return The DataType.
+ */
+DataType get_data_type(const sigrok::DataType *sr_data_type);
+
+/**
+ * Return the corresponding DataType for a sigrok DataType (unit32_t)
+ *
+ * @param sr_data_type The sigrok DataType as uint32_t
+ *
+ * @return The DataType.
+ */
+DataType get_data_type(uint32_t sr_data_type);
+
+/**
+ * Return the corresponding sigrok DataType for a DataType
+ *
+ * @param data_type The DataType.
+ *
+ * @return The sigrok DataType.
+ */
+const sigrok::DataType *get_sr_data_type(DataType data_type);
+
+/**
+ * Return the corresponding sigrok DataType ID for a DataType
+ *
+ * @param data_type The DataType
+ *
+ * @return The sigrok DataType ID as uint32_t.
+ */
+uint32_t get_sr_data_type_id(DataType data_type);
+
+/**
+ * Check if the DataType is a known sigrok DataType
+ *
+ * @param data_type The DataType
+ *
+ * @return true if it is a known sigrok DataType
+ */
+bool is_valid_sr_data_type(DataType data_type);
+
+
+/**
+ * Format a Quantity to a string
  *
  * @param quantity The Quantity to format.
  *
@@ -709,7 +829,7 @@ Unit get_unit(const sigrok::Unit *sr_unit);
 QString format_quantity(Quantity quantity);
 
 /**
- * Formats a QuantityFlag enum to a string
+ * Format a QuantityFlag enum to a string
  *
  * @param quantity_flag The QuantityFlag to format.
  *
@@ -718,7 +838,7 @@ QString format_quantity(Quantity quantity);
 QString format_quantity_flag(QuantityFlag quantity_flag);
 
 /**
- * Formats a QuantityFlag enum set to a string
+ * Format a QuantityFlag enum set to a string
  *
  * @param quantity_flags The QuantityFlags to format.
  * @param seperator The seperator between the flags.
@@ -729,7 +849,7 @@ QString format_quantity_flags(set<QuantityFlag> quantity_flags,
 	const QString seperator);
 
 /**
- * Formats a measured_quantity_t (pair<Quantity, set<QunatityFlag>>) to a string
+ * Format a measured_quantity_t (pair<Quantity, set<QunatityFlag>>) to a string
  *
  * @param measured_quantity The measured_quantity.
  *
@@ -738,7 +858,7 @@ QString format_quantity_flags(set<QuantityFlag> quantity_flags,
 QString format_measured_quantity(measured_quantity_t measured_quantity);
 
 /**
- * Formats a Unit to a string
+ * Format a Unit to a string
  *
  * @param unit The quantity to format.
  *
@@ -747,7 +867,7 @@ QString format_measured_quantity(measured_quantity_t measured_quantity);
 QString format_unit(Unit unit);
 
 /**
- * Formats a Unit to a string and adds AC/DC for voltage and current
+ * Format a Unit to a string and adds AC/DC for voltage and current
  *
  * @param unit The quantity to format.
  * @param quantity_flags The quantity flags.
@@ -757,7 +877,17 @@ QString format_unit(Unit unit);
 QString format_unit(Unit unit, set<QuantityFlag> quantity_flags);
 
 /**
- * Returns the (SI) units for the given quantity
+ * Format a DataType to a string
+ *
+ * @param data_type The DataType to format.
+ *
+ * @return The formatted DataType.
+ */
+QString format_data_type(DataType data_type);
+
+
+/**
+ * Return the (SI) units for the given quantity
  *
  * @param quantity The quantity
  *

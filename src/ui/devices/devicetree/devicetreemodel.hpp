@@ -43,13 +43,13 @@ class BaseChannel;
 }
 namespace data {
 class BaseSignal;
+namespace properties {
+class BaseProperty;
+}
 }
 namespace devices {
 class BaseDevice;
 class Configurable;
-namespace properties {
-class BaseProperty;
-}
 }
 
 namespace ui {
@@ -86,7 +86,7 @@ private:
 		TreeItem *parent_item);
 	void add_configurable(shared_ptr<sv::devices::Configurable> configurable,
 		TreeItem *device_item);
-	void add_property(shared_ptr<sv::devices::properties::BaseProperty> property,
+	void add_property(shared_ptr<sv::data::properties::BaseProperty> property,
 		TreeItem *configurable_item);
 
 	TreeItem *find_channel_group(string channel_group_name,
@@ -99,7 +99,7 @@ private:
 		shared_ptr<sv::devices::Configurable> configurable,
 		TreeItem *device_item) const;
 	TreeItem *find_property(
-		shared_ptr<sv::devices::properties::BaseProperty> property,
+		shared_ptr<sv::data::properties::BaseProperty> property,
 		TreeItem *configurable_item) const;
 
 	const Session &session_;

@@ -17,13 +17,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UI_DATATYPES_DOUBLESLIDER_HPP
-#define UI_DATATYPES_DOUBLESLIDER_HPP
+#ifndef UI_DATATYPES_DOUBLERANGECOMBOBOX_HPP
+#define UI_DATATYPES_DOUBLERANGECOMBOBOX_HPP
 
 #include <memory>
 
+#include <QComboBox>
+#include <QString>
 #include <QVariant>
-#include <qwt_slider.h>
 
 #include "src/ui/datatypes/basewidget.hpp"
 
@@ -40,12 +41,12 @@ class BaseProperty;
 namespace ui {
 namespace datatypes {
 
-class DoubleSlider : public QwtSlider, public BaseWidget
+class DoubleRangeComboBox : public QComboBox, public BaseWidget
 {
 	Q_OBJECT
 
 public:
-	DoubleSlider(
+	DoubleRangeComboBox(
 		shared_ptr<sv::data::properties::BaseProperty> property,
 		const bool auto_commit, const bool auto_update,
 		QWidget *parent = nullptr);
@@ -62,7 +63,7 @@ private Q_SLOTS:
 	/**
 	 * Signal handling for Widget -> Property
 	 */
-	void value_changed(const double);
+	void value_changed(int);
 	/**
 	 * Signal handling for Property -> Widget
 	 */
@@ -74,4 +75,4 @@ private Q_SLOTS:
 } // namespace ui
 } // namespece sv
 
-#endif // UI_DATATYPES_DOUBLESLIDER_HPP
+#endif // UI_DATATYPES_DOUBLERANGECOMBOBOX_HPP

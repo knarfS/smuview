@@ -17,10 +17,6 @@ ToDo
 	- Check getable/setable/listable also in the properties
 	- Enhance ThresholdControl widget (e.g for re:load pro). Maybe a dedicated property?
 		- Dedicated SvDoubleSpinBox and SvBoolButton?
-- Refactore:
-	- src/data/datautil.cpp -> src/data/
-	- src/devices/deviceutil.cpp -> src/data/
-	- src/devices/properties/ -> src/data/
 - Breeze icons action/labplot-* for plots?
 - Get fixed qunatity signals from channel(/channel group) (q/qf/u is set in ch.meaning at the beginning). Implement in sigrok!
 - Implement something like ch.meanings for config keys in sigrok, so smuview known the quantity/unit of config keys.
@@ -36,6 +32,7 @@ ToDo
 - BaseDevice open()/close(): move aquisition stuff to HardwareDevice, move VirtualDevice stuff to BaseDevice
 - util.cpp: use cmath instead of math.h, but Timestamp is boost and only works with non std::?
 - Use AnalogBaseSignal in all(?) Channel classes, in View classes and in Plot classes
+- Remove Configurable and ConfigKey from data::properties::*
 
 Done
 ----
@@ -78,6 +75,10 @@ Done
 - Remove "hp3478a" from gpib_libgpib_name_ and list all available names.
 - DataView: Add toolbar with "StayAtBottom" switchable action.
 - Remove all items in combo box when parent has changed and setup_ui() is recalled?	see ConfigKeyComboBox and ConfigurableComboBox
+- Refactore:
+	- src/data/datautil.cpp -> src/data/
+	- src/devices/deviceutil.cpp -> src/data/
+	- src/devices/properties/ -> src/data/
 
 Won't fix
 ---------

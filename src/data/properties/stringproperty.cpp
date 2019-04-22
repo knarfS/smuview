@@ -31,7 +31,7 @@
 using std::string;
 
 namespace sv {
-namespace devices {
+namespace data {
 namespace properties {
 
 StringProperty::StringProperty(shared_ptr<devices::Configurable> configurable,
@@ -54,6 +54,11 @@ QString StringProperty::string_value() const
 {
 	return QString::fromStdString(
 		configurable_->get_config<string>(config_key_));
+}
+
+QString StringProperty::to_string(const QVariant qvar) const
+{
+	return qvar.toString();
 }
 
 QString StringProperty::to_string() const
@@ -96,5 +101,5 @@ void StringProperty::on_value_changed(Glib::VariantBase g_var)
 }
 
 } // namespace datatypes
-} // namespace devices
+} // namespace data
 } // namespace sv

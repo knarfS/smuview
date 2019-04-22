@@ -24,9 +24,9 @@
 
 #include "genericcontrolview.hpp"
 #include "src/session.hpp"
+#include "src/data/properties/baseproperty.hpp"
 #include "src/devices/configurable.hpp"
 #include "src/devices/deviceutil.hpp"
-#include "src/devices/properties/baseproperty.hpp"
 #include "src/ui/datatypes/datatypehelper.hpp"
 
 using sv::devices::ConfigKey;

@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ using std::shared_ptr;
 
 namespace sv {
 
-namespace devices {
+namespace data {
 namespace properties {
 class BaseProperty;
 }
@@ -48,15 +48,15 @@ class ThresholdControl : public QGroupBox, public BaseWidget
 
 public:
 	ThresholdControl(
-		shared_ptr<sv::devices::properties::BaseProperty> property,
-		shared_ptr<sv::devices::properties::BaseProperty> bool_prop,
+		shared_ptr<sv::data::properties::BaseProperty> property,
+		shared_ptr<sv::data::properties::BaseProperty> bool_prop,
 		const bool auto_commit, const bool auto_update,
 		QString title, QWidget *parent = nullptr);
 
 	QVariant variant_value() const override;
 
 private:
-	shared_ptr<sv::devices::properties::BaseProperty> bool_prop_;
+	shared_ptr<sv::data::properties::BaseProperty> bool_prop_;
 	QString title_;
 
 	BoolButton *button_;

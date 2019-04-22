@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@
 using std::string;
 
 namespace sv {
-namespace devices {
+namespace data {
 namespace properties {
 
 BaseProperty::BaseProperty(shared_ptr<devices::Configurable> configurable,
@@ -36,8 +36,9 @@ BaseProperty::BaseProperty(shared_ptr<devices::Configurable> configurable,
 	configurable_(configurable),
 	config_key_(config_key)
 {
-	data_type_ = deviceutil::get_data_type_for_config_key(config_key_);
-	unit_ = deviceutil::get_unit_for_config_key(config_key_);
+	data_type_ = devices::deviceutil::get_data_type_for_config_key(config_key_);
+	//quantity_ = data::Quantity::Unknown; // TODO
+	unit_ = devices::deviceutil::get_unit_for_config_key(config_key_);
 	is_getable_ = configurable_->has_get_config(config_key_);
 	is_setable_ = configurable_->has_set_config(config_key_);
 	is_listable_ = configurable_->has_list_config(config_key_);
@@ -53,10 +54,17 @@ devices::ConfigKey BaseProperty::config_key() const
 	return config_key_;
 }
 
-devices::DataType BaseProperty::data_type() const
+data::DataType BaseProperty::data_type() const
 {
 	return data_type_;
 }
+
+/*
+data::Quantity BaseProperty::quantity() const
+{
+	return quantity_;
+}
+*/
 
 data::Unit BaseProperty::unit() const
 {
@@ -80,14 +88,14 @@ bool BaseProperty::is_listable() const
 
 string BaseProperty::name() const
 {
-	return deviceutil::format_config_key(config_key_).toStdString();
+	return devices::deviceutil::format_config_key(config_key_).toStdString();
 }
 
 QString BaseProperty::display_name() const
 {
-	return deviceutil::format_config_key(config_key_);
+	return devices::deviceutil::format_config_key(config_key_);
 }
 
 } // namespace properties
-} // namespace devices
+} // namespace data
 } // namespace sv

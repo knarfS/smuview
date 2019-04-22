@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,50 +17,61 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DEVICES_PROPERTIES_BOOLPROPERTY_HPP
-#define DEVICES_PROPERTIES_BOOLPROPERTY_HPP
+#ifndef UI_DATATYPES_UINT64LABEL_HPP
+#define UI_DATATYPES_UINT64LABEL_HPP
 
 #include <memory>
 
-#include <glib.h>
-
-#include <QObject>
+#include <QLabel>
 #include <QString>
 #include <QVariant>
 
-#include "src/devices/properties/baseproperty.hpp"
-#include "src/devices/deviceutil.hpp"
+#include "src/ui/datatypes/basewidget.hpp"
 
 using std::shared_ptr;
 
 namespace sv {
-namespace devices {
 
-class Configurable;
-
+namespace data {
 namespace properties {
+class BaseProperty;
+}
+}
 
-class BoolProperty : public BaseProperty
+namespace ui {
+namespace datatypes {
+
+class UInt64Label : public QLabel, public BaseWidget
 {
 	Q_OBJECT
 
 public:
-	BoolProperty(shared_ptr<devices::Configurable> configurable,
-		devices::ConfigKey config_key);
+	UInt64Label(
+		shared_ptr<sv::data::properties::BaseProperty> property,
+		const bool auto_update, QWidget *parent = nullptr);
 
-public:
-	QVariant value() const override;
-	bool bool_value() const;
-	QString to_string() const override;
+	QVariant variant_value() const override;
 
-public Q_SLOTS:
-	void change_value(const QVariant) override;
-	void on_value_changed(Glib::VariantBase) override;
+private:
+	void setup_ui();
+	void connect_signals();
+
+	QString text_;
+
+private Q_SLOTS:
+	/**
+	 * Signal handling for Widget -> Property
+	 */
+	void value_changed(const QString);
+	/**
+	 * Signal handling for Property -> Widget
+	 */
+	void on_value_changed(const QVariant);
 
 };
 
-} // namespace properties
-} // namespace devices
+} // namespace datatypes
+} // namespace ui
 } // namespece sv
 
-#endif // DEVICES_PROPERTIES_BOOLPROPERTY_HPP
+#endif // UI_DATATYPES_UINT64LABEL_HPP

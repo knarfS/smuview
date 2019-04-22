@@ -39,7 +39,7 @@ using std::vector;
 Q_DECLARE_METATYPE(sv::data::measured_quantity_t)
 
 namespace sv {
-namespace devices {
+namespace data {
 namespace properties {
 
 MeasuredQuantityProperty::MeasuredQuantityProperty(
@@ -90,9 +90,19 @@ MeasuredQuantityProperty::measured_quantity_value() const
 	return make_pair(quantity, quantity_flags);
 }
 
+QString MeasuredQuantityProperty::to_string(data::measured_quantity_t value) const
+{
+	return data::datautil::format_measured_quantity(value);
+}
+
+QString MeasuredQuantityProperty::to_string(const QVariant qvar) const
+{
+	return this->to_string(qvar.value<data::measured_quantity_t>());
+}
+
 QString MeasuredQuantityProperty::to_string() const
 {
-	return data::datautil::format_measured_quantity(measured_quantity_value());
+	return this->to_string(measured_quantity_value());
 }
 
 vector<data::measured_quantity_t> MeasuredQuantityProperty::list_values() const
@@ -150,6 +160,6 @@ void MeasuredQuantityProperty::on_value_changed(Glib::VariantBase g_var)
 	Q_EMIT value_changed(QVariant(g_variant_get_string(g_var.gobj(), NULL)));
 }
 
-} // namespace datatypes
-} // namespace devices
+} // namespace properties
+} // namespace data
 } // namespace sv
