@@ -54,7 +54,8 @@ bool is_supported_driver(shared_ptr<sigrok::Driver> sr_driver)
 	assert(sr_driver);
 
 	return is_source_sink_driver(sr_driver) ||
-		is_measurement_driver(sr_driver);
+		is_measurement_driver(sr_driver) ||
+		is_oscilloscope_driver(sr_driver);
 }
 
 bool is_source_sink_driver(shared_ptr<sigrok::Driver> sr_driver)
@@ -80,6 +81,14 @@ bool is_measurement_driver(shared_ptr<sigrok::Driver> sr_driver)
 		| keys.count(sigrok::ConfigKey::SCALE)
 		| keys.count(sigrok::ConfigKey::POWERMETER)
 		| keys.count(sigrok::ConfigKey::DEMO_DEV);
+}
+
+bool is_oscilloscope_driver(shared_ptr<sigrok::Driver> sr_driver)
+{
+	assert(sr_driver);
+
+	const auto keys = sr_driver->config_keys();
+	return keys.count(sigrok::ConfigKey::OSCILLOSCOPE);
 }
 
 DeviceType get_device_type(const sigrok::ConfigKey *sr_config_key)
