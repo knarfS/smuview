@@ -22,19 +22,15 @@
 
 #include <memory>
 #include <utility>
-#include <vector>
 
 #include "src/devices/hardwaredevice.hpp"
 
 using std::forward;
 using std::shared_ptr;
-using std::vector;
 
 namespace sigrok {
-class Channel;
 class Context;
 class HardwareDevice;
-class Meta;
 }
 
 namespace sv {

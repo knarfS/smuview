@@ -84,9 +84,9 @@ PlotView::PlotView(Session &session,
 	plot_->start();
 }
 
-PlotView::PlotView(Session& session,
+PlotView::PlotView(Session &session,
 		shared_ptr<sv::data::AnalogTimeSignal> signal,
-		QWidget* parent) :
+		QWidget *parent) :
 	BaseView(session, parent),
 	initial_channel_(nullptr),
 	action_add_marker_(new QAction(this)),
@@ -108,10 +108,10 @@ PlotView::PlotView(Session& session,
 	plot_->start();
 }
 
-PlotView::PlotView(Session& session,
+PlotView::PlotView(Session &session,
 		shared_ptr<sv::data::AnalogTimeSignal> x_signal,
 		shared_ptr<sv::data::AnalogTimeSignal> y_signal,
-		QWidget* parent) :
+		QWidget *parent) :
 	BaseView(session, parent),
 	initial_channel_(nullptr),
 	action_add_marker_(new QAction(this)),

@@ -56,6 +56,9 @@ public:
 	QVariant variant_value() const override;
 
 private:
+	void setup_ui();
+	void connect_signals();
+
 	const QIcon on_icon_;
 	const QIcon off_icon_;
 	const QIcon dis_icon_;
@@ -65,9 +68,6 @@ private:
 
 	QLabel *led_label_;
 	QLabel *text_label_;
-
-	void setup_ui();
-	void connect_signals();
 
 private Q_SLOTS:
 	/**

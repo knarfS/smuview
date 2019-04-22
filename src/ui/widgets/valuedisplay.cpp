@@ -96,6 +96,7 @@ void ValueDisplay::reset_value()
 		init_value.append("-");
 	show_value(init_value);
 }
+
 void ValueDisplay::update_display()
 {
 	QString value_str("");

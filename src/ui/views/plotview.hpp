@@ -65,16 +65,16 @@ class PlotView : public BaseView
 	Q_OBJECT
 
 public:
-	PlotView(Session& session,
+	PlotView(Session &session,
 		shared_ptr<channels::BaseChannel> channel,
-		QWidget* parent = nullptr);
-	PlotView(Session& session,
+		QWidget *parent = nullptr);
+	PlotView(Session &session,
 		shared_ptr<sv::data::AnalogTimeSignal> signal,
-		QWidget* parent = nullptr);
-	PlotView(Session& session,
+		QWidget *parent = nullptr);
+	PlotView(Session &session,
 		shared_ptr<sv::data::AnalogTimeSignal> x_signal,
 		shared_ptr<sv::data::AnalogTimeSignal> y_signal,
-		QWidget* parent = nullptr);
+		QWidget *parent = nullptr);
 
 	QString title() const;
 	void add_time_curve(shared_ptr<sv::data::AnalogTimeSignal> signal);
@@ -89,7 +89,7 @@ private:
 	void init_values();
 
 	shared_ptr<channels::BaseChannel> initial_channel_;
-	vector<widgets::plot::BaseCurveData *>curves_;
+	vector<widgets::plot::BaseCurveData *> curves_;
 
 	QMenu *add_marker_menu_;
 	QToolButton *add_marker_button_;
