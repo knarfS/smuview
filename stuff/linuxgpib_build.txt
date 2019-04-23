@@ -14,16 +14,27 @@ After each Kernel update:
 - Download last linux-gpib (https://sourceforge.net/projects/linux-gpib/files/)
 - Download last firmware (http://linux-gpib.sourceforge.net/firmware/)
 
-# tar -xvzf linux-gpib-4.1.0.tar.gz
-# cd linux-gpib-4.1.0
-# ./configure
-# make
-# su
-# make install
-# ldconfig
-# exit
+Since linux-gpib 4.2.0 there are two seperated builds (kernel modules + user space programms)
 
-- Copy firmware to /usr/share/usb (e.g. agilent_82357a -> /usr/share/usb) as root
+# tar -xvzf linux-gpib-4.2.0.tar.gz
+# cd linux-gpib-4.2.0
+
+# tar -xvzf linux-gpib-kernel-4.2.0.tar.gz
+# cd linux-gpib-kernel-4.2.0
+# ./configure # No longer needed?
+# make
+# sudo make install
+# sudo ldconfig
+
+# cd ..
+# tar -xvzf linux-gpib-user-4.2.0.tar.gz
+# cd linux-gpib-user-4.2.0
+# ./configure --sysconfdir=/etc
+# make
+# sudo make install
+
+- Copy firmware to /usr/local/share/usb (old: /usr/share/usb) (e.g. agilent_82357a -> /usr/local/share/usb)
+  as root (see udev rules in /etc/udev/rules.d which scripts/directories are used!)
 - Edit file /etc/gpib.conf:
 
 /***********************************************************************
