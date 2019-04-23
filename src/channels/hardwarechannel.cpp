@@ -77,26 +77,33 @@ void HardwareChannel::push_interleaved_samples(const float *data,
 	catch(sigrok::Error &e) {
 		quantity = data::Quantity::Unknown;
 	}
-
 	set<data::QuantityFlag> quantity_flags =
 		data::datautil::get_quantity_flags(sr_analog->mq_flags());
-	measured_quantity_t mq = make_pair(quantity, quantity_flags);
-	size_t signals_count = signal_map_.count(mq);
-	if (signals_count == 0) {
-		data::Unit unit = data::datautil::get_unit(sr_analog->unit());
-		add_signal(quantity, quantity_flags, unit);
-		qWarning() << "HardwareChannel::push_sample_sr_analog(): " <<
-			display_name() << " - No signal found: " <<
-			actual_signal_->display_name();
-	}
-	else if (signals_count > 1) {
-		throw ("More than one signal found for " + name());
-	}
 
-	auto signal = static_pointer_cast<data::AnalogTimeSignal>(signal_map_[mq][0]);
-	if (signal.get() != actual_signal_.get()) {
+	shared_ptr<data::AnalogTimeSignal> signal;
+	if (!actual_signal_ || actual_signal_->quantity() != quantity ||
+		actual_signal_->quantity_flags() != quantity_flags) {
+
+		/* actual_signal_ not set or doesn't match the mq/mqf */
+		measured_quantity_t mq = make_pair(quantity, quantity_flags);
+		size_t signals_count = signal_map_.count(mq);
+		if (signals_count == 0) {
+			data::Unit unit = data::datautil::get_unit(sr_analog->unit());
+			add_signal(quantity, quantity_flags, unit);
+			qWarning() << "HardwareChannel::push_sample_sr_analog(): " <<
+				display_name() << " - No signal found: " <<
+				actual_signal_->display_name();
+		}
+		else if (signals_count > 1) {
+			throw ("More than one signal found for " + name());
+		}
+
+		signal = static_pointer_cast<data::AnalogTimeSignal>(signal_map_[mq][0]);
 		actual_signal_ = signal;
 		Q_EMIT signal_changed(actual_signal_);
+	}
+	else {
+		signal = static_pointer_cast<data::AnalogTimeSignal>(actual_signal_);
 	}
 
 	/*
