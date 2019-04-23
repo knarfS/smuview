@@ -94,46 +94,6 @@ HardwareDevice::HardwareDevice(
 		assert("Unknown device");
 }
 
-void HardwareDevice::init()
-{
-	// Init Configurables from Channel Groups
-	for (const auto &sr_cg_pair : sr_device_->channel_groups()) {
-		auto sr_cg = sr_cg_pair.second;
-		if (sr_cg->config_keys().size() == 0)
-			continue;
-
-		auto cg_c = Configurable::create(
-			sr_cg, next_configurable_index_++,
-			short_name().toStdString(), device_type_);
-		configurable_map_.insert(make_pair(sr_cg_pair.first, cg_c));
-	}
-
-	/*
-	 * Check if the device configurable has any config key of use for us.
-	 * We will ignore the common device config keys like "continuous",
-	 * "limit_samples" and "limit_time"
-	 */
-	size_t device_ck_cnt = 0;
-	for (const auto &key : sr_device_->config_keys()) {
-		if (deviceutil::get_config_key(key) != ConfigKey::Unknown)
-			++device_ck_cnt;
-	}
-	if (device_ck_cnt == 0)
-		return;
-
-	// Init Configurable from Device
-	auto d_c = Configurable::create(
-		sr_device_, next_configurable_index_++,
-		short_name().toStdString(), device_type_);
-	configurable_map_.insert(make_pair("", d_c));
-
-	// Sample rate for interleaved samples
-	if (d_c->has_get_config(ConfigKey::Samplerate)) {
-		samplerate_prop_ = static_pointer_cast<data::properties::UInt64Property>(
-			d_c->get_property(ConfigKey::Samplerate));
-	}
-}
-
 string HardwareDevice::id() const
 {
 	string conn_id = sr_device()->connection_id();
@@ -218,6 +178,47 @@ void HardwareDevice::open(function<void (const QString)> error_handler)
 shared_ptr<sigrok::HardwareDevice> HardwareDevice::sr_hardware_device() const
 {
 	return static_pointer_cast<sigrok::HardwareDevice>(sr_device_);
+}
+
+void HardwareDevice::init_configurables()
+{
+	// Init Configurables from Channel Groups
+	for (const auto &sr_cg_pair : sr_device_->channel_groups()) {
+		auto sr_cg = sr_cg_pair.second;
+		if (sr_cg->config_keys().size() == 0)
+			continue;
+
+		auto cg_c = Configurable::create(
+			sr_cg, next_configurable_index_++,
+			short_name().toStdString(), device_type_);
+		configurable_map_.insert(make_pair(sr_cg_pair.first, cg_c));
+	}
+
+	/*
+	 * Check if the device configurable has any config key of use for us.
+	 * We will ignore the common device config keys like "continuous",
+	 * "limit_samples" and "limit_time"
+	 */
+	size_t device_ck_cnt = 0;
+	for (const auto &key : sr_device_->config_keys()) {
+		if (deviceutil::get_config_key(key) != ConfigKey::Unknown)
+			++device_ck_cnt;
+	}
+	if (device_ck_cnt == 0)
+		return;
+
+	// Init Configurable from Device
+	auto d_c = Configurable::create(
+		sr_device_, next_configurable_index_++,
+		short_name().toStdString(), device_type_);
+	configurable_map_.insert(make_pair("", d_c));
+
+	// Sample rate for interleaved samples
+	if (d_c->has_get_config(ConfigKey::Samplerate)) {
+		samplerate_prop_ = static_pointer_cast<data::properties::UInt64Property>(
+			d_c->get_property(ConfigKey::Samplerate));
+		cur_samplerate_ = samplerate_prop_->uint64_value();
+	}
 }
 
 void HardwareDevice::init_channels()

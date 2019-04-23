@@ -87,11 +87,6 @@ protected:
 
 public:
 	/**
-	 * Inits all configurables for this hardware device.
-	 */
-	void init() override;
-
-	/**
 	 * Returns the sigrok hardware device
 	 */
 	shared_ptr<sigrok::HardwareDevice> sr_hardware_device() const;
@@ -112,6 +107,10 @@ public:
 
 protected:
 	/**
+	 * Init all configurables for this hardware device.
+	 */
+	void init_configurables() override;
+	/**
 	 * Init all sigrok channles for this hardware device
 	 */
 	void init_channels() override;
@@ -126,6 +125,7 @@ protected:
 
 private:
 	double frame_start_timestamp_;
+	uint64_t cur_samplerate_;
 	shared_ptr<data::properties::UInt64Property> samplerate_prop_;
 
 };

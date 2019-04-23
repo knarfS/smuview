@@ -102,7 +102,6 @@ void Session::add_device(shared_ptr<devices::BaseDevice> device,
 		device.reset();
 	}
 
-
 	devices_.insert(make_pair(device->id(), device));
 
 	Q_EMIT device_added(device);

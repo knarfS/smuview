@@ -117,18 +117,12 @@ void BaseDevice::open(function<void (const QString)> error_handler)
 	// Add device to session (do this in constructor??)
 	sr_session_->add_device(sr_device_);
 
+	// Init all configurables
+	this->init_configurables();
 	// Init all channels
 	this->init_channels();
-
 	// Init aquisition
-	sr_session_->add_datafeed_callback([=]
-		(shared_ptr<sigrok::Device> sr_device, shared_ptr<sigrok::Packet> sr_packet) {
-			data_feed_in(sr_device, sr_packet);
-		});
-	aquisition_thread_ = std::thread(
-		&BaseDevice::aquisition_thread_proc, this,
-		aquisition_thread_error_handler_);
-	aquisition_state_ = AquisitionState::Running;
+	this->init_acquisition();
 
 	device_open_ = true;
 }
@@ -372,6 +366,18 @@ shared_ptr<channels::UserChannel> BaseDevice::add_user_channel(
 	add_channel(channel, channel_group_name);
 
 	return channel;
+}
+
+void BaseDevice::init_acquisition()
+{
+	sr_session_->add_datafeed_callback([=]
+		(shared_ptr<sigrok::Device> sr_device, shared_ptr<sigrok::Packet> sr_packet) {
+			data_feed_in(sr_device, sr_packet);
+		});
+	aquisition_thread_ = std::thread(
+		&BaseDevice::aquisition_thread_proc, this,
+		aquisition_thread_error_handler_);
+	aquisition_state_ = AquisitionState::Running;
 }
 
 void BaseDevice::data_feed_in(shared_ptr<sigrok::Device> sr_device,

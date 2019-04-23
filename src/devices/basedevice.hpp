@@ -88,12 +88,6 @@ public:
 	virtual ~BaseDevice();
 
 	/**
-	 * Inits all configurables for this device. Implemented in the
-	 * specific device.
-	 */
-	virtual void init() = 0;
-
-	/**
 	 *
 	 */
 	shared_ptr<sigrok::Device> sr_device() const;
@@ -213,9 +207,18 @@ public:
 
 protected:
 	/**
-	 * Inits all channles for this device. Implemented in the specific device.
+	 * Init all configurables for this device. Implemented in the
+	 * specific device.
+	 */
+	virtual void init_configurables() = 0;
+	/**
+	 * Init all channels for this device. Implemented in the specific device.
 	 */
 	virtual void init_channels() = 0;
+	/**
+	 * Init acquisition for this device.
+	 */
+	void init_acquisition();
 
 	virtual void feed_in_header() = 0;
 	virtual void feed_in_trigger() = 0;

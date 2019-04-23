@@ -47,11 +47,6 @@ public:
 		string vendor, string model, string version);
 
 	/**
-	 * Inits all configurables for this hardware device. Not used in here!
-	 */
-	void init() override;
-
-	/**
 	 * Builds the name
 	 */
 	string name() const override;
@@ -85,9 +80,14 @@ public:
 
 protected:
 	/**
-	 * Inits all channles of this hardware device
+	 * Init all configurables for this user device. Not used in here!
+	 */
+	void init_configurables() override;
+	/**
+	 * Init all channles of this user device.
 	 */
 	void init_channels() override;
+
 	void feed_in_header() override;
 	void feed_in_trigger() override;
 	void feed_in_meta(shared_ptr<sigrok::Meta> sr_meta) override;

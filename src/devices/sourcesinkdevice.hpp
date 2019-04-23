@@ -52,14 +52,11 @@ public:
 			make_shared_enabler(Arg&&...arg) : SourceSinkDevice(forward<Arg>(arg)...) {}
 		};
 
-		shared_ptr<SourceSinkDevice> device =
-			make_shared<make_shared_enabler>(forward<Arg>(arg)...);
-		device->init();
-
-		return device;
+		return make_shared<make_shared_enabler>(forward<Arg>(arg)...);
 	}
 
-	void init_channels();
+protected:
+	void init_channels() override;
 
 };
 

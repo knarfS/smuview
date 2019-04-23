@@ -53,11 +53,7 @@ public:
 			make_shared_enabler(Arg&&...arg) : MeasurementDevice(forward<Arg>(arg)...) {}
 		};
 
-		shared_ptr<MeasurementDevice> device =
-			make_shared<make_shared_enabler>(forward<Arg>(arg)...);
-		device->init();
-
-		return device;
+		return make_shared<make_shared_enabler>(forward<Arg>(arg)...);
 	}
 
 };

@@ -48,10 +48,6 @@ UserDevice::UserDevice(
 	device_type_ = DeviceType::UserDevice;
 }
 
-void UserDevice::init()
-{
-}
-
 string UserDevice::id() const
 {
 	string conn_id = sr_device()->connection_id();
@@ -178,6 +174,10 @@ void UserDevice::add_channel(shared_ptr<channels::BaseChannel> channel,
 		channel_index_, sigrok::ChannelType::ANALOG, name());
 	channel_index_++;
 	BaseDevice::add_channel(channel, channel_group_name);
+}
+
+void UserDevice::init_configurables()
+{
 }
 
 void UserDevice::init_channels()
