@@ -284,6 +284,10 @@ set(smuview_SOURCES
   src/ui/views/measurementcontrolview.cpp
   src/ui/views/plotview.cpp
   src/ui/views/powerpanelview.cpp
+  src/ui/views/scopehorizontalcontrolview.cpp
+  src/ui/views/scopeplotview.cpp
+  src/ui/views/scopetriggercontrolview.cpp
+  src/ui/views/scopeverticalcontrolview.cpp
   src/ui/views/smuscriptview.cpp
   src/ui/views/sourcesinkcontrolview.cpp
   src/ui/views/valuepanelview.cpp
