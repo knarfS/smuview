@@ -65,7 +65,9 @@ namespace devices {
 HardwareDevice::HardwareDevice(
 		const shared_ptr<sigrok::Context> sr_context,
 		shared_ptr<sigrok::HardwareDevice> sr_device) :
-	BaseDevice(sr_context, sr_device)
+	BaseDevice(sr_context, sr_device),
+	frame_open_(false),
+	frame_begin_(false)
 {
 	// Set options for different device types
 	// TODO: Multiple DeviceTypes per HardwareDevice
@@ -254,16 +256,23 @@ void HardwareDevice::feed_in_trigger()
 
 void HardwareDevice::feed_in_meta(shared_ptr<sigrok::Meta> sr_meta)
 {
+	/*
+	 * TODO: The meta packet is missing the information, to which
+	 * channel group / configurable the config key belongs.
+	 *
+	 * Workaround: First try the device configurable (channel group ""),
+	 * then try the other configurables.
+	 */
+	const auto c = configurable_map_[""];
+	if (c && c->feed_in_meta(sr_meta))
+		return;
+
 	for (const auto &c_pair : configurable_map_) {
-		// TODO: The meta packet is missing the information, to which
-		// channel group the config key belongs.
-		// Workaround: Use a configurable from a channel group if available,
-		// else use the device configurable ("")
-		if (c_pair.first == "" && configurable_map_.size() > 1)
+		if (c_pair.first == "")
 			continue;
 
-		c_pair.second->feed_in_meta(sr_meta);
-		break;
+		if (c_pair.second && c_pair.second->feed_in_meta(sr_meta))
+			return;
 	}
 }
 
@@ -271,12 +280,14 @@ void HardwareDevice::feed_in_frame_begin()
 {
 	// TODO: use std::chrono / std::time
 	frame_start_timestamp_ = QDateTime::currentMSecsSinceEpoch() / (double)1000;
-	frame_began_ = true;
+	frame_open_ = true;
+	frame_begin_ = true;
 }
 
 void HardwareDevice::feed_in_frame_end()
 {
-	frame_began_ = false;
+	frame_open_ = false;
+	frame_begin_ = false;
 }
 
 void HardwareDevice::feed_in_logic(shared_ptr<sigrok::Logic> sr_logic)
@@ -292,9 +303,10 @@ void HardwareDevice::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
 
 	lock_guard<recursive_mutex> lock(data_mutex_);
 
-	uint64_t samplerate = 0;
-	if (samplerate_prop_ != nullptr)
-		samplerate = samplerate_prop_->uint64_value();
+	if (cur_samplerate_ == 0 && samplerate_prop_ != nullptr) {
+		// TODO: Don't get a config key while in acquisition -> deadlock!
+		//cur_samplerate_ = samplerate_prop_->uint64_value();
+	}
 
 	const vector<shared_ptr<sigrok::Channel>> sr_channels = sr_analog->channels();
 
@@ -318,14 +330,18 @@ void HardwareDevice::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
 
 		// TODO: use std::chrono / std::time
 		double timestamp;
-		if (frame_began_)
+		if (frame_open_)
 			timestamp = frame_start_timestamp_;
 		else
 			timestamp = QDateTime::currentMSecsSinceEpoch() / (double)1000;
 
-		//channel->push_sample_sr_analog(channel_data++, timestamp, sr_analog);
+		if (device_type_ == DeviceType::Oscilloscope && frame_begin_) {
+			channel->start_new_frame(frame_start_timestamp_);
+			frame_begin_ = false;
+		}
+
 		channel->push_interleaved_samples(channel_data++, num_samples,
-			sr_channels.size(), timestamp, samplerate, sr_analog);
+			sr_channels.size(), timestamp, cur_samplerate_, sr_analog);
 	}
 }
 

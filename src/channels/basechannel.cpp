@@ -26,6 +26,7 @@
 #include <utility>
 #include <vector>
 
+#include <QDateTime>
 #include <QDebug>
 #include <QString>
 
@@ -157,6 +158,7 @@ void BaseChannel::add_signal(shared_ptr<data::AnalogTimeSignal> signal)
 		//return;
 	}
 
+	// TODO: disconnect old actual_signal_?
 	connect(this, SIGNAL(channel_start_timestamp_changed(double)),
 			signal.get(), SLOT(on_channel_start_timestamp_changed(double)));
 
@@ -190,6 +192,19 @@ shared_ptr<data::BaseSignal> BaseChannel::add_signal(
 	this->add_signal(signal);
 
 	return signal;
+}
+
+void BaseChannel::start_new_frame(double timestamp)
+{
+	/*
+	 * TODO: Remove shared_from_this() / (channel pointer in signal), so that
+	 *       "add_signal()" can be called from MathChannel ctor.
+	 */
+	auto signal = make_shared<data::AnalogTimeSignal>(
+		actual_signal_->quantity(), actual_signal_->quantity_flags(),
+		actual_signal_->unit(), shared_from_this(), timestamp);
+
+	this->add_signal(signal);
 }
 
 shared_ptr<data::BaseSignal> BaseChannel::actual_signal()

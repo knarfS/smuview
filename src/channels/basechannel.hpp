@@ -58,17 +58,13 @@ class BaseDevice;
 namespace channels {
 
 enum class ChannelType {
-	/**
-	 * Channels with analog data (Power supplies, loads, DMMs)
-	 */
+	/** Channels with analog data (Power supplies, loads, DMMs) */
 	AnalogChannel,
-	/**
-	 * Virtual channel for calculated data
-	 */
+	/** Channel for scopes */
+	ScopeChannel,
+	/** Virtual channel for calculated data */
 	MathChannel,
-	/**
-	 * Virtual channel for user generated data (e.g. scripts)
-	 */
+	/** Virtual channel for user generated data (e.g. scripts) */
 	UserChannel
 };
 
@@ -170,6 +166,11 @@ public:
 		data::Quantity quantity,
 		set<data::QuantityFlag> quantity_flags,
 		data::Unit unit);
+
+	/**
+	 * Add a new signal, especially for scopes.
+	 */
+	void start_new_frame(double timestamp);
 
 	/**
 	 * Get the actual signal

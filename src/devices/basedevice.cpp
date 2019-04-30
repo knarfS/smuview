@@ -65,8 +65,7 @@ BaseDevice::BaseDevice(const shared_ptr<sigrok::Context> sr_context,
 	sr_device_(sr_device),
 	device_open_(false),
 	next_channel_index_(USER_CHANNEL_START_INDEX),
-	next_configurable_index_(CONFIGURABLE_START_INDEX),
-	frame_began_(false)
+	next_configurable_index_(CONFIGURABLE_START_INDEX)
 {
 	// Set up a sigrok session per smuvierw device
 	sr_session_ = sv::Session::sr_context->create_session();
@@ -432,7 +431,8 @@ void BaseDevice::data_feed_in(shared_ptr<sigrok::Device> sr_device,
 		try {
 			feed_in_analog(
 				dynamic_pointer_cast<sigrok::Analog>(sr_packet->payload()));
-		} catch (bad_alloc &) {
+		}
+		catch (bad_alloc &) {
 			//out_of_memory_ = true;
 		}
 		break;
@@ -483,7 +483,7 @@ void BaseDevice::aquisition_thread_proc()
 
 	qWarning()
 		<< "Start aquisition for " << short_name()
-		<< ",  aquisition_start_timestamp_ = "
+		<< ", aquisition_start_timestamp_ = "
 		<< util::format_time_date(aquisition_start_timestamp_);
 
 	try {

@@ -50,10 +50,11 @@ AnalogTimeSignal::AnalogTimeSignal(
 	signal_start_timestamp_(signal_start_timestamp),
 	last_timestamp_(0.)
 {
+	/*
 	qWarning() << "Init analog time signal " << display_name()
 		<< ", signal_start_timestamp_ = "
 		<< util::format_time_date(signal_start_timestamp_);
-
+	*/
 	time_ = make_shared<vector<double>>();
 }
 
@@ -201,16 +202,21 @@ void AnalogTimeSignal::push_samples(void *data,
 {
 	//lock_guard<recursive_mutex> lock(mutex_);
 
+	timestamp = 0;
+
 	double dsample;
 
+	qWarning() << "AnalogTimeSignal::push_samples(): samplerate = " << samplerate;
 	uint64_t pos = 0;
 	double time_stride = 0;
-	if (samplerate > 0)
+	if (samplerate > 0) {
 		time_stride = 1 / (double)samplerate;
+		qWarning() << "AnalogTimeSignal::push_samples(): time_stride = " << time_stride;
+	}
 
 	/*
 	if (timestamp < last_timestamp_) {
-		qWarning() << "AnalogSignal::push_samples(): samples = " << samples
+		qWarning() << "AnalogTimeSignal::push_samples(): samples = " << samples
 			<<  ", timestamp < last_timestamp = "
 			<< timestamp-signal_start_timestamp_ << " < "
 			<< last_timestamp_-signal_start_timestamp_;
@@ -224,11 +230,9 @@ void AnalogTimeSignal::push_samples(void *data,
 			dsample = ((double *)data)[pos];
 
 		/*
-		qWarning() << "AnalogSignal::push_samples(): " << name_
+		qWarning() << "AnalogTimeSignal::push_samples(): " << display_name()
 			<< ": sample = " << dsample << " @ "
 			<<  timestamp - signal_start_timestamp_;
-		qWarning() << "AnalogSignal::push_samples(): " << name_
-			<< ": remaining_samples = " << remaining_samples;
 		*/
 
 		// TODO: Mutex?

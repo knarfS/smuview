@@ -251,8 +251,6 @@ protected:
 	AquisitionState aquisition_state_;
 	double aquisition_start_timestamp_;
 
-	bool frame_began_;
-
 private:
 	void aquisition_thread_proc();
 

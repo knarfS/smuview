@@ -121,6 +121,17 @@ protected:
 	void feed_in_analog(shared_ptr<sigrok::Analog> sr_analog) override;
 
 private:
+	/**
+	 * Is true, if a new frame has been opened by SR_DF_FRAME_BEGIN, but not
+	 * closed yet by a SR_DF_FRAME_END packet.
+	 */
+	bool frame_open_;
+	/**
+	 * Is true, if a new frame has been opened by SR_DF_FRAME_BEGIN, just before
+	 * a SR_DF_ANALOG package. Will be set to false with the first SR_DF_ANALOG
+	 * package after SR_DF_FRAME_BEGIN.
+	 */
+	bool frame_begin_;
 	double frame_start_timestamp_;
 	uint64_t cur_samplerate_;
 	shared_ptr<data::properties::UInt64Property> samplerate_prop_;

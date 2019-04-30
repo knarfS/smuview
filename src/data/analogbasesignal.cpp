@@ -53,7 +53,7 @@ AnalogBaseSignal::AnalogBaseSignal(
 	min_value_(std::numeric_limits<double>::max()),
 	max_value_(std::numeric_limits<double>::lowest())
 {
-	qWarning() << "Init analog base signal " << display_name();
+	//qWarning() << "Init analog base signal " << display_name();
 	data_ = make_shared<vector<double>>();
 }
 
