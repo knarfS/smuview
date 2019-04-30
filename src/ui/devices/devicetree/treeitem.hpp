@@ -32,9 +32,10 @@ enum class TreeItemType {
 	DeviceItem = 1001,
 	ChannelGroupItem = 1002,
 	ChannelItem = 1003,
-	SignalItem = 1004,
-	ConfigurableItem = 1005,
-	PropertyItem = 1006,
+	ScopeChannelItem = 1004,
+	SignalItem = 1005,
+	ConfigurableItem = 1006,
+	PropertyItem = 1007,
 };
 
 class TreeItem : public QStandardItem

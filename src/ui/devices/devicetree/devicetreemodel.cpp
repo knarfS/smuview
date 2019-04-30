@@ -180,9 +180,15 @@ void DeviceTreeModel::add_channel(shared_ptr<channels::BaseChannel> channel,
 		set<string> chg_names { chg_name };
 		TreeItem *channel_item = find_channel(channel, chg_names, parent_item);
 		if (!channel_item) {
+			TreeItemType tree_item_type;
+			if (channel->type() == channels::ChannelType::ScopeChannel)
+				tree_item_type = TreeItemType::ScopeChannelItem;
+			else
+				tree_item_type = TreeItemType::ChannelItem;
+
 			beginInsertRows(new_parent_item->index(),
 				new_parent_item->rowCount(), new_parent_item->rowCount()+1);
-			channel_item = new TreeItem(TreeItemType::ChannelItem);
+			channel_item = new TreeItem(tree_item_type);
 			channel_item->setText(QString::fromStdString(channel->name()));
 			channel_item->setData(QVariant::fromValue(channel), DeviceTreeModel::DataRole);
 			channel_item->setData(channel->index(), DeviceTreeModel::SortRole);

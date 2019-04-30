@@ -215,8 +215,9 @@ void DeviceTreeView::expand_recursive(QStandardItem *item)
 {
 	if (!item)
 		return;
-
 	if (item->type() == (int)TreeItemType::ConfigurableItem)
+		return;
+	if (item->type() == (int)TreeItemType::ScopeChannelItem)
 		return;
 
 	this->expand(tree_model_->indexFromItem(item));
