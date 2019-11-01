@@ -89,8 +89,9 @@ void SmuScriptView::connect_signals()
 void SmuScriptView::on_action_start_script_triggered()
 {
 	string file_name =
-		//"/home/frank/Projekte/elektronik/sigrok/smuview/smuscript/test1.py";
-		"/home/frank/Projekte/elektronik/sigrok/smuview/smuscript/example1.py";
+		"/home/frank/Projekte/elektronik/sigrok/smuview/smuscript/test1.py";
+		//"/home/frank/Projekte/elektronik/sigrok/smuview/smuscript/test2.py";
+		//"/home/frank/Projekte/elektronik/sigrok/smuview/smuscript/example1.py";
 	smu_script_runner_->run(file_name);
 }
 
