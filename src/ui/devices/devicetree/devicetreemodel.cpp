@@ -167,10 +167,10 @@ void DeviceTreeModel::add_channel(shared_ptr<channels::BaseChannel> channel,
 
 	// Find existing channel in all channel groups
 	if (!find_channel(channel, channel->channel_group_names(), parent_item)) {
-		connect(
-			channel.get(),
-			SIGNAL(signal_added(shared_ptr<sv::data::BaseSignal>)),
-			this, SLOT(on_signal_added(shared_ptr<sv::data::BaseSignal>)));
+		//connect(
+		//	channel.get(),
+		//	SIGNAL(signal_added(shared_ptr<sv::data::BaseSignal>)),
+		//	this, SLOT(on_signal_added(shared_ptr<sv::data::BaseSignal>)));
 	}
 
 	for (const auto &chg_name : channel_group_names) {

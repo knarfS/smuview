@@ -180,6 +180,7 @@ set(smuview_SOURCES
   src/session.cpp
   src/util.cpp
   src/channels/addscchannel.cpp
+  src/channels/analoghardwarechannel.cpp
   src/channels/basechannel.cpp
   src/channels/dividechannel.cpp
   src/channels/hardwarechannel.cpp
@@ -188,9 +189,11 @@ set(smuview_SOURCES
   src/channels/movingavgchannel.cpp
   src/channels/multiplysfchannel.cpp
   src/channels/multiplysschannel.cpp
+  src/channels/scopehardwarechannel.cpp
   src/channels/userchannel.cpp
   src/data/analogbasesignal.cpp
   src/data/analogsamplesignal.cpp
+  src/data/analogscopesignal.cpp
   src/data/analogtimesignal.cpp
   src/data/basesignal.cpp
   src/data/datautil.cpp
@@ -304,6 +307,7 @@ set(smuview_SOURCES
   src/ui/widgets/plot/plot.cpp
   src/ui/widgets/plot/plotmagnifier.cpp
   src/ui/widgets/plot/plotscalepicker.cpp
+  src/ui/widgets/plot/scopecurvedata.cpp
   src/ui/widgets/plot/scopeplot.cpp
   src/ui/widgets/plot/timecurvedata.cpp
   src/ui/widgets/plot/xycurvedata.cpp

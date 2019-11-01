@@ -34,6 +34,8 @@
 
 #include "basechannel.hpp"
 #include "src/util.hpp"
+#include "src/data/analogbasesignal.hpp"
+#include "src/data/analogscopesignal.hpp"
 #include "src/data/analogtimesignal.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/data/datautil.hpp"
@@ -149,7 +151,7 @@ void BaseChannel::add_channel_group_name(string channel_group_name)
 	channel_group_names_.insert(channel_group_name);
 }
 
-void BaseChannel::add_signal(shared_ptr<data::AnalogTimeSignal> signal)
+void BaseChannel::add_signal(shared_ptr<data::AnalogBaseSignal> signal)
 {
 	if (signal_map_.size() > 0 && fixed_signal_) {
 		qWarning() << "Warning: Adding new signal " << signal->display_name() <<
@@ -174,37 +176,6 @@ void BaseChannel::add_signal(shared_ptr<data::AnalogTimeSignal> signal)
 
 	actual_signal_ = signal;
 	Q_EMIT signal_added(signal);
-}
-
-shared_ptr<data::BaseSignal> BaseChannel::add_signal(
-	data::Quantity quantity,
-	set<data::QuantityFlag> quantity_flags,
-	data::Unit unit)
-{
-	/*
-	 * TODO: Remove shared_from_this() / (channel pointer in signal), so that
-	 *       "add_signal()" can be called from MathChannel ctor.
-	 */
-	auto signal = make_shared<data::AnalogTimeSignal>(
-		quantity, quantity_flags, unit,
-		shared_from_this(), channel_start_timestamp_);
-
-	this->add_signal(signal);
-
-	return signal;
-}
-
-void BaseChannel::start_new_frame(double timestamp)
-{
-	/*
-	 * TODO: Remove shared_from_this() / (channel pointer in signal), so that
-	 *       "add_signal()" can be called from MathChannel ctor.
-	 */
-	auto signal = make_shared<data::AnalogTimeSignal>(
-		actual_signal_->quantity(), actual_signal_->quantity_flags(),
-		actual_signal_->unit(), shared_from_this(), timestamp);
-
-	this->add_signal(signal);
 }
 
 shared_ptr<data::BaseSignal> BaseChannel::actual_signal()

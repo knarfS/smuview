@@ -29,8 +29,7 @@ namespace plot {
 
 BaseCurveData::BaseCurveData(CurveType curve_type) :
 	QwtSeriesData<QPointF>(),
-	curve_type_(curve_type),
-	relative_time_(true)
+	curve_type_(curve_type)
 {
 }
 
@@ -50,16 +49,6 @@ QColor BaseCurveData::color() const
 		return Qt::yellow;
 
 	//return color_;
-}
-
-void BaseCurveData::set_relative_time(bool is_relative_time)
-{
-	relative_time_ = is_relative_time;
-}
-
-bool BaseCurveData::is_relative_time() const
-{
-	return relative_time_;
 }
 
 } // namespace plot

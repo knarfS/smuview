@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UI_WIDGETS_PLOT_TIMECURVEDATA_HPP
-#define UI_WIDGETS_PLOT_TIMECURVEDATA_HPP
+#ifndef UI_WIDGETS_PLOT_SCOPECURVEDATA_HPP
+#define UI_WIDGETS_PLOT_SCOPECURVEDATA_HPP
 
 #include <memory>
 
@@ -33,21 +33,18 @@ using std::shared_ptr;
 namespace sv {
 
 namespace data {
-class AnalogTimeSignal;
+class AnalogScopeSignal;
 }
 
 namespace ui {
 namespace widgets {
 namespace plot {
 
-class TimeCurveData : public BaseCurveData
+class ScopeCurveData : public BaseCurveData
 {
 
 public:
-	TimeCurveData(shared_ptr<sv::data::AnalogTimeSignal> signal);
-
-	void set_relative_time(bool is_relative_time);
-	bool is_relative_time() const;
+	ScopeCurveData(shared_ptr<sv::data::AnalogScopeSignal> signal);
 
 	bool is_equal(const BaseCurveData *other) const override;
 
@@ -64,11 +61,10 @@ public:
 	QString y_data_unit() const override;
 	QString y_data_title() const override;
 
-	shared_ptr<sv::data::AnalogTimeSignal> signal() const;
+	shared_ptr<sv::data::AnalogScopeSignal> signal() const;
 
 private:
-	shared_ptr<sv::data::AnalogTimeSignal> signal_;
-	bool relative_time_;
+	shared_ptr<sv::data::AnalogScopeSignal> signal_;
 
 };
 
@@ -77,4 +73,4 @@ private:
 } // namespace ui
 } // namespace sv
 
-#endif // UI_WIDGETS_PLOT_TIMECURVEDATA_HPP
+#endif // UI_WIDGETS_PLOT_SCOPECURVEDATA_HPP

@@ -95,7 +95,7 @@ public:
 	 * Push multiple samples to the signal.
 	 */
 	void push_samples(void *data, uint64_t samples, double timestamp,
-		uint64_t samplerate, size_t unit_size, int digits, int decimal_places);
+		size_t unit_size, int digits, int decimal_places) override;
 
 	double signal_start_timestamp() const;
 	double first_timestamp(bool relative_time) const;

@@ -40,9 +40,6 @@ class Session;
 namespace channels {
 class BaseChannel;
 }
-namespace data {
-class AnalogTimeSignal;
-}
 namespace devices {
 class OscilloscopeDevice;
 }

@@ -102,11 +102,11 @@ public:
 			}
 		}
 
-		setupPalette();
+		setup_palette();
 	}
 
 private:
-	void setupPalette()
+	void setup_palette()
 	{
 		QPalette pal = palette();
 
@@ -130,8 +130,9 @@ ScopePlot::ScopePlot(uint64_t samplerate, int num_hdiv,
 	samplerate_(samplerate),
 	num_hdiv_(num_hdiv),
 	timebase_(timebase),
-	plot_interval_(200),
-	timer_id_(-1)
+	plot_interval_(200), // TODO
+	timer_id_(-1),
+	trigger_marker_(nullptr)
 	/*,
 	active_marker_(nullptr),
 	markers_label_(nullptr),
@@ -266,6 +267,18 @@ void ScopePlot::update_timebase(const QVariant timebase)
 {
 	timebase_ = timebase.value<data::rational_t>();
 	update_x_interval();
+}
+
+void ScopePlot::update_trigger_source(const QVariant trigger_source)
+{
+	trigger_source_ = trigger_source.toString();
+	update_trigger_marker();
+}
+
+void ScopePlot::update_trigger_level(const QVariant trigger_level)
+{
+	trigger_level_ = trigger_level.toDouble();
+	update_trigger_marker();
 }
 
 /*
@@ -522,36 +535,27 @@ void ScopePlot::update_intervals()
 
 bool ScopePlot::update_x_interval()
 {
-	double timespan = 0.;
-	double min = 0.;
-	double max = 0.;
-
 	if (num_hdiv_ > 0 && timebase_.second > 0) {
-		timespan = num_hdiv_ * (timebase_.first / (double)timebase_.second);
+		double timespan = num_hdiv_ * (timebase_.first / (double)timebase_.second);
+		qWarning() << "ScopePlot::update_x_interval(): timespan = " << timespan;
+		this->setAxisScale(QwtPlot::xBottom, 0, timespan); // TODO: axis ID
 	}
-	/*
 	else {
-		*/
 		// Find the x max value for the curves
 		// TODO: old max?
+		double min = 0.;
+		double max = 0.;
 		for (const auto &curve_data_pair : curve_data_map_) {
 			QRectF boundaries = curve_data_pair.second->boundingRect();
-			//if (boundaries.right() > timespan)
-			//	timespan = boundaries.right();
-
 			//if (boundaries.left() < min)
-				min = boundaries.left();
-			//if (boundaries.right() > max)
+			//	min = boundaries.left();
+			if (boundaries.right() > max)
 				max = boundaries.right();
 		}
-	/*
+		this->setAxisScale(QwtPlot::xBottom, min, max); // TODO: axis ID
+		qWarning() << "ScopePlot::update_x_interval(): min = " << min;
+		qWarning() << "ScopePlot::update_x_interval(): max = " << max;
 	}
-	*/
-
-	qWarning() << "ScopePlot::update_x_interval(): timespan = " << timespan;
-	qWarning() << "ScopePlot::update_x_interval(): min = " << min;
-	qWarning() << "ScopePlot::update_x_interval(): max = " << max;
-	qWarning() << "ScopePlot::update_x_interval(): max - min = " << max-min;
 
 	/*
 	QwtInterval x_interval = this->axisInterval(QwtPlot::xBottom);
@@ -574,11 +578,9 @@ bool ScopePlot::update_x_interval()
 	}
 	this->setAxisScaleDiv(QwtPlot::xBottom, scaleDiv); // TODO: axis ID
 	*/
-	//this->setAxisScale(QwtPlot::xBottom, 0, timespan); // TODO: axis ID
-	this->setAxisScale(QwtPlot::xBottom, min, max); // TODO: axis ID
 
 	for (const auto &curve_data_pair : curve_data_map_) {
-		painted_points_map_[curve_data_pair.second] = 0;
+		painted_points_map_[curve_data_pair.second] = 0; // TODO?
 	}
 
 	return true;
@@ -592,12 +594,10 @@ bool ScopePlot::update_y_interval(int y_axis_id)
 	double max = y_interval.maxValue();
 	bool interval_changed = false;
 
-	/*
 	qWarning() << "ScopePlot::update_y_interval() for b.bottom < y_int.min = " <<
 		boundaries.bottom() << " < " << min;
 	qWarning() << "ScopePlot::update_y_interval() for b.top > y_int.max = " <<
 		boundaries.top() << " > " << max;
-	*/
 
 	if (boundaries.bottom() < min) {
 		// new value + 10%
@@ -620,6 +620,33 @@ bool ScopePlot::update_y_interval(int y_axis_id)
 	}
 
 	return interval_changed;
+}
+
+bool ScopePlot::update_trigger_marker()
+{
+	// TODO: trigger source
+
+	if (!trigger_marker_) {
+		QwtSymbol *marker_sym = new QwtSymbol(QwtSymbol::RTriangle,
+			QBrush(Qt::yellow), QPen(Qt::yellow), QSize(20, 20));
+
+		trigger_marker_ = new QwtPlotMarker();
+		trigger_marker_->setSymbol(marker_sym);
+		trigger_marker_->setLineStyle(QwtPlotMarker::HLine);
+		trigger_marker_->setLinePen(Qt::yellow, 1, Qt::DashDotLine);
+		trigger_marker_->setLabelOrientation(Qt::Horizontal);
+		trigger_marker_->setLabelAlignment(Qt::AlignTop | Qt::AlignRight);
+		trigger_marker_->setXAxis(QwtPlot::xBottom);
+		trigger_marker_->setYAxis(QwtPlot::yLeft);
+		trigger_marker_->attach(this);
+	}
+
+	trigger_marker_->setLabel(QwtText(trigger_source_));
+	trigger_marker_->setValue(0., trigger_level_);
+
+	replot();
+
+	return true;
 }
 
 /*

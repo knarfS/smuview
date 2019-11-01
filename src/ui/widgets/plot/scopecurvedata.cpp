@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,8 +23,8 @@
 #include <QRectF>
 #include <QString>
 
-#include "timecurvedata.hpp"
-#include "src/data/analogtimesignal.hpp"
+#include "scopecurvedata.hpp"
+#include "src/data/analogscopesignal.hpp"
 #include "src/data/datautil.hpp"
 #include "src/ui/widgets/plot/basecurvedata.hpp"
 
@@ -35,39 +35,28 @@ namespace ui {
 namespace widgets {
 namespace plot {
 
-TimeCurveData::TimeCurveData(shared_ptr<sv::data::AnalogTimeSignal> signal) :
-	BaseCurveData(CurveType::TimeCurve),
-	signal_(signal),
-	relative_time_(true)
+ScopeCurveData::ScopeCurveData(shared_ptr<sv::data::AnalogScopeSignal> signal) :
+	BaseCurveData(CurveType::ScopeCurve),
+	signal_(signal)
 {
 }
 
-void TimeCurveData::set_relative_time(bool is_relative_time)
+bool ScopeCurveData::is_equal(const BaseCurveData *other) const
 {
-	relative_time_ = is_relative_time;
-}
-
-bool TimeCurveData::is_relative_time() const
-{
-	return relative_time_;
-}
-
-bool TimeCurveData::is_equal(const BaseCurveData *other) const
-{
-	const TimeCurveData *tcd = dynamic_cast<const TimeCurveData *>(other);
-	if (tcd != nullptr) {
-		return (signal_ == tcd->signal());
+	const ScopeCurveData *scd = dynamic_cast<const ScopeCurveData *>(other);
+	if (scd != nullptr) {
+		return (signal_ == scd->signal());
 	}
 	else {
 		return false;
 	}
 }
 
-QPointF TimeCurveData::sample(size_t i) const
+QPointF ScopeCurveData::sample(size_t i) const
 {
 	//signal_data_->lock();
 
-	auto sample = signal_->get_sample(i, relative_time_);
+	auto sample = signal_->get_sample(i);
 	QPointF sample_point(sample.first, sample.second);
 
 	//signal_data_->.unlock();
@@ -75,32 +64,30 @@ QPointF TimeCurveData::sample(size_t i) const
 	return sample_point;
 }
 
-size_t TimeCurveData::size() const
+size_t ScopeCurveData::size() const
 {
 	// TODO: Synchronize x/y sample data
 	return signal_->sample_count();
 }
 
-QRectF TimeCurveData::boundingRect() const
+QRectF ScopeCurveData::boundingRect() const
 {
-	/*
-	qWarning() << "TimeCurveData::boundingRect(): min time = "
-		<< signal_->first_timestamp(relative_time_);
-	qWarning() << "TimeCurveData::boundingRect(): max time = "
-		<< signal_->last_timestamp(relative_time_);
-	qWarning() << "TimeCurveData::boundingRect(): min value = "
+	qWarning() << "ScopeCurveData::boundingRect(): min time = "
+		<< signal_->first_timestamp();
+	qWarning() << "ScopeCurveData::boundingRect(): max time = "
+		<< signal_->last_timestamp();
+	qWarning() << "ScopeCurveData::boundingRect(): min value = "
 		<< signal_->min_value();
-	qWarning() << "TimeCurveData::boundingRect(): max value = "
+	qWarning() << "ScopeCurveData::boundingRect(): max value = "
 		<< signal_->max_value();
-	*/
 
 	// top left, bottom right
 	return QRectF(
-		QPointF(signal_->first_timestamp(relative_time_), signal_->max_value()),
-		QPointF(signal_->last_timestamp(relative_time_), signal_->min_value()));
+		QPointF(signal_->first_timestamp(), signal_->max_value()),
+		QPointF(signal_->last_timestamp(), signal_->min_value()));
 }
 
-QPointF TimeCurveData::closest_point(const QPointF &pos, double *dist) const
+QPointF ScopeCurveData::closest_point(const QPointF &pos, double *dist) const
 {
 	(void)dist;
 	const double x_value = pos.x();
@@ -128,44 +115,44 @@ QPointF TimeCurveData::closest_point(const QPointF &pos, double *dist) const
 	return sample(index_min);
 }
 
-QString TimeCurveData::name() const
+QString ScopeCurveData::name() const
 {
 	return signal_->display_name();
 }
 
-QString TimeCurveData::x_data_quantity() const
+QString ScopeCurveData::x_data_quantity() const
 {
 	return data::datautil::format_quantity(sv::data::Quantity::Time);
 }
 
-QString TimeCurveData::x_data_unit() const
+QString ScopeCurveData::x_data_unit() const
 {
 	return data::datautil::format_unit(sv::data::Unit::Second);
 }
 
-QString TimeCurveData::x_data_title() const
+QString ScopeCurveData::x_data_title() const
 {
 	return QString("%1 [%2]").arg(x_data_quantity()).arg(x_data_unit());
 }
 
-QString TimeCurveData::y_data_quantity() const
+QString ScopeCurveData::y_data_quantity() const
 {
 	return signal_->quantity_name();
 }
 
-QString TimeCurveData::y_data_unit() const
+QString ScopeCurveData::y_data_unit() const
 {
 	// Don't use signal_->unit_name(), so we can add AC/DC to axis label
 	return data::datautil::format_unit(
 		signal_->unit(), signal_->quantity_flags());
 }
 
-QString TimeCurveData::y_data_title() const
+QString ScopeCurveData::y_data_title() const
 {
 	return QString("%1 [%2]").arg(y_data_quantity()).arg(y_data_unit());
 }
 
-shared_ptr<sv::data::AnalogTimeSignal> TimeCurveData::signal() const
+shared_ptr<sv::data::AnalogScopeSignal> ScopeCurveData::signal() const
 {
 	return signal_;
 }

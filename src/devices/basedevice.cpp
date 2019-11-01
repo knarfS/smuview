@@ -34,8 +34,10 @@
 #include "basedevice.hpp"
 #include "src/session.hpp"
 #include "src/util.hpp"
+#include "src/channels/analoghardwarechannel.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/channels/hardwarechannel.hpp"
+#include "src/channels/scopehardwarechannel.hpp"
 #include "src/channels/mathchannel.hpp"
 #include "src/channels/userchannel.hpp"
 #include "src/data/basesignal.hpp"
@@ -325,11 +327,15 @@ shared_ptr<channels::BaseChannel> BaseDevice::add_sr_channel(
 		channel = channel_map()[sr_channel->name()];
 	}
 	else {
+		// TODO: move to static shared_ptr<channels::BaseChannel> ChannelManager::getChannel(DeviceType device_type)
 		set<string> chg_names { channel_group_name };
-		channel = make_shared<channels::HardwareChannel>(sr_channel,
-			shared_from_this(), chg_names, aquisition_start_timestamp_);
+		if (device_type_ == DeviceType::Oscilloscope)
+			channel = make_shared<channels::ScopeHardwareChannel>(sr_channel,
+				shared_from_this(), chg_names, aquisition_start_timestamp_);
+		else
+			channel = make_shared<channels::AnalogHardwareChannel>(sr_channel,
+				shared_from_this(), chg_names, aquisition_start_timestamp_);
 
-		// map<shared_ptr<sigrok::Channel>, shared_ptr<channels::BaseChannel>> sr_channel_map_;
 		sr_channel_map_.insert(make_pair(sr_channel, channel));
 	}
 

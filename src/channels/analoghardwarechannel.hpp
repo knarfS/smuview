@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,29 +17,27 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CHANNELS_USERCHANNEL_HPP
-#define CHANNELS_USERCHANNEL_HPP
+#ifndef CHANNELS_ANALOGHARDWARECHANNEL_HPP
+#define CHANNELS_ANALOGHARDWARECHANNEL_HPP
 
 #include <memory>
 #include <set>
 #include <string>
-#include <vector>
 
 #include <QObject>
 
-#include "src/channels/basechannel.hpp"
-#include "src/data/datautil.hpp"
+#include "src/channels/hardwarechannel.hpp"
 
 using std::set;
 using std::shared_ptr;
 using std::string;
-using std::vector;
+
+namespace sigrok {
+class Analog;
+class Channel;
+}
 
 namespace sv {
-
-namespace data {
-class BaseSignal;
-}
 
 namespace devices {
 class BaseDevice;
@@ -47,15 +45,19 @@ class BaseDevice;
 
 namespace channels {
 
-class UserChannel : public BaseChannel
+class AnalogHardwareChannel : public HardwareChannel
 {
 	Q_OBJECT
 
 public:
-	UserChannel(
-		string channel_name,
-		set<string> channel_group_names,
+	/**
+	 * A AnalogHardwareChannel does handle analog data with timestamps from a
+	 * (hardware) device.
+	 */
+	AnalogHardwareChannel(
+		shared_ptr<sigrok::Channel> sr_channel,
 		shared_ptr<devices::BaseDevice> parent_device,
+		set<string> channel_group_names,
 		double channel_start_timestamp);
 
 public:
@@ -66,14 +68,6 @@ public:
 		data::Quantity quantity,
 		set<data::QuantityFlag> quantity_flags,
 		data::Unit unit) override;
-
-	/**
-	 * Add a single sample with timestamp to the channel/signal
-	 * TODO: Move to base?
-	 */
-	void push_sample(double sample, double timestamp,
-		data::Quantity quantity, set<data::QuantityFlag> quantity_flags,
-		data::Unit unit, int digits, int decimal_places);
 
 public Q_SLOTS:
 	/**
@@ -86,4 +80,4 @@ public Q_SLOTS:
 } // namespace channels
 } // namespace sv
 
-#endif // CHANNELS_USERCHANNEL_HPP
+#endif // CHANNELS_ANALOGHARDWARECHANNEL_HPP

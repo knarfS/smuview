@@ -81,6 +81,9 @@ public Q_SLOTS:
 	void update_samplerate(const QVariant samplerate);
 	void update_num_hdiv(const QVariant num_hdiv);
 	void update_timebase(const QVariant timebase);
+	void update_trigger_source(const QVariant trigger_source);
+	void update_trigger_level(const QVariant trigger_level);
+	void update_curves();
 
 	/*
 	void add_marker(plot::BaseCurveData *curve_data);
@@ -99,10 +102,10 @@ protected:
 private:
 	int init_x_axis();
 	int init_y_axis(QString ch_name);
-	void update_curves();
 	void update_intervals();
 	bool update_x_interval();
 	bool update_y_interval(int y_axis_id);
+	bool update_trigger_marker();
 	//void update_markers_label();
 
 	/** Map the channel name to the Y axis ID. */
@@ -119,10 +122,13 @@ private:
 	uint64_t samplerate_;
 	int num_hdiv_;
 	sv::data::rational_t timebase_;
+	QString trigger_source_;
+	double trigger_level_;
 
 	int plot_interval_;
 	int timer_id_;
 
+	QwtPlotMarker *trigger_marker_;
 	/*
 	vector<QwtPlotMarker *> markers_;
 	vector<pair<QwtPlotMarker *, QwtPlotMarker *>> diff_markers_;

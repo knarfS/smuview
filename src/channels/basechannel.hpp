@@ -47,7 +47,7 @@ class Channel;
 namespace sv {
 
 namespace data {
-class AnalogTimeSignal;
+class AnalogBaseSignal;
 class BaseSignal;
 }
 
@@ -157,20 +157,15 @@ public:
 	 * Add a signal to the channel. For now only AnalogTimeSignals
 	 * are supported.
 	 */
-	void add_signal(shared_ptr<data::AnalogTimeSignal> signal);
+	void add_signal(shared_ptr<data::AnalogBaseSignal> signal);
 
 	/**
 	 * Add a signal by its quantity, quantity_flags and unit.
 	 */
-	shared_ptr<data::BaseSignal> add_signal(
+	virtual shared_ptr<data::BaseSignal> add_signal(
 		data::Quantity quantity,
 		set<data::QuantityFlag> quantity_flags,
-		data::Unit unit);
-
-	/**
-	 * Add a new signal, especially for scopes.
-	 */
-	void start_new_frame(double timestamp);
+		data::Unit unit) = 0;
 
 	/**
 	 * Get the actual signal
@@ -215,6 +210,10 @@ protected:
 	map<measured_quantity_t, vector<shared_ptr<data::BaseSignal>>> signal_map_;
 
 public Q_SLOTS:
+	/**
+	 * A new frame has started.
+	 */
+	virtual void on_frame_begin(double timestamp, uint64_t samplerate) = 0;
 	void on_aquisition_start_timestamp_changed(double);
 
 Q_SIGNALS:

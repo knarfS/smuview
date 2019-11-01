@@ -26,6 +26,7 @@
 
 #include <QObject>
 
+#include "src/data/datautil.hpp"
 #include "src/channels/basechannel.hpp"
 
 using std::set;
@@ -39,6 +40,9 @@ class Channel;
 
 namespace sv {
 
+namespace data {
+class BaseSignal;
+}
 namespace devices {
 class BaseDevice;
 }
@@ -59,14 +63,28 @@ public:
 		shared_ptr<devices::BaseDevice> parent_device,
 		set<string> channel_group_names,
 		double channel_start_timestamp);
+	virtual ~HardwareChannel();
 
 public:
+	/**
+	 * Add a signal by its quantity, quantity_flags and unit.
+	 */
+	virtual shared_ptr<data::BaseSignal> add_signal(
+		data::Quantity quantity,
+		set<data::QuantityFlag> quantity_flags,
+		data::Unit unit) = 0;
+
 	/**
 	 * Add one or more interleaved samples with timestamps to the channel
 	 */
 	void push_interleaved_samples(const float *data, size_t sample_count,
-		size_t stride, double timestamp, uint64_t samplerate,
-		shared_ptr<sigrok::Analog> sr_analog);
+		size_t stride, double timestamp, shared_ptr<sigrok::Analog> sr_analog);
+
+public Q_SLOTS:
+	/**
+	 * A new frame has started.
+	 */
+	virtual void on_frame_begin(double timestamp, uint64_t samplerate) = 0;
 
 };
 

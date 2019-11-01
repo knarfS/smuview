@@ -67,7 +67,8 @@ HardwareDevice::HardwareDevice(
 		shared_ptr<sigrok::HardwareDevice> sr_device) :
 	BaseDevice(sr_context, sr_device),
 	frame_open_(false),
-	frame_begin_(false)
+	frame_begin_(false),
+	cur_samplerate_(0)
 {
 	// Set options for different device types
 	// TODO: Multiple DeviceTypes per HardwareDevice
@@ -303,13 +304,7 @@ void HardwareDevice::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
 
 	lock_guard<recursive_mutex> lock(data_mutex_);
 
-	if (cur_samplerate_ == 0 && samplerate_prop_ != nullptr) {
-		// TODO: Don't get a config key while in acquisition -> deadlock!
-		//cur_samplerate_ = samplerate_prop_->uint64_value();
-	}
-
 	const vector<shared_ptr<sigrok::Channel>> sr_channels = sr_analog->channels();
-
 	unique_ptr<float[]> data(new float[num_samples * sr_channels.size()]);
 	sr_analog->get_data_as_float(data.get());
 	float *channel_data = data.get();
@@ -335,14 +330,18 @@ void HardwareDevice::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
 		else
 			timestamp = QDateTime::currentMSecsSinceEpoch() / (double)1000;
 
-		if (device_type_ == DeviceType::Oscilloscope && frame_begin_) {
-			channel->start_new_frame(frame_start_timestamp_);
-			frame_begin_ = false;
+		// TODO: Don't get a config key while in acquisition -> deadlock!
+		// TODO: Use meta packages and signals to push new sr to signal/channel
+		//cur_samplerate_ = samplerate_prop_->uint64_value();
+
+		if (frame_begin_) {
+			channel->on_frame_begin(frame_start_timestamp_, cur_samplerate_);
 		}
 
 		channel->push_interleaved_samples(channel_data++, num_samples,
-			sr_channels.size(), timestamp, cur_samplerate_, sr_analog);
+			sr_channels.size(), timestamp, sr_analog);
 	}
+	frame_begin_ = false;
 }
 
 } // namespace devices

@@ -28,11 +28,13 @@
 #include "scopeplotview.hpp"
 #include "src/session.hpp"
 #include "src/channels/basechannel.hpp"
-#include "src/data/analogtimesignal.hpp"
+#include "src/data/analogscopesignal.hpp"
 #include "src/data/datautil.hpp"
 #include "src/data/properties/baseproperty.hpp"
+#include "src/data/properties/doubleproperty.hpp"
 #include "src/data/properties/int32property.hpp"
 #include "src/data/properties/rationalproperty.hpp"
+#include "src/data/properties/stringproperty.hpp"
 #include "src/data/properties/uint64property.hpp"
 #include "src/devices/configurable.hpp"
 #include "src/devices/deviceutil.hpp"
@@ -42,7 +44,7 @@
 #include "src/ui/dialogs/selectsignaldialog.hpp"
 #include "src/ui/widgets/plot/scopeplot.hpp"
 #include "src/ui/widgets/plot/basecurvedata.hpp"
-#include "src/ui/widgets/plot/timecurvedata.hpp"
+#include "src/ui/widgets/plot/scopecurvedata.hpp"
 
 using std::dynamic_pointer_cast;
 using std::static_pointer_cast;
@@ -69,21 +71,26 @@ ScopePlotView::ScopePlotView(Session &session,
 {
 	assert(initial_channel_);
 
-	shared_ptr<data::AnalogTimeSignal> signal;
-	if (channel_1_->actual_signal())
-		signal = static_pointer_cast<data::AnalogTimeSignal>(
-			channel_1_->actual_signal());
-
-	connect(channel_1_.get(),
-		SIGNAL(signal_added(shared_ptr<sv::data::BaseSignal>)),
-		this, SLOT(on_signal_added()));
-
 	setup_ui();
 	setup_toolbar();
 	connect_signals();
 	init_values();
 
 	plot_->start();
+
+	/* in setup_ui()
+	shared_ptr<data::AnalogScopeSignal> signal;
+	if (channel_1_->actual_signal())
+		signal = static_pointer_cast<data::AnalogScopeSignal>(
+			channel_1_->actual_signal());
+	if (signal)
+		plot_->show_curve(channel->display_name(),
+			new widgets::plot::ScopeCurveData(signal));
+
+	connect(channel_1_.get(),
+		SIGNAL(signal_added(shared_ptr<sv::data::BaseSignal>)),
+		this, SLOT(on_signal_added()));
+	*/
 }
 
 ScopePlotView::ScopePlotView(Session &session,
@@ -125,13 +132,13 @@ void ScopePlotView::add_channel(shared_ptr<channels::BaseChannel> channel)
 
 	// TODO
 	channel_2_ = channel;
-	shared_ptr<data::AnalogTimeSignal> signal;
+	shared_ptr<data::AnalogScopeSignal> signal;
 	if (channel_2_->actual_signal())
-		signal = static_pointer_cast<data::AnalogTimeSignal>(
+		signal = static_pointer_cast<data::AnalogScopeSignal>(
 			channel_2_->actual_signal());
 	if (signal)
 		plot_->show_curve(channel->display_name(),
-			new widgets::plot::TimeCurveData(signal));
+			new widgets::plot::ScopeCurveData(signal));
 
 	connect(channel_2_.get(),
 		SIGNAL(signal_added(shared_ptr<sv::data::BaseSignal>)),
@@ -158,6 +165,8 @@ void ScopePlotView::setup_ui()
 	int num_hdiv = -1;
 	shared_ptr<data::properties::RationalProperty> timebase_prop;
 	data::rational_t timebase = {0, 0};
+	shared_ptr<data::properties::StringProperty> trigger_source_prop;
+	shared_ptr<data::properties::DoubleProperty> trigger_level_prop;
 
 	auto dev_configurable = device_->configurable_map()[""];
 	if (dev_configurable) {
@@ -175,6 +184,14 @@ void ScopePlotView::setup_ui()
 			auto prop = dev_configurable->get_property(ConfigKey::TimeBase);
 			timebase_prop = static_pointer_cast<data::properties::RationalProperty>(prop);
 			timebase = timebase_prop->rational_value();
+		}
+		if (dev_configurable->has_get_config(ConfigKey::TriggerSource)) {
+			auto prop = dev_configurable->get_property(ConfigKey::TriggerSource);
+			trigger_source_prop = static_pointer_cast<data::properties::StringProperty>(prop);
+		}
+		if (dev_configurable->has_get_config(ConfigKey::TriggerLevel)) {
+			auto prop = dev_configurable->get_property(ConfigKey::TriggerLevel);
+			trigger_level_prop = static_pointer_cast<data::properties::DoubleProperty>(prop);
 		}
 	}
 
@@ -194,14 +211,24 @@ void ScopePlotView::setup_ui()
 		connect(timebase_prop.get(), SIGNAL(value_changed(const QVariant)),
 			plot_, SLOT(update_timebase(const QVariant)));
 	}
+	if (trigger_source_prop) {
+		plot_->update_trigger_source(trigger_source_prop->value());
+		connect(trigger_source_prop.get(), SIGNAL(value_changed(const QVariant)),
+			plot_, SLOT(update_trigger_source(const QVariant)));
+	}
+	if (trigger_level_prop) {
+		plot_->update_trigger_level(trigger_level_prop->value());
+		connect(trigger_level_prop.get(), SIGNAL(value_changed(const QVariant)),
+			plot_, SLOT(update_trigger_level(const QVariant)));
+	}
 
-	shared_ptr<data::AnalogTimeSignal> signal;
+	shared_ptr<data::AnalogScopeSignal> signal;
 	if (channel_1_->actual_signal())
-		signal = static_pointer_cast<data::AnalogTimeSignal>(
+		signal = static_pointer_cast<data::AnalogScopeSignal>(
 			channel_1_->actual_signal());
 	if (signal)
 		plot_->show_curve(channel_1_->display_name(),
-			new widgets::plot::TimeCurveData(signal));
+			new widgets::plot::ScopeCurveData(signal));
 
 	connect(channel_1_.get(),
 		SIGNAL(signal_added(shared_ptr<sv::data::BaseSignal>)),
@@ -300,13 +327,16 @@ void ScopePlotView::on_signal_added()
 	if (!channel_1_)
 		return;
 
-	shared_ptr<sv::data::AnalogTimeSignal> signal;
+	shared_ptr<sv::data::AnalogScopeSignal> signal;
 	if (channel_1_->actual_signal())
-		signal = dynamic_pointer_cast<sv::data::AnalogTimeSignal>(
-			channel_1_->actual_signal());
-	if (signal)
+		signal = dynamic_pointer_cast<sv::data::AnalogScopeSignal>(
+			channel_1_->actual_signal()); // More channels
+	if (signal) {
 		plot_->show_curve(channel_1_->display_name(),
-			new widgets::plot::TimeCurveData(signal));
+			new widgets::plot::ScopeCurveData(signal));
+		connect(signal.get(), SIGNAL(sample_appended()),
+			plot_, SLOT(update_curves()));
+	}
 }
 
 void ScopePlotView::on_action_add_marker_triggered()

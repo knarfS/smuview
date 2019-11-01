@@ -275,11 +275,16 @@ int Plot::init_x_axis(widgets::plot::BaseCurveData *curve_data)
 	QString title = curve_data->x_data_title();
 	double min;
 	double max;
-	if (curve_data->curve_type() == CurveType::TimeCurve &&
-			curve_data->is_relative_time()) {
-		min = 0.;
-		max = add_time_;
-		// TODO: !curve_data->is_relative_time()
+	if (curve_data->curve_type() == CurveType::TimeCurve) {
+		// TODO
+		//auto time_curve_data = static_cast<TimeCurveData>(curve_data);
+		//if (time_curve_data->is_relative_time()) {
+			min = 0.;
+			max = add_time_;
+		//}
+		//else {
+			// TODO
+		//}
 	}
 	else {
 		min = 0.;
@@ -299,9 +304,10 @@ int Plot::init_x_axis(widgets::plot::BaseCurveData *curve_data)
 	this->enableAxis(x_axis_id);
 	this->add_axis_icons(x_axis_id);
 
-	if (curve_data->curve_type() == CurveType::TimeCurve &&
-			!curve_data->is_relative_time())
-		this->setAxisScaleEngine(x_axis_id, new QwtDateScaleEngine());
+	// TODO
+	//if (curve_data->curve_type() == CurveType::TimeCurve &&
+	//		!curve_data->is_relative_time())
+	//	this->setAxisScaleEngine(x_axis_id, new QwtDateScaleEngine());
 
 	return x_axis_id;
 }

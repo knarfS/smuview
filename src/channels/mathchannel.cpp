@@ -78,6 +78,28 @@ MathChannel::MathChannel(
 	 */
 }
 
+MathChannel::~MathChannel()
+{
+}
+
+shared_ptr<data::BaseSignal> MathChannel::add_signal(
+	data::Quantity quantity,
+	set<data::QuantityFlag> quantity_flags,
+	data::Unit unit)
+{
+	/*
+	 * TODO: Remove shared_from_this() / (channel pointer in signal), so that
+	 *       "add_signal()" can be called from MathChannel ctor.
+	 */
+	auto signal = make_shared<data::AnalogTimeSignal>(
+		quantity, quantity_flags, unit,
+		shared_from_this(), channel_start_timestamp_); // TODO: timestamp
+
+	BaseChannel::add_signal(signal);
+
+	return signal;
+}
+
 data::Quantity MathChannel::quantity()
 {
 	return quantity_;
@@ -98,6 +120,12 @@ void MathChannel::push_sample(double sample, double timestamp)
 	auto signal = static_pointer_cast<data::AnalogTimeSignal>(actual_signal_);
 	signal->push_sample(&sample, timestamp,
 		size_of_double_, digits_, decimal_places_);
+}
+
+void MathChannel::on_frame_begin(double timestamp, uint64_t samplerate)
+{
+	(void)timestamp;
+	(void)samplerate;
 }
 
 } // namespace devices

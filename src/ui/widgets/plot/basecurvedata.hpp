@@ -33,7 +33,8 @@ namespace plot {
 
 enum class CurveType {
 	TimeCurve,
-	XYCurve
+	XYCurve,
+	ScopeCurve,
 };
 
 class BaseCurveData : public QwtSeriesData<QPointF>
@@ -47,8 +48,6 @@ public:
 
 	CurveType curve_type() const;
 	QColor color() const;
-	void set_relative_time(bool is_relative_time);
-	bool is_relative_time() const;
 
 	virtual QPointF sample(size_t i) const = 0;
 	virtual size_t size() const = 0;
@@ -66,7 +65,6 @@ public:
 protected:
 	const CurveType curve_type_;
 	QColor color_;
-	bool relative_time_;
 
 };
 

@@ -60,6 +60,16 @@ public:
 		set<string> channel_group_names,
 		string channel_name,
 		double channel_start_timestamp);
+	virtual ~MathChannel();
+
+public:
+	/**
+	 * Add a signal by its quantity, quantity_flags and unit.
+	 */
+	shared_ptr<data::BaseSignal> add_signal(
+		data::Quantity quantity,
+		set<data::QuantityFlag> quantity_flags,
+		data::Unit unit) override;
 
 	/**
 	 * Get the quantity of the math channel.
@@ -78,6 +88,12 @@ public:
 	 * TODO: remove when add_signal() is calles in the MathChannel ctor
 	 */
 	data::Unit unit();
+
+public Q_SLOTS:
+	/**
+	 * A new frame has started.
+	 */
+	void on_frame_begin(double timestamp, uint64_t samplerate) override;
 
 protected:
 	/**

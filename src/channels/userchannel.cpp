@@ -61,6 +61,25 @@ UserChannel::UserChannel(
 	}
 }
 
+shared_ptr<data::BaseSignal> UserChannel::add_signal(
+	data::Quantity quantity,
+	set<data::QuantityFlag> quantity_flags,
+	data::Unit unit)
+{
+	/*
+	 * TODO: Remove shared_from_this() / (channel pointer in signal), so that
+	 *       "add_signal()" can be called from MathChannel ctor.
+	 * TODO: Find a way to return AnalogSampleSignal.
+	 */
+	auto signal = make_shared<data::AnalogTimeSignal>(
+		quantity, quantity_flags, unit,
+		shared_from_this(), channel_start_timestamp_); // TODO: timestamp
+
+	BaseChannel::add_signal(signal);
+
+	return signal;
+}
+
 void UserChannel::push_sample(double sample, double timestamp,
 	data::Quantity quantity, set<data::QuantityFlag> quantity_flags,
 	data::Unit unit, int digits, int decimal_places)
@@ -84,6 +103,12 @@ void UserChannel::push_sample(double sample, double timestamp,
 
 	signal->push_sample(&sample, timestamp, size_of_double_,
 		digits, decimal_places);
+}
+
+void UserChannel::on_frame_begin(double timestamp, uint64_t samplerate)
+{
+	(void)timestamp;
+	(void)samplerate;
 }
 
 } // namespace devices

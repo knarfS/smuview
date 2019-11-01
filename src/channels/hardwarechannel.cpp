@@ -19,8 +19,6 @@
 
 #include <cassert>
 #include <memory>
-#include <set>
-#include <string>
 #include <utility>
 
 #include <QDebug>
@@ -28,17 +26,16 @@
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
 #include "hardwarechannel.hpp"
-#include "src/session.hpp"
 #include "src/util.hpp"
 #include "src/channels/basechannel.hpp"
-#include "src/data/analogtimesignal.hpp"
+#include "src/data/analogbasesignal.hpp"
+#include "src/data/basesignal.hpp"
 #include "src/data/datautil.hpp"
 #include "src/devices/basedevice.hpp"
 
 using std::make_pair;
 using std::set;
 using std::static_pointer_cast;
-using std::string;
 using std::unique_ptr;
 using sv::data::measured_quantity_t;
 
@@ -55,12 +52,18 @@ HardwareChannel::HardwareChannel(
 {
 	assert(sr_channel);
 
-	channel_type_ = ChannelType::AnalogChannel;
 	name_ = sr_channel_->name();
+
+	qWarning() << "HardwareChannel::HardwareChannel(): name = " <<
+		display_name();
+}
+
+HardwareChannel::~HardwareChannel()
+{
 }
 
 void HardwareChannel::push_interleaved_samples(const float *data,
-	size_t sample_count, size_t stride, double timestamp, uint64_t samplerate,
+	size_t sample_count, size_t stride, double timestamp,
 	shared_ptr<sigrok::Analog> sr_analog)
 {
 	//lock_guard<recursive_mutex> lock(mutex_);
@@ -80,7 +83,7 @@ void HardwareChannel::push_interleaved_samples(const float *data,
 	set<data::QuantityFlag> quantity_flags =
 		data::datautil::get_quantity_flags(sr_analog->mq_flags());
 
-	shared_ptr<data::AnalogTimeSignal> signal;
+	shared_ptr<data::AnalogBaseSignal> signal;
 	if (!actual_signal_ || actual_signal_->quantity() != quantity ||
 		actual_signal_->quantity_flags() != quantity_flags) {
 
@@ -90,7 +93,7 @@ void HardwareChannel::push_interleaved_samples(const float *data,
 		if (signals_count == 0) {
 			data::Unit unit = data::datautil::get_unit(sr_analog->unit());
 			add_signal(quantity, quantity_flags, unit);
-			qWarning() << "HardwareChannel::push_sample_sr_analog(): " <<
+			qWarning() << "HardwareChannel::push_interleaved_samples(): " <<
 				display_name() << " - No signal found: " <<
 				actual_signal_->display_name();
 		}
@@ -98,12 +101,12 @@ void HardwareChannel::push_interleaved_samples(const float *data,
 			throw ("More than one signal found for " + name());
 		}
 
-		signal = static_pointer_cast<data::AnalogTimeSignal>(signal_map_[mq][0]);
+		signal = static_pointer_cast<data::AnalogBaseSignal>(signal_map_[mq][0]);
 		actual_signal_ = signal;
 		Q_EMIT signal_changed(actual_signal_);
 	}
 	else {
-		signal = static_pointer_cast<data::AnalogTimeSignal>(actual_signal_);
+		signal = static_pointer_cast<data::AnalogBaseSignal>(actual_signal_);
 	}
 
 	/*
@@ -127,7 +130,7 @@ void HardwareChannel::push_interleaved_samples(const float *data,
 		data += stride;
 	}
 
-	signal->push_samples(deint_data.get(), sample_count, timestamp, samplerate,
+	signal->push_samples(deint_data.get(), sample_count, timestamp,
 		sr_analog->unitsize(), digits, decimal_places);
 }
 

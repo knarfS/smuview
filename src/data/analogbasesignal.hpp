@@ -83,6 +83,12 @@ public:
 		size_t unit_size, int digits, int decimal_places);
 	 */
 
+	/**
+	 * Push multiple samples to the signal.
+	 */
+	virtual void push_samples(void *data, uint64_t samples, double timestamp,
+		size_t unit_size, int digits, int decimal_places) = 0;
+
 	int digits() const;
 	int decimal_places() const;
 	double last_value() const;
