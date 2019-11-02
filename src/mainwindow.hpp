@@ -67,7 +67,7 @@ public:
 
 	void add_user_device_tab();
 	void add_hw_device_tab(shared_ptr<devices::HardwareDevice> device);
-	void add_smuscript_tab();
+	void add_smuscript_tab(string file_name);
 	void remove_tab(string id);
 
 private:

@@ -18,7 +18,9 @@
  */
 
 #include <memory>
+#include <string>
 
+#include <QFile>
 #include <QFont>
 #include <QMessageBox>
 #include <QString>
@@ -41,8 +43,10 @@ namespace sv {
 namespace ui {
 namespace tabs {
 
-SmuScriptTab::SmuScriptTab(Session &session, QMainWindow *parent) :
+SmuScriptTab::SmuScriptTab(Session &session,
+		string script_file_name, QMainWindow *parent) :
 	BaseTab(session, parent),
+	script_file_name_(script_file_name),
 	action_open_(new QAction(this)),
 	action_save_(new QAction(this)),
 	action_run_(new QAction(this))
@@ -59,6 +63,11 @@ void SmuScriptTab::setup_ui()
 {
 	QVBoxLayout *layout = new QVBoxLayout();
 	editor_ = new widgets::scripteditor::SmuScriptEditor();
+	if (!script_file_name_.empty()) {
+		QFile script_file(script_file_name_.c_str());
+		if (script_file.open(QFile::ReadOnly | QFile::Text))
+			editor_->setPlainText(script_file.readAll());
+	}
 	layout->addWidget(editor_);
 
 	// Show the central widget of the tab (hidden by BaseTab)
@@ -111,9 +120,7 @@ void SmuScriptTab::on_action_open_triggered()
 
 void SmuScriptTab::on_action_save_triggered()
 {
-	QFile file(
-		"/home/frank/Projekte/elektronik/sigrok/smuview/smuscript/test2.py");
-		//"/home/frank/Projekte/elektronik/sigrok/smuview/smuscript/example1.py");
+	QFile file(QString::fromStdString(script_file_name_));
     if (file.open(QFile::ReadWrite | QFile::Text)) { // QIODevice::ReadWrite
 		 QTextStream stream(&file);
         stream << editor_->toPlainText() << endl;
@@ -129,10 +136,7 @@ void SmuScriptTab::on_action_run_triggered()
 			QIcon::fromTheme("media-playback-stop",
 			QIcon(":/icons/media-playback-stop.png")));
 
-		string file_name =
-			"/home/frank/Projekte/elektronik/sigrok/smuview/smuscript/test2.py";
-			//"/home/frank/Projekte/elektronik/sigrok/smuview/smuscript/example1.py";
-		smu_script_runner_->run(file_name);
+		smu_script_runner_->run(script_file_name_);
 	}
 	else {
 		action_run_->setText(tr("Start"));

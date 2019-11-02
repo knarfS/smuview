@@ -100,9 +100,6 @@ void MainWindow::init_default_session()
 
 	for (const auto &user_device : device_manager_.user_spec_devices())
 		add_hw_device_tab(user_device);
-
-	// TODO
-	add_smuscript_tab();
 }
 
 void MainWindow::init_session_with_file(
@@ -189,13 +186,13 @@ void MainWindow::add_hw_device_tab(
 	add_tab(tab_window, device->short_name(), device->id());
 }
 
-void MainWindow::add_smuscript_tab()
+void MainWindow::add_smuscript_tab(string file_name)
 {
 	QMainWindow *tab_window = new QMainWindow();
 	tab_window->setWindowFlags(Qt::Widget);  // Remove Qt::Window flag
 	tab_window->setDockNestingEnabled(true);
 	tab_window->setCentralWidget(
-		new ui::tabs::SmuScriptTab(*session_, tab_window));
+		new ui::tabs::SmuScriptTab(*session_, file_name, tab_window));
 
 	add_tab(tab_window, tr("SmuScript"), "smuscripttab");
 }

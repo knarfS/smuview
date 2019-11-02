@@ -23,8 +23,10 @@
 #include <memory>
 
 #include <QAction>
+#include <QFileSystemModel>
 #include <QString>
 #include <QToolBar>
+#include <QTreeView>
 
 #include "src/ui/views/baseview.hpp"
 
@@ -52,7 +54,10 @@ public:
 
 private:
 	QAction *const action_start_script_;
+	QAction *const action_open_script_;
 	QToolBar *toolbar_;
+	QFileSystemModel *file_system_model_;
+	QTreeView *file_system_tree_;
 	shared_ptr<python::SmuScriptRunner> smu_script_runner_; // TODO: Use unique_ptr instead?
 
 	void setup_ui();
@@ -61,6 +66,7 @@ private:
 
 private Q_SLOTS:
 	void on_action_start_script_triggered();
+	void on_action_open_script_triggered();
 	void on_script_error(QString);
 
 };

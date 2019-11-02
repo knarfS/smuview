@@ -29,6 +29,7 @@
 #include "src/ui/tabs/basetab.hpp"
 
 using std::shared_ptr;
+using std::string;
 
 namespace sv {
 
@@ -55,12 +56,14 @@ class SmuScriptTab : public BaseTab
 private:
 
 public:
-	SmuScriptTab(Session &session, QMainWindow *parent);
+	SmuScriptTab(Session &session,
+		string script_file_name, QMainWindow *parent);
 
 private:
 	void setup_ui();
 	void setup_toolbar();
 
+	string script_file_name_;
 	QAction *const action_open_;
 	QAction *const action_save_;
 	QAction *const action_run_;
