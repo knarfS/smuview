@@ -70,7 +70,10 @@ int SmuScriptEditor::line_number_area_width()
 		max /= 10;
 		++digits;
 	}
-	int space = 3 + fontMetrics().horizontalAdvance(QLatin1Char('9')) * digits;
+	// NOTE: horizontalAdvance() is introduced in Qt 5.12, but MXE uses Qt 5.7
+	//       and Ubuntu 16.04 (AppImage) uses Qt 5.5, so we use boundingRect().
+	//int space = 3 + fontMetrics().horizontalAdvance(QLatin1Char('9')) * digits;
+	int space = 3 + fontMetrics().boundingRect(QLatin1Char('9')).width() * digits;
 
 	return space;
 }
