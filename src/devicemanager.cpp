@@ -30,6 +30,7 @@
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
 #include <QApplication>
+#include <QDebug>
 #include <QObject>
 #include <QProgressDialog>
 
@@ -120,13 +121,6 @@ DeviceManager::DeviceManager(shared_ptr<sigrok::Context> context,
 	 */
 	user_spec_devices_.clear();
  	if (!drivers.empty() && !user_drvs_name_opts.empty()) {
-		shared_ptr<sigrok::Driver> scan_drv;
-		map<const sigrok::ConfigKey *, VariantBase> scan_opts;
-
-		/*
-		 * Lookup the device driver names.
-		 */
-		map<string, shared_ptr<sigrok::Driver>> drivers = context->drivers();
 		for( auto it = user_drvs_name_opts.begin(), end = user_drvs_name_opts.end();
 			it != end;
  			it = user_drvs_name_opts.upper_bound(it->first)) {
@@ -134,28 +128,10 @@ DeviceManager::DeviceManager(shared_ptr<sigrok::Context> context,
 			auto user_drv_name = it->first;
 			auto user_drv_opts = it->second;
 
-			auto entry = drivers.find(user_drv_name);
-			scan_drv = (entry != drivers.end()) ? entry->second : nullptr;
-
-			/*
-			 * Convert generic string representation of options
-			 * to the driver specific data types.
-			 */
-			if (scan_drv && !user_drv_opts.empty()) {
-				auto drv_opts = scan_drv->scan_options();
-				scan_opts = driver_scan_options(user_drv_opts, drv_opts);
-			}
-
-			/*
-			 * Run another scan for the specified driver, passing
-			 * user provided scan options this time.
-			 */
-			list< shared_ptr<devices::HardwareDevice> > found;
-			if (scan_drv) {
-				found = driver_scan(scan_drv, scan_opts);
-				if (!found.empty())
-					user_spec_devices_.push_back(found.front());
-			}
+			list< shared_ptr<devices::HardwareDevice> > found =
+				driver_scan(user_drv_name, user_drv_opts);
+			if (!found.empty())
+				user_spec_devices_.push_back(found.front());
 		}
 	}
 	progress->setValue(entry_num++);
@@ -236,7 +212,41 @@ DeviceManager::driver_scan_options(vector<string> user_spec,
 	return result;
 }
 
-list< shared_ptr<devices::HardwareDevice> >
+list<shared_ptr<devices::HardwareDevice>>
+DeviceManager::driver_scan(
+	string driver_name, vector<string> driver_opts)
+{
+	shared_ptr<sigrok::Driver> scan_drv;
+	map<const sigrok::ConfigKey *, VariantBase> scan_opts;
+
+	/*
+	 * Lookup the device driver names.
+	 */
+	map<string, shared_ptr<sigrok::Driver>> drivers = context_->drivers();
+	auto entry = drivers.find(driver_name);
+	scan_drv = (entry != drivers.end()) ? entry->second : nullptr;
+
+	/*
+	 * Convert generic string representation of options
+	 * to the driver specific data types.
+	 */
+	if (scan_drv && !driver_opts.empty()) {
+		auto drv_opts = scan_drv->scan_options();
+		scan_opts = driver_scan_options(driver_opts, drv_opts);
+	}
+
+	/*
+	 * Run another scan for the specified driver, passing
+	 * user provided scan options this time.
+	 */
+	list<shared_ptr<devices::HardwareDevice>> found;
+	if (scan_drv)
+		found = driver_scan(scan_drv, scan_opts);
+
+	return found;
+}
+
+list<shared_ptr<devices::HardwareDevice>>
 DeviceManager::driver_scan(
 	shared_ptr<sigrok::Driver> sr_driver,
 	map<const sigrok::ConfigKey *, VariantBase> drvopts)

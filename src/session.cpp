@@ -19,25 +19,31 @@
 
 #include <cassert>
 #include <functional>
+#include <list>
 #include <map>
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include <QDebug>
 
 #include "session.hpp"
 #include "config.h"
+#include "src/devicemanager.hpp"
 #include "src/util.hpp"
 #include "src/devices/basedevice.hpp"
+#include "src/devices/hardwaredevice.hpp"
 #include "src/devices/userdevice.hpp"
 
 using std::function;
+using std::list;
 using std::make_pair;
 using std::make_shared;
 using std::map;
 using std::shared_ptr;
 using std::string;
+using std::vector;
 
 namespace sigrok {
 class Context;
@@ -87,6 +93,24 @@ void Session::restore_settings(QSettings &settings)
 map<string, shared_ptr<devices::BaseDevice>> Session::devices() const
 {
 	return devices_;
+}
+
+list<shared_ptr<devices::HardwareDevice>>
+	Session::connect_device(string conn_string)
+{
+	// Determine the driver name and options (in generic format).
+	vector<string> driver_opts = sv::util::split_string(conn_string, ":");
+	string driver_name = driver_opts.front();
+	driver_opts.erase(driver_opts.begin());
+
+	// Scan for the specified driver, passing scan options.
+	list<shared_ptr<devices::HardwareDevice>> devices =
+		device_manager_.driver_scan(driver_name, driver_opts);
+
+	for (auto &device : devices)
+		add_device(device, nullptr); // TODO: error_handler
+
+	return devices;
 }
 
 void Session::add_device(shared_ptr<devices::BaseDevice> device,

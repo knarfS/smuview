@@ -59,6 +59,7 @@ using std::shared_ptr;
 using std::string;
 
 Q_DECLARE_SMART_POINTER_METATYPE(std::shared_ptr)
+Q_DECLARE_METATYPE(std::shared_ptr<sv::devices::BaseDevice>)
 Q_DECLARE_METATYPE(std::shared_ptr<sv::channels::BaseChannel>)
 Q_DECLARE_METATYPE(std::shared_ptr<sv::data::BaseSignal>)
 
@@ -71,6 +72,7 @@ MainWindow::MainWindow(DeviceManager &device_manager, QWidget *parent) :
 {
 	qRegisterMetaType<util::Timestamp>("util::Timestamp");
 	qRegisterMetaType<uint64_t>("uint64_t");
+	qRegisterMetaType<shared_ptr<devices::BaseDevice>>("shared_ptr<sv::devices::BaseDevice>");
 	qRegisterMetaType<shared_ptr<channels::BaseChannel>>("shared_ptr<sv::channels::BaseChannel>");
 	qRegisterMetaType<shared_ptr<data::BaseSignal>>("shared_ptr<sv::data::BaseSignal>");
 	qRegisterMetaType<devices::ConfigKey>("devices::ConfigKey");

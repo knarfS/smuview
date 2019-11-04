@@ -67,10 +67,13 @@ public:
 
 	shared_ptr<sigrok::Context> context();
 
-	const list< shared_ptr<devices::HardwareDevice> > &devices() const;
-	list< shared_ptr<devices::HardwareDevice> > user_spec_devices() const;
+	const list<shared_ptr<devices::HardwareDevice>> &devices() const;
+	list<shared_ptr<devices::HardwareDevice>> user_spec_devices() const;
 
-	list< shared_ptr<devices::HardwareDevice> > driver_scan(
+	list<shared_ptr<devices::HardwareDevice>> driver_scan(
+		string driver_name, vector<string> driver_opts);
+
+	list<shared_ptr<devices::HardwareDevice>> driver_scan(
 		shared_ptr<sigrok::Driver> sr_driver,
 		map<const sigrok::ConfigKey *, Glib::VariantBase> drvopts);
 
@@ -90,8 +93,8 @@ private:
 
 protected:
 	shared_ptr<sigrok::Context> context_;
-	list< shared_ptr<devices::HardwareDevice> > devices_;
-	list< shared_ptr<devices::HardwareDevice> > user_spec_devices_;
+	list<shared_ptr<devices::HardwareDevice>> devices_;
+	list<shared_ptr<devices::HardwareDevice>> user_spec_devices_;
 
 };
 
