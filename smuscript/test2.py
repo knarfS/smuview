@@ -10,7 +10,7 @@ from math import sin
 devices = Session.devices()
 
 # Demo device
-demo_dev = devices["demo:0"]
+demo_dev = devices["demo:1"]
 if "Results" in demo_dev.channels():
     result_ch = demo_dev.channels()["Results"]
 else:
