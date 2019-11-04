@@ -283,7 +283,7 @@ void ConnectDialog::scan_pressed()
 			conn.toUtf8().constData());
 	}
 
-	const list< shared_ptr<HardwareDevice> > devices =
+	const list<shared_ptr<HardwareDevice>> devices =
 		device_manager_.driver_scan(driver, drvopts);
 
 	for (const auto &device : devices) {
