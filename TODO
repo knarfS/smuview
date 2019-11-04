@@ -33,6 +33,10 @@ ToDo
 - util.cpp: use cmath instead of math.h, but Timestamp is boost and only works with non std::?
 - Use AnalogBaseSignal in all(?) Channel classes, in View classes and in Plot classes
 - Remove Configurable and ConfigKey from data::properties::*
+- Session: shared_ptr or reference?
+- Session: move init to main.cpp
+- static unsigned int device_counter; is changing
+- Missing msvcr100.dll (Windows Server 2016) SmuView/PulseView
 
 Done
 ----
