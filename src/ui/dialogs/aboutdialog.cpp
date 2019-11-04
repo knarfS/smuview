@@ -237,7 +237,7 @@ QWidget *AboutDialog::get_device_page(QWidget *parent) const
 
 	QString device_info_text("<b>");
 
-	if (sr_device->version().length() > 0) {
+	if (sr_device->vendor().length() > 0) {
 		device_info_text.append(QString("%1 ").arg(
 			QString::fromStdString(sr_device->vendor())));
 	}
@@ -255,6 +255,10 @@ QWidget *AboutDialog::get_device_page(QWidget *parent) const
 	if (sr_device->connection_id().length() > 0) {
 		device_info_text.append(QString("<br /><b>" + tr("Connection") + ":</b> %1").arg(
 			QString::fromStdString(sr_device->connection_id())));
+	}
+	if (device_->id().length() > 0) {
+		device_info_text.append(QString("<br /><b>" + tr("Device ID") + ":</b> %1").arg(
+			QString::fromStdString(device_->id())));
 	}
 
 	QLabel *device_info = new QLabel();
