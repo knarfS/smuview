@@ -9,10 +9,3 @@ TODO:
 MXE TODO:
 
 - Remove workaround in FindPythonLibsNew.cmake and implement finding of python libs in a cross compile enviroment
-- Fix compile error:
-
-In file included from /home/frank/mxe/mxe-git-x86_64/usr/lib/gcc/x86_64-w64-mingw32.static.posix/5.5.0/include/c++/valarray:37:0,
-                 from /home/frank/Projekte/elektronik/sigrok/sigrok-util/cross-compile/mingw/build_release_x86_64/smuview/external/pybind11/include/pybind11/stl.h:20,
-                 from /home/frank/Projekte/elektronik/sigrok/sigrok-util/cross-compile/mingw/build_release_x86_64/smuview/src/python/bindings.cpp:23:
-/home/frank/mxe/mxe-git-x86_64/usr/lib/gcc/x86_64-w64-mingw32.static.posix/5.5.0/include/c++/cmath:1147:11: error: '::hypot' has not been declared
-   using ::hypot;
