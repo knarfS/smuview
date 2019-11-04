@@ -35,6 +35,7 @@
 #include "src/devices/basedevice.hpp"
 #include "src/devices/configurable.hpp"
 #include "src/devices/deviceutil.hpp"
+#include "src/devices/hardwaredevice.hpp"
 #include "src/devices/userdevice.hpp"
 
 using namespace pybind11::literals; // for the ""_a
@@ -52,14 +53,10 @@ PYBIND11_EMBEDDED_MODULE(smuview, m) {
 
 void init_Session(py::module &m)
 {
-	/*
-	 * TODO:
-	 *  - connect device
-	 */
-
-    py::class_<sv::Session>(m, "Session")
-        .def("devices", &sv::Session::devices)
-        .def("add_user_device", &sv::Session::add_user_device);
+	py::class_<sv::Session>(m, "Session")
+		.def("devices", &sv::Session::devices)
+		.def("connect_device", &sv::Session::connect_device)
+		.def("add_user_device", &sv::Session::add_user_device);
 }
 
 void init_Device(py::module &m)
@@ -70,6 +67,8 @@ void init_Device(py::module &m)
 	base_device.def("channels", &sv::devices::BaseDevice::channel_map);
 	base_device.def("configurables", &sv::devices::BaseDevice::configurable_map);
 	base_device.def("add_user_channel", &sv::devices::BaseDevice::add_user_channel);
+
+	py::class_<sv::devices::HardwareDevice, std::shared_ptr<sv::devices::HardwareDevice>>(m, "HardwareDevice", base_device);
 
 	py::class_<sv::devices::UserDevice, std::shared_ptr<sv::devices::UserDevice>>(m, "UserDevice", base_device);
 }
