@@ -1,24 +1,14 @@
 import smuview
-import time
 
 # Get all already connected devices from the session
-#devices = Session.devices()
-
-# Connect the demo device
-devices = Session.connect_device("demo")
-print("{} devices connected.".format(len(devices)))
-print("")
-# Sleep 1 second to give the newly connected device the chance to create
-# data and the corresponding signals
-time.sleep(1)
+devices = Session.devices()
 
 # Iterate and print through all devices
-#for deviceId in devices:
-#    device = devices[deviceId]
-for device in devices:
+for deviceId in devices:
+    device = devices[deviceId]
     print("")
     print("device   = " + device.name())
-    #print("deviceId = " + deviceId)
+    print("deviceId = " + deviceId)
 
     configurables = device.configurables()
     for configruableId in configurables:
