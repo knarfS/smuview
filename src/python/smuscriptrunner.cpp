@@ -17,16 +17,22 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <memory>
 #include <string>
 #include <thread>
 #include <pybind11/embed.h>
 #include <pybind11/stl.h>
 
+#include <QDebug>
 #include <QString>
 
 #include "smuscriptrunner.hpp"
 #include "src/session.hpp"
 #include "src/python/bindings.hpp"
+#include "src/python/uihelper.hpp"
+#include "src/python/uiproxy.hpp"
+
+using std::make_shared;
 
 using namespace pybind11::literals; // for the ""_a
 namespace py = pybind11;
@@ -37,6 +43,7 @@ namespace python {
 SmuScriptRunner::SmuScriptRunner(Session &session) :
 	session_(session)
 {
+	ui_helper_ = make_shared<UiHelper>(session_);
 }
 
 SmuScriptRunner::~SmuScriptRunner()
@@ -63,16 +70,28 @@ void SmuScriptRunner::script_thread_proc()
 {
 	py::scoped_interpreter guard{};
 
-    auto module = py::module::import("smuview");
+	UiProxy *ui_proxy = new UiProxy(session_, ui_helper_);
+	auto module = py::module::import("smuview");
 	auto locals = py::dict(
-		"Session"_a=py::cast(session_, py::return_value_policy::reference));
+		"Session"_a=py::cast(session_, py::return_value_policy::reference),
+		"UiProxy"_a=py::cast(ui_proxy, py::return_value_policy::reference));
 
 	try {
 		py::eval_file(script_file_name_, py::globals(), locals);
 	}
 	catch (py::error_already_set &ex) {
-		Q_EMIT script_error(QString(ex.what()));
+		qWarning() << "SmuScriptRunner::script_thread_proc(): ex = " << ex.what();
+		Q_EMIT script_error(QString(ex.what())); // TODO: script_error() not set atm!
 	}
+
+	// TODO / FIXME: When a add_*_view() is not completed at MainThread and
+	// script_thread_proc() is finished, SmuView will crash (some object is
+	// missing? BaseTab signal? channel?).
+	// Workaround: time.sleep(3) in the smuscript
+	//
+	// Sometimes when many vies are added (completed), SmuView will crash
+	// anyways, even after time.sleep(10)
+
 }
 
 } // namespace python

@@ -62,10 +62,11 @@ private:
 	map<QDockWidget *, views::BaseView *> view_docks_;
 
 protected:
-	void add_view(views::BaseView *view, Qt::DockWidgetArea area);
-
 	Session &session_;
 	QMainWindow *parent_;
+
+public Q_SLOTS:
+	void add_view(views::BaseView *view, Qt::DockWidgetArea area);
 
 };
 

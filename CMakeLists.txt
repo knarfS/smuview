@@ -212,6 +212,8 @@ set(smuview_SOURCES
 
   src/python/bindings.cpp
   src/python/smuscriptrunner.cpp
+  src/python/uihelper.cpp
+  src/python/uiproxy.cpp
 
   src/ui/data/quantitycombobox.cpp
   src/ui/data/quantityflagslist.cpp

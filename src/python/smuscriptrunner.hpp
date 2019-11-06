@@ -20,17 +20,22 @@
 #ifndef PYTHON_SMUSCRIPTRUNNER_HPP
 #define PYTHON_SMUSCRIPTRUNNER_HPP
 
+#include <memory>
 #include <string>
 #include <thread>
 
 #include <QObject>
 #include <QString>
 
+using std::shared_ptr;
+
 namespace sv {
 
 class Session;
 
 namespace python {
+
+class UiHelper;
 
 class SmuScriptRunner : public QObject
 {
@@ -47,6 +52,7 @@ private:
 	void script_thread_proc(/*function<void (const QString)> error_handler*/); // TODO: signal?
 
 	Session &session_;
+	shared_ptr<UiHelper> ui_helper_;
 	std::string script_file_name_;
 	std::thread script_thread_;
 
