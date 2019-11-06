@@ -92,7 +92,7 @@ set(CMAKE_AUTOMOC ON)
 
 find_package(Qt5 COMPONENTS Core Gui Widgets Svg REQUIRED)
 
-if(WIN32)
+if(MINGW)
 	# MXE workaround: Use pkg-config to find Qt5 libs.
 	# https://github.com/mxe/mxe/issues/1642
 	# Not required (and doesn't work) on MSYS2.
@@ -338,6 +338,14 @@ if(ENABLE_SIGNALS)
 	add_definitions(-DENABLE_SIGNALS)
 endif()
 
+if(MINGW)
+	# MXE workaround: Prevents compile error:
+	# mxe-git-x86_64/usr/lib/gcc/x86_64-w64-mingw32.static.posix/5.5.0/include/c++/cmath:1147:11: error: '::hypot' has not been declared
+	#    using ::hypot;
+	# Alternativ solution:
+	# Add "#include <cmath>" before the pybind11 includes in bindings.cpp and smuscriptrunner.cpp
+	add_compile_options(-D_hypot=hypot)
+endif()
 
 #===============================================================================
 #= Global Include Directories
