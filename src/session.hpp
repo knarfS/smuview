@@ -73,8 +73,7 @@ public:
 	list<shared_ptr<devices::HardwareDevice>> connect_device(string conn_string);
 	void add_device(shared_ptr<devices::BaseDevice> device,
 		function<void (const QString)> error_handler);
-	shared_ptr<devices::UserDevice> add_user_device(
-		function<void (const QString)> error_handler);
+	shared_ptr<devices::UserDevice> add_user_device();
 	void remove_device(shared_ptr<devices::BaseDevice> device);
 
 	void load_init_file(const string &file_name, const string &format);

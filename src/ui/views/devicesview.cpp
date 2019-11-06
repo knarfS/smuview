@@ -32,6 +32,8 @@
 #include "src/channels/basechannel.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/devices/basedevice.hpp"
+#include "src/devices/hardwaredevice.hpp"
+#include "src/devices/userdevice.hpp"
 #include "src/ui/devices/devicetree/devicetreemodel.hpp"
 #include "src/ui/devices/devicetree/devicetreeview.hpp"
 #include "src/ui/devices/devicetree/treeitem.hpp"
@@ -116,13 +118,23 @@ void DevicesView::on_action_add_device_triggered()
 {
 	ui::dialogs::ConnectDialog dlg(session().device_manager());
 	if (dlg.exec()) {
-		session().main_window()->add_hw_device_tab(dlg.get_selected_device());
+		auto device = dlg.get_selected_device();
+		// NOTE: add_device() must be called, before the device tab
+		//       tries to access the device (device is not opend yet).
+		// TODO: Pass the error_handler somehow in main.cpp?
+		session().add_device(device, [&](QString message) {
+			session().main_window()->session_error("Aquisition failed", message);
+		});
+		session().main_window()->add_device_tab(device);
 	}
 }
 
 void DevicesView::on_action_add_userdevice_triggered()
 {
-	session().main_window()->add_user_device_tab();
+	// NOTE: add_user_device() must be called, before the device tab
+	//       tries to access the device (device is not opend yet).
+	auto device = session().add_user_device();
+	session().main_window()->add_device_tab(device);
 }
 
 void DevicesView::on_action_disconnect_device_triggered()

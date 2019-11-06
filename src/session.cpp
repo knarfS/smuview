@@ -131,8 +131,7 @@ void Session::add_device(shared_ptr<devices::BaseDevice> device,
 	Q_EMIT device_added(device);
 }
 
-shared_ptr<devices::UserDevice> Session::add_user_device(
-	function<void (const QString)> error_handler)
+shared_ptr<devices::UserDevice> Session::add_user_device()
 {
 	string vendor = "SmuView";
 	string model = "User Device";
@@ -140,7 +139,7 @@ shared_ptr<devices::UserDevice> Session::add_user_device(
 
 	auto device = make_shared<devices::UserDevice>(
 		sr_context, vendor, model, version);
-	this->add_device(device, error_handler);
+	this->add_device(device, nullptr); // TODO: Do we need a error_handler?
 
 	return device;
 }

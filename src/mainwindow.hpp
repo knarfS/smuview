@@ -36,13 +36,14 @@ class DeviceManager;
 class Session;
 
 namespace devices {
+class BaseDevice;
 class HardwareDevice;
-}
-namespace tabs {
-class BaseTab;
 }
 
 namespace ui {
+namespace tabs {
+class BaseTab;
+}
 namespace views {
 class DevicesView;
 class SmuScriptView;
@@ -65,15 +66,15 @@ public:
 	void save_session();
 	void restore_session();
 
-	void add_user_device_tab();
-	void add_hw_device_tab(shared_ptr<devices::HardwareDevice> device);
 	void add_smuscript_tab(string file_name);
 	void remove_tab(string id);
+	ui::tabs::BaseTab *get_base_tab_from_device_id(const string id);
+
+	void session_error(const QString text, const QString info_text);
 
 private:
 	void setup_ui();
 	void connect_signals();
-	void session_error(const QString text, const QString info_text);
 	void add_tab(QMainWindow *tab_window, QString title, string id);
 	void add_welcome_tab();
 	void remove_tab(int tab_index);
@@ -81,7 +82,12 @@ private:
 	DeviceManager &device_manager_;
 	shared_ptr<Session> session_;
 
+	/**
+	 * tab_window_map_ is used to get the index of the tab in the
+	 * QTabWidget for closing
+	 */
 	map<string, QMainWindow *> tab_window_map_;
+	map<string, ui::tabs::BaseTab *> tab_basetab_map_;
 	QWidget *central_widget_;
 	ui::views::DevicesView *devices_view_;
 	ui::views::SmuScriptView *smu_script_view_;
@@ -90,6 +96,9 @@ private:
 private Q_SLOTS:
 	void show_session_error(const QString text, const QString info_text);
 	void on_tab_close_requested(int);
+
+public Q_SLOTS:
+	void add_device_tab(shared_ptr<sv::devices::BaseDevice>);
 
 };
 

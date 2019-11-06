@@ -37,7 +37,9 @@
 #include "src/session.hpp"
 #include "src/util.hpp"
 #include "src/data/basesignal.hpp"
+#include "src/data/analogtimesignal.hpp"
 #include "src/devices/basedevice.hpp"
+#include "src/devices/configurable.hpp"
 #include "src/devices/deviceutil.hpp"
 #include "src/devices/hardwaredevice.hpp"
 #include "src/devices/measurementdevice.hpp"
@@ -72,9 +74,13 @@ MainWindow::MainWindow(DeviceManager &device_manager, QWidget *parent) :
 {
 	qRegisterMetaType<util::Timestamp>("util::Timestamp");
 	qRegisterMetaType<uint64_t>("uint64_t");
+	qRegisterMetaType<Qt::DockWidgetArea>("Qt::DockWidgetArea");
 	qRegisterMetaType<shared_ptr<devices::BaseDevice>>("shared_ptr<sv::devices::BaseDevice>");
+	qRegisterMetaType<shared_ptr<devices::Configurable>>("shared_ptr<sv::devices::Configurable>");
+	qRegisterMetaType<shared_ptr<devices::HardwareDevice>>("shared_ptr<sv::devices::HardwareDevice>");
 	qRegisterMetaType<shared_ptr<channels::BaseChannel>>("shared_ptr<sv::channels::BaseChannel>");
 	qRegisterMetaType<shared_ptr<data::BaseSignal>>("shared_ptr<sv::data::BaseSignal>");
+	qRegisterMetaType<shared_ptr<data::AnalogTimeSignal>>("shared_ptr<sv::data::AnalogTimeSignal>");
 	qRegisterMetaType<devices::ConfigKey>("devices::ConfigKey");
 
 	init_session();
@@ -100,8 +106,15 @@ void MainWindow::init_default_session()
 		return;
 	}
 
-	for (const auto &user_device : device_manager_.user_spec_devices())
-		add_hw_device_tab(user_device);
+	for (const auto &device : device_manager_.user_spec_devices()) {
+		// NOTE: add_device() must be called, before the device tab
+		//       tries to access the device (device is not opend yet).
+		// TODO: Pass the error_handler somehow in main.cpp?
+		session_->add_device(device, [&](QString message) {
+			session_error("Aquisition failed", message);
+		});
+		add_device_tab(device);
+	}
 }
 
 void MainWindow::init_session_with_file(
@@ -138,6 +151,8 @@ void MainWindow::add_tab(QMainWindow *tab_window, QString title, string id)
 	tab_widget_->setCurrentIndex(index);
 
 	tab_window_map_.insert(make_pair(id, tab_window));
+	tab_basetab_map_.insert(
+		make_pair(id, (ui::tabs::BaseTab *)tab_window->centralWidget()));
 }
 
 void MainWindow::add_welcome_tab()
@@ -149,43 +164,6 @@ void MainWindow::add_welcome_tab()
 		new ui::tabs::WelcomeTab(*session_, tab_window));
 
 	add_tab(tab_window, tr("Welcome"), "welcometab");
-}
-
-void MainWindow::add_user_device_tab()
-{
-	// TODO: handle in session/device. Must be called, before the device tab
-	//       tries to access the device (device is not opend yet).
-	// TODO: Pass the error_handler somehow in main.cpp?
-	auto device = session_->add_user_device([&](QString message) {
-		session_error("Aquisition failed", message);
-	});
-
-	QMainWindow *tab_window = new QMainWindow();
-	tab_window->setWindowFlags(Qt::Widget);  // Remove Qt::Window flag
-	tab_window->setDockNestingEnabled(true);
-	tab_window->setCentralWidget(
-		ui::tabs::tabhelper::get_tab_for_device(*session_, device, tab_window));
-
-	add_tab(tab_window, device->short_name(), device->id());
-}
-
-void MainWindow::add_hw_device_tab(
-	shared_ptr<devices::HardwareDevice> device)
-{
-	// TODO: handle in session/device. Must be called, before the device tab
-	//       tries to access the device (device is not opend yet).
-	// TODO: Pass the error_handler somehow in main.cpp?
-	session_->add_device(device, [&](QString message) {
-		session_error("Aquisition failed", message);
-	});
-
-	QMainWindow *tab_window = new QMainWindow();
-	tab_window->setWindowFlags(Qt::Widget);  // Remove Qt::Window flag
-	tab_window->setDockNestingEnabled(true);
-	tab_window->setCentralWidget(
-		ui::tabs::tabhelper::get_tab_for_device(*session_, device, tab_window));
-
-	add_tab(tab_window, device->short_name(), device->id());
 }
 
 void MainWindow::add_smuscript_tab(string file_name)
@@ -210,12 +188,16 @@ void MainWindow::remove_tab(int tab_index)
 
 	tab_widget_->removeTab(tab_index);
 
+	string id;
 	for (const auto &pair : tab_window_map_) {
 		if (pair.second == tab_window) {
+			id = pair.first;
 			tab_window_map_.erase(pair.first);
 			break;
 		}
 	}
+	tab_basetab_map_.erase(id);
+
 	//tab_window->deleteLater();
 	delete tab_window;
 
@@ -223,6 +205,14 @@ void MainWindow::remove_tab(int tab_index)
 		// When there are no more tabs, display the WelcomeTab
 		add_welcome_tab();
 	}
+}
+
+ui::tabs::BaseTab *MainWindow::get_base_tab_from_device_id(const string id)
+{
+	if (tab_basetab_map_.count(id) > 0)
+		return tab_basetab_map_[id];
+	else
+		return nullptr;
 }
 
 void MainWindow::setup_ui()
@@ -315,6 +305,18 @@ void MainWindow::on_tab_close_requested(int index)
 
 	if (reply == QMessageBox::Yes)
 		remove_tab(index);
+}
+
+void MainWindow::add_device_tab(
+	shared_ptr<sv::devices::BaseDevice> device)
+{
+	QMainWindow *tab_window = new QMainWindow();
+	tab_window->setWindowFlags(Qt::Widget);  // Remove Qt::Window flag
+	tab_window->setDockNestingEnabled(true);
+	tab_window->setCentralWidget(
+		ui::tabs::tabhelper::get_tab_for_device(*session_, device, tab_window));
+
+	add_tab(tab_window, device->short_name(), device->id());
 }
 
 } // namespace sv
