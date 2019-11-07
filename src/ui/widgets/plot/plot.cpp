@@ -24,7 +24,7 @@
 #include <QBoxLayout>
 #include <QDebug>
 #include <QEvent>
-#include <QBoxLayout>
+#include <QHBoxLayout>
 #include <QPen>
 #include <QPoint>
 #include <QPointF>
@@ -382,6 +382,8 @@ void Plot::add_axis_icons(const int axis_id)
 		scale_layout->addWidget(lower_lock_label);
 		scale_layout->addStretch(1);
 		scale_layout->addWidget(upper_lock_label);
+		// NOTE: setContentsMargins() places the locks more nicely in Windows.
+		scale_layout->setContentsMargins(0, 2, 0, 2);
 	}
 	else {
 		scale_layout = new QVBoxLayout();
@@ -392,6 +394,8 @@ void Plot::add_axis_icons(const int axis_id)
 		scale_layout->addWidget(upper_lock_label);
 		scale_layout->addStretch(1);
 		scale_layout->addWidget(lower_lock_label);
+		// NOTE: setContentsMargins() places the locks more nicely in Windows.
+		scale_layout->setContentsMargins(2, 0, 2, 0);
 	}
 
 	QwtScaleWidget *scale_widget = this->axisWidget(axis_id);
