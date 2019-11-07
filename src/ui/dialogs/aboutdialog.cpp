@@ -30,6 +30,7 @@
 #include <QDialogButtonBox>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QSize>
 #include <QTextBrowser>
 #include <QTextDocument>
 
@@ -56,9 +57,9 @@ AboutDialog::AboutDialog(DeviceManager &device_manager,
 	device_manager_(device_manager),
 	device_(device)
 {
-	const int icon_size = 64;
-
 	resize(600, 400);
+
+	const int icon_size = 64;
 
 	page_list = new QListWidget;
 	page_list->setViewMode(QListView::IconMode);
@@ -66,6 +67,11 @@ AboutDialog::AboutDialog(DeviceManager &device_manager,
 	page_list->setMovement(QListView::Static);
 	page_list->setMaximumWidth(icon_size + (icon_size / 2) + 2);
 	page_list->setSpacing(12);
+	// NOTE: setItemAlignment() is introduced in Qt 5.12, but MXE uses Qt 5.7
+	//       and Ubuntu 16.04 (AppImage) uses Qt 5.5, but
+	//       setUniformItemSizes(true) does the trick!
+	//page_list->setItemAlignment(Qt::AlignHCenter);
+	page_list->setUniformItemSizes(true);
 
 	pages = new QStackedWidget;
 	create_pages();
