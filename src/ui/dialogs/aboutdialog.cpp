@@ -2,7 +2,7 @@
  * This file is part of the SmuView project.
  *
  * Copyright (C) 2017 Soeren Apel <soeren@apelpie.net>
- * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -272,7 +272,7 @@ QWidget *AboutDialog::get_device_page(QWidget *parent) const
 
 	QString s;
 	s.append("<style type=\"text/css\"> tr .id { white-space: pre; padding-right: 5px; } </style>");
-	s.append("<table width=\"100%\" border=\"1\">");
+	s.append("<table width=\"100%\" border=\"0\">");
 
 	/* Device functions */
 	s.append("<tr><td colspan=\"7\"><b>" +
@@ -289,7 +289,7 @@ QWidget *AboutDialog::get_device_page(QWidget *parent) const
 	}
 	s.append(QString("</td></tr>"));
 	s.append("<tr><td colspan=\"7\"><b>" +
-		tr("SmuView device functions") + "</b></td></tr>");
+		tr("SmuView device functions:") + "</b></td></tr>");
 	s.append(QString("<tr><td>&nbsp;</td><td colspan=\"6\">%1</td></tr>").arg(
 		devices::deviceutil::format_device_type(device_->type())));
 	s.append("<tr><td colspan=\"7\">&nbsp;</td></tr>");
@@ -301,9 +301,9 @@ QWidget *AboutDialog::get_device_page(QWidget *parent) const
 			"</b></td></tr>");
 		for (const auto &c_pair : hw_device->configurable_map()) {
 			auto configurable = c_pair.second;
-			s.append(QString("<tr><td>&nbsp;</td><td>%1</td>").
+			s.append(QString("<tr><td>&nbsp;</td><td>%1</td><b>").
 				arg(configurable->display_name()));
-			s.append(QString("<td>GET</td><td>Value</td><td>SET</td>"));
+			s.append(QString("</b><td>GET</td><td>Value</td><td>SET</td>"));
 			s.append(QString("<td>LIST</td><td>Values</td></tr>"));
 			auto props = configurable->properties();
 			for (const auto &prop : props) {
@@ -333,59 +333,6 @@ QWidget *AboutDialog::get_device_page(QWidget *parent) const
 			}
 		}
 		s.append("<tr><td colspan=\"7\">&nbsp;</td></tr>");
-	}
-
-	// SmuView channel name + channel
-	// map<QString, shared_ptr<devices::Channel>> channel_name_map();
-	s.append("<tr><td colspan=\"2\"><b>" +
-		tr("SmuView channel name and channel (device->channel_name_map()):") +
-		"</b></td></tr>");
-	for (const auto &ch_pair : device_->channel_map()) {
-		s.append(QString("<tr><td>%1</td><td>%2</td></tr>").
-			arg(QString::fromStdString(ch_pair.first)).
-			arg(QString::fromStdString(ch_pair.second->name())));
-	}
-
-	//map<shared_ptr<sigrok::Channel>, shared_ptr<devices::Channel>> sr_channel_map();
-
-	// SmuView device channel group names + channels
-	// map<QString, vector<shared_ptr<devices::Channel>>> channel_group_name_map();
-	s.append("<tr><td colspan=\"2\"><b>" +
-		tr("SmuView channel group name and channels (device->channel_group_name_map()):") +
-		"</b></td></tr>");
-	for (const auto &chg_pair : device_->channel_group_map()) {
-		s.append(QString("<tr><td>%1</td><td></td></tr>").arg(
-			QString::fromStdString(chg_pair.first)));
-		for (const auto &channel : chg_pair.second) {
-			s.append(QString("<tr><td></td><td>%1</td></tr>").arg(
-				QString::fromStdString(channel->name())));
-		}
-	}
-
-	/* Sigrok Device channel groups + channels */
-	s.append("<tr><td colspan=\"2\"><b>" +
-		tr("Sigrok channel groups and channels:") + "</b></td></tr>");
-	const auto sr_cgs = sr_device->channel_groups();
-	for (const auto &sr_cg_pair : sr_cgs) {
-		QString channel_names("");
-		QString sep("");
-		shared_ptr<sigrok::ChannelGroup> sr_cg = sr_cg_pair.second;
-		for (const auto &sr_ch : sr_cg->channels()) {
-			channel_names.append(sep);
-			channel_names.append(QString::fromStdString(sr_ch->name()));
-			sep = QString(" ");
-		}
-		s.append(QString("<tr><td><i>%1</i></td><td>%2</td></tr>").arg(
-			QString::fromStdString(sr_cg_pair.first), channel_names));
-	}
-
-	/* Sigrok Device channel */
-	s.append("<tr><td colspan=\"2\"><b>" +
-		tr("Sigrok device channels:") + "</b></td></tr>");
-	const auto sr_channels = sr_device->channels();
-	for (const auto &sr_channel : sr_channels) {
-		s.append(QString("<tr><td><i>%1</i></td><td></td></tr>").arg(
-			QString::fromStdString(sr_channel->name())));
 	}
 
 	s.append("</table>");
