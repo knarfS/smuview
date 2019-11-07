@@ -74,6 +74,7 @@ MainWindow::MainWindow(DeviceManager &device_manager, QWidget *parent) :
 {
 	qRegisterMetaType<util::Timestamp>("util::Timestamp");
 	qRegisterMetaType<uint64_t>("uint64_t");
+	qRegisterMetaType<std::string>("std::string");
 	qRegisterMetaType<Qt::DockWidgetArea>("Qt::DockWidgetArea");
 	qRegisterMetaType<shared_ptr<devices::BaseDevice>>("shared_ptr<sv::devices::BaseDevice>");
 	qRegisterMetaType<shared_ptr<devices::Configurable>>("shared_ptr<sv::devices::Configurable>");

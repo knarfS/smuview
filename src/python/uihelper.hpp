@@ -21,11 +21,13 @@
 #define PYTHON_UIHELPER_HPP
 
 #include <memory>
+#include <string>
 
 #include <QDockWidget>
 #include <QObject>
 
 using std::shared_ptr;
+using std::string;
 
 namespace sv {
 
@@ -63,31 +65,23 @@ private:
 	Session &session_;
 
 public Q_SLOTS:
-	void add_data_view(sv::ui::tabs::BaseTab *tab,
-		Qt::DockWidgetArea area,
+	void add_data_view(std::string device_id, Qt::DockWidgetArea area,
 		shared_ptr<sv::data::AnalogTimeSignal> signal);
-	void add_control_view(sv::ui::tabs::BaseTab *tab,
-		Qt::DockWidgetArea area,
+	void add_control_view(std::string device_id, Qt::DockWidgetArea area,
 		shared_ptr<sv::devices::Configurable> configurable);
-	void add_plot_view(sv::ui::tabs::BaseTab *tab,
-		Qt::DockWidgetArea area,
+	void add_plot_view(std::string device_id, Qt::DockWidgetArea area,
 		shared_ptr<sv::channels::BaseChannel> channel);
-	void add_plot_view(sv::ui::tabs::BaseTab *tab,
-		Qt::DockWidgetArea area,
+	void add_plot_view(std::string device_id, Qt::DockWidgetArea area,
 		shared_ptr<sv::data::AnalogTimeSignal> signal);
-	void add_plot_view(sv::ui::tabs::BaseTab *tab,
-		Qt::DockWidgetArea area,
+	void add_plot_view(std::string device_id, Qt::DockWidgetArea area,
 		shared_ptr<sv::data::AnalogTimeSignal> x_signal,
 		shared_ptr<sv::data::AnalogTimeSignal> y_signal);
-	void add_power_panel_view(sv::ui::tabs::BaseTab *tab,
-		Qt::DockWidgetArea area,
+	void add_power_panel_view(std::string device_id, Qt::DockWidgetArea area,
 		shared_ptr<sv::data::AnalogTimeSignal> voltage_signal,
 		shared_ptr<sv::data::AnalogTimeSignal> current_signal);
-	void add_value_panel_view(sv::ui::tabs::BaseTab *tab,
-		Qt::DockWidgetArea area,
+	void add_value_panel_view(std::string device_id, Qt::DockWidgetArea area,
 		shared_ptr<sv::channels::BaseChannel> channel);
-	void add_value_panel_view(sv::ui::tabs::BaseTab *tab,
-		Qt::DockWidgetArea area,
+	void add_value_panel_view(std::string device_id, Qt::DockWidgetArea area,
 		shared_ptr<sv::data::AnalogTimeSignal> signal);
 	void add_signal_to_plot(sv::ui::views::PlotView *plot,
 		shared_ptr<sv::data::AnalogTimeSignal> signal);

@@ -136,28 +136,28 @@ void init_Configurable(py::module &m)
 void init_UI(py::module &m)
 {
 	py::class_<sv::python::UiProxy>(m, "UiProxy")
-		.def("get_base_tab_from_device_id", &sv::python::UiProxy::get_base_tab_from_device_id)
 		.def("add_device_tab", &sv::python::UiProxy::ui_add_device_tab)
 		.def("add_data_view", &sv::python::UiProxy::ui_add_data_view)
 		.def("add_control_view", &sv::python::UiProxy::ui_add_control_view)
 		.def("add_plot_view",
-			(void (sv::python::UiProxy::*) (sv::ui::tabs::BaseTab *, Qt::DockWidgetArea, shared_ptr<sv::channels::BaseChannel>))
+			(void (sv::python::UiProxy::*) (std::string, Qt::DockWidgetArea, shared_ptr<sv::channels::BaseChannel>))
 			&sv::python::UiProxy::ui_add_plot_view)
 		.def("add_plot_view",
-			(void (sv::python::UiProxy::*) (sv::ui::tabs::BaseTab *, Qt::DockWidgetArea, shared_ptr<sv::data::AnalogTimeSignal>))
+			(void (sv::python::UiProxy::*) (std::string, Qt::DockWidgetArea, shared_ptr<sv::data::AnalogTimeSignal>))
 			&sv::python::UiProxy::ui_add_plot_view)
 		.def("add_plot_view",
-			(void (sv::python::UiProxy::*) (sv::ui::tabs::BaseTab *, Qt::DockWidgetArea, shared_ptr<sv::data::AnalogTimeSignal>, shared_ptr<sv::data::AnalogTimeSignal>))
+			(void (sv::python::UiProxy::*) (std::string, Qt::DockWidgetArea, shared_ptr<sv::data::AnalogTimeSignal>, shared_ptr<sv::data::AnalogTimeSignal>))
 			&sv::python::UiProxy::ui_add_plot_view)
 		.def("add_power_panel_view", &sv::python::UiProxy::ui_add_power_panel_view)
 		.def("add_value_panel_view",
-			(void (sv::python::UiProxy::*) (sv::ui::tabs::BaseTab *, Qt::DockWidgetArea, shared_ptr<sv::channels::BaseChannel>))
+			(void (sv::python::UiProxy::*) (std::string, Qt::DockWidgetArea, shared_ptr<sv::channels::BaseChannel>))
 			&sv::python::UiProxy::ui_add_value_panel_view)
 		.def("add_value_panel_view",
-			(void (sv::python::UiProxy::*) (sv::ui::tabs::BaseTab *, Qt::DockWidgetArea, shared_ptr<sv::data::AnalogTimeSignal>))
+			(void (sv::python::UiProxy::*) (std::string, Qt::DockWidgetArea, shared_ptr<sv::data::AnalogTimeSignal>))
 			&sv::python::UiProxy::ui_add_value_panel_view)
 		.def("add_signal_to_plot", &sv::python::UiProxy::ui_add_signal_to_plot);
 
+	// TODO: remove
 	py::class_<sv::ui::tabs::BaseTab> base_tab(m, "BaseTab");
 	py::class_<sv::ui::tabs::DeviceTab> device_tab(m, "DeviceTab", base_tab);
 	py::class_<sv::ui::tabs::UserTab>(m, "UserTab", device_tab);

@@ -84,14 +84,7 @@ void SmuScriptRunner::script_thread_proc()
 		Q_EMIT script_error(QString(ex.what())); // TODO: script_error() not set atm!
 	}
 
-	// TODO / FIXME: When a add_*_view() is not completed at MainThread and
-	// script_thread_proc() is finished, SmuView will crash (some object is
-	// missing? BaseTab signal? channel?).
-	// Workaround: time.sleep(3) in the smuscript
-	//
-	// Sometimes when many vies are added (completed), SmuView will crash
-	// anyways, even after time.sleep(10)
-
+	qWarning() << "SmuScriptRunner::script_thread_proc() has finished!";
 }
 
 } // namespace python
