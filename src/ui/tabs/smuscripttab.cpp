@@ -21,6 +21,7 @@
 #include <string>
 
 #include <QFile>
+#include <QFileDialog>
 #include <QFont>
 #include <QMessageBox>
 #include <QString>
@@ -49,6 +50,7 @@ SmuScriptTab::SmuScriptTab(Session &session,
 	script_file_name_(script_file_name),
 	action_open_(new QAction(this)),
 	action_save_(new QAction(this)),
+	action_save_as_(new QAction(this)),
 	action_run_(new QAction(this))
 {
 	smu_script_runner_ = make_shared<python::SmuScriptRunner>(session_);
@@ -92,6 +94,14 @@ void SmuScriptTab::setup_toolbar()
 	connect(action_save_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_save_triggered()));
 
+	action_save_as_->setText(tr("Save &As..."));
+	action_save_as_->setIconText("");
+	action_save_as_->setIcon(
+		QIcon::fromTheme("document-save-as",
+		QIcon(":/icons/document-save-as.png")));
+	connect(action_save_as_, SIGNAL(triggered(bool)),
+		this, SLOT(on_action_save_as_triggered()));
+
 	action_run_->setText(tr("Start"));
 	action_run_->setIcon(
 		QIcon::fromTheme("media-playback-start",
@@ -104,6 +114,7 @@ void SmuScriptTab::setup_toolbar()
 	toolbar_ = new QToolBar("SmuScript Toolbar");
 	toolbar_->addAction(action_open_);
 	toolbar_->addAction(action_save_);
+	toolbar_->addAction(action_save_as_);
 	toolbar_->addSeparator();
 	toolbar_->addAction(action_run_);
 	parent_->addToolBar(Qt::TopToolBarArea, toolbar_);
@@ -111,23 +122,43 @@ void SmuScriptTab::setup_toolbar()
 
 void SmuScriptTab::on_action_open_triggered()
 {
-    QFile file(
-		"/home/frank/Projekte/elektronik/sigrok/smuview/smuscript/test2.py");
-		//"/home/frank/Projekte/elektronik/sigrok/smuview/smuscript/example1.py");
-	if (file.open(QFile::ReadOnly | QFile::Text)) {
-		editor_->setPlainText(file.readAll());
-		file.close();
+	QString file_name = QFileDialog::getOpenFileName(this,
+		tr("Open SmuScript-File"), QDir::homePath(), tr("Python Files (*.py)"));
+
+	if (file_name.length() > 0) {
+		script_file_name_ = file_name.toStdString();
+		QFile file(file_name);
+		if (file.open(QFile::ReadOnly | QFile::Text)) {
+			editor_->setPlainText(file.readAll());
+			file.close();
+		}
 	}
 }
 
 void SmuScriptTab::on_action_save_triggered()
 {
 	QFile file(QString::fromStdString(script_file_name_));
-    if (file.open(QFile::WriteOnly | QFile::Text | QFile::Truncate)) {
+	if (file.open(QFile::WriteOnly | QFile::Text | QFile::Truncate)) {
 		QTextStream stream(&file);
 		stream << editor_->toPlainText() << flush;
 		file.close();
-    }
+	}
+}
+
+void SmuScriptTab::on_action_save_as_triggered()
+{
+	QString file_name = QFileDialog::getSaveFileName(this,
+		tr("Save SmuScript-File"), QDir::homePath(), tr("Python Files (*.py)"));
+
+	if (file_name.length() > 0) {
+		script_file_name_ = file_name.toStdString();
+		QFile file(file_name);
+		if (file.open(QFile::WriteOnly | QFile::Text | QFile::Truncate)) {
+			QTextStream stream(&file);
+			stream << editor_->toPlainText() << flush;
+			file.close();
+		}
+	}
 }
 
 void SmuScriptTab::on_action_run_triggered()

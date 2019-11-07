@@ -66,6 +66,7 @@ private:
 	string script_file_name_;
 	QAction *const action_open_;
 	QAction *const action_save_;
+	QAction *const action_save_as_;
 	QAction *const action_run_;
 	QToolBar *toolbar_;
 	shared_ptr<python::SmuScriptRunner> smu_script_runner_; // TODO: Use unique_ptr instead?
@@ -74,6 +75,7 @@ private:
 private Q_SLOTS:
 	void on_action_open_triggered();
 	void on_action_save_triggered();
+	void on_action_save_as_triggered();
 	void on_action_run_triggered();
 	void on_script_error(QString);
 
