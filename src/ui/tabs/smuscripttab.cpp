@@ -114,16 +114,19 @@ void SmuScriptTab::on_action_open_triggered()
     QFile file(
 		"/home/frank/Projekte/elektronik/sigrok/smuview/smuscript/test2.py");
 		//"/home/frank/Projekte/elektronik/sigrok/smuview/smuscript/example1.py");
-    if (file.open(QFile::ReadOnly | QFile::Text))
-        editor_->setPlainText(file.readAll());
+	if (file.open(QFile::ReadOnly | QFile::Text)) {
+		editor_->setPlainText(file.readAll());
+		file.close();
+	}
 }
 
 void SmuScriptTab::on_action_save_triggered()
 {
 	QFile file(QString::fromStdString(script_file_name_));
-    if (file.open(QFile::ReadWrite | QFile::Text)) { // QIODevice::ReadWrite
-		 QTextStream stream(&file);
-        stream << editor_->toPlainText() << endl;
+    if (file.open(QFile::WriteOnly | QFile::Text | QFile::Truncate)) {
+		QTextStream stream(&file);
+		stream << editor_->toPlainText() << flush;
+		file.close();
     }
 }
 
