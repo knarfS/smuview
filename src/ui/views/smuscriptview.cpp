@@ -17,7 +17,6 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <memory>
 #include <string>
 
 #include <QAbstractItemView>
@@ -37,8 +36,6 @@
 #include "src/python/smuscriptrunner.hpp"
 #include "src/ui/views/baseview.hpp"
 
-using std::make_shared;
-using std::shared_ptr;
 using std::string;
 
 namespace sv {
@@ -50,10 +47,6 @@ SmuScriptView::SmuScriptView(Session &session, QWidget *parent) :
 	action_start_script_(new QAction(this)),
 	action_open_script_(new QAction(this))
 {
-	smu_script_runner_ = make_shared<python::SmuScriptRunner>(session_);
-	connect(smu_script_runner_.get(), SIGNAL(script_error(QString)),
-		this, SLOT(on_script_error(QString)));
-
 	setup_ui();
 	setup_toolbar();
 	connect_signals();
@@ -104,6 +97,8 @@ void SmuScriptView::setup_toolbar()
 		QIcon(":/icons/media-playback-start.png")));
 	connect(action_start_script_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_start_script_triggered()));
+	if (session_.smu_script_runner()->is_running())
+		action_start_script_->setDisabled(true);
 
 	action_open_script_->setText(tr("Open script"));
 	action_open_script_->setIcon(
@@ -120,6 +115,10 @@ void SmuScriptView::setup_toolbar()
 
 void SmuScriptView::connect_signals()
 {
+	connect(session_.smu_script_runner().get(), &python::SmuScriptRunner::script_started,
+		this, &SmuScriptView::on_script_started);
+	connect(session_.smu_script_runner().get(), &python::SmuScriptRunner::script_finished,
+		this, &SmuScriptView::on_script_finished);
 }
 
 void SmuScriptView::on_action_start_script_triggered()
@@ -128,7 +127,7 @@ void SmuScriptView::on_action_start_script_triggered()
 	if (!index.isValid())
 		return;
 
-	smu_script_runner_->run(
+	session_.smu_script_runner()->run(
 		file_system_model_->filePath(index).toStdString());
 }
 
@@ -142,10 +141,14 @@ void SmuScriptView::on_action_open_script_triggered()
 		file_system_model_->filePath(index).toStdString());
 }
 
-// TODO: Move?
-void SmuScriptView::on_script_error(QString msg)
+void SmuScriptView::on_script_started()
 {
-	QMessageBox::critical(this, tr("SmuScript Error"), msg);
+	action_start_script_->setDisabled(true);
+}
+
+void SmuScriptView::on_script_finished()
+{
+	action_start_script_->setDisabled(false);
 }
 
 } // namespace views

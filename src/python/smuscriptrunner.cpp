@@ -41,7 +41,8 @@ namespace sv {
 namespace python {
 
 SmuScriptRunner::SmuScriptRunner(Session &session) :
-	session_(session)
+	session_(session),
+	is_running_(false)
 {
 	ui_helper_ = make_shared<UiHelper>(session_);
 }
@@ -64,10 +65,21 @@ void SmuScriptRunner::run(std::string file_name)
 
 void SmuScriptRunner::stop()
 {
+	// TODO: finalize_interpreter crashes...
+	//py::finalize_interpreter();
+}
+
+bool SmuScriptRunner::is_running()
+{
+	return is_running_;
 }
 
 void SmuScriptRunner::script_thread_proc()
 {
+	// TODO: mutex?
+	is_running_ = true;
+	Q_EMIT script_started();
+
 	py::scoped_interpreter guard{};
 
 	UiProxy *ui_proxy = new UiProxy(session_, ui_helper_);
@@ -80,11 +92,12 @@ void SmuScriptRunner::script_thread_proc()
 		py::eval_file(script_file_name_, py::globals(), locals);
 	}
 	catch (py::error_already_set &ex) {
-		qWarning() << "SmuScriptRunner::script_thread_proc(): ex = " << ex.what();
-		Q_EMIT script_error(QString(ex.what())); // TODO: script_error() not set atm!
+		Q_EMIT script_error("SmuScriptRunner", ex.what());
 	}
 
 	qWarning() << "SmuScriptRunner::script_thread_proc() has finished!";
+	Q_EMIT script_finished();
+	is_running_ = false;
 }
 
 } // namespace python

@@ -50,6 +50,10 @@ class HardwareDevice;
 class UserDevice;
 }
 
+namespace python {
+class SmuScriptRunner;
+}
+
 class Session : public QObject
 {
 	Q_OBJECT
@@ -65,6 +69,7 @@ public:
 
 	DeviceManager &device_manager();
 	const DeviceManager &device_manager() const;
+	shared_ptr<python::SmuScriptRunner> smu_script_runner();
 
 	void save_settings(QSettings &settings) const;
 	void restore_settings(QSettings &settings);
@@ -83,10 +88,13 @@ public:
 private:
 	DeviceManager &device_manager_;
 	map<string, shared_ptr<devices::BaseDevice>> devices_;
-	// TODO: Maybe replace with a UiController?
 	MainWindow *main_window_;
+	shared_ptr<python::SmuScriptRunner> smu_script_runner_;
 
 	void free_unused_memory();
+
+private Q_SLOTS:
+	void error_handler(const std::string sender, const std::string msg);
 
 Q_SIGNALS:
 	void device_added(shared_ptr<sv::devices::BaseDevice>);

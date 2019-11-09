@@ -20,8 +20,6 @@
 #ifndef UI_VIEWS_SMUSCRIPTVIEW_HPP
 #define UI_VIEWS_SMUSCRIPTVIEW_HPP
 
-#include <memory>
-
 #include <QAction>
 #include <QFileSystemModel>
 #include <QString>
@@ -30,15 +28,9 @@
 
 #include "src/ui/views/baseview.hpp"
 
-using std::shared_ptr;
-
 namespace sv {
 
 class Session;
-
-namespace python {
-class SmuScriptRunner;
-}
 
 namespace ui {
 namespace views {
@@ -58,7 +50,6 @@ private:
 	QToolBar *toolbar_;
 	QFileSystemModel *file_system_model_;
 	QTreeView *file_system_tree_;
-	shared_ptr<python::SmuScriptRunner> smu_script_runner_; // TODO: Use unique_ptr instead?
 
 	void setup_ui();
 	void setup_toolbar();
@@ -67,7 +58,8 @@ private:
 private Q_SLOTS:
 	void on_action_start_script_triggered();
 	void on_action_open_script_triggered();
-	void on_script_error(QString);
+	void on_script_started();
+	void on_script_finished();
 
 };
 

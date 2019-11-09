@@ -47,17 +47,21 @@ public:
 
 	void run(std::string file_name);
 	void stop();
+	bool is_running();
 
 private:
-	void script_thread_proc(/*function<void (const QString)> error_handler*/); // TODO: signal?
+	void script_thread_proc();
 
 	Session &session_;
 	shared_ptr<UiHelper> ui_helper_;
 	std::string script_file_name_;
 	std::thread script_thread_;
+	bool is_running_;
 
 Q_SIGNALS:
-	void script_error(QString); // TODO: error_handler?
+	void script_error(const std::string, const std::string);
+	void script_started();
+	void script_finished();
 
 };
 

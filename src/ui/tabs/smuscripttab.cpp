@@ -37,9 +37,6 @@
 #include "src/ui/tabs/basetab.hpp"
 #include "src/ui/widgets/scripteditor/smuscripteditor.hpp"
 
-using std::make_shared;
-using std::shared_ptr;
-
 namespace sv {
 namespace ui {
 namespace tabs {
@@ -53,12 +50,9 @@ SmuScriptTab::SmuScriptTab(Session &session,
 	action_save_as_(new QAction(this)),
 	action_run_(new QAction(this))
 {
-	smu_script_runner_ = make_shared<python::SmuScriptRunner>(session_);
-	connect(smu_script_runner_.get(), SIGNAL(script_error(QString)),
-		this, SLOT(on_script_error(QString)));
-
 	setup_ui();
 	setup_toolbar();
+	connect_signals();
 }
 
 void SmuScriptTab::setup_ui()
@@ -110,6 +104,8 @@ void SmuScriptTab::setup_toolbar()
 	action_run_->setChecked(false);
 	connect(action_run_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_run_triggered()));
+	if (session_.smu_script_runner()->is_running())
+		action_run_->setDisabled(true);
 
 	toolbar_ = new QToolBar("SmuScript Toolbar");
 	toolbar_->addAction(action_open_);
@@ -118,6 +114,14 @@ void SmuScriptTab::setup_toolbar()
 	toolbar_->addSeparator();
 	toolbar_->addAction(action_run_);
 	parent_->addToolBar(Qt::TopToolBarArea, toolbar_);
+}
+
+void SmuScriptTab::connect_signals()
+{
+	connect(session_.smu_script_runner().get(), &python::SmuScriptRunner::script_started,
+		this, &SmuScriptTab::on_script_started);
+	connect(session_.smu_script_runner().get(), &python::SmuScriptRunner::script_finished,
+		this, &SmuScriptTab::on_script_finished);
 }
 
 void SmuScriptTab::on_action_open_triggered()
@@ -164,26 +168,42 @@ void SmuScriptTab::on_action_save_as_triggered()
 void SmuScriptTab::on_action_run_triggered()
 {
 	if (action_run_->isChecked()) {
+		action_run_->setText(tr("Running"));
+		action_run_->setIconText(tr("Running"));
+		/*
+		 * TODO: Script cannot be stopped (yet?).
 		action_run_->setText(tr("Stop"));
 		action_run_->setIconText(tr("Stop"));
 		action_run_->setIcon(
 			QIcon::fromTheme("media-playback-stop",
 			QIcon(":/icons/media-playback-stop.png")));
+		*/
 
-		smu_script_runner_->run(script_file_name_);
+		session_.smu_script_runner()->run(script_file_name_);
 	}
 	else {
 		action_run_->setText(tr("Start"));
 		action_run_->setIconText(tr("Start"));
+		/*
+		 * TODO: Script cannot be stopped (yet?).
 		action_run_->setIcon(
 			QIcon::fromTheme("media-playback-start",
 			QIcon(":/icons/media-playback-start.png")));
+
+		session_.smu_script_runner()->stop();
+		*/
 	}
 }
 
-void SmuScriptTab::on_script_error(QString msg)
+void SmuScriptTab::on_script_started()
 {
-	QMessageBox::critical(this, tr("SmuScript Error"), msg);
+	action_run_->setDisabled(true);
+}
+
+void SmuScriptTab::on_script_finished()
+{
+	action_run_->setDisabled(false);
+	action_run_->setChecked(false);
 }
 
 } // namespace tabs

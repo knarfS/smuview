@@ -95,6 +95,7 @@ private:
 
 private Q_SLOTS:
 	void show_session_error(const QString text, const QString info_text);
+	void error_handler(const std::string sender, const std::string msg);
 	void on_tab_close_requested(int);
 
 public Q_SLOTS:

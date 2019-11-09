@@ -35,6 +35,7 @@
 #include "src/devices/basedevice.hpp"
 #include "src/devices/hardwaredevice.hpp"
 #include "src/devices/userdevice.hpp"
+#include "src/python/smuscriptrunner.hpp"
 
 using std::function;
 using std::list;
@@ -58,6 +59,9 @@ Session::Session(DeviceManager &device_manager, MainWindow *main_window) :
 	device_manager_(device_manager),
 	main_window_(main_window)
 {
+	smu_script_runner_ = make_shared<python::SmuScriptRunner>(*this);
+	connect(smu_script_runner_.get(), &python::SmuScriptRunner::script_error,
+		this, &Session::error_handler);
 }
 
 Session::~Session()
@@ -74,6 +78,11 @@ DeviceManager &Session::device_manager()
 const DeviceManager &Session::device_manager() const
 {
 	return device_manager_;
+}
+
+shared_ptr<python::SmuScriptRunner> Session::smu_script_runner()
+{
+	return smu_script_runner_;
 }
 
 void Session::save_settings(QSettings &settings) const
@@ -157,6 +166,12 @@ void Session::remove_device(shared_ptr<devices::BaseDevice> device)
 MainWindow *Session::main_window() const
 {
 	return main_window_;
+}
+
+void Session::error_handler(const std::string sender, const std::string msg)
+{
+	qCritical() << QString::fromStdString(sender) <<
+		" error: " << QString::fromStdString(msg);
 }
 
 } // namespace sv

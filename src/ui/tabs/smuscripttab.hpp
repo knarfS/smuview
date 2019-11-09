@@ -20,24 +20,17 @@
 #ifndef UI_TABS_SMUSCRIPTTAB_HPP
 #define UI_TABS_SMUSCRIPTTAB_HPP
 
-#include <memory>
-
 #include <QAction>
 #include <QMainWindow>
 #include <QToolBar>
 
 #include "src/ui/tabs/basetab.hpp"
 
-using std::shared_ptr;
 using std::string;
 
 namespace sv {
 
 class Session;
-
-namespace python {
-class SmuScriptRunner;
-}
 
 namespace ui {
 
@@ -62,6 +55,7 @@ public:
 private:
 	void setup_ui();
 	void setup_toolbar();
+	void connect_signals();
 
 	string script_file_name_;
 	QAction *const action_open_;
@@ -69,7 +63,6 @@ private:
 	QAction *const action_save_as_;
 	QAction *const action_run_;
 	QToolBar *toolbar_;
-	shared_ptr<python::SmuScriptRunner> smu_script_runner_; // TODO: Use unique_ptr instead?
 	widgets::scripteditor::SmuScriptEditor *editor_;
 
 private Q_SLOTS:
@@ -77,7 +70,8 @@ private Q_SLOTS:
 	void on_action_save_triggered();
 	void on_action_save_as_triggered();
 	void on_action_run_triggered();
-	void on_script_error(QString);
+	void on_script_started();
+	void on_script_finished();
 
 };
 

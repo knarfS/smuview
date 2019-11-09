@@ -46,6 +46,7 @@
 #include "src/devices/sourcesinkdevice.hpp"
 #include "src/devices/userdevice.hpp"
 #include "src/channels/basechannel.hpp"
+#include "src/python/smuscriptrunner.hpp"
 #include "src/ui/dialogs/connectdialog.hpp"
 #include "src/ui/tabs/basetab.hpp"
 #include "src/ui/tabs/smuscripttab.hpp"
@@ -278,6 +279,9 @@ void MainWindow::setup_ui()
 
 void MainWindow::connect_signals()
 {
+	// Connect error handlers
+	connect(session_->smu_script_runner().get(), &python::SmuScriptRunner::script_error,
+		this, &MainWindow::error_handler);
 }
 
 void MainWindow::session_error(const QString text, const QString info_text)
@@ -295,6 +299,16 @@ void MainWindow::show_session_error(const QString text, const QString info_text)
 	msg.setStandardButtons(QMessageBox::Ok);
 	msg.setIcon(QMessageBox::Warning);
 	msg.exec();
+}
+
+void MainWindow::error_handler(const std::string sender, const std::string msg)
+{
+	QMessageBox msg_box(this);
+	msg_box.setText(QString::fromStdString(sender));
+	msg_box.setInformativeText(QString::fromStdString(msg));
+	msg_box.setStandardButtons(QMessageBox::Ok);
+	msg_box.setIcon(QMessageBox::Critical);
+	msg_box.exec();
 }
 
 void MainWindow::on_tab_close_requested(int index)
