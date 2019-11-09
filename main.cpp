@@ -62,6 +62,7 @@ void usage()
 		"  -l, --loglevel             Set libsigrok loglevel\n"
 		"  -d, --driver               Specify the device driver(s) to use\n"
 		"  -D, --dont-scan            Don't auto-scan for devices, use -d spec only\n"
+		"  -s, --script               Specify the SmuScript to load and execute\n"
 		/* Disable cmd line options i, I and c
 		"  -i, --input-file           Load input from file\n"
 		"  -I, --input-format         Input format\n"
@@ -87,6 +88,7 @@ int main(int argc, char *argv[])
 	string open_file, open_file_format;
 	bool restore_session = true;
 	bool do_scan = true;
+	string script_file;
 
 	Application app(argc, argv);
 
@@ -98,6 +100,7 @@ int main(int argc, char *argv[])
 			{ "loglevel", required_argument, nullptr, 'l' },
 			{ "driver", required_argument, nullptr, 'd' },
 			{ "dont-scan", no_argument, nullptr, 'D' },
+			{ "script", required_argument, nullptr, 's' },
 			/* Disable cmd line options i, I and c
 			{ "input-file", required_argument, nullptr, 'i' },
 			{ "input-format", required_argument, nullptr, 'I' },
@@ -111,7 +114,7 @@ int main(int argc, char *argv[])
 			"l:Vhc?d:i:I:", long_options, nullptr);
 		*/
 		const int c = getopt_long(argc, argv,
-			"h?VDl:d:", long_options, nullptr);
+			"h?VDl:d:s:", long_options, nullptr);
 
 		if (c == -1)
 			break;
@@ -146,6 +149,10 @@ int main(int argc, char *argv[])
 
 		case 'D':
 			do_scan = false;
+			break;
+
+		case 's':
+			script_file = optarg;
 			break;
 
 		/* Disable cmd line options i, I and c
@@ -183,9 +190,10 @@ int main(int argc, char *argv[])
 			sv::Session::session_start_timestamp =
 				QDateTime::currentMSecsSinceEpoch() / (double)1000;
 
-
 			// Create the device manager, initialise the drivers
 			sv::DeviceManager device_manager(context, drivers, do_scan);
+
+			// TODO: Init session here!
 
 			// Initialise the main window
 			sv::MainWindow w(device_manager);
@@ -198,6 +206,9 @@ int main(int argc, char *argv[])
 				w.init_session_with_file(open_file, open_file_format);
 			else
 				w.init_default_session();
+
+			if (!script_file.empty())
+				w.run_smu_script(script_file); // TODO: Call in Session not MainWindow
 
 #ifdef ENABLE_SIGNALS
 			if (SignalHandler::prepare_signals()) {

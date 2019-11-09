@@ -144,6 +144,12 @@ void MainWindow::restore_session()
 	settings.endGroup();
 }
 
+void MainWindow::run_smu_script(string script_file)
+{
+	add_smuscript_tab(script_file);
+	session_->smu_script_runner()->run(script_file);
+}
+
 void MainWindow::add_tab(QMainWindow *tab_window, QString title, string id)
 {
 	int index = tab_widget_->addTab(tab_window, title);

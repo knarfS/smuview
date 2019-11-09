@@ -66,6 +66,9 @@ public:
 	void save_session();
 	void restore_session();
 
+	// TODO: Move to Session, when Session init is in main.cpp
+	void run_smu_script(string script_file);
+
 	void add_smuscript_tab(string file_name);
 	void remove_tab(string id);
 	ui::tabs::BaseTab *get_base_tab_from_device_id(const string id);
