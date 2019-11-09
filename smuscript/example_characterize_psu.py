@@ -21,7 +21,7 @@ user_device.add_user_channel("Results", "User")
 load_conf.set_config(smuview.ConfigKey.CurrentLimit, .0)
 psu_conf.set_config(smuview.ConfigKey.VoltageTarget, 5.0)
 psu_conf.set_config(smuview.ConfigKey.CurrentLimit, 0.15)
-#dmm1_conf.set_config(smuview.ConfigKey.MeasurementQunatity, smuview.Qunatity.Voltage)
+#dmm1_conf.set_config(smuview.ConfigKey.MeasuredQuantity, smuview.Quantity.Voltage)
 
 d = .0
 while d <= 0.1:

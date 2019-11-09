@@ -16,13 +16,6 @@ UiProxy.add_device_tab(user_dev)
 # Sleep 1 second to give the newly connected demo device the chance to create data and the corresponding signals. TODO
 time.sleep(1)
 
-# List all connected devices
-session_devices = Session.devices()
-for deviceId in session_devices:
-    print("device.name() = " + session_devices[deviceId].name())
-    print("device.id()   = " + deviceId)
-    print("")
-
 # Get device id of user device
 user_dev_id = user_dev.id()
 
@@ -32,13 +25,13 @@ UiProxy.add_data_view(user_dev_id, smuview.DockArea.TopDockArea, demo_dev.channe
 # Add a control view to the device tab
 UiProxy.add_control_view(user_dev_id, smuview.DockArea.TopDockArea, demo_dev.configurables()["A1"])
 
-# Add a plot view to the device tab
-UiProxy.add_plot_view(user_dev_id, smuview.DockArea.BottomDockArea, demo_dev.channels()["A1"])
+# Add plot view (1) with a channel to the device tab
+plot_view_1 = UiProxy.add_plot_view(user_dev_id, smuview.DockArea.BottomDockArea, demo_dev.channels()["A1"])
 
-# Add a plot view to the device tab
-UiProxy.add_plot_view(user_dev_id, smuview.DockArea.BottomDockArea, demo_dev.channels()["A1"].actual_signal());
+# Add a plot view (2) with a signal to the device tab
+plot_view_2 = UiProxy.add_plot_view(user_dev_id, smuview.DockArea.BottomDockArea, demo_dev.channels()["A1"].actual_signal());
 
-# Add a plot view to the device tab
+# Add a x/y plot view (3) with two signals to the device tab
 UiProxy.add_plot_view(user_dev_id, smuview.DockArea.BottomDockArea, demo_dev.channels()["A1"].actual_signal(), demo_dev.channels()["A2"].actual_signal())
 
 # Add a power panel view to the device tab
@@ -49,3 +42,13 @@ UiProxy.add_value_panel_view(user_dev_id, smuview.DockArea.TopDockArea, demo_dev
 
 # Add a value panel view to the device tab
 UiProxy.add_value_panel_view(user_dev_id, smuview.DockArea.TopDockArea, demo_dev.channels()["A1"].actual_signal())
+
+# Add a signal to the existing plot view (1)
+UiProxy.add_signal_to_plot(user_dev_id, plot_view_1, demo_dev.channels()["A3"].actual_signal())
+
+# Add a signal to the existing plot view (2)
+UiProxy.add_signal_to_plot(user_dev_id, plot_view_2, demo_dev.channels()["A3"].actual_signal())
+
+# Add a signal to the existing plot view (3)
+# TODO: not working yet
+#UiProxy.add_signal_to_plot(user_dev_id, "plot_xy:A1 [V DC]:A2 [V DC]", demo_dev.channels()["A3"].actual_signal())
