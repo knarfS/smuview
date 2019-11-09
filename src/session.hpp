@@ -20,7 +20,6 @@
 #ifndef SESSION_HPP
 #define SESSION_HPP
 
-#include <functional>
 #include <list>
 #include <map>
 #include <memory>
@@ -29,7 +28,6 @@
 #include <QObject>
 #include <QSettings>
 
-using std::function;
 using std::list;
 using std::map;
 using std::shared_ptr;
@@ -76,8 +74,7 @@ public:
 
 	map<string, shared_ptr<devices::BaseDevice>> devices() const;
 	list<shared_ptr<devices::HardwareDevice>> connect_device(string conn_string);
-	void add_device(shared_ptr<devices::BaseDevice> device,
-		function<void (const QString)> error_handler);
+	void add_device(shared_ptr<devices::BaseDevice> device);
 	shared_ptr<devices::UserDevice> add_user_device();
 	void remove_device(shared_ptr<devices::BaseDevice> device);
 

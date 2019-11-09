@@ -21,7 +21,6 @@
 #ifndef DEVICES_HARDWAREDEVICE_HPP
 #define DEVICES_HARDWAREDEVICE_HPP
 
-#include <functional>
 #include <map>
 #include <mutex>
 #include <string>
@@ -35,7 +34,6 @@
 
 using std::bad_alloc;
 using std::dynamic_pointer_cast;
-using std::function;
 using std::lock_guard;
 using std::make_shared;
 using std::set;
@@ -45,7 +43,6 @@ using std::string;
 using std::vector;
 using std::unique_ptr;
 
-using std::function;
 using std::map;
 using std::mutex;
 using std::recursive_mutex;
@@ -103,7 +100,7 @@ public:
 	 */
 	QString display_name(const DeviceManager &device_manager) const override;
 
-	void open(function<void (const QString)> error_handler) override;
+	void open() override;
 
 protected:
 	/**

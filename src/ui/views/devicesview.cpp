@@ -121,10 +121,7 @@ void DevicesView::on_action_add_device_triggered()
 		auto device = dlg.get_selected_device();
 		// NOTE: add_device() must be called, before the device tab
 		//       tries to access the device (device is not opend yet).
-		// TODO: Pass the error_handler somehow in main.cpp?
-		session().add_device(device, [&](QString message) {
-			session().main_window()->session_error("Aquisition failed", message);
-		});
+		session().add_device(device);
 		session().main_window()->add_device_tab(device);
 	}
 }

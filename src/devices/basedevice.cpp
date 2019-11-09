@@ -100,10 +100,8 @@ DeviceType BaseDevice::type() const
 	return device_type_;
 }
 
-void BaseDevice::open(function<void (const QString)> error_handler)
+void BaseDevice::open()
 {
-	aquisition_thread_error_handler_ = error_handler; // TODO: not as parameter
-
 	if (device_open_)
 		close();
 
@@ -375,8 +373,7 @@ void BaseDevice::init_acquisition()
 			data_feed_in(sr_device, sr_packet);
 		});
 	aquisition_thread_ = std::thread(
-		&BaseDevice::aquisition_thread_proc, this,
-		aquisition_thread_error_handler_);
+		&BaseDevice::aquisition_thread_proc, this);
 	aquisition_state_ = AquisitionState::Running;
 }
 
@@ -465,16 +462,13 @@ void BaseDevice::data_feed_in(shared_ptr<sigrok::Device> sr_device,
 	}
 }
 
-void BaseDevice::aquisition_thread_proc(
-	function<void (const QString)> error_handler)
+void BaseDevice::aquisition_thread_proc()
 {
-	assert(error_handler);
-
 	try {
 		sr_session_->start();
 	}
 	catch (sigrok::Error &e) {
-		error_handler(e.what());
+		Q_EMIT device_error(name(), e.what());
 		return;
 	}
 
@@ -496,7 +490,7 @@ void BaseDevice::aquisition_thread_proc(
 		sr_session_->run();
 	}
 	catch (sigrok::Error &e) {
-		error_handler(e.what());
+		Q_EMIT device_error(name(), e.what());
 		aquisition_state_ = AquisitionState::Stopped;
 		return;
 	}

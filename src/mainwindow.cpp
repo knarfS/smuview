@@ -111,10 +111,7 @@ void MainWindow::init_default_session()
 	for (const auto &device : device_manager_.user_spec_devices()) {
 		// NOTE: add_device() must be called, before the device tab
 		//       tries to access the device (device is not opend yet).
-		// TODO: Pass the error_handler somehow in main.cpp?
-		session_->add_device(device, [&](QString message) {
-			session_error("Aquisition failed", message);
-		});
+		session_->add_device(device);
 		add_device_tab(device);
 	}
 }
@@ -284,23 +281,6 @@ void MainWindow::connect_signals()
 		this, &MainWindow::error_handler);
 }
 
-void MainWindow::session_error(const QString text, const QString info_text)
-{
-	QMetaObject::invokeMethod(this, "show_session_error",
-		Qt::QueuedConnection, Q_ARG(QString, text),
-		Q_ARG(QString, info_text));
-}
-
-void MainWindow::show_session_error(const QString text, const QString info_text)
-{
-	QMessageBox msg(this);
-	msg.setText(text);
-	msg.setInformativeText(info_text);
-	msg.setStandardButtons(QMessageBox::Ok);
-	msg.setIcon(QMessageBox::Warning);
-	msg.exec();
-}
-
 void MainWindow::error_handler(const std::string sender, const std::string msg)
 {
 	QMessageBox msg_box(this);
@@ -332,6 +312,10 @@ void MainWindow::add_device_tab(
 		ui::tabs::tabhelper::get_tab_for_device(*session_, device, tab_window));
 
 	add_tab(tab_window, device->short_name(), device->id());
+
+	// Connect device error handler
+	connect(device.get(), &sv::devices::BaseDevice::device_error,
+		this, &MainWindow::error_handler);
 }
 
 } // namespace sv

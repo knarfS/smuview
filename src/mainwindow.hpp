@@ -70,8 +70,6 @@ public:
 	void remove_tab(string id);
 	ui::tabs::BaseTab *get_base_tab_from_device_id(const string id);
 
-	void session_error(const QString text, const QString info_text);
-
 private:
 	void setup_ui();
 	void connect_signals();
@@ -94,7 +92,6 @@ private:
 	QTabWidget *tab_widget_;
 
 private Q_SLOTS:
-	void show_session_error(const QString text, const QString info_text);
 	void error_handler(const std::string sender, const std::string msg);
 	void on_tab_close_requested(int);
 

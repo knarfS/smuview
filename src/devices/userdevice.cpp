@@ -115,10 +115,8 @@ QString UserDevice::display_name(
 }
 
 /* TODO: merge with Device */
-void UserDevice::open(function<void (const QString)> error_handler)
+void UserDevice::open()
 {
-	(void)error_handler;
-
 	if (device_open_)
 		close();
 

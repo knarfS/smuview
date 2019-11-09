@@ -73,7 +73,7 @@ public:
 	 */
 	QString display_name(const DeviceManager &device_manager) const override;
 
-	void open(function<void (const QString)> error_handler) override;
+	void open() override;
 	void close() override;
 	void add_channel(shared_ptr<channels::BaseChannel> channel,
 		string channel_group_name) override;

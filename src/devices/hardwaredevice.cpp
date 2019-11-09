@@ -20,7 +20,6 @@
 
 #include <algorithm>
 #include <cassert>
-#include <functional>
 #include <set>
 #include <string>
 #include <thread>
@@ -48,7 +47,6 @@
 using std::bad_alloc;
 using std::dynamic_pointer_cast;
 using std::find;
-using std::function;
 using std::lock_guard;
 using std::make_pair;
 using std::make_shared;
@@ -162,9 +160,9 @@ QString HardwareDevice::display_name(
 	return name;
 }
 
-void HardwareDevice::open(function<void (const QString)> error_handler)
+void HardwareDevice::open()
 {
-	BaseDevice::open(error_handler);
+	BaseDevice::open();
 
 	// Special handling for device "demo": Set a initial moderate samplerate of
 	// 5 samples per second, to slow down the analog channels.

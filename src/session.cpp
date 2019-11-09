@@ -18,7 +18,6 @@
  */
 
 #include <cassert>
-#include <functional>
 #include <list>
 #include <map>
 #include <memory>
@@ -37,7 +36,6 @@
 #include "src/devices/userdevice.hpp"
 #include "src/python/smuscriptrunner.hpp"
 
-using std::function;
 using std::list;
 using std::make_pair;
 using std::make_shared;
@@ -117,23 +115,25 @@ list<shared_ptr<devices::HardwareDevice>>
 		device_manager_.driver_scan(driver_name, driver_opts);
 
 	for (auto &device : devices)
-		add_device(device, nullptr); // TODO: error_handler
+		add_device(device);
 
 	return devices;
 }
 
-void Session::add_device(shared_ptr<devices::BaseDevice> device,
-	function<void (const QString)> error_handler)
+void Session::add_device(shared_ptr<devices::BaseDevice> device)
 {
 	assert(device);
 
 	try {
-		device->open(error_handler);
+		device->open();
 	}
 	catch (const QString &e) {
-		qWarning() << e;
+		qCritical() << e;
 		device.reset();
 	}
+
+	connect(device.get(), &devices::BaseDevice::device_error,
+		this, &Session::error_handler);
 
 	devices_.insert(make_pair(device->id(), device));
 
@@ -148,19 +148,23 @@ shared_ptr<devices::UserDevice> Session::add_user_device()
 
 	auto device = make_shared<devices::UserDevice>(
 		sr_context, vendor, model, version);
-	this->add_device(device, nullptr); // TODO: Do we need a error_handler?
+	this->add_device(device);
 
 	return device;
 }
 
 void Session::remove_device(shared_ptr<devices::BaseDevice> device)
 {
-	if (device)
+	if (device) {
 		device->close();
 
-	devices_.erase(device->id());
+		disconnect(device.get(), &devices::BaseDevice::device_error,
+			this, &Session::error_handler);
 
-	Q_EMIT device_removed(device);
+		devices_.erase(device->id());
+
+		Q_EMIT device_removed(device);
+	}
 }
 
 MainWindow *Session::main_window() const

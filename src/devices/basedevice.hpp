@@ -21,7 +21,6 @@
 #ifndef DEVICES_BASEDEVICE_HPP
 #define DEVICES_BASEDEVICE_HPP
 
-#include <functional>
 #include <map>
 #include <memory>
 #include <mutex>
@@ -33,7 +32,6 @@
 
 #include "src/devices/deviceutil.hpp"
 
-using std::function;
 using std::map;
 using std::mutex;
 using std::recursive_mutex;
@@ -128,7 +126,7 @@ public:
 	/**
 	 * Open the device.
 	 */
-	virtual void open(function<void (const QString)> error_handler);
+	virtual void open();
 
 	/**
 	 * Close the device.
@@ -256,14 +254,14 @@ protected:
 	bool frame_began_;
 
 private:
-	void aquisition_thread_proc(function<void (const QString)> error_handler);
+	void aquisition_thread_proc();
 
-	function<void (const QString)> aquisition_thread_error_handler_;
 	std::thread aquisition_thread_;
 
 Q_SIGNALS:
 	void aquisition_start_timestamp_changed(double);
 	void channel_added(shared_ptr<sv::channels::BaseChannel>);
+	void device_error(const std::string sender, const std::string msg);
 
 };
 
