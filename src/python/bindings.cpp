@@ -38,11 +38,6 @@
 #include "src/devices/hardwaredevice.hpp"
 #include "src/devices/userdevice.hpp"
 #include "src/python/uiproxy.hpp"
-#include "src/ui/tabs/basetab.hpp"
-#include "src/ui/tabs/devicetab.hpp"
-#include "src/ui/tabs/usertab.hpp"
-#include "src/ui/views/baseview.hpp"
-#include "src/ui/views/plotview.hpp"
 
 using namespace pybind11::literals; // for the ""_a
 namespace py = pybind11;
@@ -140,30 +135,22 @@ void init_UI(py::module &m)
 		.def("add_data_view", &sv::python::UiProxy::ui_add_data_view)
 		.def("add_control_view", &sv::python::UiProxy::ui_add_control_view)
 		.def("add_plot_view",
-			(void (sv::python::UiProxy::*) (std::string, Qt::DockWidgetArea, shared_ptr<sv::channels::BaseChannel>))
+			(std::string (sv::python::UiProxy::*) (std::string, Qt::DockWidgetArea, shared_ptr<sv::channels::BaseChannel>))
 			&sv::python::UiProxy::ui_add_plot_view)
 		.def("add_plot_view",
-			(void (sv::python::UiProxy::*) (std::string, Qt::DockWidgetArea, shared_ptr<sv::data::AnalogTimeSignal>))
+			(std::string (sv::python::UiProxy::*) (std::string, Qt::DockWidgetArea, shared_ptr<sv::data::AnalogTimeSignal>))
 			&sv::python::UiProxy::ui_add_plot_view)
 		.def("add_plot_view",
-			(void (sv::python::UiProxy::*) (std::string, Qt::DockWidgetArea, shared_ptr<sv::data::AnalogTimeSignal>, shared_ptr<sv::data::AnalogTimeSignal>))
+			(std::string (sv::python::UiProxy::*) (std::string, Qt::DockWidgetArea, shared_ptr<sv::data::AnalogTimeSignal>, shared_ptr<sv::data::AnalogTimeSignal>))
 			&sv::python::UiProxy::ui_add_plot_view)
 		.def("add_power_panel_view", &sv::python::UiProxy::ui_add_power_panel_view)
 		.def("add_value_panel_view",
-			(void (sv::python::UiProxy::*) (std::string, Qt::DockWidgetArea, shared_ptr<sv::channels::BaseChannel>))
+			(std::string (sv::python::UiProxy::*) (std::string, Qt::DockWidgetArea, shared_ptr<sv::channels::BaseChannel>))
 			&sv::python::UiProxy::ui_add_value_panel_view)
 		.def("add_value_panel_view",
-			(void (sv::python::UiProxy::*) (std::string, Qt::DockWidgetArea, shared_ptr<sv::data::AnalogTimeSignal>))
+			(std::string (sv::python::UiProxy::*) (std::string, Qt::DockWidgetArea, shared_ptr<sv::data::AnalogTimeSignal>))
 			&sv::python::UiProxy::ui_add_value_panel_view)
 		.def("add_signal_to_plot", &sv::python::UiProxy::ui_add_signal_to_plot);
-
-	// TODO: remove
-	py::class_<sv::ui::tabs::BaseTab> base_tab(m, "BaseTab");
-	py::class_<sv::ui::tabs::DeviceTab> device_tab(m, "DeviceTab", base_tab);
-	py::class_<sv::ui::tabs::UserTab>(m, "UserTab", device_tab);
-
-	py::class_<sv::ui::views::BaseView> base_view(m, "BaseView");
-	py::class_<sv::ui::views::PlotView>(m, "PlotView", base_view);
 
 	// Qt enumerations
 	py::enum_<Qt::DockWidgetArea>(m, "DockArea")

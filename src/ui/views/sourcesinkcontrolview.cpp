@@ -17,6 +17,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <string>
+
 #include <QSizePolicy>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -43,6 +45,8 @@ SourceSinkControlView::SourceSinkControlView(Session &session,
 	BaseView(session, parent),
 	configurable_(configurable)
 {
+	id_ = "control:" + configurable_->name();
+
 	setup_ui();
 }
 

@@ -110,10 +110,20 @@ void UiHelper::add_value_panel_view(std::string device_id,
 	tab->add_view(new ui::views::ValuePanelView(session_, signal), area);
 }
 
-void UiHelper::add_signal_to_plot(sv::ui::views::PlotView *plot,
+void UiHelper::add_signal_to_plot(std::string device_id, std::string view_id,
 	shared_ptr<sv::data::AnalogTimeSignal> signal)
 {
-	plot->add_time_curve(signal);
+	auto tab = session_.main_window()->get_base_tab_from_device_id(device_id);
+	auto view = tab->get_view_from_view_id(view_id);
+	if (!view)
+		return;
+
+	if (view->id().rfind("plot_ch", 0) == 0)
+		((ui::views::PlotView *)view)->add_time_curve(signal);
+	else if (view->id().rfind("plot_sig", 0) == 0)
+		((ui::views::PlotView *)view)->add_time_curve(signal);
+	else if (view->id().rfind("plot_xy", 0) == 0)
+		return;
 }
 
 } // namespace python

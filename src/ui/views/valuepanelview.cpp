@@ -20,6 +20,7 @@
 #include <cassert>
 #include <memory>
 #include <set>
+#include <string>
 
 #include <QApplication>
 #include <QDateTime>
@@ -56,6 +57,8 @@ ValuePanelView::ValuePanelView(Session &session,
 
 	signal_ = dynamic_pointer_cast<sv::data::AnalogTimeSignal>(
 		channel_->actual_signal());
+
+	id_ = "valuepanel_ch:" + channel_->name();
 
 	if (signal_) {
 		digits_ = signal_->digits();
@@ -95,6 +98,8 @@ ValuePanelView::ValuePanelView(Session& session,
 	action_reset_display_(new QAction(this))
 {
 	assert(signal_);
+
+	id_ = "valuepanel_sig:" + signal_->name();
 
 	digits_ = signal_->digits();
 	decimal_places_ = signal_->decimal_places();

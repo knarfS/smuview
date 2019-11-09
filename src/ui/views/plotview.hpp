@@ -76,7 +76,7 @@ public:
 		shared_ptr<sv::data::AnalogTimeSignal> y_signal,
 		QWidget *parent = nullptr);
 
-	QString title() const;
+	QString title() const override;
 	void add_time_curve(shared_ptr<sv::data::AnalogTimeSignal> signal);
 	void add_xy_curve(shared_ptr<sv::data::AnalogTimeSignal> x_signal,
 		shared_ptr<sv::data::AnalogTimeSignal> y_signal);

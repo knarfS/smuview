@@ -18,6 +18,7 @@
  */
 
 #include <cassert>
+#include <string>
 
 #include <QMainWindow>
 #include <QMenu>
@@ -39,6 +40,7 @@
 
 using std::dynamic_pointer_cast;
 using std::static_pointer_cast;
+using std::string;
 
 Q_DECLARE_METATYPE(sv::ui::widgets::plot::BaseCurveData *)
 
@@ -67,6 +69,8 @@ PlotView::PlotView(Session &session,
 
 	if (signal)
 		curves_.push_back(new widgets::plot::TimeCurveData(signal));
+
+	id_ = "plot_ch:" + initial_channel_->name();
 
 	// Signal (aka Quantity + Flags + Unit) can change, e.g. DMM channels
 	connect(initial_channel_.get(),
@@ -100,6 +104,8 @@ PlotView::PlotView(Session &session,
 
 	curves_.push_back(new widgets::plot::TimeCurveData(signal));
 
+	id_ = "plot_sig:" + signal->name();
+
 	setup_ui();
 	setup_toolbar();
 	connect_signals();
@@ -125,6 +131,8 @@ PlotView::PlotView(Session &session,
 	assert(y_signal);
 
 	curves_.push_back(new widgets::plot::XYCurveData(x_signal, y_signal));
+
+	id_ = "plot_xy:" + x_signal->name() + "::" + y_signal->name();
 
 	setup_ui();
 	setup_toolbar();

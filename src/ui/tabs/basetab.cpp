@@ -62,6 +62,11 @@ void BaseTab::restore_settings(QSettings &settings)
 	(void)settings;
 }
 
+views::BaseView *BaseTab::get_view_from_view_id(string id)
+{
+	return view_id_map_[id];
+}
+
 void BaseTab::add_view(views::BaseView *view, Qt::DockWidgetArea area)
 {
 	if (!view)
@@ -84,7 +89,8 @@ void BaseTab::add_view(views::BaseView *view, Qt::DockWidgetArea area)
 	// resizeDocks() was introduced in Qt 5.6.
 	parent_->resizeDocks({dock}, {40}, Qt::Horizontal);
 
-	view_docks_[dock] = view;
+	view_docks_map_[dock] = view;
+	view_id_map_[view->id()] = view;
 }
 
 } // namespace tabs

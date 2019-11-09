@@ -83,7 +83,7 @@ public Q_SLOTS:
 		shared_ptr<sv::channels::BaseChannel> channel);
 	void add_value_panel_view(std::string device_id, Qt::DockWidgetArea area,
 		shared_ptr<sv::data::AnalogTimeSignal> signal);
-	void add_signal_to_plot(sv::ui::views::PlotView *plot,
+	void add_signal_to_plot(std::string device_id, std::string view_id,
 		shared_ptr<sv::data::AnalogTimeSignal> signal);
 
 };

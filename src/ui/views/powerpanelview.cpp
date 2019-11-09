@@ -18,6 +18,7 @@
  */
 
 #include <set>
+#include <string>
 
 #include <QApplication>
 #include <QDateTime>
@@ -56,6 +57,9 @@ PowerPanelView::PowerPanelView(Session &session,
 	actual_watt_hours_(0),
 	action_reset_displays_(new QAction(this))
 {
+	id_ = "powerpanel:" + voltage_signal_->name() +
+		":" + current_signal_->name();
+
 	setup_ui();
 	setup_toolbar();
 	connect_signals();

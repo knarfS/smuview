@@ -18,6 +18,7 @@
  */
 
 #include <memory>
+#include <string>
 
 #include <QDebug>
 #include <QHBoxLayout>
@@ -51,6 +52,8 @@ DemoControlView::DemoControlView(Session &session,
 	BaseView(session, parent),
 	configurable_(configurable)
 {
+	id_ = "control:" + configurable_->name();
+
 	setup_ui();
 	connect_signals();
 }

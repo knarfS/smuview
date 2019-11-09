@@ -80,62 +80,70 @@ void UiProxy::ui_add_device_tab(shared_ptr<devices::BaseDevice> device)
 	Q_EMIT add_device_tab(device);
 }
 
-void UiProxy::ui_add_data_view(string device_id, Qt::DockWidgetArea area,
+string UiProxy::ui_add_data_view(string device_id, Qt::DockWidgetArea area,
 	shared_ptr<data::AnalogTimeSignal> signal)
 {
 	Q_EMIT add_data_view(device_id, area, signal);
+	return "data:" + signal->name();
 }
 
-void UiProxy::ui_add_control_view(string device_id, Qt::DockWidgetArea area,
+string UiProxy::ui_add_control_view(string device_id, Qt::DockWidgetArea area,
 	shared_ptr<devices::Configurable> configurable)
 {
 	Q_EMIT add_control_view(device_id, area, configurable);
+	return "control:" + configurable->name();
 }
 
-void UiProxy::ui_add_plot_view(string device_id, Qt::DockWidgetArea area,
+string UiProxy::ui_add_plot_view(string device_id, Qt::DockWidgetArea area,
 	shared_ptr<channels::BaseChannel> channel)
 {
 	Q_EMIT add_plot_view(device_id, area, channel);
+	return "plot_ch:" + channel->name();
 }
 
-void UiProxy::ui_add_plot_view(string device_id, Qt::DockWidgetArea area,
+string UiProxy::ui_add_plot_view(string device_id, Qt::DockWidgetArea area,
 	shared_ptr<data::AnalogTimeSignal> signal)
 {
 	Q_EMIT add_plot_view(device_id, area, signal);
+	return "plot_sig" + signal->name();
 }
 
-void UiProxy::ui_add_plot_view(string device_id, Qt::DockWidgetArea area,
+string UiProxy::ui_add_plot_view(string device_id, Qt::DockWidgetArea area,
 	shared_ptr<data::AnalogTimeSignal> x_signal,
 	shared_ptr<data::AnalogTimeSignal> y_signal)
 {
 	Q_EMIT add_plot_view(device_id, area, x_signal, y_signal);
+	return "plot_xy:" + x_signal->name() + ":" + y_signal->name();
 
 }
 
-void UiProxy::ui_add_power_panel_view(string device_id, Qt::DockWidgetArea area,
+string UiProxy::ui_add_power_panel_view(string device_id, Qt::DockWidgetArea area,
 	shared_ptr<data::AnalogTimeSignal> voltage_signal,
 	shared_ptr<data::AnalogTimeSignal> current_signal)
 {
 	Q_EMIT add_power_panel_view(device_id, area, voltage_signal, current_signal);
+	return "powerpanel:" + voltage_signal->name() + ":" + current_signal->name();
+
 }
 
-void UiProxy::ui_add_value_panel_view(string device_id, Qt::DockWidgetArea area,
+string UiProxy::ui_add_value_panel_view(string device_id, Qt::DockWidgetArea area,
 	shared_ptr<channels::BaseChannel> channel)
 {
 	Q_EMIT add_value_panel_view(device_id, area, channel);
+	return "valuepanel_ch:" + channel->name();
 }
 
-void UiProxy::ui_add_value_panel_view(string device_id, Qt::DockWidgetArea area,
+string UiProxy::ui_add_value_panel_view(string device_id, Qt::DockWidgetArea area,
 	shared_ptr<data::AnalogTimeSignal> signal)
 {
 	Q_EMIT add_value_panel_view(device_id, area, signal);
+	return "valuepanel_sig:" + signal->name();
 }
 
-// TODO: Don't use a raw pointer, but something like a string id
-void UiProxy::ui_add_signal_to_plot(ui::views::PlotView *plot,
+void UiProxy::ui_add_signal_to_plot(string device_id, string view_id,
 	shared_ptr<data::AnalogTimeSignal> signal)
 {
-	Q_EMIT ui_add_signal_to_plot(plot, signal);
+	Q_EMIT add_signal_to_plot(device_id, view_id, signal);
 }
 
 } // namespace python

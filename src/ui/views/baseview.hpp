@@ -20,9 +20,13 @@
 #ifndef UI_VIEWS_BASEVIEW_HPP
 #define UI_VIEWS_BASEVIEW_HPP
 
+#include <string>
+
 #include <QMainWindow>
 #include <QSettings>
 #include <QWidget>
+
+using std::string;
 
 namespace sv {
 
@@ -52,6 +56,7 @@ public:
 	Session &session();
 	const Session &session() const;
 
+	string id() const;
 	virtual QString title() const = 0;
 
 	virtual void save_settings(QSettings &settings) const;
@@ -60,6 +65,7 @@ public:
 protected:
 	Session &session_;
 	QWidget *central_widget_;
+	string id_;
 
 };
 

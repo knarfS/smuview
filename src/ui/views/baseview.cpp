@@ -17,8 +17,12 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <string>
+
 #include "baseview.hpp"
 #include "src/session.hpp"
+
+using std::string;
 
 namespace sv {
 namespace ui {
@@ -28,6 +32,9 @@ BaseView::BaseView(Session &session, QWidget *parent) :
 	QMainWindow(parent),
 	session_(session)
 {
+	// Every device gets its own unique id
+	id_ = "none:";
+
 	// Remove Qt::Window flag
 	this->setWindowFlags(Qt::Widget);
 
@@ -45,6 +52,11 @@ Session &BaseView::session()
 const Session &BaseView::session() const
 {
 	return session_;
+}
+
+string BaseView::id() const
+{
+	return id_;
 }
 
 void BaseView::save_settings(QSettings &settings) const

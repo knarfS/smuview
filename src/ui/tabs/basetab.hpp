@@ -22,6 +22,8 @@
 #ifndef UI_TABS_BASETAB_HPP
 #define UI_TABS_BASETAB_HPP
 
+#include <string>
+
 #include <QDockWidget>
 #include <QMainWindow>
 #include <QSettings>
@@ -30,6 +32,7 @@
 #include "src/ui/views/baseview.hpp"
 
 using std::map;
+using std::string;
 
 namespace sv {
 
@@ -57,9 +60,11 @@ public:
 
 	virtual void save_settings(QSettings &settings) const;
 	virtual void restore_settings(QSettings &settings);
+	views::BaseView *get_view_from_view_id(string id);
 
 private:
-	map<QDockWidget *, views::BaseView *> view_docks_;
+	map<QDockWidget *, views::BaseView *> view_docks_map_;
+	map<string, views::BaseView *> view_id_map_;
 
 protected:
 	Session &session_;

@@ -17,6 +17,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <string>
+
 #include <QAction>
 #include <QDebug>
 #include <QScrollBar>
@@ -43,6 +45,8 @@ DataView::DataView(Session &session,
 	action_auto_scroll_(new QAction(this)),
 	action_add_signal_(new QAction(this))
 {
+	id_ = "data:" + signal_->name();
+
 	setup_ui();
 	setup_toolbar();
 	connect_signals();
