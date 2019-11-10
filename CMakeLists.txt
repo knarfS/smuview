@@ -447,6 +447,9 @@ install(FILES contrib/org.sigrok.SmuView.appdata.xml DESTINATION ${CMAKE_INSTALL
 install(FILES icons/smuview.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/48x48/apps)
 install(FILES icons/smuview.svg DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/scalable/apps)
 
+# Install the SmuScript examples.
+install(DIRECTORY smuscript/ DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/smuscript)
+
 # Generate Windows installer script.
 configure_file(contrib/smuview_cross.nsi.in ${CMAKE_CURRENT_BINARY_DIR}/contrib/smuview_cross.nsi @ONLY)
 
