@@ -21,7 +21,7 @@
 #
 # This file is used to create the Smuiew Windows installer via NSIS.
 # It is meant for use in a cross-compile setup (not for native builds).
-# See the 'sigrok-cross-mingw' script in the sigrok-util repo for details.
+# See the 'sigrok-cross-mingw-smuview' script in the sigrok-util repo for details.
 #
 # NSIS documentation:
 # http://nsis.sourceforge.net/Docs/
@@ -141,6 +141,10 @@ Section "SmuView (required)" Section1
 	File "${CROSS}/zadig.exe"
 	File "${CROSS}/zadig_xp.exe"
 
+	# Python
+	File "${CROSS}/python34.dll"
+	File "${CROSS}/python34.zip"
+
 	SetOutPath "$INSTDIR\share"
 
 	# Generate the uninstaller executable.
@@ -206,6 +210,22 @@ Section "SmuView (required)" Section1
 	WriteRegDWORD HKLM "${REGSTR}" "NoRepair" 1
 SectionEnd
 
+Section "Example scripts" Section2
+	# Example smuscript *.py files.
+	SetOutPath "$INSTDIR\examples"
+
+	File "${CROSS}/share/smuscript/example_characterize_batterie.py"
+	File "${CROSS}/share/smuscript/example_characterize_psu.py"
+	File "${CROSS}/share/smuscript/example_device_properties.py"
+	File "${CROSS}/share/smuscript/example_ui.py"
+	File "${CROSS}/share/smuscript/example_user_channel.py"
+
+	# Create a shortcut for the example scripts folder.
+	CreateShortCut "$SMPROGRAMS\sigrok\SmuView\Examples (SmuScript).lnk" \
+		"$INSTDIR\examples" "" "$INSTDIR\examples" 0 \
+		SW_SHOWNORMAL "" ""
+SectionEnd
+
 
 # --- Uninstaller section -----------------------------------------------------
 
@@ -218,21 +238,28 @@ Section "Uninstall"
 	Delete "$INSTDIR\smuview.exe"
 	Delete "$INSTDIR\zadig.exe"
 	Delete "$INSTDIR\zadig_xp.exe"
+	Delete "$INSTDIR\python34.dll"
+	Delete "$INSTDIR\python34.zip"
 
 	# Delete the URL files for the manual.
 	#Delete "$INSTDIR\SmuView HTML manual.url"
 	#Delete "$INSTDIR\SmuView PDF manual.url"
 
+	# Delete the example *.py files.
+	RMDir /r "$INSTDIR\examples\*"
+
 	# Delete the install directory and its sub-directories.
 	RMDir "$INSTDIR\share"
+	RMDir "$INSTDIR\examples"
 	RMDir "$INSTDIR"
 
 	# Delete the links from the start menu.
-	Delete "$SMPROGRAMS\sigrok\SmuView\SmuView"
+	Delete "$SMPROGRAMS\sigrok\SmuView\SmuView.lnk"
 	Delete "$SMPROGRAMS\sigrok\SmuView\SmuView (Debug).lnk"
 	Delete "$SMPROGRAMS\sigrok\SmuView\Uninstall SmuView.lnk"
 	Delete "$SMPROGRAMS\sigrok\SmuView\Zadig (SmuView).lnk"
 	Delete "$SMPROGRAMS\sigrok\SmuView\Zadig (SmuView, Win XP).lnk"
+	Delete "$SMPROGRAMS\sigrok\SmuView\Examples (SmuScript).lnk"
 
 	# Delete the links to the manual.
 	#Delete "$SMPROGRAMS\sigrok\SmuView\SmuView HTML manual.lnk"
@@ -250,7 +277,9 @@ SectionEnd
 # --- Component selection section descriptions --------------------------------
 
 LangString DESC_Section1 ${LANG_ENGLISH} "This installs the SmuView sigrok GUI and all required libraries."
+LangString DESC_Section2 ${LANG_ENGLISH} "This installs some example script files (SmuScript) that you can use to try out the features SmuView has to offer."
 
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
 	!insertmacro MUI_DESCRIPTION_TEXT ${Section1} $(DESC_Section1)
+	!insertmacro MUI_DESCRIPTION_TEXT ${Section2} $(DESC_Section2)
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
