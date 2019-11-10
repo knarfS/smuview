@@ -49,6 +49,7 @@
 #include "src/python/smuscriptrunner.hpp"
 #include "src/ui/dialogs/connectdialog.hpp"
 #include "src/ui/tabs/basetab.hpp"
+#include "src/ui/tabs/devicetab.hpp"
 #include "src/ui/tabs/smuscripttab.hpp"
 #include "src/ui/tabs/tabhelper.hpp"
 #include "src/ui/tabs/welcometab.hpp"
@@ -299,13 +300,18 @@ void MainWindow::error_handler(const std::string sender, const std::string msg)
 
 void MainWindow::on_tab_close_requested(int index)
 {
-	QMessageBox::StandardButton reply = QMessageBox::question(this,
-		tr("Close device tab"),
-		tr("Closing the device tab will leave the device connected!"),
-		QMessageBox::Yes | QMessageBox::Cancel);
+	QMainWindow *tab_window = (QMainWindow *)tab_widget_->widget(index);
+	if (dynamic_cast<ui::tabs::DeviceTab *>(tab_window->centralWidget())) {
+		// Show message box only, if tab holds a device.
+		QMessageBox::StandardButton reply = QMessageBox::question(this,
+			tr("Close device tab"),
+			tr("Closing the device tab will leave the device connected!"),
+			QMessageBox::Yes | QMessageBox::Cancel);
 
-	if (reply == QMessageBox::Yes)
-		remove_tab(index);
+		if (reply != QMessageBox::Yes)
+			return;
+	}
+	remove_tab(index);
 }
 
 void MainWindow::add_device_tab(
