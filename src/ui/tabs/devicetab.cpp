@@ -63,6 +63,16 @@ DeviceTab::DeviceTab(Session &session,
 }
 
 
+string DeviceTab::tab_id()
+{
+	return device_->id();
+}
+
+QString DeviceTab::tab_title()
+{
+	return device_->short_name();
+}
+
 bool DeviceTab::request_close()
 {
 	QMessageBox::StandardButton reply = QMessageBox::information(this,

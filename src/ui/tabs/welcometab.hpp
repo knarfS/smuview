@@ -20,6 +20,7 @@
 #ifndef UI_TABS_WELCOMETAB_HPP
 #define UI_TABS_WELCOMETAB_HPP
 
+#include <QString>
 #include <QWidget>
 
 #include "src/ui/tabs/basetab.hpp"
@@ -40,6 +41,8 @@ private:
 public:
 	WelcomeTab(Session &session, QWidget *parent = nullptr);
 
+	string tab_id() override;
+	QString tab_title() override;
 	/** The WelcomeTab can always be closed */
 	bool request_close() override;
 

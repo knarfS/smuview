@@ -151,27 +151,31 @@ void MainWindow::run_smu_script(string script_file)
 	session_->smu_script_runner()->run(script_file);
 }
 
-void MainWindow::add_tab(ui::tabs::BaseTab *tab_window,
-	QString title, string tab_id) // TODO
+void MainWindow::add_tab(ui::tabs::BaseTab *tab_window)
 {
-	int index = tab_widget_->addTab(tab_window, title);
+	int index = tab_widget_->addTab(tab_window, tab_window->tab_title());
 	tab_widget_->setCurrentIndex(index);
 
-	tab_window_map_.insert(make_pair(tab_id, tab_window));
+	tab_window_map_.insert(make_pair(tab_window->tab_id(), tab_window));
+}
+
+void MainWindow::add_device_tab(shared_ptr<sv::devices::BaseDevice> device)
+{
+	add_tab(ui::tabs::tabhelper::get_tab_for_device(*session_, device));
+
+	// Connect device error handler to show a message box
+	connect(device.get(), &sv::devices::BaseDevice::device_error,
+		this, &MainWindow::error_handler);
 }
 
 void MainWindow::add_welcome_tab()
 {
-	auto *tab = new ui::tabs::WelcomeTab(*session_);
-	string tab_id = "welcometab"; // TODO
-	add_tab(tab, tr("Welcome"), tab_id);
+	add_tab(new ui::tabs::WelcomeTab(*session_));
 }
 
 void MainWindow::add_smuscript_tab(string file_name)
 {
-	auto *tab = new ui::tabs::SmuScriptTab(*session_, file_name);
-	string tab_id = "smuscripttab" + file_name; // TODO
-	add_tab(tab, tr("SmuScript"), tab_id);
+	add_tab(new ui::tabs::SmuScriptTab(*session_, file_name));
 }
 
 void MainWindow::remove_tab(string tab_id)
@@ -297,17 +301,6 @@ void MainWindow::on_tab_close_requested(int index)
 	auto *tab_window = (ui::tabs::BaseTab *)tab_widget_->widget(index);
 	if (tab_window->request_close())
 		remove_tab(index);
-}
-
-void MainWindow::add_device_tab(
-	shared_ptr<sv::devices::BaseDevice> device)
-{
-	auto *tab = ui::tabs::tabhelper::get_tab_for_device(*session_, device);
-	add_tab(tab, device->short_name(), device->id());
-
-	// Connect device error handler
-	connect(device.get(), &sv::devices::BaseDevice::device_error,
-		this, &MainWindow::error_handler);
 }
 
 } // namespace sv

@@ -40,6 +40,16 @@ WelcomeTab::WelcomeTab(Session &session, QWidget *parent) :
 }
 
 
+string WelcomeTab::tab_id()
+{
+	return "welcometab";
+}
+
+QString WelcomeTab::tab_title()
+{
+	return tr("Welcome");
+}
+
 bool WelcomeTab::request_close()
 {
 	return true;

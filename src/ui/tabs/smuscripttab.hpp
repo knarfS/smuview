@@ -52,6 +52,8 @@ public:
 	SmuScriptTab(Session &session, string script_file_name,
 		QWidget *parent = nullptr);
 
+	string tab_id() override;
+	QString tab_title() override;
 	bool request_close() override;
 
 private:

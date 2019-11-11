@@ -27,6 +27,7 @@
 #include <QDockWidget>
 #include <QMainWindow>
 #include <QSettings>
+#include <QString>
 #include <QWidget>
 
 #include "src/ui/views/baseview.hpp"
@@ -63,6 +64,9 @@ public:
 
 	virtual void save_settings(QSettings &settings) const;
 	virtual void restore_settings(QSettings &settings);
+
+	virtual string tab_id() = 0;
+	virtual QString tab_title() = 0;
 	views::BaseView *get_view_from_view_id(string id);
 	virtual bool request_close() = 0;
 

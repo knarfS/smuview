@@ -77,7 +77,7 @@ public:
 private:
 	void setup_ui();
 	void connect_signals();
-	void add_tab(ui::tabs::BaseTab *tab_window, QString title, string tab_id);
+	void add_tab(ui::tabs::BaseTab *tab_window);
 	void add_welcome_tab();
 	void remove_tab(int tab_index);
 

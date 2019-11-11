@@ -59,6 +59,18 @@ SmuScriptTab::SmuScriptTab(Session &session,
 }
 
 
+string SmuScriptTab::tab_id()
+{
+	// TODO: file name may change
+	return "smuscripttab:" + script_file_name_;
+}
+
+QString SmuScriptTab::tab_title()
+{
+	std::size_t found = script_file_name_.find_last_of("/\\");
+	return QString::fromStdString(script_file_name_.substr(found+1));
+}
+
 bool SmuScriptTab::request_close()
 {
 	QMessageBox::StandardButton reply = QMessageBox::question(this,
@@ -175,9 +187,7 @@ void SmuScriptTab::on_action_save_triggered()
 		stream << editor_->toPlainText() << flush;
 		file.close();
 
-		// TODO: Centralize id generation (see MainWindow::add_smusript_tab())
-		string tab_id = "smuscripttab" + script_file_name_;
-		session_.main_window()->change_tab_icon(tab_id, QIcon());
+		session_.main_window()->change_tab_icon(tab_id(), QIcon());
 	}
 }
 
@@ -194,20 +204,15 @@ void SmuScriptTab::on_action_save_as_triggered()
 			stream << editor_->toPlainText() << flush;
 			file.close();
 
-			// TODO: Centralize id generation (see MainWindow::add_smusript_tab())
-			string tab_id = "smuscripttab" + script_file_name_;
-			session_.main_window()->change_tab_icon(tab_id, QIcon());
+			session_.main_window()->change_tab_icon(tab_id(), QIcon());
 		}
 	}
 }
 
 void SmuScriptTab::on_text_changed()
 {
-	// TODO: Centralize id generation (see MainWindow::add_smusript_tab())
-	string tab_id = "smuscripttab" + script_file_name_;
-	session_.main_window()->change_tab_icon(tab_id,
-		QIcon::fromTheme("document-save",
-			QIcon(":/icons/document-save.png")));
+	session_.main_window()->change_tab_icon(tab_id(),
+		QIcon::fromTheme("document-save", QIcon(":/icons/document-save.png")));
 }
 
 void SmuScriptTab::on_action_run_triggered()
