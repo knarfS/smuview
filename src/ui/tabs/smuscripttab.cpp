@@ -20,6 +20,7 @@
 #include <memory>
 #include <string>
 
+#include <QDebug>
 #include <QFile>
 #include <QFileDialog>
 #include <QFont>
@@ -43,6 +44,8 @@ namespace sv {
 namespace ui {
 namespace tabs {
 
+unsigned int SmuScriptTab::smuscript_tab_counter_ = 0;
+
 SmuScriptTab::SmuScriptTab(Session &session,
 		string script_file_name, QWidget *parent) :
 	BaseTab(session, parent),
@@ -53,6 +56,10 @@ SmuScriptTab::SmuScriptTab(Session &session,
 	action_run_(new QAction(this)),
 	started_from_here_(false)
 {
+	// Every script tab gets its own unique id
+	tab_id_ = "smuscripttab:" +
+		std::to_string(SmuScriptTab::smuscript_tab_counter_++);
+
 	setup_ui();
 	setup_toolbar();
 	connect_signals();
@@ -61,8 +68,7 @@ SmuScriptTab::SmuScriptTab(Session &session,
 
 string SmuScriptTab::tab_id()
 {
-	// TODO: file name may change
-	return "smuscripttab:" + script_file_name_;
+	return tab_id_;
 }
 
 QString SmuScriptTab::tab_title()
@@ -73,7 +79,10 @@ QString SmuScriptTab::tab_title()
 
 bool SmuScriptTab::request_close()
 {
-	QMessageBox::StandardButton reply = QMessageBox::question(this,
+	if (!text_changed_)
+		return true;
+
+	QMessageBox::StandardButton reply = QMessageBox::warning(this,
 		tr("Close SmuScript tab"),
 		tr("The document \"%1\" has unsaved changes. Would you like to save them?").
 			arg(QString::fromStdString(script_file_name_)),
@@ -164,54 +173,80 @@ void SmuScriptTab::connect_signals()
 		this, &SmuScriptTab::on_script_finished);
 }
 
-void SmuScriptTab::on_action_open_triggered()
+void SmuScriptTab::save(QString file_name)
 {
-	QString file_name = QFileDialog::getOpenFileName(this,
-		tr("Open SmuScript-File"), QDir::homePath(), tr("Python Files (*.py)"));
+	if (file_name.length() <= 0)
+		return;
 
-	if (file_name.length() > 0) {
-		script_file_name_ = file_name.toStdString();
-		QFile file(file_name);
-		if (file.open(QFile::ReadOnly | QFile::Text)) {
-			editor_->setPlainText(file.readAll());
-			file.close();
-		}
-	}
-}
-
-void SmuScriptTab::on_action_save_triggered()
-{
-	QFile file(QString::fromStdString(script_file_name_));
+	QFile file(file_name);
 	if (file.open(QFile::WriteOnly | QFile::Text | QFile::Truncate)) {
 		QTextStream stream(&file);
 		stream << editor_->toPlainText() << flush;
 		file.close();
 
-		session_.main_window()->change_tab_icon(tab_id(), QIcon());
+		text_changed_ = false;
+		session_.main_window()->change_tab_icon(tab_id_, QIcon());
 	}
+
+	// Check if filename has changed
+	if (script_file_name_ != file_name.toStdString()) {
+		script_file_name_ = file_name.toStdString();
+		session_.main_window()->change_tab_title(tab_id_, tab_title());
+	}
+}
+
+void SmuScriptTab::on_action_open_triggered()
+{
+	if (text_changed_) {
+		QMessageBox::StandardButton reply = QMessageBox::warning(this,
+			tr("Open new script file"),
+			tr("The document \"%1\" has unsaved changes. Would you like to save them?").
+				arg(QString::fromStdString(script_file_name_)),
+			QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+
+		if (reply == QMessageBox::Yes)
+			on_action_save_triggered();
+		else if (reply == QMessageBox::Cancel)
+			return;
+	}
+
+	QString file_name = QFileDialog::getOpenFileName(this,
+		tr("Open SmuScript-File"), QDir::homePath(), tr("Python Files (*.py)"));
+	if (file_name.length() <= 0)
+		return;
+
+	QFile file(file_name);
+	if (file.open(QFile::ReadOnly | QFile::Text)) {
+		editor_->setPlainText(file.readAll());
+		file.close();
+
+		text_changed_ = false;
+		session_.main_window()->change_tab_icon(tab_id_, QIcon());
+	}
+
+	// Check if filename has changed
+	if (script_file_name_ != file_name.toStdString()) {
+		script_file_name_ = file_name.toStdString();
+		session_.main_window()->change_tab_title(tab_id_, tab_title());
+	}
+}
+
+void SmuScriptTab::on_action_save_triggered()
+{
+	this->save(QString::fromStdString(script_file_name_));
 }
 
 void SmuScriptTab::on_action_save_as_triggered()
 {
 	QString file_name = QFileDialog::getSaveFileName(this,
 		tr("Save SmuScript-File"), QDir::homePath(), tr("Python Files (*.py)"));
-
-	if (file_name.length() > 0) {
-		script_file_name_ = file_name.toStdString();
-		QFile file(file_name);
-		if (file.open(QFile::WriteOnly | QFile::Text | QFile::Truncate)) {
-			QTextStream stream(&file);
-			stream << editor_->toPlainText() << flush;
-			file.close();
-
-			session_.main_window()->change_tab_icon(tab_id(), QIcon());
-		}
-	}
+	this->save(file_name);
 }
 
 void SmuScriptTab::on_text_changed()
 {
-	session_.main_window()->change_tab_icon(tab_id(),
+	text_changed_ = true;
+	session_.main_window()->change_tab_icon(tab_id_,
 		QIcon::fromTheme("document-save", QIcon(":/icons/document-save.png")));
 }
 

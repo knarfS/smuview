@@ -60,6 +60,9 @@ private:
 	void setup_ui();
 	void setup_toolbar();
 	void connect_signals();
+	void save(QString file_name);
+
+	static unsigned int smuscript_tab_counter_;
 
 	string script_file_name_;
 	QAction *const action_open_;
@@ -67,7 +70,9 @@ private:
 	QAction *const action_save_as_;
 	QAction *const action_run_;
 	QToolBar *toolbar_;
+	string tab_id_;
 	widgets::scripteditor::SmuScriptEditor *editor_;
+	bool text_changed_;
 	bool started_from_here_;
 
 private Q_SLOTS:
