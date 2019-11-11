@@ -65,8 +65,7 @@ void SmuScriptRunner::run(std::string file_name)
 
 void SmuScriptRunner::stop()
 {
-	// TODO: finalize_interpreter crashes...
-	//py::finalize_interpreter();
+	PyErr_SetInterrupt();
 }
 
 bool SmuScriptRunner::is_running()
@@ -82,8 +81,8 @@ void SmuScriptRunner::script_thread_proc()
 
 	py::scoped_interpreter guard{};
 
+	py::module smuview_module = py::module::import("smuview");
 	UiProxy *ui_proxy = new UiProxy(session_, ui_helper_);
-	auto module = py::module::import("smuview");
 	auto locals = py::dict(
 		"Session"_a=py::cast(session_, py::return_value_policy::reference),
 		"UiProxy"_a=py::cast(ui_proxy, py::return_value_policy::reference));
@@ -92,7 +91,7 @@ void SmuScriptRunner::script_thread_proc()
 		py::eval_file(script_file_name_, py::globals(), locals);
 	}
 	catch (py::error_already_set &ex) {
-		Q_EMIT script_error("SmuScriptRunner", ex.what());
+		Q_EMIT script_error("SmuScriptRunner py::error_already_set", ex.what());
 	}
 
 	qWarning() << "SmuScriptRunner::script_thread_proc() has finished!";

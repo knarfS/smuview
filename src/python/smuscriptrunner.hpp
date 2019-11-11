@@ -28,6 +28,7 @@
 #include <QString>
 
 using std::shared_ptr;
+using std::string;
 
 namespace sv {
 
@@ -54,7 +55,7 @@ private:
 
 	Session &session_;
 	shared_ptr<UiHelper> ui_helper_;
-	std::string script_file_name_;
+	string script_file_name_;
 	std::thread script_thread_;
 	bool is_running_;
 

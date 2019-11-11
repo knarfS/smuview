@@ -50,7 +50,8 @@ SmuScriptTab::SmuScriptTab(Session &session,
 	action_open_(new QAction(this)),
 	action_save_(new QAction(this)),
 	action_save_as_(new QAction(this)),
-	action_run_(new QAction(this))
+	action_run_(new QAction(this)),
+	started_from_here_(false)
 {
 	setup_ui();
 	setup_toolbar();
@@ -78,6 +79,7 @@ bool SmuScriptTab::request_close()
 void SmuScriptTab::setup_ui()
 {
 	QVBoxLayout *layout = new QVBoxLayout();
+
 	editor_ = new widgets::scripteditor::SmuScriptEditor();
 	if (!script_file_name_.empty()) {
 		QFile script_file(script_file_name_.c_str());
@@ -211,42 +213,46 @@ void SmuScriptTab::on_text_changed()
 void SmuScriptTab::on_action_run_triggered()
 {
 	if (action_run_->isChecked()) {
-		action_run_->setText(tr("Running"));
-		action_run_->setIconText(tr("Running"));
-		/*
-		 * TODO: Script cannot be stopped (yet?).
 		action_run_->setText(tr("Stop"));
 		action_run_->setIconText(tr("Stop"));
 		action_run_->setIcon(
 			QIcon::fromTheme("media-playback-stop",
 			QIcon(":/icons/media-playback-stop.png")));
-		*/
 
+		started_from_here_ = true;
 		session_.smu_script_runner()->run(script_file_name_);
 	}
 	else {
 		action_run_->setText(tr("Start"));
 		action_run_->setIconText(tr("Start"));
-		/*
-		 * TODO: Script cannot be stopped (yet?).
 		action_run_->setIcon(
 			QIcon::fromTheme("media-playback-start",
 			QIcon(":/icons/media-playback-start.png")));
 
+		started_from_here_ = false;
 		session_.smu_script_runner()->stop();
-		*/
 	}
 }
 
 void SmuScriptTab::on_script_started()
 {
-	action_run_->setDisabled(true);
+	if (!started_from_here_)
+		action_run_->setDisabled(true);
 }
 
 void SmuScriptTab::on_script_finished()
 {
-	action_run_->setDisabled(false);
-	action_run_->setChecked(false);
+	if (started_from_here_) {
+		action_run_->setText(tr("Start"));
+		action_run_->setIconText(tr("Start"));
+		action_run_->setIcon(
+			QIcon::fromTheme("media-playback-start",
+			QIcon(":/icons/media-playback-start.png")));
+		action_run_->setChecked(false);
+		started_from_here_ = false;
+	}
+	else
+		action_run_->setDisabled(false);
 }
 
 } // namespace tabs

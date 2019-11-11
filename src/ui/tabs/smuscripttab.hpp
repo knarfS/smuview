@@ -66,6 +66,7 @@ private:
 	QAction *const action_run_;
 	QToolBar *toolbar_;
 	widgets::scripteditor::SmuScriptEditor *editor_;
+	bool started_from_here_;
 
 private Q_SLOTS:
 	void on_action_open_triggered();
