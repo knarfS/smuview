@@ -20,6 +20,7 @@
 #include <QDebug>
 #include <QHBoxLayout>
 #include <QGroupBox>
+#include <QWidget>
 
 #include "measurementtab.hpp"
 #include "src/devices/basedevice.hpp"
@@ -35,7 +36,7 @@ namespace ui {
 namespace tabs {
 
 MeasurementTab::MeasurementTab(Session &session,
-		shared_ptr<sv::devices::MeasurementDevice> device, QMainWindow *parent) :
+		shared_ptr<sv::devices::MeasurementDevice> device, QWidget *parent) :
 	DeviceTab(session, device, parent),
 	measurement_device_(device)
 {

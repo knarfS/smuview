@@ -70,29 +70,25 @@ public:
 	void run_smu_script(string script_file);
 
 	void add_smuscript_tab(string file_name);
-	void remove_tab(string id);
-	ui::tabs::BaseTab *get_base_tab_from_device_id(const string id);
+	void remove_tab(string tab_id);
+	ui::tabs::BaseTab *get_base_tab_from_device_id(const string tab_id);
 
 private:
 	void setup_ui();
 	void connect_signals();
-	void add_tab(QMainWindow *tab_window, QString title, string id);
+	void add_tab(ui::tabs::BaseTab *tab_window, QString title, string tab_id);
 	void add_welcome_tab();
 	void remove_tab(int tab_index);
 
 	DeviceManager &device_manager_;
 	shared_ptr<Session> session_;
 
-	/**
-	 * tab_window_map_ is used to get the index of the tab in the
-	 * QTabWidget for closing
-	 */
-	map<string, QMainWindow *> tab_window_map_;
-	map<string, ui::tabs::BaseTab *> tab_basetab_map_;
 	QWidget *central_widget_;
 	ui::views::DevicesView *devices_view_;
 	ui::views::SmuScriptView *smu_script_view_;
 	QTabWidget *tab_widget_;
+	/** tab_window_map_ is used to get the index of the tab in the QTabWidget */
+	map<string, ui::tabs::BaseTab *> tab_window_map_;
 
 private Q_SLOTS:
 	void error_handler(const std::string sender, const std::string msg);

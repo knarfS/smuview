@@ -23,8 +23,8 @@
 #include <memory>
 
 #include <QAction>
-#include <QMainWindow>
 #include <QToolBar>
+#include <QWidget>
 
 #include "src/util.hpp"
 #include "src/devices/basedevice.hpp"
@@ -47,7 +47,7 @@ private:
 
 public:
 	DeviceTab(Session &session,
-		shared_ptr<sv::devices::BaseDevice> device, QMainWindow *parent);
+		shared_ptr<sv::devices::BaseDevice> device, QWidget *parent = nullptr);
 
 	virtual void clear_signals();
 

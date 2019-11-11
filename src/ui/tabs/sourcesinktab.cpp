@@ -20,6 +20,7 @@
 #include <QDebug>
 #include <QHBoxLayout>
 #include <QGroupBox>
+#include <QWidget>
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
@@ -41,7 +42,7 @@ namespace ui {
 namespace tabs {
 
 SourceSinkTab::SourceSinkTab(Session &session,
-		shared_ptr<sv::devices::HardwareDevice> device, QMainWindow *parent) :
+		shared_ptr<sv::devices::HardwareDevice> device, QWidget *parent) :
 	DeviceTab(session, device, parent)
 {
 	setup_ui();

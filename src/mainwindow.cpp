@@ -151,41 +151,32 @@ void MainWindow::run_smu_script(string script_file)
 	session_->smu_script_runner()->run(script_file);
 }
 
-void MainWindow::add_tab(QMainWindow *tab_window, QString title, string id)
+void MainWindow::add_tab(ui::tabs::BaseTab *tab_window,
+	QString title, string tab_id) // TODO
 {
 	int index = tab_widget_->addTab(tab_window, title);
 	tab_widget_->setCurrentIndex(index);
 
-	tab_window_map_.insert(make_pair(id, tab_window));
-	tab_basetab_map_.insert(
-		make_pair(id, (ui::tabs::BaseTab *)tab_window->centralWidget()));
+	tab_window_map_.insert(make_pair(tab_id, tab_window));
 }
 
 void MainWindow::add_welcome_tab()
 {
-	QMainWindow *tab_window = new QMainWindow();
-	tab_window->setWindowFlags(Qt::Widget);  // Remove Qt::Window flag
-	tab_window->setDockNestingEnabled(true);
-	tab_window->setCentralWidget(
-		new ui::tabs::WelcomeTab(*session_, tab_window));
-
-	add_tab(tab_window, tr("Welcome"), "welcometab");
+	auto *tab = new ui::tabs::WelcomeTab(*session_);
+	string tab_id = "welcometab"; // TODO
+	add_tab(tab, tr("Welcome"), tab_id);
 }
 
 void MainWindow::add_smuscript_tab(string file_name)
 {
-	QMainWindow *tab_window = new QMainWindow();
-	tab_window->setWindowFlags(Qt::Widget);  // Remove Qt::Window flag
-	tab_window->setDockNestingEnabled(true);
-	tab_window->setCentralWidget(
-		new ui::tabs::SmuScriptTab(*session_, file_name, tab_window));
-
-	add_tab(tab_window, tr("SmuScript"), "smuscripttab");
+	auto *tab = new ui::tabs::SmuScriptTab(*session_, file_name);
+	string tab_id = "smuscripttab" + file_name; // TODO
+	add_tab(tab, tr("SmuScript"), tab_id);
 }
 
-void MainWindow::remove_tab(string id)
+void MainWindow::remove_tab(string tab_id)
 {
-	remove_tab(tab_widget_->indexOf(tab_window_map_[id]));
+	remove_tab(tab_widget_->indexOf(tab_window_map_[tab_id]));
 }
 
 void MainWindow::remove_tab(int tab_index)
@@ -194,15 +185,12 @@ void MainWindow::remove_tab(int tab_index)
 
 	tab_widget_->removeTab(tab_index);
 
-	string id;
 	for (const auto &pair : tab_window_map_) {
 		if (pair.second == tab_window) {
-			id = pair.first;
 			tab_window_map_.erase(pair.first);
 			break;
 		}
 	}
-	tab_basetab_map_.erase(id);
 
 	//tab_window->deleteLater();
 	delete tab_window;
@@ -213,10 +201,10 @@ void MainWindow::remove_tab(int tab_index)
 	}
 }
 
-ui::tabs::BaseTab *MainWindow::get_base_tab_from_device_id(const string id)
+ui::tabs::BaseTab *MainWindow::get_base_tab_from_device_id(const string tab_id)
 {
-	if (tab_basetab_map_.count(id) > 0)
-		return tab_basetab_map_[id];
+	if (tab_window_map_.count(tab_id) > 0)
+		return tab_window_map_[tab_id];
 	else
 		return nullptr;
 }
@@ -300,9 +288,10 @@ void MainWindow::error_handler(const std::string sender, const std::string msg)
 
 void MainWindow::on_tab_close_requested(int index)
 {
-	QMainWindow *tab_window = (QMainWindow *)tab_widget_->widget(index);
-	if (dynamic_cast<ui::tabs::DeviceTab *>(tab_window->centralWidget())) {
+	auto *tab_window = tab_widget_->widget(index);
+	if (dynamic_cast<ui::tabs::DeviceTab *>(tab_window)) {
 		// Show message box only, if tab holds a device.
+		// TODO: move check to *Tab class
 		QMessageBox::StandardButton reply = QMessageBox::question(this,
 			tr("Close device tab"),
 			tr("Closing the device tab will leave the device connected!"),
@@ -317,13 +306,8 @@ void MainWindow::on_tab_close_requested(int index)
 void MainWindow::add_device_tab(
 	shared_ptr<sv::devices::BaseDevice> device)
 {
-	QMainWindow *tab_window = new QMainWindow();
-	tab_window->setWindowFlags(Qt::Widget);  // Remove Qt::Window flag
-	tab_window->setDockNestingEnabled(true);
-	tab_window->setCentralWidget(
-		ui::tabs::tabhelper::get_tab_for_device(*session_, device, tab_window));
-
-	add_tab(tab_window, device->short_name(), device->id());
+	auto *tab = ui::tabs::tabhelper::get_tab_for_device(*session_, device);
+	add_tab(tab, device->short_name(), device->id());
 
 	// Connect device error handler
 	connect(device.get(), &sv::devices::BaseDevice::device_error,

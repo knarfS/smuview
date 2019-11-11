@@ -22,7 +22,7 @@
 
 #include <memory>
 
-#include <QMainWindow>
+#include <QWidget>
 
 #include "src/ui/tabs/devicetab.hpp"
 
@@ -45,7 +45,8 @@ class SourceSinkTab : public DeviceTab
 
 public:
 	SourceSinkTab(Session &session,
-		shared_ptr<sv::devices::HardwareDevice> device, QMainWindow *parent);
+		shared_ptr<sv::devices::HardwareDevice> device,
+		QWidget *parent = nullptr);
 
 private:
 	void setup_ui();

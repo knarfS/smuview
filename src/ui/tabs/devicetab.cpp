@@ -22,6 +22,7 @@
 
 #include <QDebug>
 #include <QToolButton>
+#include <QWidget>
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
@@ -43,7 +44,7 @@ namespace ui {
 namespace tabs {
 
 DeviceTab::DeviceTab(Session &session,
-		shared_ptr<sv::devices::BaseDevice> device, QMainWindow *parent) :
+		shared_ptr<sv::devices::BaseDevice> device, QWidget *parent) :
 	BaseTab(session, parent),
 	device_(device),
 	action_aquire_(new QAction(this)),
@@ -159,7 +160,7 @@ void DeviceTab::setup_toolbar()
 	toolbar_->addAction(action_add_math_channel_);
 	toolbar_->addSeparator();
 	toolbar_->addAction(action_about_);
-	parent_->addToolBar(Qt::TopToolBarArea, toolbar_);
+	this->addToolBar(Qt::TopToolBarArea, toolbar_);
 }
 
 void DeviceTab::on_action_aquire_triggered()

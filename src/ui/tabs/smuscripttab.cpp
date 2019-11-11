@@ -28,6 +28,7 @@
 #include <QTextStream>
 #include <QToolButton>
 #include <QVBoxLayout>
+#include <QWidget>
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
@@ -42,7 +43,7 @@ namespace ui {
 namespace tabs {
 
 SmuScriptTab::SmuScriptTab(Session &session,
-		string script_file_name, QMainWindow *parent) :
+		string script_file_name, QWidget *parent) :
 	BaseTab(session, parent),
 	script_file_name_(script_file_name),
 	action_open_(new QAction(this)),
@@ -67,8 +68,8 @@ void SmuScriptTab::setup_ui()
 	layout->addWidget(editor_);
 
 	// Show the central widget of the tab (hidden by BaseTab)
-	this->show();
-	this->setLayout(layout);
+	this->centralWidget()->show();
+	this->centralWidget()->setLayout(layout);
 }
 
 void SmuScriptTab::setup_toolbar()
@@ -113,7 +114,7 @@ void SmuScriptTab::setup_toolbar()
 	toolbar_->addAction(action_save_as_);
 	toolbar_->addSeparator();
 	toolbar_->addAction(action_run_);
-	parent_->addToolBar(Qt::TopToolBarArea, toolbar_);
+	this->addToolBar(Qt::TopToolBarArea, toolbar_);
 }
 
 void SmuScriptTab::connect_signals()

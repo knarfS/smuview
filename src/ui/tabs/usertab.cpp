@@ -17,6 +17,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QWidget>
+
 #include "usertab.hpp"
 #include "src/session.hpp"
 #include "src/devices/userdevice.hpp"
@@ -27,7 +29,7 @@ namespace ui {
 namespace tabs {
 
 UserTab::UserTab(Session &session,
-		shared_ptr<sv::devices::UserDevice> device, QMainWindow *parent) :
+		shared_ptr<sv::devices::UserDevice> device, QWidget *parent) :
 	DeviceTab(session, device, parent)
 {
 }

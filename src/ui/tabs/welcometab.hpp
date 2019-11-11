@@ -20,7 +20,7 @@
 #ifndef UI_TABS_WELCOMETAB_HPP
 #define UI_TABS_WELCOMETAB_HPP
 
-#include <QMainWindow>
+#include <QWidget>
 
 #include "src/ui/tabs/basetab.hpp"
 
@@ -38,7 +38,7 @@ class WelcomeTab : public BaseTab
 private:
 
 public:
-	WelcomeTab(Session &session, QMainWindow *parent);
+	WelcomeTab(Session &session, QWidget *parent = nullptr);
 
 private:
 	void setup_ui();

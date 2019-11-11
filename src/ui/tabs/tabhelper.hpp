@@ -22,7 +22,7 @@
 
 #include <memory>
 
-#include <QMainWindow>
+#include <QWidget>
 
 using std::shared_ptr;
 
@@ -46,12 +46,12 @@ namespace tabhelper {
  *
  * @param[in] session The reference to the actual SmuView session
  * @param[in] device The base device
- * @param[in] parent The parent (QMainWindow) for the tab
+ * @param[in] parent The parent of the tab (normaly nullptr)
  *
  * @return The tab for the device
  */
 BaseTab *get_tab_for_device(Session &session,
-	shared_ptr<sv::devices::BaseDevice> device, QMainWindow *parent);
+	shared_ptr<sv::devices::BaseDevice> device, QWidget *parent = nullptr);
 
 } // namespace tabhelper
 } // namespace tabs

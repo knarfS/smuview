@@ -32,14 +32,18 @@ namespace sv {
 namespace ui {
 namespace tabs {
 
-BaseTab::BaseTab(Session &session, QMainWindow *parent) :
-	QWidget(parent),
-	session_(session),
-	parent_(parent)
+BaseTab::BaseTab(Session &session, QWidget *parent) :
+	QMainWindow(parent),
+	session_(session)
 {
+	// Remove Qt::Window flag
+	this->setWindowFlags(Qt::Widget);
+	this->setDockNestingEnabled(true);
+	this->setCentralWidget(new QWidget());
+
 	// Hide the central widget of the tab, so the  views (dock widgets) can use
 	// all of the available space.
-	this->hide();
+	this->centralWidget()->hide();
 }
 
 Session& BaseTab::session()
@@ -83,11 +87,11 @@ void BaseTab::add_view(views::BaseView *view, Qt::DockWidgetArea area)
 	dock->setFeatures(QDockWidget::DockWidgetMovable |
 		QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable);
 	dock->setWidget(view);
-	parent_->addDockWidget(area, dock);
+	this->addDockWidget(area, dock);
 
 	// This fixes a qt bug. See: https://bugreports.qt.io/browse/QTBUG-65592
 	// resizeDocks() was introduced in Qt 5.6.
-	parent_->resizeDocks({dock}, {40}, Qt::Horizontal);
+	this->resizeDocks({dock}, {40}, Qt::Horizontal);
 
 	view_docks_map_[dock] = view;
 	view_id_map_[view->id()] = view;

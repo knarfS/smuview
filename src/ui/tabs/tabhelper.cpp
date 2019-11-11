@@ -19,7 +19,7 @@
 
 #include <memory>
 
-#include <QMainWindow>
+#include <QWidget>
 
 #include "tabhelper.hpp"
 #include "src/session.hpp"
@@ -43,7 +43,7 @@ namespace tabs {
 namespace tabhelper {
 
 BaseTab *get_tab_for_device(Session &session,
-	shared_ptr<devices::BaseDevice> device, QMainWindow *parent)
+	shared_ptr<devices::BaseDevice> device, QWidget *parent)
 {
 	if (!device)
 		return nullptr;

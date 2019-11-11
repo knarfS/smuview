@@ -21,6 +21,7 @@
 #define UI_TABS_USERTAB_HPP
 
 #include <QObject>
+#include <QWidget>
 
 #include "src/ui/tabs/devicetab.hpp"
 
@@ -41,7 +42,7 @@ class UserTab : public DeviceTab
 
 public:
 	UserTab(Session &session,
- 		shared_ptr<sv::devices::UserDevice> device,  QMainWindow *parent);
+ 		shared_ptr<sv::devices::UserDevice> device, QWidget *parent = nullptr);
 
 };
 

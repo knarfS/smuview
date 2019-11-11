@@ -22,7 +22,7 @@
 
 #include <memory>
 
-#include <QMainWindow>
+#include <QWidget>
 
 #include "src/ui/tabs/devicetab.hpp"
 
@@ -43,7 +43,8 @@ class MeasurementTab : public DeviceTab
 
 public:
 	MeasurementTab(Session &session,
- 		shared_ptr<sv::devices::MeasurementDevice> device, QMainWindow *parent);
+ 		shared_ptr<sv::devices::MeasurementDevice> device,
+		QWidget *parent = nullptr);
 
 private:
 	void setup_ui();

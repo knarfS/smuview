@@ -21,8 +21,8 @@
 #define UI_TABS_SMUSCRIPTTAB_HPP
 
 #include <QAction>
-#include <QMainWindow>
 #include <QToolBar>
+#include <QWidget>
 
 #include "src/ui/tabs/basetab.hpp"
 
@@ -49,8 +49,8 @@ class SmuScriptTab : public BaseTab
 private:
 
 public:
-	SmuScriptTab(Session &session,
-		string script_file_name, QMainWindow *parent);
+	SmuScriptTab(Session &session, string script_file_name,
+		QWidget *parent = nullptr);
 
 private:
 	void setup_ui();

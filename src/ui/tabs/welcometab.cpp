@@ -20,8 +20,8 @@
 #include <memory>
 
 #include <QLabel>
-#include <QMainWindow>
 #include <QVBoxLayout>
+#include <QWidget>
 
 #include "welcometab.hpp"
 #include "src/session.hpp"
@@ -33,7 +33,7 @@ namespace sv {
 namespace ui {
 namespace tabs {
 
-WelcomeTab::WelcomeTab(Session &session, QMainWindow *parent) :
+WelcomeTab::WelcomeTab(Session &session, QWidget *parent) :
 	BaseTab(session, parent)
 {
 	setup_ui();
@@ -62,8 +62,8 @@ void WelcomeTab::setup_ui()
 	layout->addWidget(welcome_label);
 
 	// Show the central widget of the tab (hidden by BaseTab)
-	this->show();
-	this->setLayout(layout);
+	this->centralWidget()->show();
+	this->centralWidget()->setLayout(layout);
 }
 
 } // namespace tabs

@@ -48,12 +48,15 @@ enum class TabType {
 	WelcomeTab
 };
 
-class BaseTab : public QWidget
+/**
+ * Use a QMainWindow (as tab widget) to allow for a tool bar.
+ */
+class BaseTab : public QMainWindow
 {
 	Q_OBJECT
 
 public:
-	explicit BaseTab(Session &session, QMainWindow *parent = nullptr);
+	explicit BaseTab(Session &session, QWidget *parent = nullptr);
 
 	Session &session();
 	const Session &session() const;
@@ -68,7 +71,6 @@ private:
 
 protected:
 	Session &session_;
-	QMainWindow *parent_;
 
 public Q_SLOTS:
 	void add_view(views::BaseView *view, Qt::DockWidgetArea area);
