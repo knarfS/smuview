@@ -72,6 +72,7 @@ private Q_SLOTS:
 	void on_action_save_triggered();
 	void on_action_save_as_triggered();
 	void on_action_run_triggered();
+	void on_text_changed();
 	void on_script_started();
 	void on_script_finished();
 

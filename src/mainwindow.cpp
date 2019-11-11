@@ -201,6 +201,12 @@ void MainWindow::remove_tab(int tab_index)
 	}
 }
 
+void MainWindow::change_tab_icon(string tab_id, QIcon icon)
+{
+	int tab_index = tab_widget_->indexOf(tab_window_map_[tab_id]);
+	tab_widget_->setTabIcon(tab_index, icon);
+}
+
 ui::tabs::BaseTab *MainWindow::get_base_tab_from_device_id(const string tab_id)
 {
 	if (tab_window_map_.count(tab_id) > 0)

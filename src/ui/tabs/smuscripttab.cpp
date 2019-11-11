@@ -33,6 +33,7 @@
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
 #include "smuscripttab.hpp"
+#include "src/mainwindow.hpp"
 #include "src/session.hpp"
 #include "src/python/smuscriptrunner.hpp"
 #include "src/ui/tabs/basetab.hpp"
@@ -92,26 +93,29 @@ void SmuScriptTab::setup_ui()
 
 void SmuScriptTab::setup_toolbar()
 {
-	action_open_->setText(tr("&Open..."));
+	action_open_->setText(tr("&Open"));
 	action_open_->setIcon(
 		QIcon::fromTheme("document-open",
 		QIcon(":/icons/document-open.png")));
+	action_open_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_O));
 	connect(action_open_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_open_triggered()));
 
-	action_save_->setText(tr("&Save As..."));
+	action_save_->setText(tr("&Save"));
 	action_save_->setIconText("");
 	action_save_->setIcon(
 		QIcon::fromTheme("document-save",
 		QIcon(":/icons/document-save.png")));
+	action_save_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
 	connect(action_save_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_save_triggered()));
 
-	action_save_as_->setText(tr("Save &As..."));
+	action_save_as_->setText(tr("Save &As"));
 	action_save_as_->setIconText("");
 	action_save_as_->setIcon(
 		QIcon::fromTheme("document-save-as",
 		QIcon(":/icons/document-save-as.png")));
+	action_save_as_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_A));
 	connect(action_save_as_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_save_as_triggered()));
 
@@ -137,6 +141,9 @@ void SmuScriptTab::setup_toolbar()
 
 void SmuScriptTab::connect_signals()
 {
+	connect(editor_, &widgets::scripteditor::SmuScriptEditor::textChanged,
+		this, &SmuScriptTab::on_text_changed);
+
 	connect(session_.smu_script_runner().get(), &python::SmuScriptRunner::script_started,
 		this, &SmuScriptTab::on_script_started);
 	connect(session_.smu_script_runner().get(), &python::SmuScriptRunner::script_finished,
@@ -165,6 +172,10 @@ void SmuScriptTab::on_action_save_triggered()
 		QTextStream stream(&file);
 		stream << editor_->toPlainText() << flush;
 		file.close();
+
+		// TODO: Centralize id generation (see MainWindow::add_smusript_tab())
+		string tab_id = "smuscripttab" + script_file_name_;
+		session_.main_window()->change_tab_icon(tab_id, QIcon());
 	}
 }
 
@@ -180,8 +191,21 @@ void SmuScriptTab::on_action_save_as_triggered()
 			QTextStream stream(&file);
 			stream << editor_->toPlainText() << flush;
 			file.close();
+
+			// TODO: Centralize id generation (see MainWindow::add_smusript_tab())
+			string tab_id = "smuscripttab" + script_file_name_;
+			session_.main_window()->change_tab_icon(tab_id, QIcon());
 		}
 	}
+}
+
+void SmuScriptTab::on_text_changed()
+{
+	// TODO: Centralize id generation (see MainWindow::add_smusript_tab())
+	string tab_id = "smuscripttab" + script_file_name_;
+	session_.main_window()->change_tab_icon(tab_id,
+		QIcon::fromTheme("document-save",
+			QIcon(":/icons/document-save.png")));
 }
 
 void SmuScriptTab::on_action_run_triggered()

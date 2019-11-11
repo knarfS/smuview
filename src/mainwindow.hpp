@@ -71,6 +71,7 @@ public:
 
 	void add_smuscript_tab(string file_name);
 	void remove_tab(string tab_id);
+	void change_tab_icon(string tab_id, QIcon icon);
 	ui::tabs::BaseTab *get_base_tab_from_device_id(const string tab_id);
 
 private:
