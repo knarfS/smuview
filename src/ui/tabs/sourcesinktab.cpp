@@ -18,8 +18,8 @@
  */
 
 #include <QDebug>
-#include <QHBoxLayout>
 #include <QGroupBox>
+#include <QHBoxLayout>
 #include <QWidget>
 
 #include <libsigrokcxx/libsigrokcxx.hpp>

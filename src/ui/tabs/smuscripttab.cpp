@@ -56,6 +56,24 @@ SmuScriptTab::SmuScriptTab(Session &session,
 	connect_signals();
 }
 
+
+bool SmuScriptTab::request_close()
+{
+	QMessageBox::StandardButton reply = QMessageBox::question(this,
+		tr("Close SmuScript tab"),
+		tr("The document \"%1\" has unsaved changes. Would you like to save them?").
+			arg(QString::fromStdString(script_file_name_)),
+		QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+
+	if (reply == QMessageBox::Yes) {
+		on_action_save_triggered();
+		return true;
+	}
+	else if (reply == QMessageBox::No)
+		return true;
+	return false;
+}
+
 void SmuScriptTab::setup_ui()
 {
 	QVBoxLayout *layout = new QVBoxLayout();

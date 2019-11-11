@@ -40,6 +40,9 @@ private:
 public:
 	WelcomeTab(Session &session, QWidget *parent = nullptr);
 
+	/** The WelcomeTab can always be closed */
+	bool request_close() override;
+
 private:
 	void setup_ui();
 

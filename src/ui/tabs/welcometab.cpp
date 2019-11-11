@@ -39,6 +39,12 @@ WelcomeTab::WelcomeTab(Session &session, QWidget *parent) :
 	setup_ui();
 }
 
+
+bool WelcomeTab::request_close()
+{
+	return true;
+}
+
 void WelcomeTab::setup_ui()
 {
 	QVBoxLayout *layout = new QVBoxLayout();

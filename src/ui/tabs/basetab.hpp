@@ -64,6 +64,7 @@ public:
 	virtual void save_settings(QSettings &settings) const;
 	virtual void restore_settings(QSettings &settings);
 	views::BaseView *get_view_from_view_id(string id);
+	virtual bool request_close() = 0;
 
 private:
 	map<QDockWidget *, views::BaseView *> view_docks_map_;

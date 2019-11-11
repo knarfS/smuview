@@ -21,6 +21,8 @@
 #include <vector>
 
 #include <QDebug>
+#include <QMainWindow>
+#include <QMessageBox>
 #include <QToolButton>
 #include <QWidget>
 
@@ -58,6 +60,19 @@ DeviceTab::DeviceTab(Session &session,
 	action_about_(new QAction(this))
 {
 	setup_toolbar();
+}
+
+
+bool DeviceTab::request_close()
+{
+	QMessageBox::StandardButton reply = QMessageBox::information(this,
+		tr("Close device tab"),
+		tr("Closing the device tab will leave the device connected!"),
+		QMessageBox::Ok | QMessageBox::Cancel);
+
+	if (reply == QMessageBox::Ok)
+		return true;
+	return false;
 }
 
 void DeviceTab::clear_signals()

@@ -288,19 +288,9 @@ void MainWindow::error_handler(const std::string sender, const std::string msg)
 
 void MainWindow::on_tab_close_requested(int index)
 {
-	auto *tab_window = tab_widget_->widget(index);
-	if (dynamic_cast<ui::tabs::DeviceTab *>(tab_window)) {
-		// Show message box only, if tab holds a device.
-		// TODO: move check to *Tab class
-		QMessageBox::StandardButton reply = QMessageBox::question(this,
-			tr("Close device tab"),
-			tr("Closing the device tab will leave the device connected!"),
-			QMessageBox::Yes | QMessageBox::Cancel);
-
-		if (reply != QMessageBox::Yes)
-			return;
-	}
-	remove_tab(index);
+	auto *tab_window = (ui::tabs::BaseTab *)tab_widget_->widget(index);
+	if (tab_window->request_close())
+		remove_tab(index);
 }
 
 void MainWindow::add_device_tab(

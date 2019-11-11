@@ -52,6 +52,8 @@ public:
 	SmuScriptTab(Session &session, string script_file_name,
 		QWidget *parent = nullptr);
 
+	bool request_close() override;
+
 private:
 	void setup_ui();
 	void setup_toolbar();
