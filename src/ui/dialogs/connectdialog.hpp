@@ -21,7 +21,11 @@
 #ifndef UI_DIALOGS_CONNECTDIALOG_HPP
 #define UI_DIALOGS_CONNECTDIALOG_HPP
 
+#include <map>
 #include <memory>
+#include <mutex>
+#include <string>
+#include <thread>
 
 #include <QCheckBox>
 #include <QComboBox>
@@ -32,12 +36,15 @@
 #include <QLineEdit>
 #include <QListWidget>
 #include <QPushButton>
+#include <QRadioButton>
 #include <QSpinBox>
 #include <QVBoxLayout>
 
 #include "src/devices/hardwaredevice.hpp"
 
+using std::map;
 using std::shared_ptr;
+using std::string;
 
 namespace sigrok {
 class Driver;
@@ -68,7 +75,8 @@ public:
 
 private:
 	void populate_drivers();
-	void populate_serials(shared_ptr<sigrok::Driver> driver);
+	void populate_serials_start(shared_ptr<sigrok::Driver> driver);
+	void populate_serials_thread_proc(shared_ptr<sigrok::Driver> driver);
 	void check_available_libs();
 	void unset_connection();
 
@@ -78,6 +86,7 @@ private Q_SLOTS:
 	void tcp_toggled(bool checked);
 	void gpib_toggled(bool checked);
 	void scan_pressed();
+	void on_populate_serials_done();
 
 private:
 	sv::DeviceManager &device_manager_;
@@ -91,6 +100,14 @@ private:
 
 	QComboBox drivers_;
 
+	QRadioButton *radiobtn_usb_;
+	QRadioButton *radiobtn_serial_;
+	QRadioButton *radiobtn_tcp_;
+	QRadioButton *radiobtn_gpib_;
+
+	std::thread populate_serials_thread_;
+	std::mutex populate_serials_mtx_;
+	map<string, string> serial_device_map_;
 	QComboBox serial_devices_;
 
 	QWidget *tcp_config_;
@@ -104,6 +121,9 @@ private:
 	QListWidget device_list_;
 
 	QDialogButtonBox button_box_;
+
+Q_SIGNALS:
+	void populate_serials_done();
 
 };
 

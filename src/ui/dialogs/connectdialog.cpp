@@ -19,6 +19,10 @@
  */
 
 #include <cassert>
+#include <map>
+#include <memory>
+#include <string>
+#include <thread>
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
@@ -35,6 +39,7 @@ using std::list;
 using std::map;
 using std::shared_ptr;
 using std::string;
+using std::thread;
 
 using Glib::ustring;
 using Glib::Variant;
@@ -68,6 +73,9 @@ ConnectDialog::ConnectDialog(sv::DeviceManager &device_manager,
 	connect(&button_box_, SIGNAL(accepted()), this, SLOT(accept()));
 	connect(&button_box_, SIGNAL(rejected()), this, SLOT(reject()));
 
+	connect(this, &ConnectDialog::populate_serials_done,
+		this, &ConnectDialog::on_populate_serials_done);
+
 	populate_drivers();
 	connect(&drivers_, SIGNAL(activated(int)), this, SLOT(driver_selected(int)));
 
@@ -79,11 +87,11 @@ ConnectDialog::ConnectDialog(sv::DeviceManager &device_manager,
 	groupbox_drv->setLayout(vbox_drv);
 	form_layout_.addRow(groupbox_drv);
 
-	QRadioButton *radiobtn_usb = new QRadioButton(tr("&USB"), this);
-	QRadioButton *radiobtn_serial = new QRadioButton(tr("Serial &Port"), this);
-	QRadioButton *radiobtn_tcp = new QRadioButton(tr("&TCP/IP"), this);
+	radiobtn_usb_ = new QRadioButton(tr("&USB"), this);
+	radiobtn_serial_ = new QRadioButton(tr("Serial &Port"), this);
+	radiobtn_tcp_ = new QRadioButton(tr("&TCP/IP"), this);
 
-	radiobtn_usb->setChecked(true);
+	radiobtn_usb_->setChecked(true);
 
 	serial_devices_.setEditable(true);
 	serial_devices_.setEnabled(false);
@@ -111,10 +119,10 @@ ConnectDialog::ConnectDialog(sv::DeviceManager &device_manager,
 	check_available_libs();
 
 	QVBoxLayout *vbox_if = new QVBoxLayout;
-	vbox_if->addWidget(radiobtn_usb);
-	vbox_if->addWidget(radiobtn_serial);
+	vbox_if->addWidget(radiobtn_usb_);
+	vbox_if->addWidget(radiobtn_serial_);
 	vbox_if->addWidget(&serial_devices_);
-	vbox_if->addWidget(radiobtn_tcp);
+	vbox_if->addWidget(radiobtn_tcp_);
 	vbox_if->addWidget(tcp_config_);
 
 	QGroupBox *groupbox_if = new QGroupBox(tr("Step 2: Choose the interface"));
@@ -137,20 +145,20 @@ ConnectDialog::ConnectDialog(sv::DeviceManager &device_manager,
 
 	unset_connection();
 
-	connect(radiobtn_serial, SIGNAL(toggled(bool)), this, SLOT(serial_toggled(bool)));
-	connect(radiobtn_tcp, SIGNAL(toggled(bool)), this, SLOT(tcp_toggled(bool)));
+	connect(radiobtn_serial_, SIGNAL(toggled(bool)), this, SLOT(serial_toggled(bool)));
+	connect(radiobtn_tcp_, SIGNAL(toggled(bool)), this, SLOT(tcp_toggled(bool)));
 	connect(&scan_button_, SIGNAL(pressed()), this, SLOT(scan_pressed()));
 
 	if (gpib_avialable_) {
-		QRadioButton *radiobtn_gpib = new QRadioButton(tr("&GPIB"), this);
+		radiobtn_gpib_ = new QRadioButton(tr("&GPIB"), this);
 		// TODO: Replace with QComboBox and prefill with available gpib
 		// connection strings (like the serial box). Must be implemented in libsigrok.
 		gpib_libgpib_name_ = new QLineEdit;
 		gpib_libgpib_name_->setEnabled(false);
-		vbox_if->addWidget(radiobtn_gpib);
+		vbox_if->addWidget(radiobtn_gpib_);
 		vbox_if->addWidget(gpib_libgpib_name_);
 
-		connect(radiobtn_gpib, SIGNAL(toggled(bool)), this, SLOT(gpib_toggled(bool)));
+		connect(radiobtn_gpib_, SIGNAL(toggled(bool)), this, SLOT(gpib_toggled(bool)));
 	}
 
 	setLayout(&layout_);
@@ -205,13 +213,38 @@ void ConnectDialog::check_available_libs()
 	g_slist_free(l_orig);
 }
 
-void ConnectDialog::populate_serials(shared_ptr<Driver> driver)
+void ConnectDialog::populate_serials_start(shared_ptr<Driver> driver)
 {
 	serial_devices_.clear();
-	for (const auto &serial : device_manager_.context()->serials(driver))
+	serial_devices_.addItem(tr("Loading..."));
+	serial_devices_.setDisabled(true);
+
+	populate_serials_thread_ =
+		std::thread(&ConnectDialog::populate_serials_thread_proc, this, driver);
+	populate_serials_thread_.detach();
+}
+
+void ConnectDialog::on_populate_serials_done()
+{
+	std::lock_guard<std::mutex> lock(populate_serials_mtx_);
+
+	serial_devices_.clear();
+	for (const auto &serial : serial_device_map_) {
 		serial_devices_.addItem(QString("%1 (%2)").arg(
 			serial.first.c_str(), serial.second.c_str()),
 			QString::fromStdString(serial.first));
+	}
+	if (radiobtn_serial_->isChecked())
+		serial_devices_.setDisabled(false);
+}
+
+void ConnectDialog::populate_serials_thread_proc(shared_ptr<Driver> driver)
+{
+	std::unique_lock<std::mutex> lock(populate_serials_mtx_, std::try_to_lock);
+	if (lock.owns_lock()) {
+		serial_device_map_ = device_manager_.context()->serials(driver);
+		Q_EMIT populate_serials_done();
+	}
 }
 
 void ConnectDialog::unset_connection()
@@ -310,7 +343,7 @@ void ConnectDialog::driver_selected(int index)
 
 	unset_connection();
 
-	populate_serials(driver);
+	populate_serials_start(driver);
 }
 
 } // namespace dialogs
