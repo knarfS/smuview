@@ -72,9 +72,8 @@ void SmuScriptRunner::run(std::string file_name)
 	}
 
 	script_file_name_ = file_name;
-	std::thread script_thread =
-		std::thread(&SmuScriptRunner::script_thread_proc, this);
-	script_thread.detach();
+	script_thread_ = std::thread(&SmuScriptRunner::script_thread_proc, this);
+	script_thread_.detach();
 }
 
 void SmuScriptRunner::stop()

@@ -77,7 +77,8 @@ ConnectDialog::ConnectDialog(sv::DeviceManager &device_manager,
 		this, &ConnectDialog::on_populate_serials_done);
 
 	populate_drivers();
-	connect(&drivers_, SIGNAL(activated(int)), this, SLOT(driver_selected(int)));
+	connect(&drivers_, SIGNAL(activated(int)),
+		this, SLOT(on_driver_selected(int)));
 
 	form_.setLayout(&form_layout_);
 
@@ -145,9 +146,12 @@ ConnectDialog::ConnectDialog(sv::DeviceManager &device_manager,
 
 	unset_connection();
 
-	connect(radiobtn_serial_, SIGNAL(toggled(bool)), this, SLOT(serial_toggled(bool)));
-	connect(radiobtn_tcp_, SIGNAL(toggled(bool)), this, SLOT(tcp_toggled(bool)));
-	connect(&scan_button_, SIGNAL(pressed()), this, SLOT(scan_pressed()));
+	connect(radiobtn_serial_, SIGNAL(toggled(bool)),
+		this, SLOT(on_serial_toggled(bool)));
+	connect(radiobtn_tcp_, SIGNAL(toggled(bool)),
+		this, SLOT(on_tcp_toggled(bool)));
+	connect(&scan_button_, SIGNAL(pressed()),
+		this, SLOT(on_scan_pressed()));
 
 	if (gpib_avialable_) {
 		radiobtn_gpib_ = new QRadioButton(tr("&GPIB"), this);
@@ -158,7 +162,8 @@ ConnectDialog::ConnectDialog(sv::DeviceManager &device_manager,
 		vbox_if->addWidget(radiobtn_gpib_);
 		vbox_if->addWidget(gpib_libgpib_name_);
 
-		connect(radiobtn_gpib_, SIGNAL(toggled(bool)), this, SLOT(gpib_toggled(bool)));
+		connect(radiobtn_gpib_, SIGNAL(toggled(bool)),
+			this, SLOT(on_gpib_toggled(bool)));
 	}
 
 	setLayout(&layout_);
@@ -167,7 +172,7 @@ ConnectDialog::ConnectDialog(sv::DeviceManager &device_manager,
 	layout_.addWidget(&button_box_);
 
 	// Initially populate serials for current selected device
-	driver_selected(drivers_.currentIndex());
+	on_driver_selected(drivers_.currentIndex());
 }
 
 shared_ptr<HardwareDevice> ConnectDialog::get_selected_device() const
@@ -253,22 +258,22 @@ void ConnectDialog::unset_connection()
 	button_box_.button(QDialogButtonBox::Ok)->setDisabled(true);
 }
 
-void ConnectDialog::serial_toggled(bool checked)
+void ConnectDialog::on_serial_toggled(bool checked)
 {
 	serial_devices_.setEnabled(checked);
 }
 
-void ConnectDialog::tcp_toggled(bool checked)
+void ConnectDialog::on_tcp_toggled(bool checked)
 {
 	tcp_config_->setEnabled(checked);
 }
 
-void ConnectDialog::gpib_toggled(bool checked)
+void ConnectDialog::on_gpib_toggled(bool checked)
 {
 	gpib_libgpib_name_->setEnabled(checked);
 }
 
-void ConnectDialog::scan_pressed()
+void ConnectDialog::on_scan_pressed()
 {
 	device_list_.clear();
 
@@ -336,7 +341,7 @@ void ConnectDialog::scan_pressed()
 	button_box_.button(QDialogButtonBox::Ok)->setDisabled(device_list_.count() == 0);
 }
 
-void ConnectDialog::driver_selected(int index)
+void ConnectDialog::on_driver_selected(int index)
 {
 	shared_ptr<Driver> driver =
 		drivers_.itemData(index).value<shared_ptr<Driver>>();

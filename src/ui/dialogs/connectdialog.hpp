@@ -81,11 +81,11 @@ private:
 	void unset_connection();
 
 private Q_SLOTS:
-	void driver_selected(int index);
-	void serial_toggled(bool checked);
-	void tcp_toggled(bool checked);
-	void gpib_toggled(bool checked);
-	void scan_pressed();
+	void on_driver_selected(int index);
+	void on_serial_toggled(bool checked);
+	void on_tcp_toggled(bool checked);
+	void on_gpib_toggled(bool checked);
+	void on_scan_pressed();
 	void on_populate_serials_done();
 
 private:
