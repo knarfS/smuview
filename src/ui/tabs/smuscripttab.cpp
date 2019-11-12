@@ -120,6 +120,7 @@ void SmuScriptTab::setup_ui()
 void SmuScriptTab::setup_toolbar()
 {
 	action_open_->setText(tr("&Open"));
+	action_open_->setIconText(tr("Open"));
 	action_open_->setIcon(
 		QIcon::fromTheme("document-open",
 		QIcon(":/icons/document-open.png")));
@@ -128,7 +129,7 @@ void SmuScriptTab::setup_toolbar()
 		this, SLOT(on_action_open_triggered()));
 
 	action_save_->setText(tr("&Save"));
-	action_save_->setIconText("");
+	action_save_->setIconText(tr("Save"));
 	action_save_->setIcon(
 		QIcon::fromTheme("document-save",
 		QIcon(":/icons/document-save.png")));
@@ -137,7 +138,7 @@ void SmuScriptTab::setup_toolbar()
 		this, SLOT(on_action_save_triggered()));
 
 	action_save_as_->setText(tr("Save &As"));
-	action_save_as_->setIconText("");
+	action_save_as_->setIconText(tr("Save As"));
 	action_save_as_->setIcon(
 		QIcon::fromTheme("document-save-as",
 		QIcon(":/icons/document-save-as.png")));
@@ -145,7 +146,8 @@ void SmuScriptTab::setup_toolbar()
 	connect(action_save_as_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_save_as_triggered()));
 
-	action_run_->setText(tr("Start"));
+	action_run_->setText(tr("Run"));
+	action_run_->setIconText(tr("Run"));
 	action_run_->setIcon(
 		QIcon::fromTheme("media-playback-start",
 		QIcon(":/icons/media-playback-start.png")));
@@ -279,8 +281,8 @@ void SmuScriptTab::on_action_run_triggered()
 		session_.smu_script_runner()->run(script_file_name_);
 	}
 	else {
-		action_run_->setText(tr("Start"));
-		action_run_->setIconText(tr("Start"));
+		action_run_->setText(tr("Run"));
+		action_run_->setIconText(tr("Run"));
 		action_run_->setIcon(
 			QIcon::fromTheme("media-playback-start",
 			QIcon(":/icons/media-playback-start.png")));
@@ -299,8 +301,8 @@ void SmuScriptTab::on_script_started()
 void SmuScriptTab::on_script_finished()
 {
 	if (started_from_here_) {
-		action_run_->setText(tr("Start"));
-		action_run_->setIconText(tr("Start"));
+		action_run_->setText(tr("Run"));
+		action_run_->setIconText(tr("Run"));
 		action_run_->setIcon(
 			QIcon::fromTheme("media-playback-start",
 			QIcon(":/icons/media-playback-start.png")));

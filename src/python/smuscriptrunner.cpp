@@ -24,6 +24,7 @@
 #include <pybind11/stl.h>
 
 #include <QDebug>
+#include <QFileInfo>
 #include <QString>
 
 #include "smuscriptrunner.hpp"
@@ -57,6 +58,19 @@ SmuScriptRunner::~SmuScriptRunner()
 
 void SmuScriptRunner::run(std::string file_name)
 {
+	if (file_name.length() <= 0) {
+		Q_EMIT script_error("SmuScriptRunner",
+			tr("No script file specified!").toStdString());
+		return;
+	}
+
+    QFileInfo file_info(QString::fromStdString(file_name));
+	if (!file_info.exists() || !file_info.isFile()) {
+		Q_EMIT script_error("SmuScriptRunner",
+			tr("No valide script file specified!").toStdString());
+		return;
+	}
+
 	script_file_name_ = file_name;
 	std::thread script_thread =
 		std::thread(&SmuScriptRunner::script_thread_proc, this);
@@ -65,7 +79,8 @@ void SmuScriptRunner::run(std::string file_name)
 
 void SmuScriptRunner::stop()
 {
-	PyErr_SetInterrupt();
+	if (is_running_)
+		PyErr_SetInterrupt();
 }
 
 bool SmuScriptRunner::is_running()
@@ -76,6 +91,10 @@ bool SmuScriptRunner::is_running()
 void SmuScriptRunner::script_thread_proc()
 {
 	// TODO: mutex?
+
+	qWarning() << "SmuScriptRunner::script_thread_proc() executing " <<
+		QString::fromStdString(script_file_name_);
+
 	is_running_ = true;
 	Q_EMIT script_started();
 

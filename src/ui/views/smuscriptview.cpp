@@ -92,7 +92,8 @@ void SmuScriptView::setup_ui()
 
 void SmuScriptView::setup_toolbar()
 {
-	action_new_script_->setText(tr("&New script"));
+	action_new_script_->setText(tr("New script"));
+	action_new_script_->setIconText(tr("New script"));
 	action_new_script_->setIcon(
 		QIcon::fromTheme("document-new",
 		QIcon(":/icons/document-new.png")));
@@ -100,20 +101,25 @@ void SmuScriptView::setup_toolbar()
 		this, SLOT(on_action_new_script_triggered()));
 
 	action_open_script_->setText(tr("Open script"));
+	action_open_script_->setIconText(tr("Open script"));
 	action_open_script_->setIcon(
 		QIcon::fromTheme("document-open",
 		QIcon(":/icons/document-open.png")));
 	connect(action_open_script_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_open_script_triggered()));
 
-	action_run_script_->setText(tr("Start script"));
+	action_run_script_->setText(tr("Run script"));
+	action_run_script_->setIconText(tr("Run script"));
 	action_run_script_->setIcon(
 		QIcon::fromTheme("media-playback-start",
 		QIcon(":/icons/media-playback-start.png")));
+	action_run_script_->setCheckable(true);
 	connect(action_run_script_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_run_script_triggered()));
 	if (session_.smu_script_runner()->is_running())
-		action_run_script_->setDisabled(true);
+		action_run_script_->setChecked(true);
+	else
+		action_run_script_->setChecked(false);
 
 	toolbar_ = new QToolBar("SmuScript Toolbar");
 	toolbar_->addAction(action_new_script_);
@@ -148,22 +154,34 @@ void SmuScriptView::on_action_open_script_triggered()
 
 void SmuScriptView::on_action_run_script_triggered()
 {
-	QModelIndex index = file_system_tree_->selectionModel()->currentIndex();
-	if (!index.isValid())
-		return;
-
-	session_.smu_script_runner()->run(
-		file_system_model_->filePath(index).toStdString());
+	if (action_run_script_->isChecked()) {
+		QModelIndex index = file_system_tree_->selectionModel()->currentIndex();
+		if (index.isValid())
+			session_.smu_script_runner()->run(
+				file_system_model_->filePath(index).toStdString());
+	}
+	else
+		session_.smu_script_runner()->stop();
 }
 
 void SmuScriptView::on_script_started()
 {
-	action_run_script_->setDisabled(true);
+	action_run_script_->setText(tr("Stop"));
+	action_run_script_->setIconText(tr("Stop"));
+	action_run_script_->setIcon(
+		QIcon::fromTheme("media-playback-stop",
+		QIcon(":/icons/media-playback-stop.png")));
+	action_run_script_->setChecked(true);
 }
 
 void SmuScriptView::on_script_finished()
 {
-	action_run_script_->setDisabled(false);
+	action_run_script_->setText(tr("Run"));
+	action_run_script_->setIconText(tr("Run"));
+	action_run_script_->setIcon(
+		QIcon::fromTheme("media-playback-start",
+		QIcon(":/icons/media-playback-start.png")));
+	action_run_script_->setChecked(false);
 }
 
 } // namespace views
