@@ -45,8 +45,9 @@ public:
 	QString title() const;
 
 private:
-	QAction *const action_start_script_;
+	QAction *const action_new_script_;
 	QAction *const action_open_script_;
+	QAction *const action_run_script_;
 	QToolBar *toolbar_;
 	QFileSystemModel *file_system_model_;
 	QTreeView *file_system_tree_;
@@ -56,8 +57,9 @@ private:
 	void connect_signals();
 
 private Q_SLOTS:
-	void on_action_start_script_triggered();
+	void on_action_new_script_triggered();
 	void on_action_open_script_triggered();
+	void on_action_run_script_triggered();
 	void on_script_started();
 	void on_script_finished();
 

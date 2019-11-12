@@ -44,8 +44,9 @@ namespace views {
 
 SmuScriptView::SmuScriptView(Session &session, QWidget *parent) :
 	BaseView(session, parent),
-	action_start_script_(new QAction(this)),
-	action_open_script_(new QAction(this))
+	action_new_script_(new QAction(this)),
+	action_open_script_(new QAction(this)),
+	action_run_script_(new QAction(this))
 {
 	setup_ui();
 	setup_toolbar();
@@ -91,14 +92,12 @@ void SmuScriptView::setup_ui()
 
 void SmuScriptView::setup_toolbar()
 {
-	action_start_script_->setText(tr("Start script"));
-	action_start_script_->setIcon(
-		QIcon::fromTheme("media-playback-start",
-		QIcon(":/icons/media-playback-start.png")));
-	connect(action_start_script_, SIGNAL(triggered(bool)),
-		this, SLOT(on_action_start_script_triggered()));
-	if (session_.smu_script_runner()->is_running())
-		action_start_script_->setDisabled(true);
+	action_new_script_->setText(tr("&New script"));
+	action_new_script_->setIcon(
+		QIcon::fromTheme("document-new",
+		QIcon(":/icons/document-new.png")));
+	connect(action_new_script_, SIGNAL(triggered(bool)),
+		this, SLOT(on_action_new_script_triggered()));
 
 	action_open_script_->setText(tr("Open script"));
 	action_open_script_->setIcon(
@@ -107,9 +106,20 @@ void SmuScriptView::setup_toolbar()
 	connect(action_open_script_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_open_script_triggered()));
 
+	action_run_script_->setText(tr("Start script"));
+	action_run_script_->setIcon(
+		QIcon::fromTheme("media-playback-start",
+		QIcon(":/icons/media-playback-start.png")));
+	connect(action_run_script_, SIGNAL(triggered(bool)),
+		this, SLOT(on_action_run_script_triggered()));
+	if (session_.smu_script_runner()->is_running())
+		action_run_script_->setDisabled(true);
+
 	toolbar_ = new QToolBar("SmuScript Toolbar");
-	toolbar_->addAction(action_start_script_);
+	toolbar_->addAction(action_new_script_);
 	toolbar_->addAction(action_open_script_);
+	toolbar_->addSeparator();
+	toolbar_->addAction(action_run_script_);
 	this->addToolBar(Qt::TopToolBarArea, toolbar_);
 }
 
@@ -121,14 +131,9 @@ void SmuScriptView::connect_signals()
 		this, &SmuScriptView::on_script_finished);
 }
 
-void SmuScriptView::on_action_start_script_triggered()
+void SmuScriptView::on_action_new_script_triggered()
 {
-	QModelIndex index = file_system_tree_->selectionModel()->currentIndex();
-	if (!index.isValid())
-		return;
-
-	session_.smu_script_runner()->run(
-		file_system_model_->filePath(index).toStdString());
+	session().main_window()->add_smuscript_tab("");
 }
 
 void SmuScriptView::on_action_open_script_triggered()
@@ -141,14 +146,24 @@ void SmuScriptView::on_action_open_script_triggered()
 		file_system_model_->filePath(index).toStdString());
 }
 
+void SmuScriptView::on_action_run_script_triggered()
+{
+	QModelIndex index = file_system_tree_->selectionModel()->currentIndex();
+	if (!index.isValid())
+		return;
+
+	session_.smu_script_runner()->run(
+		file_system_model_->filePath(index).toStdString());
+}
+
 void SmuScriptView::on_script_started()
 {
-	action_start_script_->setDisabled(true);
+	action_run_script_->setDisabled(true);
 }
 
 void SmuScriptView::on_script_finished()
 {
-	action_start_script_->setDisabled(false);
+	action_run_script_->setDisabled(false);
 }
 
 } // namespace views

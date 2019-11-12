@@ -60,7 +60,7 @@ private:
 	void setup_ui();
 	void setup_toolbar();
 	void connect_signals();
-	void save(QString file_name);
+	bool save(QString file_name);
 
 	static unsigned int smuscript_tab_counter_;
 

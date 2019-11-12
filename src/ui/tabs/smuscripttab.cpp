@@ -73,8 +73,12 @@ string SmuScriptTab::tab_id()
 
 QString SmuScriptTab::tab_title()
 {
-	std::size_t found = script_file_name_.find_last_of("/\\");
-	return QString::fromStdString(script_file_name_.substr(found+1));
+	if (script_file_name_.length() <= 0)
+		return tr("Untitled");
+	else {
+		std::size_t found = script_file_name_.find_last_of("/\\");
+		return QString::fromStdString(script_file_name_.substr(found+1));
+	}
 }
 
 bool SmuScriptTab::request_close()
@@ -89,8 +93,7 @@ bool SmuScriptTab::request_close()
 		QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
 
 	if (reply == QMessageBox::Yes) {
-		on_action_save_triggered();
-		return true;
+		return this->save(QString::fromStdString(script_file_name_));
 	}
 	else if (reply == QMessageBox::No)
 		return true;
@@ -173,10 +176,15 @@ void SmuScriptTab::connect_signals()
 		this, &SmuScriptTab::on_script_finished);
 }
 
-void SmuScriptTab::save(QString file_name)
+bool SmuScriptTab::save(QString file_name)
 {
-	if (file_name.length() <= 0)
-		return;
+	if (file_name.length() <= 0) {
+		file_name = QFileDialog::getSaveFileName(this,
+			tr("Save SmuScript-File"),
+			QDir::homePath(), tr("Python Files (*.py)"));
+		if (file_name.length() <= 0)
+			return false;
+	}
 
 	QFile file(file_name);
 	if (file.open(QFile::WriteOnly | QFile::Text | QFile::Truncate)) {
@@ -187,12 +195,20 @@ void SmuScriptTab::save(QString file_name)
 		text_changed_ = false;
 		session_.main_window()->change_tab_icon(tab_id_, QIcon());
 	}
+	else {
+		QMessageBox::critical(this, tr("File error"),
+			tr("Could not save to file \"%1\".").arg(file_name),
+			QMessageBox::Ok);
+		return false;
+	}
 
 	// Check if filename has changed
 	if (script_file_name_ != file_name.toStdString()) {
 		script_file_name_ = file_name.toStdString();
 		session_.main_window()->change_tab_title(tab_id_, tab_title());
 	}
+
+	return true;
 }
 
 void SmuScriptTab::on_action_open_triggered()
@@ -204,8 +220,10 @@ void SmuScriptTab::on_action_open_triggered()
 				arg(QString::fromStdString(script_file_name_)),
 			QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
 
-		if (reply == QMessageBox::Yes)
-			on_action_save_triggered();
+		if (reply == QMessageBox::Yes) {
+			if (!this->save(QString::fromStdString(script_file_name_)))
+				return;
+		}
 		else if (reply == QMessageBox::Cancel)
 			return;
 	}
@@ -238,9 +256,7 @@ void SmuScriptTab::on_action_save_triggered()
 
 void SmuScriptTab::on_action_save_as_triggered()
 {
-	QString file_name = QFileDialog::getSaveFileName(this,
-		tr("Save SmuScript-File"), QDir::homePath(), tr("Python Files (*.py)"));
-	this->save(file_name);
+	this->save("");
 }
 
 void SmuScriptTab::on_text_changed()
