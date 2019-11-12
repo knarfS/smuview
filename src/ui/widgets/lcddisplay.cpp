@@ -136,7 +136,7 @@ void LcdDisplay::update_unit_widget_dimensions()
 		str.append(" ").append(unit_suffix_);
 	}
 	QFontMetrics metrics = unit_label_->fontMetrics();
-	unit_label_->setFixedWidth(metrics.width(str));
+	unit_label_->setFixedWidth(metrics.boundingRect(str).width());
 }
 
 void LcdDisplay::show_value(const QString &value)
