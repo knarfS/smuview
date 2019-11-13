@@ -2,7 +2,7 @@
  * This file is part of the SmuView project.
  *
  * Copyright (C) 2012-2013 Joel Holdsworth <joel@airwebreathe.org.uk>
- * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,6 +68,8 @@ ConnectDialog::ConnectDialog(sv::DeviceManager &device_manager,
 	button_box_(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
 		Qt::Horizontal, this)
 {
+	qRegisterMetaType<std::map<std::string, std::string>>("std::map<std::string, std::string>");
+
 	setWindowTitle(tr("Connect to Device"));
 
 	connect(&button_box_, SIGNAL(accepted()), this, SLOT(accept()));
@@ -175,6 +177,7 @@ ConnectDialog::ConnectDialog(sv::DeviceManager &device_manager,
 	on_driver_selected(drivers_.currentIndex());
 }
 
+
 shared_ptr<HardwareDevice> ConnectDialog::get_selected_device() const
 {
 	const QListWidgetItem *const item = device_list_.currentItem();
@@ -229,12 +232,13 @@ void ConnectDialog::populate_serials_start(shared_ptr<Driver> driver)
 	populate_serials_thread_.detach();
 }
 
-void ConnectDialog::on_populate_serials_done()
+void ConnectDialog::on_populate_serials_done(
+	std::map<std::string, std::string> serials)
 {
 	std::lock_guard<std::mutex> lock(populate_serials_mtx_);
 
 	serial_devices_.clear();
-	for (const auto &serial : serial_device_map_) {
+	for (const auto &serial : serials) {
 		serial_devices_.addItem(QString("%1 (%2)").arg(
 			serial.first.c_str(), serial.second.c_str()),
 			QString::fromStdString(serial.first));
@@ -247,8 +251,8 @@ void ConnectDialog::populate_serials_thread_proc(shared_ptr<Driver> driver)
 {
 	std::unique_lock<std::mutex> lock(populate_serials_mtx_, std::try_to_lock);
 	if (lock.owns_lock()) {
-		serial_device_map_ = device_manager_.context()->serials(driver);
-		Q_EMIT populate_serials_done();
+		map<string, string> serials = device_manager_.context()->serials(driver);
+		Q_EMIT populate_serials_done(serials);
 	}
 }
 

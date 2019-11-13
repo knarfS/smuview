@@ -2,7 +2,7 @@
  * This file is part of the SmuView project.
  *
  * Copyright (C) 2012-2013 Joel Holdsworth <joel@airwebreathe.org.uk>
- * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,9 +42,7 @@
 
 #include "src/devices/hardwaredevice.hpp"
 
-using std::map;
 using std::shared_ptr;
-using std::string;
 
 namespace sigrok {
 class Driver;
@@ -86,7 +84,7 @@ private Q_SLOTS:
 	void on_tcp_toggled(bool checked);
 	void on_gpib_toggled(bool checked);
 	void on_scan_pressed();
-	void on_populate_serials_done();
+	void on_populate_serials_done(std::map<std::string, std::string> serials);
 
 private:
 	sv::DeviceManager &device_manager_;
@@ -107,7 +105,6 @@ private:
 
 	std::thread populate_serials_thread_;
 	std::mutex populate_serials_mtx_;
-	map<string, string> serial_device_map_;
 	QComboBox serial_devices_;
 
 	QWidget *tcp_config_;
@@ -123,7 +120,7 @@ private:
 	QDialogButtonBox button_box_;
 
 Q_SIGNALS:
-	void populate_serials_done();
+	void populate_serials_done(std::map<std::string, std::string>);
 
 };
 
