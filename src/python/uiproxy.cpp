@@ -105,7 +105,7 @@ string UiProxy::ui_add_plot_view(string device_id, Qt::DockWidgetArea area,
 	shared_ptr<data::AnalogTimeSignal> signal)
 {
 	Q_EMIT add_plot_view(device_id, area, signal);
-	return "plot_sig" + signal->name();
+	return "plot_sig:" + signal->name();
 }
 
 string UiProxy::ui_add_plot_view(string device_id, Qt::DockWidgetArea area,

@@ -132,7 +132,7 @@ PlotView::PlotView(Session &session,
 
 	curves_.push_back(new widgets::plot::XYCurveData(x_signal, y_signal));
 
-	id_ = "plot_xy:" + x_signal->name() + "::" + y_signal->name();
+	id_ = "plot_xy:" + x_signal->name() + ":" + y_signal->name();
 
 	setup_ui();
 	setup_toolbar();
