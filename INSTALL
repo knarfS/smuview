@@ -19,6 +19,7 @@ Requirements
     - Qt5Core, Qt5Gui, Qt5Widgets, Qt5Svg
  - Boost (>= 1.55)
  - Qwt (>= 6.1.2)
+ - Python (>= 3)
  - libsigrokcxx (>= 0.6.0) (libsigrok C++ bindings)
  - Asciidoctor (optional, only needed to build the manual)
 
