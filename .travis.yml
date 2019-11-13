@@ -12,7 +12,7 @@ install:
     sudo apt-get -y install gpm apt-file git wget unzip gcc make autoconf automake libtool \
     g++ autoconf-archive pkg-config libglib2.0-dev libglibmm-2.4-dev libzip-dev \
     libusb-1.0-0-dev libftdi-dev libvisa-dev libieee1284-3-dev check doxygen \
-    python-numpy python-dev python-gi-dev python-setuptools swig sdcc python3-dev \
+    python-numpy python-dev python-gi-dev python-setuptools swig sdcc python3 python3-dev \
     libboost-all-dev mesa-common-dev libgl1-mesa-dev qt510base qt510svg
   - source /opt/qt510/bin/qt510-env.sh
   - sudo rm -rf /usr/bin/cmake /usr/local/cmake-* /usr/local/bin/cmake || true # Needed on Travis CI; don't do this on other systems!
