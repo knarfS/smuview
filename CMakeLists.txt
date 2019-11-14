@@ -77,9 +77,11 @@ add_subdirectory(manual)
 list(APPEND PKGDEPS glib-2.0>=2.28.0)
 list(APPEND PKGDEPS glibmm-2.4>=2.28.0)
 
-# ConfigKey OFFSET was added after 0.5.1.
-# TODO: Check for >= 0.x.x (not only >) when new stable version is released!
-set(LIBSR_CXX_BINDING "libsigrokcxx>0.5.1")
+# ConfigKey OFFSET was added after version 0.5.1. We need to check for the
+# development version (0.6.0), because cmake 3.5.1 (Ubuntu Xenial 16.04) can't
+# check for ">0.5.1"!
+# TODO: Check for stable version, when released!
+set(LIBSR_CXX_BINDING "libsigrokcxx>=0.6.0")
 list(APPEND PKGDEPS "${LIBSR_CXX_BINDING}")
 
 find_package(PkgConfig)
