@@ -3,6 +3,7 @@
 --driver conrad-digi-35-cpu:conn=/dev/ttyUSB1 -l 5
 --driver peaktech-4390a:conn=/dev/ttyUSB2 -l 5
 --driver hp-3478a:conn=libgpib/hp3478a -l 5
+--driver scpi-pps:conn=libgpib/hp6632b
 --driver eevblog-121gw:conn=bt/ble122/88-6B-0F-81-AA-C3
 
 --driver conrad-digi-35-cpu:conn=/dev/ttyUSB2 --driver arachnid-labs-re-load-pro:conn=/dev/ttyUSB0 -l 5
