@@ -180,8 +180,7 @@ void init_UI(py::module &m)
 	py_ui_helper.def("add_signal_to_plot", &sv::python::UiProxy::ui_add_signal_to_plot, "Add a signal to the given plot.");
 
 	// Qt enumerations
-	py::enum_<Qt::DockWidgetArea> py_dock_area(m, "DockArea");
-	py_dock_area.doc() = "Enum of all possible docking locations for a view.";
+	py::enum_<Qt::DockWidgetArea> py_dock_area(m, "DockArea", "Enum of all possible docking locations for a view.");
 	py_dock_area.value("LeftDocktArea", Qt::DockWidgetArea::LeftDockWidgetArea);
 	py_dock_area.value("RightDockArea", Qt::DockWidgetArea::RightDockWidgetArea);
 	py_dock_area.value("TopDockArea", Qt::DockWidgetArea::TopDockWidgetArea);
@@ -192,8 +191,7 @@ void init_UI(py::module &m)
 
 void init_Enums(py::module &m)
 {
-	py::enum_<sv::devices::ConfigKey> py_config_key(m, "ConfigKey");
-	py_config_key.doc() = "Enum of all available config keys for controlling a device.";
+	py::enum_<sv::devices::ConfigKey> py_config_key(m, "ConfigKey", "Enum of all available config keys for controlling a device.");
 	py_config_key.value("Samplerate", sv::devices::ConfigKey::Samplerate);
 	py_config_key.value("CaptureRatio", sv::devices::ConfigKey::CaptureRatio);
 	py_config_key.value("PatternMode", sv::devices::ConfigKey::PatternMode);
@@ -262,8 +260,7 @@ void init_Enums(py::module &m)
 	py_config_key.value("TestMode", sv::devices::ConfigKey::TestMode);
 	py_config_key.value("Unknown", sv::devices::ConfigKey::Unknown);
 
-	py::enum_<sv::data::Quantity> py_quantity(m, "Quantity");
-	py_quantity.doc() = "Enum of all available quantities.";
+	py::enum_<sv::data::Quantity> py_quantity(m, "Quantity", "Enum of all available quantities.");
 	py_quantity.value("Voltage", sv::data::Quantity::Voltage);
 	py_quantity.value("Current", sv::data::Quantity::Current);
 	py_quantity.value("Resistance", sv::data::Quantity::Resistance);
@@ -301,8 +298,7 @@ void init_Enums(py::module &m)
 	py_quantity.value("HarmonicRatio", sv::data::Quantity::HarmonicRatio);
 	py_quantity.value("Unknown", sv::data::Quantity::Unknown);
 
-	py::enum_<sv::data::QuantityFlag> py_quantity_flag(m, "QuantityFlag");
-	py_quantity_flag.doc() = "Enum of all available quantity flags.";
+	py::enum_<sv::data::QuantityFlag> py_quantity_flag(m, "QuantityFlag", "Enum of all available quantity flags.");
 	py_quantity_flag.value("AC", sv::data::QuantityFlag::AC);
 	py_quantity_flag.value("DC", sv::data::QuantityFlag::DC);
 	py_quantity_flag.value("RMS", sv::data::QuantityFlag::RMS);
@@ -327,8 +323,7 @@ void init_Enums(py::module &m)
 	py_quantity_flag.value("FourWire", sv::data::QuantityFlag::FourWire);
 	py_quantity_flag.value("Unknown", sv::data::QuantityFlag::Unknown);
 
-	py::enum_<sv::data::Unit> py_unit(m, "Unit");
-	py_unit.doc() = "Enum of all available units.";
+	py::enum_<sv::data::Unit> py_unit(m, "Unit", "Enum of all available units.");
 	py_unit.value("Volt", sv::data::Unit::Volt);
 	py_unit.value("Ampere", sv::data::Unit::Ampere);
 	py_unit.value("Ohm", sv::data::Unit::Ohm);
