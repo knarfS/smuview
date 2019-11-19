@@ -65,25 +65,27 @@ void UserChannel::push_sample(double sample, double timestamp,
 	data::Quantity quantity, set<data::QuantityFlag> quantity_flags,
 	data::Unit unit, int digits, int decimal_places)
 {
-	measured_quantity_t mq = make_pair(quantity, quantity_flags);
-	size_t signals_count = signal_map_.count(mq);
-	if (signals_count == 0) {
-		add_signal(quantity, quantity_flags, unit);
-		qWarning() << "UserChannel::push_sample(): " << display_name() <<
-			" - No signal found: " << actual_signal_->display_name();
-	}
-	else if (signals_count > 1) {
-		throw ("More than one signal found for " + name());
-	}
+	if (!actual_signal_ || actual_signal_->quantity() != quantity ||
+		actual_signal_->quantity_flags() != quantity_flags) {
 
-	auto signal = static_pointer_cast<data::AnalogTimeSignal>(signal_map_[mq][0]);
-	if (signal.get() != actual_signal_.get()) {
-		actual_signal_ = signal;
+		measured_quantity_t mq = make_pair(quantity, quantity_flags);
+		size_t signals_count = signal_map_.count(mq);
+		if (signals_count == 0) {
+			actual_signal_ = add_signal(quantity, quantity_flags, unit);
+			qWarning() << "UserChannel::push_sample(): " << display_name() <<
+				" - No signal found: " << actual_signal_->display_name();
+		}
+		else if (signals_count > 1) {
+			actual_signal_ = signal_map_[mq][0];
+			qWarning() << "UserChannel::push_sample(): " << display_name() <<
+				" - More than one signal found, using first found signal: " <<
+				actual_signal_->display_name();
+		}
 		Q_EMIT signal_changed(actual_signal_);
 	}
 
-	signal->push_sample(&sample, timestamp, size_of_double_,
-		digits, decimal_places);
+	static_pointer_cast<data::AnalogTimeSignal>(actual_signal_)->push_sample(
+		&sample, timestamp, size_of_double_, digits, decimal_places);
 }
 
 } // namespace devices
