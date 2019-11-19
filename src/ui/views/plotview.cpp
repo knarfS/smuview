@@ -173,6 +173,20 @@ void PlotView::add_time_curve(shared_ptr<sv::data::AnalogTimeSignal> signal)
 	}
 }
 
+void PlotView::add_xy_curve(shared_ptr<sv::data::AnalogTimeSignal> y_signal)
+{
+	// Get the x signal from a existing curve
+	if (curves_.size() == 0) {
+		QMessageBox::warning(this, tr("Cannot add signal"),
+			tr("Cannot add new x signal without an existing x signal!"),
+			QMessageBox::Ok);
+		return;
+	}
+
+	auto x_signal = ((widgets::plot::XYCurveData *)curves_.at(0))->x_t_signal();
+	this->add_xy_curve(x_signal, y_signal);
+}
+
 void PlotView::add_xy_curve(shared_ptr<sv::data::AnalogTimeSignal> x_signal,
 	shared_ptr<sv::data::AnalogTimeSignal> y_signal)
 {
@@ -183,7 +197,7 @@ void PlotView::add_xy_curve(shared_ptr<sv::data::AnalogTimeSignal> x_signal,
 	}
 	else {
 		QMessageBox::warning(this,
-			tr("Cannot add signal"), tr("Cannot add XY-signal to plot!"),
+			tr("Cannot add signal"), tr("Cannot add xy signal to plot!"),
 			QMessageBox::Ok);
 	}
 }
@@ -344,7 +358,8 @@ void PlotView::on_action_add_signal_triggered()
 				dynamic_pointer_cast<sv::data::AnalogTimeSignal>(signal));
 		}
 		else {
-			// TODO
+			add_xy_curve(
+				dynamic_pointer_cast<sv::data::AnalogTimeSignal>(signal));
 		}
 	}
 }

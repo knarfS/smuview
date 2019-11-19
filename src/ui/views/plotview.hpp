@@ -77,7 +77,18 @@ public:
 		QWidget *parent = nullptr);
 
 	QString title() const override;
+	/**
+	 * Add a new signal to the time plot.
+	 */
 	void add_time_curve(shared_ptr<sv::data::AnalogTimeSignal> signal);
+	/**
+	 * Add a new signal to the xy plot. The new signal will be time correlated
+	 * with the already set x signal.
+	 */
+	void add_xy_curve(shared_ptr<sv::data::AnalogTimeSignal> y_signal);
+	/**
+	 * Add a new x/y curve to the xy plot.
+	 */
 	void add_xy_curve(shared_ptr<sv::data::AnalogTimeSignal> x_signal,
 		shared_ptr<sv::data::AnalogTimeSignal> y_signal);
 
