@@ -151,9 +151,9 @@ void AnalogTimeSignal::push_sample(void *sample, double timestamp,
 		dsample = *(double *)sample;
 
 	/*
-	qWarning() << "AnalogSignal::push_sample(): " << name_
+	qWarning() << "AnalogTimeSignal::push_sample(): " << display_name()
 		<< ": sample = " << dsample << " @ " <<  timestamp;
-	qWarning() << "AnalogSignal::push_sample(): " << name_
+	qWarning() << "AnalogTimeSignal::push_sample(): " << display_name()
 		<< ": sample_count_ = " << sample_count_+1;
 	*/
 
@@ -166,14 +166,14 @@ void AnalogTimeSignal::push_sample(void *sample, double timestamp,
 		max_value_ = dsample;
 
 	/*
-	qWarning() << "AnalogSignal::push_sample(): " << name_
-		<< ":last_timestamp_ = " << last_timestamp_;
-	qWarning() << "AnalogSignal::push_sample(): " << name_
-		<< ":last_value_ = " << last_value_;
-	qWarning() << "AnalogSignal::push_sample(): " << name_
-		<< ":min_value_ = " << min_value_;
-	qWarning() << "AnalogSignal::push_sample(): " << name_
-		<< ":max_value_ = " << max_value_;
+	qWarning() << "AnalogTimeSignal::push_sample(): " << display_name()
+		<< ": last_timestamp_ = " << last_timestamp_;
+	qWarning() << "AnalogTimeSignal::push_sample(): " << display_name()
+		<< ": last_value_ = " << last_value_;
+	qWarning() << "AnalogTimeSignal::push_sample(): " << display_name()
+		<< ": min_value_ = " << min_value_;
+	qWarning() << "AnalogTimeSignal::push_sample(): " << display_name()
+		<< ": max_value_ = " << max_value_;
 	*/
 
 	// TODO: Mutex?
