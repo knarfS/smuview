@@ -304,20 +304,27 @@ void PlotView::on_signal_changed()
 {
 	if (!initial_channel_)
 		return;
+	if (plot_type_ != PlotType::TimePlot)
+		return;
 
 	shared_ptr<sv::data::AnalogTimeSignal> signal;
 	if (initial_channel_->actual_signal())
 		signal = dynamic_pointer_cast<sv::data::AnalogTimeSignal>(
 			initial_channel_->actual_signal());
+	if (!signal)
+		return;
+
+	// Check if new actual_signal is already added to this plot
+	for (const auto &curve : curves_) {
+		if (((widgets::plot::TimeCurveData *)curve)->signal() == signal)
+			return;
+	}
 
 	this->parentWidget()->setWindowTitle(this->title());
-
-	if (signal) {
-		auto curve = new widgets::plot::TimeCurveData(signal);
-		if (plot_->add_curve(curve)) {
-			curves_.push_back(curve);
-			update_add_marker_menu();
-		}
+	auto curve = new widgets::plot::TimeCurveData(signal);
+	if (plot_->add_curve(curve)) {
+		curves_.push_back(curve);
+		update_add_marker_menu();
 	}
 }
 
