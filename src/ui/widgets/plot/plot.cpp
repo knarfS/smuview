@@ -19,6 +19,7 @@
  */
 
 #include <cassert>
+#include <cmath>
 #include <utility>
 
 #include <QBoxLayout>
@@ -281,9 +282,16 @@ int Plot::init_x_axis(widgets::plot::BaseCurveData *curve_data)
 		max = add_time_;
 		// TODO: !curve_data->is_relative_time()
 	}
+	else if (curve_data->curve_type() == CurveType::XYCurve) {
+		// Values +/- 10%
+		min = curve_data->boundingRect().left() -
+			(std::fabs(curve_data->boundingRect().left()) * 0.1);
+		max = curve_data->boundingRect().right() +
+			(std::fabs(curve_data->boundingRect().right()) * 0.1);
+	}
 	else {
-		min = 0.;
-		max = 0.;
+		throw std::runtime_error(
+			"Plot::init_x_axis(): Curve type not implemented!");
 	}
 
 	map<AxisBoundary, bool> locks;
@@ -344,8 +352,14 @@ int Plot::init_y_axis(widgets::plot::BaseCurveData *curve_data)
 			AxisBoundary::UpperBoundary, false));
 		axis_lock_map_.insert(make_pair(y_axis_id, locks));
 
+		// Values +/- 10%
+		double min = curve_data->boundingRect().bottom() -
+			(std::fabs(curve_data->boundingRect().bottom()) * 0.1);
+		double max = curve_data->boundingRect().top() +
+			(std::fabs(curve_data->boundingRect().top()) * 0.1);
+
 		this->setAxisTitle(y_axis_id, curve_data->y_data_title());
-		this->setAxisScale(y_axis_id, 0., 0.);
+		this->setAxisScale(y_axis_id, min, max);
 		this->setAxisAutoScale(y_axis_id, false); // TODO: Not working!?
 		this->enableAxis(y_axis_id);
 		this->add_axis_icons(y_axis_id);
@@ -432,6 +446,26 @@ void Plot::on_axis_lock_clicked()
 		set_axis_locked(lock_label->get_axis_id(),
 			lock_label->get_axis_boundary(), !locked);
 	}
+}
+
+void Plot::set_time_span(double time_span)
+{
+	time_span_ = time_span;
+
+	// time_span_ is used in rolling mode and oscilloscope mode. Find the
+	// last/highest x value/timestamp and use it to calculate the new
+	// x axis interval.
+	double last_timestamp = .0;
+	for (const auto &curve : curve_datas_) {
+		if (curve->boundingRect().right() > last_timestamp)
+			last_timestamp = curve->boundingRect().right();
+	}
+	// max must be set to the last timestamp to keep the manual calculation
+	// of the scale divs for oscilloscope mode working.
+	double max = last_timestamp;
+	double min = max - time_span_;
+	this->setAxisScale(QwtPlot::xBottom, min, max);
+	this->replot();
 }
 
 void Plot::add_marker(plot::BaseCurveData *curve_data)
@@ -527,6 +561,7 @@ void Plot::on_marker_selected(const QPointF mouse_pos)
 	const double mouse_canvas_x = transform(QwtPlot::xBottom, mouse_pos.x());
 	const double mouse_canvas_y = transform(QwtPlot::yLeft, mouse_pos.y());
 
+	// Check if mouse pointer is near a marker
 	double d_min = 15.; // Minimum distance to marker for selecting
 	double d_lowest = 1.0e10;
 	QwtPlotMarker *selected_marker = nullptr;
@@ -546,7 +581,6 @@ void Plot::on_marker_selected(const QPointF mouse_pos)
 			selected_marker = marker;
 		}
 	}
-
 	if (selected_marker) {
 		plot_panner_->setEnabled(false);
 		active_marker_ = selected_marker;
@@ -657,38 +691,44 @@ bool Plot::update_x_interval(plot::BaseCurveData *curve_data)
 	double min = x_interval.minValue();
 	double max = x_interval.maxValue();
 
-	if (update_mode_ == PlotUpdateMode::Additive) {
-		/*
-		qWarning() << "Plot::update_x_interval() for b.left < x_int.min = " <<
-			boundaries.left() << " < " << min;
-		qWarning() << "Plot::update_x_interval() for b.right > x_int.max = " <<
-			boundaries.right() << " > " << max;
-		*/
-
+	// There are no plot modes when showing xy curves, just extend the intervals
+	if (curve_data->curve_type() == CurveType::XYCurve) {
 		if (axis_lock_map_[QwtPlot::xBottom][AxisBoundary::LowerBoundary] == false &&
 				boundaries.left() < min) {
-			// new value + 10%
-			min = boundaries.left() + (boundaries.left() * 0.1);
+			// New value - 10%
+			min = boundaries.left() - (std::fabs(boundaries.left()) * 0.1);
 			interval_changed = true;
 		}
 		if (axis_lock_map_[QwtPlot::xBottom][AxisBoundary::UpperBoundary] == false &&
 				boundaries.right() > max) {
-			if (curve_data->curve_type() == CurveType::TimeCurve)
-				max = x_interval.maxValue() + add_time_;
-			else
-				max = boundaries.right() + (boundaries.right() * 0.1);
+			// New value + 10%
+			max = boundaries.right() + (std::fabs(boundaries.right()) * 0.1);
 			interval_changed = true;
 		}
 
-		if (interval_changed) {
-			/*
-			qWarning() <<
-				QString("Plot::update_x_interval(): new min = %1, new max = %2").
-				arg(min).arg(max);
-			*/
+		if (interval_changed)
 			setAxisScale(QwtPlot::xBottom, min, max);
+		return interval_changed;
+	}
+
+	// Handle the various plot modes
+	if (update_mode_ == PlotUpdateMode::Additive) {
+		if (axis_lock_map_[QwtPlot::xBottom][AxisBoundary::LowerBoundary] == false &&
+				boundaries.left() < min) {
+			min = 0;
+			interval_changed = true;
+		}
+		if (axis_lock_map_[QwtPlot::xBottom][AxisBoundary::UpperBoundary] == false &&
+				boundaries.right() > max) {
+			if (boundaries.right()+add_time_ > max)
+				max = boundaries.right() + add_time_;
+			else
+				max = x_interval.maxValue() + add_time_;
+			interval_changed = true;
 		}
 
+		if (interval_changed)
+			setAxisScale(QwtPlot::xBottom, min, max);
 		return interval_changed;
 	}
 	else if (update_mode_ == PlotUpdateMode::Rolling) {
@@ -696,16 +736,13 @@ bool Plot::update_x_interval(plot::BaseCurveData *curve_data)
 		if (boundaries.right() <= max)
 			return false;
 
-		//double diff = boundaries.right() - max;
-		min += add_time_;
-		max += add_time_;
+		if (boundaries.right() > max+time_span_)
+			min = boundaries.right();
+		else
+			min += add_time_;
+		max = min + time_span_;
 
-		/*
-		qWarning() << "Plot::timerEvent() for x_interval.minValue() = " <<
-			min << ", x_interval.maxValue() = " << max;
-		*/
 		setAxisScale(QwtPlot::xBottom, min, max);
-
 		return true;
 	}
 	else if (update_mode_ == PlotUpdateMode::Oscilloscope) {
@@ -713,10 +750,11 @@ bool Plot::update_x_interval(plot::BaseCurveData *curve_data)
 		if (boundaries.right() <= max)
 			return false;
 
-		/*
-		qWarning() << "Plot::timerEvent() for x_interval.minValue() = " <<
-			max << ", x_interval.maxValue() = " << max + time_span_;
-		*/
+		if (boundaries.right() > max+time_span_)
+			min = boundaries.right();
+		else
+			min += time_span_;
+		max = min + time_span_;
 
 		/*
 		 * NOTE:
@@ -724,8 +762,7 @@ bool Plot::update_x_interval(plot::BaseCurveData *curve_data)
 		 * of the ticks and shift them manually instead.
 		 */
 		QwtScaleDiv scaleDiv = axisScaleDiv(QwtPlot::xBottom);
-		scaleDiv.setInterval(max, max + time_span_);
-
+		scaleDiv.setInterval(min, max);
 		for (int i = 0; i < QwtScaleDiv::NTickTypes; i++) {
 			QList<double> ticks = scaleDiv.ticks(i);
 			for (int j = 0; j < ticks.size(); j++) {
@@ -733,9 +770,9 @@ bool Plot::update_x_interval(plot::BaseCurveData *curve_data)
 			}
 			scaleDiv.setTicks(i, ticks);
 		}
+
 		setAxisScaleDiv(QwtPlot::xBottom, scaleDiv);
 		painted_points_map_[curve_data] = 0;
-
 		return true;
 	}
 
@@ -755,35 +792,21 @@ bool Plot::update_y_interval(plot::BaseCurveData *curve_data)
 	double max = y_interval.maxValue();
 	bool interval_changed = false;
 
-	/*
-	qWarning() << "Plot::update_y_interval() for b.bottom < y_int.min = " <<
-		boundaries.bottom() << " < " << min;
-	qWarning() << "Plot::update_y_interval() for b.top > y_int.max = " <<
-		boundaries.top() << " > " << max;
-	*/
-
 	if (axis_lock_map_[y_axis_id][AxisBoundary::LowerBoundary] == false &&
 			boundaries.bottom() < min) {
-		// new value + 10%
-		min = boundaries.bottom() + (boundaries.bottom() * 0.1);
+		// New value - 10%
+		min = boundaries.bottom() - (std::fabs(boundaries.bottom()) * 0.1);
 		interval_changed = true;
 	}
 	if (axis_lock_map_[y_axis_id][AxisBoundary::UpperBoundary] == false &&
 			boundaries.top() > max) {
-		// new value + 10%
-		max = boundaries.top() + (boundaries.top() * 0.1);
+		// New value + 10%
+		max = boundaries.top() + (std::fabs(boundaries.top()) * 0.1);
 		interval_changed = true;
 	}
 
-	if (interval_changed ) {
-		/*
-		qWarning() <<
-			QString("Plot::update_y_interval(): new min = %1, new max = %2").
-			arg(min).arg(max);
-		*/
+	if (interval_changed )
 		setAxisScale(y_axis_id, min, max);
-	}
-
 	return interval_changed;
 }
 

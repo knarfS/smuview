@@ -88,7 +88,7 @@ public:
 	void set_plot_interval(int plot_interval) { plot_interval_ = plot_interval; }
 	void set_update_mode(PlotUpdateMode update_mode) { update_mode_ = update_mode; }
 	PlotUpdateMode update_mode() const { return update_mode_; };
-	void set_time_span(double time_span) { time_span_ = time_span; }
+	void set_time_span(double time_span);
 	double time_span() { return time_span_; }
 	void set_add_time(double add_time) { add_time_ = add_time; }
 	double add_time() { return add_time_; }
