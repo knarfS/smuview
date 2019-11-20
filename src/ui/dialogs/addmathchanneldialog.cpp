@@ -493,8 +493,6 @@ void AddMathChannelDialog::accept()
 		break;
 	}
 
-	device_->add_math_channel(channel_, chg_name);
-
 	QDialog::accept();
 }
 
