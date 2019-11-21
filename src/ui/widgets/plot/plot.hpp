@@ -93,6 +93,8 @@ public:
 	void set_add_time(double add_time) { add_time_ = add_time; }
 	double add_time() { return add_time_; }
 	map<QwtPlotMarker *, plot::BaseCurveData *> markers() { return marker_map_; }
+	void set_markers_label_alignment(int alignment);
+	int markers_label_alignment() { return markers_label_alignment_; }
 
 public Q_SLOTS:
 	void start();
@@ -145,6 +147,7 @@ private:
 	map<QwtPlotMarker *, plot::BaseCurveData *> marker_map_;
 	QwtPlotMarker *active_marker_;
 	QwtPlotTextLabel *markers_label_;
+	int markers_label_alignment_;
 	QwtPlotPicker *marker_select_picker_;
 	QwtPlotPicker *marker_move_picker_;
 

@@ -130,6 +130,7 @@ Plot::Plot(QWidget *parent) : QwtPlot(parent),
 	add_time_(30.),
 	active_marker_(nullptr),
 	markers_label_(nullptr),
+	markers_label_alignment_(Qt::AlignBottom | Qt::AlignHCenter),
 	marker_select_picker_(nullptr),
 	marker_move_picker_(nullptr)
 {
@@ -810,6 +811,18 @@ bool Plot::update_y_interval(plot::BaseCurveData *curve_data)
 	return interval_changed;
 }
 
+void Plot::set_markers_label_alignment(int alignment)
+{
+	markers_label_alignment_ = alignment;
+	if (markers_label_) {
+		// TODO: Maybe there is a better way to replot the label?
+		markers_label_->detach();
+		delete markers_label_;
+		markers_label_ = nullptr;
+		update_markers_label();
+	}
+}
+
 void Plot::update_markers_label()
 {
 	if (!markers_label_) {
@@ -873,8 +886,7 @@ void Plot::update_markers_label()
 	pen.setWidthF(1.0);
 	pen.setStyle(Qt::SolidLine);
 	text.setBorderPen(pen);
-	text.setRenderFlags(Qt::AlignBottom | Qt::AlignHCenter);
-
+	text.setRenderFlags(markers_label_alignment_);
 	markers_label_->setText(text);
 }
 

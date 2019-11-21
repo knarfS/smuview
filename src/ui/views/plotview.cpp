@@ -373,7 +373,7 @@ void PlotView::on_action_add_signal_triggered()
 
 void PlotView::on_action_config_plot_triggered()
 {
-	ui::dialogs::PlotConfigDialog dlg(plot_);
+	ui::dialogs::PlotConfigDialog dlg(plot_, plot_type_);
 	dlg.exec();
 }
 

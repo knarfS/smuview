@@ -27,9 +27,11 @@
 #include <QDialogButtonBox>
 #include <QLineEdit>
 #include <QString>
+#include <QTabWidget>
 #include <QWidget>
 
 #include "src/ui/widgets/plot/plot.hpp"
+#include "src/ui/views/plotview.hpp"
 
 namespace sv {
 namespace ui {
@@ -40,18 +42,25 @@ class PlotConfigDialog : public QDialog
 	Q_OBJECT
 
 public:
-	PlotConfigDialog(widgets::plot::Plot *plot, QWidget *parent = nullptr);
+	PlotConfigDialog(widgets::plot::Plot *plot, views::PlotType plot_type,
+		QWidget *parent = nullptr);
 
 private:
 	void setup_ui();
+	void setup_ui_plot_mode_tab();
+	void setup_ui_markers_tab();
+	void setup_ui_style_tab();
 	void setup_ui_additive();
 	void setup_ui_rolling();
 	void setup_ui_oscilloscope();
 
 	widgets::plot::Plot *plot_;
+	views::PlotType plot_type_;
+	QTabWidget *tab_widget_;
 	QComboBox *plot_update_mode_combobox_;
 	QLineEdit *time_span_edit_;
 	QLineEdit *add_time_edit_;
+	QComboBox *markers_box_pos_combobox_;
 	QDialogButtonBox *button_box_;
 
 public Q_SLOTS:
