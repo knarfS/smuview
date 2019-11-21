@@ -475,20 +475,38 @@ void Plot::add_marker(plot::BaseCurveData *curve_data)
 
 	QwtPlotCurve *plot_curve = plot_curve_map_[curve_data];
 
-	QString marker_name = QString("M%1").arg(markers_.size()+1);
 	QwtSymbol *marker_sym = new QwtSymbol(
 		QwtSymbol::Diamond, QBrush(Qt::red), QPen(Qt::red), QSize(9, 9));
+	QString marker_name = QString("M%1").arg(markers_.size()+1);
 
 	QwtPlotMarker *marker = new QwtPlotMarker(marker_name);
 	marker->setSymbol(marker_sym);
 	marker->setLineStyle(QwtPlotMarker::Cross);
-	marker->setLinePen(Qt::black, 1, Qt::DotLine);
-	// Initial marker position is at the end of the curve
-	marker->setValue(curve_data->sample(curve_data->size()-1));
-	marker->setLabel(QwtText(marker_name));
-	marker->setLabelAlignment(Qt::AlignTop | Qt::AlignRight);
+	marker->setLinePen(Qt::white, 1.0, Qt::DashLine);
 	marker->setXAxis(plot_curve->xAxis());
 	marker->setYAxis(plot_curve->yAxis());
+
+	// Initial marker position is in the middle of the plot screen or
+	// at the end of the curve.
+	QwtInterval x_interval = this->axisInterval(plot_curve->xAxis());
+	double x_mid = (x_interval.minValue() + x_interval.maxValue()) / 2;
+	QwtInterval y_interval = this->axisInterval(plot_curve->yAxis());
+	double y_mid = (y_interval.minValue() + y_interval.maxValue()) / 2;
+	marker->setValue(curve_data->closest_point(QPointF(x_mid, y_mid), nullptr));
+
+	// Label
+	QwtText marker_label = QwtText(marker_name);
+	marker_label.setColor(Qt::black);
+	marker_label.setPaintAttribute(QwtText::PaintBackground, true);
+	QColor c(Qt::gray);
+	c.setAlpha(200);
+	marker_label.setBackgroundBrush(c);
+	QPen pen(Qt::black, 1.0, Qt::SolidLine);
+	marker_label.setBorderPen(pen);
+	marker_label.setBorderRadius(3);
+	marker->setLabel(marker_label);
+	marker->setLabelAlignment(Qt::AlignTop | Qt::AlignRight);
+
 	marker->attach(this);
 
 	markers_.push_back(marker);

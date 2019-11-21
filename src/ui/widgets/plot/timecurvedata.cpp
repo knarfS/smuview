@@ -95,8 +95,13 @@ QPointF TimeCurveData::closest_point(const QPointF &pos, double *dist) const
 	const double x_value = pos.x();
 	const int index_max = size() - 1;
 
-	if (index_max < 0 || x_value >= sample(index_max).x())
-		return QPointF(0, 0); // TODO
+	// Corner cases
+	if (index_max < 0)
+		return QPointF(0, 0);
+	if (x_value <= sample(0).x())
+		return sample(0);
+	if (x_value >= sample(index_max).x())
+		return sample(index_max);
 
 	size_t index_min = 0;
 	size_t n = index_max;
