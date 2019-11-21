@@ -50,6 +50,7 @@ void AxisPopup::setup_ui()
 {
 	QFormLayout *form_layout = new QFormLayout;
 
+	// Lower boundary
 	double lower_value = plot_->axisScaleDiv(axis_id_).lowerBound();
 	axis_lower_edit_ = new QLineEdit();
 	axis_lower_edit_->setValidator(new QDoubleValidator());
@@ -71,9 +72,8 @@ void AxisPopup::setup_ui()
 	lower_layout->addWidget(axis_lower_locked_check_);
 	QWidget *lower_widget = new QWidget();
 	lower_widget->setLayout(lower_layout);
-	form_layout->addRow(lower_label, lower_widget);
 
-
+	// Upper boundary
 	double upper_value = plot_->axisScaleDiv(axis_id_).upperBound();
 	axis_upper_edit_ = new QLineEdit();
 	axis_upper_edit_->setValidator(new QDoubleValidator());
@@ -95,8 +95,16 @@ void AxisPopup::setup_ui()
 	upper_layout->addWidget(axis_upper_locked_check_);
 	QWidget *upper_widget = new QWidget();
 	upper_widget->setLayout(upper_layout);
-	form_layout->addRow(upper_label, upper_widget);
 
+	if (axis_id_ == QwtPlot::xTop  || axis_id_ == QwtPlot::xBottom) {
+		form_layout->addRow(lower_label, lower_widget);
+		form_layout->addRow(upper_label, upper_widget);
+	}
+	else {
+		// Reverse the display order for y axes
+		form_layout->addRow(upper_label, upper_widget);
+		form_layout->addRow(lower_label, lower_widget);
+	}
 
 	bool is_log_scale = false;
 	if (dynamic_cast<QwtLogScaleEngine *>(plot_->axisScaleEngine(axis_id_)))
