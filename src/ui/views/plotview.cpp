@@ -235,6 +235,7 @@ void PlotView::setup_toolbar()
 	action_add_diff_marker_->setIcon(
 		QIcon::fromTheme("snap-guideline",
 		QIcon(":/icons/snap-guideline.png")));
+	action_add_diff_marker_->setDisabled(true);
 	connect(action_add_diff_marker_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_add_diff_marker_triggered()));
 
@@ -336,6 +337,11 @@ void PlotView::on_action_add_marker_triggered()
 			action->data().value<widgets::plot::BaseCurveData *>();
 		plot_->add_marker(curve_data);
 	}
+
+	if (plot_->markers().size() >= 2)
+		action_add_diff_marker_->setDisabled(false);
+	else
+		action_add_diff_marker_->setDisabled(true);
 }
 
 void PlotView::on_action_add_diff_marker_triggered()
