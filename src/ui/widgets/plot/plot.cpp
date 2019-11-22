@@ -247,6 +247,8 @@ bool Plot::add_curve(widgets::plot::BaseCurveData *curve_data)
 	plot_curve->setPaintAttribute(QwtPlotCurve::ClipPolygons, false);
 	plot_curve->setData(curve_data);
 	//plot_curve->setRawSamples(); // TODO: is this an option?
+	// Curves have the lowest z order, everything else will be painted ontop.
+	plot_curve->setZ(1);
 	plot_curve->attach(this);
 	plot_curve_map_.insert(make_pair(curve_data, plot_curve));
 
@@ -485,6 +487,8 @@ void Plot::add_marker(plot::BaseCurveData *curve_data)
 	marker->setLinePen(Qt::white, 1.0, Qt::DashLine);
 	marker->setXAxis(plot_curve->xAxis());
 	marker->setYAxis(plot_curve->yAxis());
+	// Markers will be painted ontop of curves but below the markers label box.
+	marker->setZ(2);
 
 	// Initial marker position is in the middle of the plot screen or
 	// at the end of the curve.
@@ -846,6 +850,8 @@ void Plot::update_markers_label()
 	if (!markers_label_) {
 		markers_label_ = new QwtPlotTextLabel();
 		markers_label_->setMargin(5);
+		// The markers label will be painted ontop of curves.
+		markers_label_->setZ(3);
 		markers_label_->attach(this);
 	}
 
