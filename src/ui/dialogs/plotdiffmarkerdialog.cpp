@@ -64,6 +64,8 @@ void PlotDiffMarkerDialog::setup_ui()
 			markers_pair.first->title().text(),
 			QVariant::fromValue(markers_pair.first));
 	}
+	if (plot_->markers().size() >= 1)
+		marker_1_combobox_->setCurrentIndex(0);
 	form_layout->addRow(tr("Marker 1"), marker_1_combobox_);
 
 	marker_2_combobox_ = new QComboBox();
@@ -72,6 +74,10 @@ void PlotDiffMarkerDialog::setup_ui()
 			markers_pair.first->title().text(),
 			QVariant::fromValue(markers_pair.first));
 	}
+	if (plot_->markers().size() >= 2)
+		marker_2_combobox_->setCurrentIndex(1);
+	else if (plot_->markers().size() >= 1)
+		marker_2_combobox_->setCurrentIndex(0);
 	form_layout->addRow(tr("Marker 2"), marker_2_combobox_);
 
 	main_layout->addLayout(form_layout);
