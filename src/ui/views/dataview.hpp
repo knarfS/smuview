@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,8 @@
 #define UI_VIEWS_DATAVIEW_HPP
 
 #include <memory>
+#include <mutex>
+#include <vector>
 
 #include <QAction>
 #include <QTableWidget>
@@ -29,6 +31,7 @@
 #include "src/ui/views/baseview.hpp"
 
 using std::shared_ptr;
+using std::vector;
 
 namespace sv {
 
@@ -51,11 +54,14 @@ public:
 		QWidget* parent = nullptr);
 
 	QString title() const;
+	void add_signal(shared_ptr<sv::data::AnalogTimeSignal> signal);
 
 private:
-	shared_ptr<sv::data::AnalogTimeSignal> signal_;
-	size_t next_signal_pos_;
+	vector<shared_ptr<sv::data::AnalogTimeSignal>> signals_;
+	vector<size_t> next_signal_pos_;
+	vector<QTableWidgetItem *> last_timestamp_;
 	bool auto_scroll_;
+	std::mutex populate_mutex_;
 
 	QAction *const action_auto_scroll_;
 	QAction *const action_add_signal_;
@@ -64,7 +70,6 @@ private:
 
 	void setup_ui();
 	void setup_toolbar();
-	void connect_signals();
 
 private Q_SLOTS:
 	void populate_table();

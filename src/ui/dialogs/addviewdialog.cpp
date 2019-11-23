@@ -210,14 +210,12 @@ void AddViewDialog::accept()
 			auto a_signal = static_pointer_cast<data::AnalogTimeSignal>(signal);
 			views_.push_back(new ui::views::PlotView(session_, a_signal));
 		}
-
 		break;
 	case 3:
 		// Add x/y plot view
 		{
 			auto x_signal = xy_plot_x_signal_widget_->selected_signal();
 			auto y_signal = xy_plot_y_signal_widget_->selected_signal();
-
 			if (x_signal != nullptr && y_signal != nullptr) {
 				views_.push_back(new ui::views::PlotView(session_,
 					static_pointer_cast<data::AnalogTimeSignal>(x_signal),
@@ -227,11 +225,18 @@ void AddViewDialog::accept()
 		break;
 	case 4:
 		// Add data table view
-		for (const auto &signal : table_signal_tree_->checked_signals()) {
-			auto a_signal = static_pointer_cast<data::AnalogTimeSignal>(signal);
-			views_.push_back(new ui::views::DataView(session_, a_signal));
+		{
+			auto signals = table_signal_tree_->checked_signals();
+			if (signals.size() > 0) {
+				auto view = new ui::views::DataView(session_,
+					static_pointer_cast<data::AnalogTimeSignal>(signals[0]));
+				for (size_t i=1; i<signals.size(); ++i) {
+					view->add_signal(
+						static_pointer_cast<data::AnalogTimeSignal>(signals[i]));
+				}
+				views_.push_back(view);
+			}
 		}
-
 		break;
 	default:
 		break;
