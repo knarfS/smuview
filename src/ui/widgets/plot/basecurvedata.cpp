@@ -18,6 +18,7 @@
  */
 
 #include <QColor>
+#include <QRandomGenerator>
 #include <qwt_series_data.h>
 
 #include "basecurvedata.hpp"
@@ -42,14 +43,15 @@ CurveType BaseCurveData::curve_type() const
 QColor BaseCurveData::color() const
 {
 	// TODO
-	if (y_data_unit().startsWith("V ") || y_data_unit() == "V")
+	if (y_data_unit().startsWith("V "))
 		return Qt::red;
-	else if (y_data_unit().startsWith("A ") || y_data_unit() == "A")
+	else if (y_data_unit().startsWith("A "))
 		return Qt::green;
-	else
+	else if (y_data_unit() == "W")
 		return Qt::yellow;
+	else
+		return QColor::fromRgb(QRandomGenerator::global()->generate());
 
-	//return color_;
 }
 
 void BaseCurveData::set_relative_time(bool is_relative_time)
