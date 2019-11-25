@@ -35,26 +35,38 @@ UiProxy.add_device_tab(dmm_dev)
 UiProxy.add_device_tab(user_dev)
 p_plot = UiProxy.add_plot_view(user_dev.id(), smuview.DockArea.TopDockArea, p_in_sig)
 UiProxy.add_signal_to_plot(user_dev.id(), p_plot, p_out_sig)
-UiProxy.add_plot_view(user_dev.id(), smuview.DockArea.TopDockArea, p_out_sig, eff_sig)
+xy_plot = UiProxy.add_plot_view(user_dev.id(), smuview.DockArea.TopDockArea, p_out_sig, eff_sig)
 
-d = .0
-while d <= 2.0:
-    load_conf.set_config(smuview.ConfigKey.CurrentLimit, d)
-    time.sleep(0.5)
-    u_in = psu_dev.channels()["V1"].actual_signal().get_last_sample(True)[1]
-    i_in = dmm_dev.channels()["P1"].actual_signal().get_last_sample(True)[1]
-    power_in = u_in * i_in
-    u_out = load_dev.channels()["V"].actual_signal().get_last_sample(True)[1]
-    i_out = load_dev.channels()["I"].actual_signal().get_last_sample(True)[1]
-    # MathChannels are not in the python bindings yet, so we have to calculate by our own.
-    power_out = u_out * i_out
-    eff = (power_out / power_in) * 100
-    ts = time.time()
-    p_in_ch.push_sample(power_in, ts, smuview.Quantity.Power, set(), smuview.Unit.Watt, 6, 3)
-    p_out_ch.push_sample(power_out, ts, smuview.Quantity.Power, set(), smuview.Unit.Watt, 6, 3)
-    eff_ch.push_sample(eff, ts, smuview.Quantity.PowerFactor, set(), smuview.Unit.Percentage, 6, 3)
-    d += 0.005
+# Input voltages used
+input_voltages = [8.0, 14.0, 20.0]
+
+for voltage in input_voltages:
+    if voltage > 11:
+        eff_sig = eff_ch.add_signal(smuview.Quantity.PowerFactor, set(), smuview.Unit.Percentage)
+        UiProxy.add_y_signal_to_xy_plot(user_dev.id(), xy_plot, eff_sig)
+    load_conf.set_config(smuview.ConfigKey.CurrentLimit, .0)
+    psu_conf.set_config(smuview.ConfigKey.VoltageTarget, voltage)
+    # Wait for 10 s to let the DUT cool down
+    time.sleep(10)
+    d = .0
+    while d <= 2.0:
+        load_conf.set_config(smuview.ConfigKey.CurrentLimit, d)
+        time.sleep(0.5)
+        u_in = psu_dev.channels()["V1"].actual_signal().get_last_sample(True)[1]
+        i_in = dmm_dev.channels()["P1"].actual_signal().get_last_sample(True)[1]
+        power_in = u_in * i_in
+        u_out = load_dev.channels()["V"].actual_signal().get_last_sample(True)[1]
+        i_out = load_dev.channels()["I"].actual_signal().get_last_sample(True)[1]
+        # MathChannels are not in the python bindings yet, so we have to calculate by our own.
+        power_out = u_out * i_out
+        eff = (power_out / power_in) * 100
+        ts = time.time()
+        p_in_ch.push_sample(power_in, ts, smuview.Quantity.Power, set(), smuview.Unit.Watt, 6, 3)
+        p_out_ch.push_sample(power_out, ts, smuview.Quantity.Power, set(), smuview.Unit.Watt, 6, 3)
+        eff_ch.push_sample(eff, ts, smuview.Quantity.PowerFactor, set(), smuview.Unit.Percentage, 6, 3)
+        d += 0.005
 
 # Set values to a save state
 load_conf.set_config(smuview.ConfigKey.CurrentLimit, .0)
+psu_conf.set_config(smuview.ConfigKey.VoltageTarget, .0)
 psu_conf.set_config(smuview.ConfigKey.Enabled, False)
