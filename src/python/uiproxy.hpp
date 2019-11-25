@@ -77,6 +77,11 @@ public:
 		shared_ptr<data::AnalogTimeSignal> signal);
 	void ui_add_signal_to_plot(string device_id, string view_id,
 		shared_ptr<data::AnalogTimeSignal> signal);
+	void ui_add_y_signal_to_xy_plot(string device_id, string view_id,
+		shared_ptr<data::AnalogTimeSignal> y_signal);
+	void ui_add_signals_to_xy_plot(string device_id, string view_id,
+		shared_ptr<data::AnalogTimeSignal> x_signal,
+		shared_ptr<data::AnalogTimeSignal> y_signal);
 
 private:
 	Session &session_;
@@ -106,6 +111,11 @@ Q_SIGNALS:
 
 	void add_signal_to_plot(std::string device_id, std::string view_id,
 		shared_ptr<sv::data::AnalogTimeSignal> signal);
+	void add_y_signal_to_xy_plot(std::string device_id, std::string view_id,
+		shared_ptr<sv::data::AnalogTimeSignal> y_signal);
+	void add_signals_to_xy_plot(std::string device_id, std::string view_id,
+		shared_ptr<sv::data::AnalogTimeSignal> x_signal,
+		shared_ptr<sv::data::AnalogTimeSignal> y_signal);
 
 };
 

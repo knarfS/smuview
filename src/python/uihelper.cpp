@@ -123,7 +123,31 @@ void UiHelper::add_signal_to_plot(std::string device_id, std::string view_id,
 	else if (view->id().rfind("plot_sig", 0) == 0)
 		((ui::views::PlotView *)view)->add_time_curve(signal);
 	else if (view->id().rfind("plot_xy", 0) == 0)
+		((ui::views::PlotView *)view)->add_xy_curve(signal);
+}
+
+void UiHelper::add_y_signal_to_xy_plot(std::string device_id,
+	std::string view_id, shared_ptr<sv::data::AnalogTimeSignal> y_signal)
+{
+	auto tab = session_.main_window()->get_base_tab_from_device_id(device_id);
+	auto view = tab->get_view_from_view_id(view_id);
+	if (!view)
 		return;
+
+	((ui::views::PlotView *)view)->add_xy_curve(y_signal);
+}
+
+void UiHelper::add_signals_to_xy_plot(std::string device_id,
+	std::string view_id,
+	shared_ptr<sv::data::AnalogTimeSignal> x_signal,
+	shared_ptr<sv::data::AnalogTimeSignal> y_signal)
+{
+	auto tab = session_.main_window()->get_base_tab_from_device_id(device_id);
+	auto view = tab->get_view_from_view_id(view_id);
+	if (!view)
+		return;
+
+	((ui::views::PlotView *)view)->add_xy_curve(x_signal, y_signal);
 }
 
 } // namespace python
