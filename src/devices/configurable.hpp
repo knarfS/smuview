@@ -137,6 +137,11 @@ public:
 	 */
 	DeviceType device_type() const;
 
+	/**
+	 * Get the sigrok::Configurable
+	 */
+	const shared_ptr<sigrok::Configurable> sr_configurable();
+
 	set<devices::ConfigKey> getable_configs() const;
 	set<devices::ConfigKey> setable_configs() const;
 	set<devices::ConfigKey> listable_configs() const;

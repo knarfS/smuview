@@ -365,6 +365,11 @@ DeviceType Configurable::device_type() const
 	return device_type_;
 }
 
+const shared_ptr<sigrok::Configurable> Configurable::sr_configurable()
+{
+	return sr_configurable_;
+}
+
 set<devices::ConfigKey> Configurable::getable_configs() const
 {
 	return getable_configs_;
@@ -407,21 +412,19 @@ bool Configurable::is_controllable() const
 
 void Configurable::feed_in_meta(shared_ptr<sigrok::Meta> sr_meta)
 {
-	for (const auto &entry : sr_meta->config()) {
-		devices::ConfigKey config_key =
-			devices::deviceutil::get_config_key(entry.first);
-
-		if (!properties_.count(config_key)) {
-			qWarning() << "Configurable::feed_in_meta(): Unknown config key " <<
-				QString::fromStdString(entry.first->name()) << " received";
-			return;
-		}
-
-		properties_[config_key]->on_value_changed(entry.second);
-
-		// TODO: return QVariant from prop->on_value_changed(); and emit
-		//Q_EMIT config_changed(config_key, qvar);
+	devices::ConfigKey config_key =
+		devices::deviceutil::get_config_key(sr_meta->config_key());
+	if (!properties_.count(config_key)) {
+		qWarning() << "Configurable::feed_in_meta(): Unknown config key " <<
+			QString::fromStdString(sr_meta->config_key()->name()) <<
+			" for configurable " << display_name() << " received";
+		return;
 	}
+
+	properties_[config_key]->on_value_changed(sr_meta->value());
+
+	// TODO: return QVariant from prop->on_value_changed(); and emit
+	//Q_EMIT config_changed(config_key, qvar);
 }
 
 } // namespace devices

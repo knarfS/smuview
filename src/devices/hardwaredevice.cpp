@@ -253,16 +253,10 @@ void HardwareDevice::feed_in_trigger()
 
 void HardwareDevice::feed_in_meta(shared_ptr<sigrok::Meta> sr_meta)
 {
+	shared_ptr<sigrok::Configurable> sr_configurable = sr_meta->configurable();
 	for (const auto &c_pair : configurable_map_) {
-		// TODO: The meta packet is missing the information, to which
-		// channel group the config key belongs.
-		// Workaround: Use a configurable from a channel group if available,
-		// else use the device configurable ("")
-		if (c_pair.first == "" && configurable_map_.size() > 1)
-			continue;
-
-		c_pair.second->feed_in_meta(sr_meta);
-		break;
+		if (c_pair.second->sr_configurable() == sr_configurable)
+			c_pair.second->feed_in_meta(sr_meta);
 	}
 }
 
