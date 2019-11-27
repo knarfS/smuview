@@ -121,44 +121,59 @@ void UiHelper::add_signal_to_data_view(std::string device_id,
 	((ui::views::DataView *)view)->add_signal(signal);
 }
 
-void UiHelper::add_signal_to_plot(std::string device_id, std::string view_id,
+void UiHelper::add_signal_to_plot_view(std::string device_id, std::string view_id,
 	shared_ptr<sv::data::AnalogTimeSignal> signal)
 {
 	auto tab = session_.main_window()->get_base_tab_from_device_id(device_id);
-	auto view = tab->get_view_from_view_id(view_id);
-	if (!view)
+	if (!tab) {
+		qWarning() << "UiHelper::add_signal_to_plot_view(): Tab not found: " <<
+			QString::fromStdString(device_id);
 		return;
+	}
+	auto view = tab->get_view_from_view_id(view_id);
+	if (!view) {
+		qWarning() << "UiHelper::add_signal_to_plot_view(): View not found: " <<
+			QString::fromStdString(view_id);
+		return;
+	}
+	auto plot_view = dynamic_cast<ui::views::PlotView *>(view);
+	if (!plot_view) {
+		qWarning() << "UiHelper::add_signal_to_plot_view(): View is not a " <<
+			"plot view: " << QString::fromStdString(view_id);
+		return;
+	}
 
-	if (view->id().rfind("plot_ch", 0) == 0)
-		((ui::views::PlotView *)view)->add_time_curve(signal);
-	else if (view->id().rfind("plot_sig", 0) == 0)
-		((ui::views::PlotView *)view)->add_time_curve(signal);
-	else if (view->id().rfind("plot_xy", 0) == 0)
-		((ui::views::PlotView *)view)->add_xy_curve(signal);
+	if (plot_view->id().rfind("plot_xy", 0) == 0)
+		((ui::views::PlotView *)plot_view)->add_xy_curve(signal);
+	else
+		((ui::views::PlotView *)plot_view)->add_time_curve(signal);
 }
 
-void UiHelper::add_y_signal_to_xy_plot(std::string device_id,
-	std::string view_id, shared_ptr<sv::data::AnalogTimeSignal> y_signal)
-{
-	auto tab = session_.main_window()->get_base_tab_from_device_id(device_id);
-	auto view = tab->get_view_from_view_id(view_id);
-	if (!view)
-		return;
-
-	((ui::views::PlotView *)view)->add_xy_curve(y_signal);
-}
-
-void UiHelper::add_signals_to_xy_plot(std::string device_id,
+void UiHelper::add_signals_to_xy_plot_view(std::string device_id,
 	std::string view_id,
 	shared_ptr<sv::data::AnalogTimeSignal> x_signal,
 	shared_ptr<sv::data::AnalogTimeSignal> y_signal)
 {
 	auto tab = session_.main_window()->get_base_tab_from_device_id(device_id);
-	auto view = tab->get_view_from_view_id(view_id);
-	if (!view)
+	if (!tab) {
+		qWarning() << "UiHelper::add_signals_to_xy_plot_view(): Tab not " <<
+			"found:" << QString::fromStdString(device_id);
 		return;
+	}
+	auto view = tab->get_view_from_view_id(view_id);
+	if (!view) {
+		qWarning() << "UiHelper::add_signals_to_xy_plot_view(): View not " <<
+			"found: " << QString::fromStdString(view_id);
+		return;
+	}
+	auto plot_view = dynamic_cast<ui::views::PlotView *>(view);
+	if (!plot_view) {
+		qWarning() << "UiHelper::add_signals_to_xy_plot_view(): View is not " <<
+			"a plot view: " << QString::fromStdString(view_id);
+		return;
+	}
 
-	((ui::views::PlotView *)view)->add_xy_curve(x_signal, y_signal);
+	plot_view->add_xy_curve(x_signal, y_signal);
 }
 
 } // namespace python

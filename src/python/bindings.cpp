@@ -179,10 +179,8 @@ void init_UI(py::module &m)
 		"Add a value panel view for a signal to the given tab.");
 
 	py_ui_helper.def("add_signal_to_data_view", &sv::python::UiProxy::ui_add_signal_to_data_view, "Add a signal to the given data view.");
-
-	py_ui_helper.def("add_signal_to_plot", &sv::python::UiProxy::ui_add_signal_to_plot, "Add a signal to the given time plot view.");
-	py_ui_helper.def("add_y_signal_to_xy_plot", &sv::python::UiProxy::ui_add_y_signal_to_xy_plot, "Add a y signal to the given xy plot view.");
-	py_ui_helper.def("add_signals_to_xy_plot", &sv::python::UiProxy::ui_add_signals_to_xy_plot, "Add xy signals to the given xy plot view.");
+	py_ui_helper.def("add_signal_to_plot_view", &sv::python::UiProxy::ui_add_signal_to_plot_view, "Add a signal to the given plot view. If the plot is a x/y plot, the signal will be added as a new y signal.");
+	py_ui_helper.def("add_signals_to_xy_plot_view", &sv::python::UiProxy::ui_add_signals_to_xy_plot_view, "Add x/y signals to the given x/y plot view.");
 
 	// Qt enumerations
 	py::enum_<Qt::DockWidgetArea> py_dock_area(m, "DockArea", "Enum of all possible docking locations for a view.");

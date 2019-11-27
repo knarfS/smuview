@@ -32,7 +32,7 @@ plot_view_1 = UiProxy.add_plot_view(user_dev_id, smuview.DockArea.BottomDockArea
 plot_view_2 = UiProxy.add_plot_view(user_dev_id, smuview.DockArea.BottomDockArea, demo_dev.channels()["A1"].actual_signal());
 
 # Add a x/y plot view (3) with two signals to the device tab
-UiProxy.add_plot_view(user_dev_id, smuview.DockArea.BottomDockArea, demo_dev.channels()["A1"].actual_signal(), demo_dev.channels()["A2"].actual_signal())
+plot_view_3 = UiProxy.add_plot_view(user_dev_id, smuview.DockArea.BottomDockArea, demo_dev.channels()["A1"].actual_signal(), demo_dev.channels()["A2"].actual_signal())
 
 # Add a power panel view to the device tab
 UiProxy.add_power_panel_view(user_dev_id, smuview.DockArea.BottomDockArea, demo_dev.channels()["A1"].actual_signal(), demo_dev.channels()["A2"].actual_signal())
@@ -47,11 +47,11 @@ UiProxy.add_value_panel_view(user_dev_id, smuview.DockArea.TopDockArea, demo_dev
 UiProxy.add_signal_to_data_view(user_dev_id, data_view, demo_dev.channels()["A3"].actual_signal())
 
 # Add a signal to the existing plot view (1)
-UiProxy.add_signal_to_plot(user_dev_id, plot_view_1, demo_dev.channels()["A3"].actual_signal())
+UiProxy.add_signal_to_plot_view(user_dev_id, plot_view_1, demo_dev.channels()["A3"].actual_signal())
 
-# Add a signal to the existing plot view (2)
-UiProxy.add_signal_to_plot(user_dev_id, plot_view_2, demo_dev.channels()["A3"].actual_signal())
+# Add a signal to the existing xy plot view (3)
+UiProxy.add_signal_to_plot_view(user_dev_id, plot_view_3, demo_dev.channels()["A3"].actual_signal())
 
-# Add a signal to the existing plot view (3)
-# TODO: not working yet
-#UiProxy.add_signal_to_plot(user_dev_id, "plot_xy:A1 [V DC]:A2 [V DC]", demo_dev.channels()["A3"].actual_signal())
+# Add a x/y signal to the existing xy plot view (3)
+#UiProxy.add_signals_to_xy_plot_view(user_dev_id, plot_view_3, demo_dev.channels()["A0"].actual_signal(), demo_dev.channels()["A3"].actual_signal())
+

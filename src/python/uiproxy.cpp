@@ -73,12 +73,10 @@ UiProxy::UiProxy(Session &session, shared_ptr<UiHelper> ui_helper) :
 	connect(this, &UiProxy::add_signal_to_data_view,
 		ui_helper_.get(), &UiHelper::add_signal_to_data_view);
 
-	connect(this, &UiProxy::add_signal_to_plot,
-		ui_helper_.get(), &UiHelper::add_signal_to_plot);
-	connect(this, &UiProxy::add_y_signal_to_xy_plot,
-		ui_helper_.get(), &UiHelper::add_y_signal_to_xy_plot);
-	connect(this, &UiProxy::add_signals_to_xy_plot,
-		ui_helper_.get(), &UiHelper::add_signals_to_xy_plot);
+	connect(this, &UiProxy::add_signal_to_plot_view,
+		ui_helper_.get(), &UiHelper::add_signal_to_plot_view);
+	connect(this, &UiProxy::add_signals_to_xy_plot_view,
+		ui_helper_.get(), &UiHelper::add_signals_to_xy_plot_view);
 }
 
 
@@ -153,23 +151,17 @@ void UiProxy::ui_add_signal_to_data_view(string device_id, string view_id,
 	Q_EMIT add_signal_to_data_view(device_id, view_id, signal);
 }
 
-void UiProxy::ui_add_signal_to_plot(string device_id, string view_id,
+void UiProxy::ui_add_signal_to_plot_view(string device_id, string view_id,
 	shared_ptr<data::AnalogTimeSignal> signal)
 {
-	Q_EMIT add_signal_to_plot(device_id, view_id, signal);
+	Q_EMIT add_signal_to_plot_view(device_id, view_id, signal);
 }
 
-void UiProxy::ui_add_y_signal_to_xy_plot(string device_id, string view_id,
-	shared_ptr<data::AnalogTimeSignal> y_signal)
-{
-	Q_EMIT add_y_signal_to_xy_plot(device_id, view_id, y_signal);
-}
-
-void UiProxy::ui_add_signals_to_xy_plot(string device_id, string view_id,
+void UiProxy::ui_add_signals_to_xy_plot_view(string device_id, string view_id,
 	shared_ptr<data::AnalogTimeSignal> x_signal,
 	shared_ptr<data::AnalogTimeSignal> y_signal)
 {
-	Q_EMIT add_signals_to_xy_plot(device_id, view_id, x_signal, y_signal);
+	Q_EMIT add_signals_to_xy_plot_view(device_id, view_id, x_signal, y_signal);
 }
 
 } // namespace python

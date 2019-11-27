@@ -34,7 +34,7 @@ UiProxy.add_device_tab(psu_dev)
 UiProxy.add_device_tab(dmm_dev)
 UiProxy.add_device_tab(user_dev)
 p_plot = UiProxy.add_plot_view(user_dev.id(), smuview.DockArea.TopDockArea, p_in_sig)
-UiProxy.add_signal_to_plot(user_dev.id(), p_plot, p_out_sig)
+UiProxy.add_signal_to_plot_view(user_dev.id(), p_plot, p_out_sig)
 xy_plot = UiProxy.add_plot_view(user_dev.id(), smuview.DockArea.TopDockArea, p_out_sig, eff_sig)
 
 # Input voltages used
@@ -43,7 +43,7 @@ input_voltages = [8.0, 14.0, 20.0]
 for voltage in input_voltages:
     if voltage > 11:
         eff_sig = eff_ch.add_signal(smuview.Quantity.PowerFactor, set(), smuview.Unit.Percentage)
-        UiProxy.add_y_signal_to_xy_plot(user_dev.id(), xy_plot, eff_sig)
+        UiProxy.add_signal_to_plot_view(user_dev.id(), xy_plot, eff_sig)
     load_conf.set_config(smuview.ConfigKey.CurrentLimit, .0)
     psu_conf.set_config(smuview.ConfigKey.VoltageTarget, voltage)
     # Wait for 10 s to let the DUT cool down
