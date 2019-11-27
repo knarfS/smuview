@@ -1204,10 +1204,20 @@ CLASSES
      |      
      |      Add a power panel control for two signals to the given tab.
      |  
-     |  add_signal_to_plot(...)
-     |      add_signal_to_plot(self: smuview.UiProxy, arg0: str, arg1: str, arg2: smuview.AnalogTimeSignal) -> None
+     |  add_signal_to_data_view(...)
+     |      add_signal_to_data_view(self: smuview.UiProxy, arg0: str, arg1: str, arg2: smuview.AnalogTimeSignal) -> None
      |      
-     |      Add a signal to the given plot.
+     |      Add a signal to the given data view.
+     |  
+     |  add_signal_to_plot_view(...)
+     |      add_signal_to_plot_view(self: smuview.UiProxy, arg0: str, arg1: str, arg2: smuview.AnalogTimeSignal) -> None
+     |      
+     |      Add a signal to the given plot view. If the plot is a x/y plot, the signal will be added as a new y signal.
+     |  
+     |  add_signals_to_xy_plot_view(...)
+     |      add_signals_to_xy_plot_view(self: smuview.UiProxy, arg0: str, arg1: str, arg2: smuview.AnalogTimeSignal, arg3: smuview.AnalogTimeSignal) -> None
+     |      
+     |      Add x/y signals to the given x/y plot view.
      |  
      |  add_value_panel_view(...)
      |      add_value_panel_view(*args, **kwargs)

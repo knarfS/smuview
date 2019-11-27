@@ -1,0 +1,1532 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: built-in module smuview</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>smuview</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br>(built-in)</font></td></tr></table>
+    <p><tt>SmuView&nbsp;python&nbsp;bindings.</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial">pybind11_builtins.pybind11_object(<a href="builtins.html#object">builtins.object</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="smuview.html#BaseChannel">BaseChannel</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="smuview.html#HardwareChannel">HardwareChannel</a>
+</font></dt><dt><font face="helvetica, arial"><a href="smuview.html#UserChannel">UserChannel</a>
+</font></dt></dl>
+</dd>
+<dt><font face="helvetica, arial"><a href="smuview.html#BaseDevice">BaseDevice</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="smuview.html#HardwareDevice">HardwareDevice</a>
+</font></dt><dt><font face="helvetica, arial"><a href="smuview.html#UserDevice">UserDevice</a>
+</font></dt></dl>
+</dd>
+<dt><font face="helvetica, arial"><a href="smuview.html#BaseSignal">BaseSignal</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="smuview.html#AnalogSampleSignal">AnalogSampleSignal</a>
+</font></dt><dt><font face="helvetica, arial"><a href="smuview.html#AnalogTimeSignal">AnalogTimeSignal</a>
+</font></dt></dl>
+</dd>
+<dt><font face="helvetica, arial"><a href="smuview.html#ConfigKey">ConfigKey</a>
+</font></dt><dt><font face="helvetica, arial"><a href="smuview.html#Configurable">Configurable</a>
+</font></dt><dt><font face="helvetica, arial"><a href="smuview.html#DockArea">DockArea</a>
+</font></dt><dt><font face="helvetica, arial"><a href="smuview.html#Quantity">Quantity</a>
+</font></dt><dt><font face="helvetica, arial"><a href="smuview.html#QuantityFlag">QuantityFlag</a>
+</font></dt><dt><font face="helvetica, arial"><a href="smuview.html#Session">Session</a>
+</font></dt><dt><font face="helvetica, arial"><a href="smuview.html#UiProxy">UiProxy</a>
+</font></dt><dt><font face="helvetica, arial"><a href="smuview.html#Unit">Unit</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="AnalogSampleSignal">class <strong>AnalogSampleSignal</strong></a>(<a href="smuview.html#BaseSignal">BaseSignal</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>A&nbsp;signal&nbsp;with&nbsp;key-value&nbsp;pairs.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="smuview.html#AnalogSampleSignal">AnalogSampleSignal</a></dd>
+<dd><a href="smuview.html#BaseSignal">BaseSignal</a></dd>
+<dd>pybind11_builtins.pybind11_object</dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="AnalogSampleSignal-__init__"><strong>__init__</strong></a>(self, /, *args, **kwargs)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<dl><dt><a name="AnalogSampleSignal-get_sample"><strong>get_sample</strong></a>(...)</dt><dd><tt><a href="#AnalogSampleSignal-get_sample">get_sample</a>(self:&nbsp;smuview.<a href="#AnalogSampleSignal">AnalogSampleSignal</a>,&nbsp;arg0:&nbsp;int)&nbsp;-&gt;&nbsp;Tuple[int,&nbsp;float]<br>
+&nbsp;<br>
+Return&nbsp;the&nbsp;sample&nbsp;for&nbsp;the&nbsp;given&nbsp;timestamp.</tt></dd></dl>
+
+<dl><dt><a name="AnalogSampleSignal-push_sample"><strong>push_sample</strong></a>(...)</dt><dd><tt><a href="#AnalogSampleSignal-push_sample">push_sample</a>(self:&nbsp;smuview.<a href="#AnalogSampleSignal">AnalogSampleSignal</a>,&nbsp;arg0:&nbsp;capsule,&nbsp;arg1:&nbsp;int,&nbsp;arg2:&nbsp;int,&nbsp;arg3:&nbsp;int,&nbsp;arg4:&nbsp;int)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Push&nbsp;a&nbsp;new&nbsp;sample&nbsp;to&nbsp;the&nbsp;signal.</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="smuview.html#BaseSignal">BaseSignal</a>:<br>
+<dl><dt><a name="AnalogSampleSignal-name"><strong>name</strong></a>(...)</dt><dd><tt><a href="#AnalogSampleSignal-name">name</a>(self:&nbsp;smuview.<a href="#BaseSignal">BaseSignal</a>)&nbsp;-&gt;&nbsp;str<br>
+&nbsp;<br>
+Return&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;signal.</tt></dd></dl>
+
+<dl><dt><a name="AnalogSampleSignal-sample_count"><strong>sample_count</strong></a>(...)</dt><dd><tt><a href="#AnalogSampleSignal-sample_count">sample_count</a>(self:&nbsp;smuview.<a href="#BaseSignal">BaseSignal</a>)&nbsp;-&gt;&nbsp;int<br>
+&nbsp;<br>
+Return&nbsp;the&nbsp;number&nbsp;of&nbsp;samples&nbsp;for&nbsp;the&nbsp;signal.</tt></dd></dl>
+
+<hr>
+Static methods inherited from pybind11_builtins.pybind11_object:<br>
+<dl><dt><a name="AnalogSampleSignal-__new__"><strong>__new__</strong></a>(*args, **kwargs)<font color="#909090"><font face="helvetica, arial"> from pybind11_builtins.pybind11_type</font></font></dt><dd><tt>Create&nbsp;and&nbsp;return&nbsp;a&nbsp;new&nbsp;object.&nbsp;&nbsp;See&nbsp;help(type)&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="AnalogTimeSignal">class <strong>AnalogTimeSignal</strong></a>(<a href="smuview.html#BaseSignal">BaseSignal</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>A&nbsp;signal&nbsp;with&nbsp;time-value&nbsp;pairs.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="smuview.html#AnalogTimeSignal">AnalogTimeSignal</a></dd>
+<dd><a href="smuview.html#BaseSignal">BaseSignal</a></dd>
+<dd>pybind11_builtins.pybind11_object</dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="AnalogTimeSignal-__init__"><strong>__init__</strong></a>(self, /, *args, **kwargs)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<dl><dt><a name="AnalogTimeSignal-get_last_sample"><strong>get_last_sample</strong></a>(...)</dt><dd><tt><a href="#AnalogTimeSignal-get_last_sample">get_last_sample</a>(self:&nbsp;smuview.<a href="#AnalogTimeSignal">AnalogTimeSignal</a>,&nbsp;arg0:&nbsp;bool)&nbsp;-&gt;&nbsp;Tuple[float,&nbsp;float]<br>
+&nbsp;<br>
+Return&nbsp;the&nbsp;last&nbsp;sample&nbsp;of&nbsp;the&nbsp;signal.</tt></dd></dl>
+
+<dl><dt><a name="AnalogTimeSignal-get_sample"><strong>get_sample</strong></a>(...)</dt><dd><tt><a href="#AnalogTimeSignal-get_sample">get_sample</a>(self:&nbsp;smuview.<a href="#AnalogTimeSignal">AnalogTimeSignal</a>,&nbsp;arg0:&nbsp;int,&nbsp;arg1:&nbsp;bool)&nbsp;-&gt;&nbsp;Tuple[float,&nbsp;float]<br>
+&nbsp;<br>
+Return&nbsp;the&nbsp;sample&nbsp;for&nbsp;the&nbsp;given&nbsp;timestamp.</tt></dd></dl>
+
+<dl><dt><a name="AnalogTimeSignal-push_sample"><strong>push_sample</strong></a>(...)</dt><dd><tt><a href="#AnalogTimeSignal-push_sample">push_sample</a>(self:&nbsp;smuview.<a href="#AnalogTimeSignal">AnalogTimeSignal</a>,&nbsp;arg0:&nbsp;capsule,&nbsp;arg1:&nbsp;float,&nbsp;arg2:&nbsp;int,&nbsp;arg3:&nbsp;int,&nbsp;arg4:&nbsp;int)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Push&nbsp;a&nbsp;new&nbsp;sample&nbsp;to&nbsp;the&nbsp;signal.</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="smuview.html#BaseSignal">BaseSignal</a>:<br>
+<dl><dt><a name="AnalogTimeSignal-name"><strong>name</strong></a>(...)</dt><dd><tt><a href="#AnalogTimeSignal-name">name</a>(self:&nbsp;smuview.<a href="#BaseSignal">BaseSignal</a>)&nbsp;-&gt;&nbsp;str<br>
+&nbsp;<br>
+Return&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;signal.</tt></dd></dl>
+
+<dl><dt><a name="AnalogTimeSignal-sample_count"><strong>sample_count</strong></a>(...)</dt><dd><tt><a href="#AnalogTimeSignal-sample_count">sample_count</a>(self:&nbsp;smuview.<a href="#BaseSignal">BaseSignal</a>)&nbsp;-&gt;&nbsp;int<br>
+&nbsp;<br>
+Return&nbsp;the&nbsp;number&nbsp;of&nbsp;samples&nbsp;for&nbsp;the&nbsp;signal.</tt></dd></dl>
+
+<hr>
+Static methods inherited from pybind11_builtins.pybind11_object:<br>
+<dl><dt><a name="AnalogTimeSignal-__new__"><strong>__new__</strong></a>(*args, **kwargs)<font color="#909090"><font face="helvetica, arial"> from pybind11_builtins.pybind11_type</font></font></dt><dd><tt>Create&nbsp;and&nbsp;return&nbsp;a&nbsp;new&nbsp;object.&nbsp;&nbsp;See&nbsp;help(type)&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="BaseChannel">class <strong>BaseChannel</strong></a>(pybind11_builtins.pybind11_object)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>The&nbsp;base&nbsp;class&nbsp;for&nbsp;all&nbsp;channel&nbsp;types.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="smuview.html#BaseChannel">BaseChannel</a></dd>
+<dd>pybind11_builtins.pybind11_object</dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="BaseChannel-__init__"><strong>__init__</strong></a>(self, /, *args, **kwargs)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<dl><dt><a name="BaseChannel-actual_signal"><strong>actual_signal</strong></a>(...)</dt><dd><tt><a href="#BaseChannel-actual_signal">actual_signal</a>(self:&nbsp;smuview.<a href="#BaseChannel">BaseChannel</a>)&nbsp;-&gt;&nbsp;sv::data::<a href="#BaseSignal">BaseSignal</a><br>
+&nbsp;<br>
+Return&nbsp;the&nbsp;actual&nbsp;signal&nbsp;of&nbsp;the&nbsp;channel.</tt></dd></dl>
+
+<dl><dt><a name="BaseChannel-add_signal"><strong>add_signal</strong></a>(...)</dt><dd><tt><a href="#BaseChannel-add_signal">add_signal</a>(self:&nbsp;smuview.<a href="#BaseChannel">BaseChannel</a>,&nbsp;arg0:&nbsp;sv::data::<a href="#Quantity">Quantity</a>,&nbsp;arg1:&nbsp;Set[sv::data::<a href="#QuantityFlag">QuantityFlag</a>],&nbsp;arg2:&nbsp;sv::data::<a href="#Unit">Unit</a>)&nbsp;-&gt;&nbsp;sv::data::<a href="#BaseSignal">BaseSignal</a><br>
+&nbsp;<br>
+Add&nbsp;a&nbsp;new&nbsp;signal&nbsp;to&nbsp;the&nbsp;channel.</tt></dd></dl>
+
+<dl><dt><a name="BaseChannel-name"><strong>name</strong></a>(...)</dt><dd><tt><a href="#BaseChannel-name">name</a>(self:&nbsp;smuview.<a href="#BaseChannel">BaseChannel</a>)&nbsp;-&gt;&nbsp;str<br>
+&nbsp;<br>
+Return&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;channel.</tt></dd></dl>
+
+<dl><dt><a name="BaseChannel-signals"><strong>signals</strong></a>(...)</dt><dd><tt><a href="#BaseChannel-signals">signals</a>(self:&nbsp;smuview.<a href="#BaseChannel">BaseChannel</a>)&nbsp;-&gt;&nbsp;List[sv::data::<a href="#BaseSignal">BaseSignal</a>]<br>
+&nbsp;<br>
+Return&nbsp;all&nbsp;signals&nbsp;of&nbsp;the&nbsp;channel.</tt></dd></dl>
+
+<hr>
+Static methods inherited from pybind11_builtins.pybind11_object:<br>
+<dl><dt><a name="BaseChannel-__new__"><strong>__new__</strong></a>(*args, **kwargs)<font color="#909090"><font face="helvetica, arial"> from pybind11_builtins.pybind11_type</font></font></dt><dd><tt>Create&nbsp;and&nbsp;return&nbsp;a&nbsp;new&nbsp;object.&nbsp;&nbsp;See&nbsp;help(type)&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="BaseDevice">class <strong>BaseDevice</strong></a>(pybind11_builtins.pybind11_object)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>The&nbsp;base&nbsp;class&nbsp;for&nbsp;all&nbsp;device&nbsp;types.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="smuview.html#BaseDevice">BaseDevice</a></dd>
+<dd>pybind11_builtins.pybind11_object</dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="BaseDevice-__init__"><strong>__init__</strong></a>(self, /, *args, **kwargs)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<dl><dt><a name="BaseDevice-add_user_channel"><strong>add_user_channel</strong></a>(...)</dt><dd><tt><a href="#BaseDevice-add_user_channel">add_user_channel</a>(self:&nbsp;smuview.<a href="#BaseDevice">BaseDevice</a>,&nbsp;arg0:&nbsp;str,&nbsp;arg1:&nbsp;str)&nbsp;-&gt;&nbsp;sv::channels::<a href="#UserChannel">UserChannel</a><br>
+&nbsp;<br>
+Add&nbsp;a&nbsp;new&nbsp;user&nbsp;channel&nbsp;to&nbsp;the&nbsp;device.</tt></dd></dl>
+
+<dl><dt><a name="BaseDevice-channels"><strong>channels</strong></a>(...)</dt><dd><tt><a href="#BaseDevice-channels">channels</a>(self:&nbsp;smuview.<a href="#BaseDevice">BaseDevice</a>)&nbsp;-&gt;&nbsp;Dict[str,&nbsp;sv::channels::<a href="#BaseChannel">BaseChannel</a>]<br>
+&nbsp;<br>
+Return&nbsp;all&nbsp;channels&nbsp;of&nbsp;the&nbsp;device.</tt></dd></dl>
+
+<dl><dt><a name="BaseDevice-configurables"><strong>configurables</strong></a>(...)</dt><dd><tt><a href="#BaseDevice-configurables">configurables</a>(self:&nbsp;smuview.<a href="#BaseDevice">BaseDevice</a>)&nbsp;-&gt;&nbsp;Dict[str,&nbsp;sv::devices::<a href="#Configurable">Configurable</a>]<br>
+&nbsp;<br>
+Return&nbsp;all&nbsp;configurables&nbsp;of&nbsp;the&nbsp;device.</tt></dd></dl>
+
+<dl><dt><a name="BaseDevice-id"><strong>id</strong></a>(...)</dt><dd><tt><a href="#BaseDevice-id">id</a>(self:&nbsp;smuview.<a href="#BaseDevice">BaseDevice</a>)&nbsp;-&gt;&nbsp;str<br>
+&nbsp;<br>
+Return&nbsp;the&nbsp;unique&nbsp;id&nbsp;of&nbsp;the&nbsp;device.</tt></dd></dl>
+
+<dl><dt><a name="BaseDevice-name"><strong>name</strong></a>(...)</dt><dd><tt><a href="#BaseDevice-name">name</a>(self:&nbsp;smuview.<a href="#BaseDevice">BaseDevice</a>)&nbsp;-&gt;&nbsp;str<br>
+&nbsp;<br>
+Return&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;device.</tt></dd></dl>
+
+<hr>
+Static methods inherited from pybind11_builtins.pybind11_object:<br>
+<dl><dt><a name="BaseDevice-__new__"><strong>__new__</strong></a>(*args, **kwargs)<font color="#909090"><font face="helvetica, arial"> from pybind11_builtins.pybind11_type</font></font></dt><dd><tt>Create&nbsp;and&nbsp;return&nbsp;a&nbsp;new&nbsp;object.&nbsp;&nbsp;See&nbsp;help(type)&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="BaseSignal">class <strong>BaseSignal</strong></a>(pybind11_builtins.pybind11_object)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>The&nbsp;base&nbsp;class&nbsp;for&nbsp;all&nbsp;signal&nbsp;types.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="smuview.html#BaseSignal">BaseSignal</a></dd>
+<dd>pybind11_builtins.pybind11_object</dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="BaseSignal-__init__"><strong>__init__</strong></a>(self, /, *args, **kwargs)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<dl><dt><a name="BaseSignal-name"><strong>name</strong></a>(...)</dt><dd><tt><a href="#BaseSignal-name">name</a>(self:&nbsp;smuview.<a href="#BaseSignal">BaseSignal</a>)&nbsp;-&gt;&nbsp;str<br>
+&nbsp;<br>
+Return&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;signal.</tt></dd></dl>
+
+<dl><dt><a name="BaseSignal-sample_count"><strong>sample_count</strong></a>(...)</dt><dd><tt><a href="#BaseSignal-sample_count">sample_count</a>(self:&nbsp;smuview.<a href="#BaseSignal">BaseSignal</a>)&nbsp;-&gt;&nbsp;int<br>
+&nbsp;<br>
+Return&nbsp;the&nbsp;number&nbsp;of&nbsp;samples&nbsp;for&nbsp;the&nbsp;signal.</tt></dd></dl>
+
+<hr>
+Static methods inherited from pybind11_builtins.pybind11_object:<br>
+<dl><dt><a name="BaseSignal-__new__"><strong>__new__</strong></a>(*args, **kwargs)<font color="#909090"><font face="helvetica, arial"> from pybind11_builtins.pybind11_type</font></font></dt><dd><tt>Create&nbsp;and&nbsp;return&nbsp;a&nbsp;new&nbsp;object.&nbsp;&nbsp;See&nbsp;help(type)&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="ConfigKey">class <strong>ConfigKey</strong></a>(pybind11_builtins.pybind11_object)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Enum&nbsp;of&nbsp;all&nbsp;available&nbsp;config&nbsp;keys&nbsp;for&nbsp;controlling&nbsp;a&nbsp;device.<br>
+&nbsp;<br>
+Members:<br>
+&nbsp;<br>
+&nbsp;&nbsp;Samplerate<br>
+&nbsp;<br>
+&nbsp;&nbsp;CaptureRatio<br>
+&nbsp;<br>
+&nbsp;&nbsp;PatternMode<br>
+&nbsp;<br>
+&nbsp;&nbsp;RLE<br>
+&nbsp;<br>
+&nbsp;&nbsp;TriggerSlope<br>
+&nbsp;<br>
+&nbsp;&nbsp;Averaging<br>
+&nbsp;<br>
+&nbsp;&nbsp;AvgSamples<br>
+&nbsp;<br>
+&nbsp;&nbsp;TriggerSource<br>
+&nbsp;<br>
+&nbsp;&nbsp;HorizTriggerPos<br>
+&nbsp;<br>
+&nbsp;&nbsp;BufferSize<br>
+&nbsp;<br>
+&nbsp;&nbsp;TimeBase<br>
+&nbsp;<br>
+&nbsp;&nbsp;Filter<br>
+&nbsp;<br>
+&nbsp;&nbsp;VDiv<br>
+&nbsp;<br>
+&nbsp;&nbsp;Coupling<br>
+&nbsp;<br>
+&nbsp;&nbsp;TriggerMatch<br>
+&nbsp;<br>
+&nbsp;&nbsp;SampleInterval<br>
+&nbsp;<br>
+&nbsp;&nbsp;NumHDiv<br>
+&nbsp;<br>
+&nbsp;&nbsp;NumVDiv<br>
+&nbsp;<br>
+&nbsp;&nbsp;SplWeightFreq<br>
+&nbsp;<br>
+&nbsp;&nbsp;SplWeightTime<br>
+&nbsp;<br>
+&nbsp;&nbsp;SplMeasurementRange<br>
+&nbsp;<br>
+&nbsp;&nbsp;HoldMax<br>
+&nbsp;<br>
+&nbsp;&nbsp;HoldMin<br>
+&nbsp;<br>
+&nbsp;&nbsp;VoltageThreshold<br>
+&nbsp;<br>
+&nbsp;&nbsp;ExternalClock<br>
+&nbsp;<br>
+&nbsp;&nbsp;Swap<br>
+&nbsp;<br>
+&nbsp;&nbsp;CenterFrequency<br>
+&nbsp;<br>
+&nbsp;&nbsp;NumLogicChannels<br>
+&nbsp;<br>
+&nbsp;&nbsp;NumAnalogChannels<br>
+&nbsp;<br>
+&nbsp;&nbsp;Voltage<br>
+&nbsp;<br>
+&nbsp;&nbsp;VoltageTarget<br>
+&nbsp;<br>
+&nbsp;&nbsp;Current<br>
+&nbsp;<br>
+&nbsp;&nbsp;CurrentLimit<br>
+&nbsp;<br>
+&nbsp;&nbsp;Enabled<br>
+&nbsp;<br>
+&nbsp;&nbsp;ChannelConfig<br>
+&nbsp;<br>
+&nbsp;&nbsp;OverVoltageProtectionEnabled<br>
+&nbsp;<br>
+&nbsp;&nbsp;OverVoltageProtectionActive<br>
+&nbsp;<br>
+&nbsp;&nbsp;OverVoltageProtectionThreshold<br>
+&nbsp;<br>
+&nbsp;&nbsp;OverCurrentProtectionEnabled<br>
+&nbsp;<br>
+&nbsp;&nbsp;OverCurrentProtectionActive<br>
+&nbsp;<br>
+&nbsp;&nbsp;OverCurrentProtectionThreshold<br>
+&nbsp;<br>
+&nbsp;&nbsp;OverTemperatureProtectionEnabled<br>
+&nbsp;<br>
+&nbsp;&nbsp;OverTemperatureProtectionActive<br>
+&nbsp;<br>
+&nbsp;&nbsp;UnderVoltageConditionEnabled<br>
+&nbsp;<br>
+&nbsp;&nbsp;UnderVoltageConditionActive<br>
+&nbsp;<br>
+&nbsp;&nbsp;UnderVoltageConditionThreshold<br>
+&nbsp;<br>
+&nbsp;&nbsp;ClockEdge<br>
+&nbsp;<br>
+&nbsp;&nbsp;Amplitude<br>
+&nbsp;<br>
+&nbsp;&nbsp;Offset<br>
+&nbsp;<br>
+&nbsp;&nbsp;Regulation<br>
+&nbsp;<br>
+&nbsp;&nbsp;OutputFrequency<br>
+&nbsp;<br>
+&nbsp;&nbsp;OutputFrequencyTarget<br>
+&nbsp;<br>
+&nbsp;&nbsp;MeasuredQuantity<br>
+&nbsp;<br>
+&nbsp;&nbsp;EquivCircuitModel<br>
+&nbsp;<br>
+&nbsp;&nbsp;TriggerLevel<br>
+&nbsp;<br>
+&nbsp;&nbsp;ExternalClockSource<br>
+&nbsp;<br>
+&nbsp;&nbsp;SessionFile<br>
+&nbsp;<br>
+&nbsp;&nbsp;CaptureFile<br>
+&nbsp;<br>
+&nbsp;&nbsp;CaptureUnitSize<br>
+&nbsp;<br>
+&nbsp;&nbsp;PowerOff<br>
+&nbsp;<br>
+&nbsp;&nbsp;DataSource<br>
+&nbsp;<br>
+&nbsp;&nbsp;ProbeFactor<br>
+&nbsp;<br>
+&nbsp;&nbsp;ADCPowerlineCycles<br>
+&nbsp;<br>
+&nbsp;&nbsp;DataLog<br>
+&nbsp;<br>
+&nbsp;&nbsp;DeviceMode<br>
+&nbsp;<br>
+&nbsp;&nbsp;TestMode<br>
+&nbsp;<br>
+&nbsp;&nbsp;Unknown<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="smuview.html#ConfigKey">ConfigKey</a></dd>
+<dd>pybind11_builtins.pybind11_object</dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="ConfigKey-__eq__"><strong>__eq__</strong></a> = (...)</dt><dd><tt>(self:&nbsp;object,&nbsp;arg0:&nbsp;object)&nbsp;-&gt;&nbsp;bool</tt></dd></dl>
+
+<dl><dt><a name="ConfigKey-__getstate__"><strong>__getstate__</strong></a> = (...)</dt><dd><tt>(self:&nbsp;object)&nbsp;-&gt;&nbsp;int_</tt></dd></dl>
+
+<dl><dt><a name="ConfigKey-__hash__"><strong>__hash__</strong></a> = (...)</dt><dd><tt>(self:&nbsp;object)&nbsp;-&gt;&nbsp;int_</tt></dd></dl>
+
+<dl><dt><a name="ConfigKey-__init__"><strong>__init__</strong></a>(...)</dt><dd><tt><a href="#ConfigKey-__init__">__init__</a>(self:&nbsp;smuview.<a href="#ConfigKey">ConfigKey</a>,&nbsp;arg0:&nbsp;int)&nbsp;-&gt;&nbsp;None</tt></dd></dl>
+
+<dl><dt><a name="ConfigKey-__int__"><strong>__int__</strong></a>(...)</dt><dd><tt><a href="#ConfigKey-__int__">__int__</a>(self:&nbsp;smuview.<a href="#ConfigKey">ConfigKey</a>)&nbsp;-&gt;&nbsp;int</tt></dd></dl>
+
+<dl><dt><a name="ConfigKey-__ne__"><strong>__ne__</strong></a> = (...)</dt><dd><tt>(self:&nbsp;object,&nbsp;arg0:&nbsp;object)&nbsp;-&gt;&nbsp;bool</tt></dd></dl>
+
+<dl><dt><a name="ConfigKey-__repr__"><strong>__repr__</strong></a> = (...)</dt><dd><tt>(self:&nbsp;handle)&nbsp;-&gt;&nbsp;str</tt></dd></dl>
+
+<dl><dt><a name="ConfigKey-__setstate__"><strong>__setstate__</strong></a> = (...)</dt><dd><tt>(self:&nbsp;smuview.<a href="#ConfigKey">ConfigKey</a>,&nbsp;arg0:&nbsp;int)&nbsp;-&gt;&nbsp;None</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__members__</strong></dt>
+</dl>
+<dl><dt><strong>name</strong></dt>
+<dd><tt>(self:&nbsp;handle)&nbsp;-&gt;&nbsp;str</tt></dd>
+</dl>
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>ADCPowerlineCycles</strong> = ConfigKey.ADCPowerlineCycles</dl>
+
+<dl><dt><strong>Amplitude</strong> = ConfigKey.Amplitude</dl>
+
+<dl><dt><strong>Averaging</strong> = ConfigKey.Averaging</dl>
+
+<dl><dt><strong>AvgSamples</strong> = ConfigKey.AvgSamples</dl>
+
+<dl><dt><strong>BufferSize</strong> = ConfigKey.BufferSize</dl>
+
+<dl><dt><strong>CaptureFile</strong> = ConfigKey.CaptureFile</dl>
+
+<dl><dt><strong>CaptureRatio</strong> = ConfigKey.CaptureRatio</dl>
+
+<dl><dt><strong>CaptureUnitSize</strong> = ConfigKey.CaptureUnitSize</dl>
+
+<dl><dt><strong>CenterFrequency</strong> = ConfigKey.CenterFrequency</dl>
+
+<dl><dt><strong>ChannelConfig</strong> = ConfigKey.ChannelConfig</dl>
+
+<dl><dt><strong>ClockEdge</strong> = ConfigKey.ClockEdge</dl>
+
+<dl><dt><strong>Coupling</strong> = ConfigKey.Coupling</dl>
+
+<dl><dt><strong>Current</strong> = ConfigKey.Current</dl>
+
+<dl><dt><strong>CurrentLimit</strong> = ConfigKey.CurrentLimit</dl>
+
+<dl><dt><strong>DataLog</strong> = ConfigKey.DataLog</dl>
+
+<dl><dt><strong>DataSource</strong> = ConfigKey.DataSource</dl>
+
+<dl><dt><strong>DeviceMode</strong> = ConfigKey.DeviceMode</dl>
+
+<dl><dt><strong>Enabled</strong> = ConfigKey.Enabled</dl>
+
+<dl><dt><strong>EquivCircuitModel</strong> = ConfigKey.EquivCircuitModel</dl>
+
+<dl><dt><strong>ExternalClock</strong> = ConfigKey.ExternalClock</dl>
+
+<dl><dt><strong>ExternalClockSource</strong> = ConfigKey.ExternalClockSource</dl>
+
+<dl><dt><strong>Filter</strong> = ConfigKey.Filter</dl>
+
+<dl><dt><strong>HoldMax</strong> = ConfigKey.HoldMax</dl>
+
+<dl><dt><strong>HoldMin</strong> = ConfigKey.HoldMin</dl>
+
+<dl><dt><strong>HorizTriggerPos</strong> = ConfigKey.HorizTriggerPos</dl>
+
+<dl><dt><strong>MeasuredQuantity</strong> = ConfigKey.MeasuredQuantity</dl>
+
+<dl><dt><strong>NumAnalogChannels</strong> = ConfigKey.NumAnalogChannels</dl>
+
+<dl><dt><strong>NumHDiv</strong> = ConfigKey.NumHDiv</dl>
+
+<dl><dt><strong>NumLogicChannels</strong> = ConfigKey.NumLogicChannels</dl>
+
+<dl><dt><strong>NumVDiv</strong> = ConfigKey.NumVDiv</dl>
+
+<dl><dt><strong>Offset</strong> = ConfigKey.Offset</dl>
+
+<dl><dt><strong>OutputFrequency</strong> = ConfigKey.OutputFrequency</dl>
+
+<dl><dt><strong>OutputFrequencyTarget</strong> = ConfigKey.OutputFrequencyTarget</dl>
+
+<dl><dt><strong>OverCurrentProtectionActive</strong> = ConfigKey.OverCurrentProtectionActive</dl>
+
+<dl><dt><strong>OverCurrentProtectionEnabled</strong> = ConfigKey.OverCurrentProtectionEnabled</dl>
+
+<dl><dt><strong>OverCurrentProtectionThreshold</strong> = ConfigKey.OverCurrentProtectionThreshold</dl>
+
+<dl><dt><strong>OverTemperatureProtectionActive</strong> = ConfigKey.OverTemperatureProtectionActive</dl>
+
+<dl><dt><strong>OverTemperatureProtectionEnabled</strong> = ConfigKey.OverTemperatureProtectionEnabled</dl>
+
+<dl><dt><strong>OverVoltageProtectionActive</strong> = ConfigKey.OverVoltageProtectionActive</dl>
+
+<dl><dt><strong>OverVoltageProtectionEnabled</strong> = ConfigKey.OverVoltageProtectionEnabled</dl>
+
+<dl><dt><strong>OverVoltageProtectionThreshold</strong> = ConfigKey.OverVoltageProtectionThreshold</dl>
+
+<dl><dt><strong>PatternMode</strong> = ConfigKey.PatternMode</dl>
+
+<dl><dt><strong>PowerOff</strong> = ConfigKey.PowerOff</dl>
+
+<dl><dt><strong>ProbeFactor</strong> = ConfigKey.ProbeFactor</dl>
+
+<dl><dt><strong>RLE</strong> = ConfigKey.RLE</dl>
+
+<dl><dt><strong>Regulation</strong> = ConfigKey.Regulation</dl>
+
+<dl><dt><strong>SampleInterval</strong> = ConfigKey.SampleInterval</dl>
+
+<dl><dt><strong>Samplerate</strong> = ConfigKey.Samplerate</dl>
+
+<dl><dt><strong>SessionFile</strong> = ConfigKey.SessionFile</dl>
+
+<dl><dt><strong>SplMeasurementRange</strong> = ConfigKey.SplMeasurementRange</dl>
+
+<dl><dt><strong>SplWeightFreq</strong> = ConfigKey.SplWeightFreq</dl>
+
+<dl><dt><strong>SplWeightTime</strong> = ConfigKey.SplWeightTime</dl>
+
+<dl><dt><strong>Swap</strong> = ConfigKey.Swap</dl>
+
+<dl><dt><strong>TestMode</strong> = ConfigKey.TestMode</dl>
+
+<dl><dt><strong>TimeBase</strong> = ConfigKey.TimeBase</dl>
+
+<dl><dt><strong>TriggerLevel</strong> = ConfigKey.TriggerLevel</dl>
+
+<dl><dt><strong>TriggerMatch</strong> = ConfigKey.TriggerMatch</dl>
+
+<dl><dt><strong>TriggerSlope</strong> = ConfigKey.TriggerSlope</dl>
+
+<dl><dt><strong>TriggerSource</strong> = ConfigKey.TriggerSource</dl>
+
+<dl><dt><strong>UnderVoltageConditionActive</strong> = ConfigKey.UnderVoltageConditionActive</dl>
+
+<dl><dt><strong>UnderVoltageConditionEnabled</strong> = ConfigKey.UnderVoltageConditionEnabled</dl>
+
+<dl><dt><strong>UnderVoltageConditionThreshold</strong> = ConfigKey.UnderVoltageConditionThreshold</dl>
+
+<dl><dt><strong>Unknown</strong> = ConfigKey.Unknown</dl>
+
+<dl><dt><strong>VDiv</strong> = ConfigKey.VDiv</dl>
+
+<dl><dt><strong>Voltage</strong> = ConfigKey.Voltage</dl>
+
+<dl><dt><strong>VoltageTarget</strong> = ConfigKey.VoltageTarget</dl>
+
+<dl><dt><strong>VoltageThreshold</strong> = ConfigKey.VoltageThreshold</dl>
+
+<hr>
+Static methods inherited from pybind11_builtins.pybind11_object:<br>
+<dl><dt><a name="ConfigKey-__new__"><strong>__new__</strong></a>(*args, **kwargs)<font color="#909090"><font face="helvetica, arial"> from pybind11_builtins.pybind11_type</font></font></dt><dd><tt>Create&nbsp;and&nbsp;return&nbsp;a&nbsp;new&nbsp;object.&nbsp;&nbsp;See&nbsp;help(type)&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Configurable">class <strong>Configurable</strong></a>(pybind11_builtins.pybind11_object)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>A&nbsp;configurable&nbsp;for&nbsp;controlling&nbsp;a&nbsp;device&nbsp;via&nbsp;the&nbsp;config&nbsp;keys.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="smuview.html#Configurable">Configurable</a></dd>
+<dd>pybind11_builtins.pybind11_object</dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="Configurable-__init__"><strong>__init__</strong></a>(self, /, *args, **kwargs)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<dl><dt><a name="Configurable-get_config"><strong>get_config</strong></a>(...)</dt><dd><tt><a href="#Configurable-get_config">get_config</a>(*args,&nbsp;**kwargs)<br>
+Overloaded&nbsp;function.<br>
+&nbsp;<br>
+1.&nbsp;<a href="#Configurable-get_config">get_config</a>(self:&nbsp;smuview.<a href="#Configurable">Configurable</a>,&nbsp;arg0:&nbsp;sv::devices::<a href="#ConfigKey">ConfigKey</a>,&nbsp;arg1:&nbsp;bool)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Return&nbsp;a&nbsp;boolean&nbsp;value&nbsp;from&nbsp;the&nbsp;given&nbsp;config&nbsp;key.<br>
+&nbsp;<br>
+2.&nbsp;<a href="#Configurable-get_config">get_config</a>(self:&nbsp;smuview.<a href="#Configurable">Configurable</a>,&nbsp;arg0:&nbsp;sv::devices::<a href="#ConfigKey">ConfigKey</a>,&nbsp;arg1:&nbsp;int)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Return&nbsp;an&nbsp;integer&nbsp;value&nbsp;from&nbsp;the&nbsp;given&nbsp;config&nbsp;key.<br>
+&nbsp;<br>
+3.&nbsp;<a href="#Configurable-get_config">get_config</a>(self:&nbsp;smuview.<a href="#Configurable">Configurable</a>,&nbsp;arg0:&nbsp;sv::devices::<a href="#ConfigKey">ConfigKey</a>,&nbsp;arg1:&nbsp;int)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Return&nbsp;an&nbsp;unsigned&nbsp;integer&nbsp;value&nbsp;from&nbsp;the&nbsp;given&nbsp;config&nbsp;key.<br>
+&nbsp;<br>
+4.&nbsp;<a href="#Configurable-get_config">get_config</a>(self:&nbsp;smuview.<a href="#Configurable">Configurable</a>,&nbsp;arg0:&nbsp;sv::devices::<a href="#ConfigKey">ConfigKey</a>,&nbsp;arg1:&nbsp;float)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Return&nbsp;a&nbsp;double&nbsp;value&nbsp;from&nbsp;the&nbsp;given&nbsp;config&nbsp;key.<br>
+&nbsp;<br>
+5.&nbsp;<a href="#Configurable-get_config">get_config</a>(self:&nbsp;smuview.<a href="#Configurable">Configurable</a>,&nbsp;arg0:&nbsp;sv::devices::<a href="#ConfigKey">ConfigKey</a>,&nbsp;arg1:&nbsp;str)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Return&nbsp;a&nbsp;string&nbsp;value&nbsp;from&nbsp;the&nbsp;given&nbsp;config&nbsp;key.</tt></dd></dl>
+
+<dl><dt><a name="Configurable-name"><strong>name</strong></a>(...)</dt><dd><tt><a href="#Configurable-name">name</a>(self:&nbsp;smuview.<a href="#Configurable">Configurable</a>)&nbsp;-&gt;&nbsp;str<br>
+&nbsp;<br>
+Return&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;configurable.</tt></dd></dl>
+
+<dl><dt><a name="Configurable-set_config"><strong>set_config</strong></a>(...)</dt><dd><tt><a href="#Configurable-set_config">set_config</a>(*args,&nbsp;**kwargs)<br>
+Overloaded&nbsp;function.<br>
+&nbsp;<br>
+1.&nbsp;<a href="#Configurable-set_config">set_config</a>(self:&nbsp;smuview.<a href="#Configurable">Configurable</a>,&nbsp;arg0:&nbsp;sv::devices::<a href="#ConfigKey">ConfigKey</a>,&nbsp;arg1:&nbsp;bool)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Set&nbsp;a&nbsp;boolean&nbsp;value&nbsp;to&nbsp;the&nbsp;given&nbsp;config&nbsp;key.<br>
+&nbsp;<br>
+2.&nbsp;<a href="#Configurable-set_config">set_config</a>(self:&nbsp;smuview.<a href="#Configurable">Configurable</a>,&nbsp;arg0:&nbsp;sv::devices::<a href="#ConfigKey">ConfigKey</a>,&nbsp;arg1:&nbsp;int)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Set&nbsp;an&nbsp;integer&nbsp;value&nbsp;to&nbsp;the&nbsp;given&nbsp;config&nbsp;key.<br>
+&nbsp;<br>
+3.&nbsp;<a href="#Configurable-set_config">set_config</a>(self:&nbsp;smuview.<a href="#Configurable">Configurable</a>,&nbsp;arg0:&nbsp;sv::devices::<a href="#ConfigKey">ConfigKey</a>,&nbsp;arg1:&nbsp;int)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Set&nbsp;an&nbsp;unsigned&nbsp;integer&nbsp;value&nbsp;to&nbsp;the&nbsp;given&nbsp;config&nbsp;key.<br>
+&nbsp;<br>
+4.&nbsp;<a href="#Configurable-set_config">set_config</a>(self:&nbsp;smuview.<a href="#Configurable">Configurable</a>,&nbsp;arg0:&nbsp;sv::devices::<a href="#ConfigKey">ConfigKey</a>,&nbsp;arg1:&nbsp;float)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Set&nbsp;a&nbsp;double&nbsp;value&nbsp;to&nbsp;the&nbsp;given&nbsp;config&nbsp;key.<br>
+&nbsp;<br>
+5.&nbsp;<a href="#Configurable-set_config">set_config</a>(self:&nbsp;smuview.<a href="#Configurable">Configurable</a>,&nbsp;arg0:&nbsp;sv::devices::<a href="#ConfigKey">ConfigKey</a>,&nbsp;arg1:&nbsp;str)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Set&nbsp;a&nbsp;string&nbsp;value&nbsp;to&nbsp;the&nbsp;given&nbsp;config&nbsp;key.</tt></dd></dl>
+
+<hr>
+Static methods inherited from pybind11_builtins.pybind11_object:<br>
+<dl><dt><a name="Configurable-__new__"><strong>__new__</strong></a>(*args, **kwargs)<font color="#909090"><font face="helvetica, arial"> from pybind11_builtins.pybind11_type</font></font></dt><dd><tt>Create&nbsp;and&nbsp;return&nbsp;a&nbsp;new&nbsp;object.&nbsp;&nbsp;See&nbsp;help(type)&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="DockArea">class <strong>DockArea</strong></a>(pybind11_builtins.pybind11_object)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Enum&nbsp;of&nbsp;all&nbsp;possible&nbsp;docking&nbsp;locations&nbsp;for&nbsp;a&nbsp;view.<br>
+&nbsp;<br>
+Members:<br>
+&nbsp;<br>
+&nbsp;&nbsp;LeftDocktArea<br>
+&nbsp;<br>
+&nbsp;&nbsp;RightDockArea<br>
+&nbsp;<br>
+&nbsp;&nbsp;TopDockArea<br>
+&nbsp;<br>
+&nbsp;&nbsp;BottomDockArea<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="smuview.html#DockArea">DockArea</a></dd>
+<dd>pybind11_builtins.pybind11_object</dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="DockArea-__eq__"><strong>__eq__</strong></a> = (...)</dt><dd><tt>(self:&nbsp;object,&nbsp;arg0:&nbsp;object)&nbsp;-&gt;&nbsp;bool</tt></dd></dl>
+
+<dl><dt><a name="DockArea-__getstate__"><strong>__getstate__</strong></a> = (...)</dt><dd><tt>(self:&nbsp;object)&nbsp;-&gt;&nbsp;int_</tt></dd></dl>
+
+<dl><dt><a name="DockArea-__hash__"><strong>__hash__</strong></a> = (...)</dt><dd><tt>(self:&nbsp;object)&nbsp;-&gt;&nbsp;int_</tt></dd></dl>
+
+<dl><dt><a name="DockArea-__init__"><strong>__init__</strong></a>(...)</dt><dd><tt><a href="#DockArea-__init__">__init__</a>(self:&nbsp;smuview.<a href="#DockArea">DockArea</a>,&nbsp;arg0:&nbsp;int)&nbsp;-&gt;&nbsp;None</tt></dd></dl>
+
+<dl><dt><a name="DockArea-__int__"><strong>__int__</strong></a>(...)</dt><dd><tt><a href="#DockArea-__int__">__int__</a>(self:&nbsp;smuview.<a href="#DockArea">DockArea</a>)&nbsp;-&gt;&nbsp;int</tt></dd></dl>
+
+<dl><dt><a name="DockArea-__ne__"><strong>__ne__</strong></a> = (...)</dt><dd><tt>(self:&nbsp;object,&nbsp;arg0:&nbsp;object)&nbsp;-&gt;&nbsp;bool</tt></dd></dl>
+
+<dl><dt><a name="DockArea-__repr__"><strong>__repr__</strong></a> = (...)</dt><dd><tt>(self:&nbsp;handle)&nbsp;-&gt;&nbsp;str</tt></dd></dl>
+
+<dl><dt><a name="DockArea-__setstate__"><strong>__setstate__</strong></a> = (...)</dt><dd><tt>(self:&nbsp;smuview.<a href="#DockArea">DockArea</a>,&nbsp;arg0:&nbsp;int)&nbsp;-&gt;&nbsp;None</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__members__</strong></dt>
+</dl>
+<dl><dt><strong>name</strong></dt>
+<dd><tt>(self:&nbsp;handle)&nbsp;-&gt;&nbsp;str</tt></dd>
+</dl>
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>BottomDockArea</strong> = DockArea.BottomDockArea</dl>
+
+<dl><dt><strong>LeftDocktArea</strong> = DockArea.LeftDocktArea</dl>
+
+<dl><dt><strong>RightDockArea</strong> = DockArea.RightDockArea</dl>
+
+<dl><dt><strong>TopDockArea</strong> = DockArea.TopDockArea</dl>
+
+<hr>
+Static methods inherited from pybind11_builtins.pybind11_object:<br>
+<dl><dt><a name="DockArea-__new__"><strong>__new__</strong></a>(*args, **kwargs)<font color="#909090"><font face="helvetica, arial"> from pybind11_builtins.pybind11_type</font></font></dt><dd><tt>Create&nbsp;and&nbsp;return&nbsp;a&nbsp;new&nbsp;object.&nbsp;&nbsp;See&nbsp;help(type)&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="HardwareChannel">class <strong>HardwareChannel</strong></a>(<a href="smuview.html#BaseChannel">BaseChannel</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>An&nbsp;actual&nbsp;hardware&nbsp;channel<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="smuview.html#HardwareChannel">HardwareChannel</a></dd>
+<dd><a href="smuview.html#BaseChannel">BaseChannel</a></dd>
+<dd>pybind11_builtins.pybind11_object</dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="HardwareChannel-__init__"><strong>__init__</strong></a>(self, /, *args, **kwargs)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="smuview.html#BaseChannel">BaseChannel</a>:<br>
+<dl><dt><a name="HardwareChannel-actual_signal"><strong>actual_signal</strong></a>(...)</dt><dd><tt><a href="#HardwareChannel-actual_signal">actual_signal</a>(self:&nbsp;smuview.<a href="#BaseChannel">BaseChannel</a>)&nbsp;-&gt;&nbsp;sv::data::<a href="#BaseSignal">BaseSignal</a><br>
+&nbsp;<br>
+Return&nbsp;the&nbsp;actual&nbsp;signal&nbsp;of&nbsp;the&nbsp;channel.</tt></dd></dl>
+
+<dl><dt><a name="HardwareChannel-add_signal"><strong>add_signal</strong></a>(...)</dt><dd><tt><a href="#HardwareChannel-add_signal">add_signal</a>(self:&nbsp;smuview.<a href="#BaseChannel">BaseChannel</a>,&nbsp;arg0:&nbsp;sv::data::<a href="#Quantity">Quantity</a>,&nbsp;arg1:&nbsp;Set[sv::data::<a href="#QuantityFlag">QuantityFlag</a>],&nbsp;arg2:&nbsp;sv::data::<a href="#Unit">Unit</a>)&nbsp;-&gt;&nbsp;sv::data::<a href="#BaseSignal">BaseSignal</a><br>
+&nbsp;<br>
+Add&nbsp;a&nbsp;new&nbsp;signal&nbsp;to&nbsp;the&nbsp;channel.</tt></dd></dl>
+
+<dl><dt><a name="HardwareChannel-name"><strong>name</strong></a>(...)</dt><dd><tt><a href="#HardwareChannel-name">name</a>(self:&nbsp;smuview.<a href="#BaseChannel">BaseChannel</a>)&nbsp;-&gt;&nbsp;str<br>
+&nbsp;<br>
+Return&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;channel.</tt></dd></dl>
+
+<dl><dt><a name="HardwareChannel-signals"><strong>signals</strong></a>(...)</dt><dd><tt><a href="#HardwareChannel-signals">signals</a>(self:&nbsp;smuview.<a href="#BaseChannel">BaseChannel</a>)&nbsp;-&gt;&nbsp;List[sv::data::<a href="#BaseSignal">BaseSignal</a>]<br>
+&nbsp;<br>
+Return&nbsp;all&nbsp;signals&nbsp;of&nbsp;the&nbsp;channel.</tt></dd></dl>
+
+<hr>
+Static methods inherited from pybind11_builtins.pybind11_object:<br>
+<dl><dt><a name="HardwareChannel-__new__"><strong>__new__</strong></a>(*args, **kwargs)<font color="#909090"><font face="helvetica, arial"> from pybind11_builtins.pybind11_type</font></font></dt><dd><tt>Create&nbsp;and&nbsp;return&nbsp;a&nbsp;new&nbsp;object.&nbsp;&nbsp;See&nbsp;help(type)&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="HardwareDevice">class <strong>HardwareDevice</strong></a>(<a href="smuview.html#BaseDevice">BaseDevice</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>An&nbsp;actual&nbsp;hardware&nbsp;device.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="smuview.html#HardwareDevice">HardwareDevice</a></dd>
+<dd><a href="smuview.html#BaseDevice">BaseDevice</a></dd>
+<dd>pybind11_builtins.pybind11_object</dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="HardwareDevice-__init__"><strong>__init__</strong></a>(self, /, *args, **kwargs)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="smuview.html#BaseDevice">BaseDevice</a>:<br>
+<dl><dt><a name="HardwareDevice-add_user_channel"><strong>add_user_channel</strong></a>(...)</dt><dd><tt><a href="#HardwareDevice-add_user_channel">add_user_channel</a>(self:&nbsp;smuview.<a href="#BaseDevice">BaseDevice</a>,&nbsp;arg0:&nbsp;str,&nbsp;arg1:&nbsp;str)&nbsp;-&gt;&nbsp;sv::channels::<a href="#UserChannel">UserChannel</a><br>
+&nbsp;<br>
+Add&nbsp;a&nbsp;new&nbsp;user&nbsp;channel&nbsp;to&nbsp;the&nbsp;device.</tt></dd></dl>
+
+<dl><dt><a name="HardwareDevice-channels"><strong>channels</strong></a>(...)</dt><dd><tt><a href="#HardwareDevice-channels">channels</a>(self:&nbsp;smuview.<a href="#BaseDevice">BaseDevice</a>)&nbsp;-&gt;&nbsp;Dict[str,&nbsp;sv::channels::<a href="#BaseChannel">BaseChannel</a>]<br>
+&nbsp;<br>
+Return&nbsp;all&nbsp;channels&nbsp;of&nbsp;the&nbsp;device.</tt></dd></dl>
+
+<dl><dt><a name="HardwareDevice-configurables"><strong>configurables</strong></a>(...)</dt><dd><tt><a href="#HardwareDevice-configurables">configurables</a>(self:&nbsp;smuview.<a href="#BaseDevice">BaseDevice</a>)&nbsp;-&gt;&nbsp;Dict[str,&nbsp;sv::devices::<a href="#Configurable">Configurable</a>]<br>
+&nbsp;<br>
+Return&nbsp;all&nbsp;configurables&nbsp;of&nbsp;the&nbsp;device.</tt></dd></dl>
+
+<dl><dt><a name="HardwareDevice-id"><strong>id</strong></a>(...)</dt><dd><tt><a href="#HardwareDevice-id">id</a>(self:&nbsp;smuview.<a href="#BaseDevice">BaseDevice</a>)&nbsp;-&gt;&nbsp;str<br>
+&nbsp;<br>
+Return&nbsp;the&nbsp;unique&nbsp;id&nbsp;of&nbsp;the&nbsp;device.</tt></dd></dl>
+
+<dl><dt><a name="HardwareDevice-name"><strong>name</strong></a>(...)</dt><dd><tt><a href="#HardwareDevice-name">name</a>(self:&nbsp;smuview.<a href="#BaseDevice">BaseDevice</a>)&nbsp;-&gt;&nbsp;str<br>
+&nbsp;<br>
+Return&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;device.</tt></dd></dl>
+
+<hr>
+Static methods inherited from pybind11_builtins.pybind11_object:<br>
+<dl><dt><a name="HardwareDevice-__new__"><strong>__new__</strong></a>(*args, **kwargs)<font color="#909090"><font face="helvetica, arial"> from pybind11_builtins.pybind11_type</font></font></dt><dd><tt>Create&nbsp;and&nbsp;return&nbsp;a&nbsp;new&nbsp;object.&nbsp;&nbsp;See&nbsp;help(type)&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Quantity">class <strong>Quantity</strong></a>(pybind11_builtins.pybind11_object)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Enum&nbsp;of&nbsp;all&nbsp;available&nbsp;quantities.<br>
+&nbsp;<br>
+Members:<br>
+&nbsp;<br>
+&nbsp;&nbsp;Voltage<br>
+&nbsp;<br>
+&nbsp;&nbsp;Current<br>
+&nbsp;<br>
+&nbsp;&nbsp;Resistance<br>
+&nbsp;<br>
+&nbsp;&nbsp;Capacitance<br>
+&nbsp;<br>
+&nbsp;&nbsp;Temperature<br>
+&nbsp;<br>
+&nbsp;&nbsp;Frequency<br>
+&nbsp;<br>
+&nbsp;&nbsp;DutyCyle<br>
+&nbsp;<br>
+&nbsp;&nbsp;Continuity<br>
+&nbsp;<br>
+&nbsp;&nbsp;PulseWidth<br>
+&nbsp;<br>
+&nbsp;&nbsp;Conductance<br>
+&nbsp;<br>
+&nbsp;&nbsp;Power<br>
+&nbsp;<br>
+&nbsp;&nbsp;Work<br>
+&nbsp;<br>
+&nbsp;&nbsp;ElectricCharge<br>
+&nbsp;<br>
+&nbsp;&nbsp;Gain<br>
+&nbsp;<br>
+&nbsp;&nbsp;SoundPressureLevel<br>
+&nbsp;<br>
+&nbsp;&nbsp;CarbonMonoxide<br>
+&nbsp;<br>
+&nbsp;&nbsp;RelativeHumidity<br>
+&nbsp;<br>
+&nbsp;&nbsp;Time<br>
+&nbsp;<br>
+&nbsp;&nbsp;WindSpeed<br>
+&nbsp;<br>
+&nbsp;&nbsp;Pressure<br>
+&nbsp;<br>
+&nbsp;&nbsp;ParallelInductance<br>
+&nbsp;<br>
+&nbsp;&nbsp;ParallelCapacitance<br>
+&nbsp;<br>
+&nbsp;&nbsp;ParallelResistance<br>
+&nbsp;<br>
+&nbsp;&nbsp;SeriesInductance<br>
+&nbsp;<br>
+&nbsp;&nbsp;SeriesCapacitance<br>
+&nbsp;<br>
+&nbsp;&nbsp;SeriesResistance<br>
+&nbsp;<br>
+&nbsp;&nbsp;DissipationFactor<br>
+&nbsp;<br>
+&nbsp;&nbsp;QualityFactor<br>
+&nbsp;<br>
+&nbsp;&nbsp;PhaseAngle<br>
+&nbsp;<br>
+&nbsp;&nbsp;Difference<br>
+&nbsp;<br>
+&nbsp;&nbsp;Count<br>
+&nbsp;<br>
+&nbsp;&nbsp;PowerFactor<br>
+&nbsp;<br>
+&nbsp;&nbsp;ApparentPower<br>
+&nbsp;<br>
+&nbsp;&nbsp;Mass<br>
+&nbsp;<br>
+&nbsp;&nbsp;HarmonicRatio<br>
+&nbsp;<br>
+&nbsp;&nbsp;Unknown<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="smuview.html#Quantity">Quantity</a></dd>
+<dd>pybind11_builtins.pybind11_object</dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="Quantity-__eq__"><strong>__eq__</strong></a> = (...)</dt><dd><tt>(self:&nbsp;object,&nbsp;arg0:&nbsp;object)&nbsp;-&gt;&nbsp;bool</tt></dd></dl>
+
+<dl><dt><a name="Quantity-__getstate__"><strong>__getstate__</strong></a> = (...)</dt><dd><tt>(self:&nbsp;object)&nbsp;-&gt;&nbsp;int_</tt></dd></dl>
+
+<dl><dt><a name="Quantity-__hash__"><strong>__hash__</strong></a> = (...)</dt><dd><tt>(self:&nbsp;object)&nbsp;-&gt;&nbsp;int_</tt></dd></dl>
+
+<dl><dt><a name="Quantity-__init__"><strong>__init__</strong></a>(...)</dt><dd><tt><a href="#Quantity-__init__">__init__</a>(self:&nbsp;smuview.<a href="#Quantity">Quantity</a>,&nbsp;arg0:&nbsp;int)&nbsp;-&gt;&nbsp;None</tt></dd></dl>
+
+<dl><dt><a name="Quantity-__int__"><strong>__int__</strong></a>(...)</dt><dd><tt><a href="#Quantity-__int__">__int__</a>(self:&nbsp;smuview.<a href="#Quantity">Quantity</a>)&nbsp;-&gt;&nbsp;int</tt></dd></dl>
+
+<dl><dt><a name="Quantity-__ne__"><strong>__ne__</strong></a> = (...)</dt><dd><tt>(self:&nbsp;object,&nbsp;arg0:&nbsp;object)&nbsp;-&gt;&nbsp;bool</tt></dd></dl>
+
+<dl><dt><a name="Quantity-__repr__"><strong>__repr__</strong></a> = (...)</dt><dd><tt>(self:&nbsp;handle)&nbsp;-&gt;&nbsp;str</tt></dd></dl>
+
+<dl><dt><a name="Quantity-__setstate__"><strong>__setstate__</strong></a> = (...)</dt><dd><tt>(self:&nbsp;smuview.<a href="#Quantity">Quantity</a>,&nbsp;arg0:&nbsp;int)&nbsp;-&gt;&nbsp;None</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__members__</strong></dt>
+</dl>
+<dl><dt><strong>name</strong></dt>
+<dd><tt>(self:&nbsp;handle)&nbsp;-&gt;&nbsp;str</tt></dd>
+</dl>
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>ApparentPower</strong> = Quantity.ApparentPower</dl>
+
+<dl><dt><strong>Capacitance</strong> = Quantity.Capacitance</dl>
+
+<dl><dt><strong>CarbonMonoxide</strong> = Quantity.CarbonMonoxide</dl>
+
+<dl><dt><strong>Conductance</strong> = Quantity.Conductance</dl>
+
+<dl><dt><strong>Continuity</strong> = Quantity.Continuity</dl>
+
+<dl><dt><strong>Count</strong> = Quantity.Count</dl>
+
+<dl><dt><strong>Current</strong> = Quantity.Current</dl>
+
+<dl><dt><strong>Difference</strong> = Quantity.Difference</dl>
+
+<dl><dt><strong>DissipationFactor</strong> = Quantity.DissipationFactor</dl>
+
+<dl><dt><strong>DutyCyle</strong> = Quantity.DutyCyle</dl>
+
+<dl><dt><strong>ElectricCharge</strong> = Quantity.ElectricCharge</dl>
+
+<dl><dt><strong>Frequency</strong> = Quantity.Frequency</dl>
+
+<dl><dt><strong>Gain</strong> = Quantity.Gain</dl>
+
+<dl><dt><strong>HarmonicRatio</strong> = Quantity.HarmonicRatio</dl>
+
+<dl><dt><strong>Mass</strong> = Quantity.Mass</dl>
+
+<dl><dt><strong>ParallelCapacitance</strong> = Quantity.ParallelCapacitance</dl>
+
+<dl><dt><strong>ParallelInductance</strong> = Quantity.ParallelInductance</dl>
+
+<dl><dt><strong>ParallelResistance</strong> = Quantity.ParallelResistance</dl>
+
+<dl><dt><strong>PhaseAngle</strong> = Quantity.PhaseAngle</dl>
+
+<dl><dt><strong>Power</strong> = Quantity.Power</dl>
+
+<dl><dt><strong>PowerFactor</strong> = Quantity.PowerFactor</dl>
+
+<dl><dt><strong>Pressure</strong> = Quantity.Pressure</dl>
+
+<dl><dt><strong>PulseWidth</strong> = Quantity.PulseWidth</dl>
+
+<dl><dt><strong>QualityFactor</strong> = Quantity.QualityFactor</dl>
+
+<dl><dt><strong>RelativeHumidity</strong> = Quantity.RelativeHumidity</dl>
+
+<dl><dt><strong>Resistance</strong> = Quantity.Resistance</dl>
+
+<dl><dt><strong>SeriesCapacitance</strong> = Quantity.SeriesCapacitance</dl>
+
+<dl><dt><strong>SeriesInductance</strong> = Quantity.SeriesInductance</dl>
+
+<dl><dt><strong>SeriesResistance</strong> = Quantity.SeriesResistance</dl>
+
+<dl><dt><strong>SoundPressureLevel</strong> = Quantity.SoundPressureLevel</dl>
+
+<dl><dt><strong>Temperature</strong> = Quantity.Temperature</dl>
+
+<dl><dt><strong>Time</strong> = Quantity.Time</dl>
+
+<dl><dt><strong>Unknown</strong> = Quantity.Unknown</dl>
+
+<dl><dt><strong>Voltage</strong> = Quantity.Voltage</dl>
+
+<dl><dt><strong>WindSpeed</strong> = Quantity.WindSpeed</dl>
+
+<dl><dt><strong>Work</strong> = Quantity.Work</dl>
+
+<hr>
+Static methods inherited from pybind11_builtins.pybind11_object:<br>
+<dl><dt><a name="Quantity-__new__"><strong>__new__</strong></a>(*args, **kwargs)<font color="#909090"><font face="helvetica, arial"> from pybind11_builtins.pybind11_type</font></font></dt><dd><tt>Create&nbsp;and&nbsp;return&nbsp;a&nbsp;new&nbsp;object.&nbsp;&nbsp;See&nbsp;help(type)&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="QuantityFlag">class <strong>QuantityFlag</strong></a>(pybind11_builtins.pybind11_object)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Enum&nbsp;of&nbsp;all&nbsp;available&nbsp;quantity&nbsp;flags.<br>
+&nbsp;<br>
+Members:<br>
+&nbsp;<br>
+&nbsp;&nbsp;AC<br>
+&nbsp;<br>
+&nbsp;&nbsp;DC<br>
+&nbsp;<br>
+&nbsp;&nbsp;RMS<br>
+&nbsp;<br>
+&nbsp;&nbsp;Diode<br>
+&nbsp;<br>
+&nbsp;&nbsp;Hold<br>
+&nbsp;<br>
+&nbsp;&nbsp;Max<br>
+&nbsp;<br>
+&nbsp;&nbsp;Min<br>
+&nbsp;<br>
+&nbsp;&nbsp;Autorange<br>
+&nbsp;<br>
+&nbsp;&nbsp;Relative<br>
+&nbsp;<br>
+&nbsp;&nbsp;SplFreqWeightA<br>
+&nbsp;<br>
+&nbsp;&nbsp;SplFreqWeightC<br>
+&nbsp;<br>
+&nbsp;&nbsp;SplFreqWeightZ<br>
+&nbsp;<br>
+&nbsp;&nbsp;SplFreqWeightFlat<br>
+&nbsp;<br>
+&nbsp;&nbsp;SplTimeWeightS<br>
+&nbsp;<br>
+&nbsp;&nbsp;SplTimeWeightF<br>
+&nbsp;<br>
+&nbsp;&nbsp;SplLAT<br>
+&nbsp;<br>
+&nbsp;&nbsp;SplPctOverAlarm<br>
+&nbsp;<br>
+&nbsp;&nbsp;Duration<br>
+&nbsp;<br>
+&nbsp;&nbsp;Avg<br>
+&nbsp;<br>
+&nbsp;&nbsp;Reference<br>
+&nbsp;<br>
+&nbsp;&nbsp;Unstable<br>
+&nbsp;<br>
+&nbsp;&nbsp;FourWire<br>
+&nbsp;<br>
+&nbsp;&nbsp;Unknown<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="smuview.html#QuantityFlag">QuantityFlag</a></dd>
+<dd>pybind11_builtins.pybind11_object</dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="QuantityFlag-__eq__"><strong>__eq__</strong></a> = (...)</dt><dd><tt>(self:&nbsp;object,&nbsp;arg0:&nbsp;object)&nbsp;-&gt;&nbsp;bool</tt></dd></dl>
+
+<dl><dt><a name="QuantityFlag-__getstate__"><strong>__getstate__</strong></a> = (...)</dt><dd><tt>(self:&nbsp;object)&nbsp;-&gt;&nbsp;int_</tt></dd></dl>
+
+<dl><dt><a name="QuantityFlag-__hash__"><strong>__hash__</strong></a> = (...)</dt><dd><tt>(self:&nbsp;object)&nbsp;-&gt;&nbsp;int_</tt></dd></dl>
+
+<dl><dt><a name="QuantityFlag-__init__"><strong>__init__</strong></a>(...)</dt><dd><tt><a href="#QuantityFlag-__init__">__init__</a>(self:&nbsp;smuview.<a href="#QuantityFlag">QuantityFlag</a>,&nbsp;arg0:&nbsp;int)&nbsp;-&gt;&nbsp;None</tt></dd></dl>
+
+<dl><dt><a name="QuantityFlag-__int__"><strong>__int__</strong></a>(...)</dt><dd><tt><a href="#QuantityFlag-__int__">__int__</a>(self:&nbsp;smuview.<a href="#QuantityFlag">QuantityFlag</a>)&nbsp;-&gt;&nbsp;int</tt></dd></dl>
+
+<dl><dt><a name="QuantityFlag-__ne__"><strong>__ne__</strong></a> = (...)</dt><dd><tt>(self:&nbsp;object,&nbsp;arg0:&nbsp;object)&nbsp;-&gt;&nbsp;bool</tt></dd></dl>
+
+<dl><dt><a name="QuantityFlag-__repr__"><strong>__repr__</strong></a> = (...)</dt><dd><tt>(self:&nbsp;handle)&nbsp;-&gt;&nbsp;str</tt></dd></dl>
+
+<dl><dt><a name="QuantityFlag-__setstate__"><strong>__setstate__</strong></a> = (...)</dt><dd><tt>(self:&nbsp;smuview.<a href="#QuantityFlag">QuantityFlag</a>,&nbsp;arg0:&nbsp;int)&nbsp;-&gt;&nbsp;None</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__members__</strong></dt>
+</dl>
+<dl><dt><strong>name</strong></dt>
+<dd><tt>(self:&nbsp;handle)&nbsp;-&gt;&nbsp;str</tt></dd>
+</dl>
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>AC</strong> = QuantityFlag.AC</dl>
+
+<dl><dt><strong>Autorange</strong> = QuantityFlag.Autorange</dl>
+
+<dl><dt><strong>Avg</strong> = QuantityFlag.Avg</dl>
+
+<dl><dt><strong>DC</strong> = QuantityFlag.DC</dl>
+
+<dl><dt><strong>Diode</strong> = QuantityFlag.Diode</dl>
+
+<dl><dt><strong>Duration</strong> = QuantityFlag.Duration</dl>
+
+<dl><dt><strong>FourWire</strong> = QuantityFlag.FourWire</dl>
+
+<dl><dt><strong>Hold</strong> = QuantityFlag.Hold</dl>
+
+<dl><dt><strong>Max</strong> = QuantityFlag.Max</dl>
+
+<dl><dt><strong>Min</strong> = QuantityFlag.Min</dl>
+
+<dl><dt><strong>RMS</strong> = QuantityFlag.RMS</dl>
+
+<dl><dt><strong>Reference</strong> = QuantityFlag.Reference</dl>
+
+<dl><dt><strong>Relative</strong> = QuantityFlag.Relative</dl>
+
+<dl><dt><strong>SplFreqWeightA</strong> = QuantityFlag.SplFreqWeightA</dl>
+
+<dl><dt><strong>SplFreqWeightC</strong> = QuantityFlag.SplFreqWeightC</dl>
+
+<dl><dt><strong>SplFreqWeightFlat</strong> = QuantityFlag.SplFreqWeightFlat</dl>
+
+<dl><dt><strong>SplFreqWeightZ</strong> = QuantityFlag.SplFreqWeightZ</dl>
+
+<dl><dt><strong>SplLAT</strong> = QuantityFlag.SplLAT</dl>
+
+<dl><dt><strong>SplPctOverAlarm</strong> = QuantityFlag.SplPctOverAlarm</dl>
+
+<dl><dt><strong>SplTimeWeightF</strong> = QuantityFlag.SplTimeWeightF</dl>
+
+<dl><dt><strong>SplTimeWeightS</strong> = QuantityFlag.SplTimeWeightS</dl>
+
+<dl><dt><strong>Unknown</strong> = QuantityFlag.Unknown</dl>
+
+<dl><dt><strong>Unstable</strong> = QuantityFlag.Unstable</dl>
+
+<hr>
+Static methods inherited from pybind11_builtins.pybind11_object:<br>
+<dl><dt><a name="QuantityFlag-__new__"><strong>__new__</strong></a>(*args, **kwargs)<font color="#909090"><font face="helvetica, arial"> from pybind11_builtins.pybind11_type</font></font></dt><dd><tt>Create&nbsp;and&nbsp;return&nbsp;a&nbsp;new&nbsp;object.&nbsp;&nbsp;See&nbsp;help(type)&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Session">class <strong>Session</strong></a>(pybind11_builtins.pybind11_object)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>The&nbsp;SmuView&nbsp;session&nbsp;class&nbsp;for&nbsp;accessing&nbsp;the&nbsp;actual&nbsp;state&nbsp;of&nbsp;the&nbsp;application.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="smuview.html#Session">Session</a></dd>
+<dd>pybind11_builtins.pybind11_object</dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="Session-__init__"><strong>__init__</strong></a>(self, /, *args, **kwargs)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<dl><dt><a name="Session-add_user_device"><strong>add_user_device</strong></a>(...)</dt><dd><tt><a href="#Session-add_user_device">add_user_device</a>(self:&nbsp;smuview.<a href="#Session">Session</a>)&nbsp;-&gt;&nbsp;sv::devices::<a href="#UserDevice">UserDevice</a><br>
+&nbsp;<br>
+Create&nbsp;and&nbsp;connect&nbsp;a&nbsp;new&nbsp;user&nbsp;device.</tt></dd></dl>
+
+<dl><dt><a name="Session-connect_device"><strong>connect_device</strong></a>(...)</dt><dd><tt><a href="#Session-connect_device">connect_device</a>(self:&nbsp;smuview.<a href="#Session">Session</a>,&nbsp;arg0:&nbsp;str)&nbsp;-&gt;&nbsp;List[sv::devices::<a href="#HardwareDevice">HardwareDevice</a>]<br>
+&nbsp;<br>
+Connect&nbsp;a&nbsp;new&nbsp;device.</tt></dd></dl>
+
+<dl><dt><a name="Session-devices"><strong>devices</strong></a>(...)</dt><dd><tt><a href="#Session-devices">devices</a>(self:&nbsp;smuview.<a href="#Session">Session</a>)&nbsp;-&gt;&nbsp;Dict[str,&nbsp;sv::devices::<a href="#BaseDevice">BaseDevice</a>]<br>
+&nbsp;<br>
+Return&nbsp;all&nbsp;connected&nbsp;devices.</tt></dd></dl>
+
+<hr>
+Static methods inherited from pybind11_builtins.pybind11_object:<br>
+<dl><dt><a name="Session-__new__"><strong>__new__</strong></a>(*args, **kwargs)<font color="#909090"><font face="helvetica, arial"> from pybind11_builtins.pybind11_type</font></font></dt><dd><tt>Create&nbsp;and&nbsp;return&nbsp;a&nbsp;new&nbsp;object.&nbsp;&nbsp;See&nbsp;help(type)&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="UiProxy">class <strong>UiProxy</strong></a>(pybind11_builtins.pybind11_object)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Helper&nbsp;class&nbsp;for&nbsp;accessing&nbsp;the&nbsp;UI.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="smuview.html#UiProxy">UiProxy</a></dd>
+<dd>pybind11_builtins.pybind11_object</dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="UiProxy-__init__"><strong>__init__</strong></a>(self, /, *args, **kwargs)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<dl><dt><a name="UiProxy-add_control_view"><strong>add_control_view</strong></a>(...)</dt><dd><tt><a href="#UiProxy-add_control_view">add_control_view</a>(self:&nbsp;smuview.<a href="#UiProxy">UiProxy</a>,&nbsp;arg0:&nbsp;str,&nbsp;arg1:&nbsp;Qt::DockWidgetArea,&nbsp;arg2:&nbsp;smuview.<a href="#Configurable">Configurable</a>)&nbsp;-&gt;&nbsp;str<br>
+&nbsp;<br>
+Add&nbsp;a&nbsp;control&nbsp;view&nbsp;for&nbsp;a&nbsp;configurable&nbsp;to&nbsp;the&nbsp;given&nbsp;tab.</tt></dd></dl>
+
+<dl><dt><a name="UiProxy-add_data_view"><strong>add_data_view</strong></a>(...)</dt><dd><tt><a href="#UiProxy-add_data_view">add_data_view</a>(self:&nbsp;smuview.<a href="#UiProxy">UiProxy</a>,&nbsp;arg0:&nbsp;str,&nbsp;arg1:&nbsp;Qt::DockWidgetArea,&nbsp;arg2:&nbsp;smuview.<a href="#AnalogTimeSignal">AnalogTimeSignal</a>)&nbsp;-&gt;&nbsp;str<br>
+&nbsp;<br>
+Add&nbsp;a&nbsp;data&nbsp;view&nbsp;for&nbsp;a&nbsp;signal&nbsp;to&nbsp;the&nbsp;given&nbsp;tab.</tt></dd></dl>
+
+<dl><dt><a name="UiProxy-add_device_tab"><strong>add_device_tab</strong></a>(...)</dt><dd><tt><a href="#UiProxy-add_device_tab">add_device_tab</a>(self:&nbsp;smuview.<a href="#UiProxy">UiProxy</a>,&nbsp;arg0:&nbsp;smuview.<a href="#BaseDevice">BaseDevice</a>)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Add&nbsp;a&nbsp;device&nbsp;tab&nbsp;to&nbsp;the&nbsp;UI.</tt></dd></dl>
+
+<dl><dt><a name="UiProxy-add_plot_view"><strong>add_plot_view</strong></a>(...)</dt><dd><tt><a href="#UiProxy-add_plot_view">add_plot_view</a>(*args,&nbsp;**kwargs)<br>
+Overloaded&nbsp;function.<br>
+&nbsp;<br>
+1.&nbsp;<a href="#UiProxy-add_plot_view">add_plot_view</a>(self:&nbsp;smuview.<a href="#UiProxy">UiProxy</a>,&nbsp;arg0:&nbsp;str,&nbsp;arg1:&nbsp;Qt::DockWidgetArea,&nbsp;arg2:&nbsp;smuview.<a href="#BaseChannel">BaseChannel</a>)&nbsp;-&gt;&nbsp;str<br>
+&nbsp;<br>
+Add&nbsp;a&nbsp;time&nbsp;plot&nbsp;view&nbsp;for&nbsp;a&nbsp;channel&nbsp;to&nbsp;the&nbsp;given&nbsp;tab.<br>
+&nbsp;<br>
+2.&nbsp;<a href="#UiProxy-add_plot_view">add_plot_view</a>(self:&nbsp;smuview.<a href="#UiProxy">UiProxy</a>,&nbsp;arg0:&nbsp;str,&nbsp;arg1:&nbsp;Qt::DockWidgetArea,&nbsp;arg2:&nbsp;smuview.<a href="#AnalogTimeSignal">AnalogTimeSignal</a>)&nbsp;-&gt;&nbsp;str<br>
+&nbsp;<br>
+Add&nbsp;a&nbsp;time&nbsp;plot&nbsp;view&nbsp;for&nbsp;a&nbsp;signal&nbsp;to&nbsp;the&nbsp;given&nbsp;tab.<br>
+&nbsp;<br>
+3.&nbsp;<a href="#UiProxy-add_plot_view">add_plot_view</a>(self:&nbsp;smuview.<a href="#UiProxy">UiProxy</a>,&nbsp;arg0:&nbsp;str,&nbsp;arg1:&nbsp;Qt::DockWidgetArea,&nbsp;arg2:&nbsp;smuview.<a href="#AnalogTimeSignal">AnalogTimeSignal</a>,&nbsp;arg3:&nbsp;smuview.<a href="#AnalogTimeSignal">AnalogTimeSignal</a>)&nbsp;-&gt;&nbsp;str<br>
+&nbsp;<br>
+Add&nbsp;a&nbsp;x/y&nbsp;plot&nbsp;view&nbsp;for&nbsp;two&nbsp;signals&nbsp;to&nbsp;the&nbsp;given&nbsp;tab.</tt></dd></dl>
+
+<dl><dt><a name="UiProxy-add_power_panel_view"><strong>add_power_panel_view</strong></a>(...)</dt><dd><tt><a href="#UiProxy-add_power_panel_view">add_power_panel_view</a>(self:&nbsp;smuview.<a href="#UiProxy">UiProxy</a>,&nbsp;arg0:&nbsp;str,&nbsp;arg1:&nbsp;Qt::DockWidgetArea,&nbsp;arg2:&nbsp;smuview.<a href="#AnalogTimeSignal">AnalogTimeSignal</a>,&nbsp;arg3:&nbsp;smuview.<a href="#AnalogTimeSignal">AnalogTimeSignal</a>)&nbsp;-&gt;&nbsp;str<br>
+&nbsp;<br>
+Add&nbsp;a&nbsp;power&nbsp;panel&nbsp;control&nbsp;for&nbsp;two&nbsp;signals&nbsp;to&nbsp;the&nbsp;given&nbsp;tab.</tt></dd></dl>
+
+<dl><dt><a name="UiProxy-add_signal_to_data_view"><strong>add_signal_to_data_view</strong></a>(...)</dt><dd><tt><a href="#UiProxy-add_signal_to_data_view">add_signal_to_data_view</a>(self:&nbsp;smuview.<a href="#UiProxy">UiProxy</a>,&nbsp;arg0:&nbsp;str,&nbsp;arg1:&nbsp;str,&nbsp;arg2:&nbsp;smuview.<a href="#AnalogTimeSignal">AnalogTimeSignal</a>)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Add&nbsp;a&nbsp;signal&nbsp;to&nbsp;the&nbsp;given&nbsp;data&nbsp;view.</tt></dd></dl>
+
+<dl><dt><a name="UiProxy-add_signal_to_plot_view"><strong>add_signal_to_plot_view</strong></a>(...)</dt><dd><tt><a href="#UiProxy-add_signal_to_plot_view">add_signal_to_plot_view</a>(self:&nbsp;smuview.<a href="#UiProxy">UiProxy</a>,&nbsp;arg0:&nbsp;str,&nbsp;arg1:&nbsp;str,&nbsp;arg2:&nbsp;smuview.<a href="#AnalogTimeSignal">AnalogTimeSignal</a>)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Add&nbsp;a&nbsp;signal&nbsp;to&nbsp;the&nbsp;given&nbsp;plot&nbsp;view.&nbsp;If&nbsp;the&nbsp;plot&nbsp;is&nbsp;a&nbsp;x/y&nbsp;plot,&nbsp;the&nbsp;signal&nbsp;will&nbsp;be&nbsp;added&nbsp;as&nbsp;a&nbsp;new&nbsp;y&nbsp;signal.</tt></dd></dl>
+
+<dl><dt><a name="UiProxy-add_signals_to_xy_plot_view"><strong>add_signals_to_xy_plot_view</strong></a>(...)</dt><dd><tt><a href="#UiProxy-add_signals_to_xy_plot_view">add_signals_to_xy_plot_view</a>(self:&nbsp;smuview.<a href="#UiProxy">UiProxy</a>,&nbsp;arg0:&nbsp;str,&nbsp;arg1:&nbsp;str,&nbsp;arg2:&nbsp;smuview.<a href="#AnalogTimeSignal">AnalogTimeSignal</a>,&nbsp;arg3:&nbsp;smuview.<a href="#AnalogTimeSignal">AnalogTimeSignal</a>)&nbsp;-&gt;&nbsp;None<br>
+&nbsp;<br>
+Add&nbsp;x/y&nbsp;signals&nbsp;to&nbsp;the&nbsp;given&nbsp;x/y&nbsp;plot&nbsp;view.</tt></dd></dl>
+
+<dl><dt><a name="UiProxy-add_value_panel_view"><strong>add_value_panel_view</strong></a>(...)</dt><dd><tt><a href="#UiProxy-add_value_panel_view">add_value_panel_view</a>(*args,&nbsp;**kwargs)<br>
+Overloaded&nbsp;function.<br>
+&nbsp;<br>
+1.&nbsp;<a href="#UiProxy-add_value_panel_view">add_value_panel_view</a>(self:&nbsp;smuview.<a href="#UiProxy">UiProxy</a>,&nbsp;arg0:&nbsp;str,&nbsp;arg1:&nbsp;Qt::DockWidgetArea,&nbsp;arg2:&nbsp;smuview.<a href="#BaseChannel">BaseChannel</a>)&nbsp;-&gt;&nbsp;str<br>
+&nbsp;<br>
+Add&nbsp;a&nbsp;value&nbsp;panel&nbsp;view&nbsp;for&nbsp;a&nbsp;channel&nbsp;to&nbsp;the&nbsp;given&nbsp;tab.<br>
+&nbsp;<br>
+2.&nbsp;<a href="#UiProxy-add_value_panel_view">add_value_panel_view</a>(self:&nbsp;smuview.<a href="#UiProxy">UiProxy</a>,&nbsp;arg0:&nbsp;str,&nbsp;arg1:&nbsp;Qt::DockWidgetArea,&nbsp;arg2:&nbsp;smuview.<a href="#AnalogTimeSignal">AnalogTimeSignal</a>)&nbsp;-&gt;&nbsp;str<br>
+&nbsp;<br>
+Add&nbsp;a&nbsp;value&nbsp;panel&nbsp;view&nbsp;for&nbsp;a&nbsp;signal&nbsp;to&nbsp;the&nbsp;given&nbsp;tab.</tt></dd></dl>
+
+<hr>
+Static methods inherited from pybind11_builtins.pybind11_object:<br>
+<dl><dt><a name="UiProxy-__new__"><strong>__new__</strong></a>(*args, **kwargs)<font color="#909090"><font face="helvetica, arial"> from pybind11_builtins.pybind11_type</font></font></dt><dd><tt>Create&nbsp;and&nbsp;return&nbsp;a&nbsp;new&nbsp;object.&nbsp;&nbsp;See&nbsp;help(type)&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Unit">class <strong>Unit</strong></a>(pybind11_builtins.pybind11_object)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Enum&nbsp;of&nbsp;all&nbsp;available&nbsp;units.<br>
+&nbsp;<br>
+Members:<br>
+&nbsp;<br>
+&nbsp;&nbsp;Volt<br>
+&nbsp;<br>
+&nbsp;&nbsp;Ampere<br>
+&nbsp;<br>
+&nbsp;&nbsp;Ohm<br>
+&nbsp;<br>
+&nbsp;&nbsp;Farad<br>
+&nbsp;<br>
+&nbsp;&nbsp;Kelvin<br>
+&nbsp;<br>
+&nbsp;&nbsp;Celsius<br>
+&nbsp;<br>
+&nbsp;&nbsp;Fahrenheit<br>
+&nbsp;<br>
+&nbsp;&nbsp;Hertz<br>
+&nbsp;<br>
+&nbsp;&nbsp;Percentage<br>
+&nbsp;<br>
+&nbsp;&nbsp;Boolean<br>
+&nbsp;<br>
+&nbsp;&nbsp;Second<br>
+&nbsp;<br>
+&nbsp;&nbsp;Siemens<br>
+&nbsp;<br>
+&nbsp;&nbsp;DecibelMW<br>
+&nbsp;<br>
+&nbsp;&nbsp;DecibelVolt<br>
+&nbsp;<br>
+&nbsp;&nbsp;Decibel<br>
+&nbsp;<br>
+&nbsp;&nbsp;Unitless<br>
+&nbsp;<br>
+&nbsp;&nbsp;DecibelSpl<br>
+&nbsp;<br>
+&nbsp;&nbsp;Concentration<br>
+&nbsp;<br>
+&nbsp;&nbsp;RevolutionsPerMinute<br>
+&nbsp;<br>
+&nbsp;&nbsp;VoltAmpere<br>
+&nbsp;<br>
+&nbsp;&nbsp;Watt<br>
+&nbsp;<br>
+&nbsp;&nbsp;WattHour<br>
+&nbsp;<br>
+&nbsp;&nbsp;Joule<br>
+&nbsp;<br>
+&nbsp;&nbsp;AmpereHour<br>
+&nbsp;<br>
+&nbsp;&nbsp;Coulomb<br>
+&nbsp;<br>
+&nbsp;&nbsp;MeterPerSecond<br>
+&nbsp;<br>
+&nbsp;&nbsp;HectoPascal<br>
+&nbsp;<br>
+&nbsp;&nbsp;Humidity293K<br>
+&nbsp;<br>
+&nbsp;&nbsp;Degree<br>
+&nbsp;<br>
+&nbsp;&nbsp;Henry<br>
+&nbsp;<br>
+&nbsp;&nbsp;Gram<br>
+&nbsp;<br>
+&nbsp;&nbsp;Carat<br>
+&nbsp;<br>
+&nbsp;&nbsp;Ounce<br>
+&nbsp;<br>
+&nbsp;&nbsp;TroyOunce<br>
+&nbsp;<br>
+&nbsp;&nbsp;Pound<br>
+&nbsp;<br>
+&nbsp;&nbsp;Pennyweight<br>
+&nbsp;<br>
+&nbsp;&nbsp;Grain<br>
+&nbsp;<br>
+&nbsp;&nbsp;Tael<br>
+&nbsp;<br>
+&nbsp;&nbsp;Momme<br>
+&nbsp;<br>
+&nbsp;&nbsp;Tola<br>
+&nbsp;<br>
+&nbsp;&nbsp;Piece<br>
+&nbsp;<br>
+&nbsp;&nbsp;Unknown<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="smuview.html#Unit">Unit</a></dd>
+<dd>pybind11_builtins.pybind11_object</dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="Unit-__eq__"><strong>__eq__</strong></a> = (...)</dt><dd><tt>(self:&nbsp;object,&nbsp;arg0:&nbsp;object)&nbsp;-&gt;&nbsp;bool</tt></dd></dl>
+
+<dl><dt><a name="Unit-__getstate__"><strong>__getstate__</strong></a> = (...)</dt><dd><tt>(self:&nbsp;object)&nbsp;-&gt;&nbsp;int_</tt></dd></dl>
+
+<dl><dt><a name="Unit-__hash__"><strong>__hash__</strong></a> = (...)</dt><dd><tt>(self:&nbsp;object)&nbsp;-&gt;&nbsp;int_</tt></dd></dl>
+
+<dl><dt><a name="Unit-__init__"><strong>__init__</strong></a>(...)</dt><dd><tt><a href="#Unit-__init__">__init__</a>(self:&nbsp;smuview.<a href="#Unit">Unit</a>,&nbsp;arg0:&nbsp;int)&nbsp;-&gt;&nbsp;None</tt></dd></dl>
+
+<dl><dt><a name="Unit-__int__"><strong>__int__</strong></a>(...)</dt><dd><tt><a href="#Unit-__int__">__int__</a>(self:&nbsp;smuview.<a href="#Unit">Unit</a>)&nbsp;-&gt;&nbsp;int</tt></dd></dl>
+
+<dl><dt><a name="Unit-__ne__"><strong>__ne__</strong></a> = (...)</dt><dd><tt>(self:&nbsp;object,&nbsp;arg0:&nbsp;object)&nbsp;-&gt;&nbsp;bool</tt></dd></dl>
+
+<dl><dt><a name="Unit-__repr__"><strong>__repr__</strong></a> = (...)</dt><dd><tt>(self:&nbsp;handle)&nbsp;-&gt;&nbsp;str</tt></dd></dl>
+
+<dl><dt><a name="Unit-__setstate__"><strong>__setstate__</strong></a> = (...)</dt><dd><tt>(self:&nbsp;smuview.<a href="#Unit">Unit</a>,&nbsp;arg0:&nbsp;int)&nbsp;-&gt;&nbsp;None</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__members__</strong></dt>
+</dl>
+<dl><dt><strong>name</strong></dt>
+<dd><tt>(self:&nbsp;handle)&nbsp;-&gt;&nbsp;str</tt></dd>
+</dl>
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>Ampere</strong> = Unit.Ampere</dl>
+
+<dl><dt><strong>AmpereHour</strong> = Unit.AmpereHour</dl>
+
+<dl><dt><strong>Boolean</strong> = Unit.Boolean</dl>
+
+<dl><dt><strong>Carat</strong> = Unit.Carat</dl>
+
+<dl><dt><strong>Celsius</strong> = Unit.Celsius</dl>
+
+<dl><dt><strong>Concentration</strong> = Unit.Concentration</dl>
+
+<dl><dt><strong>Coulomb</strong> = Unit.Coulomb</dl>
+
+<dl><dt><strong>Decibel</strong> = Unit.Decibel</dl>
+
+<dl><dt><strong>DecibelMW</strong> = Unit.DecibelMW</dl>
+
+<dl><dt><strong>DecibelSpl</strong> = Unit.DecibelSpl</dl>
+
+<dl><dt><strong>DecibelVolt</strong> = Unit.DecibelVolt</dl>
+
+<dl><dt><strong>Degree</strong> = Unit.Degree</dl>
+
+<dl><dt><strong>Fahrenheit</strong> = Unit.Fahrenheit</dl>
+
+<dl><dt><strong>Farad</strong> = Unit.Farad</dl>
+
+<dl><dt><strong>Grain</strong> = Unit.Grain</dl>
+
+<dl><dt><strong>Gram</strong> = Unit.Gram</dl>
+
+<dl><dt><strong>HectoPascal</strong> = Unit.HectoPascal</dl>
+
+<dl><dt><strong>Henry</strong> = Unit.Henry</dl>
+
+<dl><dt><strong>Hertz</strong> = Unit.Hertz</dl>
+
+<dl><dt><strong>Humidity293K</strong> = Unit.Humidity293K</dl>
+
+<dl><dt><strong>Joule</strong> = Unit.Joule</dl>
+
+<dl><dt><strong>Kelvin</strong> = Unit.Kelvin</dl>
+
+<dl><dt><strong>MeterPerSecond</strong> = Unit.MeterPerSecond</dl>
+
+<dl><dt><strong>Momme</strong> = Unit.Momme</dl>
+
+<dl><dt><strong>Ohm</strong> = Unit.Ohm</dl>
+
+<dl><dt><strong>Ounce</strong> = Unit.Ounce</dl>
+
+<dl><dt><strong>Pennyweight</strong> = Unit.Pennyweight</dl>
+
+<dl><dt><strong>Percentage</strong> = Unit.Percentage</dl>
+
+<dl><dt><strong>Piece</strong> = Unit.Piece</dl>
+
+<dl><dt><strong>Pound</strong> = Unit.Pound</dl>
+
+<dl><dt><strong>RevolutionsPerMinute</strong> = Unit.RevolutionsPerMinute</dl>
+
+<dl><dt><strong>Second</strong> = Unit.Second</dl>
+
+<dl><dt><strong>Siemens</strong> = Unit.Siemens</dl>
+
+<dl><dt><strong>Tael</strong> = Unit.Tael</dl>
+
+<dl><dt><strong>Tola</strong> = Unit.Tola</dl>
+
+<dl><dt><strong>TroyOunce</strong> = Unit.TroyOunce</dl>
+
+<dl><dt><strong>Unitless</strong> = Unit.Unitless</dl>
+
+<dl><dt><strong>Unknown</strong> = Unit.Unknown</dl>
+
+<dl><dt><strong>Volt</strong> = Unit.Volt</dl>
+
+<dl><dt><strong>VoltAmpere</strong> = Unit.VoltAmpere</dl>
+
+<dl><dt><strong>Watt</strong> = Unit.Watt</dl>
+
+<dl><dt><strong>WattHour</strong> = Unit.WattHour</dl>
+
+<hr>
+Static methods inherited from pybind11_builtins.pybind11_object:<br>
+<dl><dt><a name="Unit-__new__"><strong>__new__</strong></a>(*args, **kwargs)<font color="#909090"><font face="helvetica, arial"> from pybind11_builtins.pybind11_type</font></font></dt><dd><tt>Create&nbsp;and&nbsp;return&nbsp;a&nbsp;new&nbsp;object.&nbsp;&nbsp;See&nbsp;help(type)&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="UserChannel">class <strong>UserChannel</strong></a>(<a href="smuview.html#BaseChannel">BaseChannel</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>An&nbsp;user&nbsp;generated&nbsp;channel&nbsp;for&nbsp;storing&nbsp;custom&nbsp;data.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="smuview.html#UserChannel">UserChannel</a></dd>
+<dd><a href="smuview.html#BaseChannel">BaseChannel</a></dd>
+<dd>pybind11_builtins.pybind11_object</dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="UserChannel-__init__"><strong>__init__</strong></a>(self, /, *args, **kwargs)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<dl><dt><a name="UserChannel-push_sample"><strong>push_sample</strong></a>(...)</dt><dd><tt><a href="#UserChannel-push_sample">push_sample</a>(self:&nbsp;smuview.<a href="#UserChannel">UserChannel</a>,&nbsp;arg0:&nbsp;float,&nbsp;arg1:&nbsp;float,&nbsp;arg2:&nbsp;sv::data::<a href="#Quantity">Quantity</a>,&nbsp;arg3:&nbsp;Set[sv::data::<a href="#QuantityFlag">QuantityFlag</a>],&nbsp;arg4:&nbsp;sv::data::<a href="#Unit">Unit</a>,&nbsp;arg5:&nbsp;int,&nbsp;arg6:&nbsp;int)&nbsp;-&gt;&nbsp;None</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="smuview.html#BaseChannel">BaseChannel</a>:<br>
+<dl><dt><a name="UserChannel-actual_signal"><strong>actual_signal</strong></a>(...)</dt><dd><tt><a href="#UserChannel-actual_signal">actual_signal</a>(self:&nbsp;smuview.<a href="#BaseChannel">BaseChannel</a>)&nbsp;-&gt;&nbsp;sv::data::<a href="#BaseSignal">BaseSignal</a><br>
+&nbsp;<br>
+Return&nbsp;the&nbsp;actual&nbsp;signal&nbsp;of&nbsp;the&nbsp;channel.</tt></dd></dl>
+
+<dl><dt><a name="UserChannel-add_signal"><strong>add_signal</strong></a>(...)</dt><dd><tt><a href="#UserChannel-add_signal">add_signal</a>(self:&nbsp;smuview.<a href="#BaseChannel">BaseChannel</a>,&nbsp;arg0:&nbsp;sv::data::<a href="#Quantity">Quantity</a>,&nbsp;arg1:&nbsp;Set[sv::data::<a href="#QuantityFlag">QuantityFlag</a>],&nbsp;arg2:&nbsp;sv::data::<a href="#Unit">Unit</a>)&nbsp;-&gt;&nbsp;sv::data::<a href="#BaseSignal">BaseSignal</a><br>
+&nbsp;<br>
+Add&nbsp;a&nbsp;new&nbsp;signal&nbsp;to&nbsp;the&nbsp;channel.</tt></dd></dl>
+
+<dl><dt><a name="UserChannel-name"><strong>name</strong></a>(...)</dt><dd><tt><a href="#UserChannel-name">name</a>(self:&nbsp;smuview.<a href="#BaseChannel">BaseChannel</a>)&nbsp;-&gt;&nbsp;str<br>
+&nbsp;<br>
+Return&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;channel.</tt></dd></dl>
+
+<dl><dt><a name="UserChannel-signals"><strong>signals</strong></a>(...)</dt><dd><tt><a href="#UserChannel-signals">signals</a>(self:&nbsp;smuview.<a href="#BaseChannel">BaseChannel</a>)&nbsp;-&gt;&nbsp;List[sv::data::<a href="#BaseSignal">BaseSignal</a>]<br>
+&nbsp;<br>
+Return&nbsp;all&nbsp;signals&nbsp;of&nbsp;the&nbsp;channel.</tt></dd></dl>
+
+<hr>
+Static methods inherited from pybind11_builtins.pybind11_object:<br>
+<dl><dt><a name="UserChannel-__new__"><strong>__new__</strong></a>(*args, **kwargs)<font color="#909090"><font face="helvetica, arial"> from pybind11_builtins.pybind11_type</font></font></dt><dd><tt>Create&nbsp;and&nbsp;return&nbsp;a&nbsp;new&nbsp;object.&nbsp;&nbsp;See&nbsp;help(type)&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="UserDevice">class <strong>UserDevice</strong></a>(<a href="smuview.html#BaseDevice">BaseDevice</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>An&nbsp;user&nbsp;generated&nbsp;(dummy)&nbsp;device&nbsp;for&nbsp;storing&nbsp;custom&nbsp;data&nbsp;and&nbsp;showing&nbsp;a&nbsp;custom&nbsp;tab.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="smuview.html#UserDevice">UserDevice</a></dd>
+<dd><a href="smuview.html#BaseDevice">BaseDevice</a></dd>
+<dd>pybind11_builtins.pybind11_object</dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="UserDevice-__init__"><strong>__init__</strong></a>(self, /, *args, **kwargs)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="smuview.html#BaseDevice">BaseDevice</a>:<br>
+<dl><dt><a name="UserDevice-add_user_channel"><strong>add_user_channel</strong></a>(...)</dt><dd><tt><a href="#UserDevice-add_user_channel">add_user_channel</a>(self:&nbsp;smuview.<a href="#BaseDevice">BaseDevice</a>,&nbsp;arg0:&nbsp;str,&nbsp;arg1:&nbsp;str)&nbsp;-&gt;&nbsp;sv::channels::<a href="#UserChannel">UserChannel</a><br>
+&nbsp;<br>
+Add&nbsp;a&nbsp;new&nbsp;user&nbsp;channel&nbsp;to&nbsp;the&nbsp;device.</tt></dd></dl>
+
+<dl><dt><a name="UserDevice-channels"><strong>channels</strong></a>(...)</dt><dd><tt><a href="#UserDevice-channels">channels</a>(self:&nbsp;smuview.<a href="#BaseDevice">BaseDevice</a>)&nbsp;-&gt;&nbsp;Dict[str,&nbsp;sv::channels::<a href="#BaseChannel">BaseChannel</a>]<br>
+&nbsp;<br>
+Return&nbsp;all&nbsp;channels&nbsp;of&nbsp;the&nbsp;device.</tt></dd></dl>
+
+<dl><dt><a name="UserDevice-configurables"><strong>configurables</strong></a>(...)</dt><dd><tt><a href="#UserDevice-configurables">configurables</a>(self:&nbsp;smuview.<a href="#BaseDevice">BaseDevice</a>)&nbsp;-&gt;&nbsp;Dict[str,&nbsp;sv::devices::<a href="#Configurable">Configurable</a>]<br>
+&nbsp;<br>
+Return&nbsp;all&nbsp;configurables&nbsp;of&nbsp;the&nbsp;device.</tt></dd></dl>
+
+<dl><dt><a name="UserDevice-id"><strong>id</strong></a>(...)</dt><dd><tt><a href="#UserDevice-id">id</a>(self:&nbsp;smuview.<a href="#BaseDevice">BaseDevice</a>)&nbsp;-&gt;&nbsp;str<br>
+&nbsp;<br>
+Return&nbsp;the&nbsp;unique&nbsp;id&nbsp;of&nbsp;the&nbsp;device.</tt></dd></dl>
+
+<dl><dt><a name="UserDevice-name"><strong>name</strong></a>(...)</dt><dd><tt><a href="#UserDevice-name">name</a>(self:&nbsp;smuview.<a href="#BaseDevice">BaseDevice</a>)&nbsp;-&gt;&nbsp;str<br>
+&nbsp;<br>
+Return&nbsp;the&nbsp;name&nbsp;of&nbsp;the&nbsp;device.</tt></dd></dl>
+
+<hr>
+Static methods inherited from pybind11_builtins.pybind11_object:<br>
+<dl><dt><a name="UserDevice-__new__"><strong>__new__</strong></a>(*args, **kwargs)<font color="#909090"><font face="helvetica, arial"> from pybind11_builtins.pybind11_type</font></font></dt><dd><tt>Create&nbsp;and&nbsp;return&nbsp;a&nbsp;new&nbsp;object.&nbsp;&nbsp;See&nbsp;help(type)&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+</td></tr></table></td></tr></table>
+</body></html>
