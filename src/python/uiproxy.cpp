@@ -70,6 +70,9 @@ UiProxy::UiProxy(Session &session, shared_ptr<UiHelper> ui_helper) :
 	connect(this, QOverload<std::string, Qt::DockWidgetArea, shared_ptr<sv::data::AnalogTimeSignal>>::of(&UiProxy::add_value_panel_view),
 		ui_helper_.get(), QOverload<std::string, Qt::DockWidgetArea, shared_ptr<sv::data::AnalogTimeSignal>>::of(&UiHelper::add_value_panel_view));
 
+	connect(this, &UiProxy::add_signal_to_data_view,
+		ui_helper_.get(), &UiHelper::add_signal_to_data_view);
+
 	connect(this, &UiProxy::add_signal_to_plot,
 		ui_helper_.get(), &UiHelper::add_signal_to_plot);
 	connect(this, &UiProxy::add_y_signal_to_xy_plot,
@@ -142,6 +145,12 @@ string UiProxy::ui_add_value_panel_view(string device_id, Qt::DockWidgetArea are
 {
 	Q_EMIT add_value_panel_view(device_id, area, signal);
 	return "valuepanel_sig:" + signal->name();
+}
+
+void UiProxy::ui_add_signal_to_data_view(string device_id, string view_id,
+	shared_ptr<data::AnalogTimeSignal> signal)
+{
+	Q_EMIT add_signal_to_data_view(device_id, view_id, signal);
 }
 
 void UiProxy::ui_add_signal_to_plot(string device_id, string view_id,

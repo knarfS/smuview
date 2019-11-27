@@ -110,6 +110,17 @@ void UiHelper::add_value_panel_view(std::string device_id,
 	tab->add_view(new ui::views::ValuePanelView(session_, signal), area);
 }
 
+void UiHelper::add_signal_to_data_view(std::string device_id,
+	std::string view_id, shared_ptr<sv::data::AnalogTimeSignal> signal)
+{
+	auto tab = session_.main_window()->get_base_tab_from_device_id(device_id);
+	auto view = tab->get_view_from_view_id(view_id);
+	if (!view)
+		return;
+
+	((ui::views::DataView *)view)->add_signal(signal);
+}
+
 void UiHelper::add_signal_to_plot(std::string device_id, std::string view_id,
 	shared_ptr<sv::data::AnalogTimeSignal> signal)
 {

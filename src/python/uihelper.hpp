@@ -84,6 +84,9 @@ public Q_SLOTS:
 	void add_value_panel_view(std::string device_id, Qt::DockWidgetArea area,
 		shared_ptr<sv::data::AnalogTimeSignal> signal);
 
+	void add_signal_to_data_view(std::string device_id, std::string view_id,
+		shared_ptr<sv::data::AnalogTimeSignal> signal);
+
 	void add_signal_to_plot(std::string device_id, std::string view_id,
 		shared_ptr<sv::data::AnalogTimeSignal> signal);
 	void add_y_signal_to_xy_plot(std::string device_id, std::string view_id,
