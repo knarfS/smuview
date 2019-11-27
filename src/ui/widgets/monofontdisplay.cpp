@@ -24,6 +24,8 @@
 #include <QString>
 #include <QVBoxLayout>
 
+#include <QStandardPaths>
+
 #include "monofontdisplay.hpp"
 #include "src/ui/widgets/valuedisplay.hpp"
 
@@ -45,7 +47,8 @@ MonoFontDisplay::MonoFontDisplay(
 void MonoFontDisplay::setup_ui()
 {
 	// Get standard font sizes
-	QFont monospace_font("Monospace"); // = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+	//QFont monospace_font("Monospace"); // = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+	QFont monospace_font = QFont(":/fonts/DejaVuSansMono.ttf");
 	monospace_font.setStyleHint(QFont::TypeWriter);
 	int monospace_font_size = monospace_font.pointSize();
 	int std_font_size = QFont().pointSize();
@@ -77,7 +80,7 @@ void MonoFontDisplay::setup_ui()
 		value_font.setWeight(QFont::Bold);
 	}
 	value_label_->setFont(value_font);
-	value_label_->setAlignment(Qt::AlignRight | Qt::AlignBottom);
+	value_label_->setAlignment(Qt::AlignRight | Qt::AlignBaseline); //Qt::AlignBottom);
 	value_label_->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	//value_label_->setFrameShape(QFrame::Box);
 	layout->addWidget(value_label_);
@@ -101,7 +104,7 @@ void MonoFontDisplay::setup_ui()
 	QFont unit_font;
 	unit_font.setPointSize(unit_font_size_);
 	unit_label_->setFont(unit_font);
-	unit_label_->setAlignment(Qt::AlignRight | Qt::AlignBottom);
+	unit_label_->setAlignment(Qt::AlignRight | Qt::AlignBaseline); // Qt::AlignBottom);
 	unit_label_->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	//unit_label_->setFrameShape(QFrame::Box);
 	text_layout->addWidget(unit_label_);

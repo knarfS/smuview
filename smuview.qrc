@@ -44,5 +44,9 @@
 		<file>icons/information.svg</file>
 		<file>icons/menu.svg</file>
 		<file>icons/settings-views.svg</file>
+
+		<!-- Fonts -->
+		<file>fonts/DejaVuSansMono.ttf</file>
+
 	</qresource>
 </RCC>
