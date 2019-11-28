@@ -19,7 +19,7 @@
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.6)
 
 include(GNUInstallDirs)
 
@@ -54,6 +54,9 @@ if(WIN32)
 
 	# Windows does not support UNIX signals.
 	set(ENABLE_SIGNALS FALSE)
+
+	# When cross compiling this is needed for pkg-config
+	set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
 endif()
 
 if(NOT CMAKE_BUILD_TYPE)
@@ -81,7 +84,7 @@ set(LIBSR_CXX_BINDING "libsigrokcxx>=0.5.2")
 list(APPEND PKGDEPS "${LIBSR_CXX_BINDING}")
 
 find_package(PkgConfig)
-pkg_check_modules(LIBSRCXX ${LIBSR_CXX_BINDING})
+pkg_check_modules(LIBSRCXX ${LIBSR_CXX_BINDING} IMPORTED_TARGET)
 if(NOT LIBSRCXX_FOUND OR NOT LIBSRCXX_VERSION)
 	message(FATAL_ERROR "libsigrok C++ bindings missing, check libsigrok's 'configure' output (missing dependencies?)")
 endif()
@@ -388,6 +391,7 @@ set(SMUVIEW_LINK_LIBS
 	${QWT_LIBRARY}
 	${CMAKE_THREAD_LIBS_INIT}
 #	${LIBATOMIC_LIBRARY}
+	PkgConfig::LIBSRCXX
 	pybind11::embed
 	QCodeEditor
 )
