@@ -5,7 +5,7 @@
 # All rights reserved. Use of this source code is governed by a
 # BSD-style license that can be found in the LICENSE file.
 
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.6)
 
 if (POLICY CMP0048)
   # cmake warns if loaded from a min-3.0-required parent dir, so silence the warning:
@@ -34,12 +34,6 @@ include(pybind11Tools)
 
 # Cache variables so pybind11_add_module can be used in parent projects
 set(PYBIND11_INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/include" CACHE INTERNAL "")
-set(PYTHON_INCLUDE_DIRS ${PYTHON_INCLUDE_DIRS} CACHE INTERNAL "")
-set(PYTHON_LIBRARIES ${PYTHON_LIBRARIES} CACHE INTERNAL "")
-set(PYTHON_MODULE_PREFIX ${PYTHON_MODULE_PREFIX} CACHE INTERNAL "")
-set(PYTHON_MODULE_EXTENSION ${PYTHON_MODULE_EXTENSION} CACHE INTERNAL "")
-set(PYTHON_VERSION_MAJOR ${PYTHON_VERSION_MAJOR} CACHE INTERNAL "")
-set(PYTHON_VERSION_MINOR ${PYTHON_VERSION_MINOR} CACHE INTERNAL "")
 
 # NB: when adding a header don't forget to also add it to setup.py
 set(PYBIND11_HEADERS
@@ -88,19 +82,18 @@ endforeach()
 set(${PROJECT_NAME}_VERSION ${PYBIND11_VERSION_MAJOR}.${PYBIND11_VERSION_MINOR}.${PYBIND11_VERSION_PATCH})
 message(STATUS "pybind11 v${${PROJECT_NAME}_VERSION}")
 
-option (USE_PYTHON_INCLUDE_DIR "Install pybind11 headers in Python include directory instead of default installation prefix" OFF)
-if (USE_PYTHON_INCLUDE_DIR)
-    file(RELATIVE_PATH CMAKE_INSTALL_INCLUDEDIR ${CMAKE_INSTALL_PREFIX} ${PYTHON_INCLUDE_DIRS})
-endif()
+find_package(PkgConfig)
+pkg_check_modules(PYTHON3 python3 IMPORTED_TARGET)
 
 if(NOT (CMAKE_VERSION VERSION_LESS 3.0))  # CMake >= 3.0
   # Build an interface library target:
   add_library(pybind11 INTERFACE)
   add_library(pybind11::pybind11 ALIAS pybind11)  # to match exported target
+  target_link_libraries(pybind11 INTERFACE PkgConfig::PYTHON3)
   target_include_directories(pybind11 INTERFACE $<BUILD_INTERFACE:${PYBIND11_INCLUDE_DIR}>
-                                                $<BUILD_INTERFACE:${PYTHON_INCLUDE_DIRS}>
                                                 $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
   target_compile_options(pybind11 INTERFACE $<BUILD_INTERFACE:${PYBIND11_CPP_STANDARD}>)
+  target_link_directories(pybind11 INTERFACE $<BUILD_INTERFACE:${PYTHON3_LIBRARY_DIRS}>)
 
   add_library(module INTERFACE)
   add_library(pybind11::module ALIAS module)
