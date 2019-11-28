@@ -71,3 +71,13 @@ CMakeLists.txt.user*
 
 # KDEvelop
 .kdev4/
+
+# JetBrains
+.idea/
+
+# Editor backups
+*.save
+*.swp
+
+# Build artifacts
+*.AppImage
