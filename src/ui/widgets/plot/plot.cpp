@@ -268,15 +268,16 @@ int Plot::init_x_axis(widgets::plot::BaseCurveData *curve_data)
 
 	int x_axis_id = QwtPlot::xBottom;
 
-	// Check if new curve has the valid x axis unit
+	// Check if there already is an axis with the same unit. This is done
+	// via the strings to get potential AC/DC flags.
 	if (curve_datas_.size() > 0) {
-		if (curve_data->x_data_unit() != curve_datas_[0]->x_data_unit())
+		if (curve_data->x_unit_str() != curve_datas_[0]->x_unit_str())
 			return -1;
 		else
 			return x_axis_id;
 	}
 
-	QString title = curve_data->x_data_title();
+	QString title = curve_data->x_title();
 	double min;
 	double max;
 	if (curve_data->curve_type() == CurveType::TimeCurve &&
@@ -328,9 +329,10 @@ int Plot::init_y_axis(widgets::plot::BaseCurveData *curve_data)
 		do_init = true;
 	}
 	else {
-		// Check if there already is an axis with the same unit
+		// Check if there already is an axis with the same unit. This is done
+		// via the strings to get potential AC/DC flags.
 		for (const auto &cid_pair : y_axis_id_map_) {
-			if (cid_pair.first->y_data_unit() == curve_data->y_data_unit()) {
+			if (cid_pair.first->y_unit_str() == curve_data->y_unit_str()) {
 				y_axis_id = cid_pair.second;
 				do_init = false;
 			}
@@ -361,7 +363,7 @@ int Plot::init_y_axis(widgets::plot::BaseCurveData *curve_data)
 		double max = curve_data->boundingRect().top() +
 			(std::fabs(curve_data->boundingRect().top()) * 0.1);
 
-		this->setAxisTitle(y_axis_id, curve_data->y_data_title());
+		this->setAxisTitle(y_axis_id, curve_data->y_title());
 		this->setAxisScale(y_axis_id, min, max);
 		this->setAxisAutoScale(y_axis_id, false); // TODO: Not working!?
 		this->enableAxis(y_axis_id);
@@ -863,10 +865,10 @@ void Plot::update_markers_label()
 			arg(marker->title().text()));
 		table.append(QString("<td width=\"70\" align=\"right\">%2 %3</td>").
 			arg(marker->yValue()).
-			arg(marker_map_[marker]->y_data_unit()));
+			arg(marker_map_[marker]->y_unit_str()));
 		table.append(QString("<td width=\"70\" align=\"right\">%4 %5</td>").
 			arg(marker->xValue()).
-			arg(marker_map_[marker]->x_data_unit()));
+			arg(marker_map_[marker]->x_unit_str()));
 		table.append("</tr>");
 	}
 
@@ -875,14 +877,14 @@ void Plot::update_markers_label()
 		double d_y = marker_pair.first->yValue() - marker_pair.second->yValue();
 
 		QString x_unit("");
-		QString m1_x_unit = marker_map_[marker_pair.first]->x_data_unit();
-		QString m2_x_unit = marker_map_[marker_pair.second]->x_data_unit();
+		QString m1_x_unit = marker_map_[marker_pair.first]->x_unit_str();
+		QString m2_x_unit = marker_map_[marker_pair.second]->x_unit_str();
 		if (m1_x_unit == m1_x_unit)
 			x_unit = m1_x_unit;
 
 		QString y_unit("");
-		QString m1_y_unit = marker_map_[marker_pair.first]->y_data_unit();
-		QString m2_y_unit = marker_map_[marker_pair.second]->y_data_unit();
+		QString m1_y_unit = marker_map_[marker_pair.first]->y_unit_str();
+		QString m2_y_unit = marker_map_[marker_pair.second]->y_unit_str();
 		if (m1_y_unit == m2_y_unit)
 			y_unit = m1_y_unit;
 

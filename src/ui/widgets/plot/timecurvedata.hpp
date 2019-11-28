@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,13 +21,16 @@
 #define UI_WIDGETS_PLOT_TIMECURVEDATA_HPP
 
 #include <memory>
+#include <set>
 
 #include <QPointF>
 #include <QRectF>
 #include <QString>
 
+#include "src/data/datautil.hpp"
 #include "src/ui/widgets/plot/basecurvedata.hpp"
 
+using std::set;
 using std::shared_ptr;
 
 namespace sv {
@@ -54,12 +57,16 @@ public:
 
 	QPointF closest_point(const QPointF &pos, double *dist) const override;
 	QString name() const override;
-	QString x_data_quantity() const override;
-	QString x_data_unit() const override;
-	QString x_data_title() const override;
-	QString y_data_quantity() const override;
-	QString y_data_unit() const override;
-	QString y_data_title() const override;
+	sv::data::Quantity x_quantity() const override;
+	set<sv::data::QuantityFlag> x_quantity_flags() const override;
+	sv::data::Unit x_unit() const override;
+	QString x_unit_str() const override;
+	QString x_title() const override;
+	sv::data::Quantity y_quantity() const override;
+	set<sv::data::QuantityFlag> y_quantity_flags() const override;
+	sv::data::Unit y_unit() const override;
+	QString y_unit_str() const override;
+	QString y_title() const override;
 
 	shared_ptr<sv::data::AnalogTimeSignal> signal() const;
 

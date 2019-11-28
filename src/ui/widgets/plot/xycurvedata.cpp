@@ -19,6 +19,7 @@
 
 #include <memory>
 #include <mutex>
+#include <set>
 #include <vector>
 
 #include <QPointF>
@@ -27,11 +28,13 @@
 
 #include "xycurvedata.hpp"
 #include "src/data/analogtimesignal.hpp"
+#include "src/data/datautil.hpp"
 #include "src/ui/widgets/plot/basecurvedata.hpp"
 
 using std::lock_guard;
 using std::make_shared;
 using std::mutex;
+using std::set;
 using std::shared_ptr;
 
 namespace sv {
@@ -121,38 +124,61 @@ QString XYCurveData::name() const
 		append(x_t_signal_->display_name());
 }
 
-QString XYCurveData::x_data_quantity() const
+sv::data::Quantity XYCurveData::x_quantity() const
 {
-	return x_t_signal_->quantity_name();
+	return x_t_signal_->quantity();
 }
 
-QString XYCurveData::x_data_unit() const
+set<sv::data::QuantityFlag> XYCurveData::x_quantity_flags() const
 {
-	// Don't use x_t_signal_->unit_name(), so we can add AC/DC to axis label
-	return data::datautil::format_unit(
-		x_t_signal_->unit(), x_t_signal_->quantity_flags());
+	return x_t_signal_->quantity_flags();
 }
 
-QString XYCurveData::x_data_title() const
+sv::data::Unit XYCurveData::x_unit() const
 {
-	return QString("%1 [%2]").arg(x_data_quantity()).arg(x_data_unit());
+	return x_t_signal_->unit();
 }
 
-QString XYCurveData::y_data_quantity() const
+QString XYCurveData::x_unit_str() const
 {
-	return y_t_signal_->quantity_name();
+	return data::datautil::format_unit(x_unit(), x_quantity_flags());
 }
 
-QString XYCurveData::y_data_unit() const
+
+QString XYCurveData::x_title() const
 {
-	// Don't use y_t_signal_->unit_name(), so we can add AC/DC to axis label
-	return data::datautil::format_unit(
-		y_t_signal_->unit(), y_t_signal_->quantity_flags());
+	// Don't use only the unit, so we can add AC/DC to axis label.
+	return QString("%1 [%2]").
+		arg(data::datautil::format_quantity(x_quantity())).
+		arg(x_unit_str());
 }
 
-QString XYCurveData::y_data_title() const
+sv::data::Quantity XYCurveData::y_quantity() const
 {
-	return QString("%1 [%2]").arg(y_data_quantity()).arg(y_data_unit());
+	return y_t_signal_->quantity();
+}
+
+set<sv::data::QuantityFlag> XYCurveData::y_quantity_flags() const
+{
+	return y_t_signal_->quantity_flags();
+}
+
+sv::data::Unit XYCurveData::y_unit() const
+{
+	return y_t_signal_->unit();
+}
+
+QString XYCurveData::y_unit_str() const
+{
+	return data::datautil::format_unit(y_unit(), y_quantity_flags());
+}
+
+QString XYCurveData::y_title() const
+{
+	// Don't use only the unit, so we can add AC/DC to axis label.
+	return QString("%1 [%2]").
+		arg(data::datautil::format_quantity(y_quantity())).
+		arg(y_unit_str());
 }
 
 shared_ptr<sv::data::AnalogTimeSignal> XYCurveData::x_t_signal() const

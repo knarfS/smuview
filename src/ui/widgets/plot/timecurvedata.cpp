@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@
  */
 
 #include <memory>
+#include <set>
 
 #include <QPointF>
 #include <QRectF>
@@ -28,6 +29,7 @@
 #include "src/data/datautil.hpp"
 #include "src/ui/widgets/plot/basecurvedata.hpp"
 
+using std::set;
 using std::shared_ptr;
 
 namespace sv {
@@ -127,36 +129,59 @@ QString TimeCurveData::name() const
 	return signal_->display_name();
 }
 
-QString TimeCurveData::x_data_quantity() const
+sv::data::Quantity TimeCurveData::x_quantity() const
 {
-	return data::datautil::format_quantity(sv::data::Quantity::Time);
+	return sv::data::Quantity::Time;
 }
 
-QString TimeCurveData::x_data_unit() const
+set<sv::data::QuantityFlag> TimeCurveData::x_quantity_flags() const
 {
-	return data::datautil::format_unit(sv::data::Unit::Second);
+	return set<data::QuantityFlag>();
 }
 
-QString TimeCurveData::x_data_title() const
+sv::data::Unit TimeCurveData::x_unit() const
 {
-	return QString("%1 [%2]").arg(x_data_quantity()).arg(x_data_unit());
+	return sv::data::Unit::Second;
 }
 
-QString TimeCurveData::y_data_quantity() const
+QString TimeCurveData::x_unit_str() const
 {
-	return signal_->quantity_name();
+	return data::datautil::format_unit(x_unit());
 }
 
-QString TimeCurveData::y_data_unit() const
+QString TimeCurveData::x_title() const
 {
-	// Don't use signal_->unit_name(), so we can add AC/DC to axis label
-	return data::datautil::format_unit(
-		signal_->unit(), signal_->quantity_flags());
+	return QString("%1 [%2]").
+		arg(data::datautil::format_quantity(x_quantity())).
+		arg(x_unit_str());
 }
 
-QString TimeCurveData::y_data_title() const
+sv::data::Quantity TimeCurveData::y_quantity() const
 {
-	return QString("%1 [%2]").arg(y_data_quantity()).arg(y_data_unit());
+	return signal_->quantity();
+}
+
+set<sv::data::QuantityFlag> TimeCurveData::y_quantity_flags() const
+{
+	return signal_->quantity_flags();
+}
+
+sv::data::Unit TimeCurveData::y_unit() const
+{
+	return signal_->unit();
+}
+
+QString TimeCurveData::y_unit_str() const
+{
+	return data::datautil::format_unit(y_unit(), y_quantity_flags());
+}
+
+QString TimeCurveData::y_title() const
+{
+	// Don't use only the unit, so we can add AC/DC to axis label.
+	return QString("%1 [%2]").
+		arg(data::datautil::format_quantity(y_quantity())).
+		arg(y_unit_str());
 }
 
 shared_ptr<sv::data::AnalogTimeSignal> TimeCurveData::signal() const

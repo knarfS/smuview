@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 #include <qwt_series_data.h>
 
 #include "basecurvedata.hpp"
+#include "src/data/datautil.hpp"
 
 namespace sv {
 namespace ui {
@@ -42,12 +43,11 @@ CurveType BaseCurveData::curve_type() const
 
 QColor BaseCurveData::color() const
 {
-	// TODO
-	if (y_data_unit().startsWith("V "))
+	if (y_quantity() == sv::data::Quantity::Voltage)
 		return Qt::red;
-	else if (y_data_unit().startsWith("A "))
+	else if (y_quantity() == sv::data::Quantity::Current)
 		return Qt::green;
-	else if (y_data_unit() == "W")
+	else if (y_quantity() == sv::data::Quantity::Power)
 		return Qt::yellow;
 	else
 		return QColor::fromRgb(QRandomGenerator::global()->generate());

@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,11 +20,17 @@
 #ifndef UI_WIDGETS_PLOT_BASECURVEDATA_HPP
 #define UI_WIDGETS_PLOT_BASECURVEDATA_HPP
 
+#include <set>
+
 #include <QColor>
 #include <QPointF>
 #include <QRectF>
 #include <QString>
 #include <qwt_series_data.h>
+
+#include "src/data/datautil.hpp"
+
+using std::set;
 
 namespace sv {
 namespace ui {
@@ -56,12 +62,16 @@ public:
 
 	virtual QPointF closest_point(const QPointF &pos, double *dist) const = 0;
 	virtual QString name() const = 0;
-	virtual QString x_data_quantity() const = 0;
-	virtual QString x_data_unit() const = 0;
-	virtual QString x_data_title() const = 0;
-	virtual QString y_data_quantity() const = 0;
-	virtual QString y_data_unit() const = 0;
-	virtual QString y_data_title() const = 0;
+	virtual sv::data::Quantity x_quantity() const = 0;
+	virtual set<sv::data::QuantityFlag> x_quantity_flags() const = 0;
+	virtual sv::data::Unit x_unit() const = 0;
+	virtual QString x_unit_str() const = 0;
+	virtual QString x_title() const = 0;
+	virtual sv::data::Quantity y_quantity() const = 0;
+	virtual set<sv::data::QuantityFlag> y_quantity_flags() const = 0;
+	virtual sv::data::Unit y_unit() const = 0;
+	virtual QString y_unit_str() const = 0;
+	virtual QString y_title() const = 0;
 
 protected:
 	const CurveType curve_type_;

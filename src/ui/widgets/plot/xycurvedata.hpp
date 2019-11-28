@@ -22,15 +22,18 @@
 
 #include <memory>
 #include <mutex>
+#include <set>
 #include <vector>
 
 #include <QPointF>
 #include <QRectF>
 #include <QString>
 
+#include "src/data/datautil.hpp"
 #include "src/ui/widgets/plot/basecurvedata.hpp"
 
 using std::mutex;
+using std::set;
 using std::shared_ptr;
 using std::vector;
 
@@ -64,12 +67,16 @@ public:
 
 	QPointF closest_point(const QPointF &pos, double *dist) const override;
 	QString name() const override;
-	QString x_data_quantity() const override;
-	QString x_data_unit() const override;
-	QString x_data_title() const override;
-	QString y_data_quantity() const override;
-	QString y_data_unit() const override;
-	QString y_data_title() const override;
+	sv::data::Quantity x_quantity() const override;
+	set<sv::data::QuantityFlag> x_quantity_flags() const override;
+	sv::data::Unit x_unit() const override;
+	QString x_unit_str() const override;
+	QString x_title() const override;
+	sv::data::Quantity y_quantity() const override;
+	set<sv::data::QuantityFlag> y_quantity_flags() const override;
+	sv::data::Unit y_unit() const override;
+	QString y_unit_str() const override;
+	QString y_title() const override;
 
 	shared_ptr<sv::data::AnalogTimeSignal> x_t_signal() const;
 	shared_ptr<sv::data::AnalogTimeSignal> y_t_signal() const;
