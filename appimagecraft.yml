@@ -7,57 +7,60 @@ project:
 build:
   cmake:
     extra_variables:
-      # taken from some other script
+      # Taken from some other script
       - DISABLE_WERROR=y
       - CMAKE_EXPORT_COMPILE_COMMANDS=y
     raw_environment:
-      # we have to pre-build some dependencies, and also want to ship our own custom Python environment
+      # We have to pre-build some dependencies, and also want to ship our own custom Python environment
       # the CMake build system has been instructed to load the dependencies via pkg-config
       - PKG_CONFIG_PATH="$BUILD_DIR"/deps/lib/pkgconfig:"$BUILD_DIR"/AppDir/usr/conda/lib/pkgconfig
-      # also we want to use a newer CMake version
+      # Also we want to use a newer CMake version
       - PATH="$BUILD_DIR"/deps/bin:"$PATH"
 
 scripts:
   pre_build:
     - pushd "$BUILD_DIR"
     - |2
-      # we need a more recent version of libsigrok, and while we're at it, we can also build libserialport
+      # We need the Python environment before the build already, therefore we have to run the conda
+      # plugin manually before the build
+      #wget https://github.com/linuxdeploy/linuxdeploy-plugin-conda/raw/master/linuxdeploy-plugin-conda.sh
+      wget https://github.com/knarfS/linuxdeploy-plugin-conda/raw/master/linuxdeploy-plugin-conda.sh
+      # Skip the built-in cleanup as the build needs the development files (headers, libs, ...)
+      export CONDA_SKIP_CLEANUP=1
+      export CONDA_SKIP_ADJUST_PATHS=1
+      chmod +x linuxdeploy-plugin-conda.sh
+      ./linuxdeploy-plugin-conda.sh --appdir AppDir
+      . AppDir/usr/conda/bin/activate
+    - popd
+    - |2
+      # Build libserialport and libsigrok
       for i in libserialport libsigrok; do
           git clone git://sigrok.org/"$i"
           pushd "$i"
           ./autogen.sh
-          # once libserialport is built, libsigrok can be linked against it
+          # Once libserialport is built, libsigrok can be linked against it
           export PKG_CONFIG_PATH="$BUILD_DIR"/deps/lib/pkgconfig
           ./configure --prefix="$BUILD_DIR"/deps
           make -j$(nprocs)
           make install
           popd
       done
-    - popd
-    - |2
-      # unfortunately we need the Python environment before the build already, therefore we have to run the conda
-      # plugin manually before the build
-      wget https://github.com/linuxdeploy/linuxdeploy-plugin-conda/raw/master/linuxdeploy-plugin-conda.sh
-      # we need to skip the built-in cleanup as the build needs the development files (headers, libs, ...)
-      export CONDA_SKIP_CLEANUP=1
-      chmod +x linuxdeploy-plugin-conda.sh
-      ./linuxdeploy-plugin-conda.sh --appdir AppDir
-      . AppDir/usr/conda/bin/activate
 
   post_build:
+    - |2
+      # Cleanup conda
+      export CONDA_SKIP_INSTALL=1
+      ./linuxdeploy-plugin-conda.sh --appdir AppDir
     - |2
       cat > "$BUILD_DIR"/AppRun.sh <<\EOF
       #! /bin/bash
 
-      # make sure APPDIR variable is populated to allow for running from extracted AppDir as well
-      export APPDIR=${APPDIR:-$(readlink -f $(dirname "$0"))}
-
-      # load miniconda environment
+      # Load miniconda environment
       . "$APPDIR"/usr/conda/etc/profile.d/conda.sh
-      conda activate "$@"
+      conda activate
 
-      # finally, run smuview application
-      exec "$APPDIR"/usr/bin/smuview
+      # Run SmuView
+      exec "$APPDIR"/usr/bin/smuview "$@"
       EOF
     - chmod +x "$BUILD_DIR"/AppRun.sh
 
@@ -67,4 +70,4 @@ appimage:
       - qt
     extra_args: --custom-apprun "$BUILD_DIR"/AppRun.sh
     raw_environment:
-      - LD_LIBRARY_PATH="$BUILD_DIR"/AppDir/usr/conda/lib
+      - LD_LIBRARY_PATH="$LD_LIBRARY_PATH":"$BUILD_DIR"/deps/lib:"$BUILD_DIR"/AppDir/usr/conda/lib
