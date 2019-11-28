@@ -19,7 +19,7 @@
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.6)
 
 include(GNUInstallDirs)
 
@@ -85,7 +85,7 @@ set(LIBSR_CXX_BINDING "libsigrokcxx>=0.6.0")
 list(APPEND PKGDEPS "${LIBSR_CXX_BINDING}")
 
 find_package(PkgConfig)
-pkg_check_modules(LIBSRCXX ${LIBSR_CXX_BINDING})
+pkg_check_modules(LIBSRCXX ${LIBSR_CXX_BINDING} IMPORTED_TARGET)
 if(NOT LIBSRCXX_FOUND OR NOT LIBSRCXX_VERSION)
 	message(FATAL_ERROR "libsigrok C++ bindings missing, check libsigrok's 'configure' output (missing dependencies?)")
 endif()
@@ -383,6 +383,7 @@ set(SMUVIEW_LINK_LIBS
 	${CMAKE_THREAD_LIBS_INIT}
 #	${LIBATOMIC_LIBRARY}
 	pybind11::embed
+	PkgConfig::LIBSRCXX
 )
 
 if(STATIC_PKGDEPS_LIBS)
