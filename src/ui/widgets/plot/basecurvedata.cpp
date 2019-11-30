@@ -43,15 +43,51 @@ CurveType BaseCurveData::curve_type() const
 
 QColor BaseCurveData::color() const
 {
-	if (y_quantity() == sv::data::Quantity::Voltage)
+	if (y_quantity() == sv::data::Quantity::Voltage &&
+			y_quantity_flags().count(sv::data::QuantityFlag::DC))
 		return Qt::red;
-	else if (y_quantity() == sv::data::Quantity::Current)
+	else if (y_quantity() == sv::data::Quantity::Voltage &&
+			y_quantity_flags().count(sv::data::QuantityFlag::AC))
+		return Qt::darkRed;
+	else if (y_quantity() == sv::data::Quantity::Voltage)
+		// Fallback for Voltage without quantity flag
+		return Qt::red;
+	else if (y_quantity() == sv::data::Quantity::Current &&
+			y_quantity_flags().count(sv::data::QuantityFlag::DC))
 		return Qt::green;
+	else if (y_quantity() == sv::data::Quantity::Current &&
+			y_quantity_flags().count(sv::data::QuantityFlag::AC))
+		return Qt::darkGreen;
+	else if (y_quantity() == sv::data::Quantity::Current)
+		// Fallback for current without quantity flag
+		return Qt::green;
+	else if (y_quantity() == sv::data::Quantity::Resistance)
+		return Qt::cyan;
 	else if (y_quantity() == sv::data::Quantity::Power)
 		return Qt::yellow;
+	else if (y_quantity() == sv::data::Quantity::Work)
+		return Qt::darkYellow;
+	else if (y_quantity() == sv::data::Quantity::Temperature)
+		return Qt::darkCyan;
+	else if (y_quantity() == sv::data::Quantity::Capacitance)
+		return Qt::gray;
+	else if (y_quantity() == sv::data::Quantity::Frequency)
+		return Qt::magenta;
+	else if (y_quantity() == sv::data::Quantity::Time)
+		return Qt::darkMagenta;
+	else if (y_quantity() == sv::data::Quantity::PowerFactor)
+		return Qt::lightGray;
 	else
 		return QColor::fromRgb(QRandomGenerator::global()->generate());
 
+	/*
+	 * Unused colors:
+		Qt::blue
+		Qt::darkBlue
+		Qt::darkGray
+		Qt::white
+		Qt::black
+	*/
 }
 
 void BaseCurveData::set_relative_time(bool is_relative_time)
