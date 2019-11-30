@@ -101,7 +101,6 @@ private:
 	string vendor_;
 	string model_;
 	string version_;
-	unsigned int device_index_;
 	unsigned int channel_index_;
 
 };
