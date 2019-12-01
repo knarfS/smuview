@@ -136,8 +136,6 @@ memaccess_check_unaligned_le(HAVE_UNALIGNED_LITTLE_ENDIAN_ACCESS)
 set(SV_TITLE SmuView)
 set(SV_VERSION_STRING "0.0.3")
 
-set(SV_GLIBMM_VERSION ${PKGDEPS_glibmm-2.4_VERSION})
-
 # Append the revision hash unless we are exactly on a tagged release.
 include(GetGitRevisionDescription)
 git_describe(SV_TAG_VERSION_STRING --match "smuview-${SV_VERSION_STRING}" --exact-match)
@@ -163,6 +161,12 @@ if(SV_VERSION_STRING MATCHES "^([0-9]+)\\.([0-9]+)\\.([0-9]+)(-[-0-9a-z]*)?$")
 endif()
 
 message(STATUS "${SV_TITLE} version: ${SV_VERSION_STRING}")
+
+# Used libraries
+set(SV_GLIBMM_VERSION ${PKGDEPS_glibmm-2.4_VERSION})
+set(SV_PYBIND11_VERSION ${PYBIND11_VERSION_MAJOR}.${PYBIND11_VERSION_MINOR}.${PYBIND11_VERSION_PATCH})
+# TODO: Patch version is missing!
+set(SV_PYTHON_VERSION ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR})
 
 configure_file (
 	${PROJECT_SOURCE_DIR}/config.h.in

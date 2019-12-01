@@ -149,6 +149,10 @@ QWidget *AboutDialog::get_about_page(QWidget *parent) const
 		.arg(QString("glibmm"), SV_GLIBMM_VERSION));
 	s.append(QString("<tr><td><i>%1</i></td><td>%2</td></tr>")
 		.arg(QString("Boost"), BOOST_LIB_VERSION));
+	s.append(QString("<tr><td><i>%1</i></td><td>%2</td></tr>")
+		.arg(QString("pybind11"), SV_PYBIND11_VERSION));
+	s.append(QString("<tr><td><i>%1</i></td><td>%2</td></tr>")
+		.arg(QString("Python"), SV_PYTHON_VERSION));
 
 	s.append(QString("<tr><td><i>%1</i></td><td>%2/%3 (rt: %4/%5)</td></tr>")
 		.arg(QString("libsigrok"), SR_PACKAGE_VERSION_STRING,
