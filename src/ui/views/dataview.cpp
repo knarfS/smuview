@@ -166,14 +166,13 @@ void DataView::populate_table()
 			}
 
 			if (new_row) {
-				QTableWidgetItem *time_item =
-					new QTableWidgetItem(tr("%1").arg(sample.first));
-				time_item->setData(0, QVariant::fromValue(sample.first));
+				QTableWidgetItem *time_item = new QTableWidgetItem(sample.first);
+				time_item->setData(0, QVariant(sample.first));
 				data_table_->setItem(last_row+1, 0, time_item);
 				last_timestamp_[i] = time_item;
 			}
-			QTableWidgetItem *value_item =
-				new QTableWidgetItem(tr("%1").arg(sample.second));
+			QTableWidgetItem *value_item = new QTableWidgetItem(sample.second);
+			value_item->setData(0, QVariant(sample.second));
 			data_table_->setItem(last_row+1, i+1, value_item);
 
 			++next_signal_pos_[i];
