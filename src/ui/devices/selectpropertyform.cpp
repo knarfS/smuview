@@ -18,6 +18,7 @@
  */
 
 #include <memory>
+#include <set>
 
 #include <QDebug>
 #include <QVariant>
@@ -32,6 +33,7 @@
 #include "src/ui/devices/configurablecombobox.hpp"
 #include "src/ui/devices/devicecombobox.hpp"
 
+using std::set;
 using std::shared_ptr;
 
 namespace sv {
@@ -45,6 +47,11 @@ SelectPropertyForm::SelectPropertyForm(
 {
 	setup_ui();
 	connect_signals();
+}
+
+void SelectPropertyForm::filter_config_keys(set<sv::data::DataType> data_types)
+{
+	config_key_box_->filter_config_keys(data_types);
 }
 
 void SelectPropertyForm::select_device(

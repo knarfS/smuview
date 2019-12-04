@@ -21,11 +21,13 @@
 #define UI_DEVICES_SELECTPROPERTYFORM_HPP
 
 #include <memory>
+#include <set>
 
 #include <QFormLayout>
 
 #include "src/devices/deviceutil.hpp"
 
+using std::set;
 using std::shared_ptr;
 
 namespace sv {
@@ -56,9 +58,10 @@ class SelectPropertyForm : public QFormLayout
 public:
 	SelectPropertyForm(const Session &session, QWidget *parent = nullptr);
 
-	void select_device(shared_ptr<sv::devices::BaseDevice>);
-	void select_configurable(shared_ptr<sv::devices::Configurable>);
-	void select_config_key(sv::devices::ConfigKey);
+	void filter_config_keys(set<sv::data::DataType> data_types);
+	void select_device(shared_ptr<sv::devices::BaseDevice> device);
+	void select_configurable(shared_ptr<sv::devices::Configurable> configurable);
+	void select_config_key(sv::devices::ConfigKey config_key);
 	shared_ptr<sv::devices::BaseDevice> selected_device() const;
 	shared_ptr<sv::devices::Configurable> selected_configurable() const;
 	shared_ptr<sv::data::properties::BaseProperty> selected_property() const;

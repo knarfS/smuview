@@ -18,6 +18,7 @@
  */
 
 #include <memory>
+#include <set>
 
 #include <QComboBox>
 #include <QDebug>
@@ -27,6 +28,7 @@
 #include "src/devices/deviceutil.hpp"
 #include "src/devices/configurable.hpp"
 
+using std::set;
 using std::shared_ptr;
 
 Q_DECLARE_METATYPE(sv::devices::ConfigKey)
@@ -42,6 +44,12 @@ ConfigKeyComboBox::ConfigKeyComboBox(
 	configurable_(configurable)
 {
 	setup_ui();
+}
+
+void ConfigKeyComboBox::filter_config_keys(set<sv::data::DataType> data_types)
+{
+	filter_data_types_ = data_types;
+	this->fill_config_keys();
 }
 
 void ConfigKeyComboBox::select_config_key(sv::devices::ConfigKey config_key)
@@ -77,9 +85,13 @@ void ConfigKeyComboBox::fill_config_keys()
 
 	// TODO: Filter for getable, setable, listable
 	for (const auto &config_key : configurable_->setable_configs()) {
-		this->addItem(
-			sv::devices::deviceutil::format_config_key(config_key),
-			QVariant::fromValue(config_key));
+		sv::data::DataType dt =
+			sv::devices::deviceutil::get_data_type_for_config_key(config_key);
+		if (filter_data_types_.size() == 0 || filter_data_types_.count(dt)) {
+			this->addItem(
+				sv::devices::deviceutil::format_config_key(config_key),
+				QVariant::fromValue(config_key));
+		}
 	}
 }
 

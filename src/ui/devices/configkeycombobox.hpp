@@ -21,12 +21,14 @@
 #define UI_DEVICES_CONFIGKEYCOMBOBOX_HPP
 
 #include <memory>
+#include <set>
 
 #include <QComboBox>
 #include <QWidget>
 
 #include "src/devices/deviceutil.hpp"
 
+using std::set;
 using std::shared_ptr;
 
 namespace sv {
@@ -47,6 +49,7 @@ public:
 		shared_ptr<sv::devices::Configurable> configurable,
 		QWidget *parent = nullptr);
 
+	void filter_config_keys(set<sv::data::DataType> data_types);
 	void select_config_key(sv::devices::ConfigKey config_key);
 	sv::devices::ConfigKey selected_config_key() const;
 
@@ -55,6 +58,7 @@ private:
 	void fill_config_keys();
 
 	shared_ptr<sv::devices::Configurable> configurable_;
+	set<sv::data::DataType> filter_data_types_;
 
 public Q_SLOTS:
 	void change_configurable(
