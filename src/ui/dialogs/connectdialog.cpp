@@ -265,7 +265,9 @@ void ConnectDialog::unset_connection()
 
 void ConnectDialog::on_serial_toggled(bool checked)
 {
-	serial_devices_.setEnabled(checked);
+	std::unique_lock<std::mutex> lock(populate_serials_mtx_, std::try_to_lock);
+	if (lock.owns_lock())
+		serial_devices_.setEnabled(checked);
 }
 
 void ConnectDialog::on_tcp_toggled(bool checked)
