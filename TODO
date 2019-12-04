@@ -26,7 +26,6 @@ ToDo
 - Lookup: std::atomic, std::condition_variable, std::mutex
 - Remove "const Session &session" form ui::devices::* ctors and more??
 - Maybe: In all ctors "Session &session" -> "const Session &session"
-- DataView: add signal (into this table) action
 - Resize the DockWidgets/Views to their best sizes (value panels minimum, plot views max, ...). Maybe with QMainWindow->resizeDocks, SizePolicy in QDockWidget does not work....
 - boost::stacktrace, see pv
 - BaseDevice open()/close(): move aquisition stuff to HardwareDevice, move VirtualDevice stuff to BaseDevice
@@ -35,7 +34,6 @@ ToDo
 - Remove Configurable and ConfigKey from data::properties::*
 - Session: shared_ptr or reference?
 - Session: move init to main.cpp
-- static unsigned int device_counter; is changing
 - Missing msvcr100.dll (Windows Server 2016) SmuView/PulseView
 
 Done
@@ -83,6 +81,8 @@ Done
 	- src/data/datautil.cpp -> src/data/
 	- src/devices/deviceutil.cpp -> src/data/
 	- src/devices/properties/ -> src/data/
+- DataView: add signal (into this table) action
+- static unsigned int device_counter; is changing
 
 Won't fix
 ---------
