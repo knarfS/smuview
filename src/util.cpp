@@ -2,7 +2,7 @@
  * This file is part of the SmuView project.
  *
  * Copyright (C) 2012 Joel Holdsworth <joel@airwebreathe.org.uk>
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -309,6 +309,65 @@ uint get_decimal_places(double dp)
 	int d = (int)ceil(1/dp) - 1;
 	uint cnt = util::count_int_digits(d);
 	return cnt;
+}
+
+/*
+ * Based on https://stackoverflow.com/a/30338543
+ */
+vector<string> parse_csv_line(const string &line)
+{
+	enum State { UnquotedField, QuotedField, QuotedQuote } state = UnquotedField;
+	std::vector<std::string> fields {""};
+
+	size_t i = 0; // index of the current field
+	for (char c : line) {
+		switch (state) {
+		case State::UnquotedField:
+			switch (c) {
+			case ',':
+				// end of field
+				fields.push_back(""); i++;
+				break;
+			case '"':
+				state = State::QuotedField;
+				break;
+			default:
+				fields[i].push_back(c);
+				break;
+			}
+			break;
+		case State::QuotedField:
+			switch (c) {
+			case '"':
+				state = State::QuotedQuote;
+				break;
+			default:
+				fields[i].push_back(c);
+				break;
+			}
+			break;
+		case State::QuotedQuote:
+			switch (c) {
+			case ',':
+				// , after closing quote
+				fields.push_back(""); i++;
+				state = State::UnquotedField;
+				break;
+			case '"':
+				// "" -> "
+				fields[i].push_back('"');
+				state = State::QuotedField;
+				break;
+			default:
+				// end of quote
+				state = State::UnquotedField;
+				break;
+			}
+			break;
+		}
+	}
+
+	return fields;
 }
 
 } // namespace util

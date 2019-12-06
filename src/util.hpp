@@ -2,7 +2,7 @@
  * This file is part of the SmuView project.
  *
  * Copyright (C) 2012 Joel Holdsworth <joel@airwebreathe.org.uk>
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -199,6 +199,16 @@ uint count_double_digits(double max, double step);
  * @return Number of decimal places
  */
 uint get_decimal_places(double dp);
+
+/**
+ * Parse a single CSV line.
+ * Based on https://stackoverflow.com/a/30338543
+ *
+ * @param[in] line The CSV line to parse.
+ *
+ * @return A vector of the values.
+ */
+vector<string> parse_csv_line(const string &line);
 
 } // namespace util
 } // namespace sv
