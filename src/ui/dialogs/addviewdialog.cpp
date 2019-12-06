@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +17,9 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <memory>
+#include <set>
+
 #include <QDebug>
 #include <QGroupBox>
 #include <QHBoxLayout>
@@ -27,18 +30,23 @@
 #include "addviewdialog.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/data/analogtimesignal.hpp"
+#include "src/data/properties/baseproperty.hpp"
+#include "src/data/properties/doubleproperty.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/devices/configurable.hpp"
 #include "src/devices/deviceutil.hpp"
 #include "src/ui/devices/selectconfigurableform.hpp"
+#include "src/ui/devices/selectpropertyform.hpp"
 #include "src/ui/devices/selectsignalwidget.hpp"
 #include "src/ui/devices/devicetree/devicetreeview.hpp"
 #include "src/ui/views/baseview.hpp"
 #include "src/ui/views/dataview.hpp"
 #include "src/ui/views/plotview.hpp"
+#include "src/ui/views/sequenceoutputview.hpp"
 #include "src/ui/views/valuepanelview.hpp"
 #include "src/ui/views/viewhelper.hpp"
 
+using std::set;
 using std::static_pointer_cast;
 
 Q_DECLARE_SMART_POINTER_METATYPE(std::shared_ptr)
@@ -76,6 +84,7 @@ void AddViewDialog::setup_ui()
 	this->setup_ui_time_plot_tab();
 	this->setup_ui_xy_plot_tab();
 	this->setup_ui_table_tab();
+	this->setup_ui_sequence_tab();
 	tab_widget_->setCurrentIndex(selected_tab_);
 	main_layout->addWidget(tab_widget_);
 
@@ -95,6 +104,7 @@ void AddViewDialog::setup_ui_control_tab()
 
 	configurable_configurable_form_ =
 		new ui::devices::SelectConfigurableForm(session_);
+	configurable_configurable_form_->select_device(device_);
 	control_widget->setLayout(configurable_configurable_form_);
 
 	tab_widget_->addTab(control_widget, title);
@@ -174,6 +184,20 @@ void AddViewDialog::setup_ui_table_tab()
 	tab_widget_->addTab(table_widget, title);
 }
 
+void AddViewDialog::setup_ui_sequence_tab()
+{
+	QString title(tr("Sequence Output"));
+	QWidget *sequence_widget = new QWidget();
+
+	sequence_property_form_ = new ui::devices::SelectPropertyForm(session_);
+	sequence_property_form_->select_device(device_);
+	sequence_property_form_->filter_config_keys(set<sv::data::DataType>{
+		sv::data::DataType::Double});
+	sequence_widget->setLayout(sequence_property_form_);
+
+	tab_widget_->addTab(sequence_widget, title);
+}
+
 vector<ui::views::BaseView *> AddViewDialog::views()
 {
 	return views_;
@@ -236,6 +260,16 @@ void AddViewDialog::accept()
 				}
 				views_.push_back(view);
 			}
+		}
+		break;
+	case 5:
+		// Add sequence view for property
+		{
+			auto property = sequence_property_form_->selected_property();
+			auto view = new ui::views::SequenceOutputView(session_,
+				static_pointer_cast<sv::data::properties::DoubleProperty>(property));
+			if (view != nullptr)
+				views_.push_back(view);
 		}
 		break;
 	default:

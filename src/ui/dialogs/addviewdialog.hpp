@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,6 +41,7 @@ namespace ui {
 
 namespace devices {
 class SelectConfigurableForm;
+class SelectPropertyForm;
 class SelectSignalWidget;
 namespace devicetree {
 class DeviceTreeView;
@@ -71,6 +72,7 @@ private:
 	void setup_ui_time_plot_tab();
 	void setup_ui_xy_plot_tab();
 	void setup_ui_table_tab();
+	void setup_ui_sequence_tab();
 
 	Session &session_;
 	const shared_ptr<sv::devices::BaseDevice> device_;
@@ -84,6 +86,7 @@ private:
 	ui::devices::SelectSignalWidget *xy_plot_x_signal_widget_;
 	ui::devices::SelectSignalWidget *xy_plot_y_signal_widget_;
 	ui::devices::devicetree::DeviceTreeView *table_signal_tree_;
+	ui::devices::SelectPropertyForm *sequence_property_form_;
 	QDialogButtonBox *button_box_;
 
 public Q_SLOTS:
