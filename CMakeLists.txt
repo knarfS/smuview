@@ -267,6 +267,7 @@ set(smuview_SOURCES
   src/ui/dialogs/addviewdialog.cpp
   src/ui/dialogs/addviewdialog.cpp
   src/ui/dialogs/connectdialog.cpp
+  src/ui/dialogs/generatewaveformdialog.cpp
   src/ui/dialogs/plotconfigdialog.cpp
   src/ui/dialogs/plotcurveconfigdialog.cpp
   src/ui/dialogs/plotdiffmarkerdialog.cpp
