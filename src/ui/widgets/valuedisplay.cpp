@@ -104,23 +104,16 @@ void ValueDisplay::update_display()
 
 	if (value_ >= std::numeric_limits<double>::max() ||
 			value_ == std::numeric_limits<double>::infinity()) {
-		// TODO: Replace with "ol" or "overl", depending on the avail. digits,
-		// when LCDDisplay is removed completely.
-		// LCDDisplay can only display:
-		// 0/O, 1, 2, 3, 4, 5/S, 6, 7, 8, 9/g, minus, decimal point, A, B, C, D,
-		// E, F, h, H, L, o, P, r, u, U, Y, colon, degree sign and space.
+		// TODO: Replace with "ol" or "overl", depending on the avail. digits.
 		value_str = QString("OL");
 	}
 	else if (value_ <= std::numeric_limits<double>::lowest()) {
-		// TODO: Replace with "ol" or "overl", depending on the avail. digits,
-		// when LCDDisplay is removed completely.
-		// LCDDisplay can only display:
-		// 0/O, 1, 2, 3, 4, 5/S, 6, 7, 8, 9/g, minus, decimal point, A, B, C, D,
-		// E, F, h, H, L, o, P, r, u, U, Y, colon, degree sign and space.
+		// TODO: Replace with "ul" or "underf", depending on the avail. digits.
 		value_str = QString("UL");
 	}
 	else if (!auto_range_) {
-		value_str = QString("%1").
+		// Use actual locale (%L) for formating
+		value_str = QString("%L1").
 			arg(value_, digits_, 'f', decimal_places_, QChar(' '));
 	}
 	else {

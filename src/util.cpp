@@ -142,7 +142,8 @@ void format_value_si(
 
 	const double multiplier = pow(10, -exponent(si_prefix));
 
-	value_str = QString("%1").
+	// Use actual locale (%L) for formating.
+	value_str = QString("%L1").
 		arg(value * multiplier, digits, 'f', decimal_places, QChar(' '));
 
 	QTextStream si_prefix_stream(&si_prefix_str);
