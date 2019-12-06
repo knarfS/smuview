@@ -46,10 +46,9 @@ MonoFontDisplay::MonoFontDisplay(
 
 void MonoFontDisplay::setup_ui()
 {
+	// Use embedded mono space font
+	QFont monospace_font = QFont("DejaVu Sans Mono");
 	// Get standard font sizes
-	//QFont monospace_font("Monospace"); // = QFontDatabase::systemFont(QFontDatabase::FixedFont);
-	QFont monospace_font = QFont(":/fonts/DejaVuSansMono.ttf");
-	monospace_font.setStyleHint(QFont::TypeWriter);
 	int monospace_font_size = monospace_font.pointSize();
 	int std_font_size = QFont().pointSize();
 

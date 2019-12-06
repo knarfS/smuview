@@ -25,6 +25,7 @@
 #include <QApplication>
 #include <QDebug>
 #include <QDockWidget>
+#include <QFontDatabase>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QMessageBox>
@@ -85,6 +86,9 @@ MainWindow::MainWindow(DeviceManager &device_manager, QWidget *parent) :
 	qRegisterMetaType<shared_ptr<data::BaseSignal>>("shared_ptr<sv::data::BaseSignal>");
 	qRegisterMetaType<shared_ptr<data::AnalogTimeSignal>>("shared_ptr<sv::data::AnalogTimeSignal>");
 	qRegisterMetaType<devices::ConfigKey>("devices::ConfigKey");
+
+	// Add embedded mono space font for the value display.
+	QFontDatabase::addApplicationFont(":/fonts/DejaVuSansMono.ttf");
 
 	init_session();
 	setup_ui();
