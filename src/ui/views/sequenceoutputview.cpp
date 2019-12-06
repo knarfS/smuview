@@ -229,7 +229,7 @@ void SequenceOutputView::setup_toolbar()
 	action_load_from_file_->setText(tr("Load from file"));
 	action_load_from_file_->setIcon(
 		QIcon::fromTheme("document-open",
-		QIcon(":/icons/document.png")));
+		QIcon(":/icons/document-open.png")));
 	connect(action_load_from_file_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_load_from_file_triggered()));
 
