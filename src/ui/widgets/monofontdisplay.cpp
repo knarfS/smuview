@@ -19,10 +19,10 @@
 
 #include <QDebug>
 #include <QFont>
-#include <QFontDatabase>
+#include <QFontMetrics>
+#include <QGridLayout>
 #include <QSizePolicy>
 #include <QString>
-#include <QVBoxLayout>
 
 #include <QStandardPaths>
 
@@ -52,16 +52,30 @@ void MonoFontDisplay::setup_ui()
 	int monospace_font_size = monospace_font.pointSize();
 	int std_font_size = QFont().pointSize();
 
+	QFont value_font(monospace_font);
+	QFont unit_font;
+	int unit_spacer_size;
 	if (!small_) {
-		value_font_size_ = monospace_font_size + 12; // 22
-		unit_font_size_ = std_font_size + 8; // 18
-		extra_font_size_ = std_font_size; // 10
+		value_font.setPointSize(monospace_font_size + 12); // = 22
+		value_font.setBold(true);
+		value_font.setWeight(QFont::Bold);
+		unit_font.setPointSize(std_font_size + 8); // = 18
+		extra_font_.setPointSize(std_font_size); // = 10
+		unit_spacer_size = 5;
 	}
 	else {
-		value_font_size_ = monospace_font_size + 4; // 14
-		unit_font_size_ = std_font_size; // 10
-		extra_font_size_ = std_font_size - 3; // 7
+		value_font.setPointSize(monospace_font_size + 4); // = 14
+		unit_font.setPointSize(std_font_size); // = 10
+		extra_font_.setPointSize(std_font_size - 3); // = 7
+		unit_spacer_size = 3;
 	}
+
+	// Qt::AlignBaseline is not working, so we have to calculate the
+	// difference of the ascents for positioning the unit label.
+	QFontMetrics value_font_metrics(value_font);
+	QFontMetrics unit_font_metrics(unit_font);
+	ascent_diff_ = value_font_metrics.ascent() - unit_font_metrics.ascent();
+
 
 	//this->setFrameShape(QFrame::Box);
 	QSizePolicy layout_size_policy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -69,52 +83,48 @@ void MonoFontDisplay::setup_ui()
 	layout_size_policy.setVerticalStretch(0);
 	this->setSizePolicy(layout_size_policy);
 
-	QHBoxLayout *layout = new QHBoxLayout();
+	layout_ = new QGridLayout();
+	// Set the margin and spacing to 0, so we can position the value and
+	// the unit by their baselines exactly.
+	layout_->setMargin(0);
+	layout_->setSpacing(0);
 
+	// Value
 	value_label_ = new QLabel();
-	QFont value_font(monospace_font);
-	value_font.setPointSize(value_font_size_);
-	if (!small_) {
-		value_font.setBold(true);
-		value_font.setWeight(QFont::Bold);
-	}
 	value_label_->setFont(value_font);
-	value_label_->setAlignment(Qt::AlignRight | Qt::AlignBaseline); //Qt::AlignBottom);
+	value_label_->setAlignment(Qt::AlignRight);
 	value_label_->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	//value_label_->setFrameShape(QFrame::Box);
-	layout->addWidget(value_label_);
-	layout->setAlignment(unit_label_, Qt::AlignBottom);
+	layout_->addWidget(value_label_, 0, 0, 2, 1, Qt::AlignRight | Qt::AlignVCenter);
 
-	QVBoxLayout *text_layout = new QVBoxLayout();
+	// Spacer between the value and the unit labels.
+	QSpacerItem *unit_spacer = new QSpacerItem(unit_spacer_size, 1,
+		QSizePolicy::Fixed, QSizePolicy::Fixed);
+	layout_->addItem(unit_spacer, 0, 1, 2, 1, Qt::AlignCenter);
 
-	// Extra text (small)
-	extra_label_ = new QLabel();
-	QFont extra_font;
-	extra_font.setPointSize(extra_font_size_);
-	extra_label_->setFont(extra_font);
-	extra_label_->setAlignment(Qt::AlignHCenter | Qt::AlignBottom);
-	extra_label_->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-	//extra_label_->setFrameShape(QFrame::Box);
-	text_layout->addWidget(extra_label_);
-	text_layout->setAlignment(extra_label_, Qt::AlignHCenter);
+	// Extra spacer (used when extra text is empty to "fake" Qt::AlignBaseline)
+	extra_label_ = nullptr;
+	extra_spacer_ = new QSpacerItem(1, ascent_diff_,
+		QSizePolicy::Fixed, QSizePolicy::Fixed);
+	layout_->addItem(extra_spacer_, 0, 2, 1, 1, Qt::AlignCenter);
 
 	// Unit
 	unit_label_ = new QLabel();
-	QFont unit_font;
-	unit_font.setPointSize(unit_font_size_);
 	unit_label_->setFont(unit_font);
-	unit_label_->setAlignment(Qt::AlignRight | Qt::AlignBaseline); // Qt::AlignBottom);
+	// Qt::AlignTop is not working!
+	unit_label_->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
 	unit_label_->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 	//unit_label_->setFrameShape(QFrame::Box);
-	text_layout->addWidget(unit_label_);
-	text_layout->setAlignment(unit_label_, Qt::AlignHCenter | Qt::AlignBottom);
+	layout_->addWidget(unit_label_, 1, 2, 1, 1, Qt::AlignHCenter | Qt::AlignTop);
+	layout_->setRowStretch(1, 1);
 
-	layout->addLayout(text_layout);
-	this->setLayout(layout);
+	this->setLayout(layout_);
 }
 
 void MonoFontDisplay::update_value_widget_dimensions()
 {
+	// Set the widget to a fixed width, so it doesn't jump around when the
+	// length of the string is changing (e.g. minus sign).
 	QString str("");
 	size_t str_len = digits_ + 2; // digits + decimal point + sign
 	for (size_t i=0; i<str_len; ++i) {
@@ -126,16 +136,13 @@ void MonoFontDisplay::update_value_widget_dimensions()
 
 void MonoFontDisplay::update_extra_widget_dimensions()
 {
-	if (extra_text_.isEmpty()) {
-		extra_label_->hide();
-	}
-	else {
-		extra_label_->show();
-	}
+	// Nothing to do here
 }
 
 void MonoFontDisplay::update_unit_widget_dimensions()
 {
+	// Set the widget to a fixed width, so it doesn't jump around when the
+	// SI prefix is changing.
 	QString str;
 	if (auto_range_) {
 		// 'm' is the widest character for non monospace fonts
@@ -156,7 +163,32 @@ void MonoFontDisplay::show_value(const QString &value)
 
 void MonoFontDisplay::show_extra_text(const QString &extra_text)
 {
-	extra_label_->setText(extra_text);
+	if (extra_text_.isEmpty() && !extra_spacer_) {
+		// Remove label
+		layout_->removeWidget(extra_label_);
+		delete extra_label_;
+		extra_label_ = nullptr;
+		// Insert spacer
+		extra_spacer_ = new QSpacerItem(1, ascent_diff_,
+			QSizePolicy::Fixed, QSizePolicy::Fixed);
+		layout_->addItem(extra_spacer_, 0, 2, 1, 1, Qt::AlignCenter);
+	}
+	else if (!extra_text_.isEmpty()) {
+		if (!extra_label_) {
+			// Remove spacer
+			layout_->removeItem(extra_spacer_);
+			delete extra_spacer_;
+			extra_spacer_ = nullptr;
+			// Insert label
+			extra_label_ = new QLabel();
+			extra_label_->setFont(extra_font_);
+			extra_label_->setAlignment(Qt::AlignHCenter | Qt::AlignBottom);
+			extra_label_->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+			//extra_label_->setFrameShape(QFrame::Box);
+			layout_->addWidget(extra_label_, 0, 2, 1, 1, Qt::AlignCenter);
+		}
+		extra_label_->setText(extra_text);
+	}
 }
 
 void MonoFontDisplay::show_unit(const QString &unit)

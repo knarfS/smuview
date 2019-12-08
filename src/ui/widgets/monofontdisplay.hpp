@@ -20,7 +20,10 @@
 #ifndef UI_WIDGETS_MONOFONTDISPLAY_HPP
 #define UI_WIDGETS_MONOFONTDISPLAY_HPP
 
+#include <QFont>
+#include <QGridLayout>
 #include <QLabel>
+#include <QSpacerItem>
 #include <QString>
 
 #include "src/ui/widgets/valuedisplay.hpp"
@@ -40,12 +43,13 @@ public:
 		const bool small, QWidget *parent = nullptr);
 
 private:
-	int value_font_size_;
-	int extra_font_size_;
-	int unit_font_size_;
+	int ascent_diff_;
 
+	QGridLayout *layout_;
 	QLabel *value_label_;
+	QFont extra_font_;
 	QLabel *extra_label_;
+	QSpacerItem *extra_spacer_;
 	QLabel *unit_label_;
 
 	void setup_ui() override;
