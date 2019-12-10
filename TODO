@@ -97,7 +97,6 @@ libsigrok
 =========
 
 - Add GPIB address to libgpib:conn as paramenter
-- Change key naming (see load + psu wiki pages)
 - Re:load Pro: when acquisition is running and we send a command (e.g. "set xxx"), there are 2 listeners (1st send_cmd() (<-serial_write_blocking) and 2nd handle_new_data() (<-serial_read_nonblocking))
 	- Make devc->acquisition_running thread safe, bool is NOT thread safe!
 - Re:load Pro: when 2 responses are send fast afer each other, serial_read_nonblocking reads them both and the \r\n gets in beetween
@@ -109,7 +108,6 @@ libsigrok
 - dev_acquisition_start() has to do first measurement (3478a, scpi-pps, reload(?)), because 1. DF_HEADER, 2. trigger measurement
 	- If not: 3378a use scpi_cmd_resp() for use of mutex (wrt+read);
 - Can't add 2x scpi_libgpib devices: scpi_libgpib.c -> scpi_gpib_source_add() calls session.c -> sr_session_source_add() with fd = -1. This calls session.c -> sr_session_fd_source_add() with key = GINT_TO_POINTER(fd) and finally throws an error in session.c -> sr_session_source_add_internal() because "Event source with key %p already exists."
-- scpi-pps's have channel groups but options/keys/_lists_ (voltage_target, ...) apply to device
 - scpi-pps: when in acquisition send one write ":MEAS:VOLT?;:MEAS:CURR?" instead of 2 writes when possible
 - Add channel.meaning.mq, channel.meaning.mqflags, channel.meaning.unit (+channel.fixed) to PPU and load channels, to make it easy to init signals in smuview
 - Add missing units: sigrok::Unit::DECIBEL, sigrok::Unit::JOULE, sigrok::Unit::AMPEREHOUR, sigrok::Unit::COULOMB, sigrok::Unit::(HECTO)PASCAL
@@ -118,9 +116,7 @@ libsigrok
 WIP
 ---
 
-- Add mqflags (AC/DC) to channel_group_spec for scpi-pps
-- scpi-pps/hp66xxB: Don't send SCPI_CMD_REMOTE and SCPI_CMD_LOCAL when GPIB is used. Will result in error 602.
-- scpi-pps/hp66xxx: Check if SPoll is faster than sending *STB? / FAULT?, if so implement and use SPoll (or SRQ) when using GPIB.
+- Change key naming (see load + psu wiki pages)
 
 Done
 ----
@@ -145,6 +141,10 @@ Done
 - HP3478A: Implement SPoll,
 - Add missing confg key sigok::ConfigKey::OFFSET
 - Provied SR_DF_META packets for the Re:load Pro and the HP3478A for changed values/states (e.g. output switched on/off, ovp, otp, ...)
+- Add mqflags (AC/DC) to channel_group_spec for scpi-pps
+- scpi-pps/hp66xxB: Don't send SCPI_CMD_REMOTE and SCPI_CMD_LOCAL when GPIB is used. Will result in error 602.
+- scpi-pps/hp66xxx: Check if SPoll is faster than sending *STB? / FAULT?, if so implement and use SPoll (or SRQ) when using GPIB.
+- scpi-pps's have channel groups but options/keys/_lists_ (voltage_target, ...) apply to device
 
 Won't fix
 ---------
