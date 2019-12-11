@@ -48,6 +48,7 @@ private:
 	QAction *const action_new_script_;
 	QAction *const action_open_script_;
 	QAction *const action_run_script_;
+	QString script_dir_;
 	QToolBar *toolbar_;
 	QFileSystemModel *file_system_model_;
 	QTreeView *file_system_tree_;
@@ -55,6 +56,7 @@ private:
 	void setup_ui();
 	void setup_toolbar();
 	void connect_signals();
+	void scroll_to_script_dir();
 
 private Q_SLOTS:
 	void on_action_new_script_triggered();

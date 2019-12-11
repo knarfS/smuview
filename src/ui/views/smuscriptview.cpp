@@ -26,6 +26,7 @@
 #include <QMessageBox>
 #include <QModelIndex>
 #include <QString>
+#include <QTimer>
 #include <QToolBar>
 #include <QTreeView>
 #include <QVBoxLayout>
@@ -48,6 +49,10 @@ SmuScriptView::SmuScriptView(Session &session, QWidget *parent) :
 	action_open_script_(new QAction(this)),
 	action_run_script_(new QAction(this))
 {
+	// TODO: Set path to example files dir (how to do this in an AppImage?)
+	//       or save last directory in Session
+	script_dir_ = QDir::homePath();
+
 	setup_ui();
 	setup_toolbar();
 	connect_signals();
@@ -64,7 +69,6 @@ void SmuScriptView::setup_ui()
 
 	file_system_model_ = new QFileSystemModel();
 	file_system_model_->setRootPath("");
-
 	file_system_tree_ = new QTreeView();
 	file_system_tree_->setModel(file_system_model_);
 	file_system_tree_->setAnimated(false);
@@ -79,15 +83,13 @@ void SmuScriptView::setup_ui()
 
 	file_system_tree_->setColumnWidth(0, file_system_tree_->width());
 
-	// TODO (e.g. QDir::currentPath())
-	QString script_path("/home/frank/Projekte/elektronik/sigrok/smuview/smuscript/");
-	QModelIndex script_path_index = file_system_model_->index(script_path);
-
-	// TODO: scrollTo doesn't work (b/c modell isn't loaded completely?). Signal
-	//       directoryLoaded(const QString &) doesn't work either...
-	file_system_tree_->scrollTo(script_path_index, QAbstractItemView::PositionAtTop);
+	// NOTE: QFileSystemModel::index() doesn't return the correct row the first
+	//       time or when call a second time directly after the first.
+	//       Therefore it is called via a timer the second time.
+	QModelIndex script_path_index = file_system_model_->index(script_dir_);
 	file_system_tree_->expand(script_path_index);
 	file_system_tree_->setCurrentIndex(script_path_index);
+	QTimer::singleShot(100, this, &SmuScriptView::scroll_to_script_dir);
 }
 
 void SmuScriptView::setup_toolbar()
@@ -135,6 +137,12 @@ void SmuScriptView::connect_signals()
 		this, &SmuScriptView::on_script_started);
 	connect(session_.smu_script_runner().get(), &python::SmuScriptRunner::script_finished,
 		this, &SmuScriptView::on_script_finished);
+}
+
+void SmuScriptView::scroll_to_script_dir()
+{
+	QModelIndex script_path_index = file_system_model_->index(script_dir_);
+	file_system_tree_->scrollTo(script_path_index, QAbstractItemView::PositionAtTop);
 }
 
 void SmuScriptView::on_action_new_script_triggered()
