@@ -136,7 +136,7 @@ void UiHelper::add_signal_to_plot_view(std::string device_id, std::string view_i
 			QString::fromStdString(view_id);
 		return;
 	}
-	auto plot_view = dynamic_cast<ui::views::PlotView *>(view);
+	auto plot_view = qobject_cast<ui::views::PlotView *>(view);
 	if (!plot_view) {
 		qWarning() << "UiHelper::add_signal_to_plot_view(): View is not a " <<
 			"plot view: " << QString::fromStdString(view_id);
@@ -166,7 +166,7 @@ void UiHelper::add_signals_to_xy_plot_view(std::string device_id,
 			"found: " << QString::fromStdString(view_id);
 		return;
 	}
-	auto plot_view = dynamic_cast<ui::views::PlotView *>(view);
+	auto plot_view = qobject_cast<ui::views::PlotView *>(view);
 	if (!plot_view) {
 		qWarning() << "UiHelper::add_signals_to_xy_plot_view(): View is not " <<
 			"a plot view: " << QString::fromStdString(view_id);

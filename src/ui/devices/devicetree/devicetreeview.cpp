@@ -83,6 +83,7 @@ TreeItem *DeviceTreeView::selected_item() const
 
 	// We can't use item->internalPointer() here, because somehow it points
 	// to the parent item!?
+	// TODO: Use qobject_cast()?
 	return static_cast<TreeItem *>(static_cast<QStandardItemModel *>(model())->
 		itemFromIndex(index));
 }
