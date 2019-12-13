@@ -38,6 +38,7 @@ namespace ui {
 
 namespace datatypes {
 class MeasuredQuantityComboBox;
+class StringComboBox;
 }
 
 namespace views {
@@ -57,6 +58,8 @@ private:
 	shared_ptr<sv::devices::Configurable> configurable_;
 
 	ui::datatypes::MeasuredQuantityComboBox *measured_quantity_box_;
+	ui::datatypes::StringComboBox *range_box_;
+	ui::datatypes::StringComboBox *digits_box_;
 
 	void setup_ui();
 

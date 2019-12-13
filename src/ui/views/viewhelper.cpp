@@ -93,7 +93,9 @@ BaseView *get_view_for_configurable(Session &session,
 		configurable->device_type() == DeviceType::Scale ||
 		configurable->device_type() == DeviceType::Powermeter) &&
 		(configurable->has_get_config(ConfigKey::MeasuredQuantity) ||
-		configurable->has_set_config(ConfigKey::MeasuredQuantity))) {
+		configurable->has_set_config(ConfigKey::MeasuredQuantity) ||
+		configurable->has_get_config(ConfigKey::Range) ||
+		configurable->has_set_config(ConfigKey::Range))) {
 
 		return new MeasurementControlView(session, configurable);
 	}

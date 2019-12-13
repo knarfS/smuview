@@ -27,6 +27,7 @@
 #include "src/devices/configurable.hpp"
 #include "src/devices/deviceutil.hpp"
 #include "src/ui/datatypes/measuredquantitycombobox.hpp"
+#include "src/ui/datatypes/stringcombobox.hpp"
 
 using sv::devices::ConfigKey;
 
@@ -56,6 +57,14 @@ void MeasurementControlView::setup_ui()
 	measured_quantity_box_ = new ui::datatypes::MeasuredQuantityComboBox(
 		configurable_->get_property(ConfigKey::MeasuredQuantity), true, true);
 	layout->addRow(tr("Quantity"), measured_quantity_box_);
+
+	range_box_ = new ui::datatypes::StringComboBox(
+		configurable_->get_property(ConfigKey::Range), true, true);
+	layout->addRow(tr("Range"), range_box_);
+
+	digits_box_ = new ui::datatypes::StringComboBox(
+		configurable_->get_property(ConfigKey::Digits), true, true);
+	layout->addRow(tr("Digits"), digits_box_);
 
 	this->central_widget_->setLayout(layout);
 }
