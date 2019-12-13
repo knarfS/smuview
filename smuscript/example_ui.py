@@ -2,7 +2,7 @@ import smuview
 import time
 
 # Connect the demo device (it's just one!)
-demo_dev = devices = Session.connect_device("demo")[0]
+demo_dev = Session.connect_device("demo")[0]
 
 # Add a user device
 user_dev = Session.add_user_device()
