@@ -115,6 +115,8 @@ find_package(Threads REQUIRED)
 
 # SmuView has its own copy of pybind11 2.4.3
 add_subdirectory(external/pybind11)
+# SmuView has its own copy of QCodeEditor
+add_subdirectory(external/QCodeEditor)
 
 
 #===============================================================================
@@ -385,6 +387,7 @@ set(SMUVIEW_LINK_LIBS
 	${CMAKE_THREAD_LIBS_INIT}
 #	${LIBATOMIC_LIBRARY}
 	pybind11::embed
+	QCodeEditor
 )
 
 if(STATIC_PKGDEPS_LIBS)

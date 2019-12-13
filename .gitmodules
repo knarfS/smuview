@@ -1,0 +1,3 @@
+[submodule "external/QCodeEditor"]
+	path = external/QCodeEditor
+	url = https://github.com/knarfS/QCodeEditor.git
