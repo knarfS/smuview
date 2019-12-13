@@ -216,6 +216,12 @@ enum class ConfigKey
 	TriggerLevel,
 	/** Which external clock source to use if the device supports multiple external clock channels. */
 	ExternalClockSource,
+	// TODO: missing
+	/** The measurement range of a DMM or the output range of a power supply. */
+	Range,
+	/** The number of digits (e.g. for a DMM). */
+	Digits,
+
 	/** Session filename. */
 	SessionFile,
 	/** The device supports specifying a capturefile to inject. */
@@ -339,6 +345,8 @@ config_key_name_map_t config_key_name_map = {
 	{ ConfigKey::EquivCircuitModel, QString("Equivalent Circuit Model") },
 	{ ConfigKey::TriggerLevel, QString("Trigger Level") },
 	{ ConfigKey::ExternalClockSource, QString("External Clock Source") },
+	{ ConfigKey::Range, QString("Range") },
+	{ ConfigKey::Digits, QString("Digits") },
 	{ ConfigKey::SessionFile, QString("Session File") },
 	{ ConfigKey::CaptureFile, QString("Capture File") },
 	{ ConfigKey::CaptureUnitSize, QString("Capture Unit Size") },
@@ -465,6 +473,8 @@ map<const sigrok::ConfigKey *, ConfigKey> sr_config_key_config_key_map = {
 	{ sigrok::ConfigKey::EQUIV_CIRCUIT_MODEL, ConfigKey::EquivCircuitModel },
 	{ sigrok::ConfigKey::TRIGGER_LEVEL, ConfigKey::TriggerLevel },
 	{ sigrok::ConfigKey::EXTERNAL_CLOCK_SOURCE, ConfigKey::ExternalClockSource },
+	{ sigrok::ConfigKey::RANGE, ConfigKey::Range },
+	{ sigrok::ConfigKey::DIGITS, ConfigKey::Digits },
 	{ sigrok::ConfigKey::SESSIONFILE, ConfigKey::SessionFile },
 	{ sigrok::ConfigKey::CAPTUREFILE, ConfigKey::CaptureFile },
 	{ sigrok::ConfigKey::CAPTURE_UNITSIZE, ConfigKey::CaptureUnitSize },
@@ -534,6 +544,8 @@ map<ConfigKey, const sigrok::ConfigKey *> config_key_sr_config_key_map = {
 	{ ConfigKey::EquivCircuitModel, sigrok::ConfigKey::EQUIV_CIRCUIT_MODEL },
 	{ ConfigKey::TriggerLevel, sigrok::ConfigKey::TRIGGER_LEVEL },
 	{ ConfigKey::ExternalClockSource, sigrok::ConfigKey::EXTERNAL_CLOCK_SOURCE },
+	{ ConfigKey::Range, sigrok::ConfigKey::RANGE },
+	{ ConfigKey::Digits, sigrok::ConfigKey::DIGITS },
 	{ ConfigKey::SessionFile, sigrok::ConfigKey::SESSIONFILE },
 	{ ConfigKey::CaptureFile, sigrok::ConfigKey::CAPTUREFILE },
 	{ ConfigKey::CaptureUnitSize, sigrok::ConfigKey::CAPTURE_UNITSIZE },
@@ -607,6 +619,8 @@ map<ConfigKey, data::Unit> config_key_unit_map = {
 	{ ConfigKey::EquivCircuitModel, data::Unit::Unitless },
 	{ ConfigKey::TriggerLevel, data::Unit::Volt },
 	{ ConfigKey::ExternalClockSource, data::Unit::Unitless },
+	{ ConfigKey::Range, data::Unit::Unitless },
+	{ ConfigKey::Digits, data::Unit::Unitless },
 	{ ConfigKey::SessionFile, data::Unit::Unitless },
 	{ ConfigKey::CaptureFile, data::Unit::Unitless },
 	{ ConfigKey::CaptureUnitSize, data::Unit::Unknown },
