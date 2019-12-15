@@ -106,6 +106,7 @@ private:
 private Q_SLOTS:
 	void on_update();
 	void on_action_reset_displays_triggered();
+	void on_digits_changed();
 
 };
 

@@ -76,7 +76,8 @@ PowerPanelView::~PowerPanelView()
 
 QString PowerPanelView::title() const
 {
-	return tr("Power Panel"); // TODO: channel group name
+	return tr("Power Panel") + " " + voltage_signal_->display_name() +
+		" / " + current_signal_->display_name();
 }
 
 void PowerPanelView::setup_ui()
@@ -229,6 +230,7 @@ void PowerPanelView::setup_toolbar()
 
 void PowerPanelView::connect_signals()
 {
+	// Change digits for the voltage displays.
 	connect(voltage_signal_.get(), SIGNAL(digits_changed(const int, const int)),
 		voltage_display_, SLOT(set_digits(const int, const int)));
 	connect(voltage_signal_.get(), SIGNAL(digits_changed(const int, const int)),
@@ -236,6 +238,7 @@ void PowerPanelView::connect_signals()
 	connect(voltage_signal_.get(), SIGNAL(digits_changed(const int, const int)),
 		voltage_max_display_, SLOT(set_digits(const int, const int)));
 
+	// Change digits for the current displays.
 	connect(current_signal_.get(), SIGNAL(digits_changed(const int, const int)),
 		current_display_, SLOT(set_digits(const int, const int)));
 	connect(current_signal_.get(), SIGNAL(digits_changed(const int, const int)),
@@ -243,7 +246,11 @@ void PowerPanelView::connect_signals()
 	connect(current_signal_.get(), SIGNAL(digits_changed(const int, const int)),
 		current_max_display_, SLOT(set_digits(const int, const int)));
 
-	// TODO: set_digits() for the other displays!
+	// Change digits for all other displays.
+	connect(voltage_signal_.get(), SIGNAL(digits_changed(const int, const int)),
+		this, SLOT(on_digits_changed()));
+	connect(current_signal_.get(), SIGNAL(digits_changed(const int, const int)),
+		this, SLOT(on_digits_changed()));
 }
 
 void PowerPanelView::reset_displays()
@@ -369,6 +376,29 @@ void PowerPanelView::on_action_reset_displays_triggered()
 {
 	stop_timer();
 	init_timer();
+}
+
+void PowerPanelView::on_digits_changed()
+{
+	int digits;
+	if (voltage_signal_->digits() > current_signal_->digits())
+		digits = voltage_signal_->digits();
+	else
+		digits = current_signal_->digits();
+	int decimal_places;
+	if (voltage_signal_->decimal_places() > current_signal_->decimal_places())
+		decimal_places = voltage_signal_->decimal_places();
+	else
+		decimal_places = current_signal_->decimal_places();
+
+	resistance_display_->set_digits(digits, decimal_places);
+	resistance_min_display_->set_digits(digits, decimal_places);
+	resistance_max_display_->set_digits(digits, decimal_places);
+	power_display_->set_digits(digits, decimal_places);
+	power_min_display_->set_digits(digits, decimal_places);
+	power_max_display_->set_digits(digits, decimal_places);
+	amp_hour_display_->set_digits(digits, decimal_places);
+	watt_hour_display_->set_digits(digits, decimal_places);
 }
 
 } // namespace views
