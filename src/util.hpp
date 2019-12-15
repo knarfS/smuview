@@ -169,8 +169,17 @@ QString format_time_date(double t);
  *
  * @return A vector of broken down tokens.
  */
-vector<string> split_string(string text, string separator);
+vector<string> split_string(string text, const string &separator);
 
+/**
+ * Check if a string 'str' starts with the string 'start_str'.
+ *
+ * @param[in] str The string to check.
+ * @param[in] start_str The start string.
+ *
+ * @return True if string str starts with string start_str.
+ */
+bool starts_with(const string &str, const string &start_str);
 
 /**
  * Counts the number of digits for the given integer.

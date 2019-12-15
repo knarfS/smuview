@@ -272,7 +272,7 @@ QString format_time_date(double t)
 	return date;
 }
 
-vector<string> split_string(string text, string separator)
+vector<string> split_string(string text, const string &separator)
 {
 	vector<string> result;
 	size_t pos;
@@ -284,6 +284,11 @@ vector<string> split_string(string text, string separator)
 	result.push_back(text);
 
 	return result;
+}
+
+bool starts_with(const string &str, const string &start_str) {
+	return start_str.length() <= str.length() &&
+		std::equal(start_str.begin(), start_str.end(), str.begin());
 }
 
 uint count_int_digits(int number)
