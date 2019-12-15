@@ -26,6 +26,7 @@
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
 #include "sourcesinkdevice.hpp"
+#include "src/util.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/channels/dividechannel.hpp"
 #include "src/channels/hardwarechannel.hpp"
@@ -55,39 +56,62 @@ void SourceSinkDevice::init_channels()
 
 	// Preinitialize known fixed channels with a signal
 	for (const auto &chg_name_channels_pair : channel_group_map_) {
+		string ch_suffix = "";
 		for (const auto &channel : chg_name_channels_pair.second) {
 			if (channel->type() != channels::ChannelType::AnalogChannel)
 				continue;
 
-			// TODO: preinit with channel.meaning.mq, ...
-			//       (must be implemented in sigrok)
+			// TODO: Preinit the fixed channels with channel.meaning.mq,
+			//       quantity_flags (AC/DC), ...! Must be implemented in sigrok!
 			bool init = false;
 			data::Quantity quantity;
 			set<data::QuantityFlag> quantity_flags;
 			data::Unit unit;
-			if (channel->name().rfind("V", 0) == 0) {
+			if (util::starts_with(channel->name(), "V")) {
 				quantity = data::Quantity::Voltage;
-				// TODO: Set AC for AC Sources
+				// TODO: Check for AC/DC when libsigrok preinits the channels!
 				quantity_flags.insert(data::QuantityFlag::DC);
 				unit = data::Unit::Volt;
 				init = true;
+				handle_channel_name_suffix(channel->name(), 1, ch_suffix);
 			}
-			else if (channel->name().rfind("I", 0) == 0) {
+			else if (util::starts_with(channel->name(), "I")) {
 				quantity = data::Quantity::Current;
-				// TODO: Set AC for AC Sources
+				// TODO: Check for AC/DC when libsigrok preinits the channels!
 				quantity_flags.insert(data::QuantityFlag::DC);
 				unit = data::Unit::Ampere;
 				init = true;
+				handle_channel_name_suffix(channel->name(), 1, ch_suffix);
 			}
-			else if (channel->name().rfind("P", 0) == 0) {
+			else if (util::starts_with(channel->name(), "P")) {
 				quantity = data::Quantity::Power;
 				unit = data::Unit::Watt;
 				init = true;
+				handle_channel_name_suffix(channel->name(), 1, ch_suffix);
 			}
-			else if (channel->name().rfind("F", 0) == 0) {
+			else if (util::starts_with(channel->name(), "R")) {
+				quantity = data::Quantity::Resistance;
+				unit = data::Unit::Ohm;
+				init = true;
+				handle_channel_name_suffix(channel->name(), 1, ch_suffix);
+			}
+			else if (util::starts_with(channel->name(), "F")) {
 				quantity = data::Quantity::Frequency;
 				unit = data::Unit::Hertz;
 				init = true;
+				handle_channel_name_suffix(channel->name(), 1, ch_suffix);
+			}
+			else if (util::starts_with(channel->name(), "Wh")) {
+				quantity = data::Quantity::Work;
+				unit = data::Unit::WattHour;
+				init = true;
+				handle_channel_name_suffix(channel->name(), 2, ch_suffix);
+			}
+			else if (util::starts_with(channel->name(), "Ah")) {
+				quantity = data::Quantity::ElectricCharge;
+				unit = data::Unit::AmpereHour;
+				init = true;
+				handle_channel_name_suffix(channel->name(), 2, ch_suffix);
 			}
 
 			if (init) {
@@ -104,6 +128,9 @@ void SourceSinkDevice::init_channels()
 		shared_ptr<data::AnalogTimeSignal> voltage_signal;
 		shared_ptr<data::AnalogTimeSignal> current_signal;
 		shared_ptr<data::AnalogTimeSignal> power_signal;
+		shared_ptr<data::AnalogTimeSignal> resistance_signal;
+		shared_ptr<data::AnalogTimeSignal> wh_signal;
+		shared_ptr<data::AnalogTimeSignal> ah_signal;
 		for (const auto &channel : chg_name_channels_pair.second) {
 			if (!channel->fixed_signal())
 				continue;
@@ -120,6 +147,18 @@ void SourceSinkDevice::init_channels()
 				power_signal =
 					static_pointer_cast<data::AnalogTimeSignal>(signal);
 			}
+			else if (signal->quantity() == data::Quantity::Resistance) {
+				resistance_signal =
+					static_pointer_cast<data::AnalogTimeSignal>(signal);
+			}
+			else if (signal->quantity() == data::Quantity::Work) {
+				wh_signal =
+					static_pointer_cast<data::AnalogTimeSignal>(signal);
+			}
+			else if (signal->quantity() == data::Quantity::ElectricCharge) {
+				ah_signal =
+					static_pointer_cast<data::AnalogTimeSignal>(signal);
+			}
 		}
 
 		// Create power channel
@@ -131,7 +170,7 @@ void SourceSinkDevice::init_channels()
 					data::Unit::Watt,
 					voltage_signal, current_signal,
 					shared_from_this(),
-					chg_names, tr("P").toStdString(),
+					chg_names, "P" + ch_suffix,
 					aquisition_start_timestamp_);
 			BaseDevice::add_math_channel(power_channel, chg_name);
 			power_signal = static_pointer_cast<data::AnalogTimeSignal>(
@@ -139,7 +178,7 @@ void SourceSinkDevice::init_channels()
 		}
 
 		// Create resistance channel
-		if (voltage_signal && current_signal) {
+		if (voltage_signal && current_signal && !resistance_signal) {
 			shared_ptr<channels::DivideChannel> resistance_channel =
 				make_shared<channels::DivideChannel>(
 					data::Quantity::Resistance,
@@ -147,13 +186,13 @@ void SourceSinkDevice::init_channels()
 					data::Unit::Ohm,
 					voltage_signal, current_signal,
 					shared_from_this(),
-					chg_names, tr("R").toStdString(),
+					chg_names, "R" + ch_suffix,
 					aquisition_start_timestamp_);
 			BaseDevice::add_math_channel(resistance_channel, chg_name);
 		}
 
 		// Create Wh channel
-		if (power_signal) {
+		if (power_signal && !wh_signal) {
 			shared_ptr<channels::IntegrateChannel> wh_channel =
 				make_shared<channels::IntegrateChannel>(
 					data::Quantity::Work,
@@ -161,13 +200,13 @@ void SourceSinkDevice::init_channels()
 					data::Unit::WattHour,
 					power_signal,
 					shared_from_this(),
-					chg_names, tr("Wh").toStdString(),
+					chg_names, "Wh" + ch_suffix,
 					aquisition_start_timestamp_);
 			BaseDevice::add_math_channel(wh_channel, chg_name);
 		}
 
 		// Create Ah channel
-		if (current_signal) {
+		if (current_signal && !ah_signal) {
 			shared_ptr<channels::IntegrateChannel> ah_channel =
 				make_shared<channels::IntegrateChannel>(
 					data::Quantity::ElectricCharge,
@@ -175,11 +214,28 @@ void SourceSinkDevice::init_channels()
 					data::Unit::AmpereHour,
 					current_signal,
 					shared_from_this(),
-					chg_names, tr("Ah").toStdString(),
+					chg_names, "Ah" + ch_suffix,
 					aquisition_start_timestamp_);
 			BaseDevice::add_math_channel(ah_channel, chg_name);
 		}
 	}
+}
+
+void SourceSinkDevice::handle_channel_name_suffix(const string &channel_name,
+	size_t start_pos, string &channel_suffix)
+{
+	string tmp_ch_suffix = channel_name.substr(
+		start_pos, channel_name.length());
+
+	if (channel_suffix.length() == 0 && tmp_ch_suffix.length() > 0)
+		channel_suffix = tmp_ch_suffix;
+	else if (channel_suffix != tmp_ch_suffix)
+		qWarning() << "SourceSinkDevice::init_channels(): " <<
+			"Channel suffix for channel " <<
+			QString::fromStdString(channel_name) <<
+			" differs from previous suffix " <<
+			QString::fromStdString(channel_suffix);
+
 }
 
 } // namespace devices
