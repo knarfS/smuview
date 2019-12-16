@@ -113,6 +113,8 @@ vector<data::rational_t> RationalProperty::list_values() const
 
 bool RationalProperty::list_config()
 {
+	values_list_.clear();
+
 	Glib::VariantContainerBase gvar;
 	if (!configurable_->list_config(config_key_, gvar))
 		return false;
@@ -126,6 +128,8 @@ bool RationalProperty::list_config()
 
 		values_list_.push_back(make_pair(p, q));
 	}
+
+	Q_EMIT list_changed();
 
 	return true;
 }

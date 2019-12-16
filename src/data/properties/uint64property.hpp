@@ -62,14 +62,13 @@ public:
 	vector<uint64_t> list_values() const;
 
 private:
-	bool list_config();
-
 	uint64_t min_;
 	uint64_t max_;
 	uint64_t step_;
 	vector<uint64_t> values_list_;
 
 public Q_SLOTS:
+	bool list_config() override;
 	void change_value(const QVariant) override;
 	void on_value_changed(Glib::VariantBase) override;
 

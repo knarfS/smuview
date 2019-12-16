@@ -115,6 +115,8 @@ bool DoubleProperty::list_config()
 	iter.next_value(gvar);
 	step_ = Glib::VariantBase::cast_dynamic<Glib::Variant<double>>(gvar).get();
 
+	Q_EMIT list_changed();
+
 	return true;
 }
 

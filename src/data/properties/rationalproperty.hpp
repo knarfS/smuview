@@ -61,11 +61,10 @@ public:
 	vector<data::rational_t> list_values() const;
 
 private:
-	bool list_config();
-
 	vector<data::rational_t> values_list_;
 
 public Q_SLOTS:
+	bool list_config() override;
 	void change_value(const QVariant) override;
 	void on_value_changed(Glib::VariantBase) override;
 

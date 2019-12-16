@@ -109,6 +109,8 @@ vector<data::uint64_range_t> UInt64RangeProperty::list_values() const
 
 bool UInt64RangeProperty::list_config()
 {
+	values_list_.clear();
+
 	Glib::VariantContainerBase gvar;
 	if (!configurable_->list_config(config_key_, gvar))
 		return false;
@@ -122,6 +124,8 @@ bool UInt64RangeProperty::list_config()
 
 		values_list_.push_back(make_pair(low, high));
 	}
+
+	Q_EMIT list_changed();
 
 	return true;
 }

@@ -103,6 +103,8 @@ vector<uint64_t> UInt64Property::list_values() const
 
 bool UInt64Property::list_config()
 {
+	values_list_.clear();
+
 	Glib::VariantContainerBase gvar;
 	if (!configurable_->list_config(config_key_, gvar))
 		return false;
@@ -154,6 +156,8 @@ bool UInt64Property::list_config()
 				Glib::VariantBase::cast_dynamic<Glib::Variant<guint64>>(gvar).get());
 		}
 	}
+
+	Q_EMIT list_changed();
 
 	return true;
 }

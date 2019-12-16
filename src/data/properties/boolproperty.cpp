@@ -59,6 +59,12 @@ QString BoolProperty::to_string() const
 	return this->to_string(bool_value());
 }
 
+bool BoolProperty::list_config()
+{
+	// No list for boolean properties!
+	return false;
+}
+
 void BoolProperty::change_value(const QVariant qvar)
 {
 	configurable_->set_config(config_key_, qvar.toBool());

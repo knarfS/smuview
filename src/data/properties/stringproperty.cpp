@@ -73,6 +73,8 @@ QStringList StringProperty::list_values() const
 
 bool StringProperty::list_config()
 {
+	string_list_.clear();
+
 	Glib::VariantContainerBase gvar;
 	if (!configurable_->list_config(config_key_, gvar))
 		return false;
@@ -82,6 +84,8 @@ bool StringProperty::list_config()
 		string_list_.append(QString::fromStdString(
 			Glib::VariantBase::cast_dynamic<Glib::Variant<string>>(gvar).get()));
 	}
+
+	Q_EMIT list_changed();
 
 	return true;
 }

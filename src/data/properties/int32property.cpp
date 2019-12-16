@@ -99,6 +99,8 @@ bool Int32Property::list_config()
 	iter.next_value(gvar);
 	step_ = Glib::VariantBase::cast_dynamic<Glib::Variant<int32_t>>(gvar).get();
 
+	Q_EMIT list_changed();
+
 	return true;
 }
 

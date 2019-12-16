@@ -61,13 +61,12 @@ public:
 	QString to_string() const override;
 
 private:
-	bool list_config();
-
 	int32_t min_;
 	int32_t max_;
 	int32_t step_;
 
 public Q_SLOTS:
+	bool list_config() override;
 	void change_value(const QVariant) override;
 	void on_value_changed(Glib::VariantBase) override;
 

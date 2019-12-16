@@ -78,6 +78,10 @@ protected:
 
 public Q_SLOTS:
 	/**
+	 * Load the list of available values for this property.
+	 */
+	virtual bool list_config() = 0;
+	/**
 	 * Value has changes within SmuView and should be send to the device
 	 */
 	virtual void change_value(const QVariant) = 0;
@@ -88,6 +92,7 @@ public Q_SLOTS:
 
 Q_SIGNALS:
 	void value_changed(const QVariant);
+	void list_changed();
 
 };
 

@@ -64,8 +64,6 @@ public:
 	uint decimal_places() const;
 
 private:
-	bool list_config();
-
 	double min_;
 	double max_;
 	double step_;
@@ -73,6 +71,7 @@ private:
 	uint decimal_places_;
 
 public Q_SLOTS:
+	bool list_config() override;
 	void change_value(const QVariant) override;
 	void on_value_changed(Glib::VariantBase) override;
 

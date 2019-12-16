@@ -60,11 +60,10 @@ public:
 	QString to_string() const override;
 
 private:
-	bool list_config();
-
 	vector<data::measured_quantity_t> measured_quantity_list_;
 
 public Q_SLOTS:
+	bool list_config() override;
 	void change_value(const QVariant) override;
 	void on_value_changed(Glib::VariantBase) override;
 
