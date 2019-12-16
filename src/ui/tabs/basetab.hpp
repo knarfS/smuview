@@ -71,14 +71,17 @@ public:
 	virtual bool request_close() = 0;
 
 private:
-	map<QDockWidget *, views::BaseView *> view_docks_map_;
+	map<views::BaseView *, QDockWidget *> view_docks_map_;
 	map<string, views::BaseView *> view_id_map_;
+
+	QDockWidget *create_dock_widget(views::BaseView *view);
 
 protected:
 	Session &session_;
 
 public Q_SLOTS:
 	void add_view(views::BaseView *view, Qt::DockWidgetArea area);
+	void add_view_ontop(views::BaseView *view, views::BaseView *existing_view);
 
 };
 

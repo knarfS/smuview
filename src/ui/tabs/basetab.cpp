@@ -71,15 +71,12 @@ views::BaseView *BaseTab::get_view_from_view_id(string id)
 	return view_id_map_[id];
 }
 
-void BaseTab::add_view(views::BaseView *view, Qt::DockWidgetArea area)
+QDockWidget *BaseTab::create_dock_widget(views::BaseView *view)
 {
-	if (!view)
-		return;
-
-	//GlobalSettings settings;
-
-	// Dock widget must be here, because the layout must be set to the central
-	// widget of the view main window before dock->setWidget() is called.
+	// The dock widget must be created here, because the layout must be set to
+	// the central widget of the view main window before dock->setWidget() is
+	// called.
+	// Otherwise the application will flicker at startup....
 	QDockWidget *dock = new QDockWidget(view->title());
 	dock->setAttribute(Qt::WA_DeleteOnClose);
 	dock->setAllowedAreas(Qt::AllDockWidgetAreas);
@@ -87,14 +84,42 @@ void BaseTab::add_view(views::BaseView *view, Qt::DockWidgetArea area)
 	dock->setFeatures(QDockWidget::DockWidgetMovable |
 		QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable);
 	dock->setWidget(view);
+
+	view_docks_map_[view] = dock;
+	view_id_map_[view->id()] = view;
+
+	return dock;
+}
+
+void BaseTab::add_view(views::BaseView *view, Qt::DockWidgetArea area)
+{
+	if (!view)
+		return;
+
+	//GlobalSettings settings;
+
+	QDockWidget *dock = create_dock_widget(view);
 	this->addDockWidget(area, dock);
 
 	// This fixes a qt bug. See: https://bugreports.qt.io/browse/QTBUG-65592
 	// resizeDocks() was introduced in Qt 5.6.
 	this->resizeDocks({dock}, {40}, Qt::Horizontal);
+}
 
-	view_docks_map_[dock] = view;
-	view_id_map_[view->id()] = view;
+void BaseTab::add_view_ontop(views::BaseView *view,
+	views::BaseView *existing_view)
+{
+	if (!view)
+		return;
+
+	//GlobalSettings settings;
+
+	QDockWidget *dock = create_dock_widget(view);
+	this->tabifyDockWidget(view_docks_map_[existing_view], dock);
+
+	// This fixes a qt bug. See: https://bugreports.qt.io/browse/QTBUG-65592
+	// resizeDocks() was introduced in Qt 5.6.
+	this->resizeDocks({dock}, {40}, Qt::Horizontal);
 }
 
 } // namespace tabs

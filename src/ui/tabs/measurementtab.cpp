@@ -23,10 +23,12 @@
 #include <QWidget>
 
 #include "measurementtab.hpp"
+#include "src/util.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/devices/configurable.hpp"
 #include "src/devices/hardwaredevice.hpp"
 #include "src/devices/measurementdevice.hpp"
+#include "src/ui/views/baseview.hpp"
 #include "src/ui/views/plotview.hpp"
 #include "src/ui/views/valuepanelview.hpp"
 #include "src/ui/views/viewhelper.hpp"
@@ -48,42 +50,58 @@ void MeasurementTab::setup_ui()
 	auto hw_device = static_pointer_cast<sv::devices::HardwareDevice>(device_);
 
 	// Device controls
-	size_t i = 0;
+	views::BaseView *first_conf_view = nullptr;
 	for (const auto &c_pair : hw_device->configurable_map()) {
+		// Ignore logic controls from the demo devive.
+		if (c_pair.first == "Logic")
+			continue;
+
 		auto configurable = c_pair.second;
 		if (!configurable->is_controllable())
 			continue;
 
-		auto view = views::viewhelper::get_view_for_configurable(
+		auto configurable_view = views::viewhelper::get_view_for_configurable(
 			session_, configurable);
-		if (view != NULL) {
-			add_view(view, Qt::TopDockWidgetArea);
-
-			// Shown only 2 configurables
-			i++;
-			if (i >= 2)
-				break;
+		if (configurable_view) {
+			if (!first_conf_view) {
+				first_conf_view = configurable_view;
+				add_view(configurable_view, Qt::TopDockWidgetArea);
+			}
+			else
+				add_view_ontop(configurable_view, first_conf_view);
 		}
 	}
+	if (hw_device->configurable_map().size() > 1) {
+		first_conf_view->show();
+		first_conf_view->raise();
+	}
 
-	i = 0;
+	views::BaseView *first_panel_view = nullptr;
 	for (const auto &ch_pair : measurement_device_->channel_map()) {
+		// Ignore digital channels (starting with "D") from the demo devive.
+		if (util::starts_with(ch_pair.first, "D"))
+			continue;
+
 		auto channel = ch_pair.second;
 
 		// Value panel(s)
 		ui::views::BaseView *value_panel_view =
 			new ui::views::ValuePanelView(session_, channel);
-		add_view(value_panel_view, Qt::TopDockWidgetArea);
+		if (!first_panel_view) {
+			first_panel_view = value_panel_view;
+			add_view(value_panel_view, Qt::TopDockWidgetArea);
+		}
+		else
+			add_view_ontop(value_panel_view, first_panel_view);
 
 		// Value plot(s)
 		ui::views::BaseView *value_plot_view =
 			new ui::views::PlotView(session_, channel);
 		add_view(value_plot_view, Qt::BottomDockWidgetArea);
-
-		// Shown only 2 panles/plots
-		i++;
-		if (i >= 2)
-			break;
+	}
+	if (measurement_device_->channel_map().size() > 1) {
+		first_panel_view->show();
+		first_panel_view->raise();
 	}
 }
 
