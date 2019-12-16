@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,13 +18,18 @@
  */
 
 #include <cassert>
+#include <memory>
 
 #include <QDebug>
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
 #include "measurementdevice.hpp"
+#include "src/data/properties/baseproperty.hpp"
 #include "src/devices/configurable.hpp"
+#include "src/devices/hardwaredevice.hpp"
+
+using std::static_pointer_cast;
 
 namespace sv {
 namespace devices {
@@ -34,6 +39,29 @@ MeasurementDevice::MeasurementDevice(
 		shared_ptr<sigrok::HardwareDevice> sr_device) :
 	HardwareDevice(sr_context, sr_device)
 {
+}
+
+void MeasurementDevice::init_configurables()
+{
+	HardwareDevice::init_configurables();
+
+	for (const auto &c_pair : configurable_map_) {
+		auto configurable = c_pair.second;
+
+		// Check if the device has the config key "Range". If so, each possible
+		// value of the config key "MeasuredQuantity" could have a different
+		// listing for "Range"!
+		if (configurable->properties().count(ConfigKey::Range) &&
+			configurable->properties().count(ConfigKey::MeasuredQuantity)) {
+
+			auto range_property = configurable->properties()[ConfigKey::Range];
+			auto mq_property =
+				configurable->properties()[ConfigKey::MeasuredQuantity];
+			connect(
+				mq_property.get(), &data::properties::BaseProperty::value_changed,
+				range_property.get(), &data::properties::BaseProperty::list_config);
+		}
+	}
 }
 
 } // namespace devices
