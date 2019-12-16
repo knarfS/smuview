@@ -87,6 +87,8 @@ void RationalComboBox::connect_signals()
 	if (auto_update_ && property_ != nullptr) {
 		connect(property_.get(), SIGNAL(value_changed(const QVariant)),
 			this, SLOT(on_value_changed(const QVariant)));
+		connect(property_.get(), &data::properties::BaseProperty::list_changed,
+			this, &RationalComboBox::on_list_changed);
 	}
 }
 
@@ -130,6 +132,31 @@ void RationalComboBox::on_value_changed(const QVariant value)
 	shared_ptr<data::properties::RationalProperty> rational_prop =
 		dynamic_pointer_cast<data::properties::RationalProperty>(property_);
 	this->setCurrentText(rational_prop->to_string(value));
+
+	connect_widget_2_prop_signals();
+}
+
+void RationalComboBox::on_list_changed()
+{
+	// Disconnect Widget -> Property signal to prevent echoing
+	disconnect_widget_2_prop_signals();
+
+	if (property_ != nullptr && property_->is_listable()) {
+		this->clear();
+
+		shared_ptr<data::properties::RationalProperty> rational_prop =
+			dynamic_pointer_cast<data::properties::RationalProperty>(
+				property_);
+
+		for (const auto &rational : rational_prop->list_values()) {
+			this->addItem(
+				rational_prop->to_string(rational),
+				QVariant::fromValue(rational));
+		}
+
+		if (property_->is_getable())
+			this->setCurrentText(rational_prop->to_string(property_->value()));
+	}
 
 	connect_widget_2_prop_signals();
 }

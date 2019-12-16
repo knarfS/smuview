@@ -86,6 +86,8 @@ void Int32SpinBox::connect_signals()
 	if (auto_update_ && property_ != nullptr) {
 		connect(property_.get(), SIGNAL(value_changed(const QVariant)),
 			this, SLOT(on_value_changed(const QVariant)));
+		connect(property_.get(), &data::properties::BaseProperty::list_changed,
+			this, &Int32SpinBox::on_list_changed);
 	}
 }
 
@@ -122,6 +124,24 @@ void Int32SpinBox::on_value_changed(const QVariant value)
 	disconnect_widget_2_prop_signals();
 
 	this->setValue(value.toInt());
+
+	connect_widget_2_prop_signals();
+}
+
+void Int32SpinBox::on_list_changed()
+{
+	// Disconnect Widget -> Property signal to prevent echoing
+	disconnect_widget_2_prop_signals();
+
+	if (property_ != nullptr && property_->is_listable()) {
+		shared_ptr<data::properties::Int32Property> int32_prop =
+			dynamic_pointer_cast<data::properties::Int32Property>(property_);
+		this->setRange(int32_prop->min(), int32_prop->max());
+		this->setSingleStep(int32_prop->step());
+
+		if (property_->is_getable())
+			this->setValue(int32_prop->int32_value());
+	}
 
 	connect_widget_2_prop_signals();
 }

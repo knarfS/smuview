@@ -80,6 +80,8 @@ void DoubleDisplay::connect_signals()
 	if (auto_update_ && property_ != nullptr) {
 		connect(property_.get(), SIGNAL(value_changed(const QVariant)),
 			this, SLOT(on_value_changed(const QVariant)));
+		connect(property_.get(), &data::properties::BaseProperty::list_changed,
+			this, &DoubleDisplay::on_list_changed);
 	}
 }
 
@@ -96,6 +98,18 @@ void DoubleDisplay::value_changed(const double value)
 void DoubleDisplay::on_value_changed(const QVariant qvar)
 {
 	this->set_value(qvar.toDouble());
+}
+
+void DoubleDisplay::on_list_changed()
+{
+	if (property_ != nullptr && property_->is_listable()) {
+		shared_ptr<data::properties::DoubleProperty> double_prop =
+			dynamic_pointer_cast<data::properties::DoubleProperty>(property_);
+		this->set_digits(double_prop->digits(), double_prop->decimal_places());
+
+		if (property_->is_getable())
+			this->set_value(double_prop->double_value());
+	}
 }
 
 } // namespace datatypes

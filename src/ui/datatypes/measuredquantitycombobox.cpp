@@ -94,6 +94,8 @@ void MeasuredQuantityComboBox::connect_signals()
 	if (auto_update_ && property_ != nullptr) {
 		connect(property_.get(), SIGNAL(value_changed(const QVariant)),
 			this, SLOT(on_value_changed(const QVariant)));
+		connect(property_.get(), &data::properties::BaseProperty::list_changed,
+			this, &MeasuredQuantityComboBox::on_list_changed);
 	}
 }
 
@@ -136,6 +138,31 @@ void MeasuredQuantityComboBox::on_value_changed(const QVariant qvar)
 
 	this->setCurrentText(data::datautil::format_measured_quantity(
 		qvar.value<data::measured_quantity_t>()));
+
+	connect_widget_2_prop_signals();
+}
+
+void MeasuredQuantityComboBox::on_list_changed()
+{
+	// Disconnect Widget -> Property signal to prevent echoing
+	disconnect_widget_2_prop_signals();
+
+	if (property_ != nullptr && property_->is_listable()) {
+		this->clear();
+
+		shared_ptr<data::properties::MeasuredQuantityProperty> mq_prop =
+			dynamic_pointer_cast<data::properties::MeasuredQuantityProperty>(
+				property_);
+		for (const auto &mq : mq_prop->list_values()) {
+			this->addItem(
+				data::datautil::format_measured_quantity(mq),
+				QVariant::fromValue(mq));
+		}
+
+		if (property_->is_getable())
+			this->setCurrentText(data::datautil::format_measured_quantity(
+				mq_prop->measured_quantity_value()));
+	}
 
 	connect_widget_2_prop_signals();
 }

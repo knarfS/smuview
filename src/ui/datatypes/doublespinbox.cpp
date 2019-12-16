@@ -90,6 +90,8 @@ void DoubleSpinBox::connect_signals()
 	if (auto_update_ && property_ != nullptr) {
 		connect(property_.get(), SIGNAL(value_changed(const QVariant)),
 			this, SLOT(on_value_changed(const QVariant)));
+		connect(property_.get(), &data::properties::BaseProperty::list_changed,
+			this, &DoubleSpinBox::on_list_changed);
 	}
 }
 
@@ -126,6 +128,25 @@ void DoubleSpinBox::on_value_changed(const QVariant qvar)
 	disconnect_widget_2_prop_signals();
 
 	this->setValue(qvar.toDouble());
+
+	connect_widget_2_prop_signals();
+}
+
+void DoubleSpinBox::on_list_changed()
+{
+	// Disconnect Widget -> Property signal to prevent echoing
+	disconnect_widget_2_prop_signals();
+
+	if (property_ != nullptr && property_->is_listable()) {
+		shared_ptr<data::properties::DoubleProperty> double_prop =
+			dynamic_pointer_cast<data::properties::DoubleProperty>(property_);
+		this->setRange(double_prop->min(), double_prop->max());
+		this->setSingleStep(double_prop->step());
+		this->setDecimals(double_prop->decimal_places());
+
+		if (property_->is_getable())
+			this->setValue(double_prop->double_value());
+	}
 
 	connect_widget_2_prop_signals();
 }

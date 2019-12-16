@@ -85,6 +85,8 @@ void UInt64RangeComboBox::connect_signals()
 	if (auto_update_ && property_ != nullptr) {
 		connect(property_.get(), SIGNAL(value_changed(const QVariant)),
 			this, SLOT(on_value_changed(const QVariant)));
+		connect(property_.get(), &data::properties::BaseProperty::list_changed,
+			this, &UInt64RangeComboBox::on_list_changed);
 	}
 }
 
@@ -126,6 +128,29 @@ void UInt64RangeComboBox::on_value_changed(const QVariant value)
 	shared_ptr<data::properties::UInt64RangeProperty> uint64range_prop =
 		dynamic_pointer_cast<data::properties::UInt64RangeProperty>(property_);
 	this->setCurrentText(uint64range_prop->to_string(value));;
+
+	connect_widget_2_prop_signals();
+}
+
+void UInt64RangeComboBox::on_list_changed()
+{
+	// Disconnect Widget -> Property signal to prevent echoing
+	disconnect_widget_2_prop_signals();
+
+	if (property_ != nullptr && property_->is_listable()) {
+		this->clear();
+
+		shared_ptr<data::properties::UInt64RangeProperty> uint64range_prop =
+			dynamic_pointer_cast<data::properties::UInt64RangeProperty>(property_);
+		for (const auto &uint64range : uint64range_prop->list_values()) {
+			this->addItem(
+				uint64range_prop->to_string(uint64range),
+				QVariant::fromValue(uint64range));
+		}
+
+		if (property_->is_getable())
+			this->setCurrentText(uint64range_prop->to_string(property_->value()));
+	}
 
 	connect_widget_2_prop_signals();
 }

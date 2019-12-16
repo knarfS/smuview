@@ -61,6 +61,10 @@ protected: // Q_SLOTS
 	 * Signal handling for Property -> Widget
 	virtual void on_value_changed(const QVariant) = 0;
 	 */
+	/**
+	 * Signal handling for Property -> Widget
+	virtual void on_list_changed() = 0;
+	 */
 
 };
 

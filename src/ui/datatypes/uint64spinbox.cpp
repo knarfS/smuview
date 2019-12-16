@@ -86,6 +86,8 @@ void UInt64SpinBox::connect_signals()
 	if (auto_update_ && property_ != nullptr) {
 		connect(property_.get(), SIGNAL(value_changed(const QVariant)),
 			this, SLOT(on_value_changed(const QVariant)));
+		connect(property_.get(), &data::properties::BaseProperty::list_changed,
+			this, &UInt64SpinBox::on_list_changed);
 	}
 }
 
@@ -124,6 +126,24 @@ void UInt64SpinBox::on_value_changed(const QVariant value)
 	disconnect_widget_2_prop_signals();
 
 	this->setValue(value.toULongLong());
+
+	connect_widget_2_prop_signals();
+}
+
+void UInt64SpinBox::on_list_changed()
+{
+	// Disconnect Widget -> Property signal to prevent echoing
+	disconnect_widget_2_prop_signals();
+
+	if (property_ != nullptr && property_->is_listable()) {
+		shared_ptr<data::properties::UInt64Property> uint64_prop =
+			dynamic_pointer_cast<data::properties::UInt64Property>(property_);
+		this->setRange(uint64_prop->min(), uint64_prop->max());
+		this->setSingleStep(uint64_prop->step());
+
+		if (property_->is_getable())
+			this->setValue(uint64_prop->uint64_value());
+	}
 
 	connect_widget_2_prop_signals();
 }

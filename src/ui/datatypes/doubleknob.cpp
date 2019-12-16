@@ -87,6 +87,8 @@ void DoubleKnob::connect_signals()
 	if (auto_update_ && property_ != nullptr) {
 		connect(property_.get(), SIGNAL(value_changed(const QVariant)),
 			this, SLOT(on_value_changed(const QVariant)));
+		connect(property_.get(), &data::properties::BaseProperty::list_changed,
+			this, &DoubleKnob::on_list_changed);
 	}
 }
 
@@ -125,6 +127,21 @@ void DoubleKnob::on_value_changed(const QVariant qvar)
 	this->setValue(qvar.toDouble());
 
 	connect_widget_2_prop_signals();
+}
+
+void DoubleKnob::on_list_changed()
+{
+	if (property_ != nullptr && property_->is_listable()) {
+		shared_ptr<data::properties::DoubleProperty> double_prop =
+			dynamic_pointer_cast<data::properties::DoubleProperty>(property_);
+		this->setLowerBound(double_prop->min());
+		this->setUpperBound(double_prop->max());
+		this->setTotalSteps(
+			(double_prop->max() - double_prop->min()) / double_prop->step());
+
+		if (property_->is_getable())
+			this->setValue(double_prop->double_value());
+	}
 }
 
 } // namespace datatypes

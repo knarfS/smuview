@@ -81,6 +81,8 @@ void StringComboBox::connect_signals()
 	if (auto_update_ && property_ != nullptr) {
 		connect(property_.get(), SIGNAL(value_changed(const QVariant)),
 			this, SLOT(on_value_changed(const QVariant)));
+		connect(property_.get(), &data::properties::BaseProperty::list_changed,
+			this, &StringComboBox::on_list_changed);
 	}
 }
 
@@ -129,6 +131,25 @@ void StringComboBox::on_value_changed(const QVariant value)
 	disconnect_widget_2_prop_signals();
 
 	this->setCurrentText(value.toString());
+
+	connect_widget_2_prop_signals();
+}
+
+void StringComboBox::on_list_changed()
+{
+	// Disconnect Widget -> Property signal to prevent echoing
+	disconnect_widget_2_prop_signals();
+
+	if (property_ != nullptr && property_->is_listable()) {
+		this->clear();
+
+		shared_ptr<data::properties::StringProperty> string_prop =
+			dynamic_pointer_cast<data::properties::StringProperty>(property_);
+		this->addItems(string_prop->list_values());
+
+		if (property_->is_getable())
+			this->setCurrentText(string_prop->string_value());
+	}
 
 	connect_widget_2_prop_signals();
 }
