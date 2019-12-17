@@ -27,6 +27,7 @@
 
 #include "sourcesinkdevice.hpp"
 #include "src/util.hpp"
+#include "src/data/properties/baseproperty.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/channels/dividechannel.hpp"
 #include "src/channels/hardwarechannel.hpp"
@@ -48,6 +49,39 @@ SourceSinkDevice::SourceSinkDevice(
 		shared_ptr<sigrok::HardwareDevice> sr_device) :
 	HardwareDevice(sr_context, sr_device)
 {
+}
+
+void SourceSinkDevice::init_configurables()
+{
+	HardwareDevice::init_configurables();
+
+	for (const auto &c_pair : configurable_map_) {
+		auto configurable = c_pair.second;
+
+		// Check if the device has the config key "Range". If so, the config
+		// keys "VoltageTarget" and "CurrentLimit" could have different
+		// min/max/step values for each "Range" value!
+		if (configurable->properties().count(ConfigKey::Range) &&
+			configurable->properties().count(ConfigKey::VoltageTarget)) {
+
+			auto range_property = configurable->properties()[ConfigKey::Range];
+			auto volt_property =
+				configurable->properties()[ConfigKey::VoltageTarget];
+			connect(
+				range_property.get(), &data::properties::BaseProperty::value_changed,
+				volt_property.get(), &data::properties::BaseProperty::list_config);
+		}
+		if (configurable->properties().count(ConfigKey::Range) &&
+			configurable->properties().count(ConfigKey::CurrentLimit)) {
+
+			auto range_property = configurable->properties()[ConfigKey::Range];
+			auto current_property =
+				configurable->properties()[ConfigKey::CurrentLimit];
+			connect(
+				range_property.get(), &data::properties::BaseProperty::value_changed,
+				current_property.get(), &data::properties::BaseProperty::list_config);
+		}
+	}
 }
 
 void SourceSinkDevice::init_channels()
