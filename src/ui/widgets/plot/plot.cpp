@@ -238,11 +238,15 @@ bool Plot::add_curve(widgets::plot::BaseCurveData *curve_data)
 	pen.setStyle(Qt::SolidLine);
 	pen.setCosmetic(false);
 
+	// Set empty symbol, used in the PlotCurveConfigDialog.
+	QwtSymbol *symbol = new QwtSymbol(QwtSymbol::NoSymbol);
+
 	QwtPlotCurve *plot_curve = new QwtPlotCurve(curve_data->name());
 	plot_curve->setYAxis(y_axis_id);
 	plot_curve->setXAxis(x_axis_id);
 	plot_curve->setStyle(QwtPlotCurve::Lines);
 	plot_curve->setPen(pen);
+	plot_curve->setSymbol(symbol);
 	plot_curve->setRenderHint(QwtPlotItem::RenderAntialiased, true);
 	plot_curve->setPaintAttribute(QwtPlotCurve::ClipPolygons, false);
 	plot_curve->setData(curve_data);

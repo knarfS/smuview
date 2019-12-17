@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2019 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 #define UI_DIALOGS_PLOTCURVECONFIGDIALOG_HPP
 
 #include <QCheckBox>
+#include <QComboBox>
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QWidget>
@@ -48,7 +49,8 @@ private:
 	QwtPlotCurve *plot_curve_;
 	QCheckBox *visible_checkbox_;
 	widgets::ColorButton *color_button_;
-	QCheckBox *sample_points_checkbox_;
+	QComboBox *line_type_box_;
+	QComboBox *symbol_type_box_;
 	QDialogButtonBox *button_box_;
 
 public Q_SLOTS:
