@@ -37,6 +37,7 @@
 #include "src/devices/deviceutil.hpp"
 #include "src/devices/hardwaredevice.hpp"
 #include "src/devices/userdevice.hpp"
+#include "src/python/pystreambuf.hpp"
 #include "src/python/uiproxy.hpp"
 
 using namespace pybind11::literals; // for the ""_a
@@ -51,6 +52,7 @@ PYBIND11_EMBEDDED_MODULE(smuview, m) {
 	init_Signal(m);
 	init_Configurable(m);
 	init_UI(m);
+	init_StreamBuf(m);
 	init_Enums(m);
 }
 
@@ -190,6 +192,32 @@ void init_UI(py::module &m)
 	py_dock_area.value("BottomDockArea", Qt::DockWidgetArea::BottomDockWidgetArea);
 	//py_dock_area.value("AllDockAreas", Qt::DockWidgetArea::AllDockWidgetAreas);
 	//py_dock_area.value("NoDockArea", Qt::DockWidgetArea::NoDockWidgetArea);
+}
+
+void init_StreamBuf(py::module &m)
+{
+	py::class_<sv::python::PyStreamBuf> py_stream_buf(m, "PyStreamBuf");
+	py_stream_buf.doc() = "Redirect Python output to SmuView console.";
+	py_stream_buf.def(py::init<const std::string &, const std::string &>());
+	py_stream_buf.def("close", &sv::python::PyStreamBuf::py_close, "Flush and close this stream.");
+	py_stream_buf.def("fileno", &sv::python::PyStreamBuf::py_fileno, "Raises an OSError, because PyStreamBuf doesn't use a file descriptor.");
+	py_stream_buf.def("flush", &sv::python::PyStreamBuf::py_flush, "Flush the write buffers of the stream.");
+	py_stream_buf.def("isatty", &sv::python::PyStreamBuf::py_isatty, "Always return False.");
+	py_stream_buf.def("readable", &sv::python::PyStreamBuf::py_readable, "Always return False.");
+	py_stream_buf.def("readlines", &sv::python::PyStreamBuf::py_readlines, "Raises an OSError, because PyStreamBuf is write only.");
+	py_stream_buf.def("seekable", &sv::python::PyStreamBuf::py_seekable, "Always return False. PyStreamBuf is not seekable atm.");
+	py_stream_buf.def("truncate", &sv::python::PyStreamBuf::py_truncate, "Raises an OSError, because PyStreamBuf is not seekable.");
+	py_stream_buf.def("writable", &sv::python::PyStreamBuf::py_writable, "Always return True.");
+	py_stream_buf.def("writelines", &sv::python::PyStreamBuf::py_writelines, "Write a list of lines to the stream.");
+	py_stream_buf.def("__del__", &sv::python::PyStreamBuf::py_del, "Prepare for object destruction.");
+	py_stream_buf.def("read", &sv::python::PyStreamBuf::py_read, "Raises an OSError, because PyStreamBuf is write only.");
+	py_stream_buf.def("readline", &sv::python::PyStreamBuf::py_readline, "Raises an OSError, because PyStreamBuf is write only.");
+	py_stream_buf.def("seek", &sv::python::PyStreamBuf::py_seek, "Raises an OSError, because PyStreamBuf is not seekable.");
+	py_stream_buf.def("tell", &sv::python::PyStreamBuf::py_tell, "Raises an OSError, because PyStreamBuf is not seekable.");
+	py_stream_buf.def("write", &sv::python::PyStreamBuf::py_write, "Write the string s to the stream and return the number of characters written.");
+	py_stream_buf.def_readonly("closed", &sv::python::PyStreamBuf::py_closed, "True if the stream is closed.");
+	py_stream_buf.def_readonly("encoding", &sv::python::PyStreamBuf::py_encoding, "The name of the encoding that is used.");
+	py_stream_buf.def_readonly("errors", &sv::python::PyStreamBuf::py_errors, "The error setting of the decoder or encoder.");
 }
 
 void init_Enums(py::module &m)

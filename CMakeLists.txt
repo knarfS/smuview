@@ -217,6 +217,8 @@ set(smuview_SOURCES
   src/devices/userdevice.cpp
 
   src/python/bindings.cpp
+  src/python/pystreambuf.cpp
+  src/python/pystreamredirect.hpp
   src/python/smuscriptrunner.cpp
   src/python/uihelper.cpp
   src/python/uiproxy.cpp

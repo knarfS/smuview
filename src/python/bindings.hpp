@@ -30,6 +30,7 @@ void init_Channel(py::module &m);
 void init_Signal(py::module &m);
 void init_Configurable(py::module &m);
 void init_UI(py::module &m);
+void init_StreamBuf(py::module &m);
 void init_Enums(py::module &m);
 
 #endif // PYTHON_BINDINGS_HPP

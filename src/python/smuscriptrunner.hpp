@@ -38,7 +38,9 @@ namespace python {
 
 class UiHelper;
 
-class SmuScriptRunner : public QObject
+class SmuScriptRunner :
+	public QObject,
+	public std::enable_shared_from_this<SmuScriptRunner>
 {
 	Q_OBJECT
 
@@ -60,9 +62,11 @@ private:
 	bool is_running_;
 
 Q_SIGNALS:
-	void script_error(const std::string, const std::string);
+	void script_error(const std::string, const std::string); // TODO &
 	void script_started();
 	void script_finished();
+	void send_py_stdout(const std::string &text);
+	void send_py_stderr(const std::string &text);
 
 };
 

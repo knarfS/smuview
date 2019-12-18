@@ -17,6 +17,7 @@ CLASSES
         ConfigKey
         Configurable
         DockArea
+        PyStreamBuf
         Quantity
         QuantityFlag
         Session
@@ -772,6 +773,117 @@ CLASSES
      |      name(self: smuview.BaseDevice) -> str
      |      
      |      Return the name of the device.
+     |  
+     |  ----------------------------------------------------------------------
+     |  Static methods inherited from pybind11_builtins.pybind11_object:
+     |  
+     |  __new__(*args, **kwargs) from pybind11_builtins.pybind11_type
+     |      Create and return a new object.  See help(type) for accurate signature.
+    
+    class PyStreamBuf(pybind11_builtins.pybind11_object)
+     |  Redirect Python output to SmuView console.
+     |  
+     |  Method resolution order:
+     |      PyStreamBuf
+     |      pybind11_builtins.pybind11_object
+     |      builtins.object
+     |  
+     |  Methods defined here:
+     |  
+     |  __del__(...)
+     |      __del__(self: smuview.PyStreamBuf) -> None
+     |      
+     |      Prepare for object destruction.
+     |  
+     |  __init__(...)
+     |      __init__(self: smuview.PyStreamBuf, arg0: str, arg1: str) -> None
+     |  
+     |  close(...)
+     |      close(self: smuview.PyStreamBuf) -> None
+     |      
+     |      Flush and close this stream.
+     |  
+     |  fileno(...)
+     |      fileno(self: smuview.PyStreamBuf) -> int
+     |      
+     |      Raises an OSError, because PyStreamBuf doesn't use a file descriptor.
+     |  
+     |  flush(...)
+     |      flush(self: smuview.PyStreamBuf) -> None
+     |      
+     |      Flush the write buffers of the stream.
+     |  
+     |  isatty(...)
+     |      isatty(self: smuview.PyStreamBuf) -> bool
+     |      
+     |      Always return False.
+     |  
+     |  read(...)
+     |      read(self: smuview.PyStreamBuf, arg0: int) -> str
+     |      
+     |      Raises an OSError, because PyStreamBuf is write only.
+     |  
+     |  readable(...)
+     |      readable(self: smuview.PyStreamBuf) -> bool
+     |      
+     |      Always return False.
+     |  
+     |  readline(...)
+     |      readline(self: smuview.PyStreamBuf, arg0: int) -> str
+     |      
+     |      Raises an OSError, because PyStreamBuf is write only.
+     |  
+     |  readlines(...)
+     |      readlines(self: smuview.PyStreamBuf, arg0: int) -> List[str]
+     |      
+     |      Raises an OSError, because PyStreamBuf is write only.
+     |  
+     |  seek(...)
+     |      seek(self: smuview.PyStreamBuf, arg0: int, arg1: int) -> int
+     |      
+     |      Raises an OSError, because PyStreamBuf is not seekable.
+     |  
+     |  seekable(...)
+     |      seekable(self: smuview.PyStreamBuf) -> bool
+     |      
+     |      Always return False. PyStreamBuf is not seekable atm.
+     |  
+     |  tell(...)
+     |      tell(self: smuview.PyStreamBuf) -> int
+     |      
+     |      Raises an OSError, because PyStreamBuf is not seekable.
+     |  
+     |  truncate(...)
+     |      truncate(self: smuview.PyStreamBuf, arg0: int) -> int
+     |      
+     |      Raises an OSError, because PyStreamBuf is not seekable.
+     |  
+     |  writable(...)
+     |      writable(self: smuview.PyStreamBuf) -> bool
+     |      
+     |      Always return True.
+     |  
+     |  write(...)
+     |      write(self: smuview.PyStreamBuf, arg0: str) -> int
+     |      
+     |      Write the string s to the stream and return the number of characters written.
+     |  
+     |  writelines(...)
+     |      writelines(self: smuview.PyStreamBuf, arg0: List[str]) -> None
+     |      
+     |      Write a list of lines to the stream.
+     |  
+     |  ----------------------------------------------------------------------
+     |  Data descriptors defined here:
+     |  
+     |  closed
+     |      True if the stream is closed.
+     |  
+     |  encoding
+     |      The name of the encoding that is used.
+     |  
+     |  errors
+     |      The error setting of the decoder or encoder.
      |  
      |  ----------------------------------------------------------------------
      |  Static methods inherited from pybind11_builtins.pybind11_object:

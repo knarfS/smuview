@@ -20,6 +20,7 @@
 #include <memory>
 #include <string>
 #include <thread>
+
 #include <pybind11/embed.h>
 #include <pybind11/stl.h>
 
@@ -30,10 +31,13 @@
 #include "smuscriptrunner.hpp"
 #include "src/session.hpp"
 #include "src/python/bindings.hpp"
+#include "src/python/pystreambuf.hpp"
+#include "src/python/pystreamredirect.hpp"
 #include "src/python/uihelper.hpp"
 #include "src/python/uiproxy.hpp"
 
 using std::make_shared;
+using std::string;
 
 using namespace pybind11::literals; // for the ""_a
 namespace py = pybind11;
@@ -56,7 +60,7 @@ SmuScriptRunner::~SmuScriptRunner()
 	*/
 }
 
-void SmuScriptRunner::run(std::string file_name)
+void SmuScriptRunner::run(string file_name)
 {
 	if (file_name.length() <= 0) {
 		Q_EMIT script_error("SmuScriptRunner",
@@ -100,6 +104,11 @@ void SmuScriptRunner::script_thread_proc()
 	py::scoped_interpreter guard{};
 
 	py::module smuview_module = py::module::import("smuview");
+
+	// Redirect python stdout + stderr
+	PyStreamRedirect py_stream_redirect{ shared_from_this() };
+
+	// Python locals
 	UiProxy *ui_proxy = new UiProxy(session_, ui_helper_);
 	auto locals = py::dict(
 		"Session"_a=py::cast(session_, py::return_value_policy::reference),
@@ -109,6 +118,7 @@ void SmuScriptRunner::script_thread_proc()
 		py::eval_file(script_file_name_, py::globals(), locals);
 	}
 	catch (py::error_already_set &ex) {
+		Q_EMIT send_py_stderr(ex.what());
 		Q_EMIT script_error("SmuScriptRunner py::error_already_set", ex.what());
 	}
 
@@ -119,4 +129,3 @@ void SmuScriptRunner::script_thread_proc()
 
 } // namespace python
 } // namespace sv
-
