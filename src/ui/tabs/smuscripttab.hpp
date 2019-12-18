@@ -20,8 +20,6 @@
 #ifndef UI_TABS_SMUSCRIPTTAB_HPP
 #define UI_TABS_SMUSCRIPTTAB_HPP
 
-#include <QAction>
-#include <QToolBar>
 #include <QWidget>
 
 #include "src/ui/tabs/basetab.hpp"
@@ -34,10 +32,9 @@ class Session;
 
 namespace ui {
 
-namespace widgets {
-namespace scripteditor {
-class SmuScriptEditor;
-}
+namespace views {
+class SmuScriptOutputView;
+class SmuScriptView;
 }
 
 namespace tabs {
@@ -58,29 +55,18 @@ public:
 
 private:
 	void setup_ui();
-	void setup_toolbar();
 	void connect_signals();
-	bool save(QString file_name);
 
 	static unsigned int smuscript_tab_counter_;
 
-	string script_file_name_;
-	QAction *const action_open_;
-	QAction *const action_save_;
-	QAction *const action_save_as_;
-	QAction *const action_run_;
-	QToolBar *toolbar_;
 	string tab_id_;
-	widgets::scripteditor::SmuScriptEditor *editor_;
-	bool text_changed_;
-	bool started_from_here_;
+	string script_file_name_;
+	views::SmuScriptView *smu_script_view_;
+	views::SmuScriptOutputView *smu_script_output_view_;
 
 private Q_SLOTS:
-	void on_action_open_triggered();
-	void on_action_save_triggered();
-	void on_action_save_as_triggered();
-	void on_action_run_triggered();
-	void on_text_changed();
+	void on_file_name_changed(const QString &file_name);
+	void on_file_save_state_changed(bool is_unsaved);
 	void on_script_started();
 	void on_script_finished();
 
