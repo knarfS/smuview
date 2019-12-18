@@ -17,8 +17,8 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UI_VIEWS_SMUSCRIPTVIEW_HPP
-#define UI_VIEWS_SMUSCRIPTVIEW_HPP
+#ifndef UI_VIEWS_SMUSCRIPTTREEVIEW_HPP
+#define UI_VIEWS_SMUSCRIPTTREEVIEW_HPP
 
 #include <QAction>
 #include <QFileSystemModel>
@@ -35,12 +35,12 @@ class Session;
 namespace ui {
 namespace views {
 
-class SmuScriptView : public BaseView
+class SmuScriptTreeView : public BaseView
 {
 	Q_OBJECT
 
 public:
-	SmuScriptView(Session &session, QWidget *parent = nullptr);
+	SmuScriptTreeView(Session &session, QWidget *parent = nullptr);
 
 	QString title() const;
 
@@ -71,4 +71,4 @@ private Q_SLOTS:
 } // namespace ui
 } // namespace sv
 
-#endif // UI_VIEWS_SMUSCRIPTVIEW_HPP
+#endif // UI_VIEWS_SMUSCRIPTTREEVIEW_HPP

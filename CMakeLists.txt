@@ -288,7 +288,7 @@ set(smuview_SOURCES
   src/ui/views/plotview.cpp
   src/ui/views/powerpanelview.cpp
   src/ui/views/sequenceoutputview.cpp
-  src/ui/views/smuscriptview.cpp
+  src/ui/views/smuscripttreeview.cpp
   src/ui/views/sourcesinkcontrolview.cpp
   src/ui/views/valuepanelview.cpp
   src/ui/views/viewhelper.cpp

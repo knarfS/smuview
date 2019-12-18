@@ -31,7 +31,7 @@
 #include <QTreeView>
 #include <QVBoxLayout>
 
-#include "smuscriptview.hpp"
+#include "smuscripttreeview.hpp"
 #include "src/mainwindow.hpp"
 #include "src/session.hpp"
 #include "src/python/smuscriptrunner.hpp"
@@ -43,7 +43,7 @@ namespace sv {
 namespace ui {
 namespace views {
 
-SmuScriptView::SmuScriptView(Session &session, QWidget *parent) :
+SmuScriptTreeView::SmuScriptTreeView(Session &session, QWidget *parent) :
 	BaseView(session, parent),
 	action_new_script_(new QAction(this)),
 	action_open_script_(new QAction(this)),
@@ -58,12 +58,12 @@ SmuScriptView::SmuScriptView(Session &session, QWidget *parent) :
 	connect_signals();
 }
 
-QString SmuScriptView::title() const
+QString SmuScriptTreeView::title() const
 {
 	return tr("SmuScript");
 }
 
-void SmuScriptView::setup_ui()
+void SmuScriptTreeView::setup_ui()
 {
 	QVBoxLayout *layout = new QVBoxLayout();
 
@@ -89,10 +89,10 @@ void SmuScriptView::setup_ui()
 	QModelIndex script_path_index = file_system_model_->index(script_dir_);
 	file_system_tree_->expand(script_path_index);
 	file_system_tree_->setCurrentIndex(script_path_index);
-	QTimer::singleShot(100, this, &SmuScriptView::scroll_to_script_dir);
+	QTimer::singleShot(100, this, &SmuScriptTreeView::scroll_to_script_dir);
 }
 
-void SmuScriptView::setup_toolbar()
+void SmuScriptTreeView::setup_toolbar()
 {
 	action_new_script_->setText(tr("New script"));
 	action_new_script_->setIconText(tr("New script"));
@@ -131,26 +131,26 @@ void SmuScriptView::setup_toolbar()
 	this->addToolBar(Qt::TopToolBarArea, toolbar_);
 }
 
-void SmuScriptView::connect_signals()
+void SmuScriptTreeView::connect_signals()
 {
 	connect(session_.smu_script_runner().get(), &python::SmuScriptRunner::script_started,
-		this, &SmuScriptView::on_script_started);
+		this, &SmuScriptTreeView::on_script_started);
 	connect(session_.smu_script_runner().get(), &python::SmuScriptRunner::script_finished,
-		this, &SmuScriptView::on_script_finished);
+		this, &SmuScriptTreeView::on_script_finished);
 }
 
-void SmuScriptView::scroll_to_script_dir()
+void SmuScriptTreeView::scroll_to_script_dir()
 {
 	QModelIndex script_path_index = file_system_model_->index(script_dir_);
 	file_system_tree_->scrollTo(script_path_index, QAbstractItemView::PositionAtTop);
 }
 
-void SmuScriptView::on_action_new_script_triggered()
+void SmuScriptTreeView::on_action_new_script_triggered()
 {
 	session().main_window()->add_smuscript_tab("");
 }
 
-void SmuScriptView::on_action_open_script_triggered()
+void SmuScriptTreeView::on_action_open_script_triggered()
 {
 	QModelIndex index = file_system_tree_->selectionModel()->currentIndex();
 	if (!index.isValid())
@@ -160,7 +160,7 @@ void SmuScriptView::on_action_open_script_triggered()
 		file_system_model_->filePath(index).toStdString());
 }
 
-void SmuScriptView::on_action_run_script_triggered()
+void SmuScriptTreeView::on_action_run_script_triggered()
 {
 	if (action_run_script_->isChecked()) {
 		QModelIndex index = file_system_tree_->selectionModel()->currentIndex();
@@ -172,7 +172,7 @@ void SmuScriptView::on_action_run_script_triggered()
 		session_.smu_script_runner()->stop();
 }
 
-void SmuScriptView::on_script_started()
+void SmuScriptTreeView::on_script_started()
 {
 	action_run_script_->setText(tr("Stop"));
 	action_run_script_->setIconText(tr("Stop"));
@@ -182,7 +182,7 @@ void SmuScriptView::on_script_started()
 	action_run_script_->setChecked(true);
 }
 
-void SmuScriptView::on_script_finished()
+void SmuScriptTreeView::on_script_finished()
 {
 	action_run_script_->setText(tr("Run"));
 	action_run_script_->setIconText(tr("Run"));

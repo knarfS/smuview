@@ -46,7 +46,7 @@ class BaseTab;
 }
 namespace views {
 class DevicesView;
-class SmuScriptView;
+class SmuScriptTreeView;
 }
 }
 
@@ -87,7 +87,7 @@ private:
 
 	QWidget *central_widget_;
 	ui::views::DevicesView *devices_view_;
-	ui::views::SmuScriptView *smu_script_view_;
+	ui::views::SmuScriptTreeView *smu_script_tree_view_;
 	QTabWidget *tab_widget_;
 	/** tab_window_map_ is used to get the index of the tab in the QTabWidget */
 	map<string, ui::tabs::BaseTab *> tab_window_map_;
