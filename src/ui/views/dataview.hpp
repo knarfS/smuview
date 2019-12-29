@@ -53,7 +53,7 @@ public:
 		shared_ptr<sv::data::AnalogTimeSignal> signal,
 		QWidget* parent = nullptr);
 
-	QString title() const;
+	QString title() const override;
 	void add_signal(shared_ptr<sv::data::AnalogTimeSignal> signal);
 
 private:

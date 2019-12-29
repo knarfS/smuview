@@ -68,7 +68,7 @@ public:
 
 	~ValuePanelView();
 
-	QString title() const;
+	QString title() const override;
 
 private:
 	shared_ptr<channels::BaseChannel> channel_;

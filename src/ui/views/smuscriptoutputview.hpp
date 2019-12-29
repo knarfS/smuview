@@ -43,7 +43,7 @@ class SmuScriptOutputView : public BaseView
 public:
 	SmuScriptOutputView(Session& session, QWidget* parent = nullptr);
 
-	QString title() const;
+	QString title() const override;
 
 private:
 	bool auto_scroll_;

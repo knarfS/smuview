@@ -57,7 +57,7 @@ public:
 		QWidget* parent = nullptr);
 	~PowerPanelView();
 
-	QString title() const;
+	QString title() const override;
 
 private:
 	shared_ptr<sv::data::AnalogTimeSignal> voltage_signal_;

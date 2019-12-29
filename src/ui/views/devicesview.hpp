@@ -50,7 +50,7 @@ class DevicesView : public BaseView
 public:
 	DevicesView(Session &session, QWidget *parent = nullptr);
 
-	QString title() const;
+	QString title() const override;
 
 private:
 	QAction *const action_add_device_;

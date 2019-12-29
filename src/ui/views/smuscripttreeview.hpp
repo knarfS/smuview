@@ -42,7 +42,7 @@ class SmuScriptTreeView : public BaseView
 public:
 	SmuScriptTreeView(Session &session, QWidget *parent = nullptr);
 
-	QString title() const;
+	QString title() const override;
 
 private:
 	QAction *const action_new_script_;

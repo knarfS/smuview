@@ -57,7 +57,7 @@ public:
 		std::shared_ptr<sv::devices::Configurable> configurable,
 		QWidget* parent = nullptr);
 
-	QString title() const;
+	QString title() const override;
 
 private:
 	shared_ptr<sv::devices::Configurable> configurable_;
