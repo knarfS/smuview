@@ -62,7 +62,7 @@ private:
 	bool is_running_;
 
 Q_SIGNALS:
-	void script_error(const std::string, const std::string); // TODO &
+	void script_error(const std::string &sender, const std::string &msg);
 	void script_started();
 	void script_finished();
 	void send_py_stdout(const std::string &text);

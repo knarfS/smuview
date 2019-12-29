@@ -172,7 +172,7 @@ MainWindow *Session::main_window() const
 	return main_window_;
 }
 
-void Session::error_handler(const std::string sender, const std::string msg)
+void Session::error_handler(const std::string &sender, const std::string &msg)
 {
 	qCritical() << QString::fromStdString(sender) <<
 		" error: " << QString::fromStdString(msg);

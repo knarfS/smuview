@@ -93,7 +93,7 @@ private:
 	map<string, ui::tabs::BaseTab *> tab_window_map_;
 
 private Q_SLOTS:
-	void error_handler(const std::string sender, const std::string msg);
+	void error_handler(const std::string &sender, const std::string &msg);
 	void on_tab_close_requested(int);
 
 public Q_SLOTS:

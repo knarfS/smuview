@@ -91,7 +91,7 @@ private:
 	void free_unused_memory();
 
 private Q_SLOTS:
-	void error_handler(const std::string sender, const std::string msg);
+	void error_handler(const std::string &sender, const std::string &msg);
 
 Q_SIGNALS:
 	void device_added(shared_ptr<sv::devices::BaseDevice>);

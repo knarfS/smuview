@@ -296,7 +296,8 @@ void MainWindow::connect_signals()
 		this, &MainWindow::error_handler);
 }
 
-void MainWindow::error_handler(const std::string sender, const std::string msg)
+void MainWindow::error_handler(
+	const std::string &sender, const std::string &msg)
 {
 	QMessageBox msg_box(this);
 	msg_box.setText(QString::fromStdString(sender));
