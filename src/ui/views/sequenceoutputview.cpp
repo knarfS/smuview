@@ -40,6 +40,7 @@
 #include <QSpinBox>
 #include <QString>
 #include <QStringList>
+#include <QStyle>
 #include <QTableWidget>
 #include <QTableWidgetItem>
 #include <QTextStream>
@@ -263,6 +264,14 @@ void SequenceOutputView::setup_toolbar()
 		this, &SequenceOutputView::on_action_generate_waveform_triggered);
 
 	toolbar_ = new QToolBar("Generator Toolbar");
+	int icon_size = style()->pixelMetric(QStyle::PM_SmallIconSize);
+	toolbar_->setIconSize(QSize(icon_size, icon_size));
+	//toolbar_->setToolButtonStyle(Qt::ToolButtonIconOnly);
+	//toolbar_->setFloatable(false);
+	//toolbar_->setMovable(false);
+	//toolbar_->setContextMenuPolicy(Qt::PreventContextMenu);
+	toolbar_->layout()->setContentsMargins(0, 0, 0, 0);
+
 	toolbar_->addAction(action_run_);
 	toolbar_->addSeparator();
 	toolbar_->addAction(action_add_row_);

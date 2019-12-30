@@ -27,6 +27,7 @@
 #include <QScrollBar>
 #include <QSettings>
 #include <QString>
+#include <QStyle>
 #include <QTextCharFormat>
 #include <QToolBar>
 #include <QUuid>
@@ -97,6 +98,14 @@ void SmuScriptOutputView::setup_toolbar()
 		this, SLOT(on_action_clear_output_triggered()));
 
 	toolbar_ = new QToolBar("SmuScript Output Toolbar");
+	int icon_size = style()->pixelMetric(QStyle::PM_SmallIconSize);
+	toolbar_->setIconSize(QSize(icon_size, icon_size));
+	//toolbar_->setToolButtonStyle(Qt::ToolButtonIconOnly);
+	//toolbar_->setFloatable(false);
+	//toolbar_->setMovable(false);
+	//toolbar_->setContextMenuPolicy(Qt::PreventContextMenu);
+	toolbar_->layout()->setContentsMargins(0, 0, 0, 0);
+
 	toolbar_->addAction(action_auto_scroll_);
 	toolbar_->addSeparator();
 	toolbar_->addAction(action_clear_output_);

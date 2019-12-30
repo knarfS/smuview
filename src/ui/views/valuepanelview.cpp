@@ -27,6 +27,7 @@
 #include <QDebug>
 #include <QHBoxLayout>
 #include <QSettings>
+#include <QStyle>
 #include <QTimer>
 #include <QUuid>
 #include <QVariant>
@@ -162,6 +163,14 @@ void ValuePanelView::setup_toolbar()
 		this, &ValuePanelView::on_action_reset_display_triggered);
 
 	toolbar_ = new QToolBar("Panel Toolbar");
+	int icon_size = style()->pixelMetric(QStyle::PM_SmallIconSize);
+	toolbar_->setIconSize(QSize(icon_size, icon_size));
+	//toolbar_->setToolButtonStyle(Qt::ToolButtonIconOnly);
+	//toolbar_->setFloatable(false);
+	//toolbar_->setMovable(false);
+	//toolbar_->setContextMenuPolicy(Qt::PreventContextMenu);
+	toolbar_->layout()->setContentsMargins(0, 0, 0, 0);
+
 	toolbar_->addAction(action_reset_display_);
 	this->addToolBar(Qt::TopToolBarArea, toolbar_);
 }
