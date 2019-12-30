@@ -147,16 +147,18 @@ void PowerPanelView::setup_ui()
 		current_signal_->unit_name(), current_unit_suffix,
 		sv::data::datautil::format_quantity_flags(current_qfs_max, "\n"), true);
 
+	// Use the smaller digits count to save space.
 	int digits;
 	if (voltage_signal_->digits() > current_signal_->digits())
-		digits = voltage_signal_->digits();
-	else
 		digits = current_signal_->digits();
+	else
+		digits = voltage_signal_->digits();
+	// Use the smaller decimal_places count to save space.
 	int decimal_places;
 	if (voltage_signal_->decimal_places() > current_signal_->decimal_places())
-		decimal_places = voltage_signal_->decimal_places();
-	else
 		decimal_places = current_signal_->decimal_places();
+	else
+		decimal_places = voltage_signal_->decimal_places();
 
 	resistance_display_ = new widgets::MonoFontDisplay(
 		digits, decimal_places, true,
@@ -380,16 +382,18 @@ void PowerPanelView::on_action_reset_displays_triggered()
 
 void PowerPanelView::on_digits_changed()
 {
+	// Use the smaller digits count to save space.
 	int digits;
 	if (voltage_signal_->digits() > current_signal_->digits())
-		digits = voltage_signal_->digits();
-	else
 		digits = current_signal_->digits();
+	else
+		digits = voltage_signal_->digits();
+	// Use the smaller decimal_places count to save space.
 	int decimal_places;
 	if (voltage_signal_->decimal_places() > current_signal_->decimal_places())
-		decimal_places = voltage_signal_->decimal_places();
-	else
 		decimal_places = current_signal_->decimal_places();
+	else
+		decimal_places = voltage_signal_->decimal_places();
 
 	resistance_display_->set_digits(digits, decimal_places);
 	resistance_min_display_->set_digits(digits, decimal_places);
