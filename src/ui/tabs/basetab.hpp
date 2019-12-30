@@ -74,14 +74,29 @@ private:
 	map<views::BaseView *, QDockWidget *> view_docks_map_;
 	map<string, views::BaseView *> view_id_map_;
 
-	QDockWidget *create_dock_widget(views::BaseView *view);
+	QDockWidget *create_dock_widget(views::BaseView *view,
+		QDockWidget::DockWidgetFeatures features);
 
 protected:
 	Session &session_;
 
 public Q_SLOTS:
-	void add_view(views::BaseView *view, Qt::DockWidgetArea area);
-	void add_view_ontop(views::BaseView *view, views::BaseView *existing_view);
+	/*
+	 * When using QDockWidget::DockWidgetFeatures instead of int for features,
+	 * the given flags are or'ed to the default flags instead of replacing
+	 * the default falgs.
+	 */
+	void add_view(views::BaseView *view, Qt::DockWidgetArea area,
+		int features = QDockWidget::DockWidgetMovable |
+			QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable);
+	/*
+	 * When using QDockWidget::DockWidgetFeatures instead of int for features,
+	 * the given flags are or'ed to the default flags instead of replacing
+	 * the default falgs.
+	 */
+	void add_view_ontop(views::BaseView *view, views::BaseView *existing_view,
+		int features = QDockWidget::DockWidgetMovable |
+			QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable);
 
 };
 

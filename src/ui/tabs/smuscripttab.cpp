@@ -20,6 +20,7 @@
 #include <string>
 
 #include <QDebug>
+#include <QDockWidget>
 #include <QString>
 
 #include "smuscripttab.hpp"
@@ -70,10 +71,12 @@ bool SmuScriptTab::request_close()
 void SmuScriptTab::setup_ui()
 {
 	smu_script_view_ = new views::SmuScriptView(session_, script_file_name_);
-	add_view(smu_script_view_, Qt::TopDockWidgetArea);
+	add_view(smu_script_view_, Qt::TopDockWidgetArea,
+		QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
 
 	smu_script_output_view_ = new views::SmuScriptOutputView(session_);
-	add_view(smu_script_output_view_, Qt::BottomDockWidgetArea);
+	add_view(smu_script_output_view_, Qt::BottomDockWidgetArea,
+		QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
 }
 
 void SmuScriptTab::connect_signals()

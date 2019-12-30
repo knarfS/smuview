@@ -71,7 +71,8 @@ views::BaseView *BaseTab::get_view_from_view_id(string id)
 	return view_id_map_[id];
 }
 
-QDockWidget *BaseTab::create_dock_widget(views::BaseView *view)
+QDockWidget *BaseTab::create_dock_widget(views::BaseView *view,
+	QDockWidget::DockWidgetFeatures features)
 {
 	// The dock widget must be created here, because the layout must be set to
 	// the central widget of the view main window before dock->setWidget() is
@@ -81,8 +82,7 @@ QDockWidget *BaseTab::create_dock_widget(views::BaseView *view)
 	dock->setAttribute(Qt::WA_DeleteOnClose);
 	dock->setAllowedAreas(Qt::AllDockWidgetAreas);
 	dock->setContextMenuPolicy(Qt::PreventContextMenu);
-	dock->setFeatures(QDockWidget::DockWidgetMovable |
-		QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable);
+	dock->setFeatures(features);
 	dock->setWidget(view);
 
 	view_docks_map_[view] = dock;
@@ -91,14 +91,16 @@ QDockWidget *BaseTab::create_dock_widget(views::BaseView *view)
 	return dock;
 }
 
-void BaseTab::add_view(views::BaseView *view, Qt::DockWidgetArea area)
+void BaseTab::add_view(views::BaseView *view, Qt::DockWidgetArea area,
+	int features)
 {
 	if (!view)
 		return;
 
 	//GlobalSettings settings;
 
-	QDockWidget *dock = create_dock_widget(view);
+	QDockWidget *dock = create_dock_widget(
+		view, (QDockWidget::DockWidgetFeatures)features);
 	this->addDockWidget(area, dock);
 
 	// This fixes a qt bug. See: https://bugreports.qt.io/browse/QTBUG-65592
@@ -107,14 +109,15 @@ void BaseTab::add_view(views::BaseView *view, Qt::DockWidgetArea area)
 }
 
 void BaseTab::add_view_ontop(views::BaseView *view,
-	views::BaseView *existing_view)
+	views::BaseView *existing_view, int features)
 {
 	if (!view)
 		return;
 
 	//GlobalSettings settings;
 
-	QDockWidget *dock = create_dock_widget(view);
+	QDockWidget *dock = create_dock_widget(
+		view, (QDockWidget::DockWidgetFeatures)features);
 	this->tabifyDockWidget(view_docks_map_[existing_view], dock);
 
 	// This fixes a qt bug. See: https://bugreports.qt.io/browse/QTBUG-65592
