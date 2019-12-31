@@ -3,6 +3,9 @@ compiler: gcc
 sudo: require
 dist: xenial
 
+git:
+  submodules: false
+
 before_install:
   - sudo add-apt-repository ppa:beineri/opt-qt-5.12.3-xenial -y
   - sudo apt-get update -qq
