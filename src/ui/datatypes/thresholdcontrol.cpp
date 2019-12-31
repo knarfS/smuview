@@ -71,6 +71,17 @@ QVariant ThresholdControl::variant_value() const
 	return QVariant(spin_box_->value());
 }
 
+void ThresholdControl::on_value_changed(const QVariant qvar)
+{
+	(void)qvar;
+	// Nothing to do here.
+}
+
+void ThresholdControl::on_list_changed()
+{
+	// Nothing to do here.
+}
+
 } // namespace widgets
 } // namespace ui
 } // namespace sv

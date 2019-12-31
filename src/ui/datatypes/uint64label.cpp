@@ -84,6 +84,7 @@ QVariant UInt64Label::variant_value() const
 void UInt64Label::value_changed(const QString value)
 {
 	(void)value;
+	// Nothing to do here.
 }
 
 void UInt64Label::on_value_changed(const QVariant value)
@@ -92,6 +93,11 @@ void UInt64Label::on_value_changed(const QVariant value)
 		dynamic_pointer_cast<data::properties::UInt64Property>(property_);
 	this->setText(uint64_prop->to_string(value));
 
+}
+
+void UInt64Label::on_list_changed()
+{
+	// Nothing to do here.
 }
 
 } // namespace datatypes

@@ -69,6 +69,17 @@ QVariant DoubleControl::variant_value() const
 	return QVariant(spin_box_->value());
 }
 
+void DoubleControl::on_value_changed(const QVariant qvar)
+{
+	(void)qvar;
+	// Nothing to do here.
+}
+
+void DoubleControl::on_list_changed()
+{
+	// Nothing to do here.
+}
+
 } // namespace widgets
 } // namespace ui
 } // namespace sv

@@ -129,6 +129,11 @@ void BoolButton::on_value_changed(const QVariant value)
 	connect_widget_2_prop_signals();
 }
 
+void BoolButton::on_list_changed()
+{
+	// Nothing to do here.
+}
+
 } // namespace datatypes
 } // namespace ui
 } // namespace sv

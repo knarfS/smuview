@@ -60,18 +60,12 @@ private:
 	void disconnect_widget_2_prop_signals();
 
 private Q_SLOTS:
-	/**
-	 * Signal handling for Widget -> Property
-	 */
+	/** Signal handling for Widget -> Property */
 	void value_changed(int);
-	/**
-	 * Signal handling for Property -> Widget
-	 */
-	void on_value_changed(const QVariant);
-	/**
-	 * Signal handling for Property -> Widget
-	 */
-	void on_list_changed();
+	/** Signal handling for Property -> Widget */
+	void on_value_changed(const QVariant) override;
+	/** Signal handling for Property -> Widget */
+	void on_list_changed() override;
 
 };
 

@@ -64,6 +64,12 @@ private:
 
 	void setup_ui();
 
+private Q_SLOTS:
+	/** Signal handling for Property -> Widget. Nothing to do here. */
+	void on_value_changed(const QVariant) override;
+	/** Signal handling for Property -> Widget. Nothing to do here. */
+	void on_list_changed() override;
+
 };
 
 } // namespace datatypes

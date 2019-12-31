@@ -93,6 +93,7 @@ QVariant DoubleDisplay::variant_value() const
 void DoubleDisplay::value_changed(const double value)
 {
 	(void)value;
+	// Nothing to do here.
 }
 
 void DoubleDisplay::on_value_changed(const QVariant qvar)

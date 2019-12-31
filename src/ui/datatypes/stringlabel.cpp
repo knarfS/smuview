@@ -86,11 +86,17 @@ QVariant StringLabel::variant_value() const
 void StringLabel::value_changed(const QString value)
 {
 	(void)value;
+	// Nothing to do here.
 }
 
 void StringLabel::on_value_changed(const QVariant value)
 {
 	this->setText(value.toString());
+}
+
+void StringLabel::on_list_changed()
+{
+	// Nothing to do here.
 }
 
 } // namespace datatypes

@@ -109,6 +109,7 @@ QVariant StringLed::variant_value() const
 void StringLed::value_changed(const bool value)
 {
 	(void)value;
+	// Nothing to do here.
 }
 
 void StringLed::on_value_changed(const QVariant qvar)
@@ -126,6 +127,11 @@ void StringLed::on_value_changed(const QVariant qvar)
 		led_label_->setPixmap(
 			dis_icon_.pixmap(16, 16, QIcon::Mode::Active, QIcon::State::Off));
 	}
+}
+
+void StringLed::on_list_changed()
+{
+	// Nothing to do here.
 }
 
 } // namespace datatypes

@@ -52,19 +52,23 @@ protected:
 	const bool auto_update_;
 	shared_ptr<sv::data::properties::BaseProperty> property_;
 
-protected: // Q_SLOTS
+/*
+ * NOTE: With Qt, inheriting QObject twice (in the datatype widget classes) will
+ *       cause problems in moc! Because of that, this class is not inherited
+ *       from QObject and Q_SLOTS is just for readability!
+ */
+protected Q_SLOTS:
 	/**
 	 * Signal handling for Widget -> Property
-	virtual void value_changed(const double) = 0;
+	 * NOTE: No virtual method for this one, because every instance has an
+	 *       other datatype for the parameter.
 	 */
-	/**
-	 * Signal handling for Property -> Widget
+	//virtual void value_changed(const double) = 0;
+
+	/** Signal handling for Property -> Widget */
 	virtual void on_value_changed(const QVariant) = 0;
-	 */
-	/**
-	 * Signal handling for Property -> Widget
+	/** Signal handling for Property -> Widget */
 	virtual void on_list_changed() = 0;
-	 */
 
 };
 
