@@ -99,8 +99,12 @@ void AnalogSampleSignal::push_sample(void *sample, uint32_t pos,
 	last_value_ = dsample;
 	if (min_value_ > dsample)
 		min_value_ = dsample;
-	if (max_value_ < dsample)
+	// Ignore infinitiy (overflow) as max value.
+	if (max_value_ < dsample &&
+		dsample != std::numeric_limits<double>::infinity()) {
+
 		max_value_ = dsample;
+	}
 
 	/*
 	qWarning() << "AnalogSampleSignal::push_sample(): " << name_

@@ -162,8 +162,12 @@ void AnalogTimeSignal::push_sample(void *sample, double timestamp,
 	last_value_ = dsample;
 	if (min_value_ > dsample)
 		min_value_ = dsample;
-	if (max_value_ < dsample)
+	// Ignore infinitiy (overflow) as max value.
+	if (max_value_ < dsample &&
+		dsample != std::numeric_limits<double>::infinity()) {
+
 		max_value_ = dsample;
+	}
 
 	/*
 	qWarning() << "AnalogTimeSignal::push_sample(): " << display_name()
@@ -234,8 +238,12 @@ void AnalogTimeSignal::push_samples(void *data,
 		// TODO: Mutex?
 		if (min_value_ > dsample)
 			min_value_ = dsample;
-		if (max_value_ < dsample)
+		// Ignore infinitiy (overflow) as max value.
+		if (max_value_ < dsample &&
+			dsample != std::numeric_limits<double>::infinity()) {
+
 			max_value_ = dsample;
+		}
 
 		// TODO: Limit memory!
 		time_->push_back(timestamp);
