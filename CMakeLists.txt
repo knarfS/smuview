@@ -310,8 +310,6 @@ set(smuview_SOURCES
   src/ui/widgets/plot/plotscalepicker.cpp
   src/ui/widgets/plot/timecurvedata.cpp
   src/ui/widgets/plot/xycurvedata.cpp
-  src/ui/widgets/scripteditor/pythonsyntaxhighlighter.cpp
-  src/ui/widgets/scripteditor/smuscripteditor.cpp
 )
 
 if(ENABLE_SIGNALS)
