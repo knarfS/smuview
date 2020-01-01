@@ -6,7 +6,6 @@ ToDo
 
 - Use util::Timestamp?
 - last_value_, min_value_, max_value_ -> std::atomic!
-- License headers are not the same
 - Plot: Sampling
 - Mutex for aquisition_state_?
 - Save session, save all data (gnuplot, octave, ...)
@@ -83,6 +82,7 @@ Done
 	- src/devices/properties/ -> src/data/
 - DataView: add signal (into this table) action
 - static unsigned int device_counter; is changing
+- License headers are not the same
 
 Won't fix
 ---------
