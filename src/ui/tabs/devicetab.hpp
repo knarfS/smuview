@@ -68,7 +68,6 @@ private:
 	QAction *const action_add_panel_view_;
 	QAction *const action_add_plot_view_;
 	QAction *const action_add_math_channel_;
-	QAction *const action_reset_data_;
 	QAction *const action_about_;
 	QToolBar *toolbar_;
 
@@ -82,7 +81,6 @@ private Q_SLOTS:
 	void on_action_add_panel_view_triggered();
 	void on_action_add_plot_view_triggered();
 	void on_action_add_math_channel_triggered();
-	void on_action_reset_data_triggered();
 	void on_action_about_triggered();
 
 };

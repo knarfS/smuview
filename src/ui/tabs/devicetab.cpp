@@ -56,7 +56,6 @@ DeviceTab::DeviceTab(Session &session,
 	action_add_panel_view_(new QAction(this)),
 	action_add_plot_view_(new QAction(this)),
 	action_add_math_channel_(new QAction(this)),
-	action_reset_data_(new QAction(this)),
 	action_about_(new QAction(this))
 {
 	setup_toolbar();
@@ -122,14 +121,6 @@ void DeviceTab::setup_toolbar()
 	connect(action_save_as_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_save_as_triggered()));
 
-	action_reset_data_->setText(tr("&Reset Data..."));
-	action_reset_data_->setIcon(
-		QIcon::fromTheme("view-refresh",
-		QIcon(":/icons/view-refresh.png")));
-	action_reset_data_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_R));
-	connect(action_reset_data_, SIGNAL(triggered(bool)),
-		this, SLOT(on_action_reset_data_triggered()));
-
 	action_add_control_view_->setText(tr("Add &Control..."));
 	action_add_control_view_->setIcon(
 		QIcon::fromTheme("mixer-front",
@@ -175,8 +166,6 @@ void DeviceTab::setup_toolbar()
 	toolbar_->addSeparator();
 	//toolbar_->addAction(action_open_); // TODO
 	toolbar_->addAction(action_save_as_);
-	toolbar_->addSeparator();
-	toolbar_->addAction(action_reset_data_);
 	toolbar_->addSeparator();
 	toolbar_->addAction(action_add_control_view_);
 	toolbar_->addAction(action_add_panel_view_);
@@ -259,10 +248,6 @@ void DeviceTab::on_action_add_math_channel_triggered()
 		device_->add_math_channel(
 			channel, dlg.channel_group_name().toStdString());
 	}
-}
-
-void DeviceTab::on_action_reset_data_triggered()
-{
 }
 
 void DeviceTab::on_action_about_triggered()
