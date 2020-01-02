@@ -200,8 +200,6 @@ enum class ConfigKey
 	ClockEdge,
 	/** Amplitude of a source without strictly-defined MQ. */
 	Amplitude,
-	/** Offset of a source without strictly-defined MQ. */
-	Offset,
 	/** Channel regulation get: "CV", "CC" or "UR", denoting constant voltage, constant current or unregulated. */
 	Regulation,
 	/** Output frequency in Hz. */
@@ -216,7 +214,18 @@ enum class ConfigKey
 	TriggerLevel,
 	/** Which external clock source to use if the device supports multiple external clock channels. */
 	ExternalClockSource,
-	// TODO: missing
+	/** Offset of a source without strictly-defined MQ. */
+	Offset,
+	/** The device supports setting a pattern for the logic trigger. */
+	TriggerPattern,
+	/** High resolution mode. */
+	HighResolution,
+	/** Peak detection. */
+	PeakDetection,
+	/** Logic threshold: predefined levels (TTL, ECL, CMOS, etc). */
+	LogicThreshold,
+	/** Logic threshold: custom numerical value. */
+	LogicThresholdCustom,
 	/** The measurement range of a DMM or the output range of a power supply. */
 	Range,
 	/** The number of digits (e.g. for a DMM). */
@@ -337,7 +346,6 @@ config_key_name_map_t config_key_name_map = {
 	{ ConfigKey::UnderVoltageConditionThreshold, QString("Under Voltage Condition Threshold") },
 	{ ConfigKey::ClockEdge, QString("Clock Edge") },
 	{ ConfigKey::Amplitude, QString("Amplitude") },
-	{ ConfigKey::Offset, QString("Offset") },
 	{ ConfigKey::Regulation, QString("Regulation") },
 	{ ConfigKey::OutputFrequency, QString("Output Frequency") },
 	{ ConfigKey::OutputFrequencyTarget, QString("Output Frequency Target") },
@@ -345,6 +353,12 @@ config_key_name_map_t config_key_name_map = {
 	{ ConfigKey::EquivCircuitModel, QString("Equivalent Circuit Model") },
 	{ ConfigKey::TriggerLevel, QString("Trigger Level") },
 	{ ConfigKey::ExternalClockSource, QString("External Clock Source") },
+	{ ConfigKey::Offset, QString("Offset") },
+	{ ConfigKey::TriggerPattern, QString("Trigger Pattern") },
+	{ ConfigKey::HighResolution, QString("High Resolution") },
+	{ ConfigKey::PeakDetection, QString("Peak Detection") },
+	{ ConfigKey::LogicThreshold, QString("Logic Threshold") },
+	{ ConfigKey::LogicThresholdCustom, QString("Logic Threshold Custom") },
 	{ ConfigKey::Range, QString("Range") },
 	{ ConfigKey::Digits, QString("Digits") },
 	{ ConfigKey::SessionFile, QString("Session File") },
@@ -465,7 +479,6 @@ map<const sigrok::ConfigKey *, ConfigKey> sr_config_key_config_key_map = {
 	{ sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD, ConfigKey::UnderVoltageConditionThreshold },
 	{ sigrok::ConfigKey::CLOCK_EDGE, ConfigKey::ClockEdge },
 	{ sigrok::ConfigKey::AMPLITUDE, ConfigKey::Amplitude },
-	{ sigrok::ConfigKey::OFFSET, ConfigKey::Offset },
 	{ sigrok::ConfigKey::REGULATION, ConfigKey::Regulation },
 	{ sigrok::ConfigKey::OUTPUT_FREQUENCY, ConfigKey::OutputFrequency },
 	{ sigrok::ConfigKey::OUTPUT_FREQUENCY_TARGET, ConfigKey::OutputFrequencyTarget },
@@ -473,6 +486,12 @@ map<const sigrok::ConfigKey *, ConfigKey> sr_config_key_config_key_map = {
 	{ sigrok::ConfigKey::EQUIV_CIRCUIT_MODEL, ConfigKey::EquivCircuitModel },
 	{ sigrok::ConfigKey::TRIGGER_LEVEL, ConfigKey::TriggerLevel },
 	{ sigrok::ConfigKey::EXTERNAL_CLOCK_SOURCE, ConfigKey::ExternalClockSource },
+	{ sigrok::ConfigKey::OFFSET, ConfigKey::Offset },
+	{ sigrok::ConfigKey::TRIGGER_PATTERN, ConfigKey::TriggerPattern },
+	{ sigrok::ConfigKey::HIGH_RESOLUTION, ConfigKey::HighResolution },
+	{ sigrok::ConfigKey::PEAK_DETECTION, ConfigKey::PeakDetection },
+	{ sigrok::ConfigKey::LOGIC_THRESHOLD, ConfigKey::LogicThreshold },
+	{ sigrok::ConfigKey::LOGIC_THRESHOLD_CUSTOM, ConfigKey::LogicThresholdCustom },
 	{ sigrok::ConfigKey::RANGE, ConfigKey::Range },
 	{ sigrok::ConfigKey::DIGITS, ConfigKey::Digits },
 	{ sigrok::ConfigKey::SESSIONFILE, ConfigKey::SessionFile },
@@ -536,7 +555,6 @@ map<ConfigKey, const sigrok::ConfigKey *> config_key_sr_config_key_map = {
 	{ ConfigKey::UnderVoltageConditionThreshold, sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD },
 	{ ConfigKey::ClockEdge, sigrok::ConfigKey::CLOCK_EDGE },
 	{ ConfigKey::Amplitude, sigrok::ConfigKey::AMPLITUDE },
-	{ ConfigKey::Offset, sigrok::ConfigKey::OFFSET },
 	{ ConfigKey::Regulation, sigrok::ConfigKey::REGULATION },
 	{ ConfigKey::OutputFrequency, sigrok::ConfigKey::OUTPUT_FREQUENCY },
 	{ ConfigKey::OutputFrequencyTarget, sigrok::ConfigKey::OUTPUT_FREQUENCY_TARGET },
@@ -544,6 +562,12 @@ map<ConfigKey, const sigrok::ConfigKey *> config_key_sr_config_key_map = {
 	{ ConfigKey::EquivCircuitModel, sigrok::ConfigKey::EQUIV_CIRCUIT_MODEL },
 	{ ConfigKey::TriggerLevel, sigrok::ConfigKey::TRIGGER_LEVEL },
 	{ ConfigKey::ExternalClockSource, sigrok::ConfigKey::EXTERNAL_CLOCK_SOURCE },
+	{ ConfigKey::Offset, sigrok::ConfigKey::OFFSET },
+	{ ConfigKey::TriggerPattern, sigrok::ConfigKey::TRIGGER_PATTERN },
+	{ ConfigKey::HighResolution, sigrok::ConfigKey::HIGH_RESOLUTION },
+	{ ConfigKey::PeakDetection, sigrok::ConfigKey::PEAK_DETECTION },
+	{ ConfigKey::LogicThreshold, sigrok::ConfigKey::LOGIC_THRESHOLD },
+	{ ConfigKey::LogicThresholdCustom, sigrok::ConfigKey::LOGIC_THRESHOLD_CUSTOM },
 	{ ConfigKey::Range, sigrok::ConfigKey::RANGE },
 	{ ConfigKey::Digits, sigrok::ConfigKey::DIGITS },
 	{ ConfigKey::SessionFile, sigrok::ConfigKey::SESSIONFILE },
@@ -611,7 +635,6 @@ map<ConfigKey, data::Unit> config_key_unit_map = {
 	{ ConfigKey::UnderVoltageConditionThreshold, data::Unit::Volt },
 	{ ConfigKey::ClockEdge, data::Unit::Unitless },
 	{ ConfigKey::Amplitude, data::Unit::Unknown },
-	{ ConfigKey::Offset, data::Unit::Unknown },
 	{ ConfigKey::Regulation, data::Unit::Unitless },
 	{ ConfigKey::OutputFrequency, data::Unit::Hertz },
 	{ ConfigKey::OutputFrequencyTarget, data::Unit::Hertz },
@@ -619,6 +642,12 @@ map<ConfigKey, data::Unit> config_key_unit_map = {
 	{ ConfigKey::EquivCircuitModel, data::Unit::Unitless },
 	{ ConfigKey::TriggerLevel, data::Unit::Volt },
 	{ ConfigKey::ExternalClockSource, data::Unit::Unitless },
+	{ ConfigKey::Offset, data::Unit::Unknown },
+	{ ConfigKey::TriggerPattern, data::Unit::Unitless },
+	{ ConfigKey::HighResolution, data::Unit::Unitless },
+	{ ConfigKey::PeakDetection, data::Unit::Unitless },
+	{ ConfigKey::LogicThreshold, data::Unit::Unitless },
+	{ ConfigKey::LogicThresholdCustom, data::Unit::Volt },
 	{ ConfigKey::Range, data::Unit::Unitless },
 	{ ConfigKey::Digits, data::Unit::Unitless },
 	{ ConfigKey::SessionFile, data::Unit::Unitless },

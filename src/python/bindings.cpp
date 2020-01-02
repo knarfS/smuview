@@ -271,7 +271,6 @@ void init_Enums(py::module &m)
 	py_config_key.value("UnderVoltageConditionThreshold", sv::devices::ConfigKey::UnderVoltageConditionThreshold);
 	py_config_key.value("ClockEdge", sv::devices::ConfigKey::ClockEdge);
 	py_config_key.value("Amplitude", sv::devices::ConfigKey::Amplitude);
-	py_config_key.value("Offset", sv::devices::ConfigKey::Offset);
 	py_config_key.value("Regulation", sv::devices::ConfigKey::Regulation);
 	py_config_key.value("OutputFrequency", sv::devices::ConfigKey::OutputFrequency);
 	py_config_key.value("OutputFrequencyTarget", sv::devices::ConfigKey::OutputFrequencyTarget);
@@ -279,6 +278,14 @@ void init_Enums(py::module &m)
 	py_config_key.value("EquivCircuitModel", sv::devices::ConfigKey::EquivCircuitModel);
 	py_config_key.value("TriggerLevel", sv::devices::ConfigKey::TriggerLevel);
 	py_config_key.value("ExternalClockSource", sv::devices::ConfigKey::ExternalClockSource);
+	py_config_key.value("Offset", sv::devices::ConfigKey::Offset);
+	py_config_key.value("TriggerPattern", sv::devices::ConfigKey::TriggerPattern);
+	py_config_key.value("HighResolution", sv::devices::ConfigKey::HighResolution);
+	py_config_key.value("PeakDetection", sv::devices::ConfigKey::PeakDetection);
+	py_config_key.value("LogicThreshold", sv::devices::ConfigKey::LogicThreshold);
+	py_config_key.value("LogicThresholdCustom", sv::devices::ConfigKey::LogicThresholdCustom);
+	py_config_key.value("Range", sv::devices::ConfigKey::Range);
+	py_config_key.value("Digits", sv::devices::ConfigKey::Digits);
 	py_config_key.value("SessionFile", sv::devices::ConfigKey::SessionFile);
 	py_config_key.value("CaptureFile", sv::devices::ConfigKey::CaptureFile);
 	py_config_key.value("CaptureUnitSize", sv::devices::ConfigKey::CaptureUnitSize);
