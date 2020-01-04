@@ -80,11 +80,11 @@ void AddViewDialog::setup_ui()
 
 	tab_widget_ = new QTabWidget();
 	this->setup_ui_control_tab();
+	this->setup_ui_sequence_tab();
 	this->setup_ui_panel_tab();
 	this->setup_ui_time_plot_tab();
 	this->setup_ui_xy_plot_tab();
 	this->setup_ui_table_tab();
-	this->setup_ui_sequence_tab();
 	tab_widget_->setCurrentIndex(selected_tab_);
 	main_layout->addWidget(tab_widget_);
 
@@ -108,6 +108,20 @@ void AddViewDialog::setup_ui_control_tab()
 	control_widget->setLayout(configurable_configurable_form_);
 
 	tab_widget_->addTab(control_widget, title);
+}
+
+void AddViewDialog::setup_ui_sequence_tab()
+{
+	QString title(tr("Sequence Output"));
+	QWidget *sequence_widget = new QWidget();
+
+	sequence_property_form_ = new ui::devices::SelectPropertyForm(session_);
+	sequence_property_form_->select_device(device_);
+	sequence_property_form_->filter_config_keys(set<sv::data::DataType>{
+		sv::data::DataType::Double});
+	sequence_widget->setLayout(sequence_property_form_);
+
+	tab_widget_->addTab(sequence_widget, title);
 }
 
 void AddViewDialog::setup_ui_panel_tab()
@@ -184,20 +198,6 @@ void AddViewDialog::setup_ui_table_tab()
 	tab_widget_->addTab(table_widget, title);
 }
 
-void AddViewDialog::setup_ui_sequence_tab()
-{
-	QString title(tr("Sequence Output"));
-	QWidget *sequence_widget = new QWidget();
-
-	sequence_property_form_ = new ui::devices::SelectPropertyForm(session_);
-	sequence_property_form_->select_device(device_);
-	sequence_property_form_->filter_config_keys(set<sv::data::DataType>{
-		sv::data::DataType::Double});
-	sequence_widget->setLayout(sequence_property_form_);
-
-	tab_widget_->addTab(sequence_widget, title);
-}
-
 vector<ui::views::BaseView *> AddViewDialog::views()
 {
 	return views_;
@@ -220,13 +220,23 @@ void AddViewDialog::accept()
 		}
 		break;
 	case 1:
+		// Add sequence view for property
+		{
+			auto property = sequence_property_form_->selected_property();
+			auto view = new ui::views::SequenceOutputView(session_,
+				static_pointer_cast<sv::data::properties::DoubleProperty>(property));
+			if (view != nullptr)
+				views_.push_back(view);
+		}
+		break;
+	case 2:
 		// Add value panel view
 		for (const auto &channel : panel_channel_tree_->checked_channels()) {
 			views_.push_back(new ui::views::ValuePanelView(session_, channel));
 		}
 		break;
-	case 2:
-		// Add plot view
+	case 3:
+		// Add time plot view
 		for (const auto &channel : time_plot_channel_tree_->checked_channels()) {
 			views_.push_back(new ui::views::PlotView(session_, channel));
 		}
@@ -235,7 +245,7 @@ void AddViewDialog::accept()
 			views_.push_back(new ui::views::PlotView(session_, a_signal));
 		}
 		break;
-	case 3:
+	case 4:
 		// Add x/y plot view
 		{
 			auto x_signal = xy_plot_x_signal_widget_->selected_signal();
@@ -247,7 +257,7 @@ void AddViewDialog::accept()
 			}
 		}
 		break;
-	case 4:
+	case 5:
 		// Add data table view
 		{
 			auto signals = table_signal_tree_->checked_signals();
@@ -260,16 +270,6 @@ void AddViewDialog::accept()
 				}
 				views_.push_back(view);
 			}
-		}
-		break;
-	case 5:
-		// Add sequence view for property
-		{
-			auto property = sequence_property_form_->selected_property();
-			auto view = new ui::views::SequenceOutputView(session_,
-				static_pointer_cast<sv::data::properties::DoubleProperty>(property));
-			if (view != nullptr)
-				views_.push_back(view);
 		}
 		break;
 	default:

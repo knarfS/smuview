@@ -68,11 +68,11 @@ public:
 private:
 	void setup_ui();
 	void setup_ui_control_tab();
+	void setup_ui_sequence_tab();
 	void setup_ui_panel_tab();
 	void setup_ui_time_plot_tab();
 	void setup_ui_xy_plot_tab();
 	void setup_ui_table_tab();
-	void setup_ui_sequence_tab();
 
 	Session &session_;
 	const shared_ptr<sv::devices::BaseDevice> device_;
@@ -81,12 +81,12 @@ private:
 
 	QTabWidget *tab_widget_;
 	ui::devices::SelectConfigurableForm *configurable_configurable_form_;
+	ui::devices::SelectPropertyForm *sequence_property_form_;
 	ui::devices::devicetree::DeviceTreeView *panel_channel_tree_;
 	ui::devices::devicetree::DeviceTreeView *time_plot_channel_tree_;
 	ui::devices::SelectSignalWidget *xy_plot_x_signal_widget_;
 	ui::devices::SelectSignalWidget *xy_plot_y_signal_widget_;
 	ui::devices::devicetree::DeviceTreeView *table_signal_tree_;
-	ui::devices::SelectPropertyForm *sequence_property_form_;
 	QDialogButtonBox *button_box_;
 
 public Q_SLOTS:

@@ -228,7 +228,7 @@ void DeviceTab::on_action_add_control_view_triggered()
 
 void DeviceTab::on_action_add_panel_view_triggered()
 {
-	ui::dialogs::AddViewDialog dlg(session(), device_, 1);
+	ui::dialogs::AddViewDialog dlg(session(), device_, 2);
 	if (!dlg.exec())
 		return;
 
@@ -238,7 +238,7 @@ void DeviceTab::on_action_add_panel_view_triggered()
 
 void DeviceTab::on_action_add_plot_view_triggered()
 {
-	ui::dialogs::AddViewDialog dlg(session(), device_, 2);
+	ui::dialogs::AddViewDialog dlg(session(), device_, 3);
 	if (!dlg.exec())
 		return;
 
@@ -248,7 +248,7 @@ void DeviceTab::on_action_add_plot_view_triggered()
 
 void DeviceTab::on_action_add_table_view_triggered()
 {
-	ui::dialogs::AddViewDialog dlg(session(), device_, 4);
+	ui::dialogs::AddViewDialog dlg(session(), device_, 5);
 	if (!dlg.exec())
 		return;
 
