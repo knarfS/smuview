@@ -1,6 +1,6 @@
 SmuView User Manual
 ===================
-unreleased development snapshot, dated 2019-01-24
+Version 0.0.4, dated 2020-01-05
 :doctype: book
 :imagesdir: ./images
 :sectnums:
@@ -8,19 +8,24 @@ unreleased development snapshot, dated 2019-01-24
 :toclevels: 2
 :icons: font
 :figure-caption: Image
+:source-highlighter: coderay
 
 ifdef::ebook-format[:leveloffset: -1]
-
-include::license.adoc[]
 
 include::overview.adoc[]
 
 include::installation.adoc[]
 
-//include::acquisition.adoc[]
+include::devices.adoc[]
 
-//include::analysis.adoc[]
+include::data_visualisation.adoc[]
 
-//include::export.adoc[]
+include::data_processing.adoc[]
+
+include::device_control.adoc[]
+
+include::smuscript.adoc[]
 
 include::cli.adoc[]
+
+include::license.adoc[]

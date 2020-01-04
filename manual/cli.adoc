@@ -1,27 +1,37 @@
-== Command-line Interface
+[[cli,Command line interface]]
+== Command Line Interface
 
-Even though SmuView has a graphical user interface, there is also a command-line interface that
-you can make use of. It is meant to provide functions for convenience and debug purposes, not to
-replace the user interface itself.
+Even though SmuView has a graphical user interface, there is also a command line
+interface that you can make use of. It is meant to provide functions for
+convenience and debug purposes, not to replace the user interface itself.
+
+Windows only shows ountput on the command line when the debug build is used.
 
 Running
+[listing, subs="normal"]
+smuview -h
 
-	smuview -h
+gives you a list of all available options.
 
-gives you a list of these functions.
+Since SmuView can't automatically scan for devices connected to a COM port
+(`ttySx` on Linux) or Ethernet, you can tell it to look for a specific device
+using the `-d` or `--driver` parameter. Its usage is the same as for
+`sigrok-cli`. For example:
+[listing, subs="normal"]
+smuview -d arachnid-labs-re-load-pro:conn=/dev/ttyUSB0
 
-Since SmuView can't automatically scan for devices connected to a COM port (ttySx on Linux) or
-Ethernet, you can tell it to look for a specific device using the -d or --driver parameter. Its
-usage is the same as for sigrok-cli. For example:
-
-	smuview -d arachnid-labs-re-load-pro:conn=/dev/ttyUSB0
+You also can start smuscripts from the command line with the `-s` or `--script`
+parameter:
+[listing, subs="normal"]
+smuview -s /path/to/example_script.py
 
 The remaining parameters are mostly for debug purposes:
+[listing, subs="normal"]
+-V / --version		Shows the release version
+-l / --loglevel		Sets the libsigrok/libsigrokdecode log level (max is 5)
+-D / --dont-scan	Do not auto-scan for devices
 
-	-V / --version		Shows the release version
-	-l / --loglevel		Sets the libsigrok/libsigrokdecode log level (max is 5)
-	-D / --dont-scan	Don't auto-scan for devices
-
-Of these, -D / --dont-scan can be useful when SmuView gets stuck during the startup device scan.
-No such scan will be performed then, allowing the program to start up but you'll have to scan for
-your acquisition device(s) manually before you can use them.
+Of these, `-D` / `--dont-scan` can be useful when SmuView gets stuck during
+the startup device scan. No such scan will be performed then, allowing the
+program to start up but you'll have to scan for your acquisition device(s)
+manually before you can use them.

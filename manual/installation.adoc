@@ -1,33 +1,39 @@
 [[installation,Installation]]
 == Installation
 
-SmuView can be run on Linux and Windows. Mac OS X is not tested yet. For Windows provide installers
-and for Linux we provide AppImage containers that you can run without the need to install anything.
-Check the https://github.com/knarfS/smuview/releases[SmuView download page] to see which option is
-available for your platform.
+SmuView can be run on Linux and Windows. Mac OS X is not tested yet. For Windows
+we provide installers and for Linux we provide AppImage containers that you can
+run without the need to install anything. Check the
+https://github.com/knarfS/smuview/releases[SmuView download page] to see which
+option is available for your platform.
 
 === Linux
 
 You have two options to install SmuView:
 
-. https://github.com/knarfS/smuview/releases[Download] and use the AppImage which contains all required files and needs no installation:
+. https://github.com/knarfS/smuview/releases[Download] and use the AppImage
+which contains all required files and needs no installation:
 +
 --
 [listing, subs="normal"]
 chmod u+x SmuView-0.0.1-x86_64.AppImage
 ./SmuView-0.0.1-x86_64.AppImage
 
-Please be aware, however, that the AppImages are developmnet releases at the moment, so they always contain
-the latest development changes. While we do try to keep the code base in a working state, it is sometimes
-unavoidable to introduce bugs that show up in the AppImage builds. If you encounter something that is
-odd to you, please download and install the latest release and check if the issue still exists. If it
-does, feel free to https://github.com/knarfS/smuview/issues[file a bug].
+Please be aware, however, that the AppImages are development releases at the
+moment, so they always contain the latest development changes. While we do try
+to keep the code base in a working state, it is sometimes unavoidable to
+introduce bugs that show up in the AppImage builds. If you encounter something
+that is odd to you, please download and install the latest release and check if
+the issue still exists. If it does, feel free to
+https://github.com/knarfS/smuview/issues[file a bug].
 
-No system files are changed, so if you decide that you no longer want to use SmuView, simply
-delete the AppImage. If you also want the stored settings gone, delete ~/.config/sigrok as well.
+No system files are changed, so if you decide that you no longer want to use
+SmuView, simply delete the AppImage. If you also want the stored settings gone,
+delete `~/.config/sigrok` as well.
 --
 
-. Uninstall any sigrok packages from your package manager and build SmuView from source:
+. Uninstall any sigrok packages from your package manager and build SmuView from
+source:
 +
 --
 [listing, subs="normal"]
@@ -40,17 +46,18 @@ cd sigrok-util/cross-compile/linux
 export LD_LIBRARY_PATH=~/sr/lib
 ~/sr/bin/smuview
 
-No system files are changed, so if you decide that you no longer want to use SmuView, simply
-delete the ~/sr directory. If you also want the stored settings gone, delete ~/.config/sigrok
-as well.
+No system files are changed, so if you decide that you no longer want to use
+SmuView, simply delete the `~/sr` directory. If you also want the stored
+settings gone, delete `~/.config/sigrok` as well.
 --
 
 [WARNING]
 --
-If you install SmuView using the AppImage or building from source, SmuView will not be able to
-access USB and serial port devices unless it's run as root. Since programs shouldn't be run as
-root unless absolutely necessary, we provide udev configuration files that allows SmuView access
-to those devices without being root.
+If you install SmuView using the AppImage or building from source, SmuView will
+not be able to access USB and serial port devices unless it's run as root. Since
+programs shouldn't be run as `root` unless absolutely necessary, we provide udev
+configuration files that allows SmuView access to those devices without being
+`root`.
 
 Here's how you install them:
 [listing, subs="normal"]
@@ -64,23 +71,30 @@ sudo udevadm control --reload-rules
 
 === Windows
 
-We offer installers for SmuView that contain everything you need to get started. Simply download
-them from the https://github.com/knarfS/smuview/releases[sigrok download page] and run them as any other Windows
-installer.
-Please be aware, however, that the Windows installers are developmnet builts, so they always contain
-the latest development changes. While we do try to keep the code base in a working state, it is sometimes
-unavoidable to introduce bugs that show up in the developmnet builds. If you encounter something that is
-odd to you, please download and install the latest release and check if the issue still exists. If it
-does, feel free to https://github.com/knarfS/smuview/issues/[file a bug].
+We offer installers for SmuView that contain everything you need to get started.
+Simply download them from the
+https://github.com/knarfS/smuview/releases[SmuView download page] and run them
+as any other Windows installer.
 
-After installation, you will find a program called Zadig in the start menu. By default, certain devices
-recognized by Windows will have drivers installed for them that SmuView cannot use. The purpose of
-Zadig is to let you change the driver Windows uses for a particular device - for most devices you'll need
-to choose WinUSB to use them with SmuView or the original proprietary Windows driver to use it with whatever
-other software you access the device with. More details are available https://sigrok.org/wiki/Windows[in the wiki].
+Please be aware, however, that the Windows installers are development builts, so
+they always contain the latest development changes. While we do try to keep the
+code base in a working state, it is sometimes unavoidable to introduce bugs that
+show up in the development builds. If you encounter something that is odd to
+you, please download and install the latest release and check if the issue still
+exists. If it does, feel free to
+https://github.com/knarfS/smuview/issues/[file a bug].
 
-In case your device doesn't show up in SmuView and you can't find it with a scan either (see next
-chapter), check with Zadig whether the correct driver is assigned for the device.
+After installation, you will find a program called Zadig in the start menu. By
+default, certain devices recognized by Windows will have drivers installed for
+them that SmuView cannot use. The purpose of Zadig is to let you change the
+driver Windows uses for a particular device - for most devices you'll need to
+choose WinUSB to use them with SmuView or the original proprietary Windows
+driver to use it with whatever other software you access the device with. More
+details are available https://sigrok.org/wiki/Windows[in the wiki].
+
+In case your device doesn't show up in SmuView and you can't find it with a scan
+either (see next chapter), check with Zadig whether the correct driver is
+assigned for the device.
 
 === Mac OS X
 

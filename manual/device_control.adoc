@@ -1,0 +1,36 @@
+[[device_control,Device control]]
+== Device control
+
+SmuView can control devices, depending on the device type and the available
+features of the connected device. When a device is connected and it is
+controllable, control views  are automatically displayed.
+
+You can close control views and create new ones via the tool bar of the device
+tab.
+
+[[control_view]]
+=== Control view
+
+image::SourceControlView.png[Control view,344,414]
+
+Depending on the device type the control view looks different and functions may
+be disabled.
+
+Power supplies and electronic loads have a very similar control view, which
+gives access to all possible functions supported by the sigrok library.
+
+Other controllable devices like sound level meters will have a generic control
+view.
+
+[[sequence_output_view]]
+=== Sequence output view
+
+image::SequenceOutputView.png[Sequence output view,282,303]
+
+Some <<config_key,config keys>> of a device (for example the output voltage of a
+power supply) can be set to a sequence of values. The sequence can be played one
+or more times. You can generate sine, triangle, sawtooth and square wave
+sequences, load a sequence from a CSV file or enter the sequence manually.
+
+There is no tool bar button for the sequence output view yet, but it is
+accesible over the _Add View_ dialog.

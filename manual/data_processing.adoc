@@ -1,0 +1,30 @@
+[[data_processing,Data processing]]
+== Data processing
+
+SmuView can process and combine channels via math channels.
+
+image::AddMathChannelDialog.png[Add math channel dialog,558,743]
+
+image:numbers/1.png[1,22,22] Name of the new math channel. +
+image:numbers/2.png[2,22,22] Selection for the quantity, the quantity flags and
+the unit of the new math channel. +
+image:numbers/3.png[3,22,22] Selection to which device and channel group the new
+math channel should be added to. +
+image:numbers/4.png[4,22,22] Various types of math channels.
+
+One example this could be used is, when you measure a current via the voltage
+drop over a shunt resistor with a DMM. With the multiplication of a constant
+factor and the voltage signal of the DMM you can generate a current channel with
+the correct values in the correct unit (Ampere).
+
+This types of math channels are currently implemented:
+
+. Multiplication of two signals.
+. Multiplication of a signal and a constant factor.
+. Division of two signals.
+. Addition of a signal and a constant value.
+. Integration of a signal over time.
+. Moving average of a signal.
+
+As an alternative to math channels, you can use <<smuscript,SmuScript>> to do
+far more complex signal processing.
