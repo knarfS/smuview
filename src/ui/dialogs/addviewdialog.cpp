@@ -84,7 +84,7 @@ void AddViewDialog::setup_ui()
 	this->setup_ui_panel_tab();
 	this->setup_ui_time_plot_tab();
 	this->setup_ui_xy_plot_tab();
-	this->setup_ui_table_tab();
+	this->setup_ui_data_table_tab();
 	tab_widget_->setCurrentIndex(selected_tab_);
 	main_layout->addWidget(tab_widget_);
 
@@ -182,18 +182,18 @@ void AddViewDialog::setup_ui_xy_plot_tab()
 	tab_widget_->addTab(plot_widget, title);
 }
 
-void AddViewDialog::setup_ui_table_tab()
+void AddViewDialog::setup_ui_data_table_tab()
 {
 	QString title(tr("Data Table"));
 	QWidget *table_widget = new QWidget();
 	QVBoxLayout *layout = new QVBoxLayout();
 	table_widget->setLayout(layout);
 
-	table_signal_tree_ = new ui::devices::devicetree::DeviceTreeView(
+	data_table_signal_tree_ = new ui::devices::devicetree::DeviceTreeView(
 		session_, false, false, false, true, false, false, false, false);
-	table_signal_tree_->expand_device(device_);
+	data_table_signal_tree_->expand_device(device_);
 
-	layout->addWidget(table_signal_tree_);
+	layout->addWidget(data_table_signal_tree_);
 
 	tab_widget_->addTab(table_widget, title);
 }
@@ -260,7 +260,7 @@ void AddViewDialog::accept()
 	case 5:
 		// Add data table view
 		{
-			auto signals = table_signal_tree_->checked_signals();
+			auto signals = data_table_signal_tree_->checked_signals();
 			if (signals.size() > 0) {
 				auto view = new ui::views::DataView(session_,
 					static_pointer_cast<data::AnalogTimeSignal>(signals[0]));
