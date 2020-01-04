@@ -62,7 +62,6 @@ private:
 	void setup_toolbar();
 
 	QAction *const action_aquire_;
-	QAction *const action_open_;
 	QAction *const action_save_as_;
 	QAction *const action_add_control_view_;
 	QAction *const action_add_panel_view_;
@@ -76,7 +75,6 @@ public Q_SLOTS:
 
 private Q_SLOTS:
 	void on_action_aquire_triggered();
-	void on_action_open_triggered();
 	void on_action_save_as_triggered();
 	void on_action_add_control_view_triggered();
 	void on_action_add_panel_view_triggered();
