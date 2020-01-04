@@ -42,6 +42,7 @@
 #include "src/ui/views/baseview.hpp"
 #include "src/ui/views/dataview.hpp"
 #include "src/ui/views/plotview.hpp"
+#include "src/ui/views/powerpanelview.hpp"
 #include "src/ui/views/sequenceoutputview.hpp"
 #include "src/ui/views/valuepanelview.hpp"
 #include "src/ui/views/viewhelper.hpp"
@@ -85,6 +86,7 @@ void AddViewDialog::setup_ui()
 	this->setup_ui_time_plot_tab();
 	this->setup_ui_xy_plot_tab();
 	this->setup_ui_data_table_tab();
+	this->setup_ui_power_panel_tab();
 	tab_widget_->setCurrentIndex(selected_tab_);
 	main_layout->addWidget(tab_widget_);
 
@@ -198,6 +200,34 @@ void AddViewDialog::setup_ui_data_table_tab()
 	tab_widget_->addTab(table_widget, title);
 }
 
+void AddViewDialog::setup_ui_power_panel_tab()
+{
+	QString title(tr("Power Panel"));
+	QWidget *pp_widget = new QWidget();
+	QHBoxLayout *layout = new QHBoxLayout();
+	pp_widget->setLayout(layout);
+
+	QGroupBox *voltage_signal_group = new QGroupBox(tr("Voltage Signal"));
+	QVBoxLayout *voltage_layout = new QVBoxLayout();
+	ppanel_voltage_signal_widget_ = new ui::devices::SelectSignalWidget(session_);
+	ppanel_voltage_signal_widget_->filter_quantity(data::Quantity::Voltage);
+	ppanel_voltage_signal_widget_->select_device(device_);
+	voltage_layout->addWidget(ppanel_voltage_signal_widget_);
+	voltage_signal_group->setLayout(voltage_layout);
+	layout->addWidget(voltage_signal_group);
+
+	QGroupBox *current_signal_group = new QGroupBox(tr("Current Signal"));
+	QVBoxLayout *current_layout = new QVBoxLayout();
+	ppanel_current_signal_widget_ = new ui::devices::SelectSignalWidget(session_);
+	ppanel_current_signal_widget_->filter_quantity(data::Quantity::Current);
+	ppanel_current_signal_widget_->select_device(device_);
+	current_layout->addWidget(ppanel_current_signal_widget_);
+	current_signal_group->setLayout(current_layout);
+	layout->addWidget(current_signal_group);
+
+	tab_widget_->addTab(pp_widget, title);
+}
+
 vector<ui::views::BaseView *> AddViewDialog::views()
 {
 	return views_;
@@ -269,6 +299,18 @@ void AddViewDialog::accept()
 						static_pointer_cast<data::AnalogTimeSignal>(signals[i]));
 				}
 				views_.push_back(view);
+			}
+		}
+		break;
+	case 6:
+		// Add power panel view
+		{
+			auto v_signal = ppanel_voltage_signal_widget_->selected_signal();
+			auto c_signal = ppanel_current_signal_widget_->selected_signal();
+			if (v_signal != nullptr && c_signal != nullptr) {
+				views_.push_back(new ui::views::PowerPanelView(session_,
+					static_pointer_cast<data::AnalogTimeSignal>(v_signal),
+					static_pointer_cast<data::AnalogTimeSignal>(c_signal)));
 			}
 		}
 		break;
