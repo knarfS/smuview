@@ -26,6 +26,8 @@
 #include <QString>
 #include <QWidget>
 
+#include "src/data/datautil.hpp"
+
 using std::shared_ptr;
 
 namespace sv {
@@ -49,6 +51,7 @@ public:
 		shared_ptr<sv::devices::BaseDevice> device,
 		QString channel_group_name, QWidget *parent = nullptr);
 
+	void filter_quantity(sv::data::Quantity quantity);
 	void select_channel(shared_ptr<sv::channels::BaseChannel> channel);
 	shared_ptr<sv::channels::BaseChannel> selected_channel() const;
 
@@ -58,6 +61,8 @@ private:
 
 	shared_ptr<sv::devices::BaseDevice> device_;
 	QString channel_group_name_;
+	bool filter_active_;
+	sv::data::Quantity filter_quantity_;
 
 public Q_SLOTS:
 	void change_device_channel_group(

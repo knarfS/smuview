@@ -28,6 +28,7 @@
 #include "src/session.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/data/basesignal.hpp"
+#include "src/data/datautil.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/ui/devices/channelcombobox.hpp"
 #include "src/ui/devices/channelgroupcombobox.hpp"
@@ -49,6 +50,14 @@ SelectSignalWidget::SelectSignalWidget(
 {
 	setup_ui();
 	connect_signals();
+}
+
+void SelectSignalWidget::filter_quantity(sv::data::Quantity quantity)
+{
+	// NOTE: First filter the signal box and then the channel box for
+	//       signal/slots to work correctly!
+	signal_box_->filter_quantity(quantity);
+	channel_box_->filter_quantity(quantity);
 }
 
 void SelectSignalWidget::select_device(

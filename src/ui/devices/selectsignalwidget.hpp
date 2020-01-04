@@ -24,6 +24,8 @@
 
 #include <QWidget>
 
+#include "src/data/datautil.hpp"
+
 using std::shared_ptr;
 
 namespace sv {
@@ -53,6 +55,7 @@ class SelectSignalWidget : public QWidget
 public:
 	SelectSignalWidget(const Session &session, QWidget *parent = nullptr);
 
+	void filter_quantity(sv::data::Quantity quantity);
 	void select_device(shared_ptr<sv::devices::BaseDevice>);
 	shared_ptr<sv::data::BaseSignal> selected_signal() const;
 

@@ -29,6 +29,8 @@
 
 #include "channelcombobox.hpp"
 #include "src/channels/basechannel.hpp"
+#include "src/data/basesignal.hpp"
+#include "src/data/datautil.hpp"
 #include "src/devices/basedevice.hpp"
 
 using std::shared_ptr;
@@ -46,9 +48,18 @@ ChannelComboBox::ChannelComboBox(
 		QString channel_group_name, QWidget *parent) :
 	QComboBox(parent),
 	device_(device),
-	channel_group_name_(channel_group_name)
+	channel_group_name_(channel_group_name),
+	filter_active_(false)
 {
 	setup_ui();
+}
+
+void ChannelComboBox::filter_quantity(sv::data::Quantity quantity)
+{
+	filter_active_ = true;
+	filter_quantity_ = quantity;
+	// Refill combo box to apply filter.
+	this->fill_channels();
 }
 
 void ChannelComboBox::select_channel(
@@ -92,6 +103,19 @@ void ChannelComboBox::fill_channels()
 
 	auto ch_list = device_->channel_group_map()[chg_name_str];
 	for (const auto &ch : ch_list) {
+		// Check if channel contains a signal with the filter quantity.
+		if (filter_active_) {
+			bool found = false;
+			for (const auto &signal : ch->signals()) {
+				if (filter_quantity_ == signal->quantity()) {
+					found = true;
+					break;
+				}
+			}
+			if (!found)
+				continue;
+		}
+
 		this->addItem(
 			QString::fromStdString(ch->name()),
 			QVariant::fromValue(ch));

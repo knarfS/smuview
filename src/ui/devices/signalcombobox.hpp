@@ -25,6 +25,8 @@
 #include <QComboBox>
 #include <QWidget>
 
+#include "src/data/datautil.hpp"
+
 using std::shared_ptr;
 
 namespace sv {
@@ -48,6 +50,7 @@ public:
 		shared_ptr<sv::channels::BaseChannel> channel,
 		QWidget *parent = nullptr);
 
+	void filter_quantity(sv::data::Quantity quantity);
 	void select_signal(shared_ptr<sv::data::BaseSignal>);
 	shared_ptr<sv::data::BaseSignal> selected_signal() const;
 
@@ -56,6 +59,9 @@ private:
 	void fill_signals();
 
 	shared_ptr<sv::channels::BaseChannel> channel_;
+	bool filter_active_;
+	sv::data::Quantity filter_quantity_;
+
 
 public Q_SLOTS:
 	void change_channel(shared_ptr<sv::channels::BaseChannel>);

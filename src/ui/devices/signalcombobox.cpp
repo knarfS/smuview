@@ -40,9 +40,18 @@ SignalComboBox::SignalComboBox(
 		shared_ptr<sv::channels::BaseChannel> channel,
 		QWidget *parent) :
 	QComboBox(parent),
-	channel_(channel)
+	channel_(channel),
+	filter_active_(false)
 {
 	setup_ui();
+}
+
+void SignalComboBox::filter_quantity(sv::data::Quantity quantity)
+{
+	filter_active_ = true;
+	filter_quantity_ = quantity;
+	// Refill combo box to apply filter.
+	this->fill_signals();
 }
 
 void SignalComboBox::select_signal(
@@ -79,6 +88,8 @@ void SignalComboBox::fill_signals()
 
 	for (const auto &signal_pair : channel_->signal_map()) {
 		for (const auto &signal : signal_pair.second) {
+			if (filter_active_ && filter_quantity_ != signal->quantity())
+				continue;
 			this->addItem(signal->display_name(), QVariant::fromValue(signal));
 		}
 	}
