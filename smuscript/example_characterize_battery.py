@@ -51,9 +51,9 @@ UiProxy.add_plot_view(user_device.id(), smuview.DockArea.BottomDockArea, result_
 # Start test
 load_conf.set_config(smuview.ConfigKey.CurrentLimit, .150)
 
-# Load the batterie until it is below 0.5 Volt
+# Drain the battery until it is below 0.5 Volt
 value = 100
-while value > 0.2:
+while value > 0.5:
     # Take a reading every 2s and write it to the user channel
     time_stamp = time.time()
     value = dmm_device.channels()["P1"].actual_signal().get_last_sample(True)[1]
