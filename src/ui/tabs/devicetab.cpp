@@ -55,6 +55,7 @@ DeviceTab::DeviceTab(Session &session,
 	action_add_control_view_(new QAction(this)),
 	action_add_panel_view_(new QAction(this)),
 	action_add_plot_view_(new QAction(this)),
+	action_add_table_view_(new QAction(this)),
 	action_add_math_channel_(new QAction(this)),
 	action_about_(new QAction(this))
 {
@@ -145,6 +146,13 @@ void DeviceTab::setup_toolbar()
 	connect(action_add_plot_view_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_add_plot_view_triggered()));
 
+	action_add_table_view_->setText(tr("Add data table"));
+	action_add_table_view_->setIcon(
+		QIcon::fromTheme("view-form-table",
+		QIcon(":/icons/view-form-table.png")));
+	connect(action_add_table_view_, SIGNAL(triggered(bool)),
+		this, SLOT(on_action_add_table_view_triggered()));
+
 	action_add_math_channel_->setText(tr("Add &Math Channel..."));
 	action_add_math_channel_->setIcon(
 		QIcon::fromTheme("office-chart-line-percentage",
@@ -170,6 +178,7 @@ void DeviceTab::setup_toolbar()
 	toolbar_->addAction(action_add_control_view_);
 	toolbar_->addAction(action_add_panel_view_);
 	toolbar_->addAction(action_add_plot_view_);
+	toolbar_->addAction(action_add_table_view_);
 	toolbar_->addSeparator();
 	toolbar_->addAction(action_add_math_channel_);
 	toolbar_->addSeparator();
@@ -235,6 +244,16 @@ void DeviceTab::on_action_add_plot_view_triggered()
 
 	for (const auto &view : dlg.views())
 		add_view(view, Qt::BottomDockWidgetArea);
+}
+
+void DeviceTab::on_action_add_table_view_triggered()
+{
+	ui::dialogs::AddViewDialog dlg(session(), device_, 4);
+	if (!dlg.exec())
+		return;
+
+	for (const auto &view : dlg.views())
+		add_view(view, Qt::TopDockWidgetArea);
 }
 
 void DeviceTab::on_action_add_math_channel_triggered()
