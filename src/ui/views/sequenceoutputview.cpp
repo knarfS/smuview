@@ -128,7 +128,7 @@ SequenceOutputView::SequenceOutputView(Session &session,
 	sequence_pos_(0)
 {
 	assert(property_);
-	id_ = "generator:" + property_->name();
+	id_ = "sequence:" + property_->name();
 
 	timer_ = new QTimer(this);
 
@@ -143,7 +143,7 @@ SequenceOutputView::~SequenceOutputView()
 
 QString SequenceOutputView::title() const
 {
-	return tr("Generator") + " " + property_->display_name();
+	return tr("Sequence Output") + " " + property_->display_name();
 }
 
 void SequenceOutputView::setup_ui()
