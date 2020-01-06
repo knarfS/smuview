@@ -19,7 +19,7 @@
 
 #include <QColor>
 #include <QtGlobal>
-#if QT_VERSION >= 0x051000
+#if QT_VERSION >= 0x050A00
 	#include <QRandomGenerator>
 #endif
 
@@ -82,7 +82,7 @@ QColor BaseCurveData::color() const
 	else if (y_quantity() == sv::data::Quantity::PowerFactor)
 		return Qt::lightGray;
 	else
-#if QT_VERSION >= 0x051000
+#if QT_VERSION >= 0x050A00
 		return QColor::fromRgb(QRandomGenerator::global()->generate());
 #else
 		return QColor::fromRgb(qrand());
