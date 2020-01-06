@@ -1,5 +1,5 @@
-[[data_visualisation,Data visualisation]]
-== Data visualisation
+[[data_visualisation,Data Visualisation]]
+== Data Visualisation
 
 SmuView can visualize the captured data in various views. When a devices is
 connected, some common views are automatically displayed, depending on the
@@ -8,7 +8,7 @@ device type and the available features of the connected device.
 You can close views and create new ones via the tool bar of the device tab.
 
 [[value_panel_view]]
-=== Value panel view
+=== Value Panel View
 
 image::ValuePanelView.png[Value panel,402,185]
 
@@ -23,22 +23,22 @@ The minimum and maximum value can be reset with the tool bar button
 image:numbers/6.png[6,22,22].
 
 [[power_panel_view]]
-=== Power panel view
+=== Power Panel View
 
 image::PowerPanelView.png[Power panel]
 
 The power panel view is shown for power supplies and electronic loads. This view
-uses the voltage- and current-channel for calculating resistance, power, Wh and
-Ah. Also the minimum and maximum values since the last reset are shown.
+is using the voltage and current channel for calculating resistance, power, Wh
+and Ah. Also the minimum and maximum values since the last reset are shown.
 
-The minimum and maximum values can be reset with the tool bar buttion
+The minimum, maximum, Wh and Ah values can be reset with the tool bar buttion
 image:numbers/1.png[1,22,22].
 
-There is no tool bar button for the power panel view, but it is accesible over
-the _Add View_ dialog.
+There is no tool bar button in the device tab to show a power panel view, but it
+is accesible over the _Add View_ dialog in the device tab.
 
 [[data_table_view]]
-=== Data table view
+=== Data Table View
 
 image::DataTableView.png[Data table,270,266]
 
@@ -49,7 +49,7 @@ with the tool bar button image:numbers/1.png[1,22,22] and you can add new
 signals to the table via the tool bar button image:numbers/2.png[2,22,22].
 
 [[time_plot_view]]
-=== Time plot view
+=== Time Plot View
 
 image::TimePlotView_2.png[Time plot,645,369]
 
@@ -57,12 +57,12 @@ The time plot view shows one or more channels or signals in a plot over time.
 
 You can move the plot by dragging the plot canvas or by dragging the axis and
 you can zoom the whole plot by scrolling inside the plot canvas or zooming a
-specific signal by using the mouse wheel on the corresponding axis.
+specific axis by using the mouse wheel over the axis.
 
 When double clicking an axis, you can manually set the axis boundaries, lock the
-boundaries and set an axis type (linear or logarithmic). With the lock symbols
+boundaries and set an axis scale (linear or logarithmic). With the lock symbols
 (image:numbers/1.png[1,22,22] and image:numbers/2.png[2,22,22]) at the axis, you
-can also lock the axis boundary. When clicking on the signal labels
+can also lock a axis boundary. When clicking on a signal label
 (image:numbers/3.png[3,22,22]), you can change the visibility, color, line type
 and symbol type of the corresponding signal.
 
@@ -74,7 +74,7 @@ image:numbers/8.png[8,22,22]: Change the plot mode (additive, rolling,
 oscilloscope) and change the display position of the markers info box.
 
 [[xy_plot_view]]
-=== X/Y-plot view
+=== X/Y-Plot View
 
 The X/Y-plot view shows two signals in X/Y-mode. It has the same functionality
 as the time plot view.

@@ -5,7 +5,7 @@ Even though SmuView has a graphical user interface, there is also a command line
 interface that you can make use of. It is meant to provide functions for
 convenience and debug purposes, not to replace the user interface itself.
 
-Windows only shows ountput on the command line when the debug build is used.
+Windows only shows output on the command line when the debug build is used.
 
 Running
 [listing, subs="normal"]
@@ -16,7 +16,8 @@ gives you a list of all available options.
 Since SmuView can't automatically scan for devices connected to a COM port
 (`ttySx` on Linux) or Ethernet, you can tell it to look for a specific device
 using the `-d` or `--driver` parameter. Its usage is the same as for
-`sigrok-cli`. For example:
+`sigrok-cli`. All possible connection parameters are documented in the
+https://sigrok.org/wiki/Connection_parameters[sigrok wiki]. For example:
 [listing, subs="normal"]
 smuview -d arachnid-labs-re-load-pro:conn=/dev/ttyUSB0
 

@@ -16,8 +16,8 @@ which contains all required files and needs no installation:
 +
 --
 [listing, subs="normal"]
-chmod u+x SmuView-0.0.1-x86_64.AppImage
-./SmuView-0.0.1-x86_64.AppImage
+chmod u+x SmuView-0.0.4-x86_64.AppImage
+./SmuView-0.0.4-x86_64.AppImage
 
 Please be aware, however, that the AppImages are development releases at the
 moment, so they always contain the latest development changes. While we do try
@@ -28,8 +28,8 @@ the issue still exists. If it does, feel free to
 https://github.com/knarfS/smuview/issues[file a bug].
 
 No system files are changed, so if you decide that you no longer want to use
-SmuView, simply delete the AppImage. If you also want the stored settings gone,
-delete `~/.config/sigrok` as well.
+SmuView, simply delete the AppImage. If you also want to remove the stored
+settings, delete `~/.config/sigrok` as well.
 --
 
 . Uninstall any sigrok packages from your package manager and build SmuView from
@@ -40,32 +40,32 @@ source:
 _[install dependencies https://sigrok.org/wiki/Linux#Building[as listed on the wiki]]_
 mkdir ~/sr
 cd ~/sr
-git clone https://github.com/knarfS/sigrok-util.git --branch smuview --single-branch
+git clone --branch smuview --single-branch "'https://github.com/knarfS/sigrok-util.git'"
 cd sigrok-util/cross-compile/linux
 ./sigrok-cross-linux-smuview
 export LD_LIBRARY_PATH=~/sr/lib
 ~/sr/bin/smuview
 
 No system files are changed, so if you decide that you no longer want to use
-SmuView, simply delete the `~/sr` directory. If you also want the stored
-settings gone, delete `~/.config/sigrok` as well.
+SmuView, simply delete the `~/sr` directory. If you also want to remove the
+stored settings, delete `~/.config/sigrok` as well.
 --
 
 [WARNING]
 --
 If you install SmuView using the AppImage or building from source, SmuView will
-not be able to access USB and serial port devices unless it's run as root. Since
-programs shouldn't be run as `root` unless absolutely necessary, we provide udev
-configuration files that allows SmuView access to those devices without being
-`root`.
+not be able to access USB and serial port devices unless it's run as `root`.
+Since programs shouldn't be run as `root` unless absolutely necessary, we
+provide udev configuration files that allows SmuView access to those devices
+without being `root`.
 
 Here's how you install them:
 [listing, subs="normal"]
 sudo bash
 cd /etc/udev/rules.d/
-wget 'https://sigrok.org/gitweb/?p=libsigrok.git;a=blob_plain;f=contrib/60-libsigrok.rules' -O 60-libsigrok.rules
-wget 'https://sigrok.org/gitweb/?p=libsigrok.git;a=blob_plain;f=contrib/61-libsigrok-plugdev.rules' -O 61-libsigrok-plugdev.rules
-wget 'https://sigrok.org/gitweb/?p=libsigrok.git;a=blob_plain;f=contrib/61-libsigrok-uaccess.rules' -O 61-libsigrok-uaccess.rules
+wget -O 60-libsigrok.rules "'https://sigrok.org/gitweb/?p=libsigrok.git;a=blob_plain;f=contrib/60-libsigrok.rules'"
+wget -O 61-libsigrok-plugdev.rules "'https://sigrok.org/gitweb/?p=libsigrok.git;a=blob_plain;f=contrib/61-libsigrok-plugdev.rules'"
+wget -O 61-libsigrok-uaccess.rules "'https://sigrok.org/gitweb/?p=libsigrok.git;a=blob_plain;f=contrib/61-libsigrok-uaccess.rules'"
 sudo udevadm control --reload-rules
 --
 

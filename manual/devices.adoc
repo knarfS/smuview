@@ -7,11 +7,11 @@ types.
 
 A device can contain the following objects:
 
-Channel group image:icons/document-open-folder.png[width=18,Height=18]::
+Channel Group image:icons/document-open-folder.png[width=18,Height=18]::
 A device can have no, one or more channel groups. Channel groups normally
 corresponds to a physical channel on the device itself.
 +
-A three output channel power supplies for example will have three channel
+A three output channel power supply for example will have three channel
 groups, probably named `1`, `2` and `3`.
 +
 A multimeter normally doesn't have a channel group.
@@ -33,9 +33,9 @@ Channels of power supplies, electronic loads and math channels always contain
 only one signal with a fixed quantity and unit.
 +
 Channels of multimeters may contain multiple signals, each one with a unique
-qunatity, quantity flags and unit.
+quantity, quantity flags and unit.
 
-Contollable image:icons/mixer-front.png[width=18,Height=18]::
+Controllable image:icons/mixer-front.png[width=18,Height=18]::
 A device can have no, one or more controllables. Up to one controllable can
 belong to a channel group or to the device itself.
 +
@@ -43,7 +43,7 @@ A power supplies channel group controllable can probably control the output
 voltage and current, enable OVP and OCP and enable the output  .
 
 [[config_key]]
-Config key image:icons/configure.png[width=18,Height=18]::
+Config Key image:icons/configure.png[width=18,Height=18]::
 A controllable contains one or more config keys. A config key controls a single
 property of the device like the sink current of an electronic load or enables
 the output of a power supply channel group. It may be read- and writeable.
@@ -71,14 +71,14 @@ image:numbers/6.png[6,22,22] Add a new <<data_table_view,data table view>>. +
 image:numbers/7.png[7,22,22] Create a new <<math_channel,math channel>>. +
 image:numbers/8.png[8,22,22] Open the about dialog.
 
-=== Measurement device
+=== Measurement Device
 
 A measurement device can be everything from a multimeter over a thermometer to
 a scale.
 
 Most of the measurement devices are not controllable and have no channel groups.
 
-=== Power supply
+=== Power Supply
 
 Most of the supported  power supplies are controllable and have one or more
 channel group with a voltage channel and a current channel. Some power supplies
@@ -88,7 +88,7 @@ only one signal with a fixed quantity and unit.
 Math channels for power, resistance, Wh and Ah are automatically generated if
 not provided by the device.
 
-=== Electronic load
+=== Electronic Load
 
 All of the supported loads are controllable and have one channel group with a
 voltage channel and a current channel. Some loads may have additional channels
@@ -109,7 +109,7 @@ channel. The controllable for the device itself controls the timebase, the
 trigger settings and so on.
 
 [[user_device]]
-=== User device
+=== User Device
 
 A user devices has no hardware device attached to it and is basically a virtual
 device. It may contain math channels or visualisation and control views from

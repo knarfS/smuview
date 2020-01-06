@@ -1,5 +1,5 @@
-[[data_processing,Data processing]]
-== Data processing
+[[data_processing,Data Processing]]
+== Data Processing
 
 SmuView can process and combine channels via math channels.
 
