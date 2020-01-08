@@ -23,14 +23,38 @@
 import smuview
 import sys
 import pydoc
+import pdoc
+import re
 
-# Write pydoc text file
-file_name = './smuview_python_bindings.txt'
-file = open(file_name, 'w')
-sys.stdout = file
-pydoc.help(smuview)
-file.close()
-sys.stdout = sys.__stdout__
+#
+# pydoc
+#
 
-# Write pydoc html file to current directory
-pydoc.writedoc(smuview)
+# Write to text file
+#file_name = './smuview_python_bindings_pydoc.txt'
+#f = open(file_name, 'w')
+#sys.stdout = f
+#pydoc.help(smuview)
+#f.close()
+#sys.stdout = sys.__stdout__
+
+# Write html file to current directory
+#pydoc.writedoc(smuview)
+
+
+#
+# pdoc3
+#
+# Install:
+#   $ pip3 install pdoc3
+#
+
+html_str = pdoc.html("smuview", show_type_annotations=True)
+# Remove 'sv::smuview::' from html string. This fixes a bug(?) in pybind11
+html_str = re.sub(r'sv::[a-z]+::', '', html_str)
+html_str = re.sub(r'<code>sv</code>::<code>[a-z]+</code>::', '', html_str)
+# Save to file
+file_name = './smuview_python_bindings_pdoc3.html'
+f = open(file_name, 'w')
+print(html_str, file=f)
+f.close()
