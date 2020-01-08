@@ -48,6 +48,12 @@ namespace python {
 
 class UiHelper;
 
+/**
+ * The python interpreter is executed in its own thread, therefore calling any
+ * methods that will manipulate Qt widgets directly won't work.
+ * So we are using UiProxy which is communicating with the Qt main loop via
+ * signals and slots.
+ */
 class UiProxy : public QObject
 {
 	Q_OBJECT
