@@ -169,16 +169,16 @@ template int32_t Configurable::get_config(devices::ConfigKey) const;
 template uint64_t Configurable::get_config(devices::ConfigKey) const;
 template double Configurable::get_config(devices::ConfigKey) const;
 template std::string Configurable::get_config(devices::ConfigKey) const;
-template<typename T> T Configurable::get_config(devices::ConfigKey key) const
+template<typename T> T Configurable::get_config(devices::ConfigKey config_key) const
 {
 	assert(sr_configurable_);
 
 	const sigrok::ConfigKey *sr_key =
-		devices::deviceutil::get_sr_config_key(key);
+		devices::deviceutil::get_sr_config_key(config_key);
 
 	if (!sr_configurable_->config_check(sr_key, sigrok::Capability::GET)) {
-		qWarning() << "Configurable::get_config(): No key / no getable key " <<
-			devices::deviceutil::format_config_key(key);
+		qWarning() << "Configurable::get_config(): No getable config key " <<
+			devices::deviceutil::format_config_key(config_key);
 		assert(false);
 	}
 
@@ -201,17 +201,17 @@ template<typename T> T Configurable::get_config(devices::ConfigKey key) const
 }
 
 Glib::VariantContainerBase Configurable::get_container_config(
-	devices::ConfigKey key) const
+	devices::ConfigKey config_key) const
 {
 	assert(sr_configurable_);
 
 	const sigrok::ConfigKey *sr_key =
-		devices::deviceutil::get_sr_config_key(key);
+		devices::deviceutil::get_sr_config_key(config_key);
 
 	if (!sr_configurable_->config_check(sr_key, sigrok::Capability::GET)) {
 		qWarning() <<
-			"Configurable::get_container_config(): No key / no getable key " <<
-			devices::deviceutil::format_config_key(key);
+			"Configurable::get_container_config(): No getable config key " <<
+			devices::deviceutil::format_config_key(config_key);
 		assert(false);
 	}
 
@@ -252,16 +252,16 @@ template void Configurable::set_config(devices::ConfigKey, const double);
 template void Configurable::set_config(devices::ConfigKey, const std::string);
 template void Configurable::set_config(devices::ConfigKey, const Glib::ustring);
 template<typename T> void Configurable::set_config(
-	devices::ConfigKey key, const T value)
+	devices::ConfigKey config_key, const T value)
 {
 	assert(sr_configurable_);
 
 	const sigrok::ConfigKey *sr_key =
-		devices::deviceutil::get_sr_config_key(key);
+		devices::deviceutil::get_sr_config_key(config_key);
 
 	if (!sr_configurable_->config_check(sr_key, sigrok::Capability::SET)) {
-		qWarning() << "Configurable::set_config(): No key / no setable key  " <<
-			devices::deviceutil::format_config_key(key);
+		qWarning() << "Configurable::set_config(): No setable  config key  " <<
+			devices::deviceutil::format_config_key(config_key);
 		assert(false);
 	}
 
@@ -269,23 +269,24 @@ template<typename T> void Configurable::set_config(
 		sr_configurable_->config_set(sr_key, Glib::Variant<T>::create(value));
 	}
 	catch (sigrok::Error &error) {
-		qWarning() << "Configurable::set_config(): Failed to set key " <<
-			devices::deviceutil::format_config_key(key) << ". " << error.what();
+		qWarning() << "Configurable::set_config(): Failed to set config key " <<
+			devices::deviceutil::format_config_key(config_key) << ". " <<
+			error.what();
 	}
 }
 
 void Configurable::set_container_config(
-	devices::ConfigKey key, vector<Glib::VariantBase> childs)
+	devices::ConfigKey config_key, vector<Glib::VariantBase> childs)
 {
 	assert(sr_configurable_);
 
 	const sigrok::ConfigKey *sr_key =
-		devices::deviceutil::get_sr_config_key(key);
+		devices::deviceutil::get_sr_config_key(config_key);
 
 	if (!sr_configurable_->config_check(sr_key, sigrok::Capability::SET)) {
 		qWarning() <<
-			"Configurable::set_container_config(): No key / no setable key  " <<
-			devices::deviceutil::format_config_key(key);
+			"Configurable::set_container_config(): No setable config key  " <<
+			devices::deviceutil::format_config_key(config_key);
 		assert(false);
 	}
 
@@ -295,8 +296,9 @@ void Configurable::set_container_config(
 	}
 	catch (sigrok::Error &error) {
 		qWarning() <<
-			"Configurable::set_container_config(): Failed to set key " <<
-			devices::deviceutil::format_config_key(key) << ". " << error.what();
+			"Configurable::set_container_config(): Failed to set config key " <<
+			devices::deviceutil::format_config_key(config_key) << ". " <<
+			error.what();
 	}
 }
 
