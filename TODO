@@ -17,7 +17,7 @@ ToDo
 	- Enhance ThresholdControl widget (e.g for re:load pro). Maybe a dedicated property?
 		- Dedicated SvDoubleSpinBox and SvBoolButton?
 - Breeze icons action/labplot-* for plots?
-- Get fixed qunatity signals from channel(/channel group) (q/qf/u is set in ch.meaning at the beginning). Implement in sigrok!
+- Get fixed quantity signals from channel(/channel group) (q/qf/u is set in ch.meaning at the beginning). Implement in sigrok!
 - Implement something like ch.meanings for config keys in sigrok, so smuview known the quantity/unit of config keys.
 - Start timestamp on_update() -> device ctor -> timestamp = .0
 - Start timestamp to session

@@ -715,7 +715,7 @@ bool is_valid_sr_quantity(data::Quantity quantity);
 
 
 /**
- * Return the corresponding QunatityFlag for a sigrok QuantityFlag
+ * Return the corresponding QuantityFlag for a sigrok QuantityFlag
  *
  * @param sr_quantity_flag The sigrok QuantityFlag
  *
@@ -733,7 +733,7 @@ QuantityFlag get_quantity_flag(const sigrok::QuantityFlag *sr_quantity_flag);
 uint64_t get_sr_quantity_flag_id(QuantityFlag quantity_flag);
 
 /**
- * Return the corresponding QunatityFlags as a set for the
+ * Return the corresponding QuantityFlags as a set for the
  * sigrok QuantityFlags vector
  *
  * @param sr_quantity_flags The sigrok QuantityFlags as vector
@@ -744,7 +744,7 @@ set<QuantityFlag> get_quantity_flags(
 	vector<const sigrok::QuantityFlag *> sr_quantity_flags);
 
 /**
- * Return the corresponding QunatityFlags as a set for the
+ * Return the corresponding QuantityFlags as a set for the
  * sigrok QuantityFlags (uint64_t)
  *
  * @param sr_quantity_flags The sigrok QuantityFlags as uint64_t
@@ -754,7 +754,7 @@ set<QuantityFlag> get_quantity_flags(
 set<QuantityFlag> get_quantity_flags(uint64_t sr_quantity_flags);
 
 /**
- * Return the corresponding QunatityFlags as an uint64_t
+ * Return the corresponding QuantityFlags as an uint64_t
  *
  * @param quantity_flags The QuantityFlags as set
  *
@@ -849,7 +849,7 @@ QString format_quantity_flags(set<QuantityFlag> quantity_flags,
 	const QString seperator);
 
 /**
- * Format a measured_quantity_t (pair<Quantity, set<QunatityFlag>>) to a string
+ * Format a measured_quantity_t (pair<Quantity, set<QuantityFlag>>) to a string
  *
  * @param measured_quantity The measured_quantity.
  *

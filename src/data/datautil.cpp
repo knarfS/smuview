@@ -121,8 +121,8 @@ set<QuantityFlag> get_quantity_flags(uint64_t sr_quantity_flags)
 uint64_t get_sr_quantity_flags_id(set<QuantityFlag> quantity_flags)
 {
 	uint64_t sr_qfs_id = 0;
-	for (const auto &qunatity_flag : quantity_flags) {
-		sr_qfs_id |= get_sr_quantity_flag_id(qunatity_flag);
+	for (const auto &quantity_flag : quantity_flags) {
+		sr_qfs_id |= get_sr_quantity_flag_id(quantity_flag);
 	}
 	return sr_qfs_id;
 }

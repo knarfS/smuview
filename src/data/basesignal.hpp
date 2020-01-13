@@ -68,12 +68,12 @@ public:
 	virtual size_t sample_count() const = 0;
 
 	/**
-	 * Return the qunatity of this signal.
+	 * Return the quantity of this signal.
 	 */
 	data::Quantity quantity() const;
 
 	/**
-	 * Return the qunatity of this signal as string
+	 * Return the quantity of this signal as string
 	 */
 	QString quantity_name() const;
 
@@ -83,7 +83,7 @@ public:
 	set<data::QuantityFlag> quantity_flags() const;
 
 	/**
-	 * Return the qunatity flags of this signal as string
+	 * Return the quantity flags of this signal as string
 	 */
 	QString quantity_flags_name() const;
 

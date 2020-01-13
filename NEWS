@@ -24,7 +24,7 @@ For a detailed list of changes, please see the git commit history.
    - Curve colors
    - Better legend titles
    - Add AC/DC to curve unit names (axis labels)
-   - Use one axis for data with the same qunatity / qunatity flags
+   - Use one axis for data with the same quantity / quantity flags
    - Fix non working mouse wheel over axis
  * Use linear interpolation to combine signals with different time intervals:
    - Used in math channles

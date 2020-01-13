@@ -71,7 +71,7 @@ void DemoControlView::setup_ui()
 		configurable_->has_set_config(ConfigKey::MeasuredQuantity)) {
 
 		// The demo dmm device has no listable measurement quantities /
-		// qunatity flags, so we use all...
+		// quantity flags, so we use all...
 		auto mq_prop =
 			static_pointer_cast<sv::data::properties::MeasuredQuantityProperty>(
 				configurable_->get_property(ConfigKey::MeasuredQuantity));
