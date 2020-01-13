@@ -293,9 +293,9 @@ void GenerateWaveformDialog::accept()
 			value = (std::asin(std::sin(x))) / (pi/2);
 		else if (w_type == WaveformType::Sawtooth)
 			// y = −arctan(cotan(x))
-			value = -1 * std::atan(std::cos(x) / std::sin(x)) / (pi/2);
+			value = -1 * std::atan(1 / std::tan(x)) / (pi/2);
 		else if (w_type == WaveformType::SawtoothInv)
-			value = std::atan(std::cos(x) / std::sin(x)) / (pi/2);
+			value = std::atan(1 / std::tan(x)) / (pi/2);
 		else
 			value = 0;
 
@@ -306,7 +306,6 @@ void GenerateWaveformDialog::accept()
 
 	QDialog::accept();
 }
-
 
 void GenerateWaveformDialog::on_waveform_changed()
 {
