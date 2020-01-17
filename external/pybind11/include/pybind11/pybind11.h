@@ -1003,14 +1003,21 @@ void call_operator_delete(T *p, size_t s, size_t) { T::operator delete(p, s); }
 
 inline void call_operator_delete(void *p, size_t s, size_t a) {
     (void)s; (void)a;
-#if defined(PYBIND11_CPP17)
-    if (a > __STDCPP_DEFAULT_NEW_ALIGNMENT__)
-        ::operator delete(p, s, std::align_val_t(a));
-    else
+    #if defined(__cpp_aligned_new) && (!defined(_MSC_VER) || _MSC_VER >= 1912)
+        if (a > __STDCPP_DEFAULT_NEW_ALIGNMENT__) {
+            #ifdef __cpp_sized_deallocation
+                ::operator delete(p, s, std::align_val_t(a));
+            #else
+                ::operator delete(p, std::align_val_t(a));
+            #endif
+            return;
+        }
+    #endif
+    #ifdef __cpp_sized_deallocation
         ::operator delete(p, s);
-#else
-    ::operator delete(p);
-#endif
+    #else
+        ::operator delete(p);
+    #endif
 }
 
 NAMESPACE_END(detail)
@@ -1426,22 +1433,39 @@ struct enum_base {
         ));
 
         m_base.attr("__doc__") = static_property(cpp_function(
-            [](handle arg) -> std::string {
+            [show_enum_members_docstring=options::show_enum_members_docstring()](handle arg) -> std::string {
                 std::string docstring;
-                dict entries = arg.attr("__entries");
                 if (((PyTypeObject *) arg.ptr())->tp_doc)
-                    docstring += std::string(((PyTypeObject *) arg.ptr())->tp_doc) + "\n\n";
-                docstring += "Members:";
-                for (const auto &kv : entries) {
-                    auto key = std::string(pybind11::str(kv.first));
-                    auto comment = kv.second[int_(1)];
-                    docstring += "\n\n  " + key;
-                    if (!comment.is_none())
-                        docstring += " : " + (std::string) pybind11::str(comment);
+                    docstring += std::string(((PyTypeObject *) arg.ptr())->tp_doc);
+                if (show_enum_members_docstring) {
+                    docstring += "\n\nMembers:";
+                    dict entries = arg.attr("__entries");
+                    for (const auto &kv : entries) {
+                        auto key = std::string(pybind11::str(kv.first));
+                        auto comment = kv.second[int_(1)];
+                        docstring += "\n\n  " + key;
+                        if (!comment.is_none())
+                            docstring += " : " + (std::string) pybind11::str(comment);
+                    }
                 }
                 return docstring;
             }
         ), none(), none(), "");
+
+        if (options::populate_enum_pdoc()) {
+            auto name = m_base.attr("__name__");
+            m_base.attr("__pdoc__") = static_property(cpp_function(
+                [name](handle arg) -> dict {
+                    dict pdoc;
+                    dict entries = arg.attr("__entries");
+                    for (const auto &kv : entries) {
+                        str doc_key = str("{}.{}").format(name, kv.first);
+                        pdoc[doc_key] = kv.second[int_(1)];
+                    }
+                    return pdoc;
+                }), none(), none(), ""
+            );
+        }
 
         m_base.attr("__members__") = static_property(cpp_function(
             [](handle arg) -> dict {
