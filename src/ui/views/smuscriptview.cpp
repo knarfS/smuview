@@ -53,6 +53,7 @@ SmuScriptView::SmuScriptView(Session &session, string script_file_name,
 	action_save_(new QAction(this)),
 	action_save_as_(new QAction(this)),
 	action_run_(new QAction(this)),
+	text_changed_(false),
 	started_from_here_(false)
 {
 	// TODO: Not unique!
