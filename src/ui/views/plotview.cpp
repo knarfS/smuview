@@ -20,11 +20,14 @@
 #include <cassert>
 #include <string>
 
+#include <QImageWriter>
+#include <QFileDialog>
 #include <QMainWindow>
 #include <QMenu>
 #include <QMessageBox>
 #include <QToolButton>
 #include <QVBoxLayout>
+#include <qwt_plot_renderer.h>
 
 #include "plotview.hpp"
 #include "src/session.hpp"
@@ -57,6 +60,7 @@ PlotView::PlotView(Session &session,
 	action_add_diff_marker_(new QAction(this)),
 	action_zoom_best_fit_(new QAction(this)),
 	action_add_signal_(new QAction(this)),
+	action_save_(new QAction(this)),
 	action_config_plot_(new QAction(this)),
 	plot_type_(PlotType::TimePlot)
 {
@@ -97,6 +101,7 @@ PlotView::PlotView(Session &session,
 	action_add_diff_marker_(new QAction(this)),
 	action_zoom_best_fit_(new QAction(this)),
 	action_add_signal_(new QAction(this)),
+	action_save_(new QAction(this)),
 	action_config_plot_(new QAction(this)),
 	plot_type_(PlotType::TimePlot)
 {
@@ -124,6 +129,7 @@ PlotView::PlotView(Session &session,
 	action_add_diff_marker_(new QAction(this)),
 	action_zoom_best_fit_(new QAction(this)),
 	action_add_signal_(new QAction(this)),
+	action_save_(new QAction(this)),
 	action_config_plot_(new QAction(this)),
 	plot_type_(PlotType::XYPlot)
 {
@@ -253,6 +259,13 @@ void PlotView::setup_toolbar()
 	connect(action_add_signal_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_add_signal_triggered()));
 
+	action_save_->setText(tr("Save"));
+	action_save_->setIcon(
+		QIcon::fromTheme("document-save",
+		QIcon(":/icons/document-save.png")));
+	connect(action_save_, SIGNAL(triggered(bool)),
+		this, SLOT(on_action_save_triggered()));
+
 	action_config_plot_->setText(tr("Configure Plot"));
 	action_config_plot_->setIcon(
 		QIcon::fromTheme("configure",
@@ -267,6 +280,8 @@ void PlotView::setup_toolbar()
 	toolbar_->addAction(action_zoom_best_fit_);
 	toolbar_->addSeparator();
 	toolbar_->addAction(action_add_signal_);
+	toolbar_->addSeparator();
+	toolbar_->addAction(action_save_);
 	toolbar_->addSeparator();
 	toolbar_->addAction(action_config_plot_);
 	this->addToolBar(Qt::TopToolBarArea, toolbar_);
@@ -375,6 +390,25 @@ void PlotView::on_action_add_signal_triggered()
 				dynamic_pointer_cast<sv::data::AnalogTimeSignal>(signal));
 		}
 	}
+}
+
+void PlotView::on_action_save_triggered()
+{
+	QString filter("SVG Image (*.svg);;PDF File (*.pdf)");
+	for (const auto &supported : QImageWriter::supportedImageFormats()) {
+		filter += ";;" + supported.toUpper() + " Image (*." + supported + ")";
+	}
+	QString *selected_filter = new QString("SVG Image (*.svg)");
+	QString file_name = QFileDialog::getSaveFileName(this,
+		tr("Save Plot"), QDir::homePath(), filter, selected_filter);
+	if (file_name.length() <= 0)
+		return;
+
+	// TODO
+	QSizeF size(300, 200);
+	int resolution = 85;
+	QwtPlotRenderer renderer;
+	renderer.renderDocument(plot_, file_name, size, resolution);
 }
 
 void PlotView::on_action_config_plot_triggered()
