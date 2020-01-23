@@ -214,11 +214,14 @@ Section "Example scripts" Section2
 	# Example smuscript *.py files.
 	SetOutPath "$INSTDIR\examples"
 
-	File "${CROSS}/share/smuscript/example_characterize_batterie.py"
+	File "${CROSS}/share/smuscript/example_characterize_battery.py"
 	File "${CROSS}/share/smuscript/example_characterize_psu.py"
+	File "${CROSS}/share/smuscript/example_characterize_psu_2.py"
 	File "${CROSS}/share/smuscript/example_device_properties.py"
 	File "${CROSS}/share/smuscript/example_ui.py"
 	File "${CROSS}/share/smuscript/example_user_channel.py"
+	File "${CROSS}/share/smuscript/generate_documentation.py"
+	File "${CROSS}/share/smuscript/python_version.py"
 
 	# Create a shortcut for the example scripts folder.
 	CreateShortCut "$SMPROGRAMS\sigrok\SmuView\Examples (SmuScript).lnk" \
