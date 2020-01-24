@@ -85,7 +85,7 @@ The alternative to linuxdeployqt is the sigrok AppImageKit script (not tested in
  $ sudo apt-get -y install desktop-file-utils libcairo2-dev libfuse-dev zsync
  $ git clone --single-branch --recursive https://github.com/AppImage/AppImageKit
  $ cd AppImageKit
- $ ./install-build-deps.sh # TODO: wants to install cmake!!!
+ $ sudo apt -y install zsync git libarchive-dev autoconf libtool make gcc g++ libtool libfuse-dev liblzma-dev libglib2.0-dev libssl-dev libinotifytools0-dev liblz4-dev libcairo-dev desktop-file-utils
  $ patch -p1 < ../sigrok-util/cross-compile/appimage/chdir.patch
  $ ./build.sh
  $ mkdir -p build/lib/appimagekit
