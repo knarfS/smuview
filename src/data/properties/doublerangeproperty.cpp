@@ -43,7 +43,7 @@ DoubleRangeProperty::DoubleRangeProperty(
 	BaseProperty(configurable, config_key)
 {
 	if (is_listable_)
-		list_config();
+		DoubleRangeProperty::list_config();
 }
 
 QVariant DoubleRangeProperty::value() const

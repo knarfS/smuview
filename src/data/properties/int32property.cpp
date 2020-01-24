@@ -38,7 +38,7 @@ Int32Property::Int32Property(shared_ptr<devices::Configurable> configurable,
 	step_(1)
 {
 	if (is_listable_)
-		list_config();
+		Int32Property::list_config();
 }
 
 QVariant Int32Property::value() const

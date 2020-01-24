@@ -46,7 +46,7 @@ UInt64RangeProperty::UInt64RangeProperty(
 	BaseProperty(configurable, config_key)
 {
 	if (is_listable_)
-		list_config();
+		UInt64RangeProperty::list_config();
 }
 
 QVariant UInt64RangeProperty::value() const

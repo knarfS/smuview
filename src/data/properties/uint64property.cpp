@@ -45,7 +45,7 @@ UInt64Property::UInt64Property(shared_ptr<devices::Configurable> configurable,
 	step_(1)
 {
 	if (is_listable_)
-		list_config();
+		UInt64Property::list_config();
 }
 
 QVariant UInt64Property::value() const

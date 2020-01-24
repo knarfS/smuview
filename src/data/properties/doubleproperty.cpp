@@ -40,7 +40,7 @@ DoubleProperty::DoubleProperty(shared_ptr<devices::Configurable> configurable,
 	decimal_places_(3)
 {
 	if (is_listable_) {
-		if (list_config()) {
+		if (DoubleProperty::list_config()) {
 			digits_ = util::count_double_digits(max_, step_);
 			decimal_places_ = util::get_decimal_places(step_);
 		}

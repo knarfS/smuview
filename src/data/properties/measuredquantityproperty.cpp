@@ -48,7 +48,7 @@ MeasuredQuantityProperty::MeasuredQuantityProperty(
 	BaseProperty(configurable, config_key)
 {
 	if (is_listable_)
-		list_config();
+		MeasuredQuantityProperty::list_config();
 }
 
 QVariant MeasuredQuantityProperty::value() const

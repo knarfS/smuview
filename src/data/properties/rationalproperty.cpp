@@ -47,7 +47,7 @@ RationalProperty::RationalProperty(
 	BaseProperty(configurable, config_key)
 {
 	if (is_listable_)
-		list_config();
+		RationalProperty::list_config();
 }
 
 QVariant RationalProperty::value() const
