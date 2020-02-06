@@ -20,6 +20,7 @@
 #ifndef PYTHON_PYSTREAMREDIRECT_HPP
 #define PYTHON_PYSTREAMREDIRECT_HPP
 
+#include <iostream>
 #include <memory>
 #include <string>
 
@@ -31,6 +32,7 @@
 #include "src/python/smuscriptrunner.hpp"
 
 using std::shared_ptr;
+using std::string;
 
 namespace py = pybind11;
 
@@ -49,17 +51,20 @@ public:
 		old_stdout_ = sys_module.attr("stdout");
 		old_stderr_ = sys_module.attr("stderr");
 
+		auto locale_module = py::module::import("locale");
+		auto default_encoding = locale_module.attr("getpreferredencoding")(false);
+
 		stdout_buf_ = new PyStreamBuf(
-			py::str(old_stdout_.attr("encoding")),
-			py::str(old_stdout_.attr("errors")));
+			py::str(py::getattr(old_stdout_, "encoding", default_encoding)),
+			py::str(py::getattr(old_stdout_, "errors", py::str("strict"))));
 		auto py_stdout_buf = py::cast(
 			stdout_buf_, py::return_value_policy::reference);
 		connect(stdout_buf_, &PyStreamBuf::send_string,
 			script_runner_.get(), &SmuScriptRunner::send_py_stdout);
 
 		stderr_buf_ = new PyStreamBuf(
-			py::str(old_stderr_.attr("encoding")),
-			py::str(old_stderr_.attr("errors")));
+			py::str(py::getattr(old_stderr_, "encoding", default_encoding)),
+			py::str(py::getattr(old_stderr_, "errors", py::str("backslashreplace"))));
 		auto py_stderr_buf = py::cast(
 			stderr_buf_, py::return_value_policy::reference);
 		connect(stderr_buf_, &PyStreamBuf::send_string,
