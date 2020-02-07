@@ -428,9 +428,6 @@ if(WIN32)
 		#list(APPEND SMUVIEW_LINK_LIBS -lQt5GraphicsSupport)
 		list(APPEND SMUVIEW_LINK_LIBS ${QT5ALL_LDFLAGS})
 	endif()
-
-	# Python lib for MXE
-	list(APPEND SMUVIEW_LINK_LIBS ${PYTHON_LIBRARIES})
 endif()
 
 add_executable(${PROJECT_NAME} ${smuview_SOURCES} ${smuview_RESOURCES_RCC})
