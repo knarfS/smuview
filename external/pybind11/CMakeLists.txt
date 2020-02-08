@@ -98,7 +98,8 @@ if(NOT (CMAKE_VERSION VERSION_LESS 3.0))  # CMake >= 3.0
   add_library(pybind11 INTERFACE)
   add_library(pybind11::pybind11 ALIAS pybind11)  # to match exported target
   target_include_directories(pybind11 INTERFACE $<BUILD_INTERFACE:${PYBIND11_INCLUDE_DIR}>
-                                                $<BUILD_INTERFACE:${PYTHON_INCLUDE_DIRS}>
+                                                # $<BUILD_INTERFACE:${PYTHON_INCLUDE_DIRS}> isn't working, when PYTHON_INCLUDE_DIRS contains a semikolon seperated list
+                                                ${PYTHON_INCLUDE_DIRS}
                                                 $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
   target_compile_options(pybind11 INTERFACE $<BUILD_INTERFACE:${PYBIND11_CPP_STANDARD}>)
 

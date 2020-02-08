@@ -1432,12 +1432,13 @@ struct enum_base {
             }, is_method(m_base)
         ));
 
+        bool show_enum_members = options::show_enum_members_docstring();
         m_base.attr("__doc__") = static_property(cpp_function(
-            [show_enum_members_docstring=options::show_enum_members_docstring()](handle arg) -> std::string {
+            [show_enum_members](handle arg) -> std::string {
                 std::string docstring;
                 if (((PyTypeObject *) arg.ptr())->tp_doc)
                     docstring += std::string(((PyTypeObject *) arg.ptr())->tp_doc);
-                if (show_enum_members_docstring) {
+                if (show_enum_members) {
                     docstring += "\n\nMembers:";
                     dict entries = arg.attr("__entries");
                     for (const auto &kv : entries) {

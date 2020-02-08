@@ -13,7 +13,25 @@ if(NOT PYBIND11_PYTHON_VERSION)
 endif()
 
 set(Python_ADDITIONAL_VERSIONS 3.8 3.7 3.6 3.5 3.4)
-find_package(PythonLibsNew ${PYBIND11_PYTHON_VERSION} REQUIRED)
+
+# Try to get python via pgk-config, else fall back to the PythonLibsNew script.
+# When cross compiling, you need to set CMAKE_FIND_ROOT_PATH_MODE_LIBRARY to BOTH.
+find_package(PkgConfig)
+if (PkgConfig_FOUND)
+  pkg_check_modules(PYTHON3 python3) # TODO PYBIND11_PYTHON_VERSION
+  if (PYTHON3_FOUND)
+    set(PYTHON_INCLUDE_DIRS ${PYTHON3_INCLUDE_DIRS})
+    set(PYTHON_LIBRARIES ${PYTHON3_LINK_LIBRARIES})
+    set(PYTHON_MODULE_PREFIX "")
+    set(PYTHON_MODULE_EXTENSION "")
+    set(PYTHON_VERSION_MAJOR "") # TODO
+    set(PYTHON_VERSION_MINOR "") # TODO
+    message(STATUS "Python3 found via pkg-config!")
+  endif()
+endif()
+if (NOT PYTHON3_FOUND)
+  find_package(PythonLibsNew ${PYBIND11_PYTHON_VERSION} REQUIRED)
+endif()
 
 include(CheckCXXCompilerFlag)
 include(CMakeParseArguments)
