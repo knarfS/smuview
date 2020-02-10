@@ -405,8 +405,8 @@ void PlotView::on_action_save_triggered()
 		return;
 
 	// TODO
-	QSizeF size(300, 200);
-	int resolution = 85;
+	QSizeF size(300, 300);
+	int resolution = 90;
 	QwtPlotRenderer renderer;
 	renderer.renderDocument(plot_, file_name, size, resolution);
 }
