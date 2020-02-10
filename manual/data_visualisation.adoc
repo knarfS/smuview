@@ -69,8 +69,11 @@ and symbol type of the corresponding signal.
 You can add plot markers (image:numbers/4.png[4,22,22]), differential markers
 (image:numbers/5.png[5,22,22]), resize to best fit (image:numbers/6.png[6,22,22]),
 and add new signals (image:numbers/7.png[7,22,22]) to the plot via the tool bar.
+
+The plot can be saved (tool bar button image:numbers/8.png[8,22,22]) to various image formats like SVG, PDF, PNG, etc. At the moment, the image size is fixed.
+
 You can also configure the plot with the tool bar button
-image:numbers/8.png[8,22,22]: Change the plot mode (additive, rolling,
+image:numbers/9.png[9,22,22]: Change the plot mode (additive, rolling,
 oscilloscope) and change the display position of the markers info box.
 
 [[xy_plot_view]]

@@ -7,7 +7,7 @@ process incoming data and manipulate the GUI.
 [WARNING]
 Only one script can be executed at a time!
 
-You can find example scripts in the `smuscript` folder.
+You can find an API documentation https://sigrok.org/smuview_api.html[here] and example scripts in the `smuscript` folder.
 
 image::SmuScript.png[]
 

@@ -1,6 +1,6 @@
 SmuView User Manual
 ===================
-Version 0.0.4, dated 2020-01-05
+Version 0.0.4, dated 2020-02-10
 :doctype: book
 :imagesdir: ./images
 :sectnums:
