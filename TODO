@@ -21,7 +21,8 @@ ToDo
 - Implement something like ch.meanings for config keys in sigrok, so smuview known the quantity/unit of config keys.
 - Start timestamp on_update() -> device ctor -> timestamp = .0
 - Start timestamp to session
-- Use new connect/disconnet variant whenever possible
+- Use new connect/disconnet variant whenever possible.
+- Use connect(obj, SIGNAL, SIGNAL) when possible (UIProxy/UIHelper)
 - Lookup: std::atomic, std::condition_variable, std::mutex
 - Remove "const Session &session" form ui::devices::* ctors and more??
 - Maybe: In all ctors "Session &session" -> "const Session &session"
@@ -34,6 +35,22 @@ ToDo
 - Session: shared_ptr or reference?
 - Session: move init to main.cpp
 - Missing msvcr100.dll (Windows Server 2016) SmuView/PulseView
+- DeviceTree: Button for expand/close all
+- Plot: Add gradient (dY/dX) to diff marker in plot marker box
+- Plot: Movable polt marker box. Maybe not possible b/c of missing stuff in qwt?
+- Plot: Highlight polt marker and polt marker box when mouse over (near by for marker)
+- Plot: Class for marker -> qwt curve tracker playground
+- SequenceView: Handle headers (order of columns, time abs/rel) in CSV
+- SequenceView: Handle units (ms, s, h, ...) in CSV
+- PlotView: Make resolution and dpi configurable when saving as image
+- Bindings: Binding for setting the color of a plot curve
+- Bindings: Set name for new signal? e.g. f(x, y, name=nullptr)
+- Implement AnalogXYDataSignal (for python automatisation)? See scope support?
+- MonoFontDisplay/PaowerPanelView: To small for neg. values (esp. W/Ah/Wh with 6632B). B/c of the decimal point?
+- Remove LCDDisplay?
+- Reduce/Simplyfy BaseDevice name methods
+- Bindings: Implement add_math_channel()
+- Can we inherit MathChannel from UserChannel?
 
 Done
 ----
@@ -112,6 +129,7 @@ libsigrok
 - Add channel.meaning.mq, channel.meaning.mqflags, channel.meaning.unit (+channel.fixed) to PPU and load channels, to make it easy to init signals in smuview
 - Add missing units: sigrok::Unit::DECIBEL, sigrok::Unit::JOULE, sigrok::Unit::AMPEREHOUR, sigrok::Unit::COULOMB, sigrok::Unit::(HECTO)PASCAL
 - scpi-pps/hp66xxx: Return always TRUE for OVP_ENABLED
+- hp3478a: spec_digits and enc_digits are used in the wrong way!
 
 WIP
 ---

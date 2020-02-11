@@ -125,6 +125,9 @@ void MonoFontDisplay::update_value_widget_dimensions()
 {
 	// Set the widget to a fixed width, so it doesn't jump around when the
 	// length of the string is changing (e.g. minus sign).
+	// TODO: Displays are too small (not wide enough) for neg. values, esp. for
+	//       the power panel for W/Ah/Wh for the 6632B. B/c of the decimal
+	//       point?
 	QString str("");
 	size_t str_len = digits_ + 2; // digits + decimal point + sign
 	for (size_t i=0; i<str_len; ++i) {
