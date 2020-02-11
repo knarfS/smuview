@@ -39,14 +39,37 @@ CLASSES
      |      Initialize self.  See help(type(self)) for accurate signature.
      |  
      |  get_sample(...)
-     |      get_sample(self: smuview.AnalogSampleSignal, arg0: int) -> Tuple[int, float]
+     |      get_sample(self: smuview.AnalogSampleSignal, pos: int) -> Tuple[int, float]
      |      
-     |      Return the sample for the given timestamp.
+     |      Return the sample for the given position.
+     |      
+     |      Parameters
+     |      ----------
+     |      pos : int
+     |          The position/number of the sample.
+     |      
+     |      Returns
+     |      -------
+     |      Tuple[int, float]
+     |          The sample with 1. the key and 2. the sample value.
      |  
      |  push_sample(...)
-     |      push_sample(self: smuview.AnalogSampleSignal, arg0: capsule, arg1: int, arg2: int, arg3: int, arg4: int) -> None
+     |      push_sample(self: smuview.AnalogSampleSignal, sample: capsule, pos: int, unit_size: int, digits: int, decimal_places: int) -> None
      |      
      |      Push a new sample to the signal.
+     |      
+     |      Parameters
+     |      ----------
+     |      sample : float or double
+     |          The sample value.
+     |      pos : int
+     |          The key (position) of the new sample.
+     |      unit_size : int
+     |          The size of the floating point data type (float=4, double=8) for the `sample` argument.
+     |      digits : int
+     |          The total number of digits.
+     |      decimal_places : int
+     |          The number of decimal places.
      |  
      |  ----------------------------------------------------------------------
      |  Methods inherited from BaseSignal:
@@ -55,11 +78,21 @@ CLASSES
      |      name(self: smuview.BaseSignal) -> str
      |      
      |      Return the name of the signal.
+     |      
+     |      Returns
+     |      -------
+     |      str
+     |          The name of the signal.
      |  
      |  sample_count(...)
      |      sample_count(self: smuview.BaseSignal) -> int
      |      
-     |      Return the number of samples for the signal.
+     |      Return the number of samples of the signal.
+     |      
+     |      Returns
+     |      -------
+     |      int
+     |          The number of samples.
      |  
      |  ----------------------------------------------------------------------
      |  Static methods inherited from pybind11_builtins.pybind11_object:
@@ -82,19 +115,54 @@ CLASSES
      |      Initialize self.  See help(type(self)) for accurate signature.
      |  
      |  get_last_sample(...)
-     |      get_last_sample(self: smuview.AnalogTimeSignal, arg0: bool) -> Tuple[float, float]
+     |      get_last_sample(self: smuview.AnalogTimeSignal, relative_time: bool) -> Tuple[float, float]
      |      
      |      Return the last sample of the signal.
+     |      
+     |      Parameters
+     |      ----------
+     |      relative_time : bool
+     |          When true, the returned timestamp is relative to the start of the SmuView session.
+     |      
+     |      Returns
+     |      -------
+     |      Tuple[float, float]
+     |          The sample with 1. timestamp in milliseconds and 2. the sample value.
      |  
      |  get_sample(...)
-     |      get_sample(self: smuview.AnalogTimeSignal, arg0: int, arg1: bool) -> Tuple[float, float]
+     |      get_sample(self: smuview.AnalogTimeSignal, pos: int, relative_time: bool) -> Tuple[float, float]
      |      
-     |      Return the sample for the given timestamp.
+     |      Return the sample at the given position.
+     |      
+     |      Parameters
+     |      ----------
+     |      pos : int
+     |          The position/number of the sample.
+     |      relative_time : bool
+     |          When true, the returned timestamp is relative to the start of the SmuView session.
+     |      
+     |      Returns
+     |      -------
+     |      Tuple[float, float]
+     |          The sample with 1. timestamp in milliseconds and 2. the sample value.
      |  
      |  push_sample(...)
-     |      push_sample(self: smuview.AnalogTimeSignal, arg0: capsule, arg1: float, arg2: int, arg3: int, arg4: int) -> None
+     |      push_sample(self: smuview.AnalogTimeSignal, sample: capsule, timestamp: float, unit_size: int, digits: int, decimal_places: int) -> None
      |      
      |      Push a new sample to the signal.
+     |      
+     |      Parameters
+     |      ----------
+     |      sample : float or double
+     |          The sample value.
+     |      timestamp : float
+     |          The absolute timestamp in milliseconds.
+     |      unit_size : int
+     |          The size of the floating point data type (float=4, double=8) for the `sample` argument.
+     |      digits : int
+     |          The total number of digits.
+     |      decimal_places : int
+     |          The number of decimal places.
      |  
      |  ----------------------------------------------------------------------
      |  Methods inherited from BaseSignal:
@@ -103,11 +171,21 @@ CLASSES
      |      name(self: smuview.BaseSignal) -> str
      |      
      |      Return the name of the signal.
+     |      
+     |      Returns
+     |      -------
+     |      str
+     |          The name of the signal.
      |  
      |  sample_count(...)
      |      sample_count(self: smuview.BaseSignal) -> int
      |      
-     |      Return the number of samples for the signal.
+     |      Return the number of samples of the signal.
+     |      
+     |      Returns
+     |      -------
+     |      int
+     |          The number of samples.
      |  
      |  ----------------------------------------------------------------------
      |  Static methods inherited from pybind11_builtins.pybind11_object:
@@ -132,21 +210,50 @@ CLASSES
      |      actual_signal(self: smuview.BaseChannel) -> sv::data::BaseSignal
      |      
      |      Return the actual signal of the channel.
+     |      
+     |      Returns
+     |      -------
+     |      BaseSignal
+     |          The actual signal object.
      |  
      |  add_signal(...)
-     |      add_signal(self: smuview.BaseChannel, arg0: sv::data::Quantity, arg1: Set[sv::data::QuantityFlag], arg2: sv::data::Unit) -> sv::data::BaseSignal
+     |      add_signal(self: smuview.BaseChannel, quantity: sv::data::Quantity, quantity_flags: Set[sv::data::QuantityFlag], unit: sv::data::Unit) -> sv::data::BaseSignal
      |      
      |      Add a new signal to the channel.
+     |      
+     |      Parameters
+     |      ----------
+     |      quantity : Quantity
+     |          The Quantity of the new signal.
+     |      quantity_flags : Set[QuantityFlag]
+     |          The `smuview.QuantityFlag`s of the new signal.
+     |      unit : Unit
+     |          The Unit of the new signal.
+     |      
+     |      Returns
+     |      -------
+     |      BaseSignal
+     |          The new signal object.
      |  
      |  name(...)
      |      name(self: smuview.BaseChannel) -> str
      |      
      |      Return the name of the channel.
+     |      
+     |      Returns
+     |      -------
+     |      str
+     |          The name of the channel.
      |  
      |  signals(...)
      |      signals(self: smuview.BaseChannel) -> List[sv::data::BaseSignal]
      |      
      |      Return all signals of the channel.
+     |      
+     |      Returns
+     |      -------
+     |      List[BaseSignal]
+     |          All signals of the channel.
      |  
      |  ----------------------------------------------------------------------
      |  Static methods inherited from pybind11_builtins.pybind11_object:
@@ -168,29 +275,61 @@ CLASSES
      |      Initialize self.  See help(type(self)) for accurate signature.
      |  
      |  add_user_channel(...)
-     |      add_user_channel(self: smuview.BaseDevice, arg0: str, arg1: str) -> sv::channels::UserChannel
+     |      add_user_channel(self: smuview.BaseDevice, channel_name: str, channel_group_name: str) -> sv::channels::UserChannel
      |      
      |      Add a new user channel to the device.
+     |      
+     |      Parameters
+     |      ----------
+     |      channel_name : str
+     |          The name of the new user channel.
+     |      channel_group_name : str
+     |          The name of the channel group where to create the user channel. Can be empty.
+     |      
+     |      Returns
+     |      -------
+     |      UserChannel
+     |          The new user channel object.
      |  
      |  channels(...)
      |      channels(self: smuview.BaseDevice) -> Dict[str, sv::channels::BaseChannel]
      |      
      |      Return all channels of the device.
+     |      
+     |      Returns
+     |      -------
+     |      Dict[str, BaseChannel]
+     |          A Dict where the key is the id of the channel and the value is the channel object.
      |  
      |  configurables(...)
      |      configurables(self: smuview.BaseDevice) -> Dict[str, sv::devices::Configurable]
      |      
      |      Return all configurables of the device.
+     |      
+     |      Returns
+     |      -------
+     |      Dict[str, Configurable]
+     |          A Dict where the key is the id of the configurable and the value is the configurable object.
      |  
      |  id(...)
      |      id(self: smuview.BaseDevice) -> str
      |      
      |      Return the unique id of the device.
+     |      
+     |      Returns
+     |      -------
+     |      str
+     |          The id of the device.
      |  
      |  name(...)
      |      name(self: smuview.BaseDevice) -> str
      |      
      |      Return the name of the device.
+     |      
+     |      Returns
+     |      -------
+     |      str
+     |          The name of the device.
      |  
      |  ----------------------------------------------------------------------
      |  Static methods inherited from pybind11_builtins.pybind11_object:
@@ -215,11 +354,21 @@ CLASSES
      |      name(self: smuview.BaseSignal) -> str
      |      
      |      Return the name of the signal.
+     |      
+     |      Returns
+     |      -------
+     |      str
+     |          The name of the signal.
      |  
      |  sample_count(...)
      |      sample_count(self: smuview.BaseSignal) -> int
      |      
-     |      Return the number of samples for the signal.
+     |      Return the number of samples of the signal.
+     |      
+     |      Returns
+     |      -------
+     |      int
+     |          The number of samples.
      |  
      |  ----------------------------------------------------------------------
      |  Static methods inherited from pybind11_builtins.pybind11_object:
@@ -229,142 +378,6 @@ CLASSES
     
     class ConfigKey(pybind11_builtins.pybind11_object)
      |  Enum of all available config keys for controlling a device.
-     |  
-     |  Members:
-     |  
-     |    Samplerate
-     |  
-     |    CaptureRatio
-     |  
-     |    PatternMode
-     |  
-     |    RLE
-     |  
-     |    TriggerSlope
-     |  
-     |    Averaging
-     |  
-     |    AvgSamples
-     |  
-     |    TriggerSource
-     |  
-     |    HorizTriggerPos
-     |  
-     |    BufferSize
-     |  
-     |    TimeBase
-     |  
-     |    Filter
-     |  
-     |    VDiv
-     |  
-     |    Coupling
-     |  
-     |    TriggerMatch
-     |  
-     |    SampleInterval
-     |  
-     |    NumHDiv
-     |  
-     |    NumVDiv
-     |  
-     |    SplWeightFreq
-     |  
-     |    SplWeightTime
-     |  
-     |    SplMeasurementRange
-     |  
-     |    HoldMax
-     |  
-     |    HoldMin
-     |  
-     |    VoltageThreshold
-     |  
-     |    ExternalClock
-     |  
-     |    Swap
-     |  
-     |    CenterFrequency
-     |  
-     |    NumLogicChannels
-     |  
-     |    NumAnalogChannels
-     |  
-     |    Voltage
-     |  
-     |    VoltageTarget
-     |  
-     |    Current
-     |  
-     |    CurrentLimit
-     |  
-     |    Enabled
-     |  
-     |    ChannelConfig
-     |  
-     |    OverVoltageProtectionEnabled
-     |  
-     |    OverVoltageProtectionActive
-     |  
-     |    OverVoltageProtectionThreshold
-     |  
-     |    OverCurrentProtectionEnabled
-     |  
-     |    OverCurrentProtectionActive
-     |  
-     |    OverCurrentProtectionThreshold
-     |  
-     |    OverTemperatureProtectionEnabled
-     |  
-     |    OverTemperatureProtectionActive
-     |  
-     |    UnderVoltageConditionEnabled
-     |  
-     |    UnderVoltageConditionActive
-     |  
-     |    UnderVoltageConditionThreshold
-     |  
-     |    ClockEdge
-     |  
-     |    Amplitude
-     |  
-     |    Offset
-     |  
-     |    Regulation
-     |  
-     |    OutputFrequency
-     |  
-     |    OutputFrequencyTarget
-     |  
-     |    MeasuredQuantity
-     |  
-     |    EquivCircuitModel
-     |  
-     |    TriggerLevel
-     |  
-     |    ExternalClockSource
-     |  
-     |    SessionFile
-     |  
-     |    CaptureFile
-     |  
-     |    CaptureUnitSize
-     |  
-     |    PowerOff
-     |  
-     |    DataSource
-     |  
-     |    ProbeFactor
-     |  
-     |    ADCPowerlineCycles
-     |  
-     |    DataLog
-     |  
-     |    DeviceMode
-     |  
-     |    TestMode
-     |  
-     |    Unknown
      |  
      |  Method resolution order:
      |      ConfigKey
@@ -401,6 +414,8 @@ CLASSES
      |  Data descriptors defined here:
      |  
      |  __members__
+     |  
+     |  __pdoc__
      |  
      |  name
      |      (self: handle) -> str
@@ -442,6 +457,8 @@ CLASSES
      |  
      |  DeviceMode = ConfigKey.DeviceMode
      |  
+     |  Digits = ConfigKey.Digits
+     |  
      |  Enabled = ConfigKey.Enabled
      |  
      |  EquivCircuitModel = ConfigKey.EquivCircuitModel
@@ -452,11 +469,17 @@ CLASSES
      |  
      |  Filter = ConfigKey.Filter
      |  
+     |  HighResolution = ConfigKey.HighResolution
+     |  
      |  HoldMax = ConfigKey.HoldMax
      |  
      |  HoldMin = ConfigKey.HoldMin
      |  
      |  HorizTriggerPos = ConfigKey.HorizTriggerPos
+     |  
+     |  LogicThreshold = ConfigKey.LogicThreshold
+     |  
+     |  LogicThresholdCustom = ConfigKey.LogicThresholdCustom
      |  
      |  MeasuredQuantity = ConfigKey.MeasuredQuantity
      |  
@@ -492,11 +515,15 @@ CLASSES
      |  
      |  PatternMode = ConfigKey.PatternMode
      |  
+     |  PeakDetection = ConfigKey.PeakDetection
+     |  
      |  PowerOff = ConfigKey.PowerOff
      |  
      |  ProbeFactor = ConfigKey.ProbeFactor
      |  
      |  RLE = ConfigKey.RLE
+     |  
+     |  Range = ConfigKey.Range
      |  
      |  Regulation = ConfigKey.Regulation
      |  
@@ -521,6 +548,8 @@ CLASSES
      |  TriggerLevel = ConfigKey.TriggerLevel
      |  
      |  TriggerMatch = ConfigKey.TriggerMatch
+     |  
+     |  TriggerPattern = ConfigKey.TriggerPattern
      |  
      |  TriggerSlope = ConfigKey.TriggerSlope
      |  
@@ -549,7 +578,7 @@ CLASSES
      |      Create and return a new object.  See help(type) for accurate signature.
     
     class Configurable(pybind11_builtins.pybind11_object)
-     |  A configurable for controlling a device via the config keys.
+     |  A configurable for controlling a device with config keys.
      |  
      |  Method resolution order:
      |      Configurable
@@ -565,54 +594,144 @@ CLASSES
      |      get_config(*args, **kwargs)
      |      Overloaded function.
      |      
-     |      1. get_config(self: smuview.Configurable, arg0: sv::devices::ConfigKey, arg1: bool) -> None
+     |      1. get_config(self: smuview.Configurable, config_key: sv::devices::ConfigKey) -> bool
      |      
      |      Return a boolean value from the given config key.
      |      
-     |      2. get_config(self: smuview.Configurable, arg0: sv::devices::ConfigKey, arg1: int) -> None
+     |      Parameters
+     |      ----------
+     |      config_key : ConfigKey
+     |          The config key.
+     |      
+     |      Returns
+     |      -------
+     |      bool
+     |          The bool value of the config key.
+     |      
+     |      2. get_config(self: smuview.Configurable, config_key: sv::devices::ConfigKey) -> int
      |      
      |      Return an integer value from the given config key.
      |      
-     |      3. get_config(self: smuview.Configurable, arg0: sv::devices::ConfigKey, arg1: int) -> None
+     |      Parameters
+     |      ----------
+     |      config_key : ConfigKey
+     |          The config key.
+     |      
+     |      Returns
+     |      -------
+     |      int
+     |          The int value of the config key.
+     |      
+     |      3. get_config(self: smuview.Configurable, config_key: sv::devices::ConfigKey) -> int
      |      
      |      Return an unsigned integer value from the given config key.
      |      
-     |      4. get_config(self: smuview.Configurable, arg0: sv::devices::ConfigKey, arg1: float) -> None
+     |      Parameters
+     |      ----------
+     |      config_key : ConfigKey
+     |          The config key.
+     |      
+     |      Returns
+     |      -------
+     |      int
+     |          The (unsigned) int value of the config key.
+     |      
+     |      4. get_config(self: smuview.Configurable, config_key: sv::devices::ConfigKey) -> float
      |      
      |      Return a double value from the given config key.
      |      
-     |      5. get_config(self: smuview.Configurable, arg0: sv::devices::ConfigKey, arg1: str) -> None
+     |      Parameters
+     |      ----------
+     |      config_key : ConfigKey
+     |          The config key.
+     |      
+     |      Returns
+     |      -------
+     |      float
+     |          The float value of the config key.
+     |      
+     |      5. get_config(self: smuview.Configurable, config_key: sv::devices::ConfigKey) -> str
      |      
      |      Return a string value from the given config key.
+     |      
+     |      Parameters
+     |      ----------
+     |      config_key : ConfigKey
+     |          The config key.
+     |      
+     |      Returns
+     |      -------
+     |      str
+     |          The string value of the config key.
      |  
      |  name(...)
      |      name(self: smuview.Configurable) -> str
      |      
      |      Return the name of the configurable.
+     |      
+     |      Returns
+     |      -------
+     |      str
+     |          The name of the configurable.
      |  
      |  set_config(...)
      |      set_config(*args, **kwargs)
      |      Overloaded function.
      |      
-     |      1. set_config(self: smuview.Configurable, arg0: sv::devices::ConfigKey, arg1: bool) -> None
+     |      1. set_config(self: smuview.Configurable, config_key: sv::devices::ConfigKey, value: bool) -> None
      |      
      |      Set a boolean value to the given config key.
      |      
-     |      2. set_config(self: smuview.Configurable, arg0: sv::devices::ConfigKey, arg1: int) -> None
+     |      Parameters
+     |      ----------
+     |      config_key : ConfigKey
+     |          The config key.
+     |      value : bool
+     |          The bool value to set.
+     |      
+     |      2. set_config(self: smuview.Configurable, config_key: sv::devices::ConfigKey, value: int) -> None
      |      
      |      Set an integer value to the given config key.
      |      
-     |      3. set_config(self: smuview.Configurable, arg0: sv::devices::ConfigKey, arg1: int) -> None
+     |      Parameters
+     |      ----------
+     |      config_key : ConfigKey
+     |          The config key.
+     |      value : int
+     |          The int value to set.
+     |      
+     |      3. set_config(self: smuview.Configurable, config_key: sv::devices::ConfigKey, value: int) -> None
      |      
      |      Set an unsigned integer value to the given config key.
      |      
-     |      4. set_config(self: smuview.Configurable, arg0: sv::devices::ConfigKey, arg1: float) -> None
+     |      Parameters
+     |      ----------
+     |      config_key : ConfigKey
+     |          The config key.
+     |      value : int
+     |          The (unsigned) int value to set.
+     |      
+     |      4. set_config(self: smuview.Configurable, config_key: sv::devices::ConfigKey, value: float) -> None
      |      
      |      Set a double value to the given config key.
      |      
-     |      5. set_config(self: smuview.Configurable, arg0: sv::devices::ConfigKey, arg1: str) -> None
+     |      Parameters
+     |      ----------
+     |      config_key : ConfigKey
+     |          The config key.
+     |      value : float
+     |          The float value to set.
+     |      
+     |      5. set_config(self: smuview.Configurable, config_key: sv::devices::ConfigKey, value: str) -> None
      |      
      |      Set a string value to the given config key.
+     |      
+     |      Parameters
+     |      ----------
+     |      config_key : ConfigKey
+     |          The config key.
+     |      value : str
+     |          The string value to set.
      |  
      |  ----------------------------------------------------------------------
      |  Static methods inherited from pybind11_builtins.pybind11_object:
@@ -622,16 +741,6 @@ CLASSES
     
     class DockArea(pybind11_builtins.pybind11_object)
      |  Enum of all possible docking locations for a view.
-     |  
-     |  Members:
-     |  
-     |    LeftDocktArea
-     |  
-     |    RightDockArea
-     |  
-     |    TopDockArea
-     |  
-     |    BottomDockArea
      |  
      |  Method resolution order:
      |      DockArea
@@ -668,6 +777,8 @@ CLASSES
      |  Data descriptors defined here:
      |  
      |  __members__
+     |  
+     |  __pdoc__
      |  
      |  name
      |      (self: handle) -> str
@@ -710,21 +821,50 @@ CLASSES
      |      actual_signal(self: smuview.BaseChannel) -> sv::data::BaseSignal
      |      
      |      Return the actual signal of the channel.
+     |      
+     |      Returns
+     |      -------
+     |      BaseSignal
+     |          The actual signal object.
      |  
      |  add_signal(...)
-     |      add_signal(self: smuview.BaseChannel, arg0: sv::data::Quantity, arg1: Set[sv::data::QuantityFlag], arg2: sv::data::Unit) -> sv::data::BaseSignal
+     |      add_signal(self: smuview.BaseChannel, quantity: sv::data::Quantity, quantity_flags: Set[sv::data::QuantityFlag], unit: sv::data::Unit) -> sv::data::BaseSignal
      |      
      |      Add a new signal to the channel.
+     |      
+     |      Parameters
+     |      ----------
+     |      quantity : Quantity
+     |          The Quantity of the new signal.
+     |      quantity_flags : Set[QuantityFlag]
+     |          The `smuview.QuantityFlag`s of the new signal.
+     |      unit : Unit
+     |          The Unit of the new signal.
+     |      
+     |      Returns
+     |      -------
+     |      BaseSignal
+     |          The new signal object.
      |  
      |  name(...)
      |      name(self: smuview.BaseChannel) -> str
      |      
      |      Return the name of the channel.
+     |      
+     |      Returns
+     |      -------
+     |      str
+     |          The name of the channel.
      |  
      |  signals(...)
      |      signals(self: smuview.BaseChannel) -> List[sv::data::BaseSignal]
      |      
      |      Return all signals of the channel.
+     |      
+     |      Returns
+     |      -------
+     |      List[BaseSignal]
+     |          All signals of the channel.
      |  
      |  ----------------------------------------------------------------------
      |  Static methods inherited from pybind11_builtins.pybind11_object:
@@ -750,29 +890,61 @@ CLASSES
      |  Methods inherited from BaseDevice:
      |  
      |  add_user_channel(...)
-     |      add_user_channel(self: smuview.BaseDevice, arg0: str, arg1: str) -> sv::channels::UserChannel
+     |      add_user_channel(self: smuview.BaseDevice, channel_name: str, channel_group_name: str) -> sv::channels::UserChannel
      |      
      |      Add a new user channel to the device.
+     |      
+     |      Parameters
+     |      ----------
+     |      channel_name : str
+     |          The name of the new user channel.
+     |      channel_group_name : str
+     |          The name of the channel group where to create the user channel. Can be empty.
+     |      
+     |      Returns
+     |      -------
+     |      UserChannel
+     |          The new user channel object.
      |  
      |  channels(...)
      |      channels(self: smuview.BaseDevice) -> Dict[str, sv::channels::BaseChannel]
      |      
      |      Return all channels of the device.
+     |      
+     |      Returns
+     |      -------
+     |      Dict[str, BaseChannel]
+     |          A Dict where the key is the id of the channel and the value is the channel object.
      |  
      |  configurables(...)
      |      configurables(self: smuview.BaseDevice) -> Dict[str, sv::devices::Configurable]
      |      
      |      Return all configurables of the device.
+     |      
+     |      Returns
+     |      -------
+     |      Dict[str, Configurable]
+     |          A Dict where the key is the id of the configurable and the value is the configurable object.
      |  
      |  id(...)
      |      id(self: smuview.BaseDevice) -> str
      |      
      |      Return the unique id of the device.
+     |      
+     |      Returns
+     |      -------
+     |      str
+     |          The id of the device.
      |  
      |  name(...)
      |      name(self: smuview.BaseDevice) -> str
      |      
      |      Return the name of the device.
+     |      
+     |      Returns
+     |      -------
+     |      str
+     |          The name of the device.
      |  
      |  ----------------------------------------------------------------------
      |  Static methods inherited from pybind11_builtins.pybind11_object:
@@ -781,7 +953,7 @@ CLASSES
      |      Create and return a new object.  See help(type) for accurate signature.
     
     class PyStreamBuf(pybind11_builtins.pybind11_object)
-     |  Redirect Python output to SmuView console.
+     |  Redirect Python output to SmuView console. This class is for internal SmuView use only!
      |  
      |  Method resolution order:
      |      PyStreamBuf
@@ -819,7 +991,7 @@ CLASSES
      |      Always return False.
      |  
      |  read(...)
-     |      read(self: smuview.PyStreamBuf, arg0: int) -> str
+     |      read(self: smuview.PyStreamBuf, size: int) -> str
      |      
      |      Raises an OSError, because PyStreamBuf is write only.
      |  
@@ -829,17 +1001,17 @@ CLASSES
      |      Always return False.
      |  
      |  readline(...)
-     |      readline(self: smuview.PyStreamBuf, arg0: int) -> str
+     |      readline(self: smuview.PyStreamBuf, size: int) -> str
      |      
      |      Raises an OSError, because PyStreamBuf is write only.
      |  
      |  readlines(...)
-     |      readlines(self: smuview.PyStreamBuf, arg0: int) -> List[str]
+     |      readlines(self: smuview.PyStreamBuf, hint: int) -> List[str]
      |      
      |      Raises an OSError, because PyStreamBuf is write only.
      |  
      |  seek(...)
-     |      seek(self: smuview.PyStreamBuf, arg0: int, arg1: int) -> int
+     |      seek(self: smuview.PyStreamBuf, offset: int, whence: int) -> int
      |      
      |      Raises an OSError, because PyStreamBuf is not seekable.
      |  
@@ -854,7 +1026,7 @@ CLASSES
      |      Raises an OSError, because PyStreamBuf is not seekable.
      |  
      |  truncate(...)
-     |      truncate(self: smuview.PyStreamBuf, arg0: int) -> int
+     |      truncate(self: smuview.PyStreamBuf, size: int) -> int
      |      
      |      Raises an OSError, because PyStreamBuf is not seekable.
      |  
@@ -864,12 +1036,12 @@ CLASSES
      |      Always return True.
      |  
      |  write(...)
-     |      write(self: smuview.PyStreamBuf, arg0: str) -> int
+     |      write(self: smuview.PyStreamBuf, s: str) -> int
      |      
      |      Write the string s to the stream and return the number of characters written.
      |  
      |  writelines(...)
-     |      writelines(self: smuview.PyStreamBuf, arg0: List[str]) -> None
+     |      writelines(self: smuview.PyStreamBuf, lines: List[str]) -> None
      |      
      |      Write a list of lines to the stream.
      |  
@@ -893,80 +1065,6 @@ CLASSES
     
     class Quantity(pybind11_builtins.pybind11_object)
      |  Enum of all available quantities.
-     |  
-     |  Members:
-     |  
-     |    Voltage
-     |  
-     |    Current
-     |  
-     |    Resistance
-     |  
-     |    Capacitance
-     |  
-     |    Temperature
-     |  
-     |    Frequency
-     |  
-     |    DutyCyle
-     |  
-     |    Continuity
-     |  
-     |    PulseWidth
-     |  
-     |    Conductance
-     |  
-     |    Power
-     |  
-     |    Work
-     |  
-     |    ElectricCharge
-     |  
-     |    Gain
-     |  
-     |    SoundPressureLevel
-     |  
-     |    CarbonMonoxide
-     |  
-     |    RelativeHumidity
-     |  
-     |    Time
-     |  
-     |    WindSpeed
-     |  
-     |    Pressure
-     |  
-     |    ParallelInductance
-     |  
-     |    ParallelCapacitance
-     |  
-     |    ParallelResistance
-     |  
-     |    SeriesInductance
-     |  
-     |    SeriesCapacitance
-     |  
-     |    SeriesResistance
-     |  
-     |    DissipationFactor
-     |  
-     |    QualityFactor
-     |  
-     |    PhaseAngle
-     |  
-     |    Difference
-     |  
-     |    Count
-     |  
-     |    PowerFactor
-     |  
-     |    ApparentPower
-     |  
-     |    Mass
-     |  
-     |    HarmonicRatio
-     |  
-     |    Unknown
      |  
      |  Method resolution order:
      |      Quantity
@@ -1003,6 +1101,8 @@ CLASSES
      |  Data descriptors defined here:
      |  
      |  __members__
+     |  
+     |  __pdoc__
      |  
      |  name
      |      (self: handle) -> str
@@ -1091,54 +1191,6 @@ CLASSES
     class QuantityFlag(pybind11_builtins.pybind11_object)
      |  Enum of all available quantity flags.
      |  
-     |  Members:
-     |  
-     |    AC
-     |  
-     |    DC
-     |  
-     |    RMS
-     |  
-     |    Diode
-     |  
-     |    Hold
-     |  
-     |    Max
-     |  
-     |    Min
-     |  
-     |    Autorange
-     |  
-     |    Relative
-     |  
-     |    SplFreqWeightA
-     |  
-     |    SplFreqWeightC
-     |  
-     |    SplFreqWeightZ
-     |  
-     |    SplFreqWeightFlat
-     |  
-     |    SplTimeWeightS
-     |  
-     |    SplTimeWeightF
-     |  
-     |    SplLAT
-     |  
-     |    SplPctOverAlarm
-     |  
-     |    Duration
-     |  
-     |    Avg
-     |  
-     |    Reference
-     |  
-     |    Unstable
-     |  
-     |    FourWire
-     |  
-     |    Unknown
-     |  
      |  Method resolution order:
      |      QuantityFlag
      |      pybind11_builtins.pybind11_object
@@ -1174,6 +1226,8 @@ CLASSES
      |  Data descriptors defined here:
      |  
      |  __members__
+     |  
+     |  __pdoc__
      |  
      |  name
      |      (self: handle) -> str
@@ -1234,7 +1288,7 @@ CLASSES
      |      Create and return a new object.  See help(type) for accurate signature.
     
     class Session(pybind11_builtins.pybind11_object)
-     |  The SmuView session class for accessing the actual state of the application.
+     |  The SmuView `Session` class for accessing the actual state of the application.
      |  
      |  Method resolution order:
      |      Session
@@ -1249,17 +1303,37 @@ CLASSES
      |  add_user_device(...)
      |      add_user_device(self: smuview.Session) -> sv::devices::UserDevice
      |      
-     |      Create and connect a new user device.
+     |      Create a new user device.
+     |      
+     |      Returns
+     |      -------
+     |      UserDevice
+     |          The created user device object.
      |  
      |  connect_device(...)
-     |      connect_device(self: smuview.Session, arg0: str) -> List[sv::devices::HardwareDevice]
+     |      connect_device(self: smuview.Session, conn_str: str) -> List[sv::devices::HardwareDevice]
      |      
      |      Connect a new device.
+     |      
+     |      Parameters
+     |      ----------
+     |      conn_str : str
+     |          The connection string. See https://sigrok.org/wiki/Connection_parameters
+     |      
+     |      Returns
+     |      -------
+     |      List[HardwareDevice]
+     |          A List with the newly connected device objects.
      |  
      |  devices(...)
      |      devices(self: smuview.Session) -> Dict[str, sv::devices::BaseDevice]
      |      
      |      Return all connected devices.
+     |      
+     |      Returns
+     |      -------
+     |      Dict[str, BaseDevice]
+     |          A Dict where the key is the device id and the value is the device object.
      |  
      |  ----------------------------------------------------------------------
      |  Static methods inherited from pybind11_builtins.pybind11_object:
@@ -1281,67 +1355,217 @@ CLASSES
      |      Initialize self.  See help(type(self)) for accurate signature.
      |  
      |  add_control_view(...)
-     |      add_control_view(self: smuview.UiProxy, arg0: str, arg1: Qt::DockWidgetArea, arg2: smuview.Configurable) -> str
+     |      add_control_view(self: smuview.UiProxy, device_id: str, area: Qt::DockWidgetArea, configurable: smuview.Configurable) -> str
      |      
      |      Add a control view for a configurable to the given tab.
+     |      
+     |      Parameters
+     |      ----------
+     |      device_id : str
+     |          The id (device id) of the tab.
+     |      area : DockArea
+     |          Where to put the new view.
+     |      configurable : Configurable
+     |          The configurable object.
+     |      
+     |      Returns
+     |      -------
+     |      str
+     |          The id of the new view.
      |  
      |  add_data_view(...)
-     |      add_data_view(self: smuview.UiProxy, arg0: str, arg1: Qt::DockWidgetArea, arg2: smuview.AnalogTimeSignal) -> str
+     |      add_data_view(self: smuview.UiProxy, device_id: str, area: Qt::DockWidgetArea, signal: smuview.AnalogTimeSignal) -> str
      |      
      |      Add a data view for a signal to the given tab.
+     |      
+     |      Parameters
+     |      ----------
+     |      device_id : str
+     |          The id (device id) of the tab.
+     |      area : DockArea
+     |          Where to put the new view.
+     |      signal : AnalogTimeSignal
+     |          The signal object.
+     |      
+     |      Returns
+     |      -------
+     |      str
+     |          The id of the new view.
      |  
      |  add_device_tab(...)
-     |      add_device_tab(self: smuview.UiProxy, arg0: smuview.BaseDevice) -> None
+     |      add_device_tab(self: smuview.UiProxy, device: smuview.BaseDevice) -> None
      |      
-     |      Add a device tab to the UI.
+     |      Add a device tab with standard view for a device to the UI.
+     |      
+     |      Parameters
+     |      ----------
+     |      device : BaseDevice
+     |          The device object.
      |  
      |  add_plot_view(...)
      |      add_plot_view(*args, **kwargs)
      |      Overloaded function.
      |      
-     |      1. add_plot_view(self: smuview.UiProxy, arg0: str, arg1: Qt::DockWidgetArea, arg2: smuview.BaseChannel) -> str
+     |      1. add_plot_view(self: smuview.UiProxy, device_id: str, area: Qt::DockWidgetArea, channel: smuview.BaseChannel) -> str
      |      
      |      Add a time plot view for a channel to the given tab.
      |      
-     |      2. add_plot_view(self: smuview.UiProxy, arg0: str, arg1: Qt::DockWidgetArea, arg2: smuview.AnalogTimeSignal) -> str
+     |      Parameters
+     |      ----------
+     |      device_id : str
+     |          The id (device id) of the tab.
+     |      area : DockArea
+     |          Where to put the new view.
+     |      channel : BaseChannel
+     |          The channel object.
+     |      
+     |      Returns
+     |      -------
+     |      str
+     |          The id of the new view.
+     |      
+     |      2. add_plot_view(self: smuview.UiProxy, device_id: str, area: Qt::DockWidgetArea, signal: smuview.AnalogTimeSignal) -> str
      |      
      |      Add a time plot view for a signal to the given tab.
      |      
-     |      3. add_plot_view(self: smuview.UiProxy, arg0: str, arg1: Qt::DockWidgetArea, arg2: smuview.AnalogTimeSignal, arg3: smuview.AnalogTimeSignal) -> str
+     |      Parameters
+     |      ----------
+     |      device_id : str
+     |          The id (device id) of the tab.
+     |      area : DockArea
+     |          Where to put the new view.
+     |      signal : AnalogTimeSignal
+     |          The signal object.
+     |      
+     |      Returns
+     |      -------
+     |      str
+     |          The id of the new view.
+     |      
+     |      3. add_plot_view(self: smuview.UiProxy, device_id: str, area: Qt::DockWidgetArea, x_signal: smuview.AnalogTimeSignal, y_signal: smuview.AnalogTimeSignal) -> str
      |      
      |      Add a x/y plot view for two signals to the given tab.
+     |      
+     |      Parameters
+     |      ----------
+     |      device_id : str
+     |          The id (device id) of the tab.
+     |      area : DockArea
+     |          Where to put the new view.
+     |      x_signal : AnalogTimeSignal
+     |          The x signal object.
+     |      y_signal : AnalogTimeSignal
+     |          The y signal object.
+     |      
+     |      Returns
+     |      -------
+     |      str
+     |          The id of the new view.
      |  
      |  add_power_panel_view(...)
-     |      add_power_panel_view(self: smuview.UiProxy, arg0: str, arg1: Qt::DockWidgetArea, arg2: smuview.AnalogTimeSignal, arg3: smuview.AnalogTimeSignal) -> str
+     |      add_power_panel_view(self: smuview.UiProxy, device_id: str, area: Qt::DockWidgetArea, voltage_signal: smuview.AnalogTimeSignal, current_signal: smuview.AnalogTimeSignal) -> str
      |      
-     |      Add a power panel control for two signals to the given tab.
+     |      Add a power panel view for a voltage and a current signal to the given tab.
+     |      
+     |      Parameters
+     |      ----------
+     |      device_id : str
+     |          The id (device id) of the tab.
+     |      area : DockArea
+     |          Where to put the new view.
+     |      voltage_signal : AnalogTimeSignal
+     |          The voltage signal object.
+     |      current_signal : AnalogTimeSignal
+     |          The current signal object.
+     |      
+     |      Returns
+     |      -------
+     |      str
+     |          The id of the new view.
      |  
      |  add_signal_to_data_view(...)
-     |      add_signal_to_data_view(self: smuview.UiProxy, arg0: str, arg1: str, arg2: smuview.AnalogTimeSignal) -> None
+     |      add_signal_to_data_view(self: smuview.UiProxy, device_id: str, view_id: str, signal: smuview.AnalogTimeSignal) -> None
      |      
      |      Add a signal to the given data view.
+     |      
+     |      Parameters
+     |      ----------
+     |      device_id : str
+     |          The id (device id) of the tab.
+     |      view_id : str
+     |          The id of the data view.
+     |      signal : AnalogTimeSignal
+     |          The signal object.
      |  
      |  add_signal_to_plot_view(...)
-     |      add_signal_to_plot_view(self: smuview.UiProxy, arg0: str, arg1: str, arg2: smuview.AnalogTimeSignal) -> None
+     |      add_signal_to_plot_view(self: smuview.UiProxy, device_id: str, view_id: str, signal: smuview.AnalogTimeSignal) -> None
      |      
      |      Add a signal to the given plot view. If the plot is a x/y plot, the signal will be added as a new y signal.
+     |      
+     |      Parameters
+     |      ----------
+     |      device_id : str
+     |          The id (device id) of the tab.
+     |      view_id : str
+     |          The id of the plot view.
+     |      signal : AnalogTimeSignal
+     |          The signal object.
      |  
      |  add_signals_to_xy_plot_view(...)
-     |      add_signals_to_xy_plot_view(self: smuview.UiProxy, arg0: str, arg1: str, arg2: smuview.AnalogTimeSignal, arg3: smuview.AnalogTimeSignal) -> None
+     |      add_signals_to_xy_plot_view(self: smuview.UiProxy, device_id: str, view_id: str, x_signal: smuview.AnalogTimeSignal, y_signal: smuview.AnalogTimeSignal) -> None
      |      
      |      Add x/y signals to the given x/y plot view.
+     |      
+     |      Parameters
+     |      ----------
+     |      device_id : str
+     |          The id (device id) of the tab.
+     |      view_id : str
+     |          The id of the plot view.
+     |      x_signal : AnalogTimeSignal
+     |          The x signal object.
+     |      y_signal : AnalogTimeSignal
+     |          The y signal object.
      |  
      |  add_value_panel_view(...)
      |      add_value_panel_view(*args, **kwargs)
      |      Overloaded function.
      |      
-     |      1. add_value_panel_view(self: smuview.UiProxy, arg0: str, arg1: Qt::DockWidgetArea, arg2: smuview.BaseChannel) -> str
+     |      1. add_value_panel_view(self: smuview.UiProxy, device_id: str, area: Qt::DockWidgetArea, channel: smuview.BaseChannel) -> str
      |      
      |      Add a value panel view for a channel to the given tab.
      |      
-     |      2. add_value_panel_view(self: smuview.UiProxy, arg0: str, arg1: Qt::DockWidgetArea, arg2: smuview.AnalogTimeSignal) -> str
+     |      Parameters
+     |      ----------
+     |      device_id : str
+     |          The id (device id) of the tab.
+     |      area : DockArea
+     |          Where to put the new view.
+     |      channel : BaseChannel
+     |          The channel object.
+     |      
+     |      Returns
+     |      -------
+     |      str
+     |          The id of the new view.
+     |      
+     |      2. add_value_panel_view(self: smuview.UiProxy, device_id: str, area: Qt::DockWidgetArea, signal: smuview.AnalogTimeSignal) -> str
      |      
      |      Add a value panel view for a signal to the given tab.
+     |      
+     |      Parameters
+     |      ----------
+     |      device_id : str
+     |          The id (device id) of the tab.
+     |      area : DockArea
+     |          Where to put the new view.
+     |      signal : AnalogTimeSignal
+     |          The signal object.
+     |      
+     |      Returns
+     |      -------
+     |      str
+     |          The id of the new view.
      |  
      |  ----------------------------------------------------------------------
      |  Static methods inherited from pybind11_builtins.pybind11_object:
@@ -1351,92 +1575,6 @@ CLASSES
     
     class Unit(pybind11_builtins.pybind11_object)
      |  Enum of all available units.
-     |  
-     |  Members:
-     |  
-     |    Volt
-     |  
-     |    Ampere
-     |  
-     |    Ohm
-     |  
-     |    Farad
-     |  
-     |    Kelvin
-     |  
-     |    Celsius
-     |  
-     |    Fahrenheit
-     |  
-     |    Hertz
-     |  
-     |    Percentage
-     |  
-     |    Boolean
-     |  
-     |    Second
-     |  
-     |    Siemens
-     |  
-     |    DecibelMW
-     |  
-     |    DecibelVolt
-     |  
-     |    Decibel
-     |  
-     |    Unitless
-     |  
-     |    DecibelSpl
-     |  
-     |    Concentration
-     |  
-     |    RevolutionsPerMinute
-     |  
-     |    VoltAmpere
-     |  
-     |    Watt
-     |  
-     |    WattHour
-     |  
-     |    Joule
-     |  
-     |    AmpereHour
-     |  
-     |    Coulomb
-     |  
-     |    MeterPerSecond
-     |  
-     |    HectoPascal
-     |  
-     |    Humidity293K
-     |  
-     |    Degree
-     |  
-     |    Henry
-     |  
-     |    Gram
-     |  
-     |    Carat
-     |  
-     |    Ounce
-     |  
-     |    TroyOunce
-     |  
-     |    Pound
-     |  
-     |    Pennyweight
-     |  
-     |    Grain
-     |  
-     |    Tael
-     |  
-     |    Momme
-     |  
-     |    Tola
-     |  
-     |    Piece
-     |  
-     |    Unknown
      |  
      |  Method resolution order:
      |      Unit
@@ -1473,6 +1611,8 @@ CLASSES
      |  Data descriptors defined here:
      |  
      |  __members__
+     |  
+     |  __pdoc__
      |  
      |  name
      |      (self: handle) -> str
@@ -1585,7 +1725,26 @@ CLASSES
      |      Initialize self.  See help(type(self)) for accurate signature.
      |  
      |  push_sample(...)
-     |      push_sample(self: smuview.UserChannel, arg0: float, arg1: float, arg2: sv::data::Quantity, arg3: Set[sv::data::QuantityFlag], arg4: sv::data::Unit, arg5: int, arg6: int) -> None
+     |      push_sample(self: smuview.UserChannel, sample: float, timestamp: float, quantity: sv::data::Quantity, quantity_flags: Set[sv::data::QuantityFlag], unit: sv::data::Unit, digits: int, decimal_places: int) -> None
+     |      
+     |      Push a single sample to the channel.
+     |      
+     |      Parameters
+     |      ----------
+     |      sample : float
+     |          The sample value.
+     |      timestamp : float
+     |          The absolute timestamp in milliseconds.
+     |      quantity : Quantity
+     |          The Quantity of the new signal.
+     |      quantity_flags : Set[QuantityFlag]
+     |          The QuantityFlags of the new signal.
+     |      unit : Unit
+     |          The Unit of the new signal.
+     |      digits : int
+     |          The total number of digits.
+     |      decimal_places : int
+     |          The number of decimal places.
      |  
      |  ----------------------------------------------------------------------
      |  Methods inherited from BaseChannel:
@@ -1594,21 +1753,50 @@ CLASSES
      |      actual_signal(self: smuview.BaseChannel) -> sv::data::BaseSignal
      |      
      |      Return the actual signal of the channel.
+     |      
+     |      Returns
+     |      -------
+     |      BaseSignal
+     |          The actual signal object.
      |  
      |  add_signal(...)
-     |      add_signal(self: smuview.BaseChannel, arg0: sv::data::Quantity, arg1: Set[sv::data::QuantityFlag], arg2: sv::data::Unit) -> sv::data::BaseSignal
+     |      add_signal(self: smuview.BaseChannel, quantity: sv::data::Quantity, quantity_flags: Set[sv::data::QuantityFlag], unit: sv::data::Unit) -> sv::data::BaseSignal
      |      
      |      Add a new signal to the channel.
+     |      
+     |      Parameters
+     |      ----------
+     |      quantity : Quantity
+     |          The Quantity of the new signal.
+     |      quantity_flags : Set[QuantityFlag]
+     |          The `smuview.QuantityFlag`s of the new signal.
+     |      unit : Unit
+     |          The Unit of the new signal.
+     |      
+     |      Returns
+     |      -------
+     |      BaseSignal
+     |          The new signal object.
      |  
      |  name(...)
      |      name(self: smuview.BaseChannel) -> str
      |      
      |      Return the name of the channel.
+     |      
+     |      Returns
+     |      -------
+     |      str
+     |          The name of the channel.
      |  
      |  signals(...)
      |      signals(self: smuview.BaseChannel) -> List[sv::data::BaseSignal]
      |      
      |      Return all signals of the channel.
+     |      
+     |      Returns
+     |      -------
+     |      List[BaseSignal]
+     |          All signals of the channel.
      |  
      |  ----------------------------------------------------------------------
      |  Static methods inherited from pybind11_builtins.pybind11_object:
@@ -1617,7 +1805,7 @@ CLASSES
      |      Create and return a new object.  See help(type) for accurate signature.
     
     class UserDevice(BaseDevice)
-     |  An user generated (dummy) device for storing custom data and showing a custom tab.
+     |  An user generated (virtual) device for storing custom data and showing a custom tab.
      |  
      |  Method resolution order:
      |      UserDevice
@@ -1634,29 +1822,61 @@ CLASSES
      |  Methods inherited from BaseDevice:
      |  
      |  add_user_channel(...)
-     |      add_user_channel(self: smuview.BaseDevice, arg0: str, arg1: str) -> sv::channels::UserChannel
+     |      add_user_channel(self: smuview.BaseDevice, channel_name: str, channel_group_name: str) -> sv::channels::UserChannel
      |      
      |      Add a new user channel to the device.
+     |      
+     |      Parameters
+     |      ----------
+     |      channel_name : str
+     |          The name of the new user channel.
+     |      channel_group_name : str
+     |          The name of the channel group where to create the user channel. Can be empty.
+     |      
+     |      Returns
+     |      -------
+     |      UserChannel
+     |          The new user channel object.
      |  
      |  channels(...)
      |      channels(self: smuview.BaseDevice) -> Dict[str, sv::channels::BaseChannel]
      |      
      |      Return all channels of the device.
+     |      
+     |      Returns
+     |      -------
+     |      Dict[str, BaseChannel]
+     |          A Dict where the key is the id of the channel and the value is the channel object.
      |  
      |  configurables(...)
      |      configurables(self: smuview.BaseDevice) -> Dict[str, sv::devices::Configurable]
      |      
      |      Return all configurables of the device.
+     |      
+     |      Returns
+     |      -------
+     |      Dict[str, Configurable]
+     |          A Dict where the key is the id of the configurable and the value is the configurable object.
      |  
      |  id(...)
      |      id(self: smuview.BaseDevice) -> str
      |      
      |      Return the unique id of the device.
+     |      
+     |      Returns
+     |      -------
+     |      str
+     |          The id of the device.
      |  
      |  name(...)
      |      name(self: smuview.BaseDevice) -> str
      |      
      |      Return the name of the device.
+     |      
+     |      Returns
+     |      -------
+     |      str
+     |          The name of the device.
      |  
      |  ----------------------------------------------------------------------
      |  Static methods inherited from pybind11_builtins.pybind11_object:
