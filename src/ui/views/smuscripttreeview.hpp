@@ -22,6 +22,7 @@
 
 #include <QAction>
 #include <QFileSystemModel>
+#include <QModelIndex>
 #include <QString>
 #include <QToolBar>
 #include <QTreeView>
@@ -57,11 +58,13 @@ private:
 	void setup_toolbar();
 	void connect_signals();
 	void scroll_to_script_dir();
+	void open_script_file(const QModelIndex& index);
 
 private Q_SLOTS:
 	void on_action_new_script_triggered();
 	void on_action_open_script_triggered();
 	void on_action_run_script_triggered();
+	void on_tree_double_clicked(const QModelIndex& index);
 	void on_script_started();
 	void on_script_finished();
 

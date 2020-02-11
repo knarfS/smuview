@@ -21,6 +21,7 @@
 
 #include <QAbstractItemView>
 #include <QAction>
+#include <QFileInfo>
 #include <QDebug>
 #include <QFileSystemModel>
 #include <QMessageBox>
@@ -133,6 +134,9 @@ void SmuScriptTreeView::setup_toolbar()
 
 void SmuScriptTreeView::connect_signals()
 {
+	connect(file_system_tree_, &QTreeView::doubleClicked,
+		this, &SmuScriptTreeView::on_tree_double_clicked);
+
 	connect(session_.smu_script_runner().get(), &python::SmuScriptRunner::script_started,
 		this, &SmuScriptTreeView::on_script_started);
 	connect(session_.smu_script_runner().get(), &python::SmuScriptRunner::script_finished,
@@ -145,6 +149,21 @@ void SmuScriptTreeView::scroll_to_script_dir()
 	file_system_tree_->scrollTo(script_path_index, QAbstractItemView::PositionAtTop);
 }
 
+void SmuScriptTreeView::open_script_file(const QModelIndex &index)
+{
+	if (!index.isValid())
+		return;
+
+	QFileInfo file_info = file_system_model_->fileInfo(index);
+	if (!file_info.isFile())
+		return;
+	if (!file_info.fileName().endsWith(".py"))
+		return;
+
+	session().main_window()->add_smuscript_tab(
+		file_info.filePath().toStdString());
+}
+
 void SmuScriptTreeView::on_action_new_script_triggered()
 {
 	session().main_window()->add_smuscript_tab("");
@@ -153,11 +172,7 @@ void SmuScriptTreeView::on_action_new_script_triggered()
 void SmuScriptTreeView::on_action_open_script_triggered()
 {
 	QModelIndex index = file_system_tree_->selectionModel()->currentIndex();
-	if (!index.isValid())
-		return;
-
-	session().main_window()->add_smuscript_tab(
-		file_system_model_->filePath(index).toStdString());
+	open_script_file(index);
 }
 
 void SmuScriptTreeView::on_action_run_script_triggered()
@@ -170,6 +185,11 @@ void SmuScriptTreeView::on_action_run_script_triggered()
 	}
 	else
 		session_.smu_script_runner()->stop();
+}
+
+void SmuScriptTreeView::on_tree_double_clicked(const QModelIndex& index)
+{
+	open_script_file(index);
 }
 
 void SmuScriptTreeView::on_script_started()
