@@ -1,3 +1,31 @@
+0.0.4 (2020-02-12)
+------------------
+
+For a detailed list of changes, please see the git commit history.
+
+ * Embed a Python interpreter to automate measurements and device control.
+ * Add an editor to create and modify Python scripts.
+ * Add a command line parameter to load and execute Python scripts.
+ * Countless layout and GUI improvements, for example:
+   - Improve device control views.
+   - Replace the knob in the control views with a slider widget.
+   - Don't freeze the connection dialog when loading bluetooth LE devices.
+   - Ability to add a single signal to a XY-plot.
+   - Improve changing plot modes.
+   - Make the plot markers box position configurable.
+   - Nicer looking plot markers and better initial plot marker position.
+   - Support multiple signals per data table view.
+   - Add plot curve colors for various quantities and use random color for unknown quantities.
+   - Use embedded mono space font for the value displays.
+   - Stack views to save space.
+   - Settings for line and symbol style in the plot config dialog.
+   - Don't mess up the plot axis, when the signal value overflows.
+   - Add function to save plots as image.
+ * Add class AnalogSampleSignal to store sample via Python.
+ * Add a view to apply sequences to (device) controls like the output voltage.
+ * Create a manual for SmuView.
+ * Many bug fixes.
+
 0.0.3 (2019-04-04)
 ------------------
 
