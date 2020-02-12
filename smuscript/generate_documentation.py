@@ -50,10 +50,6 @@ import re
 #
 
 html_str = pdoc.html("smuview", show_type_annotations=True)
-# Remove 'sv::smuview::' from html string. This fixes a bug(?) in pybind11
-html_str = re.sub(r'sv::[a-z]+::', '', html_str)
-html_str = re.sub(r'<code>sv</code>::<code>[a-z]+</code>::', '', html_str)
-# Save to file
 file_name = './smuview_python_bindings_pdoc3.html'
 f = open(file_name, 'w')
 print(html_str, file=f)

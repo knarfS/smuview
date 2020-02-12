@@ -59,14 +59,17 @@ PYBIND11_EMBEDDED_MODULE(smuview, m) {
 
 	m.doc() = "SmuView python bindings.";
 
-	init_Session(m);
-	init_Device(m);
-	init_Channel(m);
+	// NOTE: The order of initialization is very important! Otherwise types
+	//       could be unknown when pybind11 is generating the function
+	//       signatures.
+	init_Enums(m);
 	init_Signal(m);
+	init_Channel(m);
 	init_Configurable(m);
+	init_Device(m);
+	init_Session(m);
 	init_UI(m);
 	init_StreamBuf(m);
-	init_Enums(m);
 }
 
 void init_Session(py::module &m)
