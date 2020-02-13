@@ -1,7 +1,33 @@
 Help on built-in module smuview:
 
 NAME
-    smuview - SmuView python bindings.
+    smuview - The SmuView 0.0.4 Python bindings.
+
+DESCRIPTION
+    The Python bindings are a scripting extension for SmuView, to automate and setup complex or repetitive measurements and to create a standardized user interface for those measurements.
+    
+    The smuview module offers two default object instances: `Session` and `UiProxy`.
+    The `Session` object gives access to already connected devices or connects new devices. The returned device object can then be used to read data from the device or control the device.
+    The `UiProxy` object instance is used to modify the user interface, for example adding tabs or views.
+    
+    Here is a short example that connects the HP 3378A DMM via GPIB, reads a sample and creates the default tab for the device:
+    ```
+    import smuview
+    import time
+    
+    # Connect device.
+    dmm_dev = Session.connect_device("hp-3478a:conn=libgpib/hp3478a")[0]
+    # Sleep 1s to give the devices the chance to create signals
+    time.sleep(1)
+    # Get last sample from channel P1
+    sample = dmm_dev.channels()["P1"].actual_signal().get_last_sample(True)
+    print(sample)
+    
+    # Add default tab for the DMM device.
+    UiProxy.add_device_tab(dmm_dev)
+    ```
+    
+    For more example scripts, please have a look into the `smuscript` folder.
 
 CLASSES
     pybind11_builtins.pybind11_object(builtins.object)
@@ -207,7 +233,7 @@ CLASSES
      |      Initialize self.  See help(type(self)) for accurate signature.
      |  
      |  actual_signal(...)
-     |      actual_signal(self: smuview.BaseChannel) -> sv::data::BaseSignal
+     |      actual_signal(self: smuview.BaseChannel) -> smuview.BaseSignal
      |      
      |      Return the actual signal of the channel.
      |      
@@ -217,18 +243,18 @@ CLASSES
      |          The actual signal object.
      |  
      |  add_signal(...)
-     |      add_signal(self: smuview.BaseChannel, quantity: sv::data::Quantity, quantity_flags: Set[sv::data::QuantityFlag], unit: sv::data::Unit) -> sv::data::BaseSignal
+     |      add_signal(self: smuview.BaseChannel, quantity: smuview.Quantity, quantity_flags: Set[smuview.QuantityFlag], unit: smuview.Unit) -> smuview.BaseSignal
      |      
      |      Add a new signal to the channel.
      |      
      |      Parameters
      |      ----------
      |      quantity : Quantity
-     |          The Quantity of the new signal.
+     |          The `Quantity` of the new signal.
      |      quantity_flags : Set[QuantityFlag]
-     |          The `smuview.QuantityFlag`s of the new signal.
+     |          The `QuantityFlag`s of the new signal.
      |      unit : Unit
-     |          The Unit of the new signal.
+     |          The `Unit` of the new signal.
      |      
      |      Returns
      |      -------
@@ -246,7 +272,7 @@ CLASSES
      |          The name of the channel.
      |  
      |  signals(...)
-     |      signals(self: smuview.BaseChannel) -> List[sv::data::BaseSignal]
+     |      signals(self: smuview.BaseChannel) -> List[smuview.BaseSignal]
      |      
      |      Return all signals of the channel.
      |      
@@ -275,7 +301,7 @@ CLASSES
      |      Initialize self.  See help(type(self)) for accurate signature.
      |  
      |  add_user_channel(...)
-     |      add_user_channel(self: smuview.BaseDevice, channel_name: str, channel_group_name: str) -> sv::channels::UserChannel
+     |      add_user_channel(self: smuview.BaseDevice, channel_name: str, channel_group_name: str) -> smuview.UserChannel
      |      
      |      Add a new user channel to the device.
      |      
@@ -292,7 +318,7 @@ CLASSES
      |          The new user channel object.
      |  
      |  channels(...)
-     |      channels(self: smuview.BaseDevice) -> Dict[str, sv::channels::BaseChannel]
+     |      channels(self: smuview.BaseDevice) -> Dict[str, smuview.BaseChannel]
      |      
      |      Return all channels of the device.
      |      
@@ -302,14 +328,14 @@ CLASSES
      |          A Dict where the key is the id of the channel and the value is the channel object.
      |  
      |  configurables(...)
-     |      configurables(self: smuview.BaseDevice) -> Dict[str, sv::devices::Configurable]
+     |      configurables(self: smuview.BaseDevice) -> Dict[str, smuview.Configurable]
      |      
      |      Return all configurables of the device.
      |      
      |      Returns
      |      -------
      |      Dict[str, Configurable]
-     |          A Dict where the key is the id of the configurable and the value is the configurable object.
+     |          A Dict where the key is the id of the `Configurable` and the value is the `Configurable` object.
      |  
      |  id(...)
      |      id(self: smuview.BaseDevice) -> str
@@ -594,70 +620,70 @@ CLASSES
      |      get_config(*args, **kwargs)
      |      Overloaded function.
      |      
-     |      1. get_config(self: smuview.Configurable, config_key: sv::devices::ConfigKey) -> bool
+     |      1. get_config(self: smuview.Configurable, config_key: smuview.ConfigKey) -> bool
      |      
      |      Return a boolean value from the given config key.
      |      
      |      Parameters
      |      ----------
      |      config_key : ConfigKey
-     |          The config key.
+     |          The `ConfigKey` to get.
      |      
      |      Returns
      |      -------
      |      bool
      |          The bool value of the config key.
      |      
-     |      2. get_config(self: smuview.Configurable, config_key: sv::devices::ConfigKey) -> int
+     |      2. get_config(self: smuview.Configurable, config_key: smuview.ConfigKey) -> int
      |      
      |      Return an integer value from the given config key.
      |      
      |      Parameters
      |      ----------
      |      config_key : ConfigKey
-     |          The config key.
+     |          The `ConfigKey` to get.
      |      
      |      Returns
      |      -------
      |      int
      |          The int value of the config key.
      |      
-     |      3. get_config(self: smuview.Configurable, config_key: sv::devices::ConfigKey) -> int
+     |      3. get_config(self: smuview.Configurable, config_key: smuview.ConfigKey) -> int
      |      
      |      Return an unsigned integer value from the given config key.
      |      
      |      Parameters
      |      ----------
      |      config_key : ConfigKey
-     |          The config key.
+     |          The `ConfigKey` to get.
      |      
      |      Returns
      |      -------
      |      int
      |          The (unsigned) int value of the config key.
      |      
-     |      4. get_config(self: smuview.Configurable, config_key: sv::devices::ConfigKey) -> float
+     |      4. get_config(self: smuview.Configurable, config_key: smuview.ConfigKey) -> float
      |      
      |      Return a double value from the given config key.
      |      
      |      Parameters
      |      ----------
      |      config_key : ConfigKey
-     |          The config key.
+     |          The `ConfigKey` to get.
      |      
      |      Returns
      |      -------
      |      float
      |          The float value of the config key.
      |      
-     |      5. get_config(self: smuview.Configurable, config_key: sv::devices::ConfigKey) -> str
+     |      5. get_config(self: smuview.Configurable, config_key: smuview.ConfigKey) -> str
      |      
      |      Return a string value from the given config key.
      |      
      |      Parameters
      |      ----------
      |      config_key : ConfigKey
-     |          The config key.
+     |          The `ConfigKey` to get.
      |      
      |      Returns
      |      -------
@@ -678,58 +704,58 @@ CLASSES
      |      set_config(*args, **kwargs)
      |      Overloaded function.
      |      
-     |      1. set_config(self: smuview.Configurable, config_key: sv::devices::ConfigKey, value: bool) -> None
+     |      1. set_config(self: smuview.Configurable, config_key: smuview.ConfigKey, value: bool) -> None
      |      
      |      Set a boolean value to the given config key.
      |      
      |      Parameters
      |      ----------
      |      config_key : ConfigKey
-     |          The config key.
+     |          The `ConfigKey` to set.
      |      value : bool
      |          The bool value to set.
      |      
-     |      2. set_config(self: smuview.Configurable, config_key: sv::devices::ConfigKey, value: int) -> None
+     |      2. set_config(self: smuview.Configurable, config_key: smuview.ConfigKey, value: int) -> None
      |      
      |      Set an integer value to the given config key.
      |      
      |      Parameters
      |      ----------
      |      config_key : ConfigKey
-     |          The config key.
+     |          The `ConfigKey` to set.
      |      value : int
      |          The int value to set.
      |      
-     |      3. set_config(self: smuview.Configurable, config_key: sv::devices::ConfigKey, value: int) -> None
+     |      3. set_config(self: smuview.Configurable, config_key: smuview.ConfigKey, value: int) -> None
      |      
      |      Set an unsigned integer value to the given config key.
      |      
      |      Parameters
      |      ----------
      |      config_key : ConfigKey
-     |          The config key.
+     |          The `ConfigKey` to set.
      |      value : int
      |          The (unsigned) int value to set.
      |      
-     |      4. set_config(self: smuview.Configurable, config_key: sv::devices::ConfigKey, value: float) -> None
+     |      4. set_config(self: smuview.Configurable, config_key: smuview.ConfigKey, value: float) -> None
      |      
      |      Set a double value to the given config key.
      |      
      |      Parameters
      |      ----------
      |      config_key : ConfigKey
-     |          The config key.
+     |          The `ConfigKey` to set.
      |      value : float
      |          The float value to set.
      |      
-     |      5. set_config(self: smuview.Configurable, config_key: sv::devices::ConfigKey, value: str) -> None
+     |      5. set_config(self: smuview.Configurable, config_key: smuview.ConfigKey, value: str) -> None
      |      
      |      Set a string value to the given config key.
      |      
      |      Parameters
      |      ----------
      |      config_key : ConfigKey
-     |          The config key.
+     |          The `ConfigKey` to set.
      |      value : str
      |          The string value to set.
      |  
@@ -818,7 +844,7 @@ CLASSES
      |  Methods inherited from BaseChannel:
      |  
      |  actual_signal(...)
-     |      actual_signal(self: smuview.BaseChannel) -> sv::data::BaseSignal
+     |      actual_signal(self: smuview.BaseChannel) -> smuview.BaseSignal
      |      
      |      Return the actual signal of the channel.
      |      
@@ -828,18 +854,18 @@ CLASSES
      |          The actual signal object.
      |  
      |  add_signal(...)
-     |      add_signal(self: smuview.BaseChannel, quantity: sv::data::Quantity, quantity_flags: Set[sv::data::QuantityFlag], unit: sv::data::Unit) -> sv::data::BaseSignal
+     |      add_signal(self: smuview.BaseChannel, quantity: smuview.Quantity, quantity_flags: Set[smuview.QuantityFlag], unit: smuview.Unit) -> smuview.BaseSignal
      |      
      |      Add a new signal to the channel.
      |      
      |      Parameters
      |      ----------
      |      quantity : Quantity
-     |          The Quantity of the new signal.
+     |          The `Quantity` of the new signal.
      |      quantity_flags : Set[QuantityFlag]
-     |          The `smuview.QuantityFlag`s of the new signal.
+     |          The `QuantityFlag`s of the new signal.
      |      unit : Unit
-     |          The Unit of the new signal.
+     |          The `Unit` of the new signal.
      |      
      |      Returns
      |      -------
@@ -857,7 +883,7 @@ CLASSES
      |          The name of the channel.
      |  
      |  signals(...)
-     |      signals(self: smuview.BaseChannel) -> List[sv::data::BaseSignal]
+     |      signals(self: smuview.BaseChannel) -> List[smuview.BaseSignal]
      |      
      |      Return all signals of the channel.
      |      
@@ -890,7 +916,7 @@ CLASSES
      |  Methods inherited from BaseDevice:
      |  
      |  add_user_channel(...)
-     |      add_user_channel(self: smuview.BaseDevice, channel_name: str, channel_group_name: str) -> sv::channels::UserChannel
+     |      add_user_channel(self: smuview.BaseDevice, channel_name: str, channel_group_name: str) -> smuview.UserChannel
      |      
      |      Add a new user channel to the device.
      |      
@@ -907,7 +933,7 @@ CLASSES
      |          The new user channel object.
      |  
      |  channels(...)
-     |      channels(self: smuview.BaseDevice) -> Dict[str, sv::channels::BaseChannel]
+     |      channels(self: smuview.BaseDevice) -> Dict[str, smuview.BaseChannel]
      |      
      |      Return all channels of the device.
      |      
@@ -917,14 +943,14 @@ CLASSES
      |          A Dict where the key is the id of the channel and the value is the channel object.
      |  
      |  configurables(...)
-     |      configurables(self: smuview.BaseDevice) -> Dict[str, sv::devices::Configurable]
+     |      configurables(self: smuview.BaseDevice) -> Dict[str, smuview.Configurable]
      |      
      |      Return all configurables of the device.
      |      
      |      Returns
      |      -------
      |      Dict[str, Configurable]
-     |          A Dict where the key is the id of the configurable and the value is the configurable object.
+     |          A Dict where the key is the id of the `Configurable` and the value is the `Configurable` object.
      |  
      |  id(...)
      |      id(self: smuview.BaseDevice) -> str
@@ -1301,7 +1327,7 @@ CLASSES
      |      Initialize self.  See help(type(self)) for accurate signature.
      |  
      |  add_user_device(...)
-     |      add_user_device(self: smuview.Session) -> sv::devices::UserDevice
+     |      add_user_device(self: smuview.Session) -> smuview.UserDevice
      |      
      |      Create a new user device.
      |      
@@ -1311,7 +1337,7 @@ CLASSES
      |          The created user device object.
      |  
      |  connect_device(...)
-     |      connect_device(self: smuview.Session, conn_str: str) -> List[sv::devices::HardwareDevice]
+     |      connect_device(self: smuview.Session, conn_str: str) -> List[smuview.HardwareDevice]
      |      
      |      Connect a new device.
      |      
@@ -1326,7 +1352,7 @@ CLASSES
      |          A List with the newly connected device objects.
      |  
      |  devices(...)
-     |      devices(self: smuview.Session) -> Dict[str, sv::devices::BaseDevice]
+     |      devices(self: smuview.Session) -> Dict[str, smuview.BaseDevice]
      |      
      |      Return all connected devices.
      |      
@@ -1366,7 +1392,7 @@ CLASSES
      |      area : DockArea
      |          Where to put the new view.
      |      configurable : Configurable
-     |          The configurable object.
+     |          The `Configurable` object.
      |      
      |      Returns
      |      -------
@@ -1725,7 +1751,7 @@ CLASSES
      |      Initialize self.  See help(type(self)) for accurate signature.
      |  
      |  push_sample(...)
-     |      push_sample(self: smuview.UserChannel, sample: float, timestamp: float, quantity: sv::data::Quantity, quantity_flags: Set[sv::data::QuantityFlag], unit: sv::data::Unit, digits: int, decimal_places: int) -> None
+     |      push_sample(self: smuview.UserChannel, sample: float, timestamp: float, quantity: smuview.Quantity, quantity_flags: Set[smuview.QuantityFlag], unit: smuview.Unit, digits: int, decimal_places: int) -> None
      |      
      |      Push a single sample to the channel.
      |      
@@ -1736,11 +1762,11 @@ CLASSES
      |      timestamp : float
      |          The absolute timestamp in milliseconds.
      |      quantity : Quantity
-     |          The Quantity of the new signal.
+     |          The `Quantity` of the new signal.
      |      quantity_flags : Set[QuantityFlag]
-     |          The QuantityFlags of the new signal.
+     |          The `QuantityFlag`s of the new signal.
      |      unit : Unit
-     |          The Unit of the new signal.
+     |          The `Unit` of the new signal.
      |      digits : int
      |          The total number of digits.
      |      decimal_places : int
@@ -1750,7 +1776,7 @@ CLASSES
      |  Methods inherited from BaseChannel:
      |  
      |  actual_signal(...)
-     |      actual_signal(self: smuview.BaseChannel) -> sv::data::BaseSignal
+     |      actual_signal(self: smuview.BaseChannel) -> smuview.BaseSignal
      |      
      |      Return the actual signal of the channel.
      |      
@@ -1760,18 +1786,18 @@ CLASSES
      |          The actual signal object.
      |  
      |  add_signal(...)
-     |      add_signal(self: smuview.BaseChannel, quantity: sv::data::Quantity, quantity_flags: Set[sv::data::QuantityFlag], unit: sv::data::Unit) -> sv::data::BaseSignal
+     |      add_signal(self: smuview.BaseChannel, quantity: smuview.Quantity, quantity_flags: Set[smuview.QuantityFlag], unit: smuview.Unit) -> smuview.BaseSignal
      |      
      |      Add a new signal to the channel.
      |      
      |      Parameters
      |      ----------
      |      quantity : Quantity
-     |          The Quantity of the new signal.
+     |          The `Quantity` of the new signal.
      |      quantity_flags : Set[QuantityFlag]
-     |          The `smuview.QuantityFlag`s of the new signal.
+     |          The `QuantityFlag`s of the new signal.
      |      unit : Unit
-     |          The Unit of the new signal.
+     |          The `Unit` of the new signal.
      |      
      |      Returns
      |      -------
@@ -1789,7 +1815,7 @@ CLASSES
      |          The name of the channel.
      |  
      |  signals(...)
-     |      signals(self: smuview.BaseChannel) -> List[sv::data::BaseSignal]
+     |      signals(self: smuview.BaseChannel) -> List[smuview.BaseSignal]
      |      
      |      Return all signals of the channel.
      |      
@@ -1822,7 +1848,7 @@ CLASSES
      |  Methods inherited from BaseDevice:
      |  
      |  add_user_channel(...)
-     |      add_user_channel(self: smuview.BaseDevice, channel_name: str, channel_group_name: str) -> sv::channels::UserChannel
+     |      add_user_channel(self: smuview.BaseDevice, channel_name: str, channel_group_name: str) -> smuview.UserChannel
      |      
      |      Add a new user channel to the device.
      |      
@@ -1839,7 +1865,7 @@ CLASSES
      |          The new user channel object.
      |  
      |  channels(...)
-     |      channels(self: smuview.BaseDevice) -> Dict[str, sv::channels::BaseChannel]
+     |      channels(self: smuview.BaseDevice) -> Dict[str, smuview.BaseChannel]
      |      
      |      Return all channels of the device.
      |      
@@ -1849,14 +1875,14 @@ CLASSES
      |          A Dict where the key is the id of the channel and the value is the channel object.
      |  
      |  configurables(...)
-     |      configurables(self: smuview.BaseDevice) -> Dict[str, sv::devices::Configurable]
+     |      configurables(self: smuview.BaseDevice) -> Dict[str, smuview.Configurable]
      |      
      |      Return all configurables of the device.
      |      
      |      Returns
      |      -------
      |      Dict[str, Configurable]
-     |          A Dict where the key is the id of the configurable and the value is the configurable object.
+     |          A Dict where the key is the id of the `Configurable` and the value is the `Configurable` object.
      |  
      |  id(...)
      |      id(self: smuview.BaseDevice) -> str

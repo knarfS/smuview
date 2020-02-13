@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.7.5.dev7+gde1fc6e" />
+<meta name="generator" content="pdoc 0.7.5.dev12+gcc92197.d20200213" />
 <title>smuview API documentation</title>
-<meta name="description" content="SmuView python bindings." />
+<meta name="description" content="The SmuView 0.0.4 Python bindings …" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -20,7 +20,27 @@
 <h1 class="title">Module <code>smuview</code></h1>
 </header>
 <section id="section-intro">
-<p>SmuView python bindings.</p>
+<p>The SmuView 0.0.4 Python bindings.</p>
+<p>The Python bindings are a scripting extension for SmuView, to automate and setup complex or repetitive measurements and to create a standardized user interface for those measurements.</p>
+<p>The smuview module offers two default object instances: <a title="smuview.Session" href="#smuview.Session"><code>Session</code></a> and <a title="smuview.UiProxy" href="#smuview.UiProxy"><code>UiProxy</code></a>.
+The <a title="smuview.Session" href="#smuview.Session"><code>Session</code></a> object gives access to already connected devices or connects new devices. The returned device object can then be used to read data from the device or control the device.
+The <a title="smuview.UiProxy" href="#smuview.UiProxy"><code>UiProxy</code></a> object instance is used to modify the user interface, for example adding tabs or views.</p>
+<p>Here is a short example that connects the HP 3378A DMM via GPIB, reads a sample and creates the default tab for the device:</p>
+<pre><code>import smuview
+import time
+
+# Connect device.
+dmm_dev = Session.connect_device(&quot;hp-3478a:conn=libgpib/hp3478a&quot;)[0]
+# Sleep 1s to give the devices the chance to create signals
+time.sleep(1)
+# Get last sample from channel P1
+sample = dmm_dev.channels()[&quot;P1&quot;].actual_signal().get_last_sample(True)
+print(sample)
+
+# Add default tab for the DMM device.
+UiProxy.add_device_tab(dmm_dev)
+</code></pre>
+<p>For more example scripts, please have a look into the <code>smuscript</code> folder.</p>
 </section>
 <section>
 </section>
@@ -45,11 +65,10 @@
 <h3>Methods</h3>
 <dl>
 <dt id="smuview.AnalogSampleSignal.get_sample"><code class="name flex">
-<span>def <span class="ident">get_sample</span></span>(<span>...)</span>
+<span>def <span class="ident">get_sample</span></span>(<span>self: smuview.AnalogSampleSignal, pos: int) -> 'Tuple[int, float]'</span>
 </code></dt>
 <dd>
-<section class="desc"><p>get_sample(self: smuview.AnalogSampleSignal, pos: int) -&gt; Tuple[int, float]</p>
-<p>Return the sample for the given position.</p>
+<section class="desc"><p>Return the sample for the given position.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>pos</code></strong> :&ensp;<code>int</code></dt>
@@ -62,11 +81,10 @@
 </dl></section>
 </dd>
 <dt id="smuview.AnalogSampleSignal.push_sample"><code class="name flex">
-<span>def <span class="ident">push_sample</span></span>(<span>...)</span>
+<span>def <span class="ident">push_sample</span></span>(<span>self: smuview.AnalogSampleSignal, sample: capsule, pos: int, unit_size: int, digits: int, decimal_places: int) -> 'None'</span>
 </code></dt>
 <dd>
-<section class="desc"><p>push_sample(self: smuview.AnalogSampleSignal, sample: capsule, pos: int, unit_size: int, digits: int, decimal_places: int) -&gt; None</p>
-<p>Push a new sample to the signal.</p>
+<section class="desc"><p>Push a new sample to the signal.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>sample</code></strong> :&ensp;<code>float</code> or <code>double</code></dt>
@@ -106,11 +124,10 @@
 <h3>Methods</h3>
 <dl>
 <dt id="smuview.AnalogTimeSignal.get_last_sample"><code class="name flex">
-<span>def <span class="ident">get_last_sample</span></span>(<span>...)</span>
+<span>def <span class="ident">get_last_sample</span></span>(<span>self: smuview.AnalogTimeSignal, relative_time: bool) -> 'Tuple[float, float]'</span>
 </code></dt>
 <dd>
-<section class="desc"><p>get_last_sample(self: smuview.AnalogTimeSignal, relative_time: bool) -&gt; Tuple[float, float]</p>
-<p>Return the last sample of the signal.</p>
+<section class="desc"><p>Return the last sample of the signal.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>relative_time</code></strong> :&ensp;<code>bool</code></dt>
@@ -123,11 +140,10 @@
 </dl></section>
 </dd>
 <dt id="smuview.AnalogTimeSignal.get_sample"><code class="name flex">
-<span>def <span class="ident">get_sample</span></span>(<span>...)</span>
+<span>def <span class="ident">get_sample</span></span>(<span>self: smuview.AnalogTimeSignal, pos: int, relative_time: bool) -> 'Tuple[float, float]'</span>
 </code></dt>
 <dd>
-<section class="desc"><p>get_sample(self: smuview.AnalogTimeSignal, pos: int, relative_time: bool) -&gt; Tuple[float, float]</p>
-<p>Return the sample at the given position.</p>
+<section class="desc"><p>Return the sample at the given position.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>pos</code></strong> :&ensp;<code>int</code></dt>
@@ -142,11 +158,10 @@
 </dl></section>
 </dd>
 <dt id="smuview.AnalogTimeSignal.push_sample"><code class="name flex">
-<span>def <span class="ident">push_sample</span></span>(<span>...)</span>
+<span>def <span class="ident">push_sample</span></span>(<span>self: smuview.AnalogTimeSignal, sample: capsule, timestamp: float, unit_size: int, digits: int, decimal_places: int) -> 'None'</span>
 </code></dt>
 <dd>
-<section class="desc"><p>push_sample(self: smuview.AnalogTimeSignal, sample: capsule, timestamp: float, unit_size: int, digits: int, decimal_places: int) -&gt; None</p>
-<p>Push a new sample to the signal.</p>
+<section class="desc"><p>Push a new sample to the signal.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>sample</code></strong> :&ensp;<code>float</code> or <code>double</code></dt>
@@ -190,11 +205,10 @@
 <h3>Methods</h3>
 <dl>
 <dt id="smuview.BaseChannel.actual_signal"><code class="name flex">
-<span>def <span class="ident">actual_signal</span></span>(<span>...)</span>
+<span>def <span class="ident">actual_signal</span></span>(<span>self: smuview.BaseChannel) -> '<a title="smuview.BaseSignal" href="#smuview.BaseSignal">BaseSignal</a>'</span>
 </code></dt>
 <dd>
-<section class="desc"><p>actual_signal(self: smuview.BaseChannel) -&gt; sv::data::BaseSignal</p>
-<p>Return the actual signal of the channel.</p>
+<section class="desc"><p>Return the actual signal of the channel.</p>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><a title="smuview.BaseSignal" href="#smuview.BaseSignal"><code>BaseSignal</code></a></dt>
@@ -202,19 +216,18 @@
 </dl></section>
 </dd>
 <dt id="smuview.BaseChannel.add_signal"><code class="name flex">
-<span>def <span class="ident">add_signal</span></span>(<span>...)</span>
+<span>def <span class="ident">add_signal</span></span>(<span>self: smuview.BaseChannel, quantity: smuview.Quantity, quantity_flags: Set[smuview.QuantityFlag], unit: smuview.Unit) -> '<a title="smuview.BaseSignal" href="#smuview.BaseSignal">BaseSignal</a>'</span>
 </code></dt>
 <dd>
-<section class="desc"><p>add_signal(self: smuview.BaseChannel, quantity: sv::data::Quantity, quantity_flags: Set[sv::data::QuantityFlag], unit: sv::data::Unit) -&gt; sv::data::BaseSignal</p>
-<p>Add a new signal to the channel.</p>
+<section class="desc"><p>Add a new signal to the channel.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>quantity</code></strong> :&ensp;<a title="smuview.Quantity" href="#smuview.Quantity"><code>Quantity</code></a></dt>
-<dd>The Quantity of the new signal.</dd>
+<dd>The <a title="smuview.Quantity" href="#smuview.Quantity"><code>Quantity</code></a> of the new signal.</dd>
 <dt><strong><code>quantity_flags</code></strong> :&ensp;<code>Set</code>[<a title="smuview.QuantityFlag" href="#smuview.QuantityFlag"><code>QuantityFlag</code></a>]</dt>
 <dd>The <a title="smuview.QuantityFlag" href="#smuview.QuantityFlag"><code>QuantityFlag</code></a>s of the new signal.</dd>
 <dt><strong><code>unit</code></strong> :&ensp;<a title="smuview.Unit" href="#smuview.Unit"><code>Unit</code></a></dt>
-<dd>The Unit of the new signal.</dd>
+<dd>The <a title="smuview.Unit" href="#smuview.Unit"><code>Unit</code></a> of the new signal.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -223,11 +236,10 @@
 </dl></section>
 </dd>
 <dt id="smuview.BaseChannel.name"><code class="name flex">
-<span>def <span class="ident">name</span></span>(<span>...)</span>
+<span>def <span class="ident">name</span></span>(<span>self: smuview.BaseChannel) -> 'str'</span>
 </code></dt>
 <dd>
-<section class="desc"><p>name(self: smuview.BaseChannel) -&gt; str</p>
-<p>Return the name of the channel.</p>
+<section class="desc"><p>Return the name of the channel.</p>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>str</code></dt>
@@ -235,11 +247,10 @@
 </dl></section>
 </dd>
 <dt id="smuview.BaseChannel.signals"><code class="name flex">
-<span>def <span class="ident">signals</span></span>(<span>...)</span>
+<span>def <span class="ident">signals</span></span>(<span>self: smuview.BaseChannel) -> 'List[<a title="smuview.BaseSignal" href="#smuview.BaseSignal">BaseSignal</a>]'</span>
 </code></dt>
 <dd>
-<section class="desc"><p>signals(self: smuview.BaseChannel) -&gt; List[sv::data::BaseSignal]</p>
-<p>Return all signals of the channel.</p>
+<section class="desc"><p>Return all signals of the channel.</p>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>List</code>[<a title="smuview.BaseSignal" href="#smuview.BaseSignal"><code>BaseSignal</code></a>]</dt>
@@ -266,11 +277,10 @@
 <h3>Methods</h3>
 <dl>
 <dt id="smuview.BaseDevice.add_user_channel"><code class="name flex">
-<span>def <span class="ident">add_user_channel</span></span>(<span>...)</span>
+<span>def <span class="ident">add_user_channel</span></span>(<span>self: smuview.BaseDevice, channel_name: str, channel_group_name: str) -> '<a title="smuview.UserChannel" href="#smuview.UserChannel">UserChannel</a>'</span>
 </code></dt>
 <dd>
-<section class="desc"><p>add_user_channel(self: smuview.BaseDevice, channel_name: str, channel_group_name: str) -&gt; sv::channels::UserChannel</p>
-<p>Add a new user channel to the device.</p>
+<section class="desc"><p>Add a new user channel to the device.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>channel_name</code></strong> :&ensp;<code>str</code></dt>
@@ -285,11 +295,10 @@
 </dl></section>
 </dd>
 <dt id="smuview.BaseDevice.channels"><code class="name flex">
-<span>def <span class="ident">channels</span></span>(<span>...)</span>
+<span>def <span class="ident">channels</span></span>(<span>self: smuview.BaseDevice) -> 'Dict[str, <a title="smuview.BaseChannel" href="#smuview.BaseChannel">BaseChannel</a>]'</span>
 </code></dt>
 <dd>
-<section class="desc"><p>channels(self: smuview.BaseDevice) -&gt; Dict[str, sv::channels::BaseChannel]</p>
-<p>Return all channels of the device.</p>
+<section class="desc"><p>Return all channels of the device.</p>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>Dict</code>[<code>str</code>, <a title="smuview.BaseChannel" href="#smuview.BaseChannel"><code>BaseChannel</code></a>]</dt>
@@ -297,23 +306,21 @@
 </dl></section>
 </dd>
 <dt id="smuview.BaseDevice.configurables"><code class="name flex">
-<span>def <span class="ident">configurables</span></span>(<span>...)</span>
+<span>def <span class="ident">configurables</span></span>(<span>self: smuview.BaseDevice) -> 'Dict[str, <a title="smuview.Configurable" href="#smuview.Configurable">Configurable</a>]'</span>
 </code></dt>
 <dd>
-<section class="desc"><p>configurables(self: smuview.BaseDevice) -&gt; Dict[str, sv::devices::Configurable]</p>
-<p>Return all configurables of the device.</p>
+<section class="desc"><p>Return all configurables of the device.</p>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>Dict</code>[<code>str</code>, <a title="smuview.Configurable" href="#smuview.Configurable"><code>Configurable</code></a>]</dt>
-<dd>A Dict where the key is the id of the configurable and the value is the configurable object.</dd>
+<dd>A Dict where the key is the id of the <a title="smuview.Configurable" href="#smuview.Configurable"><code>Configurable</code></a> and the value is the <a title="smuview.Configurable" href="#smuview.Configurable"><code>Configurable</code></a> object.</dd>
 </dl></section>
 </dd>
 <dt id="smuview.BaseDevice.id"><code class="name flex">
-<span>def <span class="ident">id</span></span>(<span>...)</span>
+<span>def <span class="ident">id</span></span>(<span>self: smuview.BaseDevice) -> 'str'</span>
 </code></dt>
 <dd>
-<section class="desc"><p>id(self: smuview.BaseDevice) -&gt; str</p>
-<p>Return the unique id of the device.</p>
+<section class="desc"><p>Return the unique id of the device.</p>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>str</code></dt>
@@ -321,11 +328,10 @@
 </dl></section>
 </dd>
 <dt id="smuview.BaseDevice.name"><code class="name flex">
-<span>def <span class="ident">name</span></span>(<span>...)</span>
+<span>def <span class="ident">name</span></span>(<span>self: smuview.BaseDevice) -> 'str'</span>
 </code></dt>
 <dd>
-<section class="desc"><p>name(self: smuview.BaseDevice) -&gt; str</p>
-<p>Return the name of the device.</p>
+<section class="desc"><p>Return the name of the device.</p>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>str</code></dt>
@@ -352,11 +358,10 @@
 <h3>Methods</h3>
 <dl>
 <dt id="smuview.BaseSignal.name"><code class="name flex">
-<span>def <span class="ident">name</span></span>(<span>...)</span>
+<span>def <span class="ident">name</span></span>(<span>self: smuview.BaseSignal) -> 'str'</span>
 </code></dt>
 <dd>
-<section class="desc"><p>name(self: smuview.BaseSignal) -&gt; str</p>
-<p>Return the name of the signal.</p>
+<section class="desc"><p>Return the name of the signal.</p>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>str</code></dt>
@@ -364,11 +369,10 @@
 </dl></section>
 </dd>
 <dt id="smuview.BaseSignal.sample_count"><code class="name flex">
-<span>def <span class="ident">sample_count</span></span>(<span>...)</span>
+<span>def <span class="ident">sample_count</span></span>(<span>self: smuview.BaseSignal) -> 'int'</span>
 </code></dt>
 <dd>
-<section class="desc"><p>sample_count(self: smuview.BaseSignal) -&gt; int</p>
-<p>Return the number of samples of the signal.</p>
+<section class="desc"><p>Return the number of samples of the signal.</p>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>int</code></dt>
@@ -392,299 +396,301 @@
 <dl>
 <dt id="smuview.ConfigKey.ADCPowerlineCycles"><code class="name">var <span class="ident">ADCPowerlineCycles</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Number of powerline cycles for ADC integration time.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.Amplitude"><code class="name">var <span class="ident">Amplitude</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Amplitude of a source without strictly-defined <a title="smuview.ConfigKey.MeasuredQuantity" href="#smuview.ConfigKey.MeasuredQuantity"><code>ConfigKey.MeasuredQuantity</code></a>.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.Averaging"><code class="name">var <span class="ident">Averaging</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Averaging.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.AvgSamples"><code class="name">var <span class="ident">AvgSamples</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>The number of samples to be averaged over.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.BufferSize"><code class="name">var <span class="ident">BufferSize</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Buffer size.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.CaptureFile"><code class="name">var <span class="ident">CaptureFile</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>The capturefile to inject.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.CaptureRatio"><code class="name">var <span class="ident">CaptureRatio</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>The pre/post-trigger capture ratio.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.CaptureUnitSize"><code class="name">var <span class="ident">CaptureUnitSize</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>The capturefile unit size.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.CenterFrequency"><code class="name">var <span class="ident">CenterFrequency</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Center frequency.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.ChannelConfig"><code class="name">var <span class="ident">ChannelConfig</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Channel configuration.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.ClockEdge"><code class="name">var <span class="ident">ClockEdge</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Choice of clock edge for external clock (<code>r</code> or <code>f</code>).</p></section>
 </dd>
 <dt id="smuview.ConfigKey.Coupling"><code class="name">var <span class="ident">Coupling</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Coupling.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.Current"><code class="name">var <span class="ident">Current</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Current current.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.CurrentLimit"><code class="name">var <span class="ident">CurrentLimit</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Current limit.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.DataLog"><code class="name">var <span class="ident">DataLog</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>The device has internal storage, into which data is logged.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.DataSource"><code class="name">var <span class="ident">DataSource</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Data source for acquisition.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.DeviceMode"><code class="name">var <span class="ident">DeviceMode</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Device mode for multi-function devices.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.Digits"><code class="name">var <span class="ident">Digits</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>The number of digits (e.g. for a DMM).</p></section>
 </dd>
 <dt id="smuview.ConfigKey.Enabled"><code class="name">var <span class="ident">Enabled</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Enabling/disabling a channel (group).</p></section>
 </dd>
 <dt id="smuview.ConfigKey.EquivCircuitModel"><code class="name">var <span class="ident">EquivCircuitModel</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Equivalent circuit model.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.ExternalClock"><code class="name">var <span class="ident">ExternalClock</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Using an external clock.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.ExternalClockSource"><code class="name">var <span class="ident">ExternalClockSource</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Which external clock source to use if the device supports multiple external clock channels.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.Filter"><code class="name">var <span class="ident">Filter</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Filter.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.HighResolution"><code class="name">var <span class="ident">HighResolution</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>High resolution mode.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.HoldMax"><code class="name">var <span class="ident">HoldMax</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Max hold mode.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.HoldMin"><code class="name">var <span class="ident">HoldMin</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Min hold mode.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.HorizTriggerPos"><code class="name">var <span class="ident">HorizTriggerPos</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Horizontal trigger position.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.LogicThreshold"><code class="name">var <span class="ident">LogicThreshold</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Logic threshold: predefined levels (<code>TTL</code>, <code>ECL</code>, <code>CMOS</code>, etc).</p></section>
 </dd>
 <dt id="smuview.ConfigKey.LogicThresholdCustom"><code class="name">var <span class="ident">LogicThresholdCustom</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Logic threshold: custom numerical value.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.MeasuredQuantity"><code class="name">var <span class="ident">MeasuredQuantity</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Measured quantity.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.NumAnalogChannels"><code class="name">var <span class="ident">NumAnalogChannels</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>The number of analog channels.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.NumHDiv"><code class="name">var <span class="ident">NumHDiv</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Number of horizontal divisions, as related to <a title="smuview.ConfigKey.TimeBase" href="#smuview.ConfigKey.TimeBase"><code>ConfigKey.TimeBase</code></a>.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.NumLogicChannels"><code class="name">var <span class="ident">NumLogicChannels</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>The number of logic channels.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.NumVDiv"><code class="name">var <span class="ident">NumVDiv</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Number of vertical divisions, as related to <a title="smuview.ConfigKey.VDiv" href="#smuview.ConfigKey.VDiv"><code>ConfigKey.VDiv</code></a>.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.Offset"><code class="name">var <span class="ident">Offset</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Offset of a source without strictly-defined <a title="smuview.ConfigKey.MeasuredQuantity" href="#smuview.ConfigKey.MeasuredQuantity"><code>ConfigKey.MeasuredQuantity</code></a>.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.OutputFrequency"><code class="name">var <span class="ident">OutputFrequency</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Output frequency in Hz.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.OutputFrequencyTarget"><code class="name">var <span class="ident">OutputFrequencyTarget</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Output frequency target in Hz.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.OverCurrentProtectionActive"><code class="name">var <span class="ident">OverCurrentProtectionActive</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Status of over current protection (OCP).</p></section>
 </dd>
 <dt id="smuview.ConfigKey.OverCurrentProtectionEnabled"><code class="name">var <span class="ident">OverCurrentProtectionEnabled</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Enabling/disable
+over current protection (OCP) feature.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.OverCurrentProtectionThreshold"><code class="name">var <span class="ident">OverCurrentProtectionThreshold</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Over current protection (OCP) threshold.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.OverTemperatureProtectionActive"><code class="name">var <span class="ident">OverTemperatureProtectionActive</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Status of over temperature protection (OTP).</p></section>
 </dd>
 <dt id="smuview.ConfigKey.OverTemperatureProtectionEnabled"><code class="name">var <span class="ident">OverTemperatureProtectionEnabled</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Enabling/disable over temperature protection (OTP) feature.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.OverVoltageProtectionActive"><code class="name">var <span class="ident">OverVoltageProtectionActive</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Status of over voltage protection (OVP).</p></section>
 </dd>
 <dt id="smuview.ConfigKey.OverVoltageProtectionEnabled"><code class="name">var <span class="ident">OverVoltageProtectionEnabled</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Enabling/disable over voltage protection (OVP) feature.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.OverVoltageProtectionThreshold"><code class="name">var <span class="ident">OverVoltageProtectionThreshold</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Over voltage protection (OVP) threshold.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.PatternMode"><code class="name">var <span class="ident">PatternMode</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>A pattern (pattern generator mode).</p></section>
 </dd>
 <dt id="smuview.ConfigKey.PeakDetection"><code class="name">var <span class="ident">PeakDetection</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Peak detection.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.PowerOff"><code class="name">var <span class="ident">PowerOff</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Power off the device.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.ProbeFactor"><code class="name">var <span class="ident">ProbeFactor</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>The probe factor.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.RLE"><code class="name">var <span class="ident">RLE</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Run-length encoding (RLE).</p></section>
 </dd>
 <dt id="smuview.ConfigKey.Range"><code class="name">var <span class="ident">Range</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>The measurement range of a DMM or the output range of a power supply.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.Regulation"><code class="name">var <span class="ident">Regulation</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Channel regulation. <code>CV</code>, <code>CC</code> or <code>UR</code>, denoting constant voltage, constant current or unregulated. <code>CC-</code> denotes a power supply in current sink mode (e.g. HP 66xxB). An empty string is used when there is no regulation, e.g.
+the output is disabled.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.SampleInterval"><code class="name">var <span class="ident">SampleInterval</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>The sample interval, in ms.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.Samplerate"><code class="name">var <span class="ident">Samplerate</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>The samplerate, in Hz.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.SessionFile"><code class="name">var <span class="ident">SessionFile</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Session filename.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.SplMeasurementRange"><code class="name">var <span class="ident">SplMeasurementRange</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Sound pressure level measurement range.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.SplWeightFreq"><code class="name">var <span class="ident">SplWeightFreq</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Sound pressure level frequency weighting.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.SplWeightTime"><code class="name">var <span class="ident">SplWeightTime</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Sound pressure level time weighting.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.Swap"><code class="name">var <span class="ident">Swap</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Swapping channels.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.TestMode"><code class="name">var <span class="ident">TestMode</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Self test mode.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.TimeBase"><code class="name">var <span class="ident">TimeBase</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Time base.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.TriggerLevel"><code class="name">var <span class="ident">TriggerLevel</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Trigger level.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.TriggerMatch"><code class="name">var <span class="ident">TriggerMatch</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Trigger matches.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.TriggerPattern"><code class="name">var <span class="ident">TriggerPattern</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>The pattern for the logic trigger.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.TriggerSlope"><code class="name">var <span class="ident">TriggerSlope</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>The trigger slope.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.TriggerSource"><code class="name">var <span class="ident">TriggerSource</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Trigger source.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.UnderVoltageConditionActive"><code class="name">var <span class="ident">UnderVoltageConditionActive</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Status of under voltage condition (UVC).</p></section>
 </dd>
 <dt id="smuview.ConfigKey.UnderVoltageConditionEnabled"><code class="name">var <span class="ident">UnderVoltageConditionEnabled</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Enabling/disable under voltage condition (UVC) feature.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.UnderVoltageConditionThreshold"><code class="name">var <span class="ident">UnderVoltageConditionThreshold</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Under voltage condition threshold (UVC).</p></section>
 </dd>
 <dt id="smuview.ConfigKey.Unknown"><code class="name">var <span class="ident">Unknown</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Unknown config key.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.VDiv"><code class="name">var <span class="ident">VDiv</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Volts/div.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.Voltage"><code class="name">var <span class="ident">Voltage</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Current voltage.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.VoltageTarget"><code class="name">var <span class="ident">VoltageTarget</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Maximum target voltage.</p></section>
 </dd>
 <dt id="smuview.ConfigKey.VoltageThreshold"><code class="name">var <span class="ident">VoltageThreshold</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Logic low-high threshold range.</p></section>
 </dd>
 </dl>
 <h3>Instance variables</h3>
@@ -708,71 +714,70 @@
 <h3>Methods</h3>
 <dl>
 <dt id="smuview.Configurable.get_config"><code class="name flex">
-<span>def <span class="ident">get_config</span></span>(<span>...)</span>
+<span>def <span class="ident">get_config</span></span>(<span>*args, **kwargs)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>get_config(<em>args, </em>*kwargs)
-Overloaded function.</p>
+<section class="desc"><p>Overloaded function.</p>
 <ol>
-<li>get_config(self: smuview.Configurable, config_key: sv::devices::ConfigKey) -&gt; bool</li>
+<li>get_config(self: smuview.Configurable, config_key: smuview.ConfigKey) -&gt; bool</li>
 </ol>
 <p>Return a boolean value from the given config key.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>config_key</code></strong> :&ensp;<a title="smuview.ConfigKey" href="#smuview.ConfigKey"><code>ConfigKey</code></a></dt>
-<dd>The config key.</dd>
+<dd>The <a title="smuview.ConfigKey" href="#smuview.ConfigKey"><code>ConfigKey</code></a> to get.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>bool</code></dt>
 <dd>The bool value of the config key.</dd>
-<dt><code>2.</code> <code>get_config</code>(<code>self</code>: <a title="smuview.Configurable" href="#smuview.Configurable"><code>Configurable</code></a>, <code>config_key</code>: <code>sv</code>::<code>devices</code>::<a title="smuview.ConfigKey" href="#smuview.ConfigKey"><code>ConfigKey</code></a>) -&gt; <code>int</code></dt>
+<dt><code>2.</code> <code>get_config</code>(<code>self</code>: <a title="smuview.Configurable" href="#smuview.Configurable"><code>Configurable</code></a>, <code>config_key</code>: <a title="smuview.ConfigKey" href="#smuview.ConfigKey"><code>ConfigKey</code></a>) -&gt; <code>int</code></dt>
 <dd>&nbsp;</dd>
 </dl>
 <p>Return an integer value from the given config key.</p>
 <h2 id="parameters_1">Parameters</h2>
 <dl>
 <dt><strong><code>config_key</code></strong> :&ensp;<a title="smuview.ConfigKey" href="#smuview.ConfigKey"><code>ConfigKey</code></a></dt>
-<dd>The config key.</dd>
+<dd>The <a title="smuview.ConfigKey" href="#smuview.ConfigKey"><code>ConfigKey</code></a> to get.</dd>
 </dl>
 <h2 id="returns_1">Returns</h2>
 <dl>
 <dt><code>int</code></dt>
 <dd>The int value of the config key.</dd>
-<dt><code>3.</code> <code>get_config</code>(<code>self</code>: <a title="smuview.Configurable" href="#smuview.Configurable"><code>Configurable</code></a>, <code>config_key</code>: <code>sv</code>::<code>devices</code>::<a title="smuview.ConfigKey" href="#smuview.ConfigKey"><code>ConfigKey</code></a>) -&gt; <code>int</code></dt>
+<dt><code>3.</code> <code>get_config</code>(<code>self</code>: <a title="smuview.Configurable" href="#smuview.Configurable"><code>Configurable</code></a>, <code>config_key</code>: <a title="smuview.ConfigKey" href="#smuview.ConfigKey"><code>ConfigKey</code></a>) -&gt; <code>int</code></dt>
 <dd>&nbsp;</dd>
 </dl>
 <p>Return an unsigned integer value from the given config key.</p>
 <h2 id="parameters_2">Parameters</h2>
 <dl>
 <dt><strong><code>config_key</code></strong> :&ensp;<a title="smuview.ConfigKey" href="#smuview.ConfigKey"><code>ConfigKey</code></a></dt>
-<dd>The config key.</dd>
+<dd>The <a title="smuview.ConfigKey" href="#smuview.ConfigKey"><code>ConfigKey</code></a> to get.</dd>
 </dl>
 <h2 id="returns_2">Returns</h2>
 <dl>
 <dt><code>int</code></dt>
 <dd>The (unsigned) int value of the config key.</dd>
-<dt><code>4.</code> <code>get_config</code>(<code>self</code>: <a title="smuview.Configurable" href="#smuview.Configurable"><code>Configurable</code></a>, <code>config_key</code>: <code>sv</code>::<code>devices</code>::<a title="smuview.ConfigKey" href="#smuview.ConfigKey"><code>ConfigKey</code></a>) -&gt; <code>float</code></dt>
+<dt><code>4.</code> <code>get_config</code>(<code>self</code>: <a title="smuview.Configurable" href="#smuview.Configurable"><code>Configurable</code></a>, <code>config_key</code>: <a title="smuview.ConfigKey" href="#smuview.ConfigKey"><code>ConfigKey</code></a>) -&gt; <code>float</code></dt>
 <dd>&nbsp;</dd>
 </dl>
 <p>Return a double value from the given config key.</p>
 <h2 id="parameters_3">Parameters</h2>
 <dl>
 <dt><strong><code>config_key</code></strong> :&ensp;<a title="smuview.ConfigKey" href="#smuview.ConfigKey"><code>ConfigKey</code></a></dt>
-<dd>The config key.</dd>
+<dd>The <a title="smuview.ConfigKey" href="#smuview.ConfigKey"><code>ConfigKey</code></a> to get.</dd>
 </dl>
 <h2 id="returns_3">Returns</h2>
 <dl>
 <dt><code>float</code></dt>
 <dd>The float value of the config key.</dd>
-<dt><code>5.</code> <code>get_config</code>(<code>self</code>: <a title="smuview.Configurable" href="#smuview.Configurable"><code>Configurable</code></a>, <code>config_key</code>: <code>sv</code>::<code>devices</code>::<a title="smuview.ConfigKey" href="#smuview.ConfigKey"><code>ConfigKey</code></a>) -&gt; <code>str</code></dt>
+<dt><code>5.</code> <code>get_config</code>(<code>self</code>: <a title="smuview.Configurable" href="#smuview.Configurable"><code>Configurable</code></a>, <code>config_key</code>: <a title="smuview.ConfigKey" href="#smuview.ConfigKey"><code>ConfigKey</code></a>) -&gt; <code>str</code></dt>
 <dd>&nbsp;</dd>
 </dl>
 <p>Return a string value from the given config key.</p>
 <h2 id="parameters_4">Parameters</h2>
 <dl>
 <dt><strong><code>config_key</code></strong> :&ensp;<a title="smuview.ConfigKey" href="#smuview.ConfigKey"><code>ConfigKey</code></a></dt>
-<dd>The config key.</dd>
+<dd>The <a title="smuview.ConfigKey" href="#smuview.ConfigKey"><code>ConfigKey</code></a> to get.</dd>
 </dl>
 <h2 id="returns_4">Returns</h2>
 <dl>
@@ -781,11 +786,10 @@ Overloaded function.</p>
 </dl></section>
 </dd>
 <dt id="smuview.Configurable.name"><code class="name flex">
-<span>def <span class="ident">name</span></span>(<span>...)</span>
+<span>def <span class="ident">name</span></span>(<span>self: smuview.Configurable) -> 'str'</span>
 </code></dt>
 <dd>
-<section class="desc"><p>name(self: smuview.Configurable) -&gt; str</p>
-<p>Return the name of the configurable.</p>
+<section class="desc"><p>Return the name of the configurable.</p>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>str</code></dt>
@@ -793,63 +797,62 @@ Overloaded function.</p>
 </dl></section>
 </dd>
 <dt id="smuview.Configurable.set_config"><code class="name flex">
-<span>def <span class="ident">set_config</span></span>(<span>...)</span>
+<span>def <span class="ident">set_config</span></span>(<span>*args, **kwargs)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>set_config(<em>args, </em>*kwargs)
-Overloaded function.</p>
+<section class="desc"><p>Overloaded function.</p>
 <ol>
-<li>set_config(self: smuview.Configurable, config_key: sv::devices::ConfigKey, value: bool) -&gt; None</li>
+<li>set_config(self: smuview.Configurable, config_key: smuview.ConfigKey, value: bool) -&gt; None</li>
 </ol>
 <p>Set a boolean value to the given config key.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>config_key</code></strong> :&ensp;<a title="smuview.ConfigKey" href="#smuview.ConfigKey"><code>ConfigKey</code></a></dt>
-<dd>The config key.</dd>
+<dd>The <a title="smuview.ConfigKey" href="#smuview.ConfigKey"><code>ConfigKey</code></a> to set.</dd>
 <dt><strong><code>value</code></strong> :&ensp;<code>bool</code></dt>
 <dd>The bool value to set.</dd>
 </dl>
 <ol>
-<li>set_config(self: smuview.Configurable, config_key: sv::devices::ConfigKey, value: int) -&gt; None</li>
+<li>set_config(self: smuview.Configurable, config_key: smuview.ConfigKey, value: int) -&gt; None</li>
 </ol>
 <p>Set an integer value to the given config key.</p>
 <h2 id="parameters_1">Parameters</h2>
 <dl>
 <dt><strong><code>config_key</code></strong> :&ensp;<a title="smuview.ConfigKey" href="#smuview.ConfigKey"><code>ConfigKey</code></a></dt>
-<dd>The config key.</dd>
+<dd>The <a title="smuview.ConfigKey" href="#smuview.ConfigKey"><code>ConfigKey</code></a> to set.</dd>
 <dt><strong><code>value</code></strong> :&ensp;<code>int</code></dt>
 <dd>The int value to set.</dd>
 </dl>
 <ol>
-<li>set_config(self: smuview.Configurable, config_key: sv::devices::ConfigKey, value: int) -&gt; None</li>
+<li>set_config(self: smuview.Configurable, config_key: smuview.ConfigKey, value: int) -&gt; None</li>
 </ol>
 <p>Set an unsigned integer value to the given config key.</p>
 <h2 id="parameters_2">Parameters</h2>
 <dl>
 <dt><strong><code>config_key</code></strong> :&ensp;<a title="smuview.ConfigKey" href="#smuview.ConfigKey"><code>ConfigKey</code></a></dt>
-<dd>The config key.</dd>
+<dd>The <a title="smuview.ConfigKey" href="#smuview.ConfigKey"><code>ConfigKey</code></a> to set.</dd>
 <dt><strong><code>value</code></strong> :&ensp;<code>int</code></dt>
 <dd>The (unsigned) int value to set.</dd>
 </dl>
 <ol>
-<li>set_config(self: smuview.Configurable, config_key: sv::devices::ConfigKey, value: float) -&gt; None</li>
+<li>set_config(self: smuview.Configurable, config_key: smuview.ConfigKey, value: float) -&gt; None</li>
 </ol>
 <p>Set a double value to the given config key.</p>
 <h2 id="parameters_3">Parameters</h2>
 <dl>
 <dt><strong><code>config_key</code></strong> :&ensp;<a title="smuview.ConfigKey" href="#smuview.ConfigKey"><code>ConfigKey</code></a></dt>
-<dd>The config key.</dd>
+<dd>The <a title="smuview.ConfigKey" href="#smuview.ConfigKey"><code>ConfigKey</code></a> to set.</dd>
 <dt><strong><code>value</code></strong> :&ensp;<code>float</code></dt>
 <dd>The float value to set.</dd>
 </dl>
 <ol>
-<li>set_config(self: smuview.Configurable, config_key: sv::devices::ConfigKey, value: str) -&gt; None</li>
+<li>set_config(self: smuview.Configurable, config_key: smuview.ConfigKey, value: str) -&gt; None</li>
 </ol>
 <p>Set a string value to the given config key.</p>
 <h2 id="parameters_4">Parameters</h2>
 <dl>
 <dt><strong><code>config_key</code></strong> :&ensp;<a title="smuview.ConfigKey" href="#smuview.ConfigKey"><code>ConfigKey</code></a></dt>
-<dd>The config key.</dd>
+<dd>The <a title="smuview.ConfigKey" href="#smuview.ConfigKey"><code>ConfigKey</code></a> to set.</dd>
 <dt><strong><code>value</code></strong> :&ensp;<code>str</code></dt>
 <dd>The string value to set.</dd>
 </dl></section>
@@ -871,19 +874,19 @@ Overloaded function.</p>
 <dl>
 <dt id="smuview.DockArea.BottomDockArea"><code class="name">var <span class="ident">BottomDockArea</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Dock to the bottom dock area.</p></section>
 </dd>
 <dt id="smuview.DockArea.LeftDocktArea"><code class="name">var <span class="ident">LeftDocktArea</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Dock to the left dock area.</p></section>
 </dd>
 <dt id="smuview.DockArea.RightDockArea"><code class="name">var <span class="ident">RightDockArea</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Dock to the right dock area.</p></section>
 </dd>
 <dt id="smuview.DockArea.TopDockArea"><code class="name">var <span class="ident">TopDockArea</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Dock to the top dock area.</p></section>
 </dd>
 </dl>
 <h3>Instance variables</h3>
@@ -970,109 +973,94 @@ Overloaded function.</p>
 <h3>Methods</h3>
 <dl>
 <dt id="smuview.PyStreamBuf.close"><code class="name flex">
-<span>def <span class="ident">close</span></span>(<span>...)</span>
+<span>def <span class="ident">close</span></span>(<span>self: smuview.PyStreamBuf) -> 'None'</span>
 </code></dt>
 <dd>
-<section class="desc"><p>close(self: smuview.PyStreamBuf) -&gt; None</p>
-<p>Flush and close this stream.</p></section>
+<section class="desc"><p>Flush and close this stream.</p></section>
 </dd>
 <dt id="smuview.PyStreamBuf.fileno"><code class="name flex">
-<span>def <span class="ident">fileno</span></span>(<span>...)</span>
+<span>def <span class="ident">fileno</span></span>(<span>self: smuview.PyStreamBuf) -> 'int'</span>
 </code></dt>
 <dd>
-<section class="desc"><p>fileno(self: smuview.PyStreamBuf) -&gt; int</p>
-<p>Raises an OSError, because PyStreamBuf doesn't use a file descriptor.</p></section>
+<section class="desc"><p>Raises an OSError, because PyStreamBuf doesn't use a file descriptor.</p></section>
 </dd>
 <dt id="smuview.PyStreamBuf.flush"><code class="name flex">
-<span>def <span class="ident">flush</span></span>(<span>...)</span>
+<span>def <span class="ident">flush</span></span>(<span>self: smuview.PyStreamBuf) -> 'None'</span>
 </code></dt>
 <dd>
-<section class="desc"><p>flush(self: smuview.PyStreamBuf) -&gt; None</p>
-<p>Flush the write buffers of the stream.</p></section>
+<section class="desc"><p>Flush the write buffers of the stream.</p></section>
 </dd>
 <dt id="smuview.PyStreamBuf.isatty"><code class="name flex">
-<span>def <span class="ident">isatty</span></span>(<span>...)</span>
+<span>def <span class="ident">isatty</span></span>(<span>self: smuview.PyStreamBuf) -> 'bool'</span>
 </code></dt>
 <dd>
-<section class="desc"><p>isatty(self: smuview.PyStreamBuf) -&gt; bool</p>
-<p>Always return False.</p></section>
+<section class="desc"><p>Always return False.</p></section>
 </dd>
 <dt id="smuview.PyStreamBuf.read"><code class="name flex">
-<span>def <span class="ident">read</span></span>(<span>...)</span>
+<span>def <span class="ident">read</span></span>(<span>self: smuview.PyStreamBuf, size: int) -> 'str'</span>
 </code></dt>
 <dd>
-<section class="desc"><p>read(self: smuview.PyStreamBuf, size: int) -&gt; str</p>
-<p>Raises an OSError, because PyStreamBuf is write only.</p></section>
+<section class="desc"><p>Raises an OSError, because PyStreamBuf is write only.</p></section>
 </dd>
 <dt id="smuview.PyStreamBuf.readable"><code class="name flex">
-<span>def <span class="ident">readable</span></span>(<span>...)</span>
+<span>def <span class="ident">readable</span></span>(<span>self: smuview.PyStreamBuf) -> 'bool'</span>
 </code></dt>
 <dd>
-<section class="desc"><p>readable(self: smuview.PyStreamBuf) -&gt; bool</p>
-<p>Always return False.</p></section>
+<section class="desc"><p>Always return False.</p></section>
 </dd>
 <dt id="smuview.PyStreamBuf.readline"><code class="name flex">
-<span>def <span class="ident">readline</span></span>(<span>...)</span>
+<span>def <span class="ident">readline</span></span>(<span>self: smuview.PyStreamBuf, size: int) -> 'str'</span>
 </code></dt>
 <dd>
-<section class="desc"><p>readline(self: smuview.PyStreamBuf, size: int) -&gt; str</p>
-<p>Raises an OSError, because PyStreamBuf is write only.</p></section>
+<section class="desc"><p>Raises an OSError, because PyStreamBuf is write only.</p></section>
 </dd>
 <dt id="smuview.PyStreamBuf.readlines"><code class="name flex">
-<span>def <span class="ident">readlines</span></span>(<span>...)</span>
+<span>def <span class="ident">readlines</span></span>(<span>self: smuview.PyStreamBuf, hint: int) -> 'List[str]'</span>
 </code></dt>
 <dd>
-<section class="desc"><p>readlines(self: smuview.PyStreamBuf, hint: int) -&gt; List[str]</p>
-<p>Raises an OSError, because PyStreamBuf is write only.</p></section>
+<section class="desc"><p>Raises an OSError, because PyStreamBuf is write only.</p></section>
 </dd>
 <dt id="smuview.PyStreamBuf.seek"><code class="name flex">
-<span>def <span class="ident">seek</span></span>(<span>...)</span>
+<span>def <span class="ident">seek</span></span>(<span>self: smuview.PyStreamBuf, offset: int, whence: int) -> 'int'</span>
 </code></dt>
 <dd>
-<section class="desc"><p>seek(self: smuview.PyStreamBuf, offset: int, whence: int) -&gt; int</p>
-<p>Raises an OSError, because PyStreamBuf is not seekable.</p></section>
+<section class="desc"><p>Raises an OSError, because PyStreamBuf is not seekable.</p></section>
 </dd>
 <dt id="smuview.PyStreamBuf.seekable"><code class="name flex">
-<span>def <span class="ident">seekable</span></span>(<span>...)</span>
+<span>def <span class="ident">seekable</span></span>(<span>self: smuview.PyStreamBuf) -> 'bool'</span>
 </code></dt>
 <dd>
-<section class="desc"><p>seekable(self: smuview.PyStreamBuf) -&gt; bool</p>
-<p>Always return False. PyStreamBuf is not seekable atm.</p></section>
+<section class="desc"><p>Always return False. PyStreamBuf is not seekable atm.</p></section>
 </dd>
 <dt id="smuview.PyStreamBuf.tell"><code class="name flex">
-<span>def <span class="ident">tell</span></span>(<span>...)</span>
+<span>def <span class="ident">tell</span></span>(<span>self: smuview.PyStreamBuf) -> 'int'</span>
 </code></dt>
 <dd>
-<section class="desc"><p>tell(self: smuview.PyStreamBuf) -&gt; int</p>
-<p>Raises an OSError, because PyStreamBuf is not seekable.</p></section>
+<section class="desc"><p>Raises an OSError, because PyStreamBuf is not seekable.</p></section>
 </dd>
 <dt id="smuview.PyStreamBuf.truncate"><code class="name flex">
-<span>def <span class="ident">truncate</span></span>(<span>...)</span>
+<span>def <span class="ident">truncate</span></span>(<span>self: smuview.PyStreamBuf, size: int) -> 'int'</span>
 </code></dt>
 <dd>
-<section class="desc"><p>truncate(self: smuview.PyStreamBuf, size: int) -&gt; int</p>
-<p>Raises an OSError, because PyStreamBuf is not seekable.</p></section>
+<section class="desc"><p>Raises an OSError, because PyStreamBuf is not seekable.</p></section>
 </dd>
 <dt id="smuview.PyStreamBuf.writable"><code class="name flex">
-<span>def <span class="ident">writable</span></span>(<span>...)</span>
+<span>def <span class="ident">writable</span></span>(<span>self: smuview.PyStreamBuf) -> 'bool'</span>
 </code></dt>
 <dd>
-<section class="desc"><p>writable(self: smuview.PyStreamBuf) -&gt; bool</p>
-<p>Always return True.</p></section>
+<section class="desc"><p>Always return True.</p></section>
 </dd>
 <dt id="smuview.PyStreamBuf.write"><code class="name flex">
-<span>def <span class="ident">write</span></span>(<span>...)</span>
+<span>def <span class="ident">write</span></span>(<span>self: smuview.PyStreamBuf, s: str) -> 'int'</span>
 </code></dt>
 <dd>
-<section class="desc"><p>write(self: smuview.PyStreamBuf, s: str) -&gt; int</p>
-<p>Write the string s to the stream and return the number of characters written.</p></section>
+<section class="desc"><p>Write the string s to the stream and return the number of characters written.</p></section>
 </dd>
 <dt id="smuview.PyStreamBuf.writelines"><code class="name flex">
-<span>def <span class="ident">writelines</span></span>(<span>...)</span>
+<span>def <span class="ident">writelines</span></span>(<span>self: smuview.PyStreamBuf, lines: List[str]) -> 'None'</span>
 </code></dt>
 <dd>
-<section class="desc"><p>writelines(self: smuview.PyStreamBuf, lines: List[str]) -&gt; None</p>
-<p>Write a list of lines to the stream.</p></section>
+<section class="desc"><p>Write a list of lines to the stream.</p></section>
 </dd>
 </dl>
 </dd>
@@ -1091,147 +1079,147 @@ Overloaded function.</p>
 <dl>
 <dt id="smuview.Quantity.ApparentPower"><code class="name">var <span class="ident">ApparentPower</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Apparent power</p></section>
 </dd>
 <dt id="smuview.Quantity.Capacitance"><code class="name">var <span class="ident">Capacitance</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Capacitance</p></section>
 </dd>
 <dt id="smuview.Quantity.CarbonMonoxide"><code class="name">var <span class="ident">CarbonMonoxide</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Carbon monoxide</p></section>
 </dd>
 <dt id="smuview.Quantity.Conductance"><code class="name">var <span class="ident">Conductance</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Conductance</p></section>
 </dd>
 <dt id="smuview.Quantity.Continuity"><code class="name">var <span class="ident">Continuity</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Continuity</p></section>
 </dd>
 <dt id="smuview.Quantity.Count"><code class="name">var <span class="ident">Count</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Count</p></section>
 </dd>
 <dt id="smuview.Quantity.Current"><code class="name">var <span class="ident">Current</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Current</p></section>
 </dd>
 <dt id="smuview.Quantity.Difference"><code class="name">var <span class="ident">Difference</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Difference from reference value.</p></section>
 </dd>
 <dt id="smuview.Quantity.DissipationFactor"><code class="name">var <span class="ident">DissipationFactor</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Dissipation factor</p></section>
 </dd>
 <dt id="smuview.Quantity.DutyCyle"><code class="name">var <span class="ident">DutyCyle</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>DutyCyle</p></section>
 </dd>
 <dt id="smuview.Quantity.ElectricCharge"><code class="name">var <span class="ident">ElectricCharge</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Electric charge</p></section>
 </dd>
 <dt id="smuview.Quantity.Frequency"><code class="name">var <span class="ident">Frequency</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Frequency</p></section>
 </dd>
 <dt id="smuview.Quantity.Gain"><code class="name">var <span class="ident">Gain</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Gain (a transistor's gain, or hFE, for example).</p></section>
 </dd>
 <dt id="smuview.Quantity.HarmonicRatio"><code class="name">var <span class="ident">HarmonicRatio</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Harmonic ratio</p></section>
 </dd>
 <dt id="smuview.Quantity.Mass"><code class="name">var <span class="ident">Mass</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Mass</p></section>
 </dd>
 <dt id="smuview.Quantity.ParallelCapacitance"><code class="name">var <span class="ident">ParallelCapacitance</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Parallel capacitance</p></section>
 </dd>
 <dt id="smuview.Quantity.ParallelInductance"><code class="name">var <span class="ident">ParallelInductance</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Parallel inductance</p></section>
 </dd>
 <dt id="smuview.Quantity.ParallelResistance"><code class="name">var <span class="ident">ParallelResistance</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Parallel resistance</p></section>
 </dd>
 <dt id="smuview.Quantity.PhaseAngle"><code class="name">var <span class="ident">PhaseAngle</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Phase angle</p></section>
 </dd>
 <dt id="smuview.Quantity.Power"><code class="name">var <span class="ident">Power</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Electrical power, usually in W, or dBm.</p></section>
 </dd>
 <dt id="smuview.Quantity.PowerFactor"><code class="name">var <span class="ident">PowerFactor</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Power factor</p></section>
 </dd>
 <dt id="smuview.Quantity.Pressure"><code class="name">var <span class="ident">Pressure</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Pressure</p></section>
 </dd>
 <dt id="smuview.Quantity.PulseWidth"><code class="name">var <span class="ident">PulseWidth</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>PulseWidth</p></section>
 </dd>
 <dt id="smuview.Quantity.QualityFactor"><code class="name">var <span class="ident">QualityFactor</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Quality factor</p></section>
 </dd>
 <dt id="smuview.Quantity.RelativeHumidity"><code class="name">var <span class="ident">RelativeHumidity</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Relative humidity</p></section>
 </dd>
 <dt id="smuview.Quantity.Resistance"><code class="name">var <span class="ident">Resistance</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Resistance</p></section>
 </dd>
 <dt id="smuview.Quantity.SeriesCapacitance"><code class="name">var <span class="ident">SeriesCapacitance</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Series capacitance</p></section>
 </dd>
 <dt id="smuview.Quantity.SeriesInductance"><code class="name">var <span class="ident">SeriesInductance</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Series inductance</p></section>
 </dd>
 <dt id="smuview.Quantity.SeriesResistance"><code class="name">var <span class="ident">SeriesResistance</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Series resistance</p></section>
 </dd>
 <dt id="smuview.Quantity.SoundPressureLevel"><code class="name">var <span class="ident">SoundPressureLevel</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Logarithmic representation of sound pressure relative to a reference value.</p></section>
 </dd>
 <dt id="smuview.Quantity.Temperature"><code class="name">var <span class="ident">Temperature</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Temperature</p></section>
 </dd>
 <dt id="smuview.Quantity.Time"><code class="name">var <span class="ident">Time</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Time</p></section>
 </dd>
 <dt id="smuview.Quantity.Unknown"><code class="name">var <span class="ident">Unknown</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Unknown</p></section>
 </dd>
 <dt id="smuview.Quantity.Voltage"><code class="name">var <span class="ident">Voltage</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Voltage</p></section>
 </dd>
 <dt id="smuview.Quantity.WindSpeed"><code class="name">var <span class="ident">WindSpeed</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Wind speed</p></section>
 </dd>
 <dt id="smuview.Quantity.Work"><code class="name">var <span class="ident">Work</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Work, also Energy</p></section>
 </dd>
 </dl>
 <h3>Instance variables</h3>
@@ -1257,95 +1245,95 @@ Overloaded function.</p>
 <dl>
 <dt id="smuview.QuantityFlag.AC"><code class="name">var <span class="ident">AC</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Alternating current.</p></section>
 </dd>
 <dt id="smuview.QuantityFlag.Autorange"><code class="name">var <span class="ident">Autorange</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Device is in autoranging mode.</p></section>
 </dd>
 <dt id="smuview.QuantityFlag.Avg"><code class="name">var <span class="ident">Avg</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Device is in average mode, averaging upon each new value.</p></section>
 </dd>
 <dt id="smuview.QuantityFlag.DC"><code class="name">var <span class="ident">DC</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Direct current.</p></section>
 </dd>
 <dt id="smuview.QuantityFlag.Diode"><code class="name">var <span class="ident">Diode</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Value is voltage drop across a diode, or NAN.</p></section>
 </dd>
 <dt id="smuview.QuantityFlag.Duration"><code class="name">var <span class="ident">Duration</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Time is duration (as opposed to epoch, &hellip;).</p></section>
 </dd>
 <dt id="smuview.QuantityFlag.FourWire"><code class="name">var <span class="ident">FourWire</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Device is in 4-wire mode.</p></section>
 </dd>
 <dt id="smuview.QuantityFlag.Hold"><code class="name">var <span class="ident">Hold</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Device is in hold mode (repeating the last measurement).</p></section>
 </dd>
 <dt id="smuview.QuantityFlag.Max"><code class="name">var <span class="ident">Max</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Device is in max mode, only updating upon a new max value.</p></section>
 </dd>
 <dt id="smuview.QuantityFlag.Min"><code class="name">var <span class="ident">Min</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Device is in min mode, only updating upon a new min value.</p></section>
 </dd>
 <dt id="smuview.QuantityFlag.RMS"><code class="name">var <span class="ident">RMS</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Root mean square (RMS).</p></section>
 </dd>
 <dt id="smuview.QuantityFlag.Reference"><code class="name">var <span class="ident">Reference</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Reference value shown.</p></section>
 </dd>
 <dt id="smuview.QuantityFlag.Relative"><code class="name">var <span class="ident">Relative</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Device is in relative mode.</p></section>
 </dd>
 <dt id="smuview.QuantityFlag.SplFreqWeightA"><code class="name">var <span class="ident">SplFreqWeightA</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Sound pressure level is A-weighted in the frequency domain, according to IEC 61672:2003.</p></section>
 </dd>
 <dt id="smuview.QuantityFlag.SplFreqWeightC"><code class="name">var <span class="ident">SplFreqWeightC</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Sound pressure level is C-weighted in the frequency domain, according to IEC 61672:2003.</p></section>
 </dd>
 <dt id="smuview.QuantityFlag.SplFreqWeightFlat"><code class="name">var <span class="ident">SplFreqWeightFlat</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Sound pressure level is not weighted in the frequency domain, albeit without standards-defined low and high frequency limits.</p></section>
 </dd>
 <dt id="smuview.QuantityFlag.SplFreqWeightZ"><code class="name">var <span class="ident">SplFreqWeightZ</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Sound pressure level is Z-weighted.</p></section>
 </dd>
 <dt id="smuview.QuantityFlag.SplLAT"><code class="name">var <span class="ident">SplLAT</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Sound pressure level is time-averaged (LAT), also known as Equivalent Continuous A-weighted Sound Level (LEQ).</p></section>
 </dd>
 <dt id="smuview.QuantityFlag.SplPctOverAlarm"><code class="name">var <span class="ident">SplPctOverAlarm</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Sound pressure level represented as a percentage of measurements that were over a preset alarm level.</p></section>
 </dd>
 <dt id="smuview.QuantityFlag.SplTimeWeightF"><code class="name">var <span class="ident">SplTimeWeightF</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Sound pressure level measurement is F-weighted (125ms) in the time domain.</p></section>
 </dd>
 <dt id="smuview.QuantityFlag.SplTimeWeightS"><code class="name">var <span class="ident">SplTimeWeightS</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Sound pressure level measurement is S-weighted (1s) in the time domain.</p></section>
 </dd>
 <dt id="smuview.QuantityFlag.Unknown"><code class="name">var <span class="ident">Unknown</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Unknown quantity flag.</p></section>
 </dd>
 <dt id="smuview.QuantityFlag.Unstable"><code class="name">var <span class="ident">Unstable</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Unstable value (hasn't settled yet).</p></section>
 </dd>
 </dl>
 <h3>Instance variables</h3>
@@ -1369,11 +1357,10 @@ Overloaded function.</p>
 <h3>Methods</h3>
 <dl>
 <dt id="smuview.Session.add_user_device"><code class="name flex">
-<span>def <span class="ident">add_user_device</span></span>(<span>...)</span>
+<span>def <span class="ident">add_user_device</span></span>(<span>self: smuview.Session) -> '<a title="smuview.UserDevice" href="#smuview.UserDevice">UserDevice</a>'</span>
 </code></dt>
 <dd>
-<section class="desc"><p>add_user_device(self: smuview.Session) -&gt; sv::devices::UserDevice</p>
-<p>Create a new user device.</p>
+<section class="desc"><p>Create a new user device.</p>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><a title="smuview.UserDevice" href="#smuview.UserDevice"><code>UserDevice</code></a></dt>
@@ -1381,11 +1368,10 @@ Overloaded function.</p>
 </dl></section>
 </dd>
 <dt id="smuview.Session.connect_device"><code class="name flex">
-<span>def <span class="ident">connect_device</span></span>(<span>...)</span>
+<span>def <span class="ident">connect_device</span></span>(<span>self: smuview.Session, conn_str: str) -> 'List[<a title="smuview.HardwareDevice" href="#smuview.HardwareDevice">HardwareDevice</a>]'</span>
 </code></dt>
 <dd>
-<section class="desc"><p>connect_device(self: smuview.Session, conn_str: str) -&gt; List[sv::devices::HardwareDevice]</p>
-<p>Connect a new device.</p>
+<section class="desc"><p>Connect a new device.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>conn_str</code></strong> :&ensp;<code>str</code></dt>
@@ -1398,11 +1384,10 @@ Overloaded function.</p>
 </dl></section>
 </dd>
 <dt id="smuview.Session.devices"><code class="name flex">
-<span>def <span class="ident">devices</span></span>(<span>...)</span>
+<span>def <span class="ident">devices</span></span>(<span>self: smuview.Session) -> 'Dict[str, <a title="smuview.BaseDevice" href="#smuview.BaseDevice">BaseDevice</a>]'</span>
 </code></dt>
 <dd>
-<section class="desc"><p>devices(self: smuview.Session) -&gt; Dict[str, sv::devices::BaseDevice]</p>
-<p>Return all connected devices.</p>
+<section class="desc"><p>Return all connected devices.</p>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>Dict</code>[<code>str</code>, <a title="smuview.BaseDevice" href="#smuview.BaseDevice"><code>BaseDevice</code></a>]</dt>
@@ -1424,11 +1409,10 @@ Overloaded function.</p>
 <h3>Methods</h3>
 <dl>
 <dt id="smuview.UiProxy.add_control_view"><code class="name flex">
-<span>def <span class="ident">add_control_view</span></span>(<span>...)</span>
+<span>def <span class="ident">add_control_view</span></span>(<span>self: smuview.UiProxy, device_id: str, configurable: smuview.Configurable) -> 'str'</span>
 </code></dt>
 <dd>
-<section class="desc"><p>add_control_view(self: smuview.UiProxy, device_id: str, area: Qt::DockWidgetArea, configurable: smuview.Configurable) -&gt; str</p>
-<p>Add a control view for a configurable to the given tab.</p>
+<section class="desc"><p>Add a control view for a configurable to the given tab.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>device_id</code></strong> :&ensp;<code>str</code></dt>
@@ -1436,7 +1420,7 @@ Overloaded function.</p>
 <dt><strong><code>area</code></strong> :&ensp;<a title="smuview.DockArea" href="#smuview.DockArea"><code>DockArea</code></a></dt>
 <dd>Where to put the new view.</dd>
 <dt><strong><code>configurable</code></strong> :&ensp;<a title="smuview.Configurable" href="#smuview.Configurable"><code>Configurable</code></a></dt>
-<dd>The configurable object.</dd>
+<dd>The <a title="smuview.Configurable" href="#smuview.Configurable"><code>Configurable</code></a> object.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -1445,11 +1429,10 @@ Overloaded function.</p>
 </dl></section>
 </dd>
 <dt id="smuview.UiProxy.add_data_view"><code class="name flex">
-<span>def <span class="ident">add_data_view</span></span>(<span>...)</span>
+<span>def <span class="ident">add_data_view</span></span>(<span>self: smuview.UiProxy, device_id: str, signal: smuview.AnalogTimeSignal) -> 'str'</span>
 </code></dt>
 <dd>
-<section class="desc"><p>add_data_view(self: smuview.UiProxy, device_id: str, area: Qt::DockWidgetArea, signal: smuview.AnalogTimeSignal) -&gt; str</p>
-<p>Add a data view for a signal to the given tab.</p>
+<section class="desc"><p>Add a data view for a signal to the given tab.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>device_id</code></strong> :&ensp;<code>str</code></dt>
@@ -1466,11 +1449,10 @@ Overloaded function.</p>
 </dl></section>
 </dd>
 <dt id="smuview.UiProxy.add_device_tab"><code class="name flex">
-<span>def <span class="ident">add_device_tab</span></span>(<span>...)</span>
+<span>def <span class="ident">add_device_tab</span></span>(<span>self: smuview.UiProxy, device: smuview.BaseDevice) -> 'None'</span>
 </code></dt>
 <dd>
-<section class="desc"><p>add_device_tab(self: smuview.UiProxy, device: smuview.BaseDevice) -&gt; None</p>
-<p>Add a device tab with standard view for a device to the UI.</p>
+<section class="desc"><p>Add a device tab with standard view for a device to the UI.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>device</code></strong> :&ensp;<a title="smuview.BaseDevice" href="#smuview.BaseDevice"><code>BaseDevice</code></a></dt>
@@ -1478,11 +1460,10 @@ Overloaded function.</p>
 </dl></section>
 </dd>
 <dt id="smuview.UiProxy.add_plot_view"><code class="name flex">
-<span>def <span class="ident">add_plot_view</span></span>(<span>...)</span>
+<span>def <span class="ident">add_plot_view</span></span>(<span>*args, **kwargs)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>add_plot_view(<em>args, </em>*kwargs)
-Overloaded function.</p>
+<section class="desc"><p>Overloaded function.</p>
 <ol>
 <li>add_plot_view(self: smuview.UiProxy, device_id: str, area: Qt::DockWidgetArea, channel: smuview.BaseChannel) -&gt; str</li>
 </ol>
@@ -1539,11 +1520,10 @@ Overloaded function.</p>
 </dl></section>
 </dd>
 <dt id="smuview.UiProxy.add_power_panel_view"><code class="name flex">
-<span>def <span class="ident">add_power_panel_view</span></span>(<span>...)</span>
+<span>def <span class="ident">add_power_panel_view</span></span>(<span>self: smuview.UiProxy, device_id: str, voltage_signal: smuview.AnalogTimeSignal, current_signal: smuview.AnalogTimeSignal) -> 'str'</span>
 </code></dt>
 <dd>
-<section class="desc"><p>add_power_panel_view(self: smuview.UiProxy, device_id: str, area: Qt::DockWidgetArea, voltage_signal: smuview.AnalogTimeSignal, current_signal: smuview.AnalogTimeSignal) -&gt; str</p>
-<p>Add a power panel view for a voltage and a current signal to the given tab.</p>
+<section class="desc"><p>Add a power panel view for a voltage and a current signal to the given tab.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>device_id</code></strong> :&ensp;<code>str</code></dt>
@@ -1562,11 +1542,10 @@ Overloaded function.</p>
 </dl></section>
 </dd>
 <dt id="smuview.UiProxy.add_signal_to_data_view"><code class="name flex">
-<span>def <span class="ident">add_signal_to_data_view</span></span>(<span>...)</span>
+<span>def <span class="ident">add_signal_to_data_view</span></span>(<span>self: smuview.UiProxy, device_id: str, view_id: str, signal: smuview.AnalogTimeSignal) -> 'None'</span>
 </code></dt>
 <dd>
-<section class="desc"><p>add_signal_to_data_view(self: smuview.UiProxy, device_id: str, view_id: str, signal: smuview.AnalogTimeSignal) -&gt; None</p>
-<p>Add a signal to the given data view.</p>
+<section class="desc"><p>Add a signal to the given data view.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>device_id</code></strong> :&ensp;<code>str</code></dt>
@@ -1578,11 +1557,10 @@ Overloaded function.</p>
 </dl></section>
 </dd>
 <dt id="smuview.UiProxy.add_signal_to_plot_view"><code class="name flex">
-<span>def <span class="ident">add_signal_to_plot_view</span></span>(<span>...)</span>
+<span>def <span class="ident">add_signal_to_plot_view</span></span>(<span>self: smuview.UiProxy, device_id: str, view_id: str, signal: smuview.AnalogTimeSignal) -> 'None'</span>
 </code></dt>
 <dd>
-<section class="desc"><p>add_signal_to_plot_view(self: smuview.UiProxy, device_id: str, view_id: str, signal: smuview.AnalogTimeSignal) -&gt; None</p>
-<p>Add a signal to the given plot view. If the plot is a x/y plot, the signal will be added as a new y signal.</p>
+<section class="desc"><p>Add a signal to the given plot view. If the plot is a x/y plot, the signal will be added as a new y signal.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>device_id</code></strong> :&ensp;<code>str</code></dt>
@@ -1594,11 +1572,10 @@ Overloaded function.</p>
 </dl></section>
 </dd>
 <dt id="smuview.UiProxy.add_signals_to_xy_plot_view"><code class="name flex">
-<span>def <span class="ident">add_signals_to_xy_plot_view</span></span>(<span>...)</span>
+<span>def <span class="ident">add_signals_to_xy_plot_view</span></span>(<span>self: smuview.UiProxy, device_id: str, view_id: str, x_signal: smuview.AnalogTimeSignal, y_signal: smuview.AnalogTimeSignal) -> 'None'</span>
 </code></dt>
 <dd>
-<section class="desc"><p>add_signals_to_xy_plot_view(self: smuview.UiProxy, device_id: str, view_id: str, x_signal: smuview.AnalogTimeSignal, y_signal: smuview.AnalogTimeSignal) -&gt; None</p>
-<p>Add x/y signals to the given x/y plot view.</p>
+<section class="desc"><p>Add x/y signals to the given x/y plot view.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>device_id</code></strong> :&ensp;<code>str</code></dt>
@@ -1612,11 +1589,10 @@ Overloaded function.</p>
 </dl></section>
 </dd>
 <dt id="smuview.UiProxy.add_value_panel_view"><code class="name flex">
-<span>def <span class="ident">add_value_panel_view</span></span>(<span>...)</span>
+<span>def <span class="ident">add_value_panel_view</span></span>(<span>*args, **kwargs)</span>
 </code></dt>
 <dd>
-<section class="desc"><p>add_value_panel_view(<em>args, </em>*kwargs)
-Overloaded function.</p>
+<section class="desc"><p>Overloaded function.</p>
 <ol>
 <li>add_value_panel_view(self: smuview.UiProxy, device_id: str, area: Qt::DockWidgetArea, channel: smuview.BaseChannel) -&gt; str</li>
 </ol>
@@ -1670,171 +1646,171 @@ Overloaded function.</p>
 <dl>
 <dt id="smuview.Unit.Ampere"><code class="name">var <span class="ident">Ampere</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Ampere</p></section>
 </dd>
 <dt id="smuview.Unit.AmpereHour"><code class="name">var <span class="ident">AmpereHour</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>AmpereHour (Ah)</p></section>
 </dd>
 <dt id="smuview.Unit.Boolean"><code class="name">var <span class="ident">Boolean</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Boolean</p></section>
 </dd>
 <dt id="smuview.Unit.Carat"><code class="name">var <span class="ident">Carat</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Weight in carat.</p></section>
 </dd>
 <dt id="smuview.Unit.Celsius"><code class="name">var <span class="ident">Celsius</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Celsius</p></section>
 </dd>
 <dt id="smuview.Unit.Concentration"><code class="name">var <span class="ident">Concentration</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Concentration</p></section>
 </dd>
 <dt id="smuview.Unit.Coulomb"><code class="name">var <span class="ident">Coulomb</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Coulomb</p></section>
 </dd>
 <dt id="smuview.Unit.Decibel"><code class="name">var <span class="ident">Decibel</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Decibel (dB)</p></section>
 </dd>
 <dt id="smuview.Unit.DecibelMW"><code class="name">var <span class="ident">DecibelMW</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Decibel milliWatt (dBm)</p></section>
 </dd>
 <dt id="smuview.Unit.DecibelSpl"><code class="name">var <span class="ident">DecibelSpl</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Decibel sound pressure level</p></section>
 </dd>
 <dt id="smuview.Unit.DecibelVolt"><code class="name">var <span class="ident">DecibelVolt</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Decibel Volt (dBV)</p></section>
 </dd>
 <dt id="smuview.Unit.Degree"><code class="name">var <span class="ident">Degree</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Degree</p></section>
 </dd>
 <dt id="smuview.Unit.Fahrenheit"><code class="name">var <span class="ident">Fahrenheit</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Fahrenheit</p></section>
 </dd>
 <dt id="smuview.Unit.Farad"><code class="name">var <span class="ident">Farad</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Farad</p></section>
 </dd>
 <dt id="smuview.Unit.Grain"><code class="name">var <span class="ident">Grain</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Weight in grain.</p></section>
 </dd>
 <dt id="smuview.Unit.Gram"><code class="name">var <span class="ident">Gram</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Weight in gram (g).</p></section>
 </dd>
 <dt id="smuview.Unit.HectoPascal"><code class="name">var <span class="ident">HectoPascal</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>HectoPascal (hPa)</p></section>
 </dd>
 <dt id="smuview.Unit.Henry"><code class="name">var <span class="ident">Henry</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Henry</p></section>
 </dd>
 <dt id="smuview.Unit.Hertz"><code class="name">var <span class="ident">Hertz</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Hertz</p></section>
 </dd>
 <dt id="smuview.Unit.Humidity293K"><code class="name">var <span class="ident">Humidity293K</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Humidity at 293K</p></section>
 </dd>
 <dt id="smuview.Unit.Joule"><code class="name">var <span class="ident">Joule</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Joule</p></section>
 </dd>
 <dt id="smuview.Unit.Kelvin"><code class="name">var <span class="ident">Kelvin</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Kelvin</p></section>
 </dd>
 <dt id="smuview.Unit.MeterPerSecond"><code class="name">var <span class="ident">MeterPerSecond</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Meter per second (m/s)</p></section>
 </dd>
 <dt id="smuview.Unit.Momme"><code class="name">var <span class="ident">Momme</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Weight in momme.</p></section>
 </dd>
 <dt id="smuview.Unit.Ohm"><code class="name">var <span class="ident">Ohm</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Ohm</p></section>
 </dd>
 <dt id="smuview.Unit.Ounce"><code class="name">var <span class="ident">Ounce</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Weight in avoirdupois ounce (oz).</p></section>
 </dd>
 <dt id="smuview.Unit.Pennyweight"><code class="name">var <span class="ident">Pennyweight</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Weight in pennyweight.</p></section>
 </dd>
 <dt id="smuview.Unit.Percentage"><code class="name">var <span class="ident">Percentage</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Percentage</p></section>
 </dd>
 <dt id="smuview.Unit.Piece"><code class="name">var <span class="ident">Piece</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Piece</p></section>
 </dd>
 <dt id="smuview.Unit.Pound"><code class="name">var <span class="ident">Pound</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Weight in avoirdupois pound (lb).</p></section>
 </dd>
 <dt id="smuview.Unit.RevolutionsPerMinute"><code class="name">var <span class="ident">RevolutionsPerMinute</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Revolutions per minute (RPM)</p></section>
 </dd>
 <dt id="smuview.Unit.Second"><code class="name">var <span class="ident">Second</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Second</p></section>
 </dd>
 <dt id="smuview.Unit.Siemens"><code class="name">var <span class="ident">Siemens</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Siemens</p></section>
 </dd>
 <dt id="smuview.Unit.Tael"><code class="name">var <span class="ident">Tael</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Weight in tael.</p></section>
 </dd>
 <dt id="smuview.Unit.Tola"><code class="name">var <span class="ident">Tola</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Weight in tola.</p></section>
 </dd>
 <dt id="smuview.Unit.TroyOunce"><code class="name">var <span class="ident">TroyOunce</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Weight in troy ounce (oz t).</p></section>
 </dd>
 <dt id="smuview.Unit.Unitless"><code class="name">var <span class="ident">Unitless</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Unitless</p></section>
 </dd>
 <dt id="smuview.Unit.Unknown"><code class="name">var <span class="ident">Unknown</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Unknown</p></section>
 </dd>
 <dt id="smuview.Unit.Volt"><code class="name">var <span class="ident">Volt</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Volt</p></section>
 </dd>
 <dt id="smuview.Unit.VoltAmpere"><code class="name">var <span class="ident">VoltAmpere</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>VoltAmpere (VA)</p></section>
 </dd>
 <dt id="smuview.Unit.Watt"><code class="name">var <span class="ident">Watt</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>Watt</p></section>
 </dd>
 <dt id="smuview.Unit.WattHour"><code class="name">var <span class="ident">WattHour</span></code></dt>
 <dd>
-<section class="desc"></section>
+<section class="desc"><p>WattHour (Wh)</p></section>
 </dd>
 </dl>
 <h3>Instance variables</h3>
@@ -1859,11 +1835,10 @@ Overloaded function.</p>
 <h3>Methods</h3>
 <dl>
 <dt id="smuview.UserChannel.push_sample"><code class="name flex">
-<span>def <span class="ident">push_sample</span></span>(<span>...)</span>
+<span>def <span class="ident">push_sample</span></span>(<span>self: smuview.UserChannel, sample: float, timestamp: float, quantity: smuview.Quantity, quantity_flags: Set[smuview.QuantityFlag], unit: smuview.Unit, digits: int, decimal_places: int) -> 'None'</span>
 </code></dt>
 <dd>
-<section class="desc"><p>push_sample(self: smuview.UserChannel, sample: float, timestamp: float, quantity: sv::data::Quantity, quantity_flags: Set[sv::data::QuantityFlag], unit: sv::data::Unit, digits: int, decimal_places: int) -&gt; None</p>
-<p>Push a single sample to the channel.</p>
+<section class="desc"><p>Push a single sample to the channel.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>sample</code></strong> :&ensp;<code>float</code></dt>
@@ -1871,11 +1846,11 @@ Overloaded function.</p>
 <dt><strong><code>timestamp</code></strong> :&ensp;<code>float</code></dt>
 <dd>The absolute timestamp in milliseconds.</dd>
 <dt><strong><code>quantity</code></strong> :&ensp;<a title="smuview.Quantity" href="#smuview.Quantity"><code>Quantity</code></a></dt>
-<dd>The Quantity of the new signal.</dd>
+<dd>The <a title="smuview.Quantity" href="#smuview.Quantity"><code>Quantity</code></a> of the new signal.</dd>
 <dt><strong><code>quantity_flags</code></strong> :&ensp;<code>Set</code>[<a title="smuview.QuantityFlag" href="#smuview.QuantityFlag"><code>QuantityFlag</code></a>]</dt>
-<dd>The QuantityFlags of the new signal.</dd>
+<dd>The <a title="smuview.QuantityFlag" href="#smuview.QuantityFlag"><code>QuantityFlag</code></a>s of the new signal.</dd>
 <dt><strong><code>unit</code></strong> :&ensp;<a title="smuview.Unit" href="#smuview.Unit"><code>Unit</code></a></dt>
-<dd>The Unit of the new signal.</dd>
+<dd>The <a title="smuview.Unit" href="#smuview.Unit"><code>Unit</code></a> of the new signal.</dd>
 <dt><strong><code>digits</code></strong> :&ensp;<code>int</code></dt>
 <dd>The total number of digits.</dd>
 <dt><strong><code>decimal_places</code></strong> :&ensp;<code>int</code></dt>
@@ -2254,7 +2229,7 @@ Overloaded function.</p>
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.5.dev7+gde1fc6e</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.5.dev12+gcc92197.d20200213</a>.</p>
 </footer>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
 <script>hljs.initHighlightingOnLoad()</script>

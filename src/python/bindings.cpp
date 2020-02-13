@@ -24,6 +24,7 @@
 #include <pybind11/stl.h>
 
 #include "bindings.hpp"
+#include "config.h"
 #include "src/session.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/channels/hardwarechannel.hpp"
@@ -57,7 +58,33 @@ PYBIND11_EMBEDDED_MODULE(smuview, m) {
 	options.disable_enum_members_docstring();
 	options.enable_enum_pdoc();
 
-	m.doc() = "SmuView python bindings.";
+	m.doc() = "The SmuView 0.0.4 Python bindings.\n\n" // TODO: Use SV_VERSION_STRING?
+		"The Python bindings are a scripting extension for SmuView, to automate "
+		"and setup complex or repetitive measurements and to create a standardized "
+		"user interface for those measurements.\n\n"
+		"The smuview module offers two default object instances: `Session` and "
+		"`UiProxy`.\n"
+		"The `Session` object gives access to already connected devices or connects "
+		"new devices. The returned device object can then be used to read data "
+		"from the device or control the device.\n"
+		"The `UiProxy` object instance is used to modify the user interface, for "
+		"example adding tabs or views.\n\n"
+		"Here is a short example that connects the HP 3378A DMM via GPIB, reads "
+		"a sample and creates the default tab for the device:\n"
+		"```\n"
+		"import smuview\n"
+		"import time\n\n"
+		"# Connect device.\n"
+		"dmm_dev = Session.connect_device(\"hp-3478a:conn=libgpib/hp3478a\")[0]\n"
+		"# Sleep 1s to give the devices the chance to create signals\n"
+		"time.sleep(1)\n"
+		"# Get last sample from channel P1\n"
+		"sample = dmm_dev.channels()[\"P1\"].actual_signal().get_last_sample(True)\n"
+		"print(sample)\n\n"
+		"# Add default tab for the DMM device.\n"
+		"UiProxy.add_device_tab(dmm_dev)\n"
+		"```\n\n"
+		"For more example scripts, please have a look into the `smuscript` folder.";
 
 	// NOTE: The order of initialization is very important! Otherwise types
 	//       could be unknown when pybind11 is generating the function
@@ -128,7 +155,7 @@ void init_Device(py::module &m)
 		"Returns\n"
 		"-------\n"
 		"Dict[str, Configurable]\n"
-		"    A Dict where the key is the id of the configurable and the value is the configurable object.");
+		"    A Dict where the key is the id of the `Configurable` and the value is the `Configurable` object.");
 	py_base_device.def("add_user_channel", &sv::devices::BaseDevice::add_user_channel,
 		py::arg("channel_name"), py::arg("channel_group_name"),
 		"Add a new user channel to the device.\n\n"
@@ -169,11 +196,11 @@ void init_Channel(py::module &m)
 		"Parameters\n"
 		"----------\n"
 		"quantity : Quantity\n"
-		"    The Quantity of the new signal.\n"
+		"    The `Quantity` of the new signal.\n"
 		"quantity_flags : Set[QuantityFlag]\n"
-		"    The `smuview.QuantityFlag`s of the new signal.\n"
+		"    The `QuantityFlag`s of the new signal.\n"
 		"unit : Unit\n"
-		"    The Unit of the new signal.\n\n"
+		"    The `Unit` of the new signal.\n\n"
 		"Returns\n"
 		"-------\n"
 		"BaseSignal\n"
@@ -208,11 +235,11 @@ void init_Channel(py::module &m)
 		"timestamp : float\n"
 		"    The absolute timestamp in milliseconds.\n"
 		"quantity : Quantity\n"
-		"    The Quantity of the new signal.\n"
+		"    The `Quantity` of the new signal.\n"
 		"quantity_flags : Set[QuantityFlag]\n"
-		"    The QuantityFlags of the new signal.\n"
+		"    The `QuantityFlag`s of the new signal.\n"
 		"unit : Unit\n"
-		"    The Unit of the new signal.\n"
+		"    The `Unit` of the new signal.\n"
 		"digits : int\n"
 		"    The total number of digits.\n"
 		"decimal_places : int\n"
@@ -336,7 +363,7 @@ void init_Configurable(py::module &m)
 		"Parameters\n"
 		"----------\n"
 		"config_key : ConfigKey\n"
-		"    The config key.\n"
+		"    The `ConfigKey` to set.\n"
 		"value : bool\n"
 		"    The bool value to set.");
 	py_configurable.def("set_config", &sv::devices::Configurable::set_config<int32_t>,
@@ -345,7 +372,7 @@ void init_Configurable(py::module &m)
 		"Parameters\n"
 		"----------\n"
 		"config_key : ConfigKey\n"
-		"    The config key.\n"
+		"    The `ConfigKey` to set.\n"
 		"value : int\n"
 		"    The int value to set.");
 	py_configurable.def("set_config", &sv::devices::Configurable::set_config<uint64_t>,
@@ -354,7 +381,7 @@ void init_Configurable(py::module &m)
 		"Parameters\n"
 		"----------\n"
 		"config_key : ConfigKey\n"
-		"    The config key.\n"
+		"    The `ConfigKey` to set.\n"
 		"value : int\n"
 		"    The (unsigned) int value to set.");
 	py_configurable.def("set_config", &sv::devices::Configurable::set_config<double>,
@@ -363,7 +390,7 @@ void init_Configurable(py::module &m)
 		"Parameters\n"
 		"----------\n"
 		"config_key : ConfigKey\n"
-		"    The config key.\n"
+		"    The `ConfigKey` to set.\n"
 		"value : float\n"
 		"    The float value to set.");
 	py_configurable.def("set_config", &sv::devices::Configurable::set_config<std::string>,
@@ -372,7 +399,7 @@ void init_Configurable(py::module &m)
 		"Parameters\n"
 		"----------\n"
 		"config_key : ConfigKey\n"
-		"    The config key.\n"
+		"    The `ConfigKey` to set.\n"
 		"value : str\n"
 		"    The string value to set.");
 	py_configurable.def("get_config", &sv::devices::Configurable::get_config<bool>,
@@ -381,7 +408,7 @@ void init_Configurable(py::module &m)
 		"Parameters\n"
 		"----------\n"
 		"config_key : ConfigKey\n"
-		"    The config key.\n\n"
+		"    The `ConfigKey` to get.\n\n"
 		"Returns\n"
 		"-------\n"
 		"bool\n"
@@ -392,7 +419,7 @@ void init_Configurable(py::module &m)
 		"Parameters\n"
 		"----------\n"
 		"config_key : ConfigKey\n"
-		"    The config key.\n\n"
+		"    The `ConfigKey` to get.\n\n"
 		"Returns\n"
 		"-------\n"
 		"int\n"
@@ -403,7 +430,7 @@ void init_Configurable(py::module &m)
 		"Parameters\n"
 		"----------\n"
 		"config_key : ConfigKey\n"
-		"    The config key.\n\n"
+		"    The `ConfigKey` to get.\n\n"
 		"Returns\n"
 		"-------\n"
 		"int\n"
@@ -414,7 +441,7 @@ void init_Configurable(py::module &m)
 		"Parameters\n"
 		"----------\n"
 		"config_key : ConfigKey\n"
-		"    The config key.\n\n"
+		"    The `ConfigKey` to get.\n\n"
 		"Returns\n"
 		"-------\n"
 		"float\n"
@@ -425,7 +452,7 @@ void init_Configurable(py::module &m)
 		"Parameters\n"
 		"----------\n"
 		"config_key : ConfigKey\n"
-		"    The config key.\n\n"
+		"    The `ConfigKey` to get.\n\n"
 		"Returns\n"
 		"-------\n"
 		"str\n"
@@ -474,7 +501,7 @@ void init_UI(py::module &m)
 		"area : DockArea\n"
 		"    Where to put the new view.\n"
 		"configurable : Configurable\n"
-		"    The configurable object.\n\n"
+		"    The `Configurable` object.\n\n"
 		"Returns\n"
 		"-------\n"
 		"str\n"
