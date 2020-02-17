@@ -1,13 +1,22 @@
 [[smuscript,SmuScript]]
 == SmuScript
 
-SmuView can execute python scripts to automate processes, control devices,
-process incoming data and manipulate the GUI.
+SmuView has a python scripting extension to automate, setup and control complex
+or repetitive measurements, process the incoming data and to create a
+standardized user interface for those measurements.
+
+The smuview module offers two default object instances: `Session` and `UiProxy`.
+The `Session` object gives access to already connected devices or connects new
+devices. The returned device object can then be used to read data from the
+device or control the device.
+The `UiProxy` object instance is used to modify the user interface, for example
+adding tabs or views.
 
 [WARNING]
 Only one script can be executed at a time!
 
-You can find an API documentation https://sigrok.org/smuview_api.html[here] and example scripts in the `smuscript` folder.
+You can find an API documentation https://knarfs.github.io/doc/smuview/0.0.4/python_bindings_api.html[here]
+and example scripts in the `smuscript` folder.
 
 image::SmuScript.png[]
 
@@ -23,6 +32,29 @@ image:numbers/9.png[9,22,22] Save script file with a new name. +
 image:numbers/10.png[10,22,22] Execute script file. +
 image:numbers/11.png[11,22,22] Scroll to bottom. +
 image:numbers/12.png[11,22,22] Clear output window.
+
+The following short example connects the HP 3378A DMM via GPIB, reads a sample
+and creates the default tab for the device:
+
+[source,python]
+----
+import smuview
+import time
+
+# Connect device.
+dmm_dev = Session.connect_device(\"hp-3478a:conn=libgpib/hp3478a\")[0]
+# Sleep 1s to give the devices the chance to create signals
+time.sleep(1)
+# Get last sample from channel P1
+sample = dmm_dev.channels()[\"P1\"].actual_signal().get_last_sample(True)
+print(sample)
+
+# Add default tab for the DMM device.
+UiProxy.add_device_tab(dmm_dev)
+----
+
+The following more complex example script from the `smuscript` folder
+characterizes a battery and plots the resulting graph:
 
 .example_characterize_battery.py
 [source,python]
