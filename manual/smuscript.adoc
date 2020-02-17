@@ -42,11 +42,11 @@ import smuview
 import time
 
 # Connect device.
-dmm_dev = Session.connect_device(\"hp-3478a:conn=libgpib/hp3478a\")[0]
+dmm_dev = Session.connect_device("hp-3478a:conn=libgpib/hp3478a")[0]
 # Sleep 1s to give the devices the chance to create signals
 time.sleep(1)
 # Get last sample from channel P1
-sample = dmm_dev.channels()[\"P1\"].actual_signal().get_last_sample(True)
+sample = dmm_dev.channels()["P1"].actual_signal().get_last_sample(True)
 print(sample)
 
 # Add default tab for the DMM device.
