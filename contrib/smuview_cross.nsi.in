@@ -185,6 +185,9 @@ Section "SmuView (required)" Section1
 	# Create shortcuts to the HTML and PDF manuals, respectively.
 	#!InsertMacro "CreateURL" "SmuView HTML manual" "https://sigrok.org/doc/smuview/@SV_MANUAL_VERSION@/manual.html" "SmuView HTML manual"
 	#!InsertMacro "CreateURL" "SmuView PDF manual" "https://sigrok.org/doc/smuview/@SV_MANUAL_VERSION@/manual.pdf" "SmuView PDF manual"
+	!InsertMacro "CreateURL" "SmuView HTML manual" "https://knarfs.github.io/doc/smuview/@SV_VERSION_STRING@/manual.html" "SmuView HTML manual"
+	!InsertMacro "CreateURL" "SmuView PDF manual" "https://knarfs.github.io/doc/smuview/@SV_VERSION_STRING@/manual.pdf" "SmuView PDF manual"
+	!InsertMacro "CreateURL" "SmuView Python Bindings API" "https://knarfs.github.io/doc/smuview/@SV_VERSION_STRING@/python_bindigs_api.html" "SmuView Python Bindings API"
 
 	# Create registry keys for "Add/remove programs" in the control panel.
 	WriteRegStr HKLM "${REGSTR}" "DisplayName" "SmuView"
@@ -265,8 +268,9 @@ Section "Uninstall"
 	Delete "$SMPROGRAMS\sigrok\SmuView\Examples (SmuScript).lnk"
 
 	# Delete the links to the manual.
-	#Delete "$SMPROGRAMS\sigrok\SmuView\SmuView HTML manual.lnk"
-	#Delete "$SMPROGRAMS\sigrok\SmuView\SmuView PDF manual.lnk"
+	Delete "$SMPROGRAMS\sigrok\SmuView\SmuView HTML manual.lnk"
+	Delete "$SMPROGRAMS\sigrok\SmuView\SmuView PDF manual.lnk"
+	Delete "$SMPROGRAMS\sigrok\SmuView\SmuView Python Bindings API.lnk"
 
 	# Delete the sub-directory in the start menu.
 	RMDir "$SMPROGRAMS\sigrok\SmuView"
