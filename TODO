@@ -51,6 +51,7 @@ ToDo
 - Reduce/Simplyfy BaseDevice name methods
 - Bindings: Implement add_math_channel()
 - Can we inherit MathChannel from UserChannel?
+- Add "E" for detecting energy (Wh) channels
 
 Done
 ----
