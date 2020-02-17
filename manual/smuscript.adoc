@@ -2,7 +2,7 @@
 == SmuScript
 
 SmuView has a python scripting extension to automate, setup and control complex
-or repetitive measurements, process the incoming data and to create a
+or repetitive measurements, to process the incoming data and to create a
 standardized user interface for those measurements.
 
 The smuview module offers two default object instances: `Session` and `UiProxy`.
