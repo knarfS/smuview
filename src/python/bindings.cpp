@@ -59,9 +59,10 @@ PYBIND11_EMBEDDED_MODULE(smuview, m) {
 	options.enable_enum_pdoc();
 
 	m.doc() = "The SmuView 0.0.4 Python bindings.\n\n" // TODO: Use SV_VERSION_STRING?
-		"The Python bindings are a scripting extension for SmuView, to automate "
-		"and setup complex or repetitive measurements and to create a standardized "
-		"user interface for those measurements.\n\n"
+		"The Python bindings are a scripting extension for SmuView to automate, "
+		"setup and control complex or repetitive measurements, to process the "
+		"incoming data and to create a standardized user interface for those "
+		"measurements.\n\n"
 		"The smuview module offers two default object instances: `Session` and "
 		"`UiProxy`.\n"
 		"The `Session` object gives access to already connected devices or connects "
