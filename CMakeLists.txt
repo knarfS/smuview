@@ -135,7 +135,7 @@ memaccess_check_unaligned_le(HAVE_UNALIGNED_LITTLE_ENDIAN_ACCESS)
 #-------------------------------------------------------------------------------
 
 set(SV_TITLE SmuView)
-set(SV_VERSION_STRING "0.0.3")
+set(SV_VERSION_STRING "0.0.4")
 
 # Append the revision hash unless we are exactly on a tagged release.
 include(GetGitRevisionDescription)
