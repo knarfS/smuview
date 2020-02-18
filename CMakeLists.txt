@@ -139,7 +139,7 @@ set(SV_VERSION_STRING "0.0.3")
 
 # Append the revision hash unless we are exactly on a tagged release.
 include(GetGitRevisionDescription)
-git_describe(SV_TAG_VERSION_STRING --match "smuview-${SV_VERSION_STRING}" --exact-match)
+git_describe(SV_TAG_VERSION_STRING --match "v${SV_VERSION_STRING}" --exact-match)
 if(NOT SV_TAG_VERSION_STRING)
 	get_git_head_revision(SV_REVSPEC SV_HASH)
 	if(SV_HASH)
