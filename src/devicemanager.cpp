@@ -181,7 +181,8 @@ DeviceManager::driver_scan_options(vector<string> user_spec,
 		 * Split key=value specs. Accept entries without separator
 		 * (for simplified boolean specifications).
 		 */
-		string key, val;
+		string key;
+		string val;
 		size_t pos = entry.find("=");
 		if (pos == std::string::npos) {
 			key = entry;

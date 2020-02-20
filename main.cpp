@@ -85,7 +85,8 @@ int main(int argc, char *argv[])
 	int ret = 0;
 	shared_ptr<sigrok::Context> context;
 	vector<string> drivers;
-	string open_file, open_file_format;
+	string open_file;
+	string open_file_format;
 	bool restore_session = true;
 	bool do_scan = true;
 	string script_file;
