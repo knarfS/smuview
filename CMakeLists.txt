@@ -47,6 +47,9 @@ if(POLICY CMP0054)
 	cmake_policy(SET CMP0054 NEW)
 endif()
 
+# SmuView, QCodeEditor and pybind11 only need C++11
+set(CMAKE_CXX_STANDARD 11)
+
 if(WIN32)
 	# On Windows/MinGW we need to statically link to libraries.
 	# This option is user configurable, but enable it by default on win32.
