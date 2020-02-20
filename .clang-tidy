@@ -1,0 +1,83 @@
+# Disabled checks:
+# - misc-definitions-in-headers
+#     TODO: Used in deviceutil.hpp and datautil.hpp. Maybe to const static?
+# - misc-non-private-member-variables-in-classes
+#     protected member variables are used all over the place...
+# - misc-static-assert
+#     TODO: Replace all `assert("ex")` with `throw Ex()` and activate check!
+# - performance-unnecessary-value-param
+#     TODO: !
+# - readability-avoid-const-params-in-decls
+#     TODO: Keep Decl and Def signatures the same! Recheck after
+#     performance-unnecessary-value-param solved! Maybe `const type` makes
+#     no sense:
+#     https://stackoverflow.com/questions/52916410/why-is-const-allowed-in-function-declarations
+# - readability-braces-around-statements
+#     Even with `ShortStatementLines` = 3 there are too many false positives.
+# - readability-inconsistent-declaration-parameter-name
+#     This check shows to many false positives for Qt signal declarations. We can
+#     use CppChecks "funcArgNamesDifferent" instead.
+# - readability-magic-numbers
+#     Magic numbers are ok. Maybe replace with macros(?) in the future?
+#
+# TODO:
+# - google-*,
+#   -google-readability-braces-around-statements,
+#   -google-readability-todo,
+# - modernize-*,
+#   -modernize-raw-string-literal
+#
+Checks: >-
+  bugprone-*,
+  clang-diagnostic-*,
+  clang-analyzer-*,
+  misc-*,
+  -misc-definitions-in-headers,
+  -misc-non-private-member-variables-in-classes,
+  -misc-static-assert,
+  performance-*,
+  -performance-unnecessary-value-param,
+  readability-*,
+  -readability-avoid-const-params-in-decls,
+  -readability-braces-around-statements,
+  -readability-inconsistent-declaration-parameter-name,
+  -readability-magic-numbers,
+
+WarningsAsErrors:      ''
+HeaderFilterRegex:     'src/.*'
+AnalyzeTemporaryDtors: false
+FormatStyle:           none
+User:                  frank
+CheckOptions:
+  - key:             cert-dcl16-c.NewSuffixes
+    value:           'L;LL;LU;LLU'
+  - key:             cppcoreguidelines-non-private-member-variables-in-classes.IgnoreClassesWithAllMemberVariablesBeingPublic
+    value:           '1'
+  - key:             google-readability-braces-around-statements.ShortStatementLines
+    value:           '1'
+  - key:             google-readability-function-size.StatementThreshold
+    value:           '800'
+  - key:             google-readability-namespace-comments.ShortNamespaceLines
+    value:           '10'
+  - key:             google-readability-namespace-comments.SpacesBeforeComments
+    value:           '2'
+  - key:             modernize-loop-convert.MaxCopySize
+    value:           '16'
+  - key:             modernize-loop-convert.MinConfidence
+    value:           reasonable
+  - key:             modernize-loop-convert.NamingStyle
+    value:           CamelCase
+  - key:             modernize-pass-by-value.IncludeStyle
+    value:           llvm
+  - key:             modernize-replace-auto-ptr.IncludeStyle
+    value:           llvm
+  - key:             modernize-use-nullptr.NullMacros
+    value:           'NULL'
+  - key:             readability-braces-around-statements.ShortStatementLines
+    value:           '3'
+  - key:             readability-implicit-bool-conversion.AllowPointerConditions
+    value:           '1'
+  - key:             readability-implicit-bool-conversion.AllowIntegerConditions
+    value:           '1'
+  - key:             readability-redundant-member-init.IgnoreBaseInCopyConstructors
+    value:           '1'
