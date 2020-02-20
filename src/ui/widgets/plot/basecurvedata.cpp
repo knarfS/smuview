@@ -47,45 +47,47 @@ CurveType BaseCurveData::curve_type() const
 
 QColor BaseCurveData::color() const
 {
+	// TODO: Implement a better way for color configuration of curves!
+
 	if (y_quantity() == sv::data::Quantity::Voltage &&
 			y_quantity_flags().count(sv::data::QuantityFlag::DC))
 		return Qt::red;
-	else if (y_quantity() == sv::data::Quantity::Voltage &&
+	if (y_quantity() == sv::data::Quantity::Voltage &&
 			y_quantity_flags().count(sv::data::QuantityFlag::AC))
 		return Qt::darkRed;
-	else if (y_quantity() == sv::data::Quantity::Voltage)
+	if (y_quantity() == sv::data::Quantity::Voltage)
 		// Fallback for Voltage without quantity flag
 		return Qt::red;
-	else if (y_quantity() == sv::data::Quantity::Current &&
+	if (y_quantity() == sv::data::Quantity::Current &&
 			y_quantity_flags().count(sv::data::QuantityFlag::DC))
 		return Qt::green;
-	else if (y_quantity() == sv::data::Quantity::Current &&
+	if (y_quantity() == sv::data::Quantity::Current &&
 			y_quantity_flags().count(sv::data::QuantityFlag::AC))
 		return Qt::darkGreen;
-	else if (y_quantity() == sv::data::Quantity::Current)
+	if (y_quantity() == sv::data::Quantity::Current)
 		// Fallback for current without quantity flag
 		return Qt::green;
-	else if (y_quantity() == sv::data::Quantity::Resistance)
+	if (y_quantity() == sv::data::Quantity::Resistance)
 		return Qt::cyan;
-	else if (y_quantity() == sv::data::Quantity::Power)
+	if (y_quantity() == sv::data::Quantity::Power)
 		return Qt::yellow;
-	else if (y_quantity() == sv::data::Quantity::Work)
+	if (y_quantity() == sv::data::Quantity::Work)
 		return Qt::darkYellow;
-	else if (y_quantity() == sv::data::Quantity::Temperature)
+	if (y_quantity() == sv::data::Quantity::Temperature)
 		return Qt::darkCyan;
-	else if (y_quantity() == sv::data::Quantity::Capacitance)
+	if (y_quantity() == sv::data::Quantity::Capacitance)
 		return Qt::gray;
-	else if (y_quantity() == sv::data::Quantity::Frequency)
+	if (y_quantity() == sv::data::Quantity::Frequency)
 		return Qt::magenta;
-	else if (y_quantity() == sv::data::Quantity::Time)
+	if (y_quantity() == sv::data::Quantity::Time)
 		return Qt::darkMagenta;
-	else if (y_quantity() == sv::data::Quantity::PowerFactor)
+	if (y_quantity() == sv::data::Quantity::PowerFactor)
 		return Qt::lightGray;
-	else
+
 #if QT_VERSION >= 0x050A00
-		return QColor::fromRgb(QRandomGenerator::global()->generate());
+	return QColor::fromRgb(QRandomGenerator::global()->generate());
 #else
-		return QColor::fromRgb(qrand());
+	return QColor::fromRgb(qrand());
 #endif
 
 	/*

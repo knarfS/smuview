@@ -244,7 +244,7 @@ QRegion Popup::popup_region() const
 {
 	if (space_for_arrow())
 		return arrow_region().united(bubble_region());
-	else
+	else // NOLINT
 		return bubble_region();
 }
 

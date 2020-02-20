@@ -65,13 +65,11 @@ XYCurveData::XYCurveData(shared_ptr<sv::data::AnalogTimeSignal> x_t_signal,
 bool XYCurveData::is_equal(const BaseCurveData *other) const
 {
 	const XYCurveData *xycd = dynamic_cast<const XYCurveData *>(other);
-	if (xycd != nullptr) {
-		return (x_t_signal_ == xycd->x_t_signal()) &&
-			(y_t_signal_ == xycd->y_t_signal());
-	}
-	else {
+	if (xycd == nullptr)
 		return false;
-	}
+
+	return (x_t_signal_ == xycd->x_t_signal()) &&
+		(y_t_signal_ == xycd->y_t_signal());
 }
 
 QPointF XYCurveData::sample(size_t i) const

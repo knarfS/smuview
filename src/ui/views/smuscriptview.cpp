@@ -68,10 +68,9 @@ QString SmuScriptView::title() const
 {
 	if (script_file_name_.length() <= 0)
 		return tr("Untitled");
-	else {
-		std::size_t found = script_file_name_.find_last_of("/\\");
-		return QString::fromStdString(script_file_name_.substr(found+1));
-	}
+
+	std::size_t found = script_file_name_.find_last_of("/\\");
+	return QString::fromStdString(script_file_name_.substr(found+1));
 }
 
 bool SmuScriptView::ask_to_save(const QString &title)

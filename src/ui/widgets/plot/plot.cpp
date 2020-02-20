@@ -277,8 +277,7 @@ int Plot::init_x_axis(widgets::plot::BaseCurveData *curve_data)
 	if (curve_datas_.size() > 0) {
 		if (curve_data->x_unit_str() != curve_datas_[0]->x_unit_str())
 			return -1;
-		else
-			return x_axis_id;
+		return x_axis_id;
 	}
 
 	QString title = curve_data->x_title();
@@ -737,11 +736,9 @@ bool Plot::update_x_interval(plot::BaseCurveData *curve_data)
 
 		if (interval_changed)
 			setAxisScale(QwtPlot::xBottom, min, max);
-		return interval_changed;
 	}
-
-	// Handle the various plot modes
-	if (update_mode_ == PlotUpdateMode::Additive) {
+	// Handle the Additive plot mode
+	else if (update_mode_ == PlotUpdateMode::Additive) {
 		if (axis_lock_map_[QwtPlot::xBottom][AxisBoundary::LowerBoundary] == false &&
 				boundaries.left() < min) {
 			min = 0;
@@ -758,8 +755,8 @@ bool Plot::update_x_interval(plot::BaseCurveData *curve_data)
 
 		if (interval_changed)
 			setAxisScale(QwtPlot::xBottom, min, max);
-		return interval_changed;
 	}
+	// Handle the Rolling plot mode
 	else if (update_mode_ == PlotUpdateMode::Rolling) {
 		// TODO: axis locking. Lock/Unlock both upper and lower together!
 		if (boundaries.right() <= max)
@@ -771,9 +768,10 @@ bool Plot::update_x_interval(plot::BaseCurveData *curve_data)
 			min += add_time_;
 		max = min + time_span_;
 
+		interval_changed = true;
 		setAxisScale(QwtPlot::xBottom, min, max);
-		return true;
 	}
+	// Handle the Oscilloscope plot mode
 	else if (update_mode_ == PlotUpdateMode::Oscilloscope) {
 		// TODO: axis locking. Lock/Unlock both upper and lower together?
 		if (boundaries.right() <= max)
@@ -800,12 +798,12 @@ bool Plot::update_x_interval(plot::BaseCurveData *curve_data)
 			scaleDiv.setTicks(i, ticks);
 		}
 
+		interval_changed = true;
 		setAxisScaleDiv(QwtPlot::xBottom, scaleDiv);
 		painted_points_map_[curve_data] = 0;
-		return true;
 	}
 
-	return false;
+	return interval_changed;
 }
 
 bool Plot::update_y_interval(plot::BaseCurveData *curve_data)

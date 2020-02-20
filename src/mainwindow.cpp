@@ -221,10 +221,10 @@ void MainWindow::change_tab_title(string tab_id, QString title)
 
 ui::tabs::BaseTab *MainWindow::get_base_tab_from_device_id(const string tab_id)
 {
-	if (tab_window_map_.count(tab_id) > 0)
-		return tab_window_map_[tab_id];
-	else
+	if (tab_window_map_.count(tab_id) == 0)
 		return nullptr;
+
+	return tab_window_map_[tab_id];
 }
 
 void MainWindow::setup_ui()

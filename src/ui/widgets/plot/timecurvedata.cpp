@@ -46,12 +46,10 @@ TimeCurveData::TimeCurveData(shared_ptr<sv::data::AnalogTimeSignal> signal) :
 bool TimeCurveData::is_equal(const BaseCurveData *other) const
 {
 	const TimeCurveData *tcd = dynamic_cast<const TimeCurveData *>(other);
-	if (tcd != nullptr) {
-		return (signal_ == tcd->signal());
-	}
-	else {
+	if (tcd == nullptr)
 		return false;
-	}
+
+	return signal_ == tcd->signal();
 }
 
 QPointF TimeCurveData::sample(size_t i) const

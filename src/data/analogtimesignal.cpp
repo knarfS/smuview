@@ -282,7 +282,7 @@ double AnalogTimeSignal::first_timestamp(bool relative_time) const
 
 	if (relative_time)
 		return time_->front() - signal_start_timestamp_;
-	else
+	else // NOLINT
 		return time_->front();
 }
 
@@ -293,10 +293,8 @@ double AnalogTimeSignal::last_timestamp(bool relative_time) const
 
 	if (relative_time)
 		return last_timestamp_ - signal_start_timestamp_;
-	else
+	else // NOLINT
 		return last_timestamp_;
-
-	return last_timestamp_;
 }
 
 void AnalogTimeSignal::on_channel_start_timestamp_changed(double timestamp)

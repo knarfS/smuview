@@ -150,12 +150,12 @@ void DataView::populate_table()
 						new_row = true;
 						break;
 					}
-					else if (timestamp == sample.first) {
+					if (timestamp == sample.first) {
 						last_timestamp_[i] = item;
 						new_row = false;
 						break;
 					}
-					else if (row_count == last_row+2) {
+					if (row_count == last_row+2) {
 						++last_row;
 						data_table_->insertRow(last_row+1);
 						new_row = true;

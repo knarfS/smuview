@@ -61,7 +61,7 @@ QWidget *get_widget_for_property(
 			static_pointer_cast<data::properties::UInt64Property>(property);
 		if (uint64_prop->list_values().size() > 0)
 			return new UInt64ComboBox(property, auto_commit, auto_update);
-		else
+		else // NOLINT
 			return new UInt64SpinBox(property, auto_commit, auto_update);
 		break;
 	}
