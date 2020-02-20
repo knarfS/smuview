@@ -1,0 +1,67 @@
+# EditorConfig file (https://editorconfig.org) for the SmuView project
+
+root = true
+
+[*]
+end_of_line = lf
+insert_final_newline = true
+
+
+# SmuView C++ and C files
+[**.{c,h,cpp,hpp}]
+indent_style = tab
+indent_size = 4
+
+# SmuScript python files
+[smuscript/**.py]
+indent_style = space
+indent_size = 4
+
+# SmuScript XML files
+[**.xml]
+indent_style = tab
+indent_size = 4
+[**.qrc]
+indent_style = tab
+indent_size = 4
+
+# SmuScript CMake files
+[CMakeLists.txt]
+indent_style = tab
+indent_size = 2
+[**.cmake]
+indent_style = space
+indent_size = 2
+
+
+# external: QCodeEditor C++ files
+[external/QCodeEditor/**.{cpp,hpp}]
+indent_style = space
+indent_size = 4
+
+# external: QCodeEditor XML files
+[external/QCodeEditor/**.xml]
+indent_style = space
+indent_size = 4
+[external/QCodeEditor/**.qrc]
+indent_style = space
+indent_size = 4
+
+# external: QCodeEditor CMake files
+[external/QCodeEditor/CMakeLists.txt]
+indent_style = space
+indent_size = 4
+
+
+# external: pybind11 C++ header files
+[external/pybind11/**.h]
+indent_style = space
+indent_size = 4
+
+# external: pybind11 CMake files
+[external/pybind11/CMakeLists.txt]
+indent_style = space
+indent_size = 2
+[external/pybind11/**.cmake]
+indent_style = space
+indent_size = 2
