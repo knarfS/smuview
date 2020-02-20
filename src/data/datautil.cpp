@@ -86,9 +86,7 @@ uint64_t get_sr_quantity_flag_id(QuantityFlag quantity_flag)
 
 bool is_valid_sr_quantity(data::Quantity quantity)
 {
-	if (quantity_sr_quantity_map.count(quantity) > 0)
-		return true;
-	return false;
+	return quantity_sr_quantity_map.count(quantity) > 0;
 }
 
 set<QuantityFlag> get_quantity_flags(
@@ -161,9 +159,7 @@ uint32_t get_sr_data_type_id(DataType data_type)
 
 bool is_valid_sr_data_type(DataType data_type)
 {
-	if (data_type_sr_data_type_map.count(data_type) > 0)
-		return true;
-	return false;
+	return data_type_sr_data_type_map.count(data_type) > 0;
 }
 
 

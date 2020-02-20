@@ -77,9 +77,7 @@ bool DeviceTab::request_close()
 		tr("Closing the device tab will leave the device connected!"),
 		QMessageBox::Ok | QMessageBox::Cancel);
 
-	if (reply == QMessageBox::Ok)
-		return true;
-	return false;
+	return reply == QMessageBox::Ok;
 }
 
 void DeviceTab::clear_signals()

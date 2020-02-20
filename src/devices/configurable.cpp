@@ -158,9 +158,7 @@ void Configurable::init()
 
 bool Configurable::has_get_config(devices::ConfigKey key)  const
 {
-	if (getable_configs_.count(key))
-		return true;
-	return false;
+	return getable_configs_.count(key);
 }
 
 template bool Configurable::get_config(devices::ConfigKey) const;
@@ -239,9 +237,7 @@ Glib::VariantContainerBase Configurable::get_container_config(
 
 bool Configurable::has_set_config(devices::ConfigKey key) const
 {
-	if (setable_configs_.count(key))
-		return true;
-	return false;
+	return setable_configs_.count(key);
 }
 
 template void Configurable::set_config(devices::ConfigKey, const bool);
@@ -303,9 +299,7 @@ void Configurable::set_container_config(
 
 bool Configurable::has_list_config(devices::ConfigKey key) const
 {
-	if (listable_configs_.count(key))
-		return true;
-	return false;
+	return listable_configs_.count(key);
 }
 
 bool Configurable::list_config(devices::ConfigKey key,
@@ -397,13 +391,9 @@ shared_ptr<data::properties::BaseProperty>
 
 bool Configurable::is_controllable() const
 {
-	if (setable_configs_.size() > 0 ||
+	return setable_configs_.size() > 0 ||
 		getable_configs_.size() > 0 ||
-		listable_configs_.size() > 0) {
-
-		return true;
-	}
-	return false;
+		listable_configs_.size() > 0;
 }
 
 void Configurable::feed_in_meta(shared_ptr<sigrok::Meta> sr_meta)

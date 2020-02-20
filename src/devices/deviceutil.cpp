@@ -105,9 +105,7 @@ uint32_t get_sr_config_key_id(DeviceType device_type)
 
 bool is_valid_sr_config_key(DeviceType device_type)
 {
-	if (device_type_sr_config_key_map.count(device_type) > 0)
-		return true;
-	return false;
+	return device_type_sr_config_key_map.count(device_type) > 0;
 }
 
 
@@ -138,9 +136,7 @@ uint32_t get_sr_config_key_id(ConnectionKey connection_key)
 
 bool is_valid_sr_config_key(ConnectionKey connection_key)
 {
-	if (connection_key_sr_config_key_map.count(connection_key) > 0)
-		return true;
-	return false;
+	return connection_key_sr_config_key_map.count(connection_key) > 0;
 }
 
 
@@ -171,9 +167,7 @@ uint32_t get_sr_config_key_id(ConfigKey config_key)
 
 bool is_valid_sr_config_key(ConfigKey config_key)
 {
-	if (config_key_sr_config_key_map.count(config_key) > 0)
-		return true;
-	return false;
+	return config_key_sr_config_key_map.count(config_key) > 0;
 }
 
 
