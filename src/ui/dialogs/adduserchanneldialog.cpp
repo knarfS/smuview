@@ -19,7 +19,6 @@
 
 #include <cassert>
 #include <memory>
-#include <set>
 #include <string>
 
 #include <QComboBox>
@@ -43,9 +42,7 @@
 #include "src/ui/devices/channelgroupcombobox.hpp"
 #include "src/ui/devices/devicecombobox.hpp"
 
-using std::make_shared;
-using std::set;
-using std::static_pointer_cast;
+using std::shared_ptr;
 using std::string;
 
 Q_DECLARE_SMART_POINTER_METATYPE(std::shared_ptr)

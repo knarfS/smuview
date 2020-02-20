@@ -18,7 +18,6 @@
  */
 
 #include <cassert>
-#include <memory>
 
 #include <QDebug>
 
@@ -28,8 +27,6 @@
 #include "src/data/properties/baseproperty.hpp"
 #include "src/devices/configurable.hpp"
 #include "src/devices/hardwaredevice.hpp"
-
-using std::static_pointer_cast;
 
 namespace sv {
 namespace devices {

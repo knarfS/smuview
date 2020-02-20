@@ -46,7 +46,6 @@
 #include "src/data/properties/uint64rangeproperty.hpp"
 
 using std::dynamic_pointer_cast;
-using std::forward;
 using std::make_pair;
 using std::make_shared;
 using std::string;

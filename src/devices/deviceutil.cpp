@@ -18,15 +18,11 @@
  */
 
 #include <cassert>
-#include <map>
 #include <memory>
-#include <set>
 
 #include "deviceutil.hpp"
 #include "src/data/datautil.hpp"
 
-using std::map;
-using std::set;
 using std::shared_ptr;
 
 namespace sv {

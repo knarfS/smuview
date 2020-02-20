@@ -22,7 +22,6 @@
 #include <cassert>
 #include <limits>
 #include <math.h>
-#include <set>
 #include <sstream>
 #include <vector>
 
@@ -38,7 +37,6 @@
 using std::fixed;
 using std::max;
 using std::ostringstream;
-using std::set;
 using std::setfill;
 using std::setprecision;
 using std::showpos;

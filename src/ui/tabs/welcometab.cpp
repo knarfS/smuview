@@ -17,8 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <memory>
-
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QWidget>
@@ -26,8 +24,6 @@
 #include "welcometab.hpp"
 #include "src/session.hpp"
 #include <config.h>
-
-using std::shared_ptr;
 
 namespace sv {
 namespace ui {

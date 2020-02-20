@@ -26,8 +26,6 @@
 #include "basetab.hpp"
 #include "src/session.hpp"
 
-using std::shared_ptr;
-
 namespace sv {
 namespace ui {
 namespace tabs {

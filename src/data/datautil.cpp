@@ -17,12 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <map>
 #include <set>
 
 #include "datautil.hpp"
 
-using std::map;
 using std::set;
 
 namespace sv {

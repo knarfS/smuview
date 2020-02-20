@@ -20,7 +20,6 @@
 
 #include <algorithm>
 #include <cassert>
-#include <set>
 #include <string>
 #include <thread>
 #include <utility>
@@ -44,15 +43,9 @@
 #include "src/devices/configurable.hpp"
 #include "src/devices/deviceutil.hpp"
 
-using std::bad_alloc;
-using std::dynamic_pointer_cast;
-using std::find;
 using std::lock_guard;
 using std::make_pair;
-using std::make_shared;
 using std::map;
-using std::pair;
-using std::set;
 using std::shared_ptr;
 using std::static_pointer_cast;
 using std::string;

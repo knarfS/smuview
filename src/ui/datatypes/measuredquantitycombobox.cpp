@@ -17,7 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <set>
 #include <stdexcept>
 #include <vector>
 
@@ -33,7 +32,6 @@
 #include "src/devices/configurable.hpp"
 
 using std::dynamic_pointer_cast;
-using std::set;
 
 Q_DECLARE_METATYPE(sv::data::measured_quantity_t)
 

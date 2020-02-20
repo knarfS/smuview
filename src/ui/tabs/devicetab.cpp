@@ -18,7 +18,6 @@
  */
 
 #include <memory>
-#include <vector>
 
 #include <QDebug>
 #include <QMainWindow>
@@ -39,7 +38,6 @@
 #include "src/ui/dialogs/savedialog.hpp"
 
 using std::shared_ptr;
-using std::vector;
 
 namespace sv {
 namespace ui {

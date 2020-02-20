@@ -31,8 +31,6 @@
 #include "src/data/datautil.hpp"
 #include "src/devices/basedevice.hpp"
 
-using std::make_pair;
-using std::make_shared;
 using std::set;
 using std::static_pointer_cast;
 using std::string;

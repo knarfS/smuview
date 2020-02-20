@@ -20,7 +20,6 @@
 #include <map>
 #include <memory>
 #include <string>
-#include <vector>
 
 #include <QComboBox>
 #include <QDebug>
@@ -35,7 +34,6 @@
 
 using std::shared_ptr;
 using std::string;
-using std::vector;
 
 Q_DECLARE_METATYPE(shared_ptr<sv::channels::BaseChannel>)
 

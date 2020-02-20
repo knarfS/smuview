@@ -19,7 +19,6 @@
 
 #include <cassert>
 #include <memory>
-#include <set>
 #include <string>
 
 #include <QApplication>
@@ -36,7 +35,6 @@
 #include "src/ui/widgets/monofontdisplay.hpp"
 
 using std::dynamic_pointer_cast;
-using std::set;
 
 namespace sv {
 namespace ui {

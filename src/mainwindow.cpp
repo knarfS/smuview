@@ -17,7 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <map>
 #include <memory>
 #include <string>
 #include <utility>
@@ -59,7 +58,6 @@
 
 using std::make_pair;
 using std::make_shared;
-using std::map;
 using std::shared_ptr;
 using std::string;
 

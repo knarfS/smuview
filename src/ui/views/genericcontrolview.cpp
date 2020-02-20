@@ -31,8 +31,6 @@
 #include "src/devices/deviceutil.hpp"
 #include "src/ui/datatypes/datatypehelper.hpp"
 
-using sv::devices::ConfigKey;
-
 namespace sv {
 namespace ui {
 namespace views {

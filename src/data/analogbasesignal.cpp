@@ -31,7 +31,6 @@
 #include "src/data/basesignal.hpp"
 #include "src/data/datautil.hpp"
 
-using std::make_pair;
 using std::make_shared;
 using std::set;
 using std::shared_ptr;
