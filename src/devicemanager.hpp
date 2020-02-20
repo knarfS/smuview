@@ -77,10 +77,10 @@ public:
 		shared_ptr<sigrok::Driver> sr_driver,
 		map<const sigrok::ConfigKey *, Glib::VariantBase> drvopts);
 
-	const map<string, string> get_device_info(
+	map<string, string> get_device_info(
 		const shared_ptr<devices::BaseDevice> device);
 
-	const shared_ptr<devices::HardwareDevice> find_device_from_info(
+	shared_ptr<devices::HardwareDevice> find_device_from_info(
 		const map<string, string> search_info);
 
 private:

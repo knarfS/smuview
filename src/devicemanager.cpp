@@ -287,7 +287,7 @@ DeviceManager::driver_scan(
 	return driver_devices;
 }
 
-const map<string, string> DeviceManager::get_device_info(
+map<string, string> DeviceManager::get_device_info(
 	shared_ptr<devices::BaseDevice> device)
 {
 	map<string, string> result;
@@ -309,7 +309,7 @@ const map<string, string> DeviceManager::get_device_info(
 	return result;
 }
 
-const shared_ptr<devices::HardwareDevice> DeviceManager::find_device_from_info(
+shared_ptr<devices::HardwareDevice> DeviceManager::find_device_from_info(
 	const map<string, string> search_info)
 {
 	shared_ptr<devices::HardwareDevice> last_resort_dev;

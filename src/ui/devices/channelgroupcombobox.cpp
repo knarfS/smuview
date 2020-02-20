@@ -54,7 +54,7 @@ void ChannelGroupComboBox::select_channel_group(QString channel_group)
 	}
 }
 
-const QString ChannelGroupComboBox::selected_channel_group() const
+QString ChannelGroupComboBox::selected_channel_group() const
 {
 	return this->currentText();
 }

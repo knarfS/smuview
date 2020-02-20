@@ -47,7 +47,7 @@ public:
 		QWidget *parent = nullptr);
 
 	void select_channel_group(QString);
-	const QString selected_channel_group() const;
+	QString selected_channel_group() const;
 
 private:
 	void setup_ui();
