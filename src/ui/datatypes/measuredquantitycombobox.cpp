@@ -125,7 +125,7 @@ void MeasuredQuantityComboBox::value_changed(int index)
 	if (property_ != nullptr) {
 		data::measured_quantity_t value =
 			this->currentData().value<data::measured_quantity_t>();
-		property_->change_value(QVariant().fromValue(value));
+		property_->change_value(QVariant::fromValue(value));
 	}
 }
 

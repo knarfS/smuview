@@ -48,7 +48,7 @@ DoubleRangeProperty::DoubleRangeProperty(
 
 QVariant DoubleRangeProperty::value() const
 {
-	return QVariant().fromValue(double_range_value());
+	return QVariant::fromValue(double_range_value());
 }
 
 double_range_t DoubleRangeProperty::double_range_value() const
@@ -154,7 +154,7 @@ void DoubleRangeProperty::on_value_changed(Glib::VariantBase g_var)
 	double high =
 		Glib::VariantBase::cast_dynamic<Glib::Variant<double>>(g_var).get();
 
-	Q_EMIT value_changed(QVariant().fromValue(make_pair(low, high)));
+	Q_EMIT value_changed(QVariant::fromValue(make_pair(low, high)));
 }
 
 } // namespace properties

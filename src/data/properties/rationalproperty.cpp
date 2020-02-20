@@ -52,7 +52,7 @@ RationalProperty::RationalProperty(
 
 QVariant RationalProperty::value() const
 {
-	return QVariant().fromValue(rational_value());
+	return QVariant::fromValue(rational_value());
 }
 
 /**
@@ -165,7 +165,7 @@ void RationalProperty::on_value_changed(Glib::VariantBase g_var)
 	uint64_t q =
 		Glib::VariantBase::cast_dynamic<Glib::Variant<uint64_t>>(g_var).get();
 
-	Q_EMIT value_changed(QVariant().fromValue(make_pair(p, q)));
+	Q_EMIT value_changed(QVariant::fromValue(make_pair(p, q)));
 }
 
 } // namespace datatypes

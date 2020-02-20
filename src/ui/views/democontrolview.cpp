@@ -136,7 +136,7 @@ void DemoControlView::on_quantity_set()
 
 	auto mq = make_pair(quantity, quantity_flags);
 	auto prop = configurable_->get_property(ConfigKey::MeasuredQuantity);
-	prop->change_value(QVariant().fromValue(mq));
+	prop->change_value(QVariant::fromValue(mq));
 }
 
 } // namespace views

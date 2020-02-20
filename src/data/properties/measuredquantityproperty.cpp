@@ -53,7 +53,7 @@ MeasuredQuantityProperty::MeasuredQuantityProperty(
 
 QVariant MeasuredQuantityProperty::value() const
 {
-	return QVariant().fromValue(measured_quantity_value());
+	return QVariant::fromValue(measured_quantity_value());
 }
 
 /**

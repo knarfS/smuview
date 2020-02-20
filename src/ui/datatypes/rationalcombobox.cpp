@@ -120,7 +120,7 @@ void RationalComboBox::value_changed(int index)
 	if (property_ != nullptr) {
 		data::rational_t value =
 			this->currentData().value<data::rational_t>();
-		property_->change_value(QVariant().fromValue(value));
+		property_->change_value(QVariant::fromValue(value));
 	}
 }
 

@@ -51,7 +51,7 @@ UInt64RangeProperty::UInt64RangeProperty(
 
 QVariant UInt64RangeProperty::value() const
 {
-	return QVariant().fromValue(uint64_range_value());
+	return QVariant::fromValue(uint64_range_value());
 }
 
 /**
@@ -161,7 +161,7 @@ void UInt64RangeProperty::on_value_changed(Glib::VariantBase g_var)
 	uint64_t high =
 		Glib::VariantBase::cast_dynamic<Glib::Variant<uint64_t>>(g_var).get();
 
-	Q_EMIT value_changed(QVariant().fromValue(make_pair(low, high)));
+	Q_EMIT value_changed(QVariant::fromValue(make_pair(low, high)));
 }
 
 } // namespace properties

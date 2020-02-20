@@ -30,10 +30,10 @@ using std::exception;
 Application::Application(int &argc, char *argv[]) :
 	QApplication(argc, argv)
 {
-	setApplicationVersion(SV_VERSION_STRING);
-	setApplicationName("SmuView");
-	setOrganizationName("sigrok");
-	setOrganizationDomain("sigrok.org");
+	QApplication::setApplicationVersion(SV_VERSION_STRING);
+	QApplication::setApplicationName("SmuView");
+	QApplication::setOrganizationName("sigrok");
+	QApplication::setOrganizationDomain("sigrok.org");
 }
 
 bool Application::notify(QObject *receiver, QEvent *event)
