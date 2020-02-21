@@ -291,7 +291,7 @@ void AddViewDialog::accept()
 		// Add data table view
 		{
 			auto signals = data_table_signal_tree_->checked_signals();
-			if (signals.size() > 0) {
+			if (!signals.empty()) {
 				auto view = new ui::views::DataView(session_,
 					static_pointer_cast<data::AnalogTimeSignal>(signals[0]));
 				for (size_t i=1; i<signals.size(); ++i) {

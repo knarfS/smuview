@@ -138,7 +138,7 @@ void AnalogSampleSignal::push_sample(void *sample, uint32_t pos,
 
 uint32_t AnalogSampleSignal::first_pos() const
 {
-	if (pos_->size() == 0)
+	if (pos_->empty())
 		return 0;
 
 	return pos_->front();
@@ -146,7 +146,7 @@ uint32_t AnalogSampleSignal::first_pos() const
 
 uint32_t AnalogSampleSignal::last_pos() const
 {
-	if (pos_->size() == 0)
+	if (pos_->empty())
 		return 0;
 
 	return last_pos_;

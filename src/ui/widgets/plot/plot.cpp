@@ -274,7 +274,7 @@ int Plot::init_x_axis(widgets::plot::BaseCurveData *curve_data)
 
 	// Check if there already is an axis with the same unit. This is done
 	// via the strings to get potential AC/DC flags.
-	if (curve_datas_.size() > 0) {
+	if (!curve_datas_.empty()) {
 		if (curve_data->x_unit_str() != curve_datas_[0]->x_unit_str())
 			return -1;
 		return x_axis_id;

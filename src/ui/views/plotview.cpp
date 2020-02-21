@@ -182,7 +182,7 @@ void PlotView::add_time_curve(shared_ptr<sv::data::AnalogTimeSignal> signal)
 void PlotView::add_xy_curve(shared_ptr<sv::data::AnalogTimeSignal> y_signal)
 {
 	// Get the x signal from a existing curve
-	if (curves_.size() == 0) {
+	if (curves_.empty()) {
 		QMessageBox::warning(this, tr("Cannot add signal"),
 			tr("Cannot add new x signal without an existing x signal!"),
 			QMessageBox::Ok);

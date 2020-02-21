@@ -101,8 +101,8 @@ BaseView *get_view_for_configurable(Session &session,
 	}
 
 	// Generic control view
-	if (configurable->getable_configs().size() > 0 ||
-		configurable->setable_configs().size() > 0) {
+	if (!configurable->getable_configs().empty() ||
+		!configurable->setable_configs().empty()) {
 
 		return new GenericControlView(session, configurable);
 	}

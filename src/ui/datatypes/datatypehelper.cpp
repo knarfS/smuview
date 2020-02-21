@@ -59,10 +59,10 @@ QWidget *get_widget_for_property(
 		// Special handling for different list types
 		shared_ptr<data::properties::UInt64Property> uint64_prop =
 			static_pointer_cast<data::properties::UInt64Property>(property);
-		if (uint64_prop->list_values().size() > 0)
-			return new UInt64ComboBox(property, auto_commit, auto_update);
-		else // NOLINT
+		if (uint64_prop->list_values().empty())
 			return new UInt64SpinBox(property, auto_commit, auto_update);
+		else // NOLINT
+			return new UInt64ComboBox(property, auto_commit, auto_update);
 		break;
 	}
 	case data::DataType::Double:

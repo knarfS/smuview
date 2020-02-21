@@ -391,9 +391,9 @@ shared_ptr<data::properties::BaseProperty>
 
 bool Configurable::is_controllable() const
 {
-	return setable_configs_.size() > 0 ||
-		getable_configs_.size() > 0 ||
-		listable_configs_.size() > 0;
+	return !setable_configs_.empty() ||
+		!getable_configs_.empty() ||
+		!listable_configs_.empty();
 }
 
 void Configurable::feed_in_meta(shared_ptr<sigrok::Meta> sr_meta)

@@ -57,7 +57,7 @@ BaseSignal::BaseSignal(
 	unit_name_ = data::datautil::format_unit(unit_);
 
 	name_ = parent_channel_->name() + " [" + unit_name_.toStdString();
-	if (quantity_flags_.size() > 0)
+	if (!quantity_flags_.empty())
 		name_ += " " + quantity_flags_name_.toStdString();
 	name_ += "]";
 }

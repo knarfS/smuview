@@ -176,7 +176,7 @@ void HardwareDevice::init_configurables()
 	// Init Configurables from Channel Groups
 	for (const auto &sr_cg_pair : sr_device_->channel_groups()) {
 		auto sr_cg = sr_cg_pair.second;
-		if (sr_cg->config_keys().size() == 0)
+		if (sr_cg->config_keys().empty())
 			continue;
 
 		auto cg_c = Configurable::create(
@@ -218,7 +218,7 @@ void HardwareDevice::init_channels()
 		sr_device_->channel_groups();
 
 	// Init Channels from Sigrok Channel Groups
-	if (sr_channel_groups.size() > 0) {
+	if (!sr_channel_groups.empty()) {
 		for (const auto &sr_cg_pair : sr_channel_groups) {
 			shared_ptr<sigrok::ChannelGroup> sr_cg = sr_cg_pair.second;
 			for (const auto &sr_channel : sr_cg->channels()) {
@@ -251,7 +251,7 @@ void HardwareDevice::feed_in_meta(shared_ptr<sigrok::Meta> sr_meta)
 		// channel group the config key belongs.
 		// Workaround: Use a configurable from a channel group if available,
 		// else use the device configurable ("")
-		if (c_pair.first == "" && configurable_map_.size() > 1)
+		if (c_pair.first.empty() && configurable_map_.size() > 1)
 			continue;
 
 		c_pair.second->feed_in_meta(sr_meta);

@@ -103,7 +103,7 @@ analog_time_sample_t AnalogTimeSignal::get_last_sample(bool relative_time) const
 bool AnalogTimeSignal::get_value_at_timestamp(
 	double timestamp, double &value, bool relative_time) const
 {
-	if (time_->size() == 0)
+	if (time_->empty())
 		return false;
 	if (timestamp < time_->at(0))
 		return false;
@@ -277,7 +277,7 @@ double AnalogTimeSignal::signal_start_timestamp() const
 
 double AnalogTimeSignal::first_timestamp(bool relative_time) const
 {
-	if (time_->size() == 0)
+	if (time_->empty())
 		return 0.;
 
 	if (relative_time)
@@ -288,7 +288,7 @@ double AnalogTimeSignal::first_timestamp(bool relative_time) const
 
 double AnalogTimeSignal::last_timestamp(bool relative_time) const
 {
-	if (time_->size() == 0)
+	if (time_->empty())
 		return 0.;
 
 	if (relative_time)
