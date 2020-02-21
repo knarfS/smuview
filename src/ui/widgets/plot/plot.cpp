@@ -709,8 +709,8 @@ void Plot::update_intervals()
 
 bool Plot::update_x_interval(plot::BaseCurveData *curve_data)
 {
-	if (axis_lock_map_[QwtPlot::xBottom][AxisBoundary::LowerBoundary] == true &&
-		axis_lock_map_[QwtPlot::xBottom][AxisBoundary::UpperBoundary] == true)
+	if (axis_lock_map_[QwtPlot::xBottom][AxisBoundary::LowerBoundary] &&
+		axis_lock_map_[QwtPlot::xBottom][AxisBoundary::UpperBoundary])
 		return false;
 
 	bool interval_changed = false;
@@ -721,13 +721,13 @@ bool Plot::update_x_interval(plot::BaseCurveData *curve_data)
 
 	// There are no plot modes when showing xy curves, just extend the intervals
 	if (curve_data->curve_type() == CurveType::XYCurve) {
-		if (axis_lock_map_[QwtPlot::xBottom][AxisBoundary::LowerBoundary] == false &&
+		if (!axis_lock_map_[QwtPlot::xBottom][AxisBoundary::LowerBoundary] &&
 				boundaries.left() < min) {
 			// New value - 10%
 			min = boundaries.left() - (std::fabs(boundaries.left()) * 0.1);
 			interval_changed = true;
 		}
-		if (axis_lock_map_[QwtPlot::xBottom][AxisBoundary::UpperBoundary] == false &&
+		if (!axis_lock_map_[QwtPlot::xBottom][AxisBoundary::UpperBoundary] &&
 				boundaries.right() > max) {
 			// New value + 10%
 			max = boundaries.right() + (std::fabs(boundaries.right()) * 0.1);
@@ -739,12 +739,12 @@ bool Plot::update_x_interval(plot::BaseCurveData *curve_data)
 	}
 	// Handle the Additive plot mode
 	else if (update_mode_ == PlotUpdateMode::Additive) {
-		if (axis_lock_map_[QwtPlot::xBottom][AxisBoundary::LowerBoundary] == false &&
+		if (!axis_lock_map_[QwtPlot::xBottom][AxisBoundary::LowerBoundary] &&
 				boundaries.left() < min) {
 			min = 0;
 			interval_changed = true;
 		}
-		if (axis_lock_map_[QwtPlot::xBottom][AxisBoundary::UpperBoundary] == false &&
+		if (!axis_lock_map_[QwtPlot::xBottom][AxisBoundary::UpperBoundary] &&
 				boundaries.right() > max) {
 			if (boundaries.right()+add_time_ > max)
 				max = boundaries.right() + add_time_;
@@ -809,8 +809,8 @@ bool Plot::update_x_interval(plot::BaseCurveData *curve_data)
 bool Plot::update_y_interval(plot::BaseCurveData *curve_data)
 {
 	int y_axis_id = y_axis_id_map_[curve_data];
-	if (axis_lock_map_[y_axis_id][AxisBoundary::LowerBoundary] == true &&
-			axis_lock_map_[y_axis_id][AxisBoundary::UpperBoundary] == true)
+	if (axis_lock_map_[y_axis_id][AxisBoundary::LowerBoundary] &&
+			axis_lock_map_[y_axis_id][AxisBoundary::UpperBoundary])
 		return false;
 
 	QRectF boundaries = curve_data->boundingRect();
@@ -819,13 +819,13 @@ bool Plot::update_y_interval(plot::BaseCurveData *curve_data)
 	double max = y_interval.maxValue();
 	bool interval_changed = false;
 
-	if (axis_lock_map_[y_axis_id][AxisBoundary::LowerBoundary] == false &&
+	if (!axis_lock_map_[y_axis_id][AxisBoundary::LowerBoundary] &&
 			boundaries.bottom() < min) {
 		// New value - 10%
 		min = boundaries.bottom() - (std::fabs(boundaries.bottom()) * 0.1);
 		interval_changed = true;
 	}
-	if (axis_lock_map_[y_axis_id][AxisBoundary::UpperBoundary] == false &&
+	if (!axis_lock_map_[y_axis_id][AxisBoundary::UpperBoundary] &&
 			boundaries.top() > max) {
 		// New value + 10%
 		max = boundaries.top() + (std::fabs(boundaries.top()) * 0.1);

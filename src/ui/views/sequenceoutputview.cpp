@@ -304,7 +304,7 @@ void SequenceOutputView::insert_row(int row, double value, double delay)
 
 void SequenceOutputView::on_timer_update()
 {
-	bool found_value = sequence_pos_ > 0 ? true : false;
+	bool found_value = sequence_pos_ > 0;
 	double value = .0;
 	double delay_ms = .0;
 	// Cycle through the row until a duration is found.
