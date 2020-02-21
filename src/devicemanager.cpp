@@ -183,7 +183,7 @@ DeviceManager::driver_scan_options(vector<string> user_spec,
 		 */
 		string key;
 		string val;
-		size_t pos = entry.find("=");
+		size_t pos = entry.find('=');
 		if (pos == std::string::npos) {
 			key = entry;
 			val = "";
