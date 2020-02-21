@@ -331,7 +331,7 @@ bool Configurable::list_config(devices::ConfigKey key,
 
 string Configurable::name() const
 {
-	string name = "";
+	string name;
 	if (auto sr = dynamic_pointer_cast<sigrok::HardwareDevice>(sr_configurable_)) {
 		name = "";
 	}

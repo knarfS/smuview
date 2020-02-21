@@ -114,11 +114,11 @@ void SaveDialog::save(QString file_name)
 	size_t max_sample_count = 0;
 
 	// Header
-	string start_sep("");
-	string device_header_line("");
-	string chg_name_header_line("");
-	string ch_name_header_line("");
-	string signal_name_header_line("");
+	string start_sep;
+	string device_header_line;
+	string chg_name_header_line;
+	string ch_name_header_line;
+	string signal_name_header_line;
 	for (const auto &signal : signals) {
 		// Only handle AnalogSignals
 		auto analog_signal =
@@ -142,8 +142,8 @@ void SaveDialog::save(QString file_name)
 		qWarning() << "SaveDialog::save(): signal.parent_channel().parent_device().name() = " <<
 			QString::fromStdString(parent_channel->parent_device()->name());
 
-		string chg_names("");
-		string chg_sep("");
+		string chg_names;
+		string chg_sep;
 		for (const auto &chg_name : parent_channel->channel_group_names()) {
 			chg_names += chg_sep;
 			if (chg_name.empty())
@@ -240,8 +240,8 @@ void SaveDialog::save_combined(QString file_name)
 		sample_counts.push_back(analog_signal->sample_count());
 		sample_pos.push_back(0);
 
-		string chg_names("");
-		string chg_sep("");
+		string chg_names;
+		string chg_sep;
 		for (const auto &chg_name : parent_channel->channel_group_names()) {
 			chg_names += chg_sep;
 			if (chg_name.empty())

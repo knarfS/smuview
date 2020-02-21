@@ -172,8 +172,8 @@ void BaseDevice::pause_aquisition()
 
 string BaseDevice::name() const
 {
-	string sep("");
-	string name("");
+	string sep;
+	string name;
 
 	if (sr_device_->vendor().length() > 0) {
 		name += sr_device_->vendor();

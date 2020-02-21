@@ -90,7 +90,7 @@ void SourceSinkDevice::init_channels()
 
 	// Preinitialize known fixed channels with a signal
 	for (const auto &chg_name_channels_pair : channel_group_map_) {
-		string ch_suffix = "";
+		string ch_suffix;
 		for (const auto &channel : chg_name_channels_pair.second) {
 			if (channel->type() != channels::ChannelType::AnalogChannel)
 				continue;
