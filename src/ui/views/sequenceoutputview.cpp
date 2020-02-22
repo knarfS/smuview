@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <cmath>
 #include <fstream>
 #include <memory>
 #include <string>
@@ -294,10 +295,12 @@ void SequenceOutputView::stop_timer()
 void SequenceOutputView::insert_row(int row, double value, double delay)
 {
 	sequence_table_->insertRow(row);
-	QTableWidgetItem *value_item = new QTableWidgetItem(value);
+	QTableWidgetItem *value_item = new QTableWidgetItem(
+		QString::number(value, 'f', 3));
 	value_item->setData(0, QVariant(value));
 	sequence_table_->setItem(row, 0, value_item);
-	QTableWidgetItem *delay_item = new QTableWidgetItem(delay);
+	QTableWidgetItem *delay_item = new QTableWidgetItem(
+		QString::number(delay, 'f', property_->decimal_places()));
 	delay_item->setData(0, QVariant(delay));
 	sequence_table_->setItem(row, 1, delay_item);
 }
@@ -306,7 +309,7 @@ void SequenceOutputView::on_timer_update()
 {
 	bool found_value = sequence_pos_ > 0;
 	double value = .0;
-	double delay_ms = .0;
+	int delay_ms = 0;
 	// Cycle through the row until a duration is found.
 	do {
 		if (sequence_table_->rowCount() == 0) {
@@ -334,7 +337,7 @@ void SequenceOutputView::on_timer_update()
 			value = value_item->data(0).toDouble();
 		QTableWidgetItem *delay_item = sequence_table_->item(sequence_pos_, 1);
 		if (delay_item)
-			delay_ms = delay_item->data(0).toDouble() * 1000;
+			delay_ms = (int)std::round(delay_item->data(0).toDouble() * 1000);
 
 		sequence_table_->selectRow(sequence_pos_);
 		sequence_pos_++;
