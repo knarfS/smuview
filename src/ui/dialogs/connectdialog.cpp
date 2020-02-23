@@ -178,6 +178,13 @@ ConnectDialog::ConnectDialog(sv::DeviceManager &device_manager,
 	on_driver_selected(drivers_.currentIndex());
 }
 
+ConnectDialog::~ConnectDialog(){
+	// NOTE: Wait until a potentially running populate_serials_thread_ thread
+	//       has finished, otherwise sv will crash.
+	//       Waiting for the lock/mutex isn't strictly needed (empty d'tor is
+	//       sufficient), but better safe than sorry. :)
+	std::lock_guard<std::mutex> lock(populate_serials_mtx_);
+}
 
 shared_ptr<HardwareDevice> ConnectDialog::get_selected_device() const
 {
