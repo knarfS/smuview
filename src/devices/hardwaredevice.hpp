@@ -124,6 +124,7 @@ private:
 	double frame_start_timestamp_;
 	uint64_t cur_samplerate_;
 	shared_ptr<data::properties::UInt64Property> samplerate_prop_;
+	string cur_meta_data_source_;
 
 };
 
