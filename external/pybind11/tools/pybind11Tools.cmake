@@ -21,7 +21,12 @@ if (PkgConfig_FOUND)
   pkg_check_modules(PYTHON3 python3) # TODO PYBIND11_PYTHON_VERSION
   if (PYTHON3_FOUND)
     set(PYTHON_INCLUDE_DIRS ${PYTHON3_INCLUDE_DIRS})
-    set(PYTHON_LIBRARIES ${PYTHON3_LINK_LIBRARIES})
+    if (PYTHON3_LINK_LIBRARIES)
+      # Try to use the fully qualified name for cross compiling
+      set(PYTHON_LIBRARIES ${PYTHON3_LINK_LIBRARIES})
+    else()
+      set(PYTHON_LIBRARIES ${PYTHON3_LIBRARIES})
+    endif()
     set(PYTHON_MODULE_PREFIX "")
     set(PYTHON_MODULE_EXTENSION "")
     set(PYTHON_VERSION_MAJOR "") # TODO
