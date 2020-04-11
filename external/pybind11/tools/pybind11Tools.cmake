@@ -12,7 +12,7 @@ if(NOT PYBIND11_PYTHON_VERSION)
   set(PYBIND11_PYTHON_VERSION "" CACHE STRING "Python version to use for compiling modules")
 endif()
 
-set(Python_ADDITIONAL_VERSIONS 3.8 3.7 3.6 3.5 3.4)
+set(Python_ADDITIONAL_VERSIONS 3.9 3.8 3.7 3.6 3.5 3.4)
 
 # Try to get python via pgk-config, else fall back to the PythonLibsNew script.
 # When cross compiling, you need to set CMAKE_FIND_ROOT_PATH_MODE_LIBRARY to BOTH.

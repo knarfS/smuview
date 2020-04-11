@@ -807,6 +807,9 @@ public:
         if (m_ptr == nullptr)
             pybind11_fail("Internal error in module::module()");
         inc_ref();
+
+        // Dictionary for pdoc docstrings
+        attr("__pdoc__") = dict();
     }
 
     /** \rst
@@ -1453,21 +1456,6 @@ struct enum_base {
             }
         ), none(), none(), "");
 
-        if (options::populate_enum_pdoc()) {
-            auto name = m_base.attr("__name__");
-            m_base.attr("__pdoc__") = static_property(cpp_function(
-                [name](handle arg) -> dict {
-                    dict pdoc;
-                    dict entries = arg.attr("__entries");
-                    for (const auto &kv : entries) {
-                        str doc_key = str("{}.{}").format(name, kv.first);
-                        pdoc[doc_key] = kv.second[int_(1)];
-                    }
-                    return pdoc;
-                }), none(), none(), ""
-            );
-        }
-
         m_base.attr("__members__") = static_property(cpp_function(
             [](handle arg) -> dict {
                 dict entries = arg.attr("__entries"), m;
@@ -1555,6 +1543,11 @@ struct enum_base {
 
         entries[name] = std::make_pair(value, doc);
         m_base.attr(name) = value;
+
+        if (options::populate_enum_pdoc()) {
+            auto doc_key = str("{}.{}").format(m_base.attr("__name__"), name);
+            m_parent.attr("__pdoc__")[doc_key] = doc;
+        }
     }
 
     PYBIND11_NOINLINE void export_values() {
