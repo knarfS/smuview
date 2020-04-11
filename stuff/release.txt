@@ -17,8 +17,9 @@ Install packages for libsigrok:
  $ sudo apt -y install g++ autoconf-archive pkg-config libglib2.0-dev libglibmm-2.4-dev libzip-dev libusb-1.0-0-dev libftdi1-dev libhidapi-dev libbluetooth-dev libvisa-dev libieee1284-3-dev check doxygen python3-numpy python3-dev python-gi-dev python3-setuptools swig
 
 Set python3 as the default python version
- $ sudo update-alternatives --remove python /usr/bin/python2
- $ sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 10
+ $ sudo update-alternatives --install /usr/bin/python python /usr/bin/python2.7 1
+ $ sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 2
+ $ sudo update-alternatives --set python /usr/bin/python3
 
 Install packages for smuview:
  $ sudo apt -y install libboost-all-dev
