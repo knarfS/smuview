@@ -18,7 +18,13 @@ set(Python_ADDITIONAL_VERSIONS 3.9 3.8 3.7 3.6 3.5 3.4)
 # When cross compiling, you need to set CMAKE_FIND_ROOT_PATH_MODE_LIBRARY to BOTH.
 find_package(PkgConfig)
 if (PkgConfig_FOUND)
-  pkg_check_modules(PYTHON3 python3) # TODO PYBIND11_PYTHON_VERSION
+  # Python 3.8 no longer links to libpython, but it provides a python3-embed.pc now, so let's try
+  # using that first and only fall back on the normal case if that fails.
+  # See: https://docs.python.org/3.8/whatsnew/3.8.html#debug-build-uses-the-same-abi-as-release-build
+  pkg_check_modules(PYTHON3 python3-embed) # TODO PYBIND11_PYTHON_VERSION
+  if (NOT PYTHON3_FOUND)
+    pkg_check_modules(PYTHON3 python3)
+  endif()
   if (PYTHON3_FOUND)
     set(PYTHON_INCLUDE_DIRS ${PYTHON3_INCLUDE_DIRS})
     if (PYTHON3_LINK_LIBRARIES)
@@ -29,8 +35,9 @@ if (PkgConfig_FOUND)
     endif()
     set(PYTHON_MODULE_PREFIX "")
     set(PYTHON_MODULE_EXTENSION "")
-    set(PYTHON_VERSION_MAJOR "") # TODO
-    set(PYTHON_VERSION_MINOR "") # TODO
+    string(REPLACE "." ";" PYTHON3_VERSION_LIST ${PYTHON3_VERSION})
+    list(GET VERSION_LIST 0 PYTHON_VERSION_MAJOR)
+    list(GET VERSION_LIST 1 PYTHON_VERSION_MINOR)
     message(STATUS "Python3 found via pkg-config!")
   endif()
 endif()
