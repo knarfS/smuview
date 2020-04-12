@@ -650,22 +650,6 @@ void init_UI(py::module &m)
 		"    The x signal object.\n"
 		"y_signal : AnalogTimeSignal\n"
 		"    The y signal object.");
-
-	// Qt enumerations
-	py::enum_<Qt::DockWidgetArea> py_dock_area(m, "DockArea",
-		"Enum of all possible docking locations for a view.");
-	py_dock_area.value("LeftDocktArea", Qt::DockWidgetArea::LeftDockWidgetArea,
-		"Dock to the left dock area.");
-	py_dock_area.value("RightDockArea", Qt::DockWidgetArea::RightDockWidgetArea,
-		"Dock to the right dock area.");
-	py_dock_area.value("TopDockArea", Qt::DockWidgetArea::TopDockWidgetArea,
-		"Dock to the top dock area.");
-	py_dock_area.value("BottomDockArea", Qt::DockWidgetArea::BottomDockWidgetArea,
-		"Dock to the bottom dock area.");
-	//py_dock_area.value("AllDockAreas", Qt::DockWidgetArea::AllDockWidgetAreas,
-	//	"Dock to all dock area.");
-	//py_dock_area.value("NoDockArea", Qt::DockWidgetArea::NoDockWidgetArea,
-	//	"Dock to no dock area.");
 }
 
 void init_StreamBuf(py::module &m)
@@ -1089,4 +1073,20 @@ void init_Enums(py::module &m)
 		"Piece");
 	py_unit.value("Unknown", sv::data::Unit::Unknown,
 		"Unknown");
+
+	// Qt enumerations
+	py::enum_<Qt::DockWidgetArea> py_dock_area(m, "DockArea",
+		"Enum of all possible docking locations for a view.");
+	py_dock_area.value("LeftDocktArea", Qt::DockWidgetArea::LeftDockWidgetArea,
+		"Dock to the left dock area.");
+	py_dock_area.value("RightDockArea", Qt::DockWidgetArea::RightDockWidgetArea,
+		"Dock to the right dock area.");
+	py_dock_area.value("TopDockArea", Qt::DockWidgetArea::TopDockWidgetArea,
+		"Dock to the top dock area.");
+	py_dock_area.value("BottomDockArea", Qt::DockWidgetArea::BottomDockWidgetArea,
+		"Dock to the bottom dock area.");
+	//py_dock_area.value("AllDockAreas", Qt::DockWidgetArea::AllDockWidgetAreas,
+	//	"Dock to all dock area.");
+	//py_dock_area.value("NoDockArea", Qt::DockWidgetArea::NoDockWidgetArea,
+	//	"Dock to no dock area.");
 }
