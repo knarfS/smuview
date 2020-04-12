@@ -4,7 +4,7 @@ NAME
     smuview - The SmuView 0.0.4 Python bindings.
 
 DESCRIPTION
-    The Python bindings are a scripting extension for SmuView, to automate and setup complex or repetitive measurements and to create a standardized user interface for those measurements.
+    The Python bindings are a scripting extension for SmuView to automate, setup and control complex or repetitive measurements, to process the incoming data and to create a standardized user interface for those measurements.
     
     The smuview module offers two default object instances: `Session` and `UiProxy`.
     The `Session` object gives access to already connected devices or connects new devices. The returned device object can then be used to read data from the device or control the device.
@@ -441,8 +441,6 @@ CLASSES
      |  
      |  __members__
      |  
-     |  __pdoc__
-     |  
      |  name
      |      (self: handle) -> str
      |  
@@ -804,8 +802,6 @@ CLASSES
      |  
      |  __members__
      |  
-     |  __pdoc__
-     |  
      |  name
      |      (self: handle) -> str
      |  
@@ -1128,8 +1124,6 @@ CLASSES
      |  
      |  __members__
      |  
-     |  __pdoc__
-     |  
      |  name
      |      (self: handle) -> str
      |  
@@ -1252,8 +1246,6 @@ CLASSES
      |  Data descriptors defined here:
      |  
      |  __members__
-     |  
-     |  __pdoc__
      |  
      |  name
      |      (self: handle) -> str
@@ -1381,7 +1373,7 @@ CLASSES
      |      Initialize self.  See help(type(self)) for accurate signature.
      |  
      |  add_control_view(...)
-     |      add_control_view(self: smuview.UiProxy, device_id: str, area: Qt::DockWidgetArea, configurable: smuview.Configurable) -> str
+     |      add_control_view(self: smuview.UiProxy, device_id: str, area: smuview.DockArea, configurable: smuview.Configurable) -> str
      |      
      |      Add a control view for a configurable to the given tab.
      |      
@@ -1400,7 +1392,7 @@ CLASSES
      |          The id of the new view.
      |  
      |  add_data_view(...)
-     |      add_data_view(self: smuview.UiProxy, device_id: str, area: Qt::DockWidgetArea, signal: smuview.AnalogTimeSignal) -> str
+     |      add_data_view(self: smuview.UiProxy, device_id: str, area: smuview.DockArea, signal: smuview.AnalogTimeSignal) -> str
      |      
      |      Add a data view for a signal to the given tab.
      |      
@@ -1432,7 +1424,7 @@ CLASSES
      |      add_plot_view(*args, **kwargs)
      |      Overloaded function.
      |      
-     |      1. add_plot_view(self: smuview.UiProxy, device_id: str, area: Qt::DockWidgetArea, channel: smuview.BaseChannel) -> str
+     |      1. add_plot_view(self: smuview.UiProxy, device_id: str, area: smuview.DockArea, channel: smuview.BaseChannel) -> str
      |      
      |      Add a time plot view for a channel to the given tab.
      |      
@@ -1450,7 +1442,7 @@ CLASSES
      |      str
      |          The id of the new view.
      |      
-     |      2. add_plot_view(self: smuview.UiProxy, device_id: str, area: Qt::DockWidgetArea, signal: smuview.AnalogTimeSignal) -> str
+     |      2. add_plot_view(self: smuview.UiProxy, device_id: str, area: smuview.DockArea, signal: smuview.AnalogTimeSignal) -> str
      |      
      |      Add a time plot view for a signal to the given tab.
      |      
@@ -1468,7 +1460,7 @@ CLASSES
      |      str
      |          The id of the new view.
      |      
-     |      3. add_plot_view(self: smuview.UiProxy, device_id: str, area: Qt::DockWidgetArea, x_signal: smuview.AnalogTimeSignal, y_signal: smuview.AnalogTimeSignal) -> str
+     |      3. add_plot_view(self: smuview.UiProxy, device_id: str, area: smuview.DockArea, x_signal: smuview.AnalogTimeSignal, y_signal: smuview.AnalogTimeSignal) -> str
      |      
      |      Add a x/y plot view for two signals to the given tab.
      |      
@@ -1489,7 +1481,7 @@ CLASSES
      |          The id of the new view.
      |  
      |  add_power_panel_view(...)
-     |      add_power_panel_view(self: smuview.UiProxy, device_id: str, area: Qt::DockWidgetArea, voltage_signal: smuview.AnalogTimeSignal, current_signal: smuview.AnalogTimeSignal) -> str
+     |      add_power_panel_view(self: smuview.UiProxy, device_id: str, area: smuview.DockArea, voltage_signal: smuview.AnalogTimeSignal, current_signal: smuview.AnalogTimeSignal) -> str
      |      
      |      Add a power panel view for a voltage and a current signal to the given tab.
      |      
@@ -1557,7 +1549,7 @@ CLASSES
      |      add_value_panel_view(*args, **kwargs)
      |      Overloaded function.
      |      
-     |      1. add_value_panel_view(self: smuview.UiProxy, device_id: str, area: Qt::DockWidgetArea, channel: smuview.BaseChannel) -> str
+     |      1. add_value_panel_view(self: smuview.UiProxy, device_id: str, area: smuview.DockArea, channel: smuview.BaseChannel) -> str
      |      
      |      Add a value panel view for a channel to the given tab.
      |      
@@ -1575,7 +1567,7 @@ CLASSES
      |      str
      |          The id of the new view.
      |      
-     |      2. add_value_panel_view(self: smuview.UiProxy, device_id: str, area: Qt::DockWidgetArea, signal: smuview.AnalogTimeSignal) -> str
+     |      2. add_value_panel_view(self: smuview.UiProxy, device_id: str, area: smuview.DockArea, signal: smuview.AnalogTimeSignal) -> str
      |      
      |      Add a value panel view for a signal to the given tab.
      |      
@@ -1637,8 +1629,6 @@ CLASSES
      |  Data descriptors defined here:
      |  
      |  __members__
-     |  
-     |  __pdoc__
      |  
      |  name
      |      (self: handle) -> str
@@ -1909,6 +1899,9 @@ CLASSES
      |  
      |  __new__(*args, **kwargs) from pybind11_builtins.pybind11_type
      |      Create and return a new object.  See help(type) for accurate signature.
+
+DATA
+    __pdoc__ = {'ConfigKey.ADCPowerlineCycles': 'Number of powerline cycle...
 
 FILE
     (built-in)

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.7.5.dev12+gcc92197.d20200213" />
+<meta name="generator" content="pdoc 0.7.6.dev19+g82469c6" />
 <title>smuview API documentation</title>
 <meta name="description" content="The SmuView 0.0.4 Python bindings …" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
@@ -21,7 +21,7 @@
 </header>
 <section id="section-intro">
 <p>The SmuView 0.0.4 Python bindings.</p>
-<p>The Python bindings are a scripting extension for SmuView, to automate and setup complex or repetitive measurements and to create a standardized user interface for those measurements.</p>
+<p>The Python bindings are a scripting extension for SmuView to automate, setup and control complex or repetitive measurements, to process the incoming data and to create a standardized user interface for those measurements.</p>
 <p>The smuview module offers two default object instances: <a title="smuview.Session" href="#smuview.Session"><code>Session</code></a> and <a title="smuview.UiProxy" href="#smuview.UiProxy"><code>UiProxy</code></a>.
 The <a title="smuview.Session" href="#smuview.Session"><code>Session</code></a> object gives access to already connected devices or connects new devices. The returned device object can then be used to read data from the device or control the device.
 The <a title="smuview.UiProxy" href="#smuview.UiProxy"><code>UiProxy</code></a> object instance is used to modify the user interface, for example adding tabs or views.</p>
@@ -65,7 +65,7 @@ UiProxy.add_device_tab(dmm_dev)
 <h3>Methods</h3>
 <dl>
 <dt id="smuview.AnalogSampleSignal.get_sample"><code class="name flex">
-<span>def <span class="ident">get_sample</span></span>(<span>self: smuview.AnalogSampleSignal, pos: int) -> 'Tuple[int, float]'</span>
+<span>def <span class="ident">get_sample</span></span>(<span>self: <a title="smuview.AnalogSampleSignal" href="#smuview.AnalogSampleSignal">AnalogSampleSignal</a>, pos: int) -> Tuple[int, float]</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Return the sample for the given position.</p>
@@ -81,7 +81,7 @@ UiProxy.add_device_tab(dmm_dev)
 </dl></section>
 </dd>
 <dt id="smuview.AnalogSampleSignal.push_sample"><code class="name flex">
-<span>def <span class="ident">push_sample</span></span>(<span>self: smuview.AnalogSampleSignal, sample: capsule, pos: int, unit_size: int, digits: int, decimal_places: int) -> 'None'</span>
+<span>def <span class="ident">push_sample</span></span>(<span>self: <a title="smuview.AnalogSampleSignal" href="#smuview.AnalogSampleSignal">AnalogSampleSignal</a>, sample: None, pos: int, unit_size: int, digits: int, decimal_places: int)</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Push a new sample to the signal.</p>
@@ -124,7 +124,7 @@ UiProxy.add_device_tab(dmm_dev)
 <h3>Methods</h3>
 <dl>
 <dt id="smuview.AnalogTimeSignal.get_last_sample"><code class="name flex">
-<span>def <span class="ident">get_last_sample</span></span>(<span>self: smuview.AnalogTimeSignal, relative_time: bool) -> 'Tuple[float, float]'</span>
+<span>def <span class="ident">get_last_sample</span></span>(<span>self: <a title="smuview.AnalogTimeSignal" href="#smuview.AnalogTimeSignal">AnalogTimeSignal</a>, relative_time: bool) -> Tuple[float, float]</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Return the last sample of the signal.</p>
@@ -140,7 +140,7 @@ UiProxy.add_device_tab(dmm_dev)
 </dl></section>
 </dd>
 <dt id="smuview.AnalogTimeSignal.get_sample"><code class="name flex">
-<span>def <span class="ident">get_sample</span></span>(<span>self: smuview.AnalogTimeSignal, pos: int, relative_time: bool) -> 'Tuple[float, float]'</span>
+<span>def <span class="ident">get_sample</span></span>(<span>self: <a title="smuview.AnalogTimeSignal" href="#smuview.AnalogTimeSignal">AnalogTimeSignal</a>, pos: int, relative_time: bool) -> Tuple[float, float]</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Return the sample at the given position.</p>
@@ -158,7 +158,7 @@ UiProxy.add_device_tab(dmm_dev)
 </dl></section>
 </dd>
 <dt id="smuview.AnalogTimeSignal.push_sample"><code class="name flex">
-<span>def <span class="ident">push_sample</span></span>(<span>self: smuview.AnalogTimeSignal, sample: capsule, timestamp: float, unit_size: int, digits: int, decimal_places: int) -> 'None'</span>
+<span>def <span class="ident">push_sample</span></span>(<span>self: <a title="smuview.AnalogTimeSignal" href="#smuview.AnalogTimeSignal">AnalogTimeSignal</a>, sample: None, timestamp: float, unit_size: int, digits: int, decimal_places: int)</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Push a new sample to the signal.</p>
@@ -205,7 +205,7 @@ UiProxy.add_device_tab(dmm_dev)
 <h3>Methods</h3>
 <dl>
 <dt id="smuview.BaseChannel.actual_signal"><code class="name flex">
-<span>def <span class="ident">actual_signal</span></span>(<span>self: smuview.BaseChannel) -> '<a title="smuview.BaseSignal" href="#smuview.BaseSignal">BaseSignal</a>'</span>
+<span>def <span class="ident">actual_signal</span></span>(<span>self: <a title="smuview.BaseChannel" href="#smuview.BaseChannel">BaseChannel</a>) -> <a title="smuview.BaseSignal" href="#smuview.BaseSignal">BaseSignal</a></span>
 </code></dt>
 <dd>
 <section class="desc"><p>Return the actual signal of the channel.</p>
@@ -216,7 +216,7 @@ UiProxy.add_device_tab(dmm_dev)
 </dl></section>
 </dd>
 <dt id="smuview.BaseChannel.add_signal"><code class="name flex">
-<span>def <span class="ident">add_signal</span></span>(<span>self: smuview.BaseChannel, quantity: smuview.Quantity, quantity_flags: Set[smuview.QuantityFlag], unit: smuview.Unit) -> '<a title="smuview.BaseSignal" href="#smuview.BaseSignal">BaseSignal</a>'</span>
+<span>def <span class="ident">add_signal</span></span>(<span>self: <a title="smuview.BaseChannel" href="#smuview.BaseChannel">BaseChannel</a>, quantity: <a title="smuview.Quantity" href="#smuview.Quantity">Quantity</a>, quantity_flags: Set[<a title="smuview.QuantityFlag" href="#smuview.QuantityFlag">QuantityFlag</a>], unit: <a title="smuview.Unit" href="#smuview.Unit">Unit</a>) -> <a title="smuview.BaseSignal" href="#smuview.BaseSignal">BaseSignal</a></span>
 </code></dt>
 <dd>
 <section class="desc"><p>Add a new signal to the channel.</p>
@@ -236,7 +236,7 @@ UiProxy.add_device_tab(dmm_dev)
 </dl></section>
 </dd>
 <dt id="smuview.BaseChannel.name"><code class="name flex">
-<span>def <span class="ident">name</span></span>(<span>self: smuview.BaseChannel) -> 'str'</span>
+<span>def <span class="ident">name</span></span>(<span>self: <a title="smuview.BaseChannel" href="#smuview.BaseChannel">BaseChannel</a>) -> str</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Return the name of the channel.</p>
@@ -247,7 +247,7 @@ UiProxy.add_device_tab(dmm_dev)
 </dl></section>
 </dd>
 <dt id="smuview.BaseChannel.signals"><code class="name flex">
-<span>def <span class="ident">signals</span></span>(<span>self: smuview.BaseChannel) -> 'List[<a title="smuview.BaseSignal" href="#smuview.BaseSignal">BaseSignal</a>]'</span>
+<span>def <span class="ident">signals</span></span>(<span>self: <a title="smuview.BaseChannel" href="#smuview.BaseChannel">BaseChannel</a>) -> List[<a title="smuview.BaseSignal" href="#smuview.BaseSignal">BaseSignal</a>]</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Return all signals of the channel.</p>
@@ -277,7 +277,7 @@ UiProxy.add_device_tab(dmm_dev)
 <h3>Methods</h3>
 <dl>
 <dt id="smuview.BaseDevice.add_user_channel"><code class="name flex">
-<span>def <span class="ident">add_user_channel</span></span>(<span>self: smuview.BaseDevice, channel_name: str, channel_group_name: str) -> '<a title="smuview.UserChannel" href="#smuview.UserChannel">UserChannel</a>'</span>
+<span>def <span class="ident">add_user_channel</span></span>(<span>self: <a title="smuview.BaseDevice" href="#smuview.BaseDevice">BaseDevice</a>, channel_name: str, channel_group_name: str) -> <a title="smuview.UserChannel" href="#smuview.UserChannel">UserChannel</a></span>
 </code></dt>
 <dd>
 <section class="desc"><p>Add a new user channel to the device.</p>
@@ -295,7 +295,7 @@ UiProxy.add_device_tab(dmm_dev)
 </dl></section>
 </dd>
 <dt id="smuview.BaseDevice.channels"><code class="name flex">
-<span>def <span class="ident">channels</span></span>(<span>self: smuview.BaseDevice) -> 'Dict[str, <a title="smuview.BaseChannel" href="#smuview.BaseChannel">BaseChannel</a>]'</span>
+<span>def <span class="ident">channels</span></span>(<span>self: <a title="smuview.BaseDevice" href="#smuview.BaseDevice">BaseDevice</a>) -> Dict[str, <a title="smuview.BaseChannel" href="#smuview.BaseChannel">BaseChannel</a>]</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Return all channels of the device.</p>
@@ -306,7 +306,7 @@ UiProxy.add_device_tab(dmm_dev)
 </dl></section>
 </dd>
 <dt id="smuview.BaseDevice.configurables"><code class="name flex">
-<span>def <span class="ident">configurables</span></span>(<span>self: smuview.BaseDevice) -> 'Dict[str, <a title="smuview.Configurable" href="#smuview.Configurable">Configurable</a>]'</span>
+<span>def <span class="ident">configurables</span></span>(<span>self: <a title="smuview.BaseDevice" href="#smuview.BaseDevice">BaseDevice</a>) -> Dict[str, <a title="smuview.Configurable" href="#smuview.Configurable">Configurable</a>]</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Return all configurables of the device.</p>
@@ -317,7 +317,7 @@ UiProxy.add_device_tab(dmm_dev)
 </dl></section>
 </dd>
 <dt id="smuview.BaseDevice.id"><code class="name flex">
-<span>def <span class="ident">id</span></span>(<span>self: smuview.BaseDevice) -> 'str'</span>
+<span>def <span class="ident">id</span></span>(<span>self: <a title="smuview.BaseDevice" href="#smuview.BaseDevice">BaseDevice</a>) -> str</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Return the unique id of the device.</p>
@@ -328,7 +328,7 @@ UiProxy.add_device_tab(dmm_dev)
 </dl></section>
 </dd>
 <dt id="smuview.BaseDevice.name"><code class="name flex">
-<span>def <span class="ident">name</span></span>(<span>self: smuview.BaseDevice) -> 'str'</span>
+<span>def <span class="ident">name</span></span>(<span>self: <a title="smuview.BaseDevice" href="#smuview.BaseDevice">BaseDevice</a>) -> str</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Return the name of the device.</p>
@@ -358,7 +358,7 @@ UiProxy.add_device_tab(dmm_dev)
 <h3>Methods</h3>
 <dl>
 <dt id="smuview.BaseSignal.name"><code class="name flex">
-<span>def <span class="ident">name</span></span>(<span>self: smuview.BaseSignal) -> 'str'</span>
+<span>def <span class="ident">name</span></span>(<span>self: <a title="smuview.BaseSignal" href="#smuview.BaseSignal">BaseSignal</a>) -> str</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Return the name of the signal.</p>
@@ -369,7 +369,7 @@ UiProxy.add_device_tab(dmm_dev)
 </dl></section>
 </dd>
 <dt id="smuview.BaseSignal.sample_count"><code class="name flex">
-<span>def <span class="ident">sample_count</span></span>(<span>self: smuview.BaseSignal) -> 'int'</span>
+<span>def <span class="ident">sample_count</span></span>(<span>self: <a title="smuview.BaseSignal" href="#smuview.BaseSignal">BaseSignal</a>) -> int</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Return the number of samples of the signal.</p>
@@ -786,7 +786,7 @@ the output is disabled.</p></section>
 </dl></section>
 </dd>
 <dt id="smuview.Configurable.name"><code class="name flex">
-<span>def <span class="ident">name</span></span>(<span>self: smuview.Configurable) -> 'str'</span>
+<span>def <span class="ident">name</span></span>(<span>self: <a title="smuview.Configurable" href="#smuview.Configurable">Configurable</a>) -> str</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Return the name of the configurable.</p>
@@ -973,91 +973,91 @@ the output is disabled.</p></section>
 <h3>Methods</h3>
 <dl>
 <dt id="smuview.PyStreamBuf.close"><code class="name flex">
-<span>def <span class="ident">close</span></span>(<span>self: smuview.PyStreamBuf) -> 'None'</span>
+<span>def <span class="ident">close</span></span>(<span>self: <a title="smuview.PyStreamBuf" href="#smuview.PyStreamBuf">PyStreamBuf</a>)</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Flush and close this stream.</p></section>
 </dd>
 <dt id="smuview.PyStreamBuf.fileno"><code class="name flex">
-<span>def <span class="ident">fileno</span></span>(<span>self: smuview.PyStreamBuf) -> 'int'</span>
+<span>def <span class="ident">fileno</span></span>(<span>self: <a title="smuview.PyStreamBuf" href="#smuview.PyStreamBuf">PyStreamBuf</a>) -> int</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Raises an OSError, because PyStreamBuf doesn't use a file descriptor.</p></section>
 </dd>
 <dt id="smuview.PyStreamBuf.flush"><code class="name flex">
-<span>def <span class="ident">flush</span></span>(<span>self: smuview.PyStreamBuf) -> 'None'</span>
+<span>def <span class="ident">flush</span></span>(<span>self: <a title="smuview.PyStreamBuf" href="#smuview.PyStreamBuf">PyStreamBuf</a>)</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Flush the write buffers of the stream.</p></section>
 </dd>
 <dt id="smuview.PyStreamBuf.isatty"><code class="name flex">
-<span>def <span class="ident">isatty</span></span>(<span>self: smuview.PyStreamBuf) -> 'bool'</span>
+<span>def <span class="ident">isatty</span></span>(<span>self: <a title="smuview.PyStreamBuf" href="#smuview.PyStreamBuf">PyStreamBuf</a>) -> bool</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Always return False.</p></section>
 </dd>
 <dt id="smuview.PyStreamBuf.read"><code class="name flex">
-<span>def <span class="ident">read</span></span>(<span>self: smuview.PyStreamBuf, size: int) -> 'str'</span>
+<span>def <span class="ident">read</span></span>(<span>self: <a title="smuview.PyStreamBuf" href="#smuview.PyStreamBuf">PyStreamBuf</a>, size: int) -> str</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Raises an OSError, because PyStreamBuf is write only.</p></section>
 </dd>
 <dt id="smuview.PyStreamBuf.readable"><code class="name flex">
-<span>def <span class="ident">readable</span></span>(<span>self: smuview.PyStreamBuf) -> 'bool'</span>
+<span>def <span class="ident">readable</span></span>(<span>self: <a title="smuview.PyStreamBuf" href="#smuview.PyStreamBuf">PyStreamBuf</a>) -> bool</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Always return False.</p></section>
 </dd>
 <dt id="smuview.PyStreamBuf.readline"><code class="name flex">
-<span>def <span class="ident">readline</span></span>(<span>self: smuview.PyStreamBuf, size: int) -> 'str'</span>
+<span>def <span class="ident">readline</span></span>(<span>self: <a title="smuview.PyStreamBuf" href="#smuview.PyStreamBuf">PyStreamBuf</a>, size: int) -> str</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Raises an OSError, because PyStreamBuf is write only.</p></section>
 </dd>
 <dt id="smuview.PyStreamBuf.readlines"><code class="name flex">
-<span>def <span class="ident">readlines</span></span>(<span>self: smuview.PyStreamBuf, hint: int) -> 'List[str]'</span>
+<span>def <span class="ident">readlines</span></span>(<span>self: <a title="smuview.PyStreamBuf" href="#smuview.PyStreamBuf">PyStreamBuf</a>, hint: int) -> List[str]</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Raises an OSError, because PyStreamBuf is write only.</p></section>
 </dd>
 <dt id="smuview.PyStreamBuf.seek"><code class="name flex">
-<span>def <span class="ident">seek</span></span>(<span>self: smuview.PyStreamBuf, offset: int, whence: int) -> 'int'</span>
+<span>def <span class="ident">seek</span></span>(<span>self: <a title="smuview.PyStreamBuf" href="#smuview.PyStreamBuf">PyStreamBuf</a>, offset: int, whence: int) -> int</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Raises an OSError, because PyStreamBuf is not seekable.</p></section>
 </dd>
 <dt id="smuview.PyStreamBuf.seekable"><code class="name flex">
-<span>def <span class="ident">seekable</span></span>(<span>self: smuview.PyStreamBuf) -> 'bool'</span>
+<span>def <span class="ident">seekable</span></span>(<span>self: <a title="smuview.PyStreamBuf" href="#smuview.PyStreamBuf">PyStreamBuf</a>) -> bool</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Always return False. PyStreamBuf is not seekable atm.</p></section>
 </dd>
 <dt id="smuview.PyStreamBuf.tell"><code class="name flex">
-<span>def <span class="ident">tell</span></span>(<span>self: smuview.PyStreamBuf) -> 'int'</span>
+<span>def <span class="ident">tell</span></span>(<span>self: <a title="smuview.PyStreamBuf" href="#smuview.PyStreamBuf">PyStreamBuf</a>) -> int</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Raises an OSError, because PyStreamBuf is not seekable.</p></section>
 </dd>
 <dt id="smuview.PyStreamBuf.truncate"><code class="name flex">
-<span>def <span class="ident">truncate</span></span>(<span>self: smuview.PyStreamBuf, size: int) -> 'int'</span>
+<span>def <span class="ident">truncate</span></span>(<span>self: <a title="smuview.PyStreamBuf" href="#smuview.PyStreamBuf">PyStreamBuf</a>, size: int) -> int</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Raises an OSError, because PyStreamBuf is not seekable.</p></section>
 </dd>
 <dt id="smuview.PyStreamBuf.writable"><code class="name flex">
-<span>def <span class="ident">writable</span></span>(<span>self: smuview.PyStreamBuf) -> 'bool'</span>
+<span>def <span class="ident">writable</span></span>(<span>self: <a title="smuview.PyStreamBuf" href="#smuview.PyStreamBuf">PyStreamBuf</a>) -> bool</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Always return True.</p></section>
 </dd>
 <dt id="smuview.PyStreamBuf.write"><code class="name flex">
-<span>def <span class="ident">write</span></span>(<span>self: smuview.PyStreamBuf, s: str) -> 'int'</span>
+<span>def <span class="ident">write</span></span>(<span>self: <a title="smuview.PyStreamBuf" href="#smuview.PyStreamBuf">PyStreamBuf</a>, s: str) -> int</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Write the string s to the stream and return the number of characters written.</p></section>
 </dd>
 <dt id="smuview.PyStreamBuf.writelines"><code class="name flex">
-<span>def <span class="ident">writelines</span></span>(<span>self: smuview.PyStreamBuf, lines: List[str]) -> 'None'</span>
+<span>def <span class="ident">writelines</span></span>(<span>self: <a title="smuview.PyStreamBuf" href="#smuview.PyStreamBuf">PyStreamBuf</a>, lines: List[str])</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Write a list of lines to the stream.</p></section>
@@ -1357,7 +1357,7 @@ the output is disabled.</p></section>
 <h3>Methods</h3>
 <dl>
 <dt id="smuview.Session.add_user_device"><code class="name flex">
-<span>def <span class="ident">add_user_device</span></span>(<span>self: smuview.Session) -> '<a title="smuview.UserDevice" href="#smuview.UserDevice">UserDevice</a>'</span>
+<span>def <span class="ident">add_user_device</span></span>(<span>self: <a title="smuview.Session" href="#smuview.Session">Session</a>) -> <a title="smuview.UserDevice" href="#smuview.UserDevice">UserDevice</a></span>
 </code></dt>
 <dd>
 <section class="desc"><p>Create a new user device.</p>
@@ -1368,7 +1368,7 @@ the output is disabled.</p></section>
 </dl></section>
 </dd>
 <dt id="smuview.Session.connect_device"><code class="name flex">
-<span>def <span class="ident">connect_device</span></span>(<span>self: smuview.Session, conn_str: str) -> 'List[<a title="smuview.HardwareDevice" href="#smuview.HardwareDevice">HardwareDevice</a>]'</span>
+<span>def <span class="ident">connect_device</span></span>(<span>self: <a title="smuview.Session" href="#smuview.Session">Session</a>, conn_str: str) -> List[<a title="smuview.HardwareDevice" href="#smuview.HardwareDevice">HardwareDevice</a>]</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Connect a new device.</p>
@@ -1384,7 +1384,7 @@ the output is disabled.</p></section>
 </dl></section>
 </dd>
 <dt id="smuview.Session.devices"><code class="name flex">
-<span>def <span class="ident">devices</span></span>(<span>self: smuview.Session) -> 'Dict[str, <a title="smuview.BaseDevice" href="#smuview.BaseDevice">BaseDevice</a>]'</span>
+<span>def <span class="ident">devices</span></span>(<span>self: <a title="smuview.Session" href="#smuview.Session">Session</a>) -> Dict[str, <a title="smuview.BaseDevice" href="#smuview.BaseDevice">BaseDevice</a>]</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Return all connected devices.</p>
@@ -1409,7 +1409,7 @@ the output is disabled.</p></section>
 <h3>Methods</h3>
 <dl>
 <dt id="smuview.UiProxy.add_control_view"><code class="name flex">
-<span>def <span class="ident">add_control_view</span></span>(<span>self: smuview.UiProxy, device_id: str, configurable: smuview.Configurable) -> 'str'</span>
+<span>def <span class="ident">add_control_view</span></span>(<span>self: <a title="smuview.UiProxy" href="#smuview.UiProxy">UiProxy</a>, device_id: str, area: <a title="smuview.DockArea" href="#smuview.DockArea">DockArea</a>, configurable: <a title="smuview.Configurable" href="#smuview.Configurable">Configurable</a>) -> str</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Add a control view for a configurable to the given tab.</p>
@@ -1429,7 +1429,7 @@ the output is disabled.</p></section>
 </dl></section>
 </dd>
 <dt id="smuview.UiProxy.add_data_view"><code class="name flex">
-<span>def <span class="ident">add_data_view</span></span>(<span>self: smuview.UiProxy, device_id: str, signal: smuview.AnalogTimeSignal) -> 'str'</span>
+<span>def <span class="ident">add_data_view</span></span>(<span>self: <a title="smuview.UiProxy" href="#smuview.UiProxy">UiProxy</a>, device_id: str, area: <a title="smuview.DockArea" href="#smuview.DockArea">DockArea</a>, signal: <a title="smuview.AnalogTimeSignal" href="#smuview.AnalogTimeSignal">AnalogTimeSignal</a>) -> str</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Add a data view for a signal to the given tab.</p>
@@ -1449,7 +1449,7 @@ the output is disabled.</p></section>
 </dl></section>
 </dd>
 <dt id="smuview.UiProxy.add_device_tab"><code class="name flex">
-<span>def <span class="ident">add_device_tab</span></span>(<span>self: smuview.UiProxy, device: smuview.BaseDevice) -> 'None'</span>
+<span>def <span class="ident">add_device_tab</span></span>(<span>self: <a title="smuview.UiProxy" href="#smuview.UiProxy">UiProxy</a>, device: <a title="smuview.BaseDevice" href="#smuview.BaseDevice">BaseDevice</a>)</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Add a device tab with standard view for a device to the UI.</p>
@@ -1465,7 +1465,7 @@ the output is disabled.</p></section>
 <dd>
 <section class="desc"><p>Overloaded function.</p>
 <ol>
-<li>add_plot_view(self: smuview.UiProxy, device_id: str, area: Qt::DockWidgetArea, channel: smuview.BaseChannel) -&gt; str</li>
+<li>add_plot_view(self: smuview.UiProxy, device_id: str, area: smuview.DockArea, channel: smuview.BaseChannel) -&gt; str</li>
 </ol>
 <p>Add a time plot view for a channel to the given tab.</p>
 <h2 id="parameters">Parameters</h2>
@@ -1481,7 +1481,7 @@ the output is disabled.</p></section>
 <dl>
 <dt><code>str</code></dt>
 <dd>The id of the new view.</dd>
-<dt><code>2.</code> <code>add_plot_view</code>(<code>self</code>: <a title="smuview.UiProxy" href="#smuview.UiProxy"><code>UiProxy</code></a>, <code>device_id</code>: <code>str</code>, <code>area</code>: <code>Qt</code>::<code>DockWidgetArea</code>, <code>signal</code>: <a title="smuview.AnalogTimeSignal" href="#smuview.AnalogTimeSignal"><code>AnalogTimeSignal</code></a>) -&gt; <code>str</code></dt>
+<dt><code>2.</code> <code>add_plot_view</code>(<code>self</code>: <a title="smuview.UiProxy" href="#smuview.UiProxy"><code>UiProxy</code></a>, <code>device_id</code>: <code>str</code>, <code>area</code>: <a title="smuview.DockArea" href="#smuview.DockArea"><code>DockArea</code></a>, <code>signal</code>: <a title="smuview.AnalogTimeSignal" href="#smuview.AnalogTimeSignal"><code>AnalogTimeSignal</code></a>) -&gt; <code>str</code></dt>
 <dd>&nbsp;</dd>
 </dl>
 <p>Add a time plot view for a signal to the given tab.</p>
@@ -1498,7 +1498,7 @@ the output is disabled.</p></section>
 <dl>
 <dt><code>str</code></dt>
 <dd>The id of the new view.</dd>
-<dt><code>3.</code> <code>add_plot_view</code>(<code>self</code>: <a title="smuview.UiProxy" href="#smuview.UiProxy"><code>UiProxy</code></a>, <code>device_id</code>: <code>str</code>, <code>area</code>: <code>Qt</code>::<code>DockWidgetArea</code>, <code>x_signal</code>: <a title="smuview.AnalogTimeSignal" href="#smuview.AnalogTimeSignal"><code>AnalogTimeSignal</code></a>, <code>y_signal</code>: <a title="smuview.AnalogTimeSignal" href="#smuview.AnalogTimeSignal"><code>AnalogTimeSignal</code></a>) -&gt; <code>str</code></dt>
+<dt><code>3.</code> <code>add_plot_view</code>(<code>self</code>: <a title="smuview.UiProxy" href="#smuview.UiProxy"><code>UiProxy</code></a>, <code>device_id</code>: <code>str</code>, <code>area</code>: <a title="smuview.DockArea" href="#smuview.DockArea"><code>DockArea</code></a>, <code>x_signal</code>: <a title="smuview.AnalogTimeSignal" href="#smuview.AnalogTimeSignal"><code>AnalogTimeSignal</code></a>, <code>y_signal</code>: <a title="smuview.AnalogTimeSignal" href="#smuview.AnalogTimeSignal"><code>AnalogTimeSignal</code></a>) -&gt; <code>str</code></dt>
 <dd>&nbsp;</dd>
 </dl>
 <p>Add a x/y plot view for two signals to the given tab.</p>
@@ -1520,7 +1520,7 @@ the output is disabled.</p></section>
 </dl></section>
 </dd>
 <dt id="smuview.UiProxy.add_power_panel_view"><code class="name flex">
-<span>def <span class="ident">add_power_panel_view</span></span>(<span>self: smuview.UiProxy, device_id: str, voltage_signal: smuview.AnalogTimeSignal, current_signal: smuview.AnalogTimeSignal) -> 'str'</span>
+<span>def <span class="ident">add_power_panel_view</span></span>(<span>self: <a title="smuview.UiProxy" href="#smuview.UiProxy">UiProxy</a>, device_id: str, area: <a title="smuview.DockArea" href="#smuview.DockArea">DockArea</a>, voltage_signal: <a title="smuview.AnalogTimeSignal" href="#smuview.AnalogTimeSignal">AnalogTimeSignal</a>, current_signal: <a title="smuview.AnalogTimeSignal" href="#smuview.AnalogTimeSignal">AnalogTimeSignal</a>) -> str</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Add a power panel view for a voltage and a current signal to the given tab.</p>
@@ -1542,7 +1542,7 @@ the output is disabled.</p></section>
 </dl></section>
 </dd>
 <dt id="smuview.UiProxy.add_signal_to_data_view"><code class="name flex">
-<span>def <span class="ident">add_signal_to_data_view</span></span>(<span>self: smuview.UiProxy, device_id: str, view_id: str, signal: smuview.AnalogTimeSignal) -> 'None'</span>
+<span>def <span class="ident">add_signal_to_data_view</span></span>(<span>self: <a title="smuview.UiProxy" href="#smuview.UiProxy">UiProxy</a>, device_id: str, view_id: str, signal: <a title="smuview.AnalogTimeSignal" href="#smuview.AnalogTimeSignal">AnalogTimeSignal</a>)</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Add a signal to the given data view.</p>
@@ -1557,7 +1557,7 @@ the output is disabled.</p></section>
 </dl></section>
 </dd>
 <dt id="smuview.UiProxy.add_signal_to_plot_view"><code class="name flex">
-<span>def <span class="ident">add_signal_to_plot_view</span></span>(<span>self: smuview.UiProxy, device_id: str, view_id: str, signal: smuview.AnalogTimeSignal) -> 'None'</span>
+<span>def <span class="ident">add_signal_to_plot_view</span></span>(<span>self: <a title="smuview.UiProxy" href="#smuview.UiProxy">UiProxy</a>, device_id: str, view_id: str, signal: <a title="smuview.AnalogTimeSignal" href="#smuview.AnalogTimeSignal">AnalogTimeSignal</a>)</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Add a signal to the given plot view. If the plot is a x/y plot, the signal will be added as a new y signal.</p>
@@ -1572,7 +1572,7 @@ the output is disabled.</p></section>
 </dl></section>
 </dd>
 <dt id="smuview.UiProxy.add_signals_to_xy_plot_view"><code class="name flex">
-<span>def <span class="ident">add_signals_to_xy_plot_view</span></span>(<span>self: smuview.UiProxy, device_id: str, view_id: str, x_signal: smuview.AnalogTimeSignal, y_signal: smuview.AnalogTimeSignal) -> 'None'</span>
+<span>def <span class="ident">add_signals_to_xy_plot_view</span></span>(<span>self: <a title="smuview.UiProxy" href="#smuview.UiProxy">UiProxy</a>, device_id: str, view_id: str, x_signal: <a title="smuview.AnalogTimeSignal" href="#smuview.AnalogTimeSignal">AnalogTimeSignal</a>, y_signal: <a title="smuview.AnalogTimeSignal" href="#smuview.AnalogTimeSignal">AnalogTimeSignal</a>)</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Add x/y signals to the given x/y plot view.</p>
@@ -1594,7 +1594,7 @@ the output is disabled.</p></section>
 <dd>
 <section class="desc"><p>Overloaded function.</p>
 <ol>
-<li>add_value_panel_view(self: smuview.UiProxy, device_id: str, area: Qt::DockWidgetArea, channel: smuview.BaseChannel) -&gt; str</li>
+<li>add_value_panel_view(self: smuview.UiProxy, device_id: str, area: smuview.DockArea, channel: smuview.BaseChannel) -&gt; str</li>
 </ol>
 <p>Add a value panel view for a channel to the given tab.</p>
 <h2 id="parameters">Parameters</h2>
@@ -1610,7 +1610,7 @@ the output is disabled.</p></section>
 <dl>
 <dt><code>str</code></dt>
 <dd>The id of the new view.</dd>
-<dt><code>2.</code> <code>add_value_panel_view</code>(<code>self</code>: <a title="smuview.UiProxy" href="#smuview.UiProxy"><code>UiProxy</code></a>, <code>device_id</code>: <code>str</code>, <code>area</code>: <code>Qt</code>::<code>DockWidgetArea</code>, <code>signal</code>: <a title="smuview.AnalogTimeSignal" href="#smuview.AnalogTimeSignal"><code>AnalogTimeSignal</code></a>) -&gt; <code>str</code></dt>
+<dt><code>2.</code> <code>add_value_panel_view</code>(<code>self</code>: <a title="smuview.UiProxy" href="#smuview.UiProxy"><code>UiProxy</code></a>, <code>device_id</code>: <code>str</code>, <code>area</code>: <a title="smuview.DockArea" href="#smuview.DockArea"><code>DockArea</code></a>, <code>signal</code>: <a title="smuview.AnalogTimeSignal" href="#smuview.AnalogTimeSignal"><code>AnalogTimeSignal</code></a>) -&gt; <code>str</code></dt>
 <dd>&nbsp;</dd>
 </dl>
 <p>Add a value panel view for a signal to the given tab.</p>
@@ -1835,7 +1835,7 @@ the output is disabled.</p></section>
 <h3>Methods</h3>
 <dl>
 <dt id="smuview.UserChannel.push_sample"><code class="name flex">
-<span>def <span class="ident">push_sample</span></span>(<span>self: smuview.UserChannel, sample: float, timestamp: float, quantity: smuview.Quantity, quantity_flags: Set[smuview.QuantityFlag], unit: smuview.Unit, digits: int, decimal_places: int) -> 'None'</span>
+<span>def <span class="ident">push_sample</span></span>(<span>self: <a title="smuview.UserChannel" href="#smuview.UserChannel">UserChannel</a>, sample: float, timestamp: float, quantity: <a title="smuview.Quantity" href="#smuview.Quantity">Quantity</a>, quantity_flags: Set[<a title="smuview.QuantityFlag" href="#smuview.QuantityFlag">QuantityFlag</a>], unit: <a title="smuview.Unit" href="#smuview.Unit">Unit</a>, digits: int, decimal_places: int)</span>
 </code></dt>
 <dd>
 <section class="desc"><p>Push a single sample to the channel.</p>
@@ -2229,7 +2229,7 @@ the output is disabled.</p></section>
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.5.dev12+gcc92197.d20200213</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.7.6.dev19+g82469c6</a>.</p>
 </footer>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
 <script>hljs.initHighlightingOnLoad()</script>
