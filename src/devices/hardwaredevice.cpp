@@ -254,19 +254,19 @@ void HardwareDevice::feed_in_trigger()
 void HardwareDevice::feed_in_meta(shared_ptr<sigrok::Meta> sr_meta)
 {
 	/*
-	 * HACK: re-use existing SR_CONF_DATA_SOURCE to signal
+	 * interpret SR_CONF_CHANNEL_GROUP to signal
 	 * current channel group for meta packets
 	 */
 	for (auto &entry : sr_meta->config()) {
 		devices::ConfigKey config_key =
 			devices::deviceutil::get_config_key(entry.first);
-		if(config_key == ConfigKey::DataSource) {
-			cur_meta_data_source_ = g_variant_get_string(entry.second.gobj(), NULL);
+		if(config_key == ConfigKey::ChannelGroup) {
+			cur_meta_channel_group_ = g_variant_get_string(entry.second.gobj(), NULL);
 			return;
 		}
 	}
-	if (cur_meta_data_source_.size()) {
-		auto iter = configurable_map_.find(cur_meta_data_source_);
+	if (cur_meta_channel_group_.size()) {
+		auto iter = configurable_map_.find(cur_meta_channel_group_);
 		if(iter != configurable_map_.end()) {
 			iter->second->feed_in_meta(sr_meta);
 			return;
