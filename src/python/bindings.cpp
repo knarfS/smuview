@@ -27,8 +27,14 @@
 #include "bindings.hpp"
 #include "config.h"
 #include "src/session.hpp"
+#include "src/channels/addscchannel.hpp"
 #include "src/channels/basechannel.hpp"
+#include "src/channels/dividechannel.hpp"
 #include "src/channels/hardwarechannel.hpp"
+#include "src/channels/integratechannel.hpp"
+#include "src/channels/movingavgchannel.hpp"
+#include "src/channels/multiplysfchannel.hpp"
+#include "src/channels/multiplysschannel.hpp"
 #include "src/channels/userchannel.hpp"
 #include "src/data/analogbasesignal.hpp"
 #include "src/data/analogsamplesignal.hpp"
@@ -261,6 +267,53 @@ void init_Channel(py::module &m)
 		"    The total number of digits.\n"
 		"decimal_places : int\n"
 		"    The number of decimal places.");
+
+	// Math Channels
+
+	py::class_<sv::channels::MultiplySSChannel, std::shared_ptr<sv::channels::MultiplySSChannel>> py_multiply_ss_channel(m, "MultiplySSChannel", py_base_channel);
+	py_multiply_ss_channel.doc() = "";
+	py_multiply_ss_channel.def(py::init<sv::data::Quantity, set<sv::data::QuantityFlag>, sv::data::Unit,
+							   std::shared_ptr<sv::data::AnalogTimeSignal>, std::shared_ptr<sv::data::AnalogTimeSignal>,
+							   std::shared_ptr<sv::devices::BaseDevice>, set<string>, string, double>(),
+							   py::arg("quantity"), py::arg("quantity_flags"), py::arg("unit"),
+							   py::arg("signal1"), py::arg("signal2"), py::arg("parent_device"),
+							   py::arg("channel_group_names"), py::arg("channel_name"), py::arg("channel_start_timestamp"),
+		"A math channel for multiplying two signals.\n\n"
+		"Parameters\n"
+		"----------\n"
+		"quantity : Quantity\n"
+		"    The `Quantity` of the new math channel.\n"
+		"quantity_flags : Set[QuantityFlag]\n"
+		"    The `QuantityFlag`s of the new math channel.\n"
+		"unit : Unit\n"
+		"    The `Unit` of the new math channel.\n"
+		"signal1 : AnalogTimeSignal\n"
+		"    The first signal.\n"
+		"signal2 : AnalogTimeSignal\n"
+		"    The second signal.\n"
+		"parent_device : BaseDevice\n"
+		"    Device to which the new math channel belongs to.\n"
+		"channel_group_names : Set[str]\n"
+		"    Channel groups where the new math channel is created. Empty if the math channel belongs to the device itself.\n"
+		"channel_name : str\n"
+		"    The name of the new math channel.\n"
+		"channel_start_timestamp : double\n"
+		"    The start timestamp of the new math channel.");
+
+	py::class_<sv::channels::MultiplySFChannel, std::shared_ptr<sv::channels::MultiplySFChannel>> py_multiply_sf_channel(m, "MultiplySFChannel", py_base_channel);
+	py_multiply_sf_channel.doc() = "A math channel for multiplying a signal with a factor.";
+
+	py::class_<sv::channels::DivideChannel, std::shared_ptr<sv::channels::DivideChannel>> py_divide_channel(m, "DivideChannel", py_base_channel);
+	py_multiply_sf_channel.doc() = "A math channel for dividing a signal by an other signal.";
+
+	py::class_<sv::channels::AddSCChannel, std::shared_ptr<sv::channels::AddSCChannel>> py_add_sc_channel(m, "AddSCChannel", py_base_channel);
+	py_add_sc_channel.doc() = "A math channel for adding a constant to a signal.";
+
+	py::class_<sv::channels::IntegrateChannel, std::shared_ptr<sv::channels::IntegrateChannel>> py_integrate_channel(m, "IntegrateChannel", py_base_channel);
+	py_integrate_channel.doc() = "A math channel for integrating a signal over time.";
+
+	py::class_<sv::channels::MovingAvgChannel, std::shared_ptr<sv::channels::MovingAvgChannel>> py_moving_avg_channel(m, "MovingAvgChannel", py_base_channel);
+	py_moving_avg_channel.doc() = "A math channel for calculating the moving average for a signal.";
 }
 
 void init_Signal(py::module &m)
