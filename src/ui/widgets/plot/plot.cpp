@@ -881,7 +881,7 @@ void Plot::update_markers_label()
 		QString x_unit("");
 		QString m1_x_unit = marker_map_[marker_pair.first]->x_unit_str();
 		QString m2_x_unit = marker_map_[marker_pair.second]->x_unit_str();
-		if (m1_x_unit == m1_x_unit)
+		if (m1_x_unit == m2_x_unit)
 			x_unit = m1_x_unit;
 
 		QString y_unit("");
