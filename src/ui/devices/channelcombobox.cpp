@@ -96,7 +96,7 @@ void ChannelComboBox::fill_channels()
 		channel_group_name_ = "";
 
 	string chg_name_str = channel_group_name_.toStdString();
-	if (!device_->channel_group_map().count(chg_name_str))
+	if (device_->channel_group_map().count(chg_name_str) == 0)
 		return;
 
 	auto ch_list = device_->channel_group_map()[chg_name_str];

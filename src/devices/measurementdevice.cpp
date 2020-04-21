@@ -48,8 +48,8 @@ void MeasurementDevice::init_configurables()
 		// Check if the device has the config key "Range". If so, each possible
 		// value of the config key "MeasuredQuantity" could have a different
 		// listing for "Range"!
-		if (configurable->properties().count(ConfigKey::Range) &&
-			configurable->properties().count(ConfigKey::MeasuredQuantity)) {
+		if (configurable->properties().count(ConfigKey::Range) > 0 &&
+			configurable->properties().count(ConfigKey::MeasuredQuantity) > 0) {
 
 			auto range_property = configurable->properties()[ConfigKey::Range];
 			auto mq_property =

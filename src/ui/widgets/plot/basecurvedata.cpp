@@ -50,19 +50,19 @@ QColor BaseCurveData::color() const
 	// TODO: Implement a better way for color configuration of curves!
 
 	if (y_quantity() == sv::data::Quantity::Voltage &&
-			y_quantity_flags().count(sv::data::QuantityFlag::DC))
+			y_quantity_flags().count(sv::data::QuantityFlag::DC) > 0)
 		return Qt::red;
 	if (y_quantity() == sv::data::Quantity::Voltage &&
-			y_quantity_flags().count(sv::data::QuantityFlag::AC))
+			y_quantity_flags().count(sv::data::QuantityFlag::AC) > 0)
 		return Qt::darkRed;
 	if (y_quantity() == sv::data::Quantity::Voltage)
 		// Fallback for Voltage without quantity flag
 		return Qt::red;
 	if (y_quantity() == sv::data::Quantity::Current &&
-			y_quantity_flags().count(sv::data::QuantityFlag::DC))
+			y_quantity_flags().count(sv::data::QuantityFlag::DC) > 0)
 		return Qt::green;
 	if (y_quantity() == sv::data::Quantity::Current &&
-			y_quantity_flags().count(sv::data::QuantityFlag::AC))
+			y_quantity_flags().count(sv::data::QuantityFlag::AC) > 0)
 		return Qt::darkGreen;
 	if (y_quantity() == sv::data::Quantity::Current)
 		// Fallback for current without quantity flag

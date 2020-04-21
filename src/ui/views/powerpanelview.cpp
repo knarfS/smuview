@@ -87,13 +87,13 @@ void PowerPanelView::setup_ui()
 
 	QString voltage_unit_suffix("");
 	set<QuantityFlag> voltage_qfs = voltage_signal_->quantity_flags();
-	if (voltage_qfs.count(QuantityFlag::AC)) {
+	if (voltage_qfs.count(QuantityFlag::AC) > 0) {
 		//voltage_unit_suffix = QString::fromUtf8("\u23E6");
 		voltage_unit_suffix = sv::data::datautil::format_quantity_flag(
 			QuantityFlag::AC);
 		voltage_qfs.erase(QuantityFlag::AC);
 	}
-	else if (voltage_qfs.count(QuantityFlag::DC)) {
+	else if (voltage_qfs.count(QuantityFlag::DC) > 0) {
 		//voltage_unit_suffix = QString::fromUtf8("\u2393");
 		voltage_unit_suffix = sv::data::datautil::format_quantity_flag(
 			QuantityFlag::DC);
@@ -119,12 +119,12 @@ void PowerPanelView::setup_ui()
 
 	QString current_unit_suffix("");
 	set<QuantityFlag> current_qfs = current_signal_->quantity_flags();
-	if (current_qfs.count(QuantityFlag::AC)) {
+	if (current_qfs.count(QuantityFlag::AC) > 0) {
 		current_unit_suffix = sv::data::datautil::format_quantity_flag(
 			QuantityFlag::AC);
 		current_qfs.erase(QuantityFlag::AC);
 	}
-	else if (current_qfs.count(QuantityFlag::DC)) {
+	else if (current_qfs.count(QuantityFlag::DC) > 0) {
 		current_unit_suffix = sv::data::datautil::format_quantity_flag(
 			QuantityFlag::DC);
 		current_qfs.erase(QuantityFlag::DC);

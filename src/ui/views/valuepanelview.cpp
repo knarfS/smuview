@@ -139,13 +139,13 @@ void ValuePanelView::setup_unit()
 	unit_ = signal_->unit_name();
 	quantity_flags_ = signal_->quantity_flags();
 
-	if (quantity_flags_.count(sv::data::QuantityFlag::AC)) {
+	if (quantity_flags_.count(sv::data::QuantityFlag::AC) > 0) {
 		//unit_suffix_ = QString::fromUtf8("\u23E6");
 		unit_suffix_ = sv::data::datautil::format_quantity_flag(
 			sv::data::QuantityFlag::AC);
 		quantity_flags_.erase(sv::data::QuantityFlag::AC);
 	}
-	else if (quantity_flags_.count(sv::data::QuantityFlag::DC)) {
+	else if (quantity_flags_.count(sv::data::QuantityFlag::DC) > 0) {
 		//unit_suffix_ = QString::fromUtf8("\u2393");
 		unit_suffix_ = sv::data::datautil::format_quantity_flag(
 			sv::data::QuantityFlag::DC);

@@ -158,7 +158,7 @@ void Configurable::init()
 
 bool Configurable::has_get_config(devices::ConfigKey key)  const
 {
-	return getable_configs_.count(key);
+	return getable_configs_.count(key) > 0;
 }
 
 template bool Configurable::get_config(devices::ConfigKey) const;
@@ -237,7 +237,7 @@ Glib::VariantContainerBase Configurable::get_container_config(
 
 bool Configurable::has_set_config(devices::ConfigKey key) const
 {
-	return setable_configs_.count(key);
+	return setable_configs_.count(key) > 0;
 }
 
 template void Configurable::set_config(devices::ConfigKey, const bool);
@@ -299,7 +299,7 @@ void Configurable::set_container_config(
 
 bool Configurable::has_list_config(devices::ConfigKey key) const
 {
-	return listable_configs_.count(key);
+	return listable_configs_.count(key) > 0;
 }
 
 bool Configurable::list_config(devices::ConfigKey key,

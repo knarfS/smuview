@@ -58,8 +58,8 @@ bool is_source_sink_driver(shared_ptr<sigrok::Driver> sr_driver)
 	assert(sr_driver);
 
 	const auto keys = sr_driver->config_keys();
-	return keys.count(sigrok::ConfigKey::POWER_SUPPLY)
-		| keys.count(sigrok::ConfigKey::ELECTRONIC_LOAD);
+	return keys.count(sigrok::ConfigKey::POWER_SUPPLY) > 0
+		|| keys.count(sigrok::ConfigKey::ELECTRONIC_LOAD) > 0;
 }
 
 bool is_measurement_driver(shared_ptr<sigrok::Driver> sr_driver)
@@ -67,15 +67,15 @@ bool is_measurement_driver(shared_ptr<sigrok::Driver> sr_driver)
 	assert(sr_driver);
 
 	const auto keys = sr_driver->config_keys();
-	return keys.count(sigrok::ConfigKey::MULTIMETER)
-		| keys.count(sigrok::ConfigKey::SOUNDLEVELMETER)
-		| keys.count(sigrok::ConfigKey::THERMOMETER)
-		| keys.count(sigrok::ConfigKey::HYGROMETER)
-		| keys.count(sigrok::ConfigKey::ENERGYMETER)
-		| keys.count(sigrok::ConfigKey::LCRMETER)
-		| keys.count(sigrok::ConfigKey::SCALE)
-		| keys.count(sigrok::ConfigKey::POWERMETER)
-		| keys.count(sigrok::ConfigKey::DEMO_DEV);
+	return keys.count(sigrok::ConfigKey::MULTIMETER) > 0
+		|| keys.count(sigrok::ConfigKey::SOUNDLEVELMETER) > 0
+		|| keys.count(sigrok::ConfigKey::THERMOMETER) > 0
+		|| keys.count(sigrok::ConfigKey::HYGROMETER) > 0
+		|| keys.count(sigrok::ConfigKey::ENERGYMETER) > 0
+		|| keys.count(sigrok::ConfigKey::LCRMETER) > 0
+		|| keys.count(sigrok::ConfigKey::SCALE) > 0
+		|| keys.count(sigrok::ConfigKey::POWERMETER) > 0
+		|| keys.count(sigrok::ConfigKey::DEMO_DEV) > 0;
 }
 
 DeviceType get_device_type(const sigrok::ConfigKey *sr_config_key)

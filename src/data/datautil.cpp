@@ -256,11 +256,11 @@ QString format_unit(Unit unit, set<QuantityFlag> quantity_flags)
 {
 	QString unit_str = format_unit(unit);
 	if (unit == Unit::Volt || unit == Unit::Ampere) {
-		if (quantity_flags.count(QuantityFlag::AC)) {
+		if (quantity_flags.count(QuantityFlag::AC) > 0) {
 			unit_str = unit_str.append(" ").append(
 				format_quantity_flag(QuantityFlag::AC));
 		}
-		if (quantity_flags.count(QuantityFlag::DC)) {
+		if (quantity_flags.count(QuantityFlag::DC) > 0) {
 			unit_str = unit_str.append(" ").append(
 				format_quantity_flag(QuantityFlag::DC));
 		}
