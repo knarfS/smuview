@@ -116,7 +116,7 @@ void HardwareChannel::push_interleaved_samples(const float *data,
 	// Deinterleave the samples and add them
 	unique_ptr<float[]> deint_data(new float[sample_count]);
 	float *deint_data_ptr = deint_data.get();
-	for (uint32_t i = 0; i < sample_count; i++) {
+	for (size_t i = 0; i < sample_count; i++) {
 		*deint_data_ptr = (float)(*data);
 		deint_data_ptr++;
 		data += stride;
