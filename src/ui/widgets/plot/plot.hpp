@@ -115,9 +115,9 @@ Q_SIGNALS:
 	void axis_lock_changed(int axis_id, AxisBoundary axis_boundary, bool locked);
 
 protected:
-	virtual void showEvent(QShowEvent *) override;
-	virtual void resizeEvent(QResizeEvent *) override;
-	virtual void timerEvent(QTimerEvent *) override;
+	virtual void showEvent(QShowEvent *event) override;
+	virtual void resizeEvent(QResizeEvent *event) override;
+	virtual void timerEvent(QTimerEvent *event) override;
 
 private:
 	void update_curves();

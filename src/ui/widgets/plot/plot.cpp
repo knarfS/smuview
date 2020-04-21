@@ -938,8 +938,9 @@ void Plot::resizeEvent(QResizeEvent *event)
 	QwtPlot::resizeEvent(event);
 }
 
-void Plot::showEvent(QShowEvent *)
+void Plot::showEvent(QShowEvent *event)
 {
+	(void)event;
 	replot();
 }
 

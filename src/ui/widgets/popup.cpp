@@ -270,13 +270,16 @@ void Popup::reposition_widget()
 		max(min(o.y(), screen_rect.bottom() - height()), screen_rect.top()));
 }
 
-void Popup::closeEvent(QCloseEvent *)
+void Popup::closeEvent(QCloseEvent *event)
 {
+	(void)event;
 	closed();
 }
 
-void Popup::paintEvent(QPaintEvent *)
+void Popup::paintEvent(QPaintEvent *event)
 {
+	(void)event;
+
 	QPainter painter(this);
 	painter.setRenderHint(QPainter::Antialiasing);
 
@@ -309,15 +312,17 @@ void Popup::paintEvent(QPaintEvent *)
 	painter.drawRect(rect());
 }
 
-void Popup::resizeEvent(QResizeEvent *)
+void Popup::resizeEvent(QResizeEvent *event)
 {
+	(void)event;
 	reposition_widget();
 	setMask(popup_region());
 }
 
 
-void Popup::mousePressEvent(QMouseEvent *)
+void Popup::mousePressEvent(QMouseEvent *event)
 {
+	(void)event;
 	mouse_pressed_ = true;
 }
 
@@ -336,8 +341,9 @@ void Popup::mouseReleaseEvent(QMouseEvent *event)
 		close();
 }
 
-void Popup::showEvent(QShowEvent *)
+void Popup::showEvent(QShowEvent *event)
 {
+	(void)event;
 	reposition_widget();
 }
 
