@@ -176,7 +176,7 @@ QString format_time_si(const Timestamp& v, SIPrefix prefix,
 	QTextStream ts(&s);
 	if (sign && !v.is_zero())
 		ts << forcesign;
-	ts << qSetRealNumberPrecision(precision) << (v * multiplier) << ' '
+	ts << qSetRealNumberPrecision((int)precision) << (v * multiplier) << ' '
 		<< prefix << unit;
 
 	return s;

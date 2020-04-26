@@ -675,7 +675,7 @@ void Plot::update_curves()
 				const QwtScaleMap x_map = canvasMap(plot_curve->xAxis());
 				const QwtScaleMap y_map = canvasMap(plot_curve->yAxis());
 				QRectF br = qwtBoundingRect(*plot_curve->data(),
-					painted_points - 1, num_points - 1);
+					(int)painted_points - 1, (int)num_points - 1);
 				const QRect clip_rect =
 					QwtScaleMap::transform(x_map, y_map, br).toRect();
 
@@ -683,7 +683,7 @@ void Plot::update_curves()
 			}
 
 			direct_painter->drawSeries(plot_curve,
-				painted_points - 1, num_points - 1);
+				(int)painted_points - 1, (int)num_points - 1);
 
 			painted_points_map_[curve_data] = num_points;
 		}

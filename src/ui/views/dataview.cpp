@@ -175,7 +175,7 @@ void DataView::populate_table()
 			QTableWidgetItem *value_item = new QTableWidgetItem(
 				QString::number(sample.second, 'f', signals_[i]->decimal_places()));
 			value_item->setData(0, QVariant(sample.second));
-			data_table_->setItem(last_row+1, i+1, value_item);
+			data_table_->setItem(last_row+1, (int)i+1, value_item);
 
 			++next_signal_pos_[i];
 		}

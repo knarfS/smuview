@@ -93,7 +93,7 @@ QPointF TimeCurveData::closest_point(const QPointF &pos, double *dist) const
 {
 	(void)dist;
 	const double x_value = pos.x();
-	const int index_max = size() - 1;
+	const int index_max = (int)size() - 1;
 
 	// Corner cases
 	if (index_max < 0)

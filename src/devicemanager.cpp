@@ -63,7 +63,7 @@ DeviceManager::DeviceManager(shared_ptr<sigrok::Context> context,
 	context_(context)
 {
 	unique_ptr<QProgressDialog> progress(new QProgressDialog("",
-		QObject::tr("Cancel"), 0, context->drivers().size() + 1));
+		QObject::tr("Cancel"), 0, (int)context->drivers().size() + 1));
 	progress->setWindowModality(Qt::WindowModal);
 	progress->setMinimumDuration(1);  // To show the dialog immediately
 
