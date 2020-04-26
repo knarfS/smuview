@@ -282,8 +282,13 @@ void GenerateWaveformDialog::accept()
 	double omega = 2 * pi * frequency;
 
 	WaveformType w_type = waveform_box_->currentData().value<WaveformType>();
-	for (double t=0; t<periode; t+=interval) {
+	// NOTE: We must not rely on floating point types for loop termination.
+	//       Resolves clang-analyzer-security.FloatLoopCounter warnings.
+	double t = .0;
+	size_t const count = std::floor(periode / interval);
+	for (size_t i = 0; i < count; ++i) {
 		double x = omega * t + phi;
+		t += interval;
 		double value;
 		if (w_type == WaveformType::Sine)
 			value = std::sin(x);
