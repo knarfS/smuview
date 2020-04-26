@@ -51,9 +51,9 @@ class Popup : public QWidget
 	Q_OBJECT
 
 private:
-	static const unsigned int ArrowLength;
-	static const unsigned int ArrowOverlap;
-	static const unsigned int MarginWidth;
+	static const int ArrowLength;
+	static const int ArrowOverlap;
+	static const int MarginWidth;
 
 public:
 	Popup(QWidget *parent);

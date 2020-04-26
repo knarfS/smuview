@@ -48,9 +48,9 @@ namespace sv {
 namespace ui {
 namespace widgets {
 
-const unsigned int Popup::ArrowLength = 10;
-const unsigned int Popup::ArrowOverlap = 3;
-const unsigned int Popup::MarginWidth = 6;
+const int Popup::ArrowLength = 10;
+const int Popup::ArrowOverlap = 3;
+const int Popup::MarginWidth = 6;
 
 Popup::Popup(QWidget *parent) :
 	QWidget(parent, Qt::Popup | Qt::FramelessWindowHint),
@@ -72,7 +72,8 @@ PopupPosition Popup::position() const
 
 void Popup::set_position(const QPoint point, PopupPosition pos)
 {
-	point_ = point, pos_ = pos;
+	point_ = point;
+	pos_ = pos;
 
 	setContentsMargins(
 		MarginWidth + ((pos == PopupPosition::Right) ? ArrowLength : 0),
@@ -224,8 +225,8 @@ QRegion Popup::bubble_region() const
 {
 	const QRect rect(bubble_rect());
 
-	const unsigned int r = MarginWidth;
-	const unsigned int d = 2 * r;
+	const int r = MarginWidth;
+	const int d = 2 * r;
 	return QRegion(rect.adjusted(r, 0, -r, 0)).united(
 		QRegion(rect.adjusted(0, r, 0, -r))).united(
 		QRegion(rect.left(), rect.top(), d, d,

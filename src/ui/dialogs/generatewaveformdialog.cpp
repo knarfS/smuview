@@ -361,7 +361,8 @@ void GenerateWaveformDialog::on_periode_changed()
 		this, SLOT(on_sample_cnt_changed()));
 
 	frequency_box_->setValue(1 / periode_box_->value());
-	sample_count_box_->setValue(periode_box_->value() / interval_box_->value());
+	sample_count_box_->setValue(
+		std::floor(periode_box_->value() / interval_box_->value()));
 
 	connect(frequency_box_, SIGNAL(valueChanged(double)),
 		this, SLOT(on_frequency_changed()));
@@ -377,7 +378,8 @@ void GenerateWaveformDialog::on_frequency_changed()
 		this, SLOT(on_sample_cnt_changed()));
 
 	periode_box_->setValue(1 / frequency_box_->value());
-	sample_count_box_->setValue(periode_box_->value() / interval_box_->value());
+	sample_count_box_->setValue(
+		std::floor(periode_box_->value() / interval_box_->value()));
 
 	connect(periode_box_, SIGNAL(valueChanged(double)),
 		this, SLOT(on_periode_changed()));
@@ -390,7 +392,8 @@ void GenerateWaveformDialog::on_interval_changed()
 	disconnect(sample_count_box_, SIGNAL(valueChanged(int)),
 		this, SLOT(on_sample_cnt_changed()));
 
-	sample_count_box_->setValue(periode_box_->value() / interval_box_->value());
+	sample_count_box_->setValue(
+		std::floor(periode_box_->value() / interval_box_->value()));
 
 	connect(sample_count_box_, SIGNAL(valueChanged(int)),
 		this, SLOT(on_sample_cnt_changed()));

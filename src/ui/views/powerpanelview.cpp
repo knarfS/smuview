@@ -317,7 +317,7 @@ void PowerPanelView::on_update()
 		return;
 
 	qint64 now = QDateTime::currentMSecsSinceEpoch();
-	double elapsed_time = (now - last_time_) / (double)3600000; // 1000 * 60 * 60 = 1h
+	double elapsed_time = (double)(now - last_time_) / (double)3600000; // / 1h
 	last_time_ = now;
 
 	double voltage = 0.;
