@@ -401,6 +401,7 @@ void PlotView::on_action_save_triggered()
 	QString *selected_filter = new QString("SVG Image (*.svg)");
 	QString file_name = QFileDialog::getSaveFileName(this,
 		tr("Save Plot"), QDir::homePath(), filter, selected_filter);
+	delete selected_filter;
 	if (file_name.length() <= 0)
 		return;
 
