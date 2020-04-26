@@ -71,7 +71,7 @@ void MeasurementTab::setup_ui()
 				add_view_ontop(configurable_view, first_conf_view);
 		}
 	}
-	if (hw_device->configurable_map().size() > 1) {
+	if (first_conf_view && hw_device->configurable_map().size() > 1) {
 		first_conf_view->show();
 		first_conf_view->raise();
 	}
@@ -99,7 +99,7 @@ void MeasurementTab::setup_ui()
 			new ui::views::PlotView(session_, channel);
 		add_view(value_plot_view, Qt::BottomDockWidgetArea);
 	}
-	if (measurement_device_->channel_map().size() > 1) {
+	if (first_panel_view && measurement_device_->channel_map().size() > 1) {
 		first_panel_view->show();
 		first_panel_view->raise();
 	}
