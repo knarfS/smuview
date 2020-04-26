@@ -111,14 +111,12 @@ bool Popup::eventFilter(QObject *obj, QEvent *event)
 
 void Popup::show()
 {
-	QLineEdit* le;
-
 	QWidget::show();
 
 	// We want to close the popup when the Enter key was
 	// pressed and the first editable widget had focus.
-	if ((le = this->findChild<QLineEdit*>())) {
-
+	QLineEdit *le = this->findChild<QLineEdit*>();
+	if (le) {
 		// For combo boxes we need to hook into the parent of
 		// the line edit (i.e. the QComboBox). For edit boxes
 		// we hook into the widget directly.

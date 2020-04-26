@@ -166,6 +166,7 @@ void DeviceTreeModel::add_channel(shared_ptr<channels::BaseChannel> channel,
 	std::lock_guard<std::recursive_mutex> lock(mutex_);
 
 	// Find existing channel in all channel groups
+	// NOLINTNEXTLINE(readability-implicit-bool-conversion)
 	if (!find_channel(channel, channel->channel_group_names(), parent_item)) {
 		connect(
 			channel.get(),

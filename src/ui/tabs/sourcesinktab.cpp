@@ -71,7 +71,7 @@ void SourceSinkTab::setup_ui()
 				add_view_ontop(configurable_view, first_conf_view);
 		}
 	}
-	if (first_conf_view && hw_device->configurable_map().size() > 1) {
+	if (first_conf_view != nullptr && hw_device->configurable_map().size() > 1) {
 		first_conf_view->show();
 		first_conf_view->raise();
 	}
@@ -125,7 +125,7 @@ void SourceSinkTab::setup_ui()
 				add_view_ontop(power_panel_view, first_pp_view);
 		}
 	}
-	if (first_pp_view && device_->channel_group_map().size() > 1) {
+	if (first_pp_view != nullptr && device_->channel_group_map().size() > 1) {
 		first_pp_view->show();
 		first_pp_view->raise();
 	}

@@ -59,7 +59,7 @@ bool PlotScalePicker::eventFilter(QObject *object, QEvent *event)
 		QwtScaleWidget *scale_widget = qobject_cast<QwtScaleWidget *>(object);
 		if (scale_widget) {
 			QMouseEvent *mouse_event = static_cast<QMouseEvent *>(event);
-			if (mouse_event->buttons() & Qt::LeftButton) {
+			if ((mouse_event->buttons() & Qt::LeftButton) != 0) {
 				QPoint pos = mouse_event->pos();
 				switch (scale_widget->alignment()) {
 				case QwtScaleDraw::LeftScale:
@@ -80,7 +80,7 @@ bool PlotScalePicker::eventFilter(QObject *object, QEvent *event)
 		QwtScaleWidget *scale_widget = qobject_cast<QwtScaleWidget *>(object);
 		if (scale_widget) {
 			QMouseEvent *mouse_event = static_cast<QMouseEvent *>(event);
-			if (mouse_event->buttons() & Qt::LeftButton) {
+			if ((mouse_event->buttons() & Qt::LeftButton) != 0) {
 				QPoint pos = mouse_event->pos();
 				int axis_id = -1;
 				int p_value = 0;
@@ -204,7 +204,7 @@ bool PlotScalePicker::eventFilter(QObject *object, QEvent *event)
 		QwtScaleWidget *scale_widget = qobject_cast<QwtScaleWidget *>(object);
 		if (scale_widget) {
 			QMouseEvent *mouse_event = static_cast<QMouseEvent *>(event);
-			if (mouse_event->buttons() & Qt::LeftButton) {
+			if ((mouse_event->buttons() & Qt::LeftButton) != 0) {
 				is_double_clicked = true;
 				return true;
 			}

@@ -98,7 +98,7 @@ static QTextStream& operator<<(QTextStream& stream, const Timestamp& t)
 	ostringstream ss;
 	ss << fixed;
 
-	if (stream.numberFlags() & QTextStream::ForceSign)
+	if ((stream.numberFlags() & QTextStream::ForceSign) != 0)
 		ss << showpos;
 
 	if (0 == precision)
