@@ -82,11 +82,11 @@ public Q_SLOTS:
 	 */
 	virtual bool list_config() = 0;
 	/**
-	 * Value has changes within SmuView and should be send to the device
+	 * Value has changed within SmuView and should be send to the device.
 	 */
 	virtual void change_value(const QVariant) = 0;
 	/**
-	 * Devices has sended a changed value via a meta package
+	 * Devices has send a changed value via a meta package.
 	 */
 	virtual void on_value_changed(Glib::VariantBase) = 0;
 
