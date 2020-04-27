@@ -52,8 +52,6 @@ class BaseDevice;
 class HardwareDevice;
 }
 
-class Session;
-
 class DeviceManager
 {
 
