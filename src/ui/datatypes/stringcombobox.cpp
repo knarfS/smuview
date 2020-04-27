@@ -125,12 +125,12 @@ void StringComboBox::value_changed(const QString value)
 		property_->change_value(QVariant(value));
 }
 
-void StringComboBox::on_value_changed(const QVariant value)
+void StringComboBox::on_value_changed(const QVariant qvar)
 {
 	// Disconnect Widget -> Property signal to prevent echoing
 	disconnect_widget_2_prop_signals();
 
-	this->setCurrentText(value.toString());
+	this->setCurrentText(qvar.toString());
 
 	connect_widget_2_prop_signals();
 }

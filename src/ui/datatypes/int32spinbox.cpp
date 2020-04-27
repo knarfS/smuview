@@ -118,12 +118,12 @@ void Int32SpinBox::value_changed()
 		property_->change_value(QVariant(this->value()));
 }
 
-void Int32SpinBox::on_value_changed(const QVariant value)
+void Int32SpinBox::on_value_changed(const QVariant qvar)
 {
 	// Disconnect Widget -> Property signal to prevent echoing
 	disconnect_widget_2_prop_signals();
 
-	this->setValue(value.toInt());
+	this->setValue(qvar.toInt());
 
 	connect_widget_2_prop_signals();
 }

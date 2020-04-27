@@ -89,9 +89,9 @@ void StringLabel::value_changed(const QString value)
 	// Nothing to do here.
 }
 
-void StringLabel::on_value_changed(const QVariant value)
+void StringLabel::on_value_changed(const QVariant qvar)
 {
-	this->setText(value.toString());
+	this->setText(qvar.toString());
 }
 
 void StringLabel::on_list_changed()

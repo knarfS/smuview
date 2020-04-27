@@ -120,14 +120,14 @@ void UInt64RangeComboBox::value_changed(int index)
 	}
 }
 
-void UInt64RangeComboBox::on_value_changed(const QVariant value)
+void UInt64RangeComboBox::on_value_changed(const QVariant qvar)
 {
 	// Disconnect Widget -> Property signal to prevent echoing
 	disconnect_widget_2_prop_signals();
 
 	shared_ptr<data::properties::UInt64RangeProperty> uint64range_prop =
 		dynamic_pointer_cast<data::properties::UInt64RangeProperty>(property_);
-	this->setCurrentText(uint64range_prop->to_string(value));;
+	this->setCurrentText(uint64range_prop->to_string(qvar));;
 
 	connect_widget_2_prop_signals();
 }

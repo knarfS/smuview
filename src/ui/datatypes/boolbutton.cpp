@@ -110,12 +110,12 @@ void BoolButton::value_changed(const bool value)
 		property_->change_value(QVariant(value));
 }
 
-void BoolButton::on_value_changed(const QVariant value)
+void BoolButton::on_value_changed(const QVariant qvar)
 {
 	// Disconnect Widget -> Property signal to prevent echoing
 	disconnect_widget_2_prop_signals();
 
-	if (value.toBool()) {
+	if (qvar.toBool()) {
 		this->setIcon(on_icon_);
 		this->setText(tr("On"));
 		this->setChecked(true);

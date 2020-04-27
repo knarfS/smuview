@@ -120,14 +120,14 @@ void UInt64ComboBox::value_changed(int index)
 	}
 }
 
-void UInt64ComboBox::on_value_changed(const QVariant value)
+void UInt64ComboBox::on_value_changed(const QVariant qvar)
 {
 	// Disconnect Widget -> Property signal to prevent echoing
 	disconnect_widget_2_prop_signals();
 
 	shared_ptr<data::properties::UInt64Property> uint64_prop =
 		dynamic_pointer_cast<data::properties::UInt64Property>(property_);
-	this->setCurrentText(uint64_prop->to_string(value));;
+	this->setCurrentText(uint64_prop->to_string(qvar));;
 
 	connect_widget_2_prop_signals();
 }

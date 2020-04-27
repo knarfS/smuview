@@ -124,14 +124,14 @@ void RationalComboBox::value_changed(int index)
 	}
 }
 
-void RationalComboBox::on_value_changed(const QVariant value)
+void RationalComboBox::on_value_changed(const QVariant qvar)
 {
 	// Disconnect Widget -> Property signal to prevent echoing
 	disconnect_widget_2_prop_signals();
 
 	shared_ptr<data::properties::RationalProperty> rational_prop =
 		dynamic_pointer_cast<data::properties::RationalProperty>(property_);
-	this->setCurrentText(rational_prop->to_string(value));
+	this->setCurrentText(rational_prop->to_string(qvar));
 
 	connect_widget_2_prop_signals();
 }

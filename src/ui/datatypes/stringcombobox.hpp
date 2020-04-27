@@ -61,9 +61,9 @@ private:
 
 private Q_SLOTS:
 	/** Signal handling for Widget -> Property */
-	void value_changed(const QString);
+	void value_changed(const QString value);
 	/** Signal handling for Property -> Widget */
-	void on_value_changed(const QVariant);
+	void on_value_changed(const QVariant qvar);
 	/** Signal handling for Property -> Widget */
 	void on_list_changed();
 

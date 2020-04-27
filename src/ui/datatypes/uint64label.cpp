@@ -87,11 +87,11 @@ void UInt64Label::value_changed(const QString value)
 	// Nothing to do here.
 }
 
-void UInt64Label::on_value_changed(const QVariant value)
+void UInt64Label::on_value_changed(const QVariant qvar)
 {
 	shared_ptr<data::properties::UInt64Property> uint64_prop =
 		dynamic_pointer_cast<data::properties::UInt64Property>(property_);
-	this->setText(uint64_prop->to_string(value));
+	this->setText(uint64_prop->to_string(qvar));
 
 }
 

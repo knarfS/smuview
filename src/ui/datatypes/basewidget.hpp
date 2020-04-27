@@ -65,13 +65,13 @@ protected Q_SLOTS:
 	 * NOTE: No virtual method for value_changed, because every instance has an
 	 *       other datatype for the parameter.
 	 */
-	//virtual void value_changed(const double) = 0;
+	//virtual void value_changed(const double value) = 0;
 
 	/**
 	 * Signal handling for Property -> Widget
 	 * NOTE: No virtual method for on_value_changed.
 	 */
-	//virtual void on_value_changed(const QVariant) = 0;
+	//virtual void on_value_changed(const QVariant qvar) = 0;
 
 	/**
 	 * Signal handling for Property -> Widget

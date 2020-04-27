@@ -120,14 +120,14 @@ void DoubleRangeComboBox::value_changed(int index)
 	}
 }
 
-void DoubleRangeComboBox::on_value_changed(const QVariant value)
+void DoubleRangeComboBox::on_value_changed(const QVariant qvar)
 {
 	// Disconnect Widget -> Property signal to prevent echoing
 	disconnect_widget_2_prop_signals();
 
 	shared_ptr<data::properties::DoubleRangeProperty> doublerange_prop =
 		dynamic_pointer_cast<data::properties::DoubleRangeProperty>(property_);
-	this->setCurrentText(doublerange_prop->to_string(value));;
+	this->setCurrentText(doublerange_prop->to_string(qvar));;
 
 	connect_widget_2_prop_signals();
 }
