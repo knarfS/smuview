@@ -54,8 +54,7 @@ void SignalComboBox::filter_quantity(sv::data::Quantity quantity)
 	this->fill_signals();
 }
 
-void SignalComboBox::select_signal(
-	shared_ptr<sv::data::BaseSignal> signal)
+void SignalComboBox::select_signal(shared_ptr<sv::data::BaseSignal> signal)
 {
 	for (int i = 0; i < this->count(); ++i) {
 		QVariant data = this->itemData(i, Qt::UserRole);

@@ -180,10 +180,10 @@ void UInt64Property::change_value(const QVariant qvar)
 	Q_EMIT value_changed(new_qvar);
 }
 
-void UInt64Property::on_value_changed(Glib::VariantBase g_var)
+void UInt64Property::on_value_changed(Glib::VariantBase gvar)
 {
 	Q_EMIT value_changed(QVariant(
-		(qulonglong)g_variant_get_uint64(g_var.gobj())));
+		(qulonglong)g_variant_get_uint64(gvar.gobj())));
 }
 
 } // namespace properties

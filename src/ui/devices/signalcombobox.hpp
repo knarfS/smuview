@@ -51,7 +51,7 @@ public:
 		QWidget *parent = nullptr);
 
 	void filter_quantity(sv::data::Quantity quantity);
-	void select_signal(shared_ptr<sv::data::BaseSignal>);
+	void select_signal(shared_ptr<sv::data::BaseSignal> signal);
 	shared_ptr<sv::data::BaseSignal> selected_signal() const;
 
 private:
@@ -64,7 +64,7 @@ private:
 
 
 public Q_SLOTS:
-	void change_channel(shared_ptr<sv::channels::BaseChannel>);
+	void change_channel(shared_ptr<sv::channels::BaseChannel> channel);
 
 };
 

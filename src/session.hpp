@@ -94,8 +94,8 @@ private Q_SLOTS:
 	void error_handler(const std::string &sender, const std::string &msg);
 
 Q_SIGNALS:
-	void device_added(shared_ptr<sv::devices::BaseDevice>);
-	void device_removed(shared_ptr<sv::devices::BaseDevice>);
+	void device_added(shared_ptr<sv::devices::BaseDevice> device);
+	void device_removed(shared_ptr<sv::devices::BaseDevice> device);
 
 };
 

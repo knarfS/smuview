@@ -121,7 +121,7 @@ private:
 	QDialogButtonBox button_box_;
 
 Q_SIGNALS:
-	void populate_serials_done(std::map<std::string, std::string>);
+	void populate_serials_done(std::map<std::string, std::string> serials);
 
 };
 

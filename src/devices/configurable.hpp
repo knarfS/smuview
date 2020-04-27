@@ -96,26 +96,26 @@ public:
 	 */
 	void init();
 
-	bool has_get_config(devices::ConfigKey) const;
-	template<typename T> T get_config(devices::ConfigKey) const;
+	bool has_get_config(devices::ConfigKey config_key) const;
+	template<typename T> T get_config(devices::ConfigKey config_key) const;
 	/**
 	 * Special handling for Conatiner Variants (especially std::tuple).
 	 * Tuple types are only supported with version >= 2.52 of glibmm, but we
 	 * need to use version 2.42, because of mxe.
 	 */
-	Glib::VariantContainerBase get_container_config(devices::ConfigKey) const;
+	Glib::VariantContainerBase get_container_config(devices::ConfigKey config_key) const;
 
-	bool has_set_config(devices::ConfigKey) const;
-	template<typename T> void set_config(devices::ConfigKey, const T);
+	bool has_set_config(devices::ConfigKey config_key) const;
+	template<typename T> void set_config(devices::ConfigKey config_key, const T value);
 	/**
 	 * Special handling for Conatiner Variants (especially std::tuple).
 	 * Tuple types are only supported with version >= 2.52 of glibmm, but we
 	 * need to use version 2.42, because of mxe.
 	 */
-	void set_container_config(devices::ConfigKey, vector<Glib::VariantBase>);
+	void set_container_config(devices::ConfigKey config_key, vector<Glib::VariantBase> childs);
 
-	bool has_list_config(devices::ConfigKey) const;
-	bool list_config(devices::ConfigKey, Glib::VariantContainerBase &);
+	bool has_list_config(devices::ConfigKey config_key) const;
+	bool list_config(devices::ConfigKey config_key, Glib::VariantContainerBase &gvar);
 
 	/**
 	 * Get the name of this configurable.
@@ -142,11 +142,11 @@ public:
 	set<devices::ConfigKey> listable_configs() const;
 
 	map<devices::ConfigKey, shared_ptr<data::properties::BaseProperty>> properties() const;
-	shared_ptr<data::properties::BaseProperty> get_property(devices::ConfigKey) const;
+	shared_ptr<data::properties::BaseProperty> get_property(devices::ConfigKey config_key) const;
 
 	bool is_controllable() const;
 
-	void feed_in_meta(shared_ptr<sigrok::Meta>);
+	void feed_in_meta(shared_ptr<sigrok::Meta> sr_meta);
 
 private:
 	const shared_ptr<sigrok::Configurable> sr_configurable_;
@@ -160,7 +160,7 @@ private:
 	map<devices::ConfigKey, shared_ptr<data::properties::BaseProperty>> properties_;
 
 Q_SIGNALS:
-	void config_changed(const devices::ConfigKey, const QVariant);
+	void config_changed(const devices::ConfigKey config_key, const QVariant qvar);
 
 };
 

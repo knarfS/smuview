@@ -156,9 +156,9 @@ void Configurable::init()
 	}
 }
 
-bool Configurable::has_get_config(devices::ConfigKey key)  const
+bool Configurable::has_get_config(devices::ConfigKey config_key)  const
 {
-	return getable_configs_.count(key) > 0;
+	return getable_configs_.count(config_key) > 0;
 }
 
 template bool Configurable::get_config(devices::ConfigKey) const;
@@ -235,9 +235,9 @@ Glib::VariantContainerBase Configurable::get_container_config(
 	*/
 }
 
-bool Configurable::has_set_config(devices::ConfigKey key) const
+bool Configurable::has_set_config(devices::ConfigKey config_key) const
 {
-	return setable_configs_.count(key) > 0;
+	return setable_configs_.count(config_key) > 0;
 }
 
 template void Configurable::set_config(devices::ConfigKey, const bool);
@@ -255,7 +255,7 @@ template<typename T> void Configurable::set_config(
 		devices::deviceutil::get_sr_config_key(config_key);
 
 	if (!sr_configurable_->config_check(sr_key, sigrok::Capability::SET)) {
-		qWarning() << "Configurable::set_config(): No setable  config key  " <<
+		qWarning() << "Configurable::set_config(): No setable config key " <<
 			devices::deviceutil::format_config_key(config_key);
 		assert(false);
 	}
@@ -280,7 +280,7 @@ void Configurable::set_container_config(
 
 	if (!sr_configurable_->config_check(sr_key, sigrok::Capability::SET)) {
 		qWarning() <<
-			"Configurable::set_container_config(): No setable config key  " <<
+			"Configurable::set_container_config(): No setable config key " <<
 			devices::deviceutil::format_config_key(config_key);
 		assert(false);
 	}
@@ -297,32 +297,32 @@ void Configurable::set_container_config(
 	}
 }
 
-bool Configurable::has_list_config(devices::ConfigKey key) const
+bool Configurable::has_list_config(devices::ConfigKey config_key) const
 {
-	return listable_configs_.count(key) > 0;
+	return listable_configs_.count(config_key) > 0;
 }
 
-bool Configurable::list_config(devices::ConfigKey key,
-	Glib::VariantContainerBase &gvariant)
+bool Configurable::list_config(devices::ConfigKey config_key,
+	Glib::VariantContainerBase &gvar)
 {
 	assert(sr_configurable_);
 
 	const sigrok::ConfigKey *sr_key =
-		devices::deviceutil::get_sr_config_key(key);
+		devices::deviceutil::get_sr_config_key(config_key);
 
 	if (!sr_configurable_->config_check(sr_key, sigrok::Capability::LIST)) {
 		qWarning() <<
-			"Configurable::list_config(): No key / no listable key " <<
-			devices::deviceutil::format_config_key(key);
+			"Configurable::list_config(): No config key / no listable config key " <<
+			devices::deviceutil::format_config_key(config_key);
 		return false;
 	}
 
 	try {
-		gvariant = sr_configurable_->config_list(sr_key);
+		gvar = sr_configurable_->config_list(sr_key);
 	}
 	catch (sigrok::Error &error) {
-		qWarning() << "Configurable::list_config(): Failed to list key " <<
-			devices::deviceutil::format_config_key(key) << ". " << error.what();
+		qWarning() << "Configurable::list_config(): Failed to list config key " <<
+			devices::deviceutil::format_config_key(config_key) << ". " << error.what();
 		return false;
 	}
 

@@ -56,7 +56,7 @@ public:
 	SelectSignalWidget(const Session &session, QWidget *parent = nullptr);
 
 	void filter_quantity(sv::data::Quantity quantity);
-	void select_device(shared_ptr<sv::devices::BaseDevice>);
+	void select_device(shared_ptr<sv::devices::BaseDevice> device);
 	shared_ptr<sv::data::BaseSignal> selected_signal() const;
 
 private:

@@ -214,14 +214,14 @@ protected:
 	map<measured_quantity_t, vector<shared_ptr<data::BaseSignal>>> signal_map_;
 
 public Q_SLOTS:
-	void on_aquisition_start_timestamp_changed(double);
+	void on_aquisition_start_timestamp_changed(double timestamp);
 
 Q_SIGNALS:
-	void channel_start_timestamp_changed(double);
-	void enabled_changed(const bool);
-	void name_changed(const string);
-	void signal_added(shared_ptr<sv::data::BaseSignal>);
-	void signal_changed(shared_ptr<sv::data::BaseSignal>);
+	void channel_start_timestamp_changed(double timestamp);
+	void enabled_changed(const bool enabled);
+	void name_changed(const string name);
+	void signal_added(shared_ptr<sv::data::BaseSignal> signal);
+	void signal_changed(shared_ptr<sv::data::BaseSignal> signal);
 
 };
 

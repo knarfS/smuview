@@ -71,9 +71,9 @@ void BoolProperty::change_value(const QVariant qvar)
 	Q_EMIT value_changed(qvar);
 }
 
-void BoolProperty::on_value_changed(Glib::VariantBase g_var)
+void BoolProperty::on_value_changed(Glib::VariantBase gvar)
 {
-	Q_EMIT value_changed(QVariant(g_variant_get_boolean(g_var.gobj())));
+	Q_EMIT value_changed(QVariant(g_variant_get_boolean(gvar.gobj())));
 }
 
 } // namespace properties

@@ -99,9 +99,9 @@ void StringProperty::change_value(const QVariant qvar)
 	Q_EMIT value_changed(qvar);
 }
 
-void StringProperty::on_value_changed(Glib::VariantBase g_var)
+void StringProperty::on_value_changed(Glib::VariantBase gvar)
 {
-	Q_EMIT value_changed(QVariant(g_variant_get_string(g_var.gobj(), NULL)));
+	Q_EMIT value_changed(QVariant(g_variant_get_string(gvar.gobj(), NULL)));
 }
 
 } // namespace datatypes

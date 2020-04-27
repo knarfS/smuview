@@ -259,8 +259,8 @@ private:
 	std::thread aquisition_thread_;
 
 Q_SIGNALS:
-	void aquisition_start_timestamp_changed(double);
-	void channel_added(shared_ptr<sv::channels::BaseChannel>);
+	void aquisition_start_timestamp_changed(double timestamp);
+	void channel_added(shared_ptr<sv::channels::BaseChannel> channel);
 	void device_error(const std::string sender, const std::string msg);
 
 };

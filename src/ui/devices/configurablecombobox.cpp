@@ -46,12 +46,12 @@ ConfigurableComboBox::ConfigurableComboBox(
 }
 
 void ConfigurableComboBox::select_configurable(
-	shared_ptr<sv::devices::Configurable> configuable)
+	shared_ptr<sv::devices::Configurable> configurable)
 {
 	for (int i = 0; i < this->count(); ++i) {
 		QVariant data = this->itemData(i, Qt::UserRole);
 		auto item_config = data.value<shared_ptr<sv::devices::Configurable>>();
-		if (item_config == configuable) {
+		if (item_config == configurable) {
 			this->setCurrentIndex(i);
 			break;
 		}

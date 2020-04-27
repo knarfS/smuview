@@ -68,7 +68,7 @@ private:
 	double last_value_;
 
 private Q_SLOTS:
-	void on_channel_start_timestamp_changed(double);
+	void on_channel_start_timestamp_changed(double timestamp);
 	void on_sample_appended();
 
 };

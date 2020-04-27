@@ -159,9 +159,9 @@ void MeasuredQuantityProperty::change_value(const QVariant qvar)
 	Q_EMIT value_changed(qvar);
 }
 
-void MeasuredQuantityProperty::on_value_changed(Glib::VariantBase g_var)
+void MeasuredQuantityProperty::on_value_changed(Glib::VariantBase gvar)
 {
-	Q_EMIT value_changed(QVariant(g_variant_get_string(g_var.gobj(), NULL)));
+	Q_EMIT value_changed(QVariant(g_variant_get_string(gvar.gobj(), NULL)));
 }
 
 } // namespace properties

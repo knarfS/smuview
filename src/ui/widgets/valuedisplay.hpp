@@ -62,11 +62,11 @@ protected:
 	virtual void show_unit(const QString &unit) = 0;
 
 public Q_SLOTS:
-	void set_value(const double);
-	void set_extra_text(const QString);
-	void set_unit(const QString);
-	void set_unit_suffix(const QString);
-	void set_digits(const int, const int);
+	void set_value(const double value);
+	void set_extra_text(const QString extra_text);
+	void set_unit(const QString unit);
+	void set_unit_suffix(const QString unit_suffix);
+	void set_digits(const int digits, const int decimal_places);
 	void reset_value();
 	void update_display();
 

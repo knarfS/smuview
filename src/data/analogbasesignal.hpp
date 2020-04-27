@@ -113,7 +113,7 @@ protected:
 Q_SIGNALS:
 	void samples_cleared();
 	void sample_appended();
-	void digits_changed(const int, const int);
+	void digits_changed(const int digits, const int decimal_places);
 
 };
 

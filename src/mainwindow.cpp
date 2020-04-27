@@ -305,11 +305,11 @@ void MainWindow::error_handler(
 	msg_box.exec();
 }
 
-void MainWindow::on_tab_close_requested(int index)
+void MainWindow::on_tab_close_requested(int tab_index)
 {
-	auto *tab_window = (ui::tabs::BaseTab *)tab_widget_->widget(index);
+	auto *tab_window = (ui::tabs::BaseTab *)tab_widget_->widget(tab_index);
 	if (tab_window->request_close())
-		remove_tab(index);
+		remove_tab(tab_index);
 }
 
 } // namespace sv

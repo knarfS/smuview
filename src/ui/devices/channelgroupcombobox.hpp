@@ -46,7 +46,7 @@ public:
 		shared_ptr<sv::devices::BaseDevice> device,
 		QWidget *parent = nullptr);
 
-	void select_channel_group(QString);
+	void select_channel_group(QString channel_group);
 	QString selected_channel_group() const;
 
 private:
@@ -56,7 +56,7 @@ private:
 	shared_ptr<sv::devices::BaseDevice> device_;
 
 public Q_SLOTS:
-	void change_device(shared_ptr<sv::devices::BaseDevice>);
+	void change_device(shared_ptr<sv::devices::BaseDevice> device);
 
 };
 

@@ -126,9 +126,9 @@ void DoubleProperty::change_value(const QVariant qvar)
 	Q_EMIT value_changed(qvar);
 }
 
-void DoubleProperty::on_value_changed(Glib::VariantBase g_var)
+void DoubleProperty::on_value_changed(Glib::VariantBase gvar)
 {
-	Q_EMIT value_changed(QVariant(g_variant_get_double(g_var.gobj())));
+	Q_EMIT value_changed(QVariant(g_variant_get_double(gvar.gobj())));
 }
 
 } // namespace properties

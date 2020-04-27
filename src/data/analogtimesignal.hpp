@@ -114,10 +114,10 @@ private:
 	double last_timestamp_;
 
 public Q_SLOTS:
-	void on_channel_start_timestamp_changed(double);
+	void on_channel_start_timestamp_changed(double timestamp);
 
 Q_SIGNALS:
-	void signal_start_timestamp_changed(double);
+	void signal_start_timestamp_changed(double timestamp);
 
 };
 

@@ -46,7 +46,7 @@ public:
 		shared_ptr<sv::devices::BaseDevice> device,
 		QWidget *parent = nullptr);
 
-	void select_configurable(shared_ptr<sv::devices::Configurable>);
+	void select_configurable(shared_ptr<sv::devices::Configurable> configurable);
 	shared_ptr<sv::devices::Configurable> selected_configurable() const;
 
 private:
@@ -56,7 +56,7 @@ private:
 	shared_ptr<sv::devices::BaseDevice> device_;
 
 public Q_SLOTS:
-	void change_device(shared_ptr<sv::devices::BaseDevice>);
+	void change_device(shared_ptr<sv::devices::BaseDevice> device);
 
 };
 

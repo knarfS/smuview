@@ -94,10 +94,10 @@ private:
 
 private Q_SLOTS:
 	void error_handler(const std::string &sender, const std::string &msg);
-	void on_tab_close_requested(int);
+	void on_tab_close_requested(int tab_index);
 
 public Q_SLOTS:
-	void add_device_tab(shared_ptr<sv::devices::BaseDevice>);
+	void add_device_tab(shared_ptr<sv::devices::BaseDevice> device);
 
 };
 

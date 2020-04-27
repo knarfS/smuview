@@ -96,7 +96,7 @@ private:
 	shared_ptr<UiHelper> ui_helper_;
 
 Q_SIGNALS:
-	void add_device_tab(shared_ptr<sv::devices::BaseDevice>);
+	void add_device_tab(shared_ptr<sv::devices::BaseDevice> device);
 
 	void add_data_view(std::string device_id, Qt::DockWidgetArea area,
 		shared_ptr<sv::data::AnalogTimeSignal> signal);

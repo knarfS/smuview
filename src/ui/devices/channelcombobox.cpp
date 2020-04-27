@@ -43,10 +43,10 @@ namespace devices {
 
 ChannelComboBox::ChannelComboBox(
 		shared_ptr<sv::devices::BaseDevice> device,
-		QString channel_group_name, QWidget *parent) :
+		QString channel_group, QWidget *parent) :
 	QComboBox(parent),
 	device_(device),
-	channel_group_name_(channel_group_name),
+	channel_group_(channel_group),
 	filter_active_(false)
 {
 	setup_ui();
@@ -92,14 +92,14 @@ void ChannelComboBox::fill_channels()
 	if (device_ == nullptr)
 		return;
 
-	if (channel_group_name_ == nullptr)
-		channel_group_name_ = "";
+	if (channel_group_ == nullptr)
+		channel_group_ = "";
 
-	string chg_name_str = channel_group_name_.toStdString();
-	if (device_->channel_group_map().count(chg_name_str) == 0)
+	string chg_str = channel_group_.toStdString();
+	if (device_->channel_group_map().count(chg_str) == 0)
 		return;
 
-	auto ch_list = device_->channel_group_map()[chg_name_str];
+	auto ch_list = device_->channel_group_map()[chg_str];
 	for (const auto &ch : ch_list) {
 		// Check if channel contains a signal with the filter quantity.
 		if (filter_active_) {
@@ -121,10 +121,10 @@ void ChannelComboBox::fill_channels()
 }
 
 void ChannelComboBox::change_device_channel_group(
-	shared_ptr<sv::devices::BaseDevice> device, QString channel_group_name)
+	shared_ptr<sv::devices::BaseDevice> device, QString channel_group)
 {
 	device_ = device;
-	channel_group_name_ = channel_group_name;
+	channel_group_ = channel_group;
 	this->fill_channels();
 }
 

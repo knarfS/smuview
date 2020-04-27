@@ -64,8 +64,8 @@ private:
 
 public Q_SLOTS:
 	bool list_config() override;
-	void change_value(const QVariant) override;
-	void on_value_changed(Glib::VariantBase) override;
+	void change_value(const QVariant qvar) override;
+	void on_value_changed(Glib::VariantBase gvar) override;
 
 };
 

@@ -110,9 +110,9 @@ void Int32Property::change_value(const QVariant qvar)
 	Q_EMIT value_changed(qvar);
 }
 
-void Int32Property::on_value_changed(Glib::VariantBase g_var)
+void Int32Property::on_value_changed(Glib::VariantBase gvar)
 {
-	Q_EMIT value_changed(QVariant(g_variant_get_int32(g_var.gobj())));
+	Q_EMIT value_changed(QVariant(g_variant_get_int32(gvar.gobj())));
 }
 
 } // namespace datatypes
