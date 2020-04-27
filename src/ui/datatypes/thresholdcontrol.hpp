@@ -66,9 +66,9 @@ private:
 
 private Q_SLOTS:
 	/** Signal handling for Property -> Widget. Nothing to do here. */
-	void on_value_changed(const QVariant) override;
+	void on_value_changed(const QVariant);
 	/** Signal handling for Property -> Widget. Nothing to do here. */
-	void on_list_changed() override;
+	void on_list_changed();
 
 };
 

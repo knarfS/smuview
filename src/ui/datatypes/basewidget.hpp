@@ -55,20 +55,29 @@ protected:
 /*
  * NOTE: With Qt, inheriting QObject twice (in the datatype widget classes) will
  *       cause problems in moc! Because of that, this class is not inherited
- *       from QObject and Q_SLOTS is just for readability!
+ *       from QObject and therefore no virtual Q_SLOTS in here!
+ *       Also this eliminates the clang-tidy clang-analyzer-optin.cplusplus.VirtualCall
+ *       warning.
  */
 protected Q_SLOTS:
 	/**
 	 * Signal handling for Widget -> Property
-	 * NOTE: No virtual method for this one, because every instance has an
+	 * NOTE: No virtual method for value_changed, because every instance has an
 	 *       other datatype for the parameter.
 	 */
 	//virtual void value_changed(const double) = 0;
 
-	/** Signal handling for Property -> Widget */
-	virtual void on_value_changed(const QVariant) = 0;
-	/** Signal handling for Property -> Widget */
-	virtual void on_list_changed() = 0;
+	/**
+	 * Signal handling for Property -> Widget
+	 * NOTE: No virtual method for on_value_changed.
+	 */
+	//virtual void on_value_changed(const QVariant) = 0;
+
+	/**
+	 * Signal handling for Property -> Widget
+	 * NOTE: No virtual method for on_list_changed.
+	 */
+	//virtual void on_list_changed() = 0;
 
 };
 
