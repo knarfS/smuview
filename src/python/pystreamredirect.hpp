@@ -76,9 +76,12 @@ public:
 
 	~PyStreamRedirect()
 	{
-		auto sys_module = py::module::import("sys");
-		sys_module.attr("stdout") = old_stdout_;
-		sys_module.attr("stderr") = old_stderr_;
+		try {
+			auto sys_module = py::module::import("sys");
+			sys_module.attr("stdout") = old_stdout_;
+			sys_module.attr("stderr") = old_stderr_;
+		}
+		catch (const py::error_already_set &) {}
 
 		stdout_buf_->py_close();
 		stderr_buf_->py_close();
