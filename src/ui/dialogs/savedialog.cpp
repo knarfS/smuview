@@ -153,14 +153,23 @@ void SaveDialog::save(QString file_name)
 			chg_sep = ", ";
 		}
 
-		device_header_line += start_sep + parent_channel->parent_device()->name(); // Time
-		device_header_line += sep + parent_channel->parent_device()->name(); // Value
-		chg_name_header_line += start_sep + chg_names; // Time
-		chg_name_header_line += sep + chg_names; // Value
-		ch_name_header_line += start_sep + parent_channel->name(); // Time
-		ch_name_header_line += sep + parent_channel->name(); // Value
-		signal_name_header_line += start_sep + "Time " + name; // Time
-		signal_name_header_line += sep + name; // Value
+		device_header_line += start_sep;
+		device_header_line += parent_channel->parent_device()->name(); // Time
+		device_header_line += sep;
+		device_header_line += parent_channel->parent_device()->name(); // Value
+		chg_name_header_line += start_sep;
+		chg_name_header_line += chg_names; // Time
+		chg_name_header_line += sep;
+		chg_name_header_line += chg_names; // Value
+		ch_name_header_line += start_sep;
+		ch_name_header_line += parent_channel->name(); // Time
+		ch_name_header_line += sep;
+		ch_name_header_line += parent_channel->name(); // Value
+		signal_name_header_line += start_sep;
+		signal_name_header_line += "Time ";
+		signal_name_header_line += name; // Time
+		signal_name_header_line += sep;
+		signal_name_header_line += name; // Value
 
 		start_sep = sep;
 	}
@@ -251,10 +260,14 @@ void SaveDialog::save_combined(QString file_name)
 			chg_sep = ", ";
 		}
 
-		device_header_line += sep + parent_channel->parent_device()->name(); // Value
-		chg_name_header_line += sep + chg_names; // Value
-		ch_name_header_line += sep + parent_channel->name(); // Value
-		signal_name_header_line += sep + analog_signal->name(); // Value
+		device_header_line += sep;
+		device_header_line += parent_channel->parent_device()->name(); // Value
+		chg_name_header_line += sep;
+		chg_name_header_line += chg_names; // Value
+		ch_name_header_line += sep;
+		ch_name_header_line += parent_channel->name(); // Value
+		signal_name_header_line += sep;
+		signal_name_header_line += analog_signal->name(); // Value
 	}
 	output_file << device_header_line << std::endl;
 	output_file << chg_name_header_line << std::endl;
