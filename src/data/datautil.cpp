@@ -107,8 +107,11 @@ set<QuantityFlag> get_quantity_flags(uint64_t sr_quantity_flags)
 		if (!(sr_quantity_flags & mask))
 			continue;
 
+		// TODO: Fix in libsigrokcxx.hpp, template EnumValue:
+		//       Change datatype of id from int to unsigned int.
+		//       See knarfS/libsigrok#v0.6.0-wip
 		const sigrok::QuantityFlag *sr_qf =
-			sigrok::QuantityFlag::get(sr_quantity_flags & mask);
+			sigrok::QuantityFlag::get((int)(sr_quantity_flags & mask));
 		quantity_flag_set.insert(get_quantity_flag(sr_qf));
 	}
 	return quantity_flag_set;
