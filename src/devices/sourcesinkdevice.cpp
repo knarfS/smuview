@@ -263,12 +263,13 @@ void SourceSinkDevice::handle_channel_name_suffix(const string &channel_name,
 
 	if (channel_suffix.length() == 0 && tmp_ch_suffix.length() > 0)
 		channel_suffix = tmp_ch_suffix;
-	else if (channel_suffix != tmp_ch_suffix)
+	else if (channel_suffix != tmp_ch_suffix) {
 		qWarning() << "SourceSinkDevice::init_channels(): " <<
 			"Channel suffix for channel " <<
 			QString::fromStdString(channel_name) <<
 			" differs from previous suffix " <<
 			QString::fromStdString(channel_suffix);
+	}
 
 }
 

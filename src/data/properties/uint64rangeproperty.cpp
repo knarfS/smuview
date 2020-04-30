@@ -66,11 +66,12 @@ data::uint64_range_t UInt64RangeProperty::uint64_range_value() const
 		configurable_->get_container_config(config_key_);
 
 	size_t child_cnt = gvar.get_n_children();
-	if (child_cnt != 2)
+	if (child_cnt != 2) {
 		throw std::runtime_error(QString(
 			"UInt64RangeProperty::uint64_range_value(): ").append(
 			"container should have 2 child, but has %1").arg(child_cnt).
 			toStdString());
+	}
 
 	Glib::VariantIter iter(gvar);
 	iter.next_value(gvar);

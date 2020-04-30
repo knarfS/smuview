@@ -320,33 +320,38 @@ shared_ptr<devices::HardwareDevice> DeviceManager::find_device_from_info(
 		dev_info = get_device_info(dev);
 
 		// If present, vendor and model always have to match.
-		if (dev_info.count("vendor") > 0 && search_info.count("vendor") > 0)
+		if (dev_info.count("vendor") > 0 && search_info.count("vendor") > 0) {
 			if (dev_info.at("vendor") != search_info.at("vendor"))
 				continue;
+		}
 
-		if (dev_info.count("model") > 0 && search_info.count("model") > 0)
+		if (dev_info.count("model") > 0 && search_info.count("model") > 0) {
 			if (dev_info.at("model") != search_info.at("model"))
 				continue;
+		}
 
 		// Most unique match: vendor/model/serial_num (but don't match a S/N of 0)
-		if ((dev_info.count("serial_num") > 0) && (dev_info.at("serial_num") != "0")
-				&& search_info.count("serial_num") > 0)
+		if (dev_info.count("serial_num") > 0 &&
+				dev_info.at("serial_num") != "0" &&
+				search_info.count("serial_num") > 0) {
 			if (dev_info.at("serial_num") == search_info.at("serial_num") &&
 					dev_info.at("serial_num") != "0")
 				return dev;
+		}
 
 		// Second best match: vendor/model/connection_id
 		if (dev_info.count("connection_id") > 0 &&
-			search_info.count("connection_id") > 0)
+				search_info.count("connection_id") > 0) {
 			if (dev_info.at("connection_id") == search_info.at("connection_id"))
 				return dev;
+		}
 
 		// Last resort: vendor/model/version
-		if (dev_info.count("version") > 0 &&
-			search_info.count("version") > 0)
+		if (dev_info.count("version") > 0 && search_info.count("version") > 0) {
 			if (dev_info.at("version") == search_info.at("version") &&
 					dev_info.at("version") != "0")
 				return dev;
+		}
 
 		// For this device, we merely have a vendor/model match.
 		last_resort_dev = dev;
