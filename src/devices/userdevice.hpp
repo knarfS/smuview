@@ -73,8 +73,6 @@ public:
 	 */
 	QString display_name(const DeviceManager &device_manager) const override;
 
-	void open() override;
-	void close() override;
 	void add_channel(shared_ptr<channels::BaseChannel> channel,
 		string channel_group_name) override;
 
@@ -87,6 +85,10 @@ protected:
 	 * Init all channles of this user device.
 	 */
 	void init_channels() override;
+	/**
+	 * Init acquisition for this device.
+	 */
+	void init_acquisition() override;
 
 	void feed_in_header() override;
 	void feed_in_trigger() override;

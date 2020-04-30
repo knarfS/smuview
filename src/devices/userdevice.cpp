@@ -114,56 +114,6 @@ QString UserDevice::display_name(
 	return full_name();
 }
 
-/* TODO: merge with Device */
-void UserDevice::open()
-{
-	if (device_open_)
-		close();
-
-	try {
-		sr_device_->open();
-	}
-	catch (const sigrok::Error &e) {
-		// TODO: UserDevices throws SR_ERR_ARG in device.sr_dev_open(), thats ok, bc the device has no driver
-		//throw QString(e.what());
-	}
-
-	// Add device to session (do this in constructor??)
-	sr_session_->add_device(sr_device_);
-
-	device_open_ = true;
-}
-
-/* TODO: merge with Device */
-void UserDevice::close()
-{
-	qWarning() << "UserDevice::close(): Trying to close device " << full_name();
-
-	if (!device_open_)
-		return;
-
-	sr_session_->stop();
-
-	/*
-	 * NOTE: The device may already be closed from sr_session_->stop()
-	 *
-	 * sigrok::Session::stop() -> sr_session_stop() -> session_stop_sync() ->
-	 * sr_dev_acquisition_stop() -> via devce api dev_acquisition_stop() ->
-	 * std_serial_dev_acquisition_stop() -> sr_dev_close()
-	 */
-	try {
-		sr_device_->close();
-	}
-	catch (...) {}
-
-	if (sr_session_)
-		sr_session_->remove_devices();
-
-	device_open_ = false;
-
-	qWarning() << "UserDevice::close(): Device closed " << full_name();
-}
-
 void UserDevice::add_channel(shared_ptr<channels::BaseChannel> channel,
 	string channel_group_name)
 {
@@ -179,6 +129,10 @@ void UserDevice::init_configurables()
 }
 
 void UserDevice::init_channels()
+{
+}
+
+void UserDevice::init_acquisition()
 {
 }
 

@@ -131,7 +131,7 @@ public:
 	/**
 	 * Close the device.
 	 */
-	virtual void close();
+	void close();
 
 	/**
 	 * Start data aquisition from device after init or pause.
@@ -216,7 +216,7 @@ protected:
 	/**
 	 * Init acquisition for this device.
 	 */
-	void init_acquisition();
+	virtual void init_acquisition();
 
 	virtual void feed_in_header() = 0;
 	virtual void feed_in_trigger() = 0;

@@ -109,7 +109,9 @@ void BaseDevice::open()
 		sr_device_->open();
 	}
 	catch (const sigrok::Error &e) {
-		throw QString(e.what());
+		// TODO: UserDevices throws SR_ERR_ARG in device.sr_dev_open(). That's
+		//       ok, b/c the device has no driver.
+		//throw QString(e.what());
 	}
 
 	// Add device to session (do this in constructor??)
@@ -151,7 +153,11 @@ void BaseDevice::close()
 	try {
 		sr_device_->close();
 	}
-	catch (...) {}
+	catch (const sigrok::Error &e) {
+		// TODO: UserDevices throws SR_ERR_ARG in device.sr_dev_close(). That's
+		//       ok, b/c the device has no driver.
+		//throw QString(e.what());
+	}
 
 	if (sr_session_)
 		sr_session_->remove_devices();
