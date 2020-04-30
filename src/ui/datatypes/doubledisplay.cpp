@@ -51,7 +51,7 @@ DoubleDisplay::DoubleDisplay(
 		throw std::runtime_error(msg.toStdString());
 	}
 
-	setup_ui();
+	DoubleDisplay::setup_ui();
 	connect_signals();
 }
 

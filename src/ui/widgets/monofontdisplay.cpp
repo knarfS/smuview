@@ -40,7 +40,7 @@ MonoFontDisplay::MonoFontDisplay(
 	ValueDisplay(digits, decimal_places, auto_range, unit, unit_suffix,
 		extra_text, small, parent)
 {
-	setup_ui();
+	MonoFontDisplay::setup_ui();
 	reset_value();
 }
 
