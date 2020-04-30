@@ -85,9 +85,9 @@ BaseDevice::BaseDevice(const shared_ptr<sigrok::Context> sr_context,
 BaseDevice::~BaseDevice()
 {
 	// TODO: Not called!! Maybe cyclic refernece?
-	qWarning() << "BaseDevice::~BaseDevice(): " << full_name();
+	qWarning() << "BaseDevice::~BaseDevice(): " << BaseDevice::full_name();
 	if (sr_session_)
-		close();
+		BaseDevice::close();
 }
 
 shared_ptr<sigrok::Device> BaseDevice::sr_device() const
@@ -127,7 +127,8 @@ void BaseDevice::open()
 
 void BaseDevice::close()
 {
-	qWarning() << "BaseDevice::close(): Trying to close device " << full_name();
+	qWarning() << "BaseDevice::close(): Trying to close device " <<
+		BaseDevice::full_name();
 
 	if (!device_open_)
 		return;
@@ -157,7 +158,8 @@ void BaseDevice::close()
 
 	device_open_ = false;
 
-	qWarning() << "BaseDevice::close(): Device closed " << full_name();
+	qWarning() << "BaseDevice::close(): Device closed " <<
+		BaseDevice::full_name();
 }
 
 void BaseDevice::start_aquisition()
