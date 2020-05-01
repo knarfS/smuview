@@ -80,7 +80,7 @@ void SourceSinkTab::setup_ui()
 	// for power supplys and loads.
 	views::BaseView *first_pp_view = nullptr;
 	for (const auto &chg_pair : device_->channel_group_map()) {
-		ui::views::PlotView *plot_view = NULL;
+		ui::views::PlotView *plot_view = nullptr;
 		shared_ptr<data::AnalogTimeSignal> voltage_signal;
 		shared_ptr<data::AnalogTimeSignal> current_signal;
 		for (const auto &channel : chg_pair.second) {

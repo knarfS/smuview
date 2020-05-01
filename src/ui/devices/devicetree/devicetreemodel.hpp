@@ -67,7 +67,7 @@ public:
 		bool is_device_checkable, bool is_channel_group_checkable,
 		bool is_channel_checkable, bool is_signal_checkable,
 		bool is_configurable_checkable, bool is_config_key_checkable,
-		bool show_configurable, QObject *parent = 0);
+		bool show_configurable, QObject *parent = nullptr);
 
 	TreeItem *find_device(shared_ptr<sv::devices::BaseDevice> device) const;
 

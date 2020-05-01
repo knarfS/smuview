@@ -89,10 +89,10 @@ QWidget *get_widget_for_property(
 		break;
 	case data::DataType::KeyValue:
 	default:
-		return NULL;
+		return nullptr;
 		break;
 	}
-	return NULL;
+	return nullptr;
 }
 
 } // namespace datatypehelper

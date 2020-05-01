@@ -56,7 +56,7 @@ class MainWindow : public QMainWindow
 
 public:
 	explicit MainWindow(DeviceManager &device_manager,
-		QWidget *parent = 0);
+		QWidget *parent = nullptr);
 
 	~MainWindow();
 

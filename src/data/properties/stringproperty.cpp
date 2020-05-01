@@ -101,7 +101,7 @@ void StringProperty::change_value(const QVariant qvar)
 
 void StringProperty::on_value_changed(Glib::VariantBase gvar)
 {
-	Q_EMIT value_changed(QVariant(g_variant_get_string(gvar.gobj(), NULL)));
+	Q_EMIT value_changed(QVariant(g_variant_get_string(gvar.gobj(), nullptr)));
 }
 
 } // namespace properties

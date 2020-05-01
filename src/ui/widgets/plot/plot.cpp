@@ -68,7 +68,7 @@ namespace plot {
 class Canvas : public QwtPlotCanvas
 {
 public:
-	Canvas(QwtPlot *plot = NULL) : QwtPlotCanvas(plot)
+	Canvas(QwtPlot *plot = nullptr) : QwtPlotCanvas(plot)
 	{
 		/*
 		 * NOTE:
@@ -632,7 +632,7 @@ void Plot::on_marker_moved(const QPointF mouse_pos)
 		return;
 
 	plot::BaseCurveData *curve_data = marker_map_[active_marker_];
-	QPointF marker_pos = curve_data->closest_point(mouse_pos, NULL);
+	QPointF marker_pos = curve_data->closest_point(mouse_pos, nullptr);
 	active_marker_->setValue(marker_pos);
 
 	update_markers_label();
