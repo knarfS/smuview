@@ -84,5 +84,5 @@ void MovingAvgChannel::on_sample_appended()
 	}
 }
 
-} // namespace devices
+} // namespace channels
 } // namespace sv

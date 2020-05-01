@@ -123,7 +123,7 @@ private Q_SLOTS:
 };
 
 } // namespace devicetree
-} // namespace views
+} // namespace devices
 } // namespace ui
 } // namespace sv
 

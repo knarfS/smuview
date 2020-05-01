@@ -69,7 +69,6 @@ private Q_SLOTS:
 
 } // namespace datatypes
 } // namespace ui
-} // namespece sv
+} // namespace sv
 
 #endif // UI_DATATYPES_BOOLCHECKBOX_HPP
-

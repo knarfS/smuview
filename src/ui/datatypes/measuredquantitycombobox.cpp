@@ -167,4 +167,4 @@ void MeasuredQuantityComboBox::on_list_changed()
 
 } // namespace datatypes
 } // namespace ui
-} // namespece sv
+} // namespace sv

@@ -76,6 +76,6 @@ void DoubleSmallControl::on_list_changed()
 	// Nothing to do here.
 }
 
-} // namespace widgets
+} // namespace datatypes
 } // namespace ui
 } // namespace sv

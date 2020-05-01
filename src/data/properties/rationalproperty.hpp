@@ -72,6 +72,6 @@ public Q_SLOTS:
 
 } // namespace properties
 } // namespace data
-} // namespece sv
+} // namespace sv
 
 #endif // DATA_PROPERTIES_RATIONALPROPERTY_HPP

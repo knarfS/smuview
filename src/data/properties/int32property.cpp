@@ -115,6 +115,6 @@ void Int32Property::on_value_changed(Glib::VariantBase gvar)
 	Q_EMIT value_changed(QVariant(g_variant_get_int32(gvar.gobj())));
 }
 
-} // namespace datatypes
+} // namespace properties
 } // namespace data
 } // namespace sv

@@ -98,5 +98,5 @@ void MathChannel::push_sample(double sample, double timestamp)
 		size_of_double_, digits_, decimal_places_);
 }
 
-} // namespace devices
+} // namespace channels
 } // namespace sv

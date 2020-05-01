@@ -83,6 +83,6 @@ protected Q_SLOTS:
 
 } // namespace datatypes
 } // namespace ui
-} // namespece sv
+} // namespace sv
 
 #endif // UI_DATATYPES_BASEWIDEGT_HPP

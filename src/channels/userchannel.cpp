@@ -87,5 +87,5 @@ void UserChannel::push_sample(double sample, double timestamp,
 		&sample, timestamp, size_of_double_, digits, decimal_places);
 }
 
-} // namespace devices
+} // namespace channels
 } // namespace sv

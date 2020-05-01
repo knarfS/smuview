@@ -169,6 +169,6 @@ void RationalProperty::on_value_changed(Glib::VariantBase gvar)
 	Q_EMIT value_changed(QVariant::fromValue(make_pair(p, q)));
 }
 
-} // namespace datatypes
+} // namespace properties
 } // namespace data
 } // namespace sv

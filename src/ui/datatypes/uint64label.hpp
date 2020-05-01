@@ -70,6 +70,6 @@ private Q_SLOTS:
 
 } // namespace datatypes
 } // namespace ui
-} // namespece sv
+} // namespace sv
 
 #endif // UI_DATATYPES_UINT64LABEL_HPP

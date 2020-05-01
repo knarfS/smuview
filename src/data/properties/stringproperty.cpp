@@ -104,6 +104,6 @@ void StringProperty::on_value_changed(Glib::VariantBase gvar)
 	Q_EMIT value_changed(QVariant(g_variant_get_string(gvar.gobj(), NULL)));
 }
 
-} // namespace datatypes
+} // namespace properties
 } // namespace data
 } // namespace sv

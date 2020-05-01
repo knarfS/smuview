@@ -51,7 +51,7 @@ protected:
 };
 
 } // namespace devicetree
-} // namespace views
+} // namespace devices
 } // namespace ui
 } // namespace sv
 
