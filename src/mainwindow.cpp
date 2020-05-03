@@ -93,31 +93,13 @@ MainWindow::MainWindow(DeviceManager &device_manager,
 	session_->set_main_window(this);
 
 	setup_ui();
+	restore_settings();
 	connect_signals();
 	init_device_tabs();
 }
 
 MainWindow::~MainWindow()
 {
-}
-
-void MainWindow::save_session()
-{
-	QSettings settings;
-
-	settings.beginGroup("Session");
-	settings.remove("");  // Remove all keys in this group
-	session_->save_settings(settings);
-	settings.endGroup();
-}
-
-void MainWindow::restore_session()
-{
-	QSettings settings;
-
-	settings.beginGroup("Session");
-	session_->restore_settings(settings);
-	settings.endGroup();
 }
 
 void MainWindow::add_tab(ui::tabs::BaseTab *tab_window)
@@ -231,6 +213,7 @@ void MainWindow::setup_ui()
 	// A layout must be set to the central widget of the main window
 	// before dev_dock->setWidget() is called.
 	QDockWidget* dev_dock = new QDockWidget(devices_view_->title());
+	dev_dock->setObjectName("dev_doc");
 	dev_dock->setAllowedAreas(Qt::AllDockWidgetAreas);
 	dev_dock->setContextMenuPolicy(Qt::PreventContextMenu);
 	dev_dock->setFeatures(QDockWidget::DockWidgetMovable |
@@ -246,6 +229,7 @@ void MainWindow::setup_ui()
 	smu_script_tree_view_ = new ui::views::SmuScriptTreeView(*session_);
 
 	QDockWidget* script_dock = new QDockWidget(smu_script_tree_view_->title());
+	script_dock->setObjectName("script_dock");
 	script_dock->setAllowedAreas(Qt::AllDockWidgetAreas);
 	script_dock->setContextMenuPolicy(Qt::PreventContextMenu);
 	script_dock->setFeatures(QDockWidget::DockWidgetMovable |
@@ -279,6 +263,31 @@ void MainWindow::connect_signals()
 		this, &MainWindow::error_handler);
 }
 
+void MainWindow::save_settings()
+{
+	QSettings settings;
+
+	settings.beginGroup("MainWindow");
+	settings.setValue("geometry", saveGeometry());
+	settings.setValue("state", saveState());
+	settings.endGroup();
+}
+
+void MainWindow::restore_settings()
+{
+	QSettings settings;
+
+	// Restore main window stuff
+	settings.beginGroup("MainWindow");
+	if (settings.contains("geometry")) {
+		restoreGeometry(settings.value("geometry").toByteArray());
+		restoreState(settings.value("state").toByteArray());
+	}
+	else
+		resize(1000, 720);
+	settings.endGroup();
+}
+
 void MainWindow::error_handler(
 	const std::string &sender, const std::string &msg)
 {
@@ -295,6 +304,17 @@ void MainWindow::on_tab_close_requested(int tab_index)
 	auto *tab_window = (ui::tabs::BaseTab *)tab_widget_->widget(tab_index);
 	if (tab_window->request_close())
 		remove_tab(tab_index);
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+	/*
+	for (const auto &tab_window_pair : this->tab_window_map_)
+		tab_window_pair.second->save_settings();
+	*/
+
+	save_settings();
+	event->accept();
 }
 
 } // namespace sv

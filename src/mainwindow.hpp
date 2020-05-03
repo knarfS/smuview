@@ -24,7 +24,9 @@
 #include <memory>
 #include <string>
 
+#include <QCloseEvent>
 #include <QMainWindow>
+#include <QSettings>
 
 using std::map;
 using std::shared_ptr;
@@ -62,8 +64,6 @@ public:
 
 	~MainWindow();
 
-	void save_session();
-	void restore_session();
 
 	ui::tabs::SmuScriptTab *add_smuscript_tab(string file_name);
 	void remove_tab(string tab_id);
@@ -75,9 +75,14 @@ private:
 	void setup_ui();
 	void init_device_tabs();
 	void connect_signals();
+	void save_settings();
+	void restore_settings();
 	void add_tab(ui::tabs::BaseTab *tab_window);
 	ui::tabs::WelcomeTab *add_welcome_tab();
 	void remove_tab(int tab_index);
+
+	/** This event is handling the saving of the settings */
+	void closeEvent(QCloseEvent *event) override;
 
 	DeviceManager &device_manager_;
 	shared_ptr<Session> session_;

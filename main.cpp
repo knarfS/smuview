@@ -105,20 +105,20 @@ int main(int argc, char *argv[])
 			{ "driver", required_argument, nullptr, 'd' },
 			{ "dont-scan", no_argument, nullptr, 'D' },
 			{ "script", required_argument, nullptr, 's' },
-			/* Disable cmd line options i, I and c
+			{ "clean", no_argument, nullptr, 'c' },
+			/* Disable cmd line options i and I
 			{ "input-file", required_argument, nullptr, 'i' },
 			{ "input-format", required_argument, nullptr, 'I' },
-			{ "clean", no_argument, nullptr, 'c' },
 			*/
 			{ nullptr, 0, nullptr, 0 }
 		};
 
-		/* Disable cmd line options i, I and c
+		/* Disable cmd line options i and I
 		const int c = getopt_long(argc, argv,
 			"l:Vhc?d:i:I:", long_options, nullptr);
 		*/
 		const int c = getopt_long(argc, argv,
-			"h?VDl:d:s:", long_options, nullptr);
+			"h?VDl:d:s:c", long_options, nullptr);
 
 		if (c == -1)
 			break;
@@ -159,17 +159,17 @@ int main(int argc, char *argv[])
 			script_file = optarg;
 			break;
 
-		/* Disable cmd line options i, I and c
+		case 'c':
+			restore_session = false;
+			break;
+
+		/* Disable cmd line options i and I
 		case 'i':
 			open_file = optarg;
 			break;
 
 		case 'I':
 			open_file_format = optarg;
-			break;
-
-		case 'c':
-			restore_session = false;
 			break;
 		*/
 		}
@@ -204,8 +204,11 @@ int main(int argc, char *argv[])
 			sv::MainWindow w(device_manager, session);
 			w.show();
 
+			(void)restore_session;
+			/* TODO: atm in MainWindow ctor
 			if (restore_session)
 				w.restore_session();
+			*/
 
 			if (!script_file.empty())
 				w.add_smuscript_tab(script_file)->run_script();
