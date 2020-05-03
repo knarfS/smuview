@@ -38,7 +38,7 @@ public:
     ~ClickableLabel();
 
 protected:
-    void mousePressEvent(QMouseEvent* event);
+    void mousePressEvent(QMouseEvent* event) override;
 
 Q_SIGNALS:
     void clicked();

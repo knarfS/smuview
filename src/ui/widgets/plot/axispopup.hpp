@@ -53,7 +53,7 @@ private:
 	QDialogButtonBox *button_box_;
 
 	void setup_ui();
-	void showEvent(QShowEvent *event);
+	void showEvent(QShowEvent *event) override;
 
 private Q_SLOTS:
 	void on_accept();

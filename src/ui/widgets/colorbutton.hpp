@@ -44,7 +44,7 @@ private:
 	QColor color_;
 
 private:
-	void paintEvent(QPaintEvent *event);
+	void paintEvent(QPaintEvent *event) override;
 
 public Q_SLOTS:
 	void change_color();
