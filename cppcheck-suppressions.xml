@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<suppressions>
+
+	<!-- False positives because of forward declaration. -->
+	<suppress>
+		<id>unsafeClassCanLeak</id>
+		<fileName>*/ui/views/sourcesinkcontrolview.hpp</fileName>
+	</suppress>
+
+	<!-- False positive? -->
+	<suppress>
+		<id>nullPointer</id>
+		<fileName>*/devices/configurable.hpp</fileName>
+		<symbolName>configurable</symbolName>
+	</suppress>
+
+	<!-- This one is ok! -->
+	<suppress>
+		<id>unreadVariable</id>
+		<fileName>*/devices/configurable.cpp</fileName>
+		<symbolName>sr</symbolName>
+	</suppress>
+
+	<!-- There are many functions in SmuView that are not used yet. -->
+	<suppress>
+		<id>unusedFunction</id>
+	</suppress>
+
+	<!-- Maybe add this checks later: -->
+	<suppress>
+		<id>useStlAlgorithm</id>
+	</suppress>
+	<suppress>
+		<id>useInitializationList</id>
+	</suppress>
+	<suppress>
+		<id>uninitMemberVar</id>
+	</suppress>
+
+</suppressions>
