@@ -19,6 +19,7 @@
  */
 
 #include <getopt.h>
+#include <memory>
 #include <unistd.h>
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
@@ -44,6 +45,7 @@ Q_IMPORT_PLUGIN(QSvgPlugin)
 #endif
 
 using std::exception;
+using std::make_shared;
 using std::shared_ptr;
 using std::string;
 using std::vector;
@@ -189,27 +191,25 @@ int main(int argc, char *argv[])
 			// Initialize global start timestamp
 			// TODO: use std::chrono / std::time
 			sv::Session::session_start_timestamp =
-				QDateTime::currentMSecsSinceEpoch() / (double)1000;
+				(double)QDateTime::currentMSecsSinceEpoch() / (double)1000;
 
 			// Create the device manager, initialise the drivers
 			sv::DeviceManager device_manager(context, drivers, do_scan);
 
-			// TODO: Init session here!
+			// Initialise the session.
+			auto session = make_shared<sv::Session>(device_manager);
 
-			// Initialise the main window
-			sv::MainWindow w(device_manager);
+			// Initialise the main window.
+			sv::MainWindow w(device_manager, session);
 			w.show();
 
 			if (restore_session)
 				w.restore_session();
 
-			if (!open_file.empty())
-				w.init_session_with_file(open_file, open_file_format);
-			else
-				w.init_default_session();
-
-			if (!script_file.empty())
-				w.run_smu_script(script_file); // TODO: Call in Session not MainWindow
+			if (!script_file.empty()) {
+				w.add_smuscript_tab(script_file);
+				session->run_smu_script(script_file);
+			}
 
 #ifdef ENABLE_SIGNALS
 			if (SignalHandler::prepare_signals()) {

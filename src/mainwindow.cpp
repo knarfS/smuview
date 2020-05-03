@@ -69,9 +69,11 @@ Q_DECLARE_METATYPE(std::shared_ptr<sv::data::BaseSignal>)
 namespace sv
 {
 
-MainWindow::MainWindow(DeviceManager &device_manager, QWidget *parent) :
+MainWindow::MainWindow(DeviceManager &device_manager,
+		shared_ptr<Session> session, QWidget *parent) :
 	QMainWindow(parent),
-	device_manager_(device_manager)
+	device_manager_(device_manager),
+	session_(session)
 {
 	qRegisterMetaType<util::Timestamp>("util::Timestamp");
 	qRegisterMetaType<uint64_t>("uint64_t");
@@ -88,44 +90,15 @@ MainWindow::MainWindow(DeviceManager &device_manager, QWidget *parent) :
 	// Add embedded mono space font for the value display.
 	QFontDatabase::addApplicationFont(":/fonts/DejaVuSansMono.ttf");
 
-	init_session();
+	session_->set_main_window(this);
+
 	setup_ui();
 	connect_signals();
+	init_device_tabs();
 }
 
 MainWindow::~MainWindow()
 {
-}
-
-void MainWindow::init_session()
-{
-	session_ = make_shared<Session>(device_manager_, this);
-}
-
-void MainWindow::init_default_session()
-{
-	if (device_manager_.user_spec_devices().empty()) {
-		// Display the WelcomeTab if no DeviceTabs will be opened, because
-		// without a tab in the QTabWidget the main window looks so empty...
-		add_welcome_tab();
-		return;
-	}
-
-	for (const auto &device : device_manager_.user_spec_devices()) {
-		// NOTE: add_device() must be called, before the device tab
-		//       tries to access the device (device is not opend yet).
-		session_->add_device(device);
-		add_device_tab(device);
-	}
-}
-
-void MainWindow::init_session_with_file(
-	string open_file_name, string open_file_format)
-{
-	(void)open_file_name;
-	(void)open_file_format;
-	// TODO
-	//session_->load_init_file(open_file_name, open_file_format);
 }
 
 void MainWindow::save_session()
@@ -145,12 +118,6 @@ void MainWindow::restore_session()
 	settings.beginGroup("Session");
 	session_->restore_settings(settings);
 	settings.endGroup();
-}
-
-void MainWindow::run_smu_script(string script_file)
-{
-	add_smuscript_tab(script_file);
-	session_->smu_script_runner()->run(script_file);
 }
 
 void MainWindow::add_tab(ui::tabs::BaseTab *tab_window)
@@ -285,6 +252,20 @@ void MainWindow::setup_ui()
 	// Select device tree dock tab
 	dev_dock->show();
 	dev_dock->raise();
+}
+
+void MainWindow::init_device_tabs()
+{
+	if (device_manager_.user_spec_devices().empty()) {
+		// Display the WelcomeTab if no DeviceTabs will be opened, because
+		// without a tab in the QTabWidget the main window looks so empty...
+		add_welcome_tab();
+		return;
+	}
+
+	for (const auto &device : device_manager_.user_spec_devices()) {
+		add_device_tab(device);
+	}
 }
 
 void MainWindow::connect_signals()

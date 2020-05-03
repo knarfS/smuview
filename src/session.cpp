@@ -53,13 +53,17 @@ namespace sv {
 shared_ptr<sigrok::Context> Session::sr_context;
 double Session::session_start_timestamp = .0;
 
-Session::Session(DeviceManager &device_manager, MainWindow *main_window) :
-	device_manager_(device_manager),
-	main_window_(main_window)
+Session::Session(DeviceManager &device_manager) :
+	device_manager_(device_manager)
 {
 	smu_script_runner_ = make_shared<python::SmuScriptRunner>(*this);
 	connect(smu_script_runner_.get(), &python::SmuScriptRunner::script_error,
 		this, &Session::error_handler);
+
+	// Connect devices
+	for (const auto &device : device_manager.user_spec_devices()) {
+		this->add_device(device);
+	}
 }
 
 Session::~Session()
@@ -76,11 +80,6 @@ DeviceManager &Session::device_manager()
 const DeviceManager &Session::device_manager() const
 {
 	return device_manager_;
-}
-
-shared_ptr<python::SmuScriptRunner> Session::smu_script_runner()
-{
-	return smu_script_runner_;
 }
 
 void Session::save_settings(QSettings &settings) const
@@ -165,6 +164,22 @@ void Session::remove_device(shared_ptr<devices::BaseDevice> device)
 
 		Q_EMIT device_removed(device);
 	}
+}
+
+
+shared_ptr<python::SmuScriptRunner> Session::smu_script_runner()
+{
+	return smu_script_runner_;
+}
+
+void Session::run_smu_script(string script_file)
+{
+	smu_script_runner_->run(script_file);
+}
+
+void Session::set_main_window(MainWindow *main_window)
+{
+	main_window_ = main_window;
 }
 
 MainWindow *Session::main_window() const

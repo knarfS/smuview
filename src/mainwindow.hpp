@@ -56,18 +56,12 @@ class MainWindow : public QMainWindow
 
 public:
 	explicit MainWindow(DeviceManager &device_manager,
-		QWidget *parent = nullptr);
+		shared_ptr<Session> session, QWidget *parent = nullptr);
 
 	~MainWindow();
 
-	void init_session();
-	void init_default_session();
-	void init_session_with_file(string open_file_name, string open_file_format);
 	void save_session();
 	void restore_session();
-
-	// TODO: Move to Session, when Session init is in main.cpp
-	void run_smu_script(string script_file);
 
 	void add_smuscript_tab(string file_name);
 	void remove_tab(string tab_id);
@@ -77,6 +71,7 @@ public:
 
 private:
 	void setup_ui();
+	void init_device_tabs();
 	void connect_signals();
 	void add_tab(ui::tabs::BaseTab *tab_window);
 	void add_welcome_tab();

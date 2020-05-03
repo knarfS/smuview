@@ -62,12 +62,11 @@ public:
 	static double session_start_timestamp;
 
 public:
-	Session(DeviceManager &device_manager, MainWindow *main_window);
+	Session(DeviceManager &device_manager);
 	~Session();
 
 	DeviceManager &device_manager();
 	const DeviceManager &device_manager() const;
-	shared_ptr<python::SmuScriptRunner> smu_script_runner();
 
 	void save_settings(QSettings &settings) const;
 	void restore_settings(QSettings &settings);
@@ -78,8 +77,10 @@ public:
 	shared_ptr<devices::UserDevice> add_user_device();
 	void remove_device(shared_ptr<devices::BaseDevice> device);
 
-	void load_init_file(const string &file_name, const string &format);
+	shared_ptr<python::SmuScriptRunner> smu_script_runner();
+	void run_smu_script(string script_file);
 
+	void set_main_window(MainWindow *main_window);
 	MainWindow *main_window() const;
 
 private:
