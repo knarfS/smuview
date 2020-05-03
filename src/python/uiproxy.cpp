@@ -46,8 +46,10 @@ UiProxy::UiProxy(Session &session, shared_ptr<UiHelper> ui_helper) :
 	session_(session),
 	ui_helper_(ui_helper)
 {
-	connect(this, &UiProxy::add_device_tab,
-		session_.main_window(), &MainWindow::add_device_tab);
+	if (session_.main_window()) {
+		connect(this, &UiProxy::add_device_tab,
+			session_.main_window(), &MainWindow::add_device_tab);
+	}
 
 	connect(this, &UiProxy::add_data_view,
 		ui_helper_.get(), &UiHelper::add_data_view);
