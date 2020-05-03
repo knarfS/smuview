@@ -71,6 +71,7 @@ endif()
 # Generate compile_commands.json in build/ for analyzers like clang-tidy.
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+
 #===============================================================================
 #= Documentation
 #-------------------------------------------------------------------------------
