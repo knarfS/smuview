@@ -33,6 +33,7 @@ Checks: >-
   bugprone-*,
   clang-diagnostic-*,
   clang-analyzer-*,
+  google-explicit-constructor,
   misc-*,
   -misc-definitions-in-headers,
   -misc-non-private-member-variables-in-classes,
