@@ -82,20 +82,6 @@ const DeviceManager &Session::device_manager() const
 	return device_manager_;
 }
 
-void Session::save_settings(QSettings &settings) const
-{
-	(QSettings)&settings;
-
-	// TODO: Remove all signal data from settings?
-}
-
-void Session::restore_settings(QSettings &settings)
-{
-	(QSettings)&settings;
-
-	// TODO: Restore all signal data from settings?
-}
-
 map<string, shared_ptr<devices::BaseDevice>> Session::devices() const
 {
 	return devices_;

@@ -68,9 +68,6 @@ public:
 	DeviceManager &device_manager();
 	const DeviceManager &device_manager() const;
 
-	void save_settings(QSettings &settings) const;
-	void restore_settings(QSettings &settings);
-
 	map<string, shared_ptr<devices::BaseDevice>> devices() const;
 	list<shared_ptr<devices::HardwareDevice>> connect_device(string conn_string);
 	void add_device(shared_ptr<devices::BaseDevice> device);
