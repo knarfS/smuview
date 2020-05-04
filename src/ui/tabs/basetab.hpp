@@ -62,23 +62,23 @@ public:
 	Session &session();
 	const Session &session() const;
 
-	virtual void save_settings(QSettings &settings) const;
-	virtual void restore_settings(QSettings &settings);
-
 	virtual string tab_id() = 0;
 	virtual QString tab_title() = 0;
 	views::BaseView *get_view_from_view_id(string id);
 	virtual bool request_close() = 0;
 
-private:
-	map<views::BaseView *, QDockWidget *> view_docks_map_;
-	map<string, views::BaseView *> view_id_map_;
+	// TODO: scope
+	virtual void save_settings() const = 0;
+	virtual void restore_settings() = 0;
 
+private:
 	QDockWidget *create_dock_widget(views::BaseView *view,
 		QDockWidget::DockWidgetFeatures features);
 
 protected:
 	Session &session_;
+	map<views::BaseView *, QDockWidget *> view_docks_map_;
+	map<string, views::BaseView *> view_id_map_;
 
 public Q_SLOTS:
 	/*

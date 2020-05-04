@@ -19,6 +19,7 @@
 
 #include <memory>
 
+#include <QCloseEvent>
 #include <QDebug>
 #include <QMainWindow>
 #include <QMessageBox>
@@ -36,6 +37,7 @@
 #include "src/ui/dialogs/addmathchanneldialog.hpp"
 #include "src/ui/dialogs/addviewdialog.hpp"
 #include "src/ui/dialogs/savedialog.hpp"
+#include "src/ui/views/viewhelper.hpp"
 
 using std::shared_ptr;
 
@@ -150,6 +152,8 @@ void DeviceTab::setup_toolbar()
 		this, SLOT(on_action_about_triggered()));
 
 	toolbar_ = new QToolBar("Device Toolbar");
+	// objectName is needed for QSettings
+	toolbar_->setObjectName("toolbar:" + QString::fromStdString(tab_id()));
 	toolbar_->addWidget(aquire_button_);
 	toolbar_->addSeparator();
 	toolbar_->addAction(action_save_as_);
@@ -163,6 +167,116 @@ void DeviceTab::setup_toolbar()
 	toolbar_->addSeparator();
 	toolbar_->addAction(action_about_);
 	this->addToolBar(Qt::TopToolBarArea, toolbar_);
+}
+
+void DeviceTab::restore_settings()
+{
+	/*
+	qWarning() << "DeviceTab::restore_settings()";
+
+	QSettings settings;
+
+	// Restore device views
+	settings.beginGroup(QString::fromStdString(device_->id()));
+
+	QStringList dock_keys = settings.childGroups();
+	for (const auto &dock_key : dock_keys) {
+		settings.beginGroup(dock_key);
+		qWarning() << "DeviceTab::restore_settings(): dock_key = " << dock_key;
+		auto view = views::viewhelper::get_view_from_settings(session_, settings);
+		if (!view)
+			continue;
+		qWarning() << "DeviceTab::restore_settings(): view = " << QString::fromStdString(view->id());
+		add_view(view, Qt::DockWidgetArea::TopDockWidgetArea);
+		settings.endGroup();
+	}
+
+	// Restore state and geometry for all dock widgets.
+	if (settings.contains("geometry"))
+		//restoreGeometry(settings.value("geometry").toByteArray());
+		setGeometry(settings.value("geometry").toRect());
+	if (settings.contains("state"))
+		restoreState(settings.value("state").toByteArray());
+
+	for (const auto &dock_key : dock_keys) {
+		settings.beginGroup(dock_key);
+		if (settings.contains("id") && settings.contains("geometry")) {
+			string id = settings.value("id").toString().toStdString();
+			qWarning() << "DeviceTab::restore_settings(): geometry view = " << QString::fromStdString(id);
+			//view_docks_map_[view_id_map_[id]]->restoreGeometry(settings.value("geometry").toByteArray());
+			view_docks_map_[view_id_map_[id]]->move(settings.value("position").toPoint());
+			view_docks_map_[view_id_map_[id]]->resize(settings.value("size").toSize());
+		}
+		settings.endGroup();
+	}
+
+	settings.endGroup();
+	*/
+}
+
+void DeviceTab::save_settings() const
+{
+	/*
+	qWarning() << "DeviceTab::save_settings()";
+	qWarning() << "DeviceTab::save_settings(): isMaximized = " << isMaximized();
+
+	QSettings settings;
+
+	settings.beginGroup(QString::fromStdString(device_->id()));
+	settings.remove("");  // Remove all keys in this group
+
+	size_t i = 0;
+	for (const auto &view_dock_pair : view_docks_map_) {
+		qWarning() << "DeviceTab::save_settings(): group = " << QString("dock%1").arg(i);
+		settings.beginGroup(QString("dock%1").arg(i));
+		view_dock_pair.first->save_settings(settings);
+		settings.setValue("geometry", view_dock_pair.second->saveGeometry());
+		settings.setValue("position", view_dock_pair.second->pos());
+		settings.setValue("size", view_dock_pair.second->size());
+		/ *
+		view_dock_pair.second->pos();
+		view_dock_pair.second->size();
+		view_dock_pair.second->allowedAreas();
+		//view_dock_pair.second->tabified()
+		* /
+		settings.endGroup();
+		++i;
+	}
+
+	// Save state and geometry for all dock widgets.
+	//settings.setValue("geometry", saveGeometry());
+	settings.setValue("geometry", geometry());
+	settings.setValue("state", saveState());
+
+	settings.endGroup();
+	*/
+}
+
+void DeviceTab::closeEvent(QCloseEvent *event)
+{
+	/*
+	qWarning() << "DeviceTab::closeEvent()";
+
+	//bool data_saved = true;
+
+	/ *
+	for (auto& entry : session_windows_)
+		if (!entry.first->data_saved())
+			data_saved = false;
+	* /
+
+	/ *
+	if (!data_saved && (QMessageBox::question(this, tr("Confirmation"),
+			tr("There is unsaved data. Close anyway?"),
+			QMessageBox::Yes | QMessageBox::No) == QMessageBox::No)) {
+		event->ignore();
+	}
+	else {
+	* /
+		save_settings();
+		event->accept();
+	//}
+	*/
 }
 
 void DeviceTab::on_action_aquire_triggered()

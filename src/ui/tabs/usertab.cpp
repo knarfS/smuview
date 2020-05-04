@@ -34,6 +34,14 @@ UserTab::UserTab(Session &session,
 {
 }
 
+void UserTab::restore_settings()
+{
+}
+
+void UserTab::save_settings() const
+{
+}
+
 } // namespace tabs
 } // namespace ui
 } // namespace sv

@@ -308,10 +308,8 @@ void MainWindow::on_tab_close_requested(int tab_index)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-	/*
 	for (const auto &tab_window_pair : this->tab_window_map_)
 		tab_window_pair.second->save_settings();
-	*/
 
 	save_settings();
 	event->accept();

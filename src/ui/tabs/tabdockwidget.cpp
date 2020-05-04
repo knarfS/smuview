@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2020 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2020 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,46 +17,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UI_TABS_WELCOMETAB_HPP
-#define UI_TABS_WELCOMETAB_HPP
+#include <QCloseEvent>
+#include <QDebug>
+#include <QDockWidget>
 
-#include <QString>
-#include <QWidget>
-
-#include "src/ui/tabs/basetab.hpp"
+#include "tabdockwidget.hpp"
 
 namespace sv {
-
-class Session;
-
 namespace ui {
 namespace tabs {
 
-class WelcomeTab : public BaseTab
+TabDockWidget::TabDockWidget(QWidget *parent) :
+	QDockWidget(parent)
 {
-	Q_OBJECT
+}
 
-private:
-
-public:
-	WelcomeTab(Session &session, QWidget *parent = nullptr);
-
-	string tab_id() override;
-	QString tab_title() override;
-	/** The WelcomeTab can always be closed */
-	bool request_close() override;
-
-	// TODO: scope
-	void save_settings() const override;
-	void restore_settings() override;
-
-private:
-	void setup_ui();
-
-};
+void TabDockWidget::closeEvent(QCloseEvent *event)
+{
+	Q_EMIT closed();
+	event->accept();
+}
 
 } // namespace tabs
 } // namespace ui
 } // namespace sv
-
-#endif // UI_TABS_WELCOMETAB_HPP

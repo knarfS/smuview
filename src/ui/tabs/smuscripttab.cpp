@@ -103,6 +103,14 @@ void SmuScriptTab::stop_script()
 	smu_script_view_->stop_script();
 }
 
+void SmuScriptTab::restore_settings()
+{
+}
+
+void SmuScriptTab::save_settings() const
+{
+}
+
 void SmuScriptTab::on_file_name_changed(const QString &file_name)
 {
 	(void)file_name;

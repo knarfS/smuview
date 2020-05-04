@@ -54,16 +54,6 @@ const Session& BaseTab::session() const
 	return session_;
 }
 
-void BaseTab::save_settings(QSettings &settings) const
-{
-	(void)settings;
-}
-
-void BaseTab::restore_settings(QSettings &settings)
-{
-	(void)settings;
-}
-
 views::BaseView *BaseTab::get_view_from_view_id(string id)
 {
 	return view_id_map_[id];
@@ -77,6 +67,9 @@ QDockWidget *BaseTab::create_dock_widget(views::BaseView *view,
 	// called.
 	// Otherwise the application will flicker at startup....
 	QDockWidget *dock = new QDockWidget(view->title());
+	// objectName is needed for QSettings
+	dock->setObjectName(QString::fromStdString(tab_id()) + ":" +
+		QString::fromStdString(view->id()));
 	dock->setAttribute(Qt::WA_DeleteOnClose);
 	dock->setAllowedAreas(Qt::AllDockWidgetAreas);
 	dock->setContextMenuPolicy(Qt::PreventContextMenu);

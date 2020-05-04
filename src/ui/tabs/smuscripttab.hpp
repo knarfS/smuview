@@ -53,6 +53,10 @@ public:
 	QString tab_title() override;
 	bool request_close() override;
 
+	// TODO: scope
+	void save_settings() const override;
+	void restore_settings() override;
+
 private:
 	void setup_ui();
 	void connect_signals();

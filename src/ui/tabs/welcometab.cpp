@@ -78,6 +78,14 @@ void WelcomeTab::setup_ui()
 	this->centralWidget()->setLayout(layout);
 }
 
+void WelcomeTab::restore_settings()
+{
+}
+
+void WelcomeTab::save_settings() const
+{
+}
+
 } // namespace tabs
 } // namespace ui
 } // namespace sv
