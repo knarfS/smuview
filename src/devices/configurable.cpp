@@ -57,11 +57,13 @@ namespace devices {
 Configurable::Configurable(
 		const shared_ptr<sigrok::Configurable> sr_configurable,
 		unsigned int configurable_index,
-		const string device_name, const DeviceType device_type):
+		const string device_name, const DeviceType device_type,
+		const string device_id):
 	sr_configurable_(sr_configurable),
 	configurable_index_(configurable_index),
 	device_name_(device_name),
-	device_type_(device_type)
+	device_type_(device_type),
+	device_id_(device_id)
 {
 }
 
@@ -358,6 +360,11 @@ unsigned int Configurable::index() const
 DeviceType Configurable::device_type() const
 {
 	return device_type_;
+}
+
+string Configurable::device_id() const
+{
+	return device_id_;
 }
 
 set<devices::ConfigKey> Configurable::getable_configs() const
