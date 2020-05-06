@@ -22,17 +22,23 @@
 
 #include <QApplication>
 #include <QDateTime>
+#include <QDebug>
+#include <QSettings>
 #include <QVBoxLayout>
 
 #include "powerpanelview.hpp"
 #include "src/session.hpp"
 #include "src/util.hpp"
+#include "src/channels/basechannel.hpp"
 #include "src/data/analogtimesignal.hpp"
 #include "src/data/datautil.hpp"
+#include "src/devices/basedevice.hpp"
 #include "src/ui/widgets/monofontdisplay.hpp"
 
 using std::set;
 using sv::data::QuantityFlag;
+
+Q_DECLARE_METATYPE(sv::data::measured_quantity_t)
 
 namespace sv {
 namespace ui {
@@ -252,6 +258,36 @@ void PowerPanelView::connect_signals()
 		this, SLOT(on_digits_changed()));
 	connect(current_signal_.get(), SIGNAL(digits_changed(const int, const int)),
 		this, SLOT(on_digits_changed()));
+}
+
+void PowerPanelView::save_settings(QSettings &settings) const
+{
+	qWarning() << "PowerPanelView::save_settings(): settings.group = " << settings.group();
+
+	settings.setValue("id", QVariant(QString::fromStdString(id_)));
+
+	settings.setValue("v_device", QVariant(
+		QString::fromStdString(voltage_signal_->parent_channel()->parent_device()->id())));
+	settings.setValue("v_channel", QVariant(
+		QString::fromStdString(voltage_signal_->parent_channel()->name())));
+	settings.setValue("v_signal_sr_q",
+		sv::data::datautil::get_sr_quantity_id(voltage_signal_->quantity()));
+	settings.setValue("v_signal_sr_qf", QVariant::fromValue<uint64_t>(
+		sv::data::datautil::get_sr_quantity_flags_id(voltage_signal_->quantity_flags())));
+
+	settings.setValue("i_device", QVariant(
+		QString::fromStdString(current_signal_->parent_channel()->parent_device()->id())));
+	settings.setValue("i_channel", QVariant(
+		QString::fromStdString(current_signal_->parent_channel()->name())));
+	settings.setValue("i_signal_sr_q",
+		sv::data::datautil::get_sr_quantity_id(current_signal_->quantity()));
+	settings.setValue("i_signal_sr_qf", QVariant::fromValue<uint64_t>(
+		sv::data::datautil::get_sr_quantity_flags_id(current_signal_->quantity_flags())));
+}
+
+void PowerPanelView::restore_settings(QSettings &settings)
+{
+	(void)settings;
 }
 
 void PowerPanelView::reset_displays()

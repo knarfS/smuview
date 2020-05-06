@@ -22,6 +22,7 @@
 #include <QAction>
 #include <QDebug>
 #include <QMessageBox>
+#include <QSettings>
 #include <QToolBar>
 #include <QVBoxLayout>
 
@@ -112,6 +113,16 @@ void DevicesView::setup_toolbar()
 
 void DevicesView::connect_signals()
 {
+}
+
+void DevicesView::save_settings(QSettings &settings) const
+{
+	(void)settings;
+}
+
+void DevicesView::restore_settings(QSettings &settings)
+{
+	(void)settings;
 }
 
 void DevicesView::on_action_add_device_triggered()

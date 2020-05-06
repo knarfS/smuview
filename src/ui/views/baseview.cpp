@@ -61,16 +61,6 @@ string BaseView::id() const
 	return id_;
 }
 
-void BaseView::save_settings(QSettings &settings) const
-{
-	(void)settings;
-}
-
-void BaseView::restore_settings(QSettings &settings)
-{
-	(void)settings;
-}
-
 } // namespace views
 } // namespace ui
 } // namespace sv

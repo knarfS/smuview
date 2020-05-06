@@ -25,6 +25,7 @@
 #include <vector>
 
 #include <QAction>
+#include <QSettings>
 #include <QTableWidget>
 #include <QToolBar>
 
@@ -55,6 +56,10 @@ public:
 
 	QString title() const override;
 	void add_signal(shared_ptr<sv::data::AnalogTimeSignal> signal);
+
+	// TODO: scope
+	void save_settings(QSettings &settings) const override;
+	void restore_settings(QSettings &settings) override;
 
 private:
 	vector<shared_ptr<sv::data::AnalogTimeSignal>> signals_;

@@ -25,6 +25,7 @@
 #include <QMainWindow>
 #include <QMenu>
 #include <QMessageBox>
+#include <QSettings>
 #include <QToolButton>
 #include <QVBoxLayout>
 #include <qwt_plot_renderer.h>
@@ -33,6 +34,7 @@
 #include "src/session.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/data/analogtimesignal.hpp"
+#include "src/devices/basedevice.hpp"
 #include "src/ui/dialogs/plotconfigdialog.hpp"
 #include "src/ui/dialogs/plotdiffmarkerdialog.hpp"
 #include "src/ui/dialogs/selectsignaldialog.hpp"
@@ -285,6 +287,57 @@ void PlotView::setup_toolbar()
 	toolbar_->addSeparator();
 	toolbar_->addAction(action_config_plot_);
 	this->addToolBar(Qt::TopToolBarArea, toolbar_);
+}
+
+void PlotView::save_settings(QSettings &settings) const
+{
+	qWarning() << "PlotView::save_settings(): settings.group = " << settings.group();
+
+	settings.setValue("id", QVariant(QString::fromStdString(id_)));
+
+	size_t i = 0;
+	for (const auto &curve : curves_) {
+		settings.beginGroup(QString("curve%1").arg(i++));
+		if (curve->curve_type() == widgets::plot::CurveType::TimeCurve) {
+			auto t_curve = static_cast<widgets::plot::TimeCurveData *>(curve);
+			auto signal = t_curve->signal();
+			settings.setValue("device", QVariant(
+				QString::fromStdString(signal->parent_channel()->parent_device()->id())));
+			settings.setValue("channel", QVariant(
+				QString::fromStdString(signal->parent_channel()->name())));
+			settings.setValue("signal_sr_q",
+				sv::data::datautil::get_sr_quantity_id(signal->quantity()));
+			settings.setValue("signal_sr_qf", QVariant::fromValue<uint64_t>(
+				sv::data::datautil::get_sr_quantity_flags_id(signal->quantity_flags())));
+		}
+		else if (curve->curve_type() == widgets::plot::CurveType::XYCurve) {
+			auto xy_curve = static_cast<widgets::plot::XYCurveData *>(curve);
+			auto x_signal = xy_curve->x_t_signal();
+			settings.setValue("x_device", QVariant(
+				QString::fromStdString(x_signal->parent_channel()->parent_device()->id())));
+			settings.setValue("x_channel", QVariant(
+				QString::fromStdString(x_signal->parent_channel()->name())));
+			settings.setValue("x_signal_sr_q",
+				sv::data::datautil::get_sr_quantity_id(x_signal->quantity()));
+			settings.setValue("x_signal_sr_qf", QVariant::fromValue<uint64_t>(
+				sv::data::datautil::get_sr_quantity_flags_id(x_signal->quantity_flags())));
+			auto y_signal = xy_curve->x_t_signal();
+			settings.setValue("y_device", QVariant(
+				QString::fromStdString(y_signal->parent_channel()->parent_device()->id())));
+			settings.setValue("y_channel", QVariant(
+				QString::fromStdString(y_signal->parent_channel()->name())));
+			settings.setValue("y_signal_sr_q",
+				sv::data::datautil::get_sr_quantity_id(y_signal->quantity()));
+			settings.setValue("y_signal_sr_qf", QVariant::fromValue<uint64_t>(
+				sv::data::datautil::get_sr_quantity_flags_id(y_signal->quantity_flags())));
+		}
+		settings.endGroup();
+	}
+}
+
+void PlotView::restore_settings(QSettings &settings)
+{
+	(void)settings;
 }
 
 void PlotView::update_add_marker_menu()

@@ -26,6 +26,7 @@
 #include <QFileSystemModel>
 #include <QMessageBox>
 #include <QModelIndex>
+#include <QSettings>
 #include <QString>
 #include <QTimer>
 #include <QToolBar>
@@ -141,6 +142,16 @@ void SmuScriptTreeView::connect_signals()
 		this, &SmuScriptTreeView::on_script_started);
 	connect(session_.smu_script_runner().get(), &python::SmuScriptRunner::script_finished,
 		this, &SmuScriptTreeView::on_script_finished);
+}
+
+void SmuScriptTreeView::save_settings(QSettings &settings) const
+{
+	(void)settings;
+}
+
+void SmuScriptTreeView::restore_settings(QSettings &settings)
+{
+	(void)settings;
 }
 
 void SmuScriptTreeView::scroll_to_script_dir()

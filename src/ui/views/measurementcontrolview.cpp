@@ -21,9 +21,12 @@
 
 #include <QDebug>
 #include <QFormLayout>
+#include <QSettings>
+#include <QVariant>
 
 #include "measurementcontrolview.hpp"
 #include "src/session.hpp"
+#include "src/devices/basedevice.hpp"
 #include "src/devices/configurable.hpp"
 #include "src/devices/deviceutil.hpp"
 #include "src/ui/datatypes/measuredquantitycombobox.hpp"
@@ -40,7 +43,7 @@ MeasurementControlView::MeasurementControlView(Session &session,
 	BaseView(session, parent),
 	configurable_(configurable)
 {
-	id_ = "control:" + std::to_string(BaseView::id_counter++);
+	id_ = "measurementcontrol:" + std::to_string(BaseView::id_counter++);
 
 	setup_ui();
 }
@@ -67,6 +70,20 @@ void MeasurementControlView::setup_ui()
 	layout->addRow(tr("Digits"), digits_box_);
 
 	this->central_widget_->setLayout(layout);
+}
+
+void MeasurementControlView::save_settings(QSettings &settings) const
+{
+	qWarning() << "MeasurementControlView::save_settings(): settings.group = " << settings.group();
+
+	settings.setValue("id", QVariant(QString::fromStdString(id_)));
+	settings.setValue("device", QVariant(QString::fromStdString(configurable_->device_id())));
+	settings.setValue("configurable", QVariant(QString::fromStdString(configurable_->name())));
+}
+
+void MeasurementControlView::restore_settings(QSettings &settings)
+{
+	(void)settings;
 }
 
 } // namespace views

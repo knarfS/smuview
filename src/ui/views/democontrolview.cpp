@@ -23,6 +23,7 @@
 #include <QDebug>
 #include <QHBoxLayout>
 #include <QPushButton>
+#include <QSettings>
 #include <QVBoxLayout>
 #include <QVariant>
 
@@ -31,6 +32,7 @@
 #include "src/data/datautil.hpp"
 #include "src/data/properties/baseproperty.hpp"
 #include "src/data/properties/measuredquantityproperty.hpp"
+#include "src/devices/basedevice.hpp"
 #include "src/devices/configurable.hpp"
 #include "src/devices/deviceutil.hpp"
 #include "src/ui/data/quantitycombobox.hpp"
@@ -52,7 +54,7 @@ DemoControlView::DemoControlView(Session &session,
 	BaseView(session, parent),
 	configurable_(configurable)
 {
-	id_ = "control:" + std::to_string(BaseView::id_counter++);
+	id_ = "democontrol:" + std::to_string(BaseView::id_counter++);
 
 	setup_ui();
 	connect_signals();
@@ -126,6 +128,20 @@ void DemoControlView::connect_signals()
 	}
 
 	// Device -> control elements
+}
+
+void DemoControlView::save_settings(QSettings &settings) const
+{
+	qWarning() << "DemoControlView::save_settings(): settings.group = " << settings.group();
+
+	settings.setValue("id", QVariant(QString::fromStdString(id_)));
+	settings.setValue("device", QVariant(QString::fromStdString(configurable_->device_id())));
+	settings.setValue("configurable", QVariant(QString::fromStdString(configurable_->name())));
+}
+
+void DemoControlView::restore_settings(QSettings &settings)
+{
+	(void)settings;
 }
 
 void DemoControlView::on_quantity_set()

@@ -24,6 +24,7 @@
 #include <set>
 
 #include <QAction>
+#include <QSettings>
 #include <QString>
 #include <QTimer>
 #include <QToolBar>
@@ -69,6 +70,10 @@ public:
 	~ValuePanelView();
 
 	QString title() const override;
+
+	// TODO: scope
+	void save_settings(QSettings &settings) const override;
+	void restore_settings(QSettings &settings) override;
 
 private:
 	shared_ptr<channels::BaseChannel> channel_;

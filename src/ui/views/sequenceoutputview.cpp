@@ -35,6 +35,7 @@
 #include <QLabel>
 #include <QList>
 #include <QLocale>
+#include <QSettings>
 #include <QSpinBox>
 #include <QString>
 #include <QStringList>
@@ -251,6 +252,16 @@ void SequenceOutputView::setup_toolbar()
 	toolbar_->addAction(action_load_from_file_);
 	toolbar_->addAction(action_generate_waveform_);
 	this->addToolBar(Qt::TopToolBarArea, toolbar_);
+}
+
+void SequenceOutputView::save_settings(QSettings &settings) const
+{
+	(void)settings;
+}
+
+void SequenceOutputView::restore_settings(QSettings &settings)
+{
+	(void)settings;
 }
 
 void SequenceOutputView::start_timer()

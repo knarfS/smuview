@@ -23,6 +23,7 @@
 #include <memory>
 
 #include <QPushButton>
+#include <QSettings>
 #include <QString>
 
 #include "src/ui/views/baseview.hpp"
@@ -57,9 +58,13 @@ class DemoControlView : public BaseView
 public:
 	DemoControlView(Session& session,
 		shared_ptr<sv::devices::Configurable> configurable,
-		QWidget* parent = nullptr);
+		QWidget *parent = nullptr);
 
 	QString title() const override;
+
+	// TODO: scope
+	void save_settings(QSettings &settings) const override;
+	void restore_settings(QSettings &settings) override;
 
 private:
 	shared_ptr<sv::devices::Configurable> configurable_;

@@ -24,6 +24,7 @@
 #include <QDir>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QSettings>
 #include <QString>
 #include <QTextOption>
 #include <QTextStream>
@@ -172,6 +173,16 @@ void SmuScriptView::connect_signals()
 		this, &SmuScriptView::on_script_started);
 	connect(session_.smu_script_runner().get(), &python::SmuScriptRunner::script_finished,
 		this, &SmuScriptView::on_script_finished);
+}
+
+void SmuScriptView::save_settings(QSettings &settings) const
+{
+	(void)settings;
+}
+
+void SmuScriptView::restore_settings(QSettings &settings)
+{
+	(void)settings;
 }
 
 bool SmuScriptView::save(QString file_name)

@@ -59,8 +59,9 @@ public:
 	string id() const;
 	virtual QString title() const = 0;
 
-	virtual void save_settings(QSettings &settings) const;
-	virtual void restore_settings(QSettings &settings);
+	// TODO: scope
+	virtual void save_settings(QSettings &settings) const = 0;
+	virtual void restore_settings(QSettings &settings) = 0;
 
 protected:
 	static unsigned int id_counter;

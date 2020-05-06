@@ -21,8 +21,12 @@
 #define UI_VIEWS_VIEWHELPER_HPP
 
 #include <memory>
+#include <string>
+
+#include <QSettings>
 
 using std::shared_ptr;
+using std::string;
 
 namespace sv {
 
@@ -50,6 +54,16 @@ namespace viewhelper {
  */
 BaseView *get_view_for_configurable(Session &session,
 	shared_ptr<sv::devices::Configurable> configurable);
+
+/**
+ * Returns the view defined in the actual settings group.
+ *
+ * @param[in] session The reference to the actual SmuView session
+ * @param[in] settings The settings
+ *
+ * @return The view defined by settings
+ */
+BaseView *get_view_from_settings(Session &session, QSettings &settings);
 
 } // namespace viewhelper
 } // namespace views

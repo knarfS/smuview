@@ -22,6 +22,8 @@
 
 #include <memory>
 
+#include <QSettings>
+
 #include "src/ui/views/baseview.hpp"
 
 using std::shared_ptr;
@@ -53,6 +55,10 @@ public:
 		QWidget* parent = nullptr);
 
 	QString title() const override;
+
+	// TODO: scope
+	void save_settings(QSettings &settings) const override;
+	void restore_settings(QSettings &settings) override;
 
 private:
 	shared_ptr<sv::devices::Configurable> configurable_;

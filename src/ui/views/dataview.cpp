@@ -19,10 +19,13 @@
 
 #include <memory>
 #include <mutex>
+#include <set>
 #include <string>
 
 #include <QAction>
 #include <QDebug>
+#include <QList>
+#include <QSettings>
 #include <QScrollBar>
 #include <QTableWidget>
 #include <QTableWidgetItem>
@@ -33,6 +36,8 @@
 #include "src/session.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/data/analogtimesignal.hpp"
+#include "src/data/datautil.hpp"
+#include "src/devices/basedevice.hpp"
 #include "src/ui/dialogs/selectsignaldialog.hpp"
 
 using std::dynamic_pointer_cast;
@@ -99,6 +104,35 @@ void DataView::setup_toolbar()
 	toolbar_->addSeparator();
 	toolbar_->addAction(action_add_signal_);
 	this->addToolBar(Qt::TopToolBarArea, toolbar_);
+}
+
+void DataView::save_settings(QSettings &settings) const
+{
+	qWarning() << "DataView::save_settings(): settings.group = " << settings.group();
+
+	settings.setValue("id", QVariant(QString::fromStdString(id_)));
+
+	size_t i = 0;
+	qWarning() << "DataView::save_settings(): signals_.size = " << signals_.size();
+	for (const auto &signal : signals_) {
+		settings.beginGroup(QString("signal%1").arg(i++));
+
+		settings.setValue("device", QVariant(
+			QString::fromStdString(signal->parent_channel()->parent_device()->id())));
+		settings.setValue("channel", QVariant(
+			QString::fromStdString(signal->parent_channel()->name())));
+		settings.setValue("signal_sr_q",
+			sv::data::datautil::get_sr_quantity_id(signal->quantity()));
+		settings.setValue("signal_sr_qf", QVariant::fromValue<uint64_t>(
+			sv::data::datautil::get_sr_quantity_flags_id(signal->quantity_flags())));
+
+		settings.endGroup();
+	}
+}
+
+void DataView::restore_settings(QSettings &settings)
+{
+	(void)settings;
 }
 
 void DataView::add_signal(shared_ptr<sv::data::AnalogTimeSignal> signal)

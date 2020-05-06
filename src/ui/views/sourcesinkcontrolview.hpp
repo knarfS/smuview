@@ -22,6 +22,8 @@
 
 #include <memory>
 
+#include <QSettings>
+
 #include "src/devices/deviceutil.hpp"
 #include "src/ui/views/baseview.hpp"
 
@@ -58,6 +60,10 @@ public:
 		QWidget* parent = nullptr);
 
 	QString title() const override;
+
+	// TODO: scope
+	void save_settings(QSettings &settings) const override;
+	void restore_settings(QSettings &settings) override;
 
 private:
 	shared_ptr<sv::devices::Configurable> configurable_;

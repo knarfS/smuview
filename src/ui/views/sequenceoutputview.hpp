@@ -25,6 +25,7 @@
 #include <QAction>
 #include <QCheckBox>
 #include <QLocale>
+#include <QSettings>
 #include <QSpinBox>
 #include <QString>
 #include <QStringList>
@@ -89,6 +90,10 @@ public:
 	~SequenceOutputView();
 
 	QString title() const override;
+
+	// TODO: scope
+	void save_settings(QSettings &settings) const override;
+	void restore_settings(QSettings &settings) override;
 
 private:
 	shared_ptr<sv::data::properties::DoubleProperty> property_;

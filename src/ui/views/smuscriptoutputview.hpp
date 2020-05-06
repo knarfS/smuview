@@ -24,6 +24,7 @@
 
 #include <QAction>
 #include <QPlainTextEdit>
+#include <QSettings>
 #include <QString>
 #include <QToolBar>
 
@@ -44,6 +45,10 @@ public:
 	SmuScriptOutputView(Session& session, QWidget* parent = nullptr);
 
 	QString title() const override;
+
+	// TODO: scope
+	void save_settings(QSettings &settings) const override;
+	void restore_settings(QSettings &settings) override;
 
 private:
 	bool auto_scroll_;

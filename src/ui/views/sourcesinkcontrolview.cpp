@@ -19,6 +19,7 @@
 
 #include <string>
 
+#include <QSettings>
 #include <QSizePolicy>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -45,7 +46,7 @@ SourceSinkControlView::SourceSinkControlView(Session &session,
 	BaseView(session, parent),
 	configurable_(configurable)
 {
-	id_ = "control:" + std::to_string(BaseView::id_counter++);
+	id_ = "sourcesinkcontrol:" + std::to_string(BaseView::id_counter++);
 
 	setup_ui();
 }
@@ -165,6 +166,16 @@ void SourceSinkControlView::setup_ui()
 	layout->addStretch(1);
 
 	this->central_widget_->setLayout(layout);
+}
+
+void SourceSinkControlView::save_settings(QSettings &settings) const
+{
+	(void)settings;
+}
+
+void SourceSinkControlView::restore_settings(QSettings &settings)
+{
+	(void)settings;
 }
 
 } // namespace views

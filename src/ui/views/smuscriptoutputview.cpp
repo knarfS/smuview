@@ -25,6 +25,7 @@
 #include <QFontDatabase>
 #include <QPlainTextEdit>
 #include <QScrollBar>
+#include <QSettings>
 #include <QString>
 #include <QTextCharFormat>
 #include <QToolBar>
@@ -95,6 +96,16 @@ void SmuScriptOutputView::setup_toolbar()
 	toolbar_->addSeparator();
 	toolbar_->addAction(action_clear_output_);
 	this->addToolBar(Qt::TopToolBarArea, toolbar_);
+}
+
+void SmuScriptOutputView::save_settings(QSettings &settings) const
+{
+	(void)settings;
+}
+
+void SmuScriptOutputView::restore_settings(QSettings &settings)
+{
+	(void)settings;
 }
 
 void SmuScriptOutputView::scroll_to_bottom()

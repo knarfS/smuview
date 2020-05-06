@@ -23,6 +23,7 @@
 #include <QAction>
 #include <QFileSystemModel>
 #include <QModelIndex>
+#include <QSettings>
 #include <QString>
 #include <QToolBar>
 #include <QTreeView>
@@ -44,6 +45,10 @@ public:
 	SmuScriptTreeView(Session &session, QWidget *parent = nullptr);
 
 	QString title() const override;
+
+	// TODO: scope
+	void save_settings(QSettings &settings) const override;
+	void restore_settings(QSettings &settings) override;
 
 private:
 	QAction *const action_new_script_;

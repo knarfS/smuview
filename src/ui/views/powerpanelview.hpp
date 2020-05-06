@@ -23,6 +23,7 @@
 #include <memory>
 
 #include <QAction>
+#include <QSettings>
 #include <QTimer>
 #include <QToolBar>
 
@@ -58,6 +59,10 @@ public:
 	~PowerPanelView();
 
 	QString title() const override;
+
+	// TODO: scope
+	void save_settings(QSettings &settings) const override;
+	void restore_settings(QSettings &settings) override;
 
 private:
 	shared_ptr<sv::data::AnalogTimeSignal> voltage_signal_;

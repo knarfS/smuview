@@ -23,6 +23,7 @@
 #include <memory>
 
 #include <QAction>
+#include <QSettings>
 #include <QToolBar>
 
 #include "src/ui/views/baseview.hpp"
@@ -51,6 +52,10 @@ public:
 	DevicesView(Session &session, QWidget *parent = nullptr);
 
 	QString title() const override;
+
+	// TODO: scope
+	void save_settings(QSettings &settings) const override;
+	void restore_settings(QSettings &settings) override;
 
 private:
 	QAction *const action_add_device_;
