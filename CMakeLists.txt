@@ -191,6 +191,7 @@ set(smuview_SOURCES
   src/devicemanager.cpp
   src/mainwindow.cpp
   src/session.cpp
+  src/settingsmanager.cpp
   src/util.cpp
   src/channels/addscchannel.cpp
   src/channels/basechannel.cpp
