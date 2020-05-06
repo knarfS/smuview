@@ -115,7 +115,7 @@ void MeasuredQuantityComboBox::disconnect_widget_2_prop_signals()
 
 QVariant MeasuredQuantityComboBox::variant_value() const
 {
-	return QVariant(this->currentData());
+	return this->currentData();
 }
 
 void MeasuredQuantityComboBox::value_changed(int index)
@@ -123,9 +123,7 @@ void MeasuredQuantityComboBox::value_changed(int index)
 	(void)index;
 
 	if (property_ != nullptr) {
-		data::measured_quantity_t value =
-			this->currentData().value<data::measured_quantity_t>();
-		property_->change_value(QVariant::fromValue(value));
+		property_->change_value(this->currentData());
 	}
 }
 
