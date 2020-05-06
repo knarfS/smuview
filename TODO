@@ -52,6 +52,8 @@ ToDo
 - Can we inherit MathChannel from UserChannel?
 - Add "E" for detecting energy (Wh) channels
 - Unify name of static (const) variables
+- Remove devicetab.hpp time_unit_
+- Cycle: replace BaseChannel::parent_device_ with device_id_, and so on....
 
 Done
 ----
