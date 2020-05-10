@@ -851,6 +851,8 @@ void init_Enums(py::module &m)
 		"The probe factor.");
 	py_config_key.value("ADCPowerlineCycles", sv::devices::ConfigKey::ADCPowerlineCycles,
 		"Number of powerline cycles for ADC integration time.");
+	py_config_key.value("ChannelGroup", sv::devices::ConfigKey::ChannelGroup,
+		"Which channel group to assign following meta packages to.");
 	py_config_key.value("DataLog", sv::devices::ConfigKey::DataLog,
 		"The device has internal storage, into which data is logged.");
 	py_config_key.value("DeviceMode", sv::devices::ConfigKey::DeviceMode,

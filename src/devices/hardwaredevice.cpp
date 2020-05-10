@@ -246,6 +246,27 @@ void HardwareDevice::feed_in_trigger()
 
 void HardwareDevice::feed_in_meta(shared_ptr<sigrok::Meta> sr_meta)
 {
+	/*
+	 * interpret SR_CONF_CHANNEL_GROUP to signal
+	 * current channel group for meta packets
+	 */
+	for (auto &entry : sr_meta->config()) {
+		devices::ConfigKey config_key =
+			devices::deviceutil::get_config_key(entry.first);
+		if(config_key == ConfigKey::ChannelGroup) {
+			cur_meta_channel_group_ = g_variant_get_string(entry.second.gobj(), NULL);
+			return;
+		}
+	}
+	if (cur_meta_channel_group_.size()) {
+		auto iter = configurable_map_.find(cur_meta_channel_group_);
+		if(iter != configurable_map_.end()) {
+			iter->second->feed_in_meta(sr_meta);
+			return;
+		}
+		// fallback to old code...
+	}
+	
 	for (const auto &c_pair : configurable_map_) {
 		// TODO: The meta packet is missing the information, to which
 		// channel group the config key belongs.

@@ -245,6 +245,8 @@ enum class ConfigKey
 	ProbeFactor,
 	/** Number of powerline cycles for ADC integration time. */
 	ADCPowerlineCycles,
+	/** Which channel group to assign following meta packages to. */
+	ChannelGroup,
 	/** The device has internal storage, into which data is logged. */
 	DataLog,
 	/** Device mode for multi-function devices. */
@@ -368,6 +370,7 @@ config_key_name_map_t config_key_name_map = {
 	{ ConfigKey::DataSource, QString("Data Source") },
 	{ ConfigKey::ProbeFactor, QString("Probe Factor") },
 	{ ConfigKey::ADCPowerlineCycles, QString("ADC Powerline Cycles") },
+	{ ConfigKey::ChannelGroup, QString("Channel Group") },
 	{ ConfigKey::DataLog, QString("Data Log") },
 	{ ConfigKey::DeviceMode, QString("Device Mode") },
 	{ ConfigKey::TestMode, QString("Test Mode") },
@@ -501,6 +504,7 @@ map<const sigrok::ConfigKey *, ConfigKey> sr_config_key_config_key_map = {
 	{ sigrok::ConfigKey::DATA_SOURCE, ConfigKey::DataSource },
 	{ sigrok::ConfigKey::PROBE_FACTOR, ConfigKey::ProbeFactor },
 	{ sigrok::ConfigKey::ADC_POWERLINE_CYCLES, ConfigKey::ADCPowerlineCycles },
+	{ sigrok::ConfigKey::CHANNEL_GROUP, ConfigKey::ChannelGroup },
 	{ sigrok::ConfigKey::DATALOG, ConfigKey::DataLog },
 	{ sigrok::ConfigKey::DEVICE_MODE, ConfigKey::DeviceMode },
 	{ sigrok::ConfigKey::TEST_MODE, ConfigKey::TestMode },
@@ -577,6 +581,7 @@ map<ConfigKey, const sigrok::ConfigKey *> config_key_sr_config_key_map = {
 	{ ConfigKey::DataSource, sigrok::ConfigKey::DATA_SOURCE },
 	{ ConfigKey::ProbeFactor, sigrok::ConfigKey::PROBE_FACTOR },
 	{ ConfigKey::ADCPowerlineCycles, sigrok::ConfigKey::ADC_POWERLINE_CYCLES },
+	{ ConfigKey::ChannelGroup, sigrok::ConfigKey::CHANNEL_GROUP },
 	{ ConfigKey::DataLog, sigrok::ConfigKey::DATALOG },
 	{ ConfigKey::DeviceMode, sigrok::ConfigKey::DEVICE_MODE },
 	{ ConfigKey::TestMode, sigrok::ConfigKey::TEST_MODE },
@@ -657,6 +662,7 @@ map<ConfigKey, data::Unit> config_key_unit_map = {
 	{ ConfigKey::DataSource, data::Unit::Unitless },
 	{ ConfigKey::ProbeFactor, data::Unit::Unitless },
 	{ ConfigKey::ADCPowerlineCycles, data::Unit::Unitless },
+	{ ConfigKey::ChannelGroup, data::Unit::Unitless },
 	{ ConfigKey::DataLog, data::Unit::Boolean },
 	{ ConfigKey::DeviceMode, data::Unit::Unitless },
 	{ ConfigKey::TestMode, data::Unit::Unitless },
