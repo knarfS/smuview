@@ -93,6 +93,9 @@ public Q_SLOTS:
 		shared_ptr<sv::data::AnalogTimeSignal> x_signal,
 		shared_ptr<sv::data::AnalogTimeSignal> y_signal);
 
+Q_SIGNALS:
+	void view_added(std::string view_id);
+
 };
 
 } // namespace python

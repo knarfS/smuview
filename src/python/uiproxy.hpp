@@ -24,7 +24,10 @@
 #include <string>
 
 #include <QDockWidget>
+#include <QEventLoop>
+#include <QMetaObject>
 #include <QObject>
+#include <QTimer>
 
 using std::shared_ptr;
 using std::string;
@@ -92,8 +95,15 @@ public:
 		shared_ptr<data::AnalogTimeSignal> y_signal);
 
 private:
+	void init_wait_for_view_added(string &id, int timeout = 1000);
+	void finish_wait_for_signal();
+
 	Session &session_;
 	shared_ptr<UiHelper> ui_helper_;
+	QEventLoop event_loop_;
+	QTimer timer_;
+	QMetaObject::Connection event_loop_conn_;
+	QMetaObject::Connection timer_conn_;
 
 Q_SIGNALS:
 	void add_device_tab(shared_ptr<sv::devices::BaseDevice> device);

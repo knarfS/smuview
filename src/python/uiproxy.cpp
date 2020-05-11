@@ -22,6 +22,9 @@
 
 #include <QDebug>
 #include <QDockWidget>
+#include <QEventLoop>
+#include <QMetaObject>
+#include <QTimer>
 
 #include "uiproxy.hpp"
 #include "src/mainwindow.hpp"
@@ -44,7 +47,9 @@ namespace python {
 
 UiProxy::UiProxy(Session &session, shared_ptr<UiHelper> ui_helper) :
 	session_(session),
-	ui_helper_(ui_helper)
+	ui_helper_(ui_helper),
+	event_loop_(),
+	timer_()
 {
 	if (session_.main_window()) {
 		connect(this, &UiProxy::add_device_tab,
@@ -90,61 +95,99 @@ void UiProxy::ui_add_device_tab(shared_ptr<devices::BaseDevice> device)
 string UiProxy::ui_add_data_view(string device_id, Qt::DockWidgetArea area,
 	shared_ptr<data::AnalogTimeSignal> signal)
 {
+	string id;
+	init_wait_for_view_added(id);
 	Q_EMIT add_data_view(device_id, area, signal);
-	return "data:" + signal->name();
+	event_loop_.exec();
+	finish_wait_for_signal();
+
+	return id;
 }
 
 string UiProxy::ui_add_control_view(string device_id, Qt::DockWidgetArea area,
 	shared_ptr<devices::Configurable> configurable)
 {
+	string id;
+	init_wait_for_view_added(id);
 	Q_EMIT add_control_view(device_id, area, configurable);
-	return "control:" + configurable->name();
+	event_loop_.exec();
+	finish_wait_for_signal();
+
+	return id;
 }
 
 string UiProxy::ui_add_plot_view(string device_id, Qt::DockWidgetArea area,
 	shared_ptr<channels::BaseChannel> channel)
 {
+	string id;
+	init_wait_for_view_added(id);
 	Q_EMIT add_plot_view(device_id, area, channel);
-	return "plot_ch:" + channel->name();
+	event_loop_.exec();
+	finish_wait_for_signal();
+
+	return id;
 }
 
 string UiProxy::ui_add_plot_view(string device_id, Qt::DockWidgetArea area,
 	shared_ptr<data::AnalogTimeSignal> signal)
 {
+	string id;
+	init_wait_for_view_added(id);
 	Q_EMIT add_plot_view(device_id, area, signal);
-	return "plot_sig:" + signal->name();
+	event_loop_.exec();
+	finish_wait_for_signal();
+
+	return id;
 }
 
 string UiProxy::ui_add_plot_view(string device_id, Qt::DockWidgetArea area,
 	shared_ptr<data::AnalogTimeSignal> x_signal,
 	shared_ptr<data::AnalogTimeSignal> y_signal)
 {
+	string id;
+	init_wait_for_view_added(id);
 	Q_EMIT add_plot_view(device_id, area, x_signal, y_signal);
-	return "plot_xy:" + x_signal->name() + ":" + y_signal->name();
+	event_loop_.exec();
+	finish_wait_for_signal();
 
+	return id;
 }
 
 string UiProxy::ui_add_power_panel_view(string device_id, Qt::DockWidgetArea area,
 	shared_ptr<data::AnalogTimeSignal> voltage_signal,
 	shared_ptr<data::AnalogTimeSignal> current_signal)
 {
+	string id;
+	init_wait_for_view_added(id);
 	Q_EMIT add_power_panel_view(device_id, area, voltage_signal, current_signal);
-	return "powerpanel:" + voltage_signal->name() + ":" + current_signal->name();
+	event_loop_.exec();
+	finish_wait_for_signal();
 
+	return id;
 }
 
 string UiProxy::ui_add_value_panel_view(string device_id, Qt::DockWidgetArea area,
 	shared_ptr<channels::BaseChannel> channel)
 {
+	string id;
+	init_wait_for_view_added(id);
 	Q_EMIT add_value_panel_view(device_id, area, channel);
-	return "valuepanel_ch:" + channel->name();
+	event_loop_.exec();
+	finish_wait_for_signal();
+
+	return id;
 }
 
 string UiProxy::ui_add_value_panel_view(string device_id, Qt::DockWidgetArea area,
 	shared_ptr<data::AnalogTimeSignal> signal)
 {
+	string id;
+	init_wait_for_view_added(id);
 	Q_EMIT add_value_panel_view(device_id, area, signal);
-	return "valuepanel_sig:" + signal->name();
+	event_loop_.exec();
+	finish_wait_for_signal();
+
+	return id;
 }
 
 void UiProxy::ui_add_signal_to_data_view(string device_id, string view_id,
@@ -164,6 +207,29 @@ void UiProxy::ui_add_signals_to_xy_plot_view(string device_id, string view_id,
 	shared_ptr<data::AnalogTimeSignal> y_signal)
 {
 	Q_EMIT add_signals_to_xy_plot_view(device_id, view_id, x_signal, y_signal);
+}
+
+void UiProxy::init_wait_for_view_added(string &id, int timeout)
+{
+	event_loop_conn_ = connect(ui_helper_.get(), &UiHelper::view_added,
+		[this, &id](std::string view_id) {
+			id = view_id;
+			event_loop_.quit();
+        });
+
+	if (timeout > 0) {
+		timer_.setSingleShot(true);
+		timer_conn_ = connect(&timer_, &QTimer::timeout,
+			&event_loop_, &QEventLoop::quit);
+		timer_.start(timeout);
+	}
+}
+
+void UiProxy::finish_wait_for_signal()
+{
+	disconnect(event_loop_conn_);
+	if (timer_conn_)
+		disconnect(timer_conn_);
 }
 
 } // namespace python

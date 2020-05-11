@@ -57,7 +57,9 @@ void UiHelper::add_data_view(std::string device_id, Qt::DockWidgetArea area,
 	if (!tab)
 		return;
 
-	tab->add_view(new ui::views::DataView(session_, signal), area);
+	auto view = new ui::views::DataView(session_, signal);
+	tab->add_view(view, area);
+	Q_EMIT view_added(view->id());
 }
 
 void UiHelper::add_control_view(std::string device_id, Qt::DockWidgetArea area,
@@ -70,9 +72,10 @@ void UiHelper::add_control_view(std::string device_id, Qt::DockWidgetArea area,
 	if (!tab)
 		return;
 
-	tab->add_view(
-		ui::views::viewhelper::get_view_for_configurable(session_, configurable),
-		area);
+	auto view = ui::views::viewhelper::get_view_for_configurable(
+		session_, configurable);
+	tab->add_view(view, area);
+	Q_EMIT view_added(view->id());
 }
 
 void UiHelper::add_plot_view(std::string device_id, Qt::DockWidgetArea area,
@@ -85,7 +88,9 @@ void UiHelper::add_plot_view(std::string device_id, Qt::DockWidgetArea area,
 	if (!tab)
 		return;
 
-	tab->add_view(new ui::views::PlotView(session_, channel), area);
+	auto view = new ui::views::PlotView(session_, channel);
+	tab->add_view(view, area);
+	Q_EMIT view_added(view->id());
 }
 
 void UiHelper::add_plot_view(std::string device_id, Qt::DockWidgetArea area,
@@ -98,7 +103,9 @@ void UiHelper::add_plot_view(std::string device_id, Qt::DockWidgetArea area,
 	if (!tab)
 		return;
 
-	tab->add_view(new ui::views::PlotView(session_, signal), area);
+	auto view = new ui::views::PlotView(session_, signal);
+	tab->add_view(view, area);
+	Q_EMIT view_added(view->id());
 }
 
 void UiHelper::add_plot_view(std::string device_id, Qt::DockWidgetArea area,
@@ -112,7 +119,9 @@ void UiHelper::add_plot_view(std::string device_id, Qt::DockWidgetArea area,
 	if (!tab)
 		return;
 
-	tab->add_view(new ui::views::PlotView(session_, x_signal, y_signal), area);
+	auto view = new ui::views::PlotView(session_, x_signal, y_signal);
+	tab->add_view(view, area);
+	Q_EMIT view_added(view->id());
 }
 
 void UiHelper::add_power_panel_view(std::string device_id,
@@ -127,9 +136,10 @@ void UiHelper::add_power_panel_view(std::string device_id,
 	if (!tab)
 		return;
 
-	tab->add_view(
-		new ui::views::PowerPanelView(session_, voltage_signal, current_signal),
-		area);
+	auto view = new ui::views::PowerPanelView(
+		session_, voltage_signal, current_signal);
+	tab->add_view(view, area);
+	Q_EMIT view_added(view->id());
 }
 
 void UiHelper::add_value_panel_view(std::string device_id,
@@ -142,7 +152,9 @@ void UiHelper::add_value_panel_view(std::string device_id,
 	if (!tab)
 		return;
 
-	tab->add_view(new ui::views::ValuePanelView(session_, channel), area);
+	auto view = new ui::views::ValuePanelView(session_, channel);
+	tab->add_view(view, area);
+	Q_EMIT view_added(view->id());
 }
 
 void UiHelper::add_value_panel_view(std::string device_id,
@@ -155,7 +167,9 @@ void UiHelper::add_value_panel_view(std::string device_id,
 	if (!tab)
 		return;
 
-	tab->add_view(new ui::views::ValuePanelView(session_, signal), area);
+	auto view = new ui::views::ValuePanelView(session_, signal);
+	tab->add_view(view, area);
+	Q_EMIT view_added(view->id());
 }
 
 void UiHelper::add_signal_to_data_view(std::string device_id,
