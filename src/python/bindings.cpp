@@ -112,7 +112,17 @@ void init_Session(py::module &m)
 		"    A Dict where the key is the device id and the value is the device object.");
 	py_session.def("connect_device", &sv::Session::connect_device,
 		py::arg("conn_str"),
-		"Connect a new device.\n\n"
+		"Connect a new device. For some devices (like DMMs) you may want to "
+		"wait a fixed time, until the first sample has arrived and an `AnalogSignal` "
+		"object has been created. Example:\n"
+		"```\n"
+		"import smuview\n"
+		"import time\n\n"
+		"# Connect device.\n"
+		"dmm_dev = Session.connect_device(\"hp-3478a:conn=libgpib/hp3478a\")[0]\n"
+		"# Sleep 1s to give the devices the chance to create signals\n"
+		"time.sleep(1)\n"
+		"```\n\n"
 		"Parameters\n"
 		"----------\n"
 		"conn_str : str\n"
