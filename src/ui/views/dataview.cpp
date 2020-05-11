@@ -49,7 +49,7 @@ DataView::DataView(Session &session,
 	action_auto_scroll_(new QAction(this)),
 	action_add_signal_(new QAction(this))
 {
-	id_ = "data:" + signal->name();
+	id_ = "data:" + std::to_string(BaseView::id_counter++);
 
 	setup_ui();
 	setup_toolbar();

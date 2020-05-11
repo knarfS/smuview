@@ -129,7 +129,7 @@ SequenceOutputView::SequenceOutputView(Session &session,
 	sequence_pos_(0)
 {
 	assert(property_);
-	id_ = "sequence:" + property_->name();
+	id_ = "sequence:" + std::to_string(BaseView::id_counter++);
 
 	timer_ = new QTimer(this);
 

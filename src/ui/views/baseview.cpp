@@ -28,6 +28,8 @@ namespace sv {
 namespace ui {
 namespace views {
 
+unsigned int BaseView::id_counter = 0;
+
 BaseView::BaseView(Session &session, QWidget *parent) :
 	QMainWindow(parent),
 	session_(session)

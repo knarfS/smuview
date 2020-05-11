@@ -57,8 +57,7 @@ PowerPanelView::PowerPanelView(Session &session,
 	actual_watt_hours_(0),
 	action_reset_displays_(new QAction(this))
 {
-	id_ = "powerpanel:" + voltage_signal_->name() +
-		":" + current_signal_->name();
+	id_ = "powerpanel:" + std::to_string(BaseView::id_counter++);
 
 	setup_ui();
 	setup_toolbar();

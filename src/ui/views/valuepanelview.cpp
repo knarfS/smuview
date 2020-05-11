@@ -56,7 +56,7 @@ ValuePanelView::ValuePanelView(Session &session,
 	signal_ = dynamic_pointer_cast<sv::data::AnalogTimeSignal>(
 		channel_->actual_signal());
 
-	id_ = "valuepanel_ch:" + channel_->name();
+	id_ = "valuepanel_ch:" + std::to_string(BaseView::id_counter++);
 
 	if (signal_) {
 		digits_ = signal_->digits();
@@ -97,7 +97,7 @@ ValuePanelView::ValuePanelView(Session& session,
 {
 	assert(signal_);
 
-	id_ = "valuepanel_sig:" + signal_->name();
+	id_ = "valuepanel_sig:" + std::to_string(BaseView::id_counter++);
 
 	digits_ = signal_->digits();
 	decimal_places_ = signal_->decimal_places();

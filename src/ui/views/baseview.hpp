@@ -63,6 +63,8 @@ public:
 	virtual void restore_settings(QSettings &settings);
 
 protected:
+	static unsigned int id_counter;
+
 	Session &session_;
 	QWidget *central_widget_;
 	string id_;

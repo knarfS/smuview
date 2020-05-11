@@ -44,8 +44,7 @@ SmuScriptOutputView::SmuScriptOutputView(Session &session, QWidget *parent) :
 	action_auto_scroll_(new QAction(this)),
 	action_clear_output_(new QAction(this))
 {
-	// TODO: Not unique!
-	id_ = "smuscriptoutput:";
+	id_ = "smuscriptoutput:" + std::to_string(BaseView::id_counter++);;
 
 	setup_ui();
 	setup_toolbar();

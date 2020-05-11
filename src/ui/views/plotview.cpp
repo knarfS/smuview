@@ -74,7 +74,7 @@ PlotView::PlotView(Session &session,
 	if (signal)
 		curves_.push_back(new widgets::plot::TimeCurveData(signal));
 
-	id_ = "plot_ch:" + initial_channel_->name();
+	id_ = "plot_ch:" + std::to_string(BaseView::id_counter++);
 
 	// Signal (aka Quantity + Flags + Unit) can change, e.g. DMM channels
 	connect(initial_channel_.get(),
@@ -109,7 +109,7 @@ PlotView::PlotView(Session &session,
 
 	curves_.push_back(new widgets::plot::TimeCurveData(signal));
 
-	id_ = "plot_sig:" + signal->name();
+	id_ = "plot_sig:" + std::to_string(BaseView::id_counter++);
 
 	setup_ui();
 	setup_toolbar();
@@ -138,7 +138,7 @@ PlotView::PlotView(Session &session,
 
 	curves_.push_back(new widgets::plot::XYCurveData(x_signal, y_signal));
 
-	id_ = "plot_xy:" + x_signal->name() + ":" + y_signal->name();
+	id_ = "plot_xy:" + std::to_string(BaseView::id_counter++);
 
 	setup_ui();
 	setup_toolbar();

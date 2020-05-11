@@ -56,8 +56,7 @@ SmuScriptView::SmuScriptView(Session &session, string script_file_name,
 	text_changed_(false),
 	started_from_here_(false)
 {
-	// TODO: Not unique!
-	id_ = "smuscript:";
+	id_ = "smuscript:" + std::to_string(BaseView::id_counter++);;
 
 	setup_ui();
 	setup_toolbar();

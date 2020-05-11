@@ -45,7 +45,7 @@ SourceSinkControlView::SourceSinkControlView(Session &session,
 	BaseView(session, parent),
 	configurable_(configurable)
 {
-	id_ = "control:" + configurable_->name();
+	id_ = "control:" + std::to_string(BaseView::id_counter++);
 
 	setup_ui();
 }
