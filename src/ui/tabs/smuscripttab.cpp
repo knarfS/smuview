@@ -37,7 +37,7 @@ namespace sv {
 namespace ui {
 namespace tabs {
 
-unsigned int SmuScriptTab::smuscript_tab_counter_ = 0;
+unsigned int SmuScriptTab::smuscript_tab_counter = 0;
 
 SmuScriptTab::SmuScriptTab(Session &session,
 		string script_file_name, QWidget *parent) :
@@ -46,7 +46,7 @@ SmuScriptTab::SmuScriptTab(Session &session,
 {
 	// Every script tab gets its own unique id
 	tab_id_ = "smuscripttab:" +
-		std::to_string(SmuScriptTab::smuscript_tab_counter_++);
+		std::to_string(SmuScriptTab::smuscript_tab_counter++);
 
 	setup_ui();
 	connect_signals();

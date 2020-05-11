@@ -57,7 +57,7 @@ private:
 	void setup_ui();
 	void connect_signals();
 
-	static unsigned int smuscript_tab_counter_;
+	static unsigned int smuscript_tab_counter;
 
 	string tab_id_;
 	string script_file_name_;
