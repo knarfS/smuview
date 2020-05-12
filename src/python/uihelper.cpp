@@ -21,6 +21,10 @@
 #include <string>
 
 #include <QDebug>
+#include <QInputDialog>
+#include <QLineEdit>
+#include <QMessageBox>
+#include <QString>
 
 #include "uihelper.hpp"
 #include "src/mainwindow.hpp"
@@ -248,6 +252,84 @@ void UiHelper::add_signals_to_xy_plot_view(std::string device_id,
 
 	plot_view->add_xy_curve(x_signal, y_signal);
 }
+
+void UiHelper::show_message_box(const std::string &title,
+	const std::string &text)
+{
+	if (!session_.main_window()) {
+		Q_EMIT message_box_canceled();
+		return;
+	}
+
+	auto button = QMessageBox::information(session_.main_window(),
+		QString::fromStdString(title), QString::fromStdString(text));
+
+	if (button == QMessageBox::StandardButton::Ok)
+		Q_EMIT message_box_finished();
+	else
+		Q_EMIT message_box_canceled();
+}
+
+void UiHelper::show_string_input_dialog(const std::string &title,
+	const std::string &label, const std::string &value)
+{
+	if (!session_.main_window()) {
+		Q_EMIT input_dialog_canceled();
+		return;
+	}
+
+	bool ok;
+	QString s = QInputDialog::getText(session_.main_window(),
+		QString::fromStdString(title), QString::fromStdString(label),
+		QLineEdit::Normal, QString::fromStdString(value), &ok,
+		Qt::WindowFlags(), Qt::ImhNone);
+
+	if (ok)
+		Q_EMIT input_dialog_finished(QVariant(s));
+	else
+		Q_EMIT input_dialog_canceled();
+
+}
+
+void UiHelper::show_double_input_dialog(const std::string &title,
+	const std::string &label, double value, int decimals, double step,
+	double min, double max)
+{
+	if (!session_.main_window()) {
+		Q_EMIT input_dialog_canceled();
+		return;
+	}
+
+	bool ok;
+	double d = QInputDialog::getDouble(session_.main_window(),
+		QString::fromStdString(title), QString::fromStdString(label),
+		value, min, max, decimals, &ok, Qt::WindowFlags(), step);
+
+	if (ok)
+		Q_EMIT input_dialog_finished(QVariant(d));
+	else
+		Q_EMIT input_dialog_canceled();
+}
+
+void UiHelper::show_int_input_dialog(const std::string &title,
+	const std::string &label, int value, int step, int min, int max)
+{
+	if (!session_.main_window()) {
+		Q_EMIT input_dialog_canceled();
+		return;
+	}
+
+	bool ok;
+	int i = QInputDialog::getInt(session_.main_window(),
+		QString::fromStdString(title), QString::fromStdString(label),
+		value, min, max, step, &ok, Qt::WindowFlags());
+
+	if (ok)
+		Q_EMIT input_dialog_finished(QVariant(i));
+	else
+		Q_EMIT input_dialog_canceled();
+}
+
 
 } // namespace python
 } // namespace sv

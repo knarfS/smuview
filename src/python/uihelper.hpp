@@ -25,6 +25,7 @@
 
 #include <QDockWidget>
 #include <QObject>
+#include <QVariant>
 
 using std::shared_ptr;
 using std::string;
@@ -93,8 +94,21 @@ public Q_SLOTS:
 		shared_ptr<sv::data::AnalogTimeSignal> x_signal,
 		shared_ptr<sv::data::AnalogTimeSignal> y_signal);
 
+	void show_message_box(const std::string &title, const std::string &text);
+	void show_string_input_dialog(const std::string &title,
+		const std::string &label, const std::string &value);
+	void show_double_input_dialog(const std::string &title,
+		const std::string &label, double value, int decimals, double step,
+		double min, double max);
+	void show_int_input_dialog(const std::string &title,
+		const std::string &label, int value, int step, int min, int max);
+
 Q_SIGNALS:
 	void view_added(std::string view_id);
+	void message_box_finished();
+	void message_box_canceled();
+	void input_dialog_finished(const QVariant &qvar_input);
+	void input_dialog_canceled();
 
 };
 

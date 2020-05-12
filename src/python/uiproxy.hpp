@@ -22,15 +22,19 @@
 
 #include <memory>
 #include <string>
+#include <pybind11/pybind11.h>
 
 #include <QDockWidget>
 #include <QEventLoop>
 #include <QMetaObject>
 #include <QObject>
 #include <QTimer>
+#include <QVariant>
 
 using std::shared_ptr;
 using std::string;
+
+namespace py = pybind11;
 
 namespace sv {
 
@@ -94,15 +98,27 @@ public:
 		shared_ptr<data::AnalogTimeSignal> x_signal,
 		shared_ptr<data::AnalogTimeSignal> y_signal);
 
+	bool ui_show_message_box(const std::string &title, const std::string &text);
+	py::object ui_show_string_input_dialog(const string &title,
+		const string &label, const string &value);
+	py::object ui_show_double_input_dialog(const string &title,
+		const string &label, double value, int decimals, double step,
+		double min, double max);
+	py::object ui_show_int_input_dialog(const string &title,
+		const string &label, int value, int step, int min, int max);
+
 private:
 	void init_wait_for_view_added(string &id, int timeout = 1000);
+	void init_wait_for_message_box(bool &ok, int timeout = 0);
+	void init_wait_for_input_dialog(bool &ok, QVariant &qvar, int timeout = 0);
 	void finish_wait_for_signal();
 
 	Session &session_;
 	shared_ptr<UiHelper> ui_helper_;
 	QEventLoop event_loop_;
 	QTimer timer_;
-	QMetaObject::Connection event_loop_conn_;
+	QMetaObject::Connection event_loop_finished_conn_;
+	QMetaObject::Connection event_loop_canceled_conn_;
 	QMetaObject::Connection timer_conn_;
 
 Q_SIGNALS:
@@ -136,6 +152,14 @@ Q_SIGNALS:
 		shared_ptr<sv::data::AnalogTimeSignal> x_signal,
 		shared_ptr<sv::data::AnalogTimeSignal> y_signal);
 
+	void show_message_box(const std::string &title, const std::string &text);
+	void show_string_input_dialog(const std::string &title,
+		const std::string &label, const std::string &value);
+	void show_double_input_dialog(const std::string &title,
+		const std::string &label, double value, int decimals, double step,
+		double min, double max);
+	void show_int_input_dialog(const std::string &title,
+		const std::string &label, int value, int step, int min, int max);
 };
 
 } // namespace python
