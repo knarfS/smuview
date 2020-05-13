@@ -204,7 +204,7 @@ void ConnectDialog::populate_drivers()
 		if (sv::devices::deviceutil::is_supported_driver(sr_driver)) {
 			drivers_.addItem(QString("%1 (%2)").arg(
 				sr_driver->long_name().c_str(), name.c_str()),
-				qVariantFromValue(sr_driver));
+				QVariant::fromValue(sr_driver));
 		}
 	}
 }
@@ -347,7 +347,7 @@ void ConnectDialog::on_scan_pressed()
 
 		QListWidgetItem *const item = new QListWidgetItem(text,
 			&device_list_);
-		item->setData(Qt::UserRole, qVariantFromValue(device));
+		item->setData(Qt::UserRole, QVariant::fromValue(device));
 		device_list_.addItem(item);
 	}
 

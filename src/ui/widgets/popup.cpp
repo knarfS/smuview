@@ -36,6 +36,7 @@
 #include <QRect>
 #include <QRegion>
 #include <QResizeEvent>
+#include <QScreen>
 #include <QShowEvent>
 #include <QWidget>
 
@@ -250,9 +251,15 @@ QRegion Popup::popup_region() const
 void Popup::reposition_widget()
 {
 	QPoint o;
-
+#if QT_VERSION >= 0x050A00
+	QScreen *screen = QGuiApplication::screenAt(point_);
+	if(!screen)
+		return;
+	const QRect screen_rect = screen->availableGeometry();
+#else
 	const QRect screen_rect = QApplication::desktop()->availableGeometry(
 		QApplication::desktop()->screenNumber(point_));
+#endif
 
 	if (pos_ == PopupPosition::Right || pos_ == PopupPosition::Left)
 		o.ry() = -height() / 2;
