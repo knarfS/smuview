@@ -33,7 +33,6 @@ ToDo
 - Use AnalogBaseSignal in all(?) Channel classes, in View classes and in Plot classes
 - Remove Configurable and ConfigKey from data::properties::*
 - Session: shared_ptr or reference?
-- Session: move init to main.cpp
 - Missing msvcr100.dll (Windows Server 2016) SmuView/PulseView
 - DeviceTree: Button for expand/close all
 - Plot: Add gradient (dY/dX) to diff marker in plot marker box
@@ -52,6 +51,7 @@ ToDo
 - Bindings: Implement add_math_channel()
 - Can we inherit MathChannel from UserChannel?
 - Add "E" for detecting energy (Wh) channels
+- Unify name of static (const) variables
 
 Done
 ----
@@ -101,6 +101,7 @@ Done
 - DataView: add signal (into this table) action
 - static unsigned int device_counter; is changing
 - License headers are not the same
+- Session: move init to main.cpp
 
 Won't fix
 ---------
