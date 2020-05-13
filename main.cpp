@@ -33,6 +33,7 @@
 #include "src/devicemanager.hpp"
 #include "src/session.hpp"
 #include "src/mainwindow.hpp"
+#include "src/ui/tabs/smuscripttab.hpp"
 
 #ifdef ENABLE_SIGNALS
 #include "signalhandler.hpp"
@@ -206,10 +207,8 @@ int main(int argc, char *argv[])
 			if (restore_session)
 				w.restore_session();
 
-			if (!script_file.empty()) {
-				w.add_smuscript_tab(script_file);
-				session->run_smu_script(script_file);
-			}
+			if (!script_file.empty())
+				w.add_smuscript_tab(script_file)->run_script();
 
 #ifdef ENABLE_SIGNALS
 			if (SignalHandler::prepare_signals()) {

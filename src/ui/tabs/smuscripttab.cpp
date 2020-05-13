@@ -93,6 +93,16 @@ void SmuScriptTab::connect_signals()
 		this, &SmuScriptTab::on_script_finished);
 }
 
+void SmuScriptTab::run_script()
+{
+	smu_script_view_->run_script();
+}
+
+void SmuScriptTab::stop_script()
+{
+	smu_script_view_->stop_script();
+}
+
 void SmuScriptTab::on_file_name_changed(const QString &file_name)
 {
 	(void)file_name;

@@ -36,9 +36,11 @@ UiProxy.add_device_tab(user_device)
 UiProxy.add_plot_view(user_device.id(), smuview.DockArea.TopDockArea, user_device.channels()["Results"])
 
 # Fill the user channel with some data
+print("Starting loop...")
 i = 0
 while i<10000:
     ts = time.time()
     result_ch.push_sample(sin(i), ts, smuview.Quantity.Power, set(), smuview.Unit.Watt, 6, 3)
+    print("  new value = {}".format(result_ch.actual_signal().get_last_sample(True)[1]))
     time.sleep(0.25)
     i = i + 0.1

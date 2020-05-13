@@ -43,6 +43,8 @@ class HardwareDevice;
 namespace ui {
 namespace tabs {
 class BaseTab;
+class SmuScriptTab;
+class WelcomeTab;
 }
 namespace views {
 class DevicesView;
@@ -63,7 +65,7 @@ public:
 	void save_session();
 	void restore_session();
 
-	void add_smuscript_tab(string file_name);
+	ui::tabs::SmuScriptTab *add_smuscript_tab(string file_name);
 	void remove_tab(string tab_id);
 	void change_tab_icon(string tab_id, QIcon icon);
 	void change_tab_title(string tab_id, QString title);
@@ -74,7 +76,7 @@ private:
 	void init_device_tabs();
 	void connect_signals();
 	void add_tab(ui::tabs::BaseTab *tab_window);
-	void add_welcome_tab();
+	ui::tabs::WelcomeTab *add_welcome_tab();
 	void remove_tab(int tab_index);
 
 	DeviceManager &device_manager_;

@@ -65,6 +65,10 @@ private:
 	void connect_signals();
 	bool save(QString file_name);
 
+public Q_SLOTS:
+	void run_script();
+	void stop_script();
+
 private Q_SLOTS:
 	void on_action_open_triggered();
 	void on_action_save_triggered();

@@ -64,6 +64,10 @@ private:
 	views::SmuScriptView *smu_script_view_;
 	views::SmuScriptOutputView *smu_script_output_view_;
 
+public Q_SLOTS:
+	void run_script();
+	void stop_script();
+
 private Q_SLOTS:
 	void on_file_name_changed(const QString &file_name);
 	void on_file_save_state_changed(bool is_unsaved);

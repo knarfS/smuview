@@ -209,6 +209,26 @@ bool SmuScriptView::save(QString file_name)
 	return true;
 }
 
+void SmuScriptView::run_script()
+{
+	if (action_run_->isChecked()) {
+		// Already running!
+		return;
+	}
+
+	action_run_->activate(QAction::Trigger);
+}
+
+void SmuScriptView::stop_script()
+{
+	if (!action_run_->isChecked()) {
+		// Not running!
+		return;
+	}
+
+	action_run_->activate(QAction::Trigger);
+}
+
 void SmuScriptView::on_action_open_triggered()
 {
 	if (!ask_to_save(tr("Open new script file")))

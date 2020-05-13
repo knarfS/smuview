@@ -137,14 +137,18 @@ void MainWindow::add_device_tab(shared_ptr<sv::devices::BaseDevice> device)
 		this, &MainWindow::error_handler);
 }
 
-void MainWindow::add_welcome_tab()
+ui::tabs::WelcomeTab *MainWindow::add_welcome_tab()
 {
-	add_tab(new ui::tabs::WelcomeTab(*session_));
+	auto *tab = new ui::tabs::WelcomeTab(*session_);
+	add_tab(tab);
+	return tab;
 }
 
-void MainWindow::add_smuscript_tab(string file_name)
+ui::tabs::SmuScriptTab *MainWindow::add_smuscript_tab(string file_name)
 {
-	add_tab(new ui::tabs::SmuScriptTab(*session_, file_name));
+	auto *tab = new ui::tabs::SmuScriptTab(*session_, file_name);
+	add_tab(tab);
+	return tab;
 }
 
 void MainWindow::remove_tab(string tab_id)
