@@ -476,7 +476,6 @@ void init_UI(py::module &m)
 	/*
 	 * TODO:
 	 *  - Change plot curve color
-	 *  - Display message boxes and simple input dialogs (howto return a value?)
 	 */
 
 	py::class_<sv::python::UiProxy> py_ui_helper(m, "UiProxy");
@@ -502,7 +501,7 @@ void init_UI(py::module &m)
 		"Returns\n"
 		"-------\n"
 		"str\n"
-		"    The id of the new view.");
+		"    The id of the new view or empty if the view couldn't be added.");
 	py_ui_helper.def("add_control_view", &sv::python::UiProxy::ui_add_control_view,
 		py::arg("device_id"), py::arg("area"), py::arg("configurable"),
 		"Add a control view for a configurable to the given tab.\n\n"
@@ -517,7 +516,7 @@ void init_UI(py::module &m)
 		"Returns\n"
 		"-------\n"
 		"str\n"
-		"    The id of the new view.");
+		"    The id of the new view or empty if the view couldn't be added.");
 	py_ui_helper.def("add_plot_view",
 		(std::string (sv::python::UiProxy::*) (std::string, Qt::DockWidgetArea, shared_ptr<sv::channels::BaseChannel>))
 			&sv::python::UiProxy::ui_add_plot_view,
@@ -534,7 +533,7 @@ void init_UI(py::module &m)
 		"Returns\n"
 		"-------\n"
 		"str\n"
-		"    The id of the new view.");
+		"    The id of the new view or empty if the view couldn't be added.");
 	py_ui_helper.def("add_plot_view",
 		(std::string (sv::python::UiProxy::*) (std::string, Qt::DockWidgetArea, shared_ptr<sv::data::AnalogTimeSignal>))
 			&sv::python::UiProxy::ui_add_plot_view,
@@ -551,7 +550,7 @@ void init_UI(py::module &m)
 		"Returns\n"
 		"-------\n"
 		"str\n"
-		"    The id of the new view.");
+		"    The id of the new view or empty if the view couldn't be added.");
 	py_ui_helper.def("add_plot_view",
 		(std::string (sv::python::UiProxy::*) (std::string, Qt::DockWidgetArea, shared_ptr<sv::data::AnalogTimeSignal>, shared_ptr<sv::data::AnalogTimeSignal>))
 			&sv::python::UiProxy::ui_add_plot_view,
@@ -571,7 +570,7 @@ void init_UI(py::module &m)
 		"Returns\n"
 		"-------\n"
 		"str\n"
-		"    The id of the new view.");
+		"    The id of the new view or empty if the view couldn't be added.");
 	py_ui_helper.def("add_power_panel_view", &sv::python::UiProxy::ui_add_power_panel_view,
 		py::arg("device_id"), py::arg("area"), py::arg("voltage_signal"),
 		py::arg("current_signal"),
@@ -589,7 +588,7 @@ void init_UI(py::module &m)
 		"Returns\n"
 		"-------\n"
 		"str\n"
-		"    The id of the new view.");
+		"    The id of the new view or empty if the view couldn't be added.");
 	py_ui_helper.def("add_value_panel_view",
 		(std::string (sv::python::UiProxy::*) (std::string, Qt::DockWidgetArea, shared_ptr<sv::channels::BaseChannel>))
 			&sv::python::UiProxy::ui_add_value_panel_view,
@@ -606,7 +605,7 @@ void init_UI(py::module &m)
 		"Returns\n"
 		"-------\n"
 		"str\n"
-		"    The id of the new view.");
+		"    The id of the new view or empty if the view couldn't be added.");
 	py_ui_helper.def("add_value_panel_view",
 		(std::string (sv::python::UiProxy::*) (std::string, Qt::DockWidgetArea, shared_ptr<sv::data::AnalogTimeSignal>))
 			&sv::python::UiProxy::ui_add_value_panel_view,
@@ -623,7 +622,7 @@ void init_UI(py::module &m)
 		"Returns\n"
 		"-------\n"
 		"str\n"
-		"    The id of the new view.");
+		"    The id of the new view or empty if the view couldn't be added.");
 
 	py_ui_helper.def("add_signal_to_data_view", &sv::python::UiProxy::ui_add_signal_to_data_view,
 		py::arg("device_id"), py::arg("view_id"), py::arg("signal"),

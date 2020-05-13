@@ -54,12 +54,15 @@ UiHelper::UiHelper(Session &session) :
 void UiHelper::add_data_view(std::string device_id, Qt::DockWidgetArea area,
 	shared_ptr<sv::data::AnalogTimeSignal> signal)
 {
-	if (!session_.main_window())
+	if (!session_.main_window()) {
+		Q_EMIT view_added("");
 		return;
-
+	}
 	auto tab = session_.main_window()->get_base_tab_from_device_id(device_id);
-	if (!tab)
+	if (!tab) {
+		Q_EMIT view_added("");
 		return;
+	}
 
 	auto view = new ui::views::DataView(session_, signal);
 	tab->add_view(view, area);
@@ -69,15 +72,22 @@ void UiHelper::add_data_view(std::string device_id, Qt::DockWidgetArea area,
 void UiHelper::add_control_view(std::string device_id, Qt::DockWidgetArea area,
 	shared_ptr<sv::devices::Configurable> configurable)
 {
-	if (!session_.main_window())
+	if (!session_.main_window()) {
+		Q_EMIT view_added("");
 		return;
-
+	}
 	auto tab = session_.main_window()->get_base_tab_from_device_id(device_id);
-	if (!tab)
+	if (!tab) {
+		Q_EMIT view_added("");
 		return;
-
+	}
 	auto view = ui::views::viewhelper::get_view_for_configurable(
 		session_, configurable);
+	if (!view) {
+		Q_EMIT view_added("");
+		return;
+	}
+
 	tab->add_view(view, area);
 	Q_EMIT view_added(view->id());
 }
@@ -85,12 +95,15 @@ void UiHelper::add_control_view(std::string device_id, Qt::DockWidgetArea area,
 void UiHelper::add_plot_view(std::string device_id, Qt::DockWidgetArea area,
 	shared_ptr<sv::channels::BaseChannel> channel)
 {
-	if (!session_.main_window())
+	if (!session_.main_window()) {
+		Q_EMIT view_added("");
 		return;
-
+	}
 	auto tab = session_.main_window()->get_base_tab_from_device_id(device_id);
-	if (!tab)
+	if (!tab) {
+		Q_EMIT view_added("");
 		return;
+	}
 
 	auto view = new ui::views::PlotView(session_, channel);
 	tab->add_view(view, area);
@@ -100,12 +113,15 @@ void UiHelper::add_plot_view(std::string device_id, Qt::DockWidgetArea area,
 void UiHelper::add_plot_view(std::string device_id, Qt::DockWidgetArea area,
 	shared_ptr<sv::data::AnalogTimeSignal> signal)
 {
-	if (!session_.main_window())
+	if (!session_.main_window()) {
+		Q_EMIT view_added("");
 		return;
-
+	}
 	auto tab = session_.main_window()->get_base_tab_from_device_id(device_id);
-	if (!tab)
+	if (!tab) {
+		Q_EMIT view_added("");
 		return;
+	}
 
 	auto view = new ui::views::PlotView(session_, signal);
 	tab->add_view(view, area);
@@ -116,12 +132,15 @@ void UiHelper::add_plot_view(std::string device_id, Qt::DockWidgetArea area,
 	shared_ptr<sv::data::AnalogTimeSignal> x_signal,
 	shared_ptr<sv::data::AnalogTimeSignal> y_signal)
 {
-	if (!session_.main_window())
+	if (!session_.main_window()) {
+		Q_EMIT view_added("");
 		return;
-
+	}
 	auto tab = session_.main_window()->get_base_tab_from_device_id(device_id);
-	if (!tab)
+	if (!tab) {
+		Q_EMIT view_added("");
 		return;
+	}
 
 	auto view = new ui::views::PlotView(session_, x_signal, y_signal);
 	tab->add_view(view, area);
@@ -133,12 +152,15 @@ void UiHelper::add_power_panel_view(std::string device_id,
 	shared_ptr<sv::data::AnalogTimeSignal> voltage_signal,
 	shared_ptr<sv::data::AnalogTimeSignal> current_signal)
 {
-	if (!session_.main_window())
+	if (!session_.main_window()) {
+		Q_EMIT view_added("");
 		return;
-
+	}
 	auto tab = session_.main_window()->get_base_tab_from_device_id(device_id);
-	if (!tab)
+	if (!tab) {
+		Q_EMIT view_added("");
 		return;
+	}
 
 	auto view = new ui::views::PowerPanelView(
 		session_, voltage_signal, current_signal);
@@ -149,12 +171,15 @@ void UiHelper::add_power_panel_view(std::string device_id,
 void UiHelper::add_value_panel_view(std::string device_id,
 	Qt::DockWidgetArea area, shared_ptr<sv::channels::BaseChannel> channel)
 {
-	if (!session_.main_window())
+	if (!session_.main_window()) {
+		Q_EMIT view_added("");
 		return;
-
+	}
 	auto tab = session_.main_window()->get_base_tab_from_device_id(device_id);
-	if (!tab)
+	if (!tab) {
+		Q_EMIT view_added("");
 		return;
+	}
 
 	auto view = new ui::views::ValuePanelView(session_, channel);
 	tab->add_view(view, area);
@@ -164,12 +189,15 @@ void UiHelper::add_value_panel_view(std::string device_id,
 void UiHelper::add_value_panel_view(std::string device_id,
 	Qt::DockWidgetArea area, shared_ptr<sv::data::AnalogTimeSignal> signal)
 {
-	if (!session_.main_window())
+	if (!session_.main_window()) {
+		Q_EMIT view_added("");
 		return;
-
+	}
 	auto tab = session_.main_window()->get_base_tab_from_device_id(device_id);
-	if (!tab)
+	if (!tab) {
+		Q_EMIT view_added("");
 		return;
+	}
 
 	auto view = new ui::views::ValuePanelView(session_, signal);
 	tab->add_view(view, area);
@@ -181,7 +209,6 @@ void UiHelper::add_signal_to_data_view(std::string device_id,
 {
 	if (!session_.main_window())
 		return;
-
 	auto tab = session_.main_window()->get_base_tab_from_device_id(device_id);
 	if (!tab)
 		return;
@@ -197,7 +224,6 @@ void UiHelper::add_signal_to_plot_view(std::string device_id, std::string view_i
 {
 	if (!session_.main_window())
 		return;
-
 	auto tab = session_.main_window()->get_base_tab_from_device_id(device_id);
 	if (!tab) {
 		qWarning() << "UiHelper::add_signal_to_plot_view(): Tab not found: " <<
@@ -230,7 +256,6 @@ void UiHelper::add_signals_to_xy_plot_view(std::string device_id,
 {
 	if (!session_.main_window())
 		return;
-
 	auto tab = session_.main_window()->get_base_tab_from_device_id(device_id);
 	if (!tab) {
 		qWarning() << "UiHelper::add_signals_to_xy_plot_view(): Tab not " <<
