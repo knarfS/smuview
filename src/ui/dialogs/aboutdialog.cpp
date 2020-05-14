@@ -258,18 +258,23 @@ QWidget *AboutDialog::get_device_page(QWidget *parent) const
 			QString::fromStdString(sr_device->version())));
 	}
 
-	if (sr_device->serial_number().length() > 0) {
-		device_info_text.append(QString("<br /><b>" + tr("Serial Number") + ":</b> %1").arg(
-			QString::fromStdString(sr_device->serial_number())));
-	}
-	if (sr_device->connection_id().length() > 0) {
-		device_info_text.append(QString("<br /><b>" + tr("Connection") + ":</b> %1").arg(
-			QString::fromStdString(sr_device->connection_id())));
-	}
-	if (device_->id().length() > 0) {
-		device_info_text.append(QString("<br /><b>" + tr("Device ID") + ":</b> %1").arg(
-			QString::fromStdString(device_->id())));
-	}
+	QString sn("-");
+	if (sr_device->serial_number().length() > 0)
+		sn = QString::fromStdString(sr_device->serial_number());
+	device_info_text.append(
+		QString("<br /><b>" + tr("Serial Number") + ":</b> %1").arg(sn));
+
+	QString conn_id("-");
+	if (sr_device->connection_id().length() > 0)
+		conn_id = QString::fromStdString(sr_device->connection_id());
+	device_info_text.append(
+		QString("<br /><b>" + tr("Connection") + ":</b> %1").arg(conn_id));
+
+	QString id("-");
+	if (device_->id().length() > 0)
+		id = QString::fromStdString(device_->id());
+	device_info_text.append(
+		QString("<br /><b>" + tr("Device ID") + ":</b> %1").arg(id));
 
 	QLabel *device_info = new QLabel();
 	device_info->setText(device_info_text);
