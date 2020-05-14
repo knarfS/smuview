@@ -28,7 +28,7 @@
 #include "src/devices/measurementdevice.hpp"
 #include "src/devices/sourcesinkdevice.hpp"
 #include "src/devices/userdevice.hpp"
-#include "src/ui/tabs/basetab.hpp"
+#include "src/ui/tabs/devicetab.hpp"
 #include "src/ui/tabs/measurementtab.hpp"
 #include "src/ui/tabs/sourcesinktab.hpp"
 #include "src/ui/tabs/usertab.hpp"
@@ -42,7 +42,7 @@ namespace ui {
 namespace tabs {
 namespace tabhelper {
 
-BaseTab *get_tab_for_device(Session &session,
+DeviceTab *get_tab_for_device(Session &session,
 	shared_ptr<devices::BaseDevice> device, QWidget *parent)
 {
 	if (!device)

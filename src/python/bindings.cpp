@@ -486,14 +486,18 @@ void init_UI(py::module &m)
 		"Parameters\n"
 		"----------\n"
 		"device : BaseDevice\n"
-		"    The device object.");
+		"    The device object.\n\n"
+		"Returns\n"
+		"-------\n"
+		"str\n"
+		"    The id of the new tab or empty if the tab couldn't be added.");
 	py_ui_helper.def("add_data_view", &sv::python::UiProxy::ui_add_data_view,
-		py::arg("device_id"), py::arg("area"), py::arg("signal"),
+		py::arg("tab_id"), py::arg("area"), py::arg("signal"),
 		"Add a data view for a signal to the given tab.\n\n"
 		"Parameters\n"
 		"----------\n"
-		"device_id : str\n"
-		"    The id (device id) of the tab.\n"
+		"tab_id : str\n"
+		"    The id of the tab.\n"
 		"area : DockArea\n"
 		"    Where to put the new view.\n"
 		"signal : AnalogTimeSignal\n"
@@ -503,12 +507,12 @@ void init_UI(py::module &m)
 		"str\n"
 		"    The id of the new view or empty if the view couldn't be added.");
 	py_ui_helper.def("add_control_view", &sv::python::UiProxy::ui_add_control_view,
-		py::arg("device_id"), py::arg("area"), py::arg("configurable"),
+		py::arg("tab_id"), py::arg("area"), py::arg("configurable"),
 		"Add a control view for a configurable to the given tab.\n\n"
 		"Parameters\n"
 		"----------\n"
-		"device_id : str\n"
-		"    The id (device id) of the tab.\n"
+		"tab_id : str\n"
+		"    The id of the tab.\n"
 		"area : DockArea\n"
 		"    Where to put the new view.\n"
 		"configurable : Configurable\n"
@@ -520,12 +524,12 @@ void init_UI(py::module &m)
 	py_ui_helper.def("add_plot_view",
 		(std::string (sv::python::UiProxy::*) (std::string, Qt::DockWidgetArea, shared_ptr<sv::channels::BaseChannel>))
 			&sv::python::UiProxy::ui_add_plot_view,
-		py::arg("device_id"), py::arg("area"), py::arg("channel"),
+		py::arg("tab_id"), py::arg("area"), py::arg("channel"),
 		"Add a time plot view for a channel to the given tab.\n\n"
 		"Parameters\n"
 		"----------\n"
-		"device_id : str\n"
-		"    The id (device id) of the tab.\n"
+		"tab_id : str\n"
+		"    The id of the tab.\n"
 		"area : DockArea\n"
 		"    Where to put the new view.\n"
 		"channel : BaseChannel\n"
@@ -537,12 +541,12 @@ void init_UI(py::module &m)
 	py_ui_helper.def("add_plot_view",
 		(std::string (sv::python::UiProxy::*) (std::string, Qt::DockWidgetArea, shared_ptr<sv::data::AnalogTimeSignal>))
 			&sv::python::UiProxy::ui_add_plot_view,
-		py::arg("device_id"), py::arg("area"), py::arg("signal"),
+		py::arg("tab_id"), py::arg("area"), py::arg("signal"),
 		"Add a time plot view for a signal to the given tab.\n\n"
 		"Parameters\n"
 		"----------\n"
-		"device_id : str\n"
-		"    The id (device id) of the tab.\n"
+		"tab_id : str\n"
+		"    The id of the tab.\n"
 		"area : DockArea\n"
 		"    Where to put the new view.\n"
 		"signal : AnalogTimeSignal\n"
@@ -554,13 +558,13 @@ void init_UI(py::module &m)
 	py_ui_helper.def("add_plot_view",
 		(std::string (sv::python::UiProxy::*) (std::string, Qt::DockWidgetArea, shared_ptr<sv::data::AnalogTimeSignal>, shared_ptr<sv::data::AnalogTimeSignal>))
 			&sv::python::UiProxy::ui_add_plot_view,
-		py::arg("device_id"), py::arg("area"), py::arg("x_signal"),
+		py::arg("tab_id"), py::arg("area"), py::arg("x_signal"),
 		py::arg("y_signal"),
 		"Add a x/y plot view for two signals to the given tab.\n\n"
 		"Parameters\n"
 		"----------\n"
-		"device_id : str\n"
-		"    The id (device id) of the tab.\n"
+		"tab_id : str\n"
+		"    The id of the tab.\n"
 		"area : DockArea\n"
 		"    Where to put the new view.\n"
 		"x_signal : AnalogTimeSignal\n"
@@ -572,13 +576,13 @@ void init_UI(py::module &m)
 		"str\n"
 		"    The id of the new view or empty if the view couldn't be added.");
 	py_ui_helper.def("add_power_panel_view", &sv::python::UiProxy::ui_add_power_panel_view,
-		py::arg("device_id"), py::arg("area"), py::arg("voltage_signal"),
+		py::arg("tab_id"), py::arg("area"), py::arg("voltage_signal"),
 		py::arg("current_signal"),
 		"Add a power panel view for a voltage and a current signal to the given tab.\n\n"
 		"Parameters\n"
 		"----------\n"
-		"device_id : str\n"
-		"    The id (device id) of the tab.\n"
+		"tab_id : str\n"
+		"    The id of the tab.\n"
 		"area : DockArea\n"
 		"    Where to put the new view.\n"
 		"voltage_signal : AnalogTimeSignal\n"
@@ -592,12 +596,12 @@ void init_UI(py::module &m)
 	py_ui_helper.def("add_value_panel_view",
 		(std::string (sv::python::UiProxy::*) (std::string, Qt::DockWidgetArea, shared_ptr<sv::channels::BaseChannel>))
 			&sv::python::UiProxy::ui_add_value_panel_view,
-		py::arg("device_id"), py::arg("area"), py::arg("channel"),
+		py::arg("tab_id"), py::arg("area"), py::arg("channel"),
 		"Add a value panel view for a channel to the given tab.\n\n"
 		"Parameters\n"
 		"----------\n"
-		"device_id : str\n"
-		"    The id (device id) of the tab.\n"
+		"tab_id : str\n"
+		"    The id of the tab.\n"
 		"area : DockArea\n"
 		"    Where to put the new view.\n"
 		"channel : BaseChannel\n"
@@ -609,12 +613,12 @@ void init_UI(py::module &m)
 	py_ui_helper.def("add_value_panel_view",
 		(std::string (sv::python::UiProxy::*) (std::string, Qt::DockWidgetArea, shared_ptr<sv::data::AnalogTimeSignal>))
 			&sv::python::UiProxy::ui_add_value_panel_view,
-		py::arg("device_id"), py::arg("area"), py::arg("signal"),
+		py::arg("tab_id"), py::arg("area"), py::arg("signal"),
 		"Add a value panel view for a signal to the given tab.\n\n"
 		"Parameters\n"
 		"----------\n"
-		"device_id : str\n"
-		"    The id (device id) of the tab.\n"
+		"tab_id : str\n"
+		"    The id of the tab.\n"
 		"area : DockArea\n"
 		"    Where to put the new view.\n"
 		"signal : AnalogTimeSignal\n"
@@ -625,35 +629,35 @@ void init_UI(py::module &m)
 		"    The id of the new view or empty if the view couldn't be added.");
 
 	py_ui_helper.def("add_signal_to_data_view", &sv::python::UiProxy::ui_add_signal_to_data_view,
-		py::arg("device_id"), py::arg("view_id"), py::arg("signal"),
+		py::arg("tab_id"), py::arg("view_id"), py::arg("signal"),
 		"Add a signal to the given data view.\n\n"
 		"Parameters\n"
 		"----------\n"
-		"device_id : str\n"
-		"    The id (device id) of the tab.\n"
+		"tab_id : str\n"
+		"    The id of the tab.\n"
 		"view_id : str\n"
 		"    The id of the data view.\n"
 		"signal : AnalogTimeSignal\n"
 		"    The signal object.");
 	py_ui_helper.def("add_signal_to_plot_view", &sv::python::UiProxy::ui_add_signal_to_plot_view,
-		py::arg("device_id"), py::arg("view_id"), py::arg("signal"),
+		py::arg("tab_id"), py::arg("view_id"), py::arg("signal"),
 		"Add a signal to the given plot view. If the plot is a x/y plot, the signal will be added as a new y signal.\n\n"
 		"Parameters\n"
 		"----------\n"
-		"device_id : str\n"
-		"    The id (device id) of the tab.\n"
+		"tab_id : str\n"
+		"    The id of the tab.\n"
 		"view_id : str\n"
 		"    The id of the plot view.\n"
 		"signal : AnalogTimeSignal\n"
 		"    The signal object.");
 	py_ui_helper.def("add_signals_to_xy_plot_view", &sv::python::UiProxy::ui_add_signals_to_xy_plot_view,
-		py::arg("device_id"), py::arg("view_id"), py::arg("x_signal"),
+		py::arg("tab_id"), py::arg("view_id"), py::arg("x_signal"),
 		py::arg("y_signal"),
 		"Add x/y signals to the given x/y plot view.\n\n"
 		"Parameters\n"
 		"----------\n"
-		"device_id : str\n"
-		"    The id (device id) of the tab.\n"
+		"tab_id : str\n"
+		"    The id of the tab.\n"
 		"view_id : str\n"
 		"    The id of the plot view.\n"
 		"x_signal : AnalogTimeSignal\n"

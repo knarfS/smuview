@@ -37,7 +37,7 @@ class BaseDevice;
 namespace ui {
 namespace tabs {
 
-class BaseTab;
+class DeviceTab;
 
 namespace tabhelper {
 
@@ -50,7 +50,7 @@ namespace tabhelper {
  *
  * @return The tab for the device
  */
-BaseTab *get_tab_for_device(Session &session,
+DeviceTab *get_tab_for_device(Session &session,
 	shared_ptr<sv::devices::BaseDevice> device, QWidget *parent = nullptr);
 
 } // namespace tabhelper

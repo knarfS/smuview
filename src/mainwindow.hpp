@@ -45,6 +45,7 @@ class HardwareDevice;
 namespace ui {
 namespace tabs {
 class BaseTab;
+class DeviceTab;
 class SmuScriptTab;
 class WelcomeTab;
 }
@@ -65,11 +66,13 @@ public:
 	~MainWindow();
 
 
+	ui::tabs::DeviceTab *add_device_tab(
+		shared_ptr<sv::devices::BaseDevice> device);
 	ui::tabs::SmuScriptTab *add_smuscript_tab(string file_name);
 	void remove_tab(string tab_id);
 	void change_tab_icon(string tab_id, QIcon icon);
 	void change_tab_title(string tab_id, QString title);
-	ui::tabs::BaseTab *get_base_tab_from_device_id(const string tab_id);
+	ui::tabs::BaseTab *get_tab_from_tab_id(const string &id);
 
 private:
 	void setup_ui();
@@ -97,9 +100,6 @@ private:
 private Q_SLOTS:
 	void error_handler(const std::string &sender, const std::string &msg);
 	void on_tab_close_requested(int tab_index);
-
-public Q_SLOTS:
-	void add_device_tab(shared_ptr<sv::devices::BaseDevice> device);
 
 };
 

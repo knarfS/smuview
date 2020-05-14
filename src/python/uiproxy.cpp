@@ -55,10 +55,8 @@ UiProxy::UiProxy(Session &session, shared_ptr<UiHelper> ui_helper) :
 	event_loop_(),
 	timer_()
 {
-	if (session_.main_window()) {
-		connect(this, &UiProxy::add_device_tab,
-			session_.main_window(), &MainWindow::add_device_tab);
-	}
+	connect(this, &UiProxy::add_device_tab,
+		ui_helper_.get(), &UiHelper::add_device_tab);
 
 	connect(this, &UiProxy::add_data_view,
 		ui_helper_.get(), &UiHelper::add_data_view);
@@ -100,126 +98,132 @@ UiProxy::UiProxy(Session &session, shared_ptr<UiHelper> ui_helper) :
 }
 
 
-void UiProxy::ui_add_device_tab(shared_ptr<devices::BaseDevice> device)
-{
-	Q_EMIT add_device_tab(device);
-}
-
-string UiProxy::ui_add_data_view(string device_id, Qt::DockWidgetArea area,
-	shared_ptr<data::AnalogTimeSignal> signal)
+string UiProxy::ui_add_device_tab(shared_ptr<devices::BaseDevice> device)
 {
 	string id;
-	init_wait_for_view_added(id);
-	Q_EMIT add_data_view(device_id, area, signal);
+	init_wait_for_tab_added(id);
+	Q_EMIT add_device_tab(device);
 	event_loop_.exec();
 	finish_wait_for_signal();
 
 	return id;
 }
 
-string UiProxy::ui_add_control_view(string device_id, Qt::DockWidgetArea area,
+string UiProxy::ui_add_data_view(string tab_id, Qt::DockWidgetArea area,
+	shared_ptr<data::AnalogTimeSignal> signal)
+{
+	string id;
+	init_wait_for_view_added(id);
+	Q_EMIT add_data_view(tab_id, area, signal);
+	event_loop_.exec();
+	finish_wait_for_signal();
+
+	return id;
+}
+
+string UiProxy::ui_add_control_view(string tab_id, Qt::DockWidgetArea area,
 	shared_ptr<devices::Configurable> configurable)
 {
 	string id;
 	init_wait_for_view_added(id);
-	Q_EMIT add_control_view(device_id, area, configurable);
+	Q_EMIT add_control_view(tab_id, area, configurable);
 	event_loop_.exec();
 	finish_wait_for_signal();
 
 	return id;
 }
 
-string UiProxy::ui_add_plot_view(string device_id, Qt::DockWidgetArea area,
+string UiProxy::ui_add_plot_view(string tab_id, Qt::DockWidgetArea area,
 	shared_ptr<channels::BaseChannel> channel)
 {
 	string id;
 	init_wait_for_view_added(id);
-	Q_EMIT add_plot_view(device_id, area, channel);
+	Q_EMIT add_plot_view(tab_id, area, channel);
 	event_loop_.exec();
 	finish_wait_for_signal();
 
 	return id;
 }
 
-string UiProxy::ui_add_plot_view(string device_id, Qt::DockWidgetArea area,
+string UiProxy::ui_add_plot_view(string tab_id, Qt::DockWidgetArea area,
 	shared_ptr<data::AnalogTimeSignal> signal)
 {
 	string id;
 	init_wait_for_view_added(id);
-	Q_EMIT add_plot_view(device_id, area, signal);
+	Q_EMIT add_plot_view(tab_id, area, signal);
 	event_loop_.exec();
 	finish_wait_for_signal();
 
 	return id;
 }
 
-string UiProxy::ui_add_plot_view(string device_id, Qt::DockWidgetArea area,
+string UiProxy::ui_add_plot_view(string tab_id, Qt::DockWidgetArea area,
 	shared_ptr<data::AnalogTimeSignal> x_signal,
 	shared_ptr<data::AnalogTimeSignal> y_signal)
 {
 	string id;
 	init_wait_for_view_added(id);
-	Q_EMIT add_plot_view(device_id, area, x_signal, y_signal);
+	Q_EMIT add_plot_view(tab_id, area, x_signal, y_signal);
 	event_loop_.exec();
 	finish_wait_for_signal();
 
 	return id;
 }
 
-string UiProxy::ui_add_power_panel_view(string device_id, Qt::DockWidgetArea area,
+string UiProxy::ui_add_power_panel_view(string tab_id, Qt::DockWidgetArea area,
 	shared_ptr<data::AnalogTimeSignal> voltage_signal,
 	shared_ptr<data::AnalogTimeSignal> current_signal)
 {
 	string id;
 	init_wait_for_view_added(id);
-	Q_EMIT add_power_panel_view(device_id, area, voltage_signal, current_signal);
+	Q_EMIT add_power_panel_view(tab_id, area, voltage_signal, current_signal);
 	event_loop_.exec();
 	finish_wait_for_signal();
 
 	return id;
 }
 
-string UiProxy::ui_add_value_panel_view(string device_id, Qt::DockWidgetArea area,
+string UiProxy::ui_add_value_panel_view(string tab_id, Qt::DockWidgetArea area,
 	shared_ptr<channels::BaseChannel> channel)
 {
 	string id;
 	init_wait_for_view_added(id);
-	Q_EMIT add_value_panel_view(device_id, area, channel);
+	Q_EMIT add_value_panel_view(tab_id, area, channel);
 	event_loop_.exec();
 	finish_wait_for_signal();
 
 	return id;
 }
 
-string UiProxy::ui_add_value_panel_view(string device_id, Qt::DockWidgetArea area,
+string UiProxy::ui_add_value_panel_view(string tab_id, Qt::DockWidgetArea area,
 	shared_ptr<data::AnalogTimeSignal> signal)
 {
 	string id;
 	init_wait_for_view_added(id);
-	Q_EMIT add_value_panel_view(device_id, area, signal);
+	Q_EMIT add_value_panel_view(tab_id, area, signal);
 	event_loop_.exec();
 	finish_wait_for_signal();
 
 	return id;
 }
 
-void UiProxy::ui_add_signal_to_data_view(string device_id, string view_id,
+void UiProxy::ui_add_signal_to_data_view(string tab_id, string view_id,
 	shared_ptr<data::AnalogTimeSignal> signal)
 {
-	Q_EMIT add_signal_to_data_view(device_id, view_id, signal);
+	Q_EMIT add_signal_to_data_view(tab_id, view_id, signal);
 }
 
-void UiProxy::ui_add_signal_to_plot_view(string device_id, string view_id,
+void UiProxy::ui_add_signal_to_plot_view(string tab_id, string view_id,
 	shared_ptr<data::AnalogTimeSignal> signal)
 {
-	Q_EMIT add_signal_to_plot_view(device_id, view_id, signal);
+	Q_EMIT add_signal_to_plot_view(tab_id, view_id, signal);
 }
 
-void UiProxy::ui_add_signals_to_xy_plot_view(string device_id, string view_id,
+void UiProxy::ui_add_signals_to_xy_plot_view(string tab_id, string view_id,
 	shared_ptr<data::AnalogTimeSignal> x_signal,
 	shared_ptr<data::AnalogTimeSignal> y_signal)
 {
-	Q_EMIT add_signals_to_xy_plot_view(device_id, view_id, x_signal, y_signal);
+	Q_EMIT add_signals_to_xy_plot_view(tab_id, view_id, x_signal, y_signal);
 }
 
 
@@ -283,6 +287,23 @@ py::object UiProxy::ui_show_int_input_dialog(const string &title,
 		return py::cast(qvar.toInt());
 	else
 		return py::cast<py::none>(Py_None);
+}
+
+void UiProxy::init_wait_for_tab_added(string &id, int timeout)
+{
+	event_loop_finished_conn_ =
+		connect(ui_helper_.get(), &UiHelper::tab_added,
+			[this, &id](std::string tab_id) {
+				id = tab_id;
+				event_loop_.quit();
+			});
+
+	if (timeout > 0) {
+		timer_.setSingleShot(true);
+		timer_conn_ = connect(&timer_, &QTimer::timeout,
+			&event_loop_, &QEventLoop::quit);
+		timer_.start(timeout);
+	}
 }
 
 void UiProxy::init_wait_for_view_added(string &id, int timeout)

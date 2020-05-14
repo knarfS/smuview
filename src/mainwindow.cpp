@@ -110,25 +110,29 @@ void MainWindow::add_tab(ui::tabs::BaseTab *tab_window)
 	tab_window_map_.insert(make_pair(tab_window->tab_id(), tab_window));
 }
 
-void MainWindow::add_device_tab(shared_ptr<sv::devices::BaseDevice> device)
+ui::tabs::DeviceTab *MainWindow::add_device_tab(
+	shared_ptr<sv::devices::BaseDevice> device)
 {
-	add_tab(ui::tabs::tabhelper::get_tab_for_device(*session_, device));
+	auto tab = ui::tabs::tabhelper::get_tab_for_device(*session_, device);
+	add_tab(tab);
 
 	// Connect device error handler to show a message box
 	connect(device.get(), &sv::devices::BaseDevice::device_error,
 		this, &MainWindow::error_handler);
+
+	return tab;
 }
 
 ui::tabs::WelcomeTab *MainWindow::add_welcome_tab()
 {
-	auto *tab = new ui::tabs::WelcomeTab(*session_);
+	auto tab = new ui::tabs::WelcomeTab(*session_);
 	add_tab(tab);
 	return tab;
 }
 
 ui::tabs::SmuScriptTab *MainWindow::add_smuscript_tab(string file_name)
 {
-	auto *tab = new ui::tabs::SmuScriptTab(*session_, file_name);
+	auto tab = new ui::tabs::SmuScriptTab(*session_, file_name);
 	add_tab(tab);
 	return tab;
 }
@@ -172,12 +176,12 @@ void MainWindow::change_tab_title(string tab_id, QString title)
 	tab_widget_->setTabText(tab_index, title);
 }
 
-ui::tabs::BaseTab *MainWindow::get_base_tab_from_device_id(const string tab_id)
+ui::tabs::BaseTab *MainWindow::get_tab_from_tab_id(const string &id)
 {
-	if (tab_window_map_.count(tab_id) == 0)
+	if (tab_window_map_.count(id) == 0)
 		return nullptr;
 
-	return tab_window_map_[tab_id];
+	return tab_window_map_[id];
 }
 
 void MainWindow::setup_ui()
@@ -301,7 +305,7 @@ void MainWindow::error_handler(
 
 void MainWindow::on_tab_close_requested(int tab_index)
 {
-	auto *tab_window = (ui::tabs::BaseTab *)tab_widget_->widget(tab_index);
+	auto tab_window = (ui::tabs::BaseTab *)tab_widget_->widget(tab_index);
 	if (tab_window->request_close())
 		remove_tab(tab_index);
 }

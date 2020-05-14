@@ -68,33 +68,33 @@ class UiProxy : public QObject
 public:
 	UiProxy(Session &session, shared_ptr<UiHelper> ui_helper);
 
-	void ui_add_device_tab(shared_ptr<devices::BaseDevice> device);
+	string ui_add_device_tab(shared_ptr<devices::BaseDevice> device);
 
-	string ui_add_data_view(string device_id, Qt::DockWidgetArea area,
+	string ui_add_data_view(string tab_id, Qt::DockWidgetArea area,
 		shared_ptr<data::AnalogTimeSignal> signal);
-	string ui_add_control_view(string device_id, Qt::DockWidgetArea area,
+	string ui_add_control_view(string tab_id, Qt::DockWidgetArea area,
 		shared_ptr<devices::Configurable> configurable);
-	string ui_add_plot_view(string device_id, Qt::DockWidgetArea area,
+	string ui_add_plot_view(string tab_id, Qt::DockWidgetArea area,
 		shared_ptr<channels::BaseChannel> channel);
-	string ui_add_plot_view(string device_id, Qt::DockWidgetArea area,
+	string ui_add_plot_view(string tab_id, Qt::DockWidgetArea area,
 		shared_ptr<data::AnalogTimeSignal> signal);
-	string ui_add_plot_view(string device_id, Qt::DockWidgetArea area,
+	string ui_add_plot_view(string tab_id, Qt::DockWidgetArea area,
 		shared_ptr<data::AnalogTimeSignal> x_signal,
 		shared_ptr<data::AnalogTimeSignal> y_signal);
-	string ui_add_power_panel_view(string device_id, Qt::DockWidgetArea area,
+	string ui_add_power_panel_view(string tab_id, Qt::DockWidgetArea area,
 		shared_ptr<data::AnalogTimeSignal> voltage_signal,
 		shared_ptr<data::AnalogTimeSignal> current_signal);
-	string ui_add_value_panel_view(string device_id, Qt::DockWidgetArea area,
+	string ui_add_value_panel_view(string tab_id, Qt::DockWidgetArea area,
 		shared_ptr<channels::BaseChannel> channel);
-	string ui_add_value_panel_view(string device_id, Qt::DockWidgetArea area,
+	string ui_add_value_panel_view(string tab_id, Qt::DockWidgetArea area,
 		shared_ptr<data::AnalogTimeSignal> signal);
 
-	void ui_add_signal_to_data_view(string device_id, string view_id,
+	void ui_add_signal_to_data_view(string tab_id, string view_id,
 		shared_ptr<data::AnalogTimeSignal> signal);
 
-	void ui_add_signal_to_plot_view(string device_id, string view_id,
+	void ui_add_signal_to_plot_view(string tab_id, string view_id,
 		shared_ptr<data::AnalogTimeSignal> signal);
-	void ui_add_signals_to_xy_plot_view(string device_id, string view_id,
+	void ui_add_signals_to_xy_plot_view(string tab_id, string view_id,
 		shared_ptr<data::AnalogTimeSignal> x_signal,
 		shared_ptr<data::AnalogTimeSignal> y_signal);
 
@@ -108,6 +108,7 @@ public:
 		const string &label, int value, int step, int min, int max);
 
 private:
+	void init_wait_for_tab_added(string &id, int timeout = 1000);
 	void init_wait_for_view_added(string &id, int timeout = 1000);
 	void init_wait_for_message_box(bool &ok, int timeout = 0);
 	void init_wait_for_input_dialog(bool &ok, QVariant &qvar, int timeout = 0);
@@ -124,31 +125,31 @@ private:
 Q_SIGNALS:
 	void add_device_tab(shared_ptr<sv::devices::BaseDevice> device);
 
-	void add_data_view(std::string device_id, Qt::DockWidgetArea area,
+	void add_data_view(std::string tab_id, Qt::DockWidgetArea area,
 		shared_ptr<sv::data::AnalogTimeSignal> signal);
-	void add_control_view(std::string device_id, Qt::DockWidgetArea area,
+	void add_control_view(std::string tab_id, Qt::DockWidgetArea area,
 		shared_ptr<sv::devices::Configurable> configurable);
-	void add_plot_view(std::string device_id, Qt::DockWidgetArea area,
+	void add_plot_view(std::string tab_id, Qt::DockWidgetArea area,
 		shared_ptr<sv::channels::BaseChannel> channel);
-	void add_plot_view(std::string device_id, Qt::DockWidgetArea area,
+	void add_plot_view(std::string tab_id, Qt::DockWidgetArea area,
 		shared_ptr<sv::data::AnalogTimeSignal> signal);
-	void add_plot_view(std::string device_id, Qt::DockWidgetArea area,
+	void add_plot_view(std::string tab_id, Qt::DockWidgetArea area,
 		shared_ptr<sv::data::AnalogTimeSignal> x_signal,
 		shared_ptr<sv::data::AnalogTimeSignal> y_signal);
-	void add_power_panel_view(std::string device_id, Qt::DockWidgetArea area,
+	void add_power_panel_view(std::string tab_id, Qt::DockWidgetArea area,
 		shared_ptr<sv::data::AnalogTimeSignal> voltage_signal,
 		shared_ptr<sv::data::AnalogTimeSignal> current_signal);
-	void add_value_panel_view(std::string device_id, Qt::DockWidgetArea area,
+	void add_value_panel_view(std::string tab_id, Qt::DockWidgetArea area,
 		shared_ptr<sv::channels::BaseChannel> channel);
-	void add_value_panel_view(std::string device_id, Qt::DockWidgetArea area,
+	void add_value_panel_view(std::string tab_id, Qt::DockWidgetArea area,
 		shared_ptr<sv::data::AnalogTimeSignal> signal);
 
-	void add_signal_to_data_view(std::string device_id, std::string view_id,
+	void add_signal_to_data_view(std::string tab_id, std::string view_id,
 		shared_ptr<sv::data::AnalogTimeSignal> signal);
 
-	void add_signal_to_plot_view(std::string device_id, std::string view_id,
+	void add_signal_to_plot_view(std::string tab_id, std::string view_id,
 		shared_ptr<sv::data::AnalogTimeSignal> signal);
-	void add_signals_to_xy_plot_view(std::string device_id, std::string view_id,
+	void add_signals_to_xy_plot_view(std::string tab_id, std::string view_id,
 		shared_ptr<sv::data::AnalogTimeSignal> x_signal,
 		shared_ptr<sv::data::AnalogTimeSignal> y_signal);
 
