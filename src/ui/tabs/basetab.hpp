@@ -63,7 +63,7 @@ public:
 	const Session &session() const;
 
 	virtual string id() = 0;
-	virtual QString tab_title() = 0; // TODO: rename to title()
+	virtual QString title() = 0;
 	views::BaseView *get_view_from_view_id(string id);
 	virtual bool request_close() = 0;
 

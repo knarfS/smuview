@@ -104,7 +104,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::add_tab(ui::tabs::BaseTab *tab_window)
 {
-	int index = tab_widget_->addTab(tab_window, tab_window->tab_title());
+	int index = tab_widget_->addTab(tab_window, tab_window->title());
 	tab_widget_->setCurrentIndex(index);
 
 	tab_window_map_.insert(make_pair(tab_window->id(), tab_window));

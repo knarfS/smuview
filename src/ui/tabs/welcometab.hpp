@@ -42,7 +42,7 @@ public:
 	WelcomeTab(Session &session, QWidget *parent = nullptr);
 
 	string id() override;
-	QString tab_title() override;
+	QString title() override;
 	/** The WelcomeTab can always be closed */
 	bool request_close() override;
 

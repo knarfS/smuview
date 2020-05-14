@@ -41,7 +41,7 @@ string WelcomeTab::id()
 	return "welcometab";
 }
 
-QString WelcomeTab::tab_title()
+QString WelcomeTab::title()
 {
 	return tr("Welcome");
 }

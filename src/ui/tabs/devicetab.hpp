@@ -51,7 +51,7 @@ public:
 		shared_ptr<sv::devices::BaseDevice> device, QWidget *parent = nullptr);
 
 	string id() override;
-	QString tab_title() override;
+	QString title() override;
 	bool request_close() override;
 	virtual void clear_signals();
 

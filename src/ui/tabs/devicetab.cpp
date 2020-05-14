@@ -67,7 +67,7 @@ string DeviceTab::id()
 	return device_->id();
 }
 
-QString DeviceTab::tab_title()
+QString DeviceTab::title()
 {
 	return device_->short_name();
 }

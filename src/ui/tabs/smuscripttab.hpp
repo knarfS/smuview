@@ -50,7 +50,7 @@ public:
 		QWidget *parent = nullptr);
 
 	string id() override;
-	QString tab_title() override;
+	QString title() override;
 	bool request_close() override;
 
 	// TODO: scope

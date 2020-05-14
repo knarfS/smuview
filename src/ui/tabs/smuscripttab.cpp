@@ -58,7 +58,7 @@ string SmuScriptTab::id()
 	return id_;
 }
 
-QString SmuScriptTab::tab_title()
+QString SmuScriptTab::title()
 {
 	return smu_script_view_->title();
 }
