@@ -17,22 +17,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <cmath>
 #include <map>
 
+#include <QApplication>
+#include <QColor>
+#include <QColorDialog>
 #include <QComboBox>
 #include <QDebug>
 #include <QDialog>
 #include <QDoubleValidator>
 #include <QFormLayout>
+#include <QHeaderView>
 #include <QIcon>
 #include <QLineEdit>
 #include <QString>
+#include <QStyle>
+#include <QStyleOptionViewItem>
+#include <QTableWidget>
+#include <QTableWidgetItem>
 #include <QTabWidget>
 #include <QVariant>
 #include <QVBoxLayout>
 #include <QWidget>
 
 #include "plotconfigdialog.hpp"
+#include "src/data/datautil.hpp"
 #include "src/ui/views/plotview.hpp"
 #include "src/ui/widgets/plot/plot.hpp"
 
@@ -41,6 +51,69 @@ Q_DECLARE_METATYPE(sv::ui::widgets::plot::PlotUpdateMode)
 namespace sv {
 namespace ui {
 namespace dialogs {
+
+ColorItemDelegate::ColorItemDelegate(QObject *parent) :
+	QStyledItemDelegate(parent)
+{
+}
+
+QWidget *ColorItemDelegate::createEditor(QWidget *parent,
+	const QStyleOptionViewItem &option, const QModelIndex &index) const
+{
+	(void)option;
+	(void)index;
+
+	QColorDialog *dialog = new QColorDialog(parent);
+    dialog->setModal(true);
+    return dialog;
+}
+
+void ColorItemDelegate::paint(QPainter *painter,
+	const QStyleOptionViewItem &option, const QModelIndex &index) const
+{
+	// Set background color
+	QColor color = index.model()->data(index, Qt::EditRole).value<QColor>();
+	painter->fillRect(option.rect, color);
+
+	// Set text and text color depending on background color
+	QStyleOptionViewItem item_option(option);
+    initStyleOption(&item_option, index);
+	item_option.text = color.name();
+	float brightness = std::sqrt(
+		color.red() * color.red() * 0.241 +
+		color.green() * color.green() * 0.691 +
+		color.blue() * color.blue() * 0.068);
+	if (brightness >= 130)
+		item_option.palette.setColor(QPalette::Text, Qt::black);
+	else
+		item_option.palette.setColor(QPalette::Text, Qt::white);
+    QApplication::style()->drawControl(
+		QStyle::CE_ItemViewItem, &item_option, painter);
+}
+
+void ColorItemDelegate::setEditorData(QWidget *editor,
+	const QModelIndex &index) const
+{
+	QColor color = index.model()->data(index, Qt::EditRole).value<QColor>();
+	QColorDialog *dialog = qobject_cast<QColorDialog *>(editor);
+	dialog->setCurrentColor(color);
+}
+
+void ColorItemDelegate::setModelData(QWidget *editor,
+	QAbstractItemModel *model, const QModelIndex &index) const
+{
+	QColorDialog *dialog = qobject_cast<QColorDialog *>(editor);
+	model->setData(index, QVariant(dialog->currentColor()), Qt::EditRole);
+}
+
+void ColorItemDelegate::updateEditorGeometry(QWidget *editor,
+	const QStyleOptionViewItem &option, const QModelIndex &index) const
+{
+	(void)index;
+
+	editor->setGeometry(option.rect);
+}
+
 
 PlotConfigDialog::PlotConfigDialog(widgets::plot::Plot *plot,
 		views::PlotType plot_type, QWidget *parent) :
@@ -69,6 +142,7 @@ void PlotConfigDialog::setup_ui()
 	}
 	this->setup_ui_markers_tab();
 	//this->setup_ui_style_tab();
+	this->setup_ui_curve_colors_tab();
 	tab_widget_->setCurrentIndex(0);
 	main_layout->addWidget(tab_widget_);
 
@@ -176,6 +250,64 @@ void PlotConfigDialog::setup_ui_style_tab()
 	QWidget *widget = new QWidget();
 	QFormLayout *layout = new QFormLayout();
 
+	// TODO: Plot background color? Axis position? What else?
+
+	widget->setLayout(layout);
+	tab_widget_->addTab(widget, title);
+}
+
+void PlotConfigDialog::setup_ui_curve_colors_tab()
+{
+	QString title(tr("Curve Colors"));
+
+	QWidget *widget = new QWidget();
+	QVBoxLayout *layout = new QVBoxLayout();
+
+	QTableWidget *color_table_ = new QTableWidget();
+	color_table_->setColumnCount(2);
+
+	QTableWidgetItem *quantity_header_item = new QTableWidgetItem(tr("Quantity"));
+	quantity_header_item->setTextAlignment(Qt::AlignVCenter);
+	color_table_->setHorizontalHeaderItem(0, quantity_header_item);
+	color_table_->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
+	QTableWidgetItem *color_header_item = new QTableWidgetItem(tr("Color"));
+	color_header_item->setTextAlignment(Qt::AlignVCenter);
+	color_table_->setHorizontalHeaderItem(1, color_header_item);
+	color_table_->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
+
+	color_table_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+	color_table_->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
+	color_table_->setSelectionMode(QTableWidget::NoSelection);
+	color_table_->setItemDelegateForColumn(1, new ColorItemDelegate());
+
+	for (const auto &q_n_pair : data::datautil::get_quantity_name_map()) {
+		int last_row = color_table_->rowCount();
+		color_table_->insertRow(last_row);
+		QTableWidgetItem *quantity_item = new QTableWidgetItem(q_n_pair.second);
+		quantity_item->setFlags(quantity_item->flags() ^ Qt::ItemIsEditable);
+		color_table_->setItem(last_row, 0, quantity_item);
+		QTableWidgetItem *color_item = new QTableWidgetItem(q_n_pair.second);
+		color_table_->setItem(last_row, 1, color_item);
+
+		// For Voltage and Current, we want to make AC/DC also configurable.
+		if (q_n_pair.first == data::Quantity::Voltage ||
+				q_n_pair.first == data::Quantity::Current) {
+			for (auto const &qf : {data::QuantityFlag::AC, data::QuantityFlag::DC}) {
+				QString name = QString("%1 %2").arg(
+					q_n_pair.second, data::datautil::format_quantity_flag(qf));
+				int last_row = color_table_->rowCount();
+				color_table_->insertRow(last_row);
+				QTableWidgetItem *quantity_item = new QTableWidgetItem(name);
+				quantity_item->setFlags(quantity_item->flags() ^ Qt::ItemIsEditable);
+				color_table_->setItem(last_row, 0, quantity_item);
+				QTableWidgetItem *color_item = new QTableWidgetItem(name);
+				color_table_->setItem(last_row, 1, color_item);
+			}
+		}
+	}
+
+	layout->addWidget(color_table_);
+
 	widget->setLayout(layout);
 	tab_widget_->addTab(widget, title);
 }
@@ -231,6 +363,8 @@ void PlotConfigDialog::accept()
 
 	plot_->set_markers_label_alignment(
 		markers_box_pos_combobox_->currentData().toInt());
+
+	// TODO: Set color to QSettings?
 
 	QDialog::accept();
 }

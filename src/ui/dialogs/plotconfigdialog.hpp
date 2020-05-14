@@ -22,11 +22,17 @@
 
 #include <map>
 
+#include <QAbstractItemModel>
 #include <QComboBox>
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QLineEdit>
+#include <QLocale>
+#include <QModelIndex>
+#include <QPainter>
 #include <QString>
+#include <QStyledItemDelegate>
+#include <QStyleOptionViewItem>
 #include <QTabWidget>
 #include <QWidget>
 
@@ -36,6 +42,25 @@
 namespace sv {
 namespace ui {
 namespace dialogs {
+
+class ColorItemDelegate : public QStyledItemDelegate
+{
+	Q_OBJECT
+
+public:
+	ColorItemDelegate(QObject *parent = nullptr);
+
+	QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option,
+		const QModelIndex &index) const override;
+	void paint(QPainter *painter, const QStyleOptionViewItem &option,
+		const QModelIndex &index) const override;
+	void setEditorData(QWidget *editor,
+		const QModelIndex &index) const override;
+	void setModelData(QWidget *editor, QAbstractItemModel *model,
+		const QModelIndex &index) const override;
+	void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option,
+		const QModelIndex &index) const override;
+};
 
 class PlotConfigDialog : public QDialog
 {
@@ -50,6 +75,7 @@ private:
 	void setup_ui_plot_mode_tab();
 	void setup_ui_markers_tab();
 	void setup_ui_style_tab();
+	void setup_ui_curve_colors_tab();
 	void setup_ui_additive();
 	void setup_ui_rolling();
 	void setup_ui_oscilloscope();
