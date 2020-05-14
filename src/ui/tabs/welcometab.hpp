@@ -41,7 +41,7 @@ private:
 public:
 	WelcomeTab(Session &session, QWidget *parent = nullptr);
 
-	string tab_id() override;
+	string id() override;
 	QString tab_title() override;
 	/** The WelcomeTab can always be closed */
 	bool request_close() override;

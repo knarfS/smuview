@@ -60,7 +60,7 @@ void UiHelper::add_device_tab(shared_ptr<sv::devices::BaseDevice> device)
 	}
 
 	auto tab = session_.main_window()->add_device_tab(device);
-	Q_EMIT tab_added(tab->tab_id());
+	Q_EMIT tab_added(tab->id());
 }
 
 void UiHelper::add_data_view(std::string tab_id, Qt::DockWidgetArea area,

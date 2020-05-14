@@ -68,7 +68,7 @@ QDockWidget *BaseTab::create_dock_widget(views::BaseView *view,
 	// Otherwise the application will flicker at startup....
 	QDockWidget *dock = new QDockWidget(view->title());
 	// objectName is needed for QSettings
-	dock->setObjectName(QString::fromStdString(tab_id()) + ":" +
+	dock->setObjectName(QString::fromStdString(this->id()) + ":" +
 		QString::fromStdString(view->id()));
 	dock->setAttribute(Qt::WA_DeleteOnClose);
 	dock->setAllowedAreas(Qt::AllDockWidgetAreas);

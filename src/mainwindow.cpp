@@ -107,7 +107,7 @@ void MainWindow::add_tab(ui::tabs::BaseTab *tab_window)
 	int index = tab_widget_->addTab(tab_window, tab_window->tab_title());
 	tab_widget_->setCurrentIndex(index);
 
-	tab_window_map_.insert(make_pair(tab_window->tab_id(), tab_window));
+	tab_window_map_.insert(make_pair(tab_window->id(), tab_window));
 }
 
 ui::tabs::DeviceTab *MainWindow::add_device_tab(

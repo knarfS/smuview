@@ -45,7 +45,7 @@ SmuScriptTab::SmuScriptTab(Session &session,
 	script_file_name_(script_file_name)
 {
 	// Every script tab gets its own unique id
-	tab_id_ = "smuscripttab:" +
+	id_ = "smuscripttab:" +
 		std::to_string(SmuScriptTab::smuscript_tab_counter++);
 
 	setup_ui();
@@ -53,9 +53,9 @@ SmuScriptTab::SmuScriptTab(Session &session,
 }
 
 
-string SmuScriptTab::tab_id()
+string SmuScriptTab::id()
 {
-	return tab_id_;
+	return id_;
 }
 
 QString SmuScriptTab::tab_title()
@@ -114,16 +114,16 @@ void SmuScriptTab::save_settings() const
 void SmuScriptTab::on_file_name_changed(const QString &file_name)
 {
 	(void)file_name;
-	session_.main_window()->change_tab_title(tab_id_, smu_script_view_->title());
+	session_.main_window()->change_tab_title(id_, smu_script_view_->title());
 }
 
 void SmuScriptTab::on_file_save_state_changed(bool is_unsaved)
 {
 	if (is_unsaved)
-		session_.main_window()->change_tab_icon(tab_id_,
+		session_.main_window()->change_tab_icon(id_,
 			QIcon::fromTheme("document-save", QIcon(":/icons/document-save.png")));
 	else
-		session_.main_window()->change_tab_icon(tab_id_, QIcon());
+		session_.main_window()->change_tab_icon(id_, QIcon());
 }
 
 void SmuScriptTab::on_script_started()

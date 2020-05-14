@@ -36,7 +36,7 @@ WelcomeTab::WelcomeTab(Session &session, QWidget *parent) :
 }
 
 
-string WelcomeTab::tab_id()
+string WelcomeTab::id()
 {
 	return "welcometab";
 }

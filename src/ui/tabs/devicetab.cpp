@@ -62,7 +62,7 @@ DeviceTab::DeviceTab(Session &session,
 }
 
 
-string DeviceTab::tab_id()
+string DeviceTab::id()
 {
 	return device_->id();
 }
@@ -153,7 +153,7 @@ void DeviceTab::setup_toolbar()
 
 	toolbar_ = new QToolBar("Device Toolbar");
 	// objectName is needed for QSettings
-	toolbar_->setObjectName("toolbar:" + QString::fromStdString(tab_id()));
+	toolbar_->setObjectName("toolbar:" + QString::fromStdString(id()));
 	toolbar_->addWidget(aquire_button_);
 	toolbar_->addSeparator();
 	toolbar_->addAction(action_save_as_);
