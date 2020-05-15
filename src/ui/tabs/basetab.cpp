@@ -30,6 +30,8 @@ namespace sv {
 namespace ui {
 namespace tabs {
 
+unsigned int BaseTab::id_counter = 0;
+
 BaseTab::BaseTab(Session &session, QWidget *parent) :
 	QMainWindow(parent),
 	session_(session)
@@ -44,6 +46,7 @@ BaseTab::BaseTab(Session &session, QWidget *parent) :
 	this->centralWidget()->hide();
 }
 
+
 Session& BaseTab::session()
 {
 	return session_;
@@ -52,6 +55,11 @@ Session& BaseTab::session()
 const Session& BaseTab::session() const
 {
 	return session_;
+}
+
+string BaseTab::id() const
+{
+	return id_;
 }
 
 views::BaseView *BaseTab::get_view_from_view_id(string id)

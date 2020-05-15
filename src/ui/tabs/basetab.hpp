@@ -62,7 +62,7 @@ public:
 	Session &session();
 	const Session &session() const;
 
-	virtual string id() = 0;
+	string id() const;
 	virtual QString title() = 0;
 	views::BaseView *get_view_from_view_id(string id);
 	virtual bool request_close() = 0;
@@ -76,7 +76,10 @@ private:
 		QDockWidget::DockWidgetFeatures features);
 
 protected:
+	static unsigned int id_counter;
+
 	Session &session_;
+	string id_;
 	map<views::BaseView *, QDockWidget *> view_docks_map_;
 	map<string, views::BaseView *> view_id_map_;
 

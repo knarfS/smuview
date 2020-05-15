@@ -49,7 +49,6 @@ public:
 	SmuScriptTab(Session &session, string script_file_name,
 		QWidget *parent = nullptr);
 
-	string id() override;
 	QString title() override;
 	bool request_close() override;
 
@@ -61,9 +60,6 @@ private:
 	void setup_ui();
 	void connect_signals();
 
-	static unsigned int smuscript_tab_counter;
-
-	string id_;
 	string script_file_name_;
 	views::SmuScriptView *smu_script_view_;
 	views::SmuScriptOutputView *smu_script_output_view_;

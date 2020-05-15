@@ -37,6 +37,7 @@
 #include "src/ui/dialogs/addmathchanneldialog.hpp"
 #include "src/ui/dialogs/addviewdialog.hpp"
 #include "src/ui/dialogs/savedialog.hpp"
+#include "src/ui/tabs/basetab.hpp"
 #include "src/ui/views/viewhelper.hpp"
 
 using std::shared_ptr;
@@ -58,14 +59,11 @@ DeviceTab::DeviceTab(Session &session,
 	action_add_math_channel_(new QAction(this)),
 	action_about_(new QAction(this))
 {
+	id_ = "devicetab:" + std::to_string(BaseTab::id_counter++);
+
 	setup_toolbar();
 }
 
-
-string DeviceTab::id()
-{
-	return device_->id();
-}
 
 QString DeviceTab::title()
 {

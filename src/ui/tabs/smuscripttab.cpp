@@ -37,26 +37,17 @@ namespace sv {
 namespace ui {
 namespace tabs {
 
-unsigned int SmuScriptTab::smuscript_tab_counter = 0;
-
 SmuScriptTab::SmuScriptTab(Session &session,
 		string script_file_name, QWidget *parent) :
 	BaseTab(session, parent),
 	script_file_name_(script_file_name)
 {
-	// Every script tab gets its own unique id
-	id_ = "smuscripttab:" +
-		std::to_string(SmuScriptTab::smuscript_tab_counter++);
+	id_ = "smuscripttab:" + std::to_string(BaseTab::id_counter++);
 
 	setup_ui();
 	connect_signals();
 }
 
-
-string SmuScriptTab::id()
-{
-	return id_;
-}
 
 QString SmuScriptTab::title()
 {

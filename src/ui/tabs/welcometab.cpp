@@ -23,6 +23,7 @@
 
 #include "welcometab.hpp"
 #include "src/session.hpp"
+#include "src/ui/tabs/basetab.hpp"
 #include <config.h>
 
 namespace sv {
@@ -32,14 +33,11 @@ namespace tabs {
 WelcomeTab::WelcomeTab(Session &session, QWidget *parent) :
 	BaseTab(session, parent)
 {
+	id_ = "welcometab:" + std::to_string(BaseTab::id_counter++);
+
 	setup_ui();
 }
 
-
-string WelcomeTab::id()
-{
-	return "welcometab";
-}
 
 QString WelcomeTab::title()
 {
