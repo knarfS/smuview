@@ -89,11 +89,6 @@ public:
 	shared_ptr<sigrok::HardwareDevice> sr_hardware_device() const;
 
 	/**
-	 * Get the unique Id of the device
-	 */
-	string id() const override;
-
-	/**
 	 * Builds the display name. It only contains fields as required.
 	 * @param device_manager a reference to the device manager is needed
 	 * so that other similarly titled devices can be detected.

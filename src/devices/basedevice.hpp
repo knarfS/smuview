@@ -98,7 +98,7 @@ public:
 	/**
 	 * Get the unique Id of the device
 	 */
-	virtual string id() const = 0;
+	string id() const;
 
 	/**
 	 * Builds the name

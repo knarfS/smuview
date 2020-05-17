@@ -18,6 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <algorithm>
 #include <cassert>
 #include <map>
 #include <memory>
@@ -98,6 +99,24 @@ shared_ptr<sigrok::Device> BaseDevice::sr_device() const
 DeviceType BaseDevice::type() const
 {
 	return device_type_;
+}
+
+string BaseDevice::id() const
+{
+	string vendor = sr_device_->vendor();
+	std::replace(vendor.begin(), vendor.end(), ':', '-');
+	string model = sr_device_->model();
+	std::replace(model.begin(), model.end(), ':', '-');
+
+	string id = vendor + ":" + model + ":";
+	if (!sr_device_->serial_number().empty())
+		id += sr_device_->serial_number();
+	else if (!sr_device_->connection_id().empty())
+		id += sr_device_->connection_id();
+	else
+		id += std::to_string(device_index_);
+
+	return id;
 }
 
 void BaseDevice::open()

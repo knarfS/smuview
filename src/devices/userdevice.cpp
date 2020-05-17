@@ -43,20 +43,8 @@ UserDevice::UserDevice(
 	version_(version),
 	channel_index_(0)
 {
-	auto sr_device = sr_context_->create_user_device(vendor_, model_, version_);
-	sr_device_ = sr_device;
+	sr_device_ = sr_context_->create_user_device(vendor_, model_, version_);
 	device_type_ = DeviceType::UserDevice;
-}
-
-string UserDevice::id() const
-{
-	string conn_id = sr_device()->connection_id();
-	if (conn_id.empty()) {
-		// NOTE: sigrok doesn't alway return a connection_id.
-		conn_id = std::to_string(device_index_);
-	}
-
-	return "userdevice:" + conn_id;
 }
 
 string UserDevice::name() const

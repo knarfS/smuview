@@ -85,17 +85,6 @@ HardwareDevice::HardwareDevice(
 		assert("Unknown device");
 }
 
-string HardwareDevice::id() const
-{
-	string conn_id = sr_device()->connection_id();
-	if (conn_id.empty()) {
-		// NOTE: sigrok doesn't alway return a connection_id.
-		conn_id = std::to_string(device_index_);
-	}
-
-	return sr_hardware_device()->driver()->name() + ":" + conn_id;
-}
-
 QString HardwareDevice::display_name(
 	const DeviceManager &device_manager) const
 {
