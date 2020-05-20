@@ -156,7 +156,7 @@ public:
 
 private:
 	const shared_ptr<sigrok::Configurable> sr_configurable_;
-	unsigned int configurable_index_;
+	unsigned int index_;
 	const string device_name_;
 	const DeviceType device_type_;
 	const string device_id_;

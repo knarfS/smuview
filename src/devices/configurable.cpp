@@ -60,7 +60,7 @@ Configurable::Configurable(
 		const string device_name, const DeviceType device_type,
 		const string device_id):
 	sr_configurable_(sr_configurable),
-	configurable_index_(configurable_index),
+	index_(configurable_index),
 	device_name_(device_name),
 	device_type_(device_type),
 	device_id_(device_id)
@@ -354,7 +354,7 @@ QString Configurable::display_name() const
 
 unsigned int Configurable::index() const
 {
-	return configurable_index_;
+	return index_;
 }
 
 DeviceType Configurable::device_type() const
