@@ -62,7 +62,7 @@ HardwareDevice::HardwareDevice(
 {
 	// Set options for different device types
 	// TODO: Multiple DeviceTypes per HardwareDevice
-	device_type_ = DeviceType::Unknown;
+	type_ = DeviceType::Unknown;
 	const auto sr_keys = sr_device->driver()->config_keys();
 	for (const auto &sr_key : sr_keys) {
 		DeviceType dt = deviceutil::get_device_type(sr_key);
@@ -77,11 +77,11 @@ HardwareDevice::HardwareDevice(
 				dt == DeviceType::LcrMeter ||
 				dt == DeviceType::Scale ||
 				dt == DeviceType::Powermeter) {
-			device_type_ = dt;
+			type_ = dt;
 			break;
 		}
 	}
-	if (device_type_ == DeviceType::Unknown)
+	if (type_ == DeviceType::Unknown)
 		assert("Unknown device");
 }
 
@@ -170,7 +170,7 @@ void HardwareDevice::init_configurables()
 
 		auto cg_c = Configurable::create(
 			sr_cg, next_configurable_index_++,
-			short_name().toStdString(), device_type_, id());
+			short_name().toStdString(), type_, id());
 		configurable_map_.insert(make_pair(sr_cg_pair.first, cg_c));
 	}
 
@@ -190,7 +190,7 @@ void HardwareDevice::init_configurables()
 	// Init Configurable from Device
 	auto d_c = Configurable::create(
 		sr_device_, next_configurable_index_++,
-		short_name().toStdString(), device_type_, id());
+		short_name().toStdString(), type_, id());
 	configurable_map_.insert(make_pair("", d_c));
 
 	// Sample rate for interleaved samples

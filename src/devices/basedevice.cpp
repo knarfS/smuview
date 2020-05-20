@@ -64,7 +64,7 @@ BaseDevice::BaseDevice(const shared_ptr<sigrok::Context> sr_context,
 		shared_ptr<sigrok::Device> sr_device) :
 	sr_context_(sr_context),
 	sr_device_(sr_device),
-	device_open_(false),
+	is_open_(false),
 	next_channel_index_(USER_CHANNEL_START_INDEX),
 	next_configurable_index_(CONFIGURABLE_START_INDEX),
 	frame_began_(false)
@@ -73,7 +73,7 @@ BaseDevice::BaseDevice(const shared_ptr<sigrok::Context> sr_context,
 	sr_session_ = sv::Session::sr_context->create_session();
 
 	// Every device gets its own unique index
-	device_index_ = BaseDevice::device_counter++;
+	index_ = BaseDevice::device_counter++;
 
 	/*
 	 * NOTE: Get the start timestamp from the session.
@@ -98,7 +98,7 @@ shared_ptr<sigrok::Device> BaseDevice::sr_device() const
 
 DeviceType BaseDevice::type() const
 {
-	return device_type_;
+	return type_;
 }
 
 string BaseDevice::id() const
@@ -114,14 +114,14 @@ string BaseDevice::id() const
 	else if (!sr_device_->connection_id().empty())
 		id += sr_device_->connection_id();
 	else
-		id += std::to_string(device_index_);
+		id += std::to_string(index_);
 
 	return id;
 }
 
 void BaseDevice::open()
 {
-	if (device_open_)
+	if (is_open_)
 		close();
 
 	try {
@@ -143,7 +143,7 @@ void BaseDevice::open()
 	// Init aquisition
 	this->init_acquisition();
 
-	device_open_ = true;
+	is_open_ = true;
 }
 
 void BaseDevice::close()
@@ -151,7 +151,7 @@ void BaseDevice::close()
 	qWarning() << "BaseDevice::close(): Trying to close device " <<
 		BaseDevice::full_name();
 
-	if (!device_open_)
+	if (!is_open_)
 		return;
 
 	sr_session_->stop();
@@ -181,7 +181,7 @@ void BaseDevice::close()
 	if (sr_session_)
 		sr_session_->remove_devices();
 
-	device_open_ = false;
+	is_open_ = false;
 
 	qWarning() << "BaseDevice::close(): Device closed " <<
 		BaseDevice::full_name();

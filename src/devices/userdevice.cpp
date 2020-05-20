@@ -44,7 +44,7 @@ UserDevice::UserDevice(
 	channel_index_(0)
 {
 	sr_device_ = sr_context_->create_user_device(vendor_, model_, version_);
-	device_type_ = DeviceType::UserDevice;
+	type_ = DeviceType::UserDevice;
 }
 
 string UserDevice::name() const

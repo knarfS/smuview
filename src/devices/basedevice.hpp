@@ -234,9 +234,9 @@ protected:
 	const shared_ptr<sigrok::Context> sr_context_;
 	shared_ptr<sigrok::Session> sr_session_;
 	shared_ptr<sigrok::Device> sr_device_;
-	DeviceType device_type_;
-	unsigned int device_index_;
-	bool device_open_;
+	DeviceType type_;
+	unsigned int index_;
+	bool is_open_;
 
 	unsigned int next_channel_index_;
 	unsigned int next_configurable_index_;
