@@ -102,12 +102,12 @@ QString BaseChannel::display_name() const
 
 unsigned int BaseChannel::index() const
 {
-	return (sr_channel_) ? sr_channel_->index() : channel_index_;
+	return (sr_channel_) ? sr_channel_->index() : index_;
 }
 
 ChannelType BaseChannel::type() const
 {
-	return channel_type_;
+	return type_;
 }
 
 bool BaseChannel::enabled() const

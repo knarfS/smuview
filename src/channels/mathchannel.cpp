@@ -56,15 +56,15 @@ MathChannel::MathChannel(
 	unit_(unit)
 {
 	name_ = channel_name;
-	channel_type_ = ChannelType::MathChannel;
-	channel_index_ = parent_device->next_channel_index();
+	type_ = ChannelType::MathChannel;
+	index_ = parent_device->next_channel_index();
 	fixed_signal_ = true;
 
 	if (parent_device_->type() == devices::DeviceType::UserDevice) {
 		auto sr_udev = static_pointer_cast<sigrok::UserDevice>(
 			parent_device_->sr_device());
 		sr_channel_ = sr_udev->add_channel(
-			channel_index_, sigrok::ChannelType::ANALOG, name_);
+			index_, sigrok::ChannelType::ANALOG, name_);
 	}
 
 	/*

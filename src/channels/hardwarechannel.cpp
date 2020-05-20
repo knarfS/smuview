@@ -55,7 +55,7 @@ HardwareChannel::HardwareChannel(
 {
 	assert(sr_channel);
 
-	channel_type_ = ChannelType::AnalogChannel;
+	type_ = ChannelType::AnalogChannel;
 	name_ = sr_channel_->name();
 }
 

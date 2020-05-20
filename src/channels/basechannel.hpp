@@ -200,13 +200,20 @@ public:
 protected:
 	static const size_t size_of_double_ = sizeof(double);
 
+	/** The corresponding sigrok channel object. */
 	shared_ptr<sigrok::Channel> sr_channel_;
+	/** Name of this channel. */
 	string name_;
-	unsigned int channel_index_;
-	ChannelType channel_type_;
+	/** Index of this channel. */
+	unsigned int index_;
+	/** Type of this channel. */
+	ChannelType type_;
+	/** Timestamp when this channel was created/started. */
 	double channel_start_timestamp_;
 
+	/** The device this channel belongs to. */
 	shared_ptr<devices::BaseDevice> parent_device_;
+	/** The channel group names this channel belongs to. */
 	set<string> channel_group_names_;
 
 	bool fixed_signal_;
