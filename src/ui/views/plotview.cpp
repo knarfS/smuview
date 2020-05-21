@@ -298,7 +298,7 @@ void PlotView::save_settings(QSettings &settings) const
 	size_t i = 0;
 	for (const auto &curve : curves_) {
 		settings.beginGroup(QString("curve%1").arg(i++));
-		if (curve->curve_type() == widgets::plot::CurveType::TimeCurve) {
+		if (curve->type() == widgets::plot::CurveType::TimeCurve) {
 			auto t_curve = static_cast<widgets::plot::TimeCurveData *>(curve);
 			auto signal = t_curve->signal();
 			settings.setValue("device", QVariant(
@@ -310,7 +310,7 @@ void PlotView::save_settings(QSettings &settings) const
 			settings.setValue("signal_sr_qf", QVariant::fromValue<uint64_t>(
 				sv::data::datautil::get_sr_quantity_flags_id(signal->quantity_flags())));
 		}
-		else if (curve->curve_type() == widgets::plot::CurveType::XYCurve) {
+		else if (curve->type() == widgets::plot::CurveType::XYCurve) {
 			auto xy_curve = static_cast<widgets::plot::XYCurveData *>(curve);
 			auto x_signal = xy_curve->x_t_signal();
 			settings.setValue("x_device", QVariant(

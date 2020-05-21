@@ -35,14 +35,14 @@ namespace plot {
 
 BaseCurveData::BaseCurveData(CurveType curve_type) :
 	QwtSeriesData<QPointF>(),
-	curve_type_(curve_type),
+	type_(curve_type),
 	relative_time_(true)
 {
 }
 
-CurveType BaseCurveData::curve_type() const
+CurveType BaseCurveData::type() const
 {
-	return curve_type_;
+	return type_;
 }
 
 QColor BaseCurveData::color() const

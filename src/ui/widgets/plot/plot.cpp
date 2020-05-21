@@ -283,13 +283,13 @@ int Plot::init_x_axis(widgets::plot::BaseCurveData *curve_data)
 	QString title = curve_data->x_title();
 	double min;
 	double max;
-	if (curve_data->curve_type() == CurveType::TimeCurve &&
+	if (curve_data->type() == CurveType::TimeCurve &&
 			curve_data->is_relative_time()) {
 		min = 0.;
 		max = add_time_;
 		// TODO: !curve_data->is_relative_time()
 	}
-	else if (curve_data->curve_type() == CurveType::XYCurve) {
+	else if (curve_data->type() == CurveType::XYCurve) {
 		// Values +/- 10%
 		min = curve_data->boundingRect().left() -
 			(std::fabs(curve_data->boundingRect().left()) * 0.1);
@@ -314,7 +314,7 @@ int Plot::init_x_axis(widgets::plot::BaseCurveData *curve_data)
 	this->enableAxis(x_axis_id);
 	this->add_axis_icons(x_axis_id);
 
-	if (curve_data->curve_type() == CurveType::TimeCurve &&
+	if (curve_data->type() == CurveType::TimeCurve &&
 			!curve_data->is_relative_time())
 		this->setAxisScaleEngine(x_axis_id, new QwtDateScaleEngine());
 
@@ -720,7 +720,7 @@ bool Plot::update_x_interval(plot::BaseCurveData *curve_data)
 	double max = x_interval.maxValue();
 
 	// There are no plot modes when showing xy curves, just extend the intervals
-	if (curve_data->curve_type() == CurveType::XYCurve) {
+	if (curve_data->type() == CurveType::XYCurve) {
 		if (!axis_lock_map_[QwtPlot::xBottom][AxisBoundary::LowerBoundary] &&
 				boundaries.left() < min) {
 			// New value - 10%

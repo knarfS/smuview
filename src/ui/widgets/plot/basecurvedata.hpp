@@ -51,7 +51,7 @@ public:
 
 	virtual bool is_equal(const BaseCurveData *other) const = 0;
 
-	CurveType curve_type() const;
+	CurveType type() const;
 	QColor color() const;
 	void set_relative_time(bool is_relative_time);
 	bool is_relative_time() const;
@@ -74,7 +74,7 @@ public:
 	virtual QString y_title() const = 0;
 
 protected:
-	const CurveType curve_type_;
+	const CurveType type_;
 	QColor color_;
 	bool relative_time_;
 
