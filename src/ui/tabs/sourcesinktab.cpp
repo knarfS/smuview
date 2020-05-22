@@ -46,7 +46,10 @@ SourceSinkTab::SourceSinkTab(Session &session,
 		shared_ptr<sv::devices::HardwareDevice> device, QWidget *parent) :
 	DeviceTab(session, device, parent)
 {
-	setup_ui();
+	if (views::viewhelper::has_device_settings(device))
+		restore_settings();
+	else
+		setup_ui();
 }
 
 void SourceSinkTab::setup_ui()

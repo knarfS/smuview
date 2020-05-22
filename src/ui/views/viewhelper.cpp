@@ -236,6 +236,19 @@ BaseView *get_view_for_configurable(Session &session,
 	return nullptr;
 }
 
+bool has_device_settings(shared_ptr<sv::devices::BaseDevice> device)
+{
+	QSettings settings;
+	if (settings.childGroups().contains(QString::fromStdString(device->id()))) {
+		qWarning() << "has_device_settings(): Settings for " <<
+			QString::fromStdString(device->id()) << " found!";
+		return true;
+	}
+	qWarning() << "has_device_settings(): NO settings for " <<
+		QString::fromStdString(device->id()) << " found!";
+	return false;
+}
+
 BaseView *get_view_from_settings(Session &session, QSettings &settings)
 {
 	qWarning() << "get_view_from_settings(): current group = " << settings.group();

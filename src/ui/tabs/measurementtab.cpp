@@ -42,8 +42,10 @@ MeasurementTab::MeasurementTab(Session &session,
 	DeviceTab(session, device, parent),
 	measurement_device_(device)
 {
-	//setup_ui();
-	restore_settings();
+	if (views::viewhelper::has_device_settings(device))
+		restore_settings();
+	else
+		setup_ui();
 }
 
 void MeasurementTab::setup_ui()

@@ -32,6 +32,9 @@ UserTab::UserTab(Session &session,
 		shared_ptr<sv::devices::UserDevice> device, QWidget *parent) :
 	DeviceTab(session, device, parent)
 {
+	// TODO: Unique Id for user tabs!
+	//if (views::viewhelper::has_device_settings(device))
+	//	restore_settings();
 }
 
 void UserTab::restore_settings()

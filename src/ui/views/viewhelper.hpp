@@ -34,6 +34,7 @@ class Session;
 
 namespace devices {
 class Configurable;
+class BaseDevice;
 }
 
 namespace ui {
@@ -47,21 +48,30 @@ namespace viewhelper {
  * Returns the fitting control view for the given configurable, by checking for
  * get-/setable config keys and the device type.
  *
- * @param[in] session The reference to the actual SmuView session
- * @param[in] configurable The Configurable
+ * @param[in] session The reference to the actual SmuView session.
+ * @param[in] configurable The Configurable.
  *
- * @return The control view for the configurable
+ * @return The control view for the configurable.
  */
 BaseView *get_view_for_configurable(Session &session,
 	shared_ptr<sv::devices::Configurable> configurable);
 
 /**
+ * Check if a setting for this device exists.
+ *
+ * @param[in] device The device.
+ *
+ * @return true if a setting exists.
+ */
+bool has_device_settings(shared_ptr<sv::devices::BaseDevice> device);
+
+/**
  * Returns the view defined in the actual settings group.
  *
- * @param[in] session The reference to the actual SmuView session
- * @param[in] settings The settings
+ * @param[in] session The reference to the actual SmuView session.
+ * @param[in] settings The settings.
  *
- * @return The view defined by settings
+ * @return The view defined by settings.
  */
 BaseView *get_view_from_settings(Session &session, QSettings &settings);
 

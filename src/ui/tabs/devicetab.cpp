@@ -169,17 +169,18 @@ void DeviceTab::setup_toolbar()
 
 void DeviceTab::restore_settings()
 {
-	qWarning() << "DeviceTab::restore_settings()";
+	qWarning() << "DeviceTab::restore_settings(): " <<
+		QString::fromStdString(device_->id());
 
 	QSettings settings;
 
 	// Restore device views
 	settings.beginGroup(QString::fromStdString(device_->id()));
 
-	QStringList dock_keys = settings.childGroups();
-	for (const auto &dock_key : dock_keys) {
-		settings.beginGroup(dock_key);
-		qWarning() << "DeviceTab::restore_settings(): dock_key = " << dock_key;
+	QStringList view_keys = settings.childGroups();
+	for (const auto &view_key : view_keys) {
+		settings.beginGroup(view_key);
+		qWarning() << "DeviceTab::restore_settings(): view_key = " << view_key;
 		auto view = views::viewhelper::get_view_from_settings(session_, settings);
 		if (view) {
 			qWarning() << "DeviceTab::restore_settings(): view = " << QString::fromStdString(view->id());
@@ -188,15 +189,15 @@ void DeviceTab::restore_settings()
 		settings.endGroup();
 	}
 
-	// Restore state and geometry for all dock widgets.
+	// Restore state and geometry for all view widgets.
 	if (settings.contains("geometry"))
 		//restoreGeometry(settings.value("geometry").toByteArray());
 		setGeometry(settings.value("geometry").toRect());
 	if (settings.contains("state"))
 		restoreState(settings.value("state").toByteArray());
 
-	for (const auto &dock_key : dock_keys) {
-		settings.beginGroup(dock_key);
+	for (const auto &view_key : view_keys) {
+		settings.beginGroup(view_key);
 		if (settings.contains("id") && settings.contains("geometry")) {
 			string id = settings.value("id").toString().toStdString();
 			qWarning() << "DeviceTab::restore_settings(): geometry view = " << QString::fromStdString(id);
@@ -212,7 +213,8 @@ void DeviceTab::restore_settings()
 
 void DeviceTab::save_settings() const
 {
-	qWarning() << "DeviceTab::save_settings()";
+	qWarning() << "DeviceTab::save_settings(): " <<
+		QString::fromStdString(device_->id());
 	qWarning() << "DeviceTab::save_settings(): isMaximized = " << isMaximized();
 
 	QSettings settings;
@@ -221,16 +223,18 @@ void DeviceTab::save_settings() const
 	settings.remove("");  // Remove all keys in this group
 
 	size_t i = 0;
+	qWarning() << "DeviceTab::save_settings(): views.size() = " << view_docks_map_.size();
 	for (const auto &view_dock_pair : view_docks_map_) {
-		qWarning() << "DeviceTab::save_settings(): group = " << QString("dock%1").arg(i);
-		settings.beginGroup(QString("dock%1").arg(i));
+		qWarning() << "DeviceTab::save_settings(): group = " << QString("view%1").arg(i);
+		qWarning() << "DeviceTab::save_settings(): view type = " << QString::fromStdString(view_dock_pair.first->id());
+		settings.beginGroup(QString("view%1").arg(i));
 		view_dock_pair.first->save_settings(settings);
+		/*
 		settings.setValue("geometry", view_dock_pair.second->saveGeometry());
 		settings.setValue("position", view_dock_pair.second->pos());
 		settings.setValue("size", view_dock_pair.second->size());
+		*/
 		/*
-		view_dock_pair.second->pos();
-		view_dock_pair.second->size();
 		view_dock_pair.second->allowedAreas();
 		//view_dock_pair.second->tabified()
 		*/
@@ -238,7 +242,7 @@ void DeviceTab::save_settings() const
 		++i;
 	}
 
-	// Save state and geometry for all dock widgets.
+	// Save state and geometry for all view widgets.
 	//settings.setValue("geometry", saveGeometry());
 	settings.setValue("geometry", geometry());
 	settings.setValue("state", saveState());

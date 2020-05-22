@@ -19,6 +19,7 @@
 
 #include <string>
 
+#include <QDebug>
 #include <QSettings>
 #include <QSizePolicy>
 #include <QHBoxLayout>
@@ -170,7 +171,11 @@ void SourceSinkControlView::setup_ui()
 
 void SourceSinkControlView::save_settings(QSettings &settings) const
 {
-	(void)settings;
+	qWarning() << "SourceSinkControlView::save_settings(): settings.group = " << settings.group();
+
+	settings.setValue("id", QVariant(QString::fromStdString(id_)));
+	settings.setValue("device", QVariant(QString::fromStdString(configurable_->device_id())));
+	settings.setValue("configurable", QVariant(QString::fromStdString(configurable_->name())));
 }
 
 void SourceSinkControlView::restore_settings(QSettings &settings)
