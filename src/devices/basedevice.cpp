@@ -104,17 +104,28 @@ DeviceType BaseDevice::type() const
 string BaseDevice::id() const
 {
 	string vendor = sr_device_->vendor();
-	std::replace(vendor.begin(), vendor.end(), ':', '-');
+	std::replace(vendor.begin(), vendor.end(), ':', '_');
 	string model = sr_device_->model();
-	std::replace(model.begin(), model.end(), ':', '-');
+	std::replace(model.begin(), model.end(), ':', '_');
 
-	string id = vendor + ":" + model + ":";
-	if (!sr_device_->serial_number().empty())
-		id += sr_device_->serial_number();
-	else if (!sr_device_->connection_id().empty())
-		id += sr_device_->connection_id();
-	else
-		id += std::to_string(index_);
+	string id = vendor + ":" + model;
+
+	if (!sr_device_->serial_number().empty()) {
+		string serial_number = sr_device_->serial_number();
+		std::replace(serial_number.begin(), serial_number.end(), ':', '_');
+		// Replacing some special characters for QSettings.
+		std::replace(serial_number.begin(), serial_number.end(), '/', '_');
+		std::replace(serial_number.begin(), serial_number.end(), '\\', '_');
+		id +=  ":" + serial_number;
+	}
+	else if (!sr_device_->connection_id().empty()) {
+		string connection_id = sr_device_->connection_id();
+		std::replace(connection_id.begin(), connection_id.end(), ':', '_');
+		// Replacing some special characters for QSettings.
+		std::replace(connection_id.begin(), connection_id.end(), '/', '_');
+		std::replace(connection_id.begin(), connection_id.end(), '\\', '_');
+		id += ":" + connection_id;
+	}
 
 	return id;
 }
