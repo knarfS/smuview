@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <algorithm>
 #include <string>
 
 #include <QDebug>
@@ -42,7 +43,11 @@ SmuScriptTab::SmuScriptTab(Session &session,
 	BaseTab(session, parent),
 	script_file_name_(script_file_name)
 {
-	id_ = "smuscripttab:" + std::to_string(BaseTab::id_counter++);
+	// Replacing some special characters for QSettings.
+	string file_name_tmp = script_file_name_;
+	std::replace(file_name_tmp.begin(), file_name_tmp.end(), '/', '_');
+	std::replace(file_name_tmp.begin(), file_name_tmp.end(), '\\', '_');
+	id_ = "smuscripttab:" + file_name_tmp;
 
 	setup_ui();
 	connect_signals();

@@ -33,7 +33,7 @@ namespace tabs {
 WelcomeTab::WelcomeTab(Session &session, QWidget *parent) :
 	BaseTab(session, parent)
 {
-	id_ = "welcometab:" + std::to_string(BaseTab::id_counter++);
+	id_ = "welcometab:0";
 
 	setup_ui();
 }

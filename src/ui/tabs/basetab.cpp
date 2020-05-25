@@ -31,8 +31,6 @@ namespace sv {
 namespace ui {
 namespace tabs {
 
-unsigned int BaseTab::id_counter = 0;
-
 BaseTab::BaseTab(Session &session, QWidget *parent) :
 	QMainWindow(parent),
 	session_(session)

@@ -59,7 +59,7 @@ DeviceTab::DeviceTab(Session &session,
 	action_add_math_channel_(new QAction(this)),
 	action_about_(new QAction(this))
 {
-	id_ = "devicetab:" + std::to_string(BaseTab::id_counter++);
+	id_ = "devicetab:" + device_->id();
 
 	setup_toolbar();
 }

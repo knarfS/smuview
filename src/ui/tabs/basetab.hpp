@@ -78,8 +78,6 @@ private:
 		QDockWidget::DockWidgetFeatures features);
 
 protected:
-	static unsigned int id_counter;
-
 	Session &session_;
 	string id_;
 	map<views::BaseView *, TabDockWidget *> view_docks_map_;
