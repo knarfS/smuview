@@ -33,6 +33,7 @@
 #include <QTableWidget>
 #include <QTimer>
 #include <QToolBar>
+#include <QUuid>
 #include <QVariant>
 
 #include "src/ui/views/baseview.hpp"
@@ -86,6 +87,7 @@ class SequenceOutputView : public BaseView
 public:
 	SequenceOutputView(Session& session,
 		shared_ptr<sv::data::properties::DoubleProperty> property,
+		QUuid uuid = QUuid(),
 		QWidget* parent = nullptr);
 	~SequenceOutputView();
 

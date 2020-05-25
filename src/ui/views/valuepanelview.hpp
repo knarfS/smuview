@@ -28,6 +28,7 @@
 #include <QString>
 #include <QTimer>
 #include <QToolBar>
+#include <QUuid>
 
 #include "src/data/datautil.hpp"
 #include "src/ui/views/baseview.hpp"
@@ -61,10 +62,12 @@ class ValuePanelView : public BaseView
 public:
 	ValuePanelView(Session& session,
 		shared_ptr<channels::BaseChannel> channel,
+		QUuid uuid = QUuid(),
 		QWidget* parent = nullptr);
 
 	ValuePanelView(Session& session,
 		shared_ptr<sv::data::AnalogTimeSignal> signal,
+		QUuid uuid = QUuid(),
 		QWidget* parent = nullptr);
 
 	~ValuePanelView();

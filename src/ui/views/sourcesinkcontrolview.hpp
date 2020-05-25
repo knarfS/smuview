@@ -23,6 +23,7 @@
 #include <memory>
 
 #include <QSettings>
+#include <QUuid>
 
 #include "src/devices/deviceutil.hpp"
 #include "src/ui/views/baseview.hpp"
@@ -57,6 +58,7 @@ class SourceSinkControlView : public BaseView
 public:
 	SourceSinkControlView(Session& session,
 		std::shared_ptr<sv::devices::Configurable> configurable,
+		QUuid uuid = QUuid(),
 		QWidget* parent = nullptr);
 
 	QString title() const override;

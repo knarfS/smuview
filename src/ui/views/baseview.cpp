@@ -19,6 +19,8 @@
 
 #include <string>
 
+#include <QUuid>
+
 #include "baseview.hpp"
 #include "src/session.hpp"
 
@@ -28,14 +30,12 @@ namespace sv {
 namespace ui {
 namespace views {
 
-unsigned int BaseView::id_counter = 0;
-
-BaseView::BaseView(Session &session, QWidget *parent) :
+BaseView::BaseView(Session &session, QUuid uuid, QWidget *parent) :
 	QMainWindow(parent),
 	session_(session)
 {
-	// Every device gets its own unique id
-	id_ = "none:";
+	// Every view gets its own unique id
+	uuid_ = uuid.isNull() ? QUuid::createUuid() : uuid;
 
 	// Remove Qt::Window flag
 	this->setWindowFlags(Qt::Widget);

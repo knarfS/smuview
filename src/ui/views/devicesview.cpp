@@ -24,6 +24,7 @@
 #include <QMessageBox>
 #include <QSettings>
 #include <QToolBar>
+#include <QUuid>
 #include <QVBoxLayout>
 
 #include "devicesview.hpp"
@@ -52,13 +53,14 @@ namespace sv {
 namespace ui {
 namespace views {
 
-DevicesView::DevicesView(Session &session,
-		QWidget *parent) :
-	BaseView(session, parent),
+DevicesView::DevicesView(Session &session, QUuid uuid, QWidget *parent) :
+	BaseView(session, uuid, parent),
 	action_add_device_(new QAction(this)),
 	action_add_userdevice_(new QAction(this)),
 	action_disconnect_device_(new QAction(this))
 {
+	id_ = "devices:" + uuid_.toString(QUuid::WithoutBraces).toStdString();
+
 	setup_ui();
 	setup_toolbar();
 	connect_signals();

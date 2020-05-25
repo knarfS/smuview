@@ -24,6 +24,7 @@
 #include <QDateTime>
 #include <QDebug>
 #include <QSettings>
+#include <QUuid>
 #include <QVBoxLayout>
 
 #include "powerpanelview.hpp"
@@ -47,8 +48,9 @@ namespace views {
 PowerPanelView::PowerPanelView(Session &session,
 		shared_ptr<sv::data::AnalogTimeSignal> voltage_signal,
 		shared_ptr<sv::data::AnalogTimeSignal> current_signal,
+		QUuid uuid,
 		QWidget *parent) :
-	BaseView(session, parent),
+	BaseView(session, uuid, parent),
 	voltage_signal_(voltage_signal),
 	current_signal_(current_signal),
 	voltage_min_(std::numeric_limits<double>::max()),
@@ -63,7 +65,7 @@ PowerPanelView::PowerPanelView(Session &session,
 	actual_watt_hours_(0),
 	action_reset_displays_(new QAction(this))
 {
-	id_ = "powerpanel:" + std::to_string(BaseView::id_counter++);
+	id_ = "powerpanel:" + uuid_.toString(QUuid::WithoutBraces).toStdString();
 
 	setup_ui();
 	setup_toolbar();
@@ -264,6 +266,7 @@ void PowerPanelView::save_settings(QSettings &settings) const
 {
 	qWarning() << "PowerPanelView::save_settings(): settings.group = " << settings.group();
 
+	settings.setValue("uuid", QVariant(uuid_));
 	settings.setValue("id", QVariant(QString::fromStdString(id_)));
 
 	settings.setValue("v_device", QVariant(

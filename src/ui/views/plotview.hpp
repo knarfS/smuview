@@ -28,6 +28,7 @@
 #include <QSettings>
 #include <QToolBar>
 #include <QToolButton>
+#include <QUuid>
 
 #include "src/ui/views/baseview.hpp"
 
@@ -68,13 +69,16 @@ class PlotView : public BaseView
 public:
 	PlotView(Session &session,
 		shared_ptr<channels::BaseChannel> channel,
+		QUuid uuid = QUuid(),
 		QWidget *parent = nullptr);
 	PlotView(Session &session,
 		shared_ptr<sv::data::AnalogTimeSignal> signal,
+		QUuid uuid = QUuid(),
 		QWidget *parent = nullptr);
 	PlotView(Session &session,
 		shared_ptr<sv::data::AnalogTimeSignal> x_signal,
 		shared_ptr<sv::data::AnalogTimeSignal> y_signal,
+		QUuid uuid = QUuid(),
 		QWidget *parent = nullptr);
 
 	QString title() const override;

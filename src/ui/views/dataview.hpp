@@ -28,6 +28,7 @@
 #include <QSettings>
 #include <QTableWidget>
 #include <QToolBar>
+#include <QUuid>
 
 #include "src/ui/views/baseview.hpp"
 
@@ -51,7 +52,7 @@ class DataView : public BaseView
 
 public:
 	DataView(Session& session,
-		shared_ptr<sv::data::AnalogTimeSignal> signal,
+		shared_ptr<sv::data::AnalogTimeSignal> signal, QUuid uuid = QUuid(),
 		QWidget* parent = nullptr);
 
 	QString title() const override;

@@ -254,6 +254,7 @@ BaseView *get_view_from_settings(Session &session, QSettings &settings)
 	qWarning() << "get_view_from_settings(): current group = " << settings.group();
 
 	QString id = settings.value("id").toString();
+	QUuid uuid = settings.value("uuid").toUuid();
 	QStringList id_list = id.split(':');
 	QString type = id_list[0];
 	qWarning() << "get_view_from_settings(): type = " << type;
@@ -268,7 +269,7 @@ BaseView *get_view_from_settings(Session &session, QSettings &settings)
 		}
 		DataView *view = nullptr;
 		if (!signals.empty()) {
-			view = new DataView(session, signals.at(0));
+			view = new DataView(session, signals.at(0), uuid);
 			for (size_t i=1; i<signals.size(); i++)
 				view->add_signal(signals.at(i));
 		}
@@ -284,7 +285,7 @@ BaseView *get_view_from_settings(Session &session, QSettings &settings)
 		}
 		PlotView *view = nullptr;
 		if (!signals.empty()) {
-			view = new PlotView(session, signals.at(0)->parent_channel());
+			view = new PlotView(session, signals.at(0)->parent_channel(), uuid);
 			for (size_t i=1; i<signals.size(); i++)
 				view->add_time_curve(signals.at(i));
 		}
@@ -300,7 +301,7 @@ BaseView *get_view_from_settings(Session &session, QSettings &settings)
 		}
 		PlotView *view = nullptr;
 		if (!signals.empty()) {
-			view = new PlotView(session, signals.at(0));
+			view = new PlotView(session, signals.at(0), uuid);
 			for (size_t i=1; i<signals.size(); i++)
 				view->add_time_curve(signals.at(i));
 		}
@@ -314,7 +315,7 @@ BaseView *get_view_from_settings(Session &session, QSettings &settings)
 		auto y_signal = get_signal(session, settings, "y_");
 		if (!y_signal)
 			return nullptr;
-		return new PlotView(session, x_signal, y_signal);
+		return new PlotView(session, x_signal, y_signal, uuid);
 		*/
 	}
 	if (type == "powerpanel") {
@@ -324,19 +325,19 @@ BaseView *get_view_from_settings(Session &session, QSettings &settings)
 		auto i_signal = get_signal(session, settings, "i_");
 		if (!i_signal)
 			return nullptr;
-		return new PowerPanelView(session, v_signal, i_signal);
+		return new PowerPanelView(session, v_signal, i_signal, uuid);
 	}
 	if (type == "valuepanel_ch") {
 		auto channel = get_channel(session, settings);
 		if (!channel)
 			return nullptr;
-		return new ValuePanelView(session, channel);
+		return new ValuePanelView(session, channel, uuid);
 	}
 	if (type == "valuepanel_sig") {
 		auto signal = get_signal(session, settings);
 		if (!signal)
 			return nullptr;
-		return new ValuePanelView(session, signal);
+		return new ValuePanelView(session, signal, uuid);
 	}
 	if (type == "sequenceoutput") {
 		// TODO
@@ -345,25 +346,25 @@ BaseView *get_view_from_settings(Session &session, QSettings &settings)
 		auto configurable = get_configurable(session, settings);
 		if (!configurable)
 			return nullptr;
-		return new DemoControlView(session, configurable);
+		return new DemoControlView(session, configurable, uuid);
 	}
 	if (type == "genericcontrol") {
 		auto configurable = get_configurable(session, settings);
 		if (!configurable)
 			return nullptr;
-		return new GenericControlView(session, configurable);
+		return new GenericControlView(session, configurable, uuid);
 	}
 	if (type == "measurementcontrol") {
 		auto configurable = get_configurable(session, settings);
 		if (!configurable)
 			return nullptr;
-		return new MeasurementControlView(session, configurable);
+		return new MeasurementControlView(session, configurable, uuid);
 	}
 	if (type == "sourcesinkcontrol") {
 		auto configurable = get_configurable(session, settings);
 		if (!configurable)
 			return nullptr;
-		return new SourceSinkControlView(session, configurable);
+		return new SourceSinkControlView(session, configurable, uuid);
 	}
 
 	return nullptr;

@@ -27,6 +27,7 @@
 #include <QSettings>
 #include <QString>
 #include <QToolBar>
+#include <QUuid>
 
 #include "src/ui/views/baseview.hpp"
 
@@ -42,7 +43,8 @@ class SmuScriptOutputView : public BaseView
 	Q_OBJECT
 
 public:
-	SmuScriptOutputView(Session& session, QWidget* parent = nullptr);
+	SmuScriptOutputView(Session& session, QUuid uuid = QUuid(),
+		QWidget* parent = nullptr);
 
 	QString title() const override;
 

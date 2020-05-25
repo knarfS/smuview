@@ -44,6 +44,7 @@
 #include <QTextStream>
 #include <QTimer>
 #include <QToolBar>
+#include <QUuid>
 #include <QVBoxLayout>
 
 #include "sequenceoutputview.hpp"
@@ -118,8 +119,9 @@ void DoubleSpinBoxDelegate::updateEditorGeometry(QWidget *editor,
 
 SequenceOutputView::SequenceOutputView(Session &session,
 		shared_ptr<sv::data::properties::DoubleProperty> property,
+		QUuid uuid,
 		QWidget *parent) :
-	BaseView(session, parent),
+	BaseView(session, uuid, parent),
 	property_(property),
 	action_run_(new QAction(this)),
 	action_add_row_(new QAction(this)),
@@ -130,7 +132,7 @@ SequenceOutputView::SequenceOutputView(Session &session,
 	sequence_pos_(0)
 {
 	assert(property_);
-	id_ = "sequence:" + std::to_string(BaseView::id_counter++);
+	id_ = "sequence:" + uuid_.toString(QUuid::WithoutBraces).toStdString();
 
 	timer_ = new QTimer(this);
 

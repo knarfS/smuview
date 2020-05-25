@@ -25,6 +25,7 @@
 #include <QPushButton>
 #include <QSettings>
 #include <QString>
+#include <QUuid>
 
 #include "src/ui/views/baseview.hpp"
 
@@ -58,6 +59,7 @@ class DemoControlView : public BaseView
 public:
 	DemoControlView(Session& session,
 		shared_ptr<sv::devices::Configurable> configurable,
+		QUuid uuid = QUuid(),
 		QWidget *parent = nullptr);
 
 	QString title() const override;

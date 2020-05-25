@@ -23,6 +23,7 @@
 #include <memory>
 
 #include <QSettings>
+#include <QUuid>
 
 #include "src/ui/views/baseview.hpp"
 
@@ -52,6 +53,7 @@ class MeasurementControlView : public BaseView
 public:
 	MeasurementControlView(Session& session,
 		shared_ptr<sv::devices::Configurable> configurable,
+		QUuid uuid = QUuid(),
 		QWidget* parent = nullptr);
 
 	QString title() const override;

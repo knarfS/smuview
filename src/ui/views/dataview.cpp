@@ -30,6 +30,7 @@
 #include <QTableWidget>
 #include <QTableWidgetItem>
 #include <QToolBar>
+#include <QUuid>
 #include <QVBoxLayout>
 
 #include "dataview.hpp"
@@ -48,13 +49,14 @@ namespace views {
 
 DataView::DataView(Session &session,
 		shared_ptr<sv::data::AnalogTimeSignal> signal,
+		QUuid uuid,
 		QWidget *parent) :
-	BaseView(session, parent),
+	BaseView(session, uuid, parent),
 	auto_scroll_(true),
 	action_auto_scroll_(new QAction(this)),
 	action_add_signal_(new QAction(this))
 {
-	id_ = "data:" + std::to_string(BaseView::id_counter++);
+	id_ = "data:" + uuid_.toString(QUuid::WithoutBraces).toStdString();
 
 	setup_ui();
 	setup_toolbar();
@@ -110,6 +112,7 @@ void DataView::save_settings(QSettings &settings) const
 {
 	qWarning() << "DataView::save_settings(): settings.group = " << settings.group();
 
+	settings.setValue("uuid", QVariant(uuid_));
 	settings.setValue("id", QVariant(QString::fromStdString(id_)));
 
 	size_t i = 0;

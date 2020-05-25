@@ -24,6 +24,7 @@
 
 #include <QMainWindow>
 #include <QSettings>
+#include <QUuid>
 #include <QWidget>
 
 using std::string;
@@ -51,7 +52,8 @@ class BaseView : public QMainWindow
 	Q_OBJECT
 
 public:
-	explicit BaseView(Session &session, QWidget *parent = nullptr);
+	explicit BaseView(Session &session, QUuid uuid = QUuid(),
+		QWidget *parent = nullptr);
 
 	Session &session();
 	const Session &session() const;
@@ -64,10 +66,9 @@ public:
 	virtual void restore_settings(QSettings &settings) = 0;
 
 protected:
-	static unsigned int id_counter;
-
 	Session &session_;
 	QWidget *central_widget_;
+	QUuid uuid_;
 	string id_;
 
 };

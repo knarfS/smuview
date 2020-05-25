@@ -22,6 +22,7 @@
 #include <QDebug>
 #include <QFormLayout>
 #include <QSettings>
+#include <QUuid>
 #include <QVariant>
 
 #include "measurementcontrolview.hpp"
@@ -39,11 +40,12 @@ namespace ui {
 namespace views {
 
 MeasurementControlView::MeasurementControlView(Session &session,
-		shared_ptr<sv::devices::Configurable> configurable, QWidget *parent) :
-	BaseView(session, parent),
+		shared_ptr<sv::devices::Configurable> configurable,
+		QUuid uuid, QWidget *parent) :
+	BaseView(session, uuid, parent),
 	configurable_(configurable)
 {
-	id_ = "measurementcontrol:" + std::to_string(BaseView::id_counter++);
+	id_ = "measurementcontrol:" + uuid_.toString(QUuid::WithoutBraces).toStdString();
 
 	setup_ui();
 }
@@ -76,6 +78,7 @@ void MeasurementControlView::save_settings(QSettings &settings) const
 {
 	qWarning() << "MeasurementControlView::save_settings(): settings.group = " << settings.group();
 
+	settings.setValue("uuid", QVariant(uuid_));
 	settings.setValue("id", QVariant(QString::fromStdString(id_)));
 	settings.setValue("device", QVariant(QString::fromStdString(configurable_->device_id())));
 	settings.setValue("configurable", QVariant(QString::fromStdString(configurable_->name())));

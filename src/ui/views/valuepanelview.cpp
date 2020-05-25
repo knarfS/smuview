@@ -27,6 +27,7 @@
 #include <QDebug>
 #include <QHBoxLayout>
 #include <QSettings>
+#include <QUuid>
 #include <QVariant>
 #include <QVBoxLayout>
 
@@ -49,8 +50,9 @@ namespace views {
 
 ValuePanelView::ValuePanelView(Session &session,
 		shared_ptr<channels::BaseChannel> channel,
+		QUuid uuid,
 		QWidget *parent) :
-	BaseView(session, parent),
+	BaseView(session, uuid, parent),
 	channel_(channel),
 	unit_(""),
 	unit_suffix_(""),
@@ -63,7 +65,7 @@ ValuePanelView::ValuePanelView(Session &session,
 	signal_ = dynamic_pointer_cast<sv::data::AnalogTimeSignal>(
 		channel_->actual_signal());
 
-	id_ = "valuepanel_ch:" + std::to_string(BaseView::id_counter++);
+	id_ = "valuepanel_ch:" + uuid_.toString(QUuid::WithoutBraces).toStdString();
 
 	if (signal_) {
 		digits_ = signal_->digits();
@@ -92,8 +94,9 @@ ValuePanelView::ValuePanelView(Session &session,
 
 ValuePanelView::ValuePanelView(Session& session,
 		shared_ptr<sv::data::AnalogTimeSignal> signal,
+		QUuid uuid,
 		QWidget* parent) :
-	BaseView(session, parent),
+	BaseView(session, uuid, parent),
 	channel_(nullptr),
 	signal_(signal),
 	unit_(""),
@@ -104,7 +107,7 @@ ValuePanelView::ValuePanelView(Session& session,
 {
 	assert(signal_);
 
-	id_ = "valuepanel_sig:" + std::to_string(BaseView::id_counter++);
+	id_ = "valuepanel_sig:" + uuid_.toString(QUuid::WithoutBraces).toStdString();
 
 	digits_ = signal_->digits();
 	decimal_places_ = signal_->decimal_places();
@@ -239,6 +242,7 @@ void ValuePanelView::save_settings(QSettings &settings) const
 {
 	qWarning() << "ValuePanelView::save_settings(): settings.group = " << settings.group();
 
+	settings.setValue("uuid", QVariant(uuid_));
 	settings.setValue("id", QVariant(QString::fromStdString(id_)));
 	settings.setValue("device", QVariant(
 		QString::fromStdString(channel_->parent_device()->id())));

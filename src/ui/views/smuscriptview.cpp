@@ -29,6 +29,7 @@
 #include <QTextOption>
 #include <QTextStream>
 #include <QToolBar>
+#include <QUuid>
 #include <QVBoxLayout>
 
 #include <QCodeEditor>
@@ -47,8 +48,8 @@ namespace ui {
 namespace views {
 
 SmuScriptView::SmuScriptView(Session &session, string script_file_name,
-		QWidget *parent) :
-	BaseView(session, parent),
+		QUuid uuid, QWidget *parent) :
+	BaseView(session, uuid, parent),
 	script_file_name_(script_file_name),
 	action_open_(new QAction(this)),
 	action_save_(new QAction(this)),
@@ -57,7 +58,7 @@ SmuScriptView::SmuScriptView(Session &session, string script_file_name,
 	text_changed_(false),
 	started_from_here_(false)
 {
-	id_ = "smuscript:" + std::to_string(BaseView::id_counter++);;
+	id_ = "smuscript:" + uuid_.toString(QUuid::WithoutBraces).toStdString();
 
 	setup_ui();
 	setup_toolbar();

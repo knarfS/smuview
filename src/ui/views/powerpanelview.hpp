@@ -26,6 +26,7 @@
 #include <QSettings>
 #include <QTimer>
 #include <QToolBar>
+#include <QUuid>
 
 #include "src/ui/views/baseview.hpp"
 
@@ -55,6 +56,7 @@ public:
 	PowerPanelView(Session& session,
 		shared_ptr<sv::data::AnalogTimeSignal> voltage_signal,
 		shared_ptr<sv::data::AnalogTimeSignal> current_signal,
+		QUuid uuid = QUuid(),
 		QWidget* parent = nullptr);
 	~PowerPanelView();
 

@@ -25,6 +25,7 @@
 #include <QAction>
 #include <QSettings>
 #include <QToolBar>
+#include <QUuid>
 
 #include "src/ui/views/baseview.hpp"
 
@@ -49,7 +50,8 @@ class DevicesView : public BaseView
 	Q_OBJECT
 
 public:
-	DevicesView(Session &session, QWidget *parent = nullptr);
+	DevicesView(Session &session, QUuid uuid = QUuid(),
+		QWidget *parent = nullptr);
 
 	QString title() const override;
 

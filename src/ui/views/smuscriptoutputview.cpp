@@ -29,6 +29,7 @@
 #include <QString>
 #include <QTextCharFormat>
 #include <QToolBar>
+#include <QUuid>
 #include <QVBoxLayout>
 
 #include "smuscriptoutputview.hpp"
@@ -39,13 +40,14 @@ namespace sv {
 namespace ui {
 namespace views {
 
-SmuScriptOutputView::SmuScriptOutputView(Session &session, QWidget *parent) :
-	BaseView(session, parent),
+SmuScriptOutputView::SmuScriptOutputView(Session &session,
+		QUuid uuid, QWidget *parent) :
+	BaseView(session, uuid, parent),
 	auto_scroll_(true),
 	action_auto_scroll_(new QAction(this)),
 	action_clear_output_(new QAction(this))
 {
-	id_ = "smuscriptoutput:" + std::to_string(BaseView::id_counter++);;
+	id_ = "smuscriptoutput:" + uuid_.toString(QUuid::WithoutBraces).toStdString();
 
 	setup_ui();
 	setup_toolbar();

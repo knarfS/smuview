@@ -27,6 +27,7 @@
 #include <QMessageBox>
 #include <QSettings>
 #include <QToolButton>
+#include <QUuid>
 #include <QVBoxLayout>
 #include <qwt_plot_renderer.h>
 
@@ -55,8 +56,9 @@ namespace views {
 
 PlotView::PlotView(Session &session,
 		shared_ptr<channels::BaseChannel> channel,
+		QUuid uuid,
 		QWidget *parent) :
-	BaseView(session, parent),
+	BaseView(session, uuid, parent),
 	initial_channel_(channel),
 	action_add_marker_(new QAction(this)),
 	action_add_diff_marker_(new QAction(this)),
@@ -76,7 +78,7 @@ PlotView::PlotView(Session &session,
 	if (signal)
 		curves_.push_back(new widgets::plot::TimeCurveData(signal));
 
-	id_ = "plot_ch:" + std::to_string(BaseView::id_counter++);
+	id_ = "plot_ch:" + uuid_.toString(QUuid::WithoutBraces).toStdString();
 
 	// Signal (aka Quantity + Flags + Unit) can change, e.g. DMM channels
 	connect(initial_channel_.get(),
@@ -96,8 +98,9 @@ PlotView::PlotView(Session &session,
 
 PlotView::PlotView(Session &session,
 		shared_ptr<sv::data::AnalogTimeSignal> signal,
+		QUuid uuid,
 		QWidget *parent) :
-	BaseView(session, parent),
+	BaseView(session, uuid, parent),
 	initial_channel_(nullptr),
 	action_add_marker_(new QAction(this)),
 	action_add_diff_marker_(new QAction(this)),
@@ -111,7 +114,7 @@ PlotView::PlotView(Session &session,
 
 	curves_.push_back(new widgets::plot::TimeCurveData(signal));
 
-	id_ = "plot_sig:" + std::to_string(BaseView::id_counter++);
+	id_ = "plot_sig:" + uuid_.toString(QUuid::WithoutBraces).toStdString();
 
 	setup_ui();
 	setup_toolbar();
@@ -124,8 +127,9 @@ PlotView::PlotView(Session &session,
 PlotView::PlotView(Session &session,
 		shared_ptr<sv::data::AnalogTimeSignal> x_signal,
 		shared_ptr<sv::data::AnalogTimeSignal> y_signal,
+		QUuid uuid,
 		QWidget *parent) :
-	BaseView(session, parent),
+	BaseView(session, uuid, parent),
 	initial_channel_(nullptr),
 	action_add_marker_(new QAction(this)),
 	action_add_diff_marker_(new QAction(this)),
@@ -140,7 +144,7 @@ PlotView::PlotView(Session &session,
 
 	curves_.push_back(new widgets::plot::XYCurveData(x_signal, y_signal));
 
-	id_ = "plot_xy:" + std::to_string(BaseView::id_counter++);
+	id_ = "plot_xy:" + uuid_.toString(QUuid::WithoutBraces).toStdString();
 
 	setup_ui();
 	setup_toolbar();
@@ -293,6 +297,7 @@ void PlotView::save_settings(QSettings &settings) const
 {
 	qWarning() << "PlotView::save_settings(): settings.group = " << settings.group();
 
+	settings.setValue("uuid", QVariant(uuid_));
 	settings.setValue("id", QVariant(QString::fromStdString(id_)));
 
 	size_t i = 0;

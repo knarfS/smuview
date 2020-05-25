@@ -25,6 +25,7 @@
 #include <QAction>
 #include <QSettings>
 #include <QToolBar>
+#include <QUuid>
 
 #include <QCodeEditor>
 
@@ -45,7 +46,7 @@ class SmuScriptView : public BaseView
 
 public:
 	SmuScriptView(Session& session, string script_file_name,
-		QWidget* parent = nullptr);
+		QUuid uuid = QUuid(), QWidget* parent = nullptr);
 
 	QString title() const override;
 	bool ask_to_save(const QString &title);

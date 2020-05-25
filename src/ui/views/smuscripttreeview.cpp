@@ -31,6 +31,7 @@
 #include <QTimer>
 #include <QToolBar>
 #include <QTreeView>
+#include <QUuid>
 #include <QVBoxLayout>
 
 #include "smuscripttreeview.hpp"
@@ -45,12 +46,15 @@ namespace sv {
 namespace ui {
 namespace views {
 
-SmuScriptTreeView::SmuScriptTreeView(Session &session, QWidget *parent) :
-	BaseView(session, parent),
+SmuScriptTreeView::SmuScriptTreeView(Session &session,
+		QUuid uuid, QWidget *parent) :
+	BaseView(session, uuid, parent),
 	action_new_script_(new QAction(this)),
 	action_open_script_(new QAction(this)),
 	action_run_script_(new QAction(this))
 {
+	id_ = "smuscripttree:" + uuid_.toString(QUuid::WithoutBraces).toStdString();
+
 	// TODO: Set path to example files dir (how to do this in an AppImage?)
 	//       or save last directory in Session
 	script_dir_ = QDir::homePath();

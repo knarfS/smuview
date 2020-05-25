@@ -23,6 +23,7 @@
 #include <QSettings>
 #include <QSizePolicy>
 #include <QHBoxLayout>
+#include <QUuid>
 #include <QVBoxLayout>
 
 #include "sourcesinkcontrolview.hpp"
@@ -43,11 +44,12 @@ namespace ui {
 namespace views {
 
 SourceSinkControlView::SourceSinkControlView(Session &session,
-		shared_ptr<sv::devices::Configurable> configurable, QWidget *parent) :
-	BaseView(session, parent),
+		shared_ptr<sv::devices::Configurable> configurable,
+		QUuid uuid, QWidget *parent) :
+	BaseView(session, uuid, parent),
 	configurable_(configurable)
 {
-	id_ = "sourcesinkcontrol:" + std::to_string(BaseView::id_counter++);
+	id_ = "sourcesinkcontrol:" + uuid_.toString(QUuid::WithoutBraces).toStdString();
 
 	setup_ui();
 }
@@ -173,6 +175,7 @@ void SourceSinkControlView::save_settings(QSettings &settings) const
 {
 	qWarning() << "SourceSinkControlView::save_settings(): settings.group = " << settings.group();
 
+	settings.setValue("uuid", QVariant(uuid_));
 	settings.setValue("id", QVariant(QString::fromStdString(id_)));
 	settings.setValue("device", QVariant(QString::fromStdString(configurable_->device_id())));
 	settings.setValue("configurable", QVariant(QString::fromStdString(configurable_->name())));

@@ -27,6 +27,7 @@
 #include <QString>
 #include <QToolBar>
 #include <QTreeView>
+#include <QUuid>
 
 #include "src/ui/views/baseview.hpp"
 
@@ -42,7 +43,8 @@ class SmuScriptTreeView : public BaseView
 	Q_OBJECT
 
 public:
-	SmuScriptTreeView(Session &session, QWidget *parent = nullptr);
+	SmuScriptTreeView(Session &session, QUuid uuid = QUuid(),
+		QWidget *parent = nullptr);
 
 	QString title() const override;
 
