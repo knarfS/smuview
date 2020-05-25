@@ -287,8 +287,9 @@ set(smuview_SOURCES
   src/ui/tabs/devicetab.cpp
   src/ui/tabs/measurementtab.cpp
   src/ui/tabs/smuscripttab.cpp
-  src/ui/tabs/tabhelper.cpp
   src/ui/tabs/sourcesinktab.cpp
+  src/ui/tabs/tabdockwidget.cpp
+  src/ui/tabs/tabhelper.cpp
   src/ui/tabs/usertab.cpp
   src/ui/tabs/welcometab.cpp
   src/ui/views/baseview.cpp

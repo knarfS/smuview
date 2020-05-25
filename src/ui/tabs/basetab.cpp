@@ -25,6 +25,7 @@
 
 #include "basetab.hpp"
 #include "src/session.hpp"
+#include "src/ui/tabs/tabdockwidget.hpp"
 
 namespace sv {
 namespace ui {
@@ -67,14 +68,14 @@ views::BaseView *BaseTab::get_view_from_view_id(string id)
 	return view_id_map_[id];
 }
 
-QDockWidget *BaseTab::create_dock_widget(views::BaseView *view,
+TabDockWidget *BaseTab::create_dock_widget(views::BaseView *view,
 	QDockWidget::DockWidgetFeatures features)
 {
 	// The dock widget must be created here, because the layout must be set to
 	// the central widget of the view main window before dock->setWidget() is
 	// called.
 	// Otherwise the application will flicker at startup....
-	QDockWidget *dock = new QDockWidget(view->title());
+	TabDockWidget *dock = new TabDockWidget(view->title(), view->id());
 	// objectName is needed for QSettings
 	dock->setObjectName(QString::fromStdString(this->id()) + ":" +
 		QString::fromStdString(view->id()));
@@ -86,6 +87,8 @@ QDockWidget *BaseTab::create_dock_widget(views::BaseView *view,
 
 	view_docks_map_[view] = dock;
 	view_id_map_[view->id()] = view;
+
+	connect(dock, &TabDockWidget::closed, this, &BaseTab::remove_view);
 
 	return dock;
 }
@@ -122,6 +125,13 @@ void BaseTab::add_view_ontop(views::BaseView *view,
 	// This fixes a qt bug. See: https://bugreports.qt.io/browse/QTBUG-65592
 	// resizeDocks() was introduced in Qt 5.6.
 	this->resizeDocks({dock}, {40}, Qt::Horizontal);
+}
+
+void BaseTab::remove_view(const std::string &view_id)
+{
+	auto view = view_id_map_[view_id];
+	view_docks_map_.erase(view);
+	view_id_map_.erase(view_id);
 }
 
 } // namespace tabs

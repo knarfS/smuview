@@ -20,6 +20,7 @@
 #include <QCloseEvent>
 #include <QDebug>
 #include <QDockWidget>
+#include <QString>
 
 #include "tabdockwidget.hpp"
 
@@ -27,14 +28,16 @@ namespace sv {
 namespace ui {
 namespace tabs {
 
-TabDockWidget::TabDockWidget(QWidget *parent) :
-	QDockWidget(parent)
+TabDockWidget::TabDockWidget(const QString &title, const string &view_id,
+		QWidget *parent) :
+	QDockWidget(title, parent),
+	view_id_(view_id)
 {
 }
 
 void TabDockWidget::closeEvent(QCloseEvent *event)
 {
-	Q_EMIT closed();
+	Q_EMIT closed(view_id_);
 	event->accept();
 }
 

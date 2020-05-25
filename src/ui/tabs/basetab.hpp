@@ -42,6 +42,8 @@ class Session;
 namespace ui {
 namespace tabs {
 
+class TabDockWidget;
+
 enum class TabType {
 	MeasurementTab,
 	SourceSinkTab,
@@ -72,7 +74,7 @@ public:
 	virtual void restore_settings() = 0;
 
 private:
-	QDockWidget *create_dock_widget(views::BaseView *view,
+	TabDockWidget *create_dock_widget(views::BaseView *view,
 		QDockWidget::DockWidgetFeatures features);
 
 protected:
@@ -80,7 +82,7 @@ protected:
 
 	Session &session_;
 	string id_;
-	map<views::BaseView *, QDockWidget *> view_docks_map_;
+	map<views::BaseView *, TabDockWidget *> view_docks_map_;
 	map<string, views::BaseView *> view_id_map_;
 
 public Q_SLOTS:
@@ -100,6 +102,9 @@ public Q_SLOTS:
 	void add_view_ontop(views::BaseView *view, views::BaseView *existing_view,
 		int features = QDockWidget::DockWidgetMovable |
 			QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable);
+
+private Q_SLOTS:
+	void remove_view(const std::string &view_id);
 
 };
 

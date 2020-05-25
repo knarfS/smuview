@@ -20,8 +20,13 @@
 #ifndef UI_TABS_TABDOCKWIDGET_HPP
 #define UI_TABS_TABDOCKWIDGET_HPP
 
+#include <string>
+
 #include <QCloseEvent>
 #include <QDockWidget>
+#include <QString>
+
+using std::string;
 
 namespace sv {
 namespace ui {
@@ -32,13 +37,16 @@ class TabDockWidget : public QDockWidget
 	Q_OBJECT
 
 public:
-	TabDockWidget(QWidget *parent = nullptr);
+	TabDockWidget(const QString &title, const string &view_id,
+		QWidget *parent = nullptr);
 
 private:
 	void closeEvent(QCloseEvent *event) override;
 
+	string view_id_;
+
 Q_SIGNALS:
-	void closed();
+	void closed(const std::string &view_id);
 
 };
 
