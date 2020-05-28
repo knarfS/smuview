@@ -53,6 +53,7 @@
 #include "src/data/properties/doubleproperty.hpp"
 #include "src/ui/datatypes/doublespinbox.hpp"
 #include "src/ui/dialogs/generatewaveformdialog.hpp"
+#include "src/ui/views/baseview.hpp"
 
 using std::shared_ptr;
 using std::string;
@@ -258,12 +259,12 @@ void SequenceOutputView::setup_toolbar()
 
 void SequenceOutputView::save_settings(QSettings &settings) const
 {
-	(void)settings;
+	BaseView::save_settings(settings);
 }
 
 void SequenceOutputView::restore_settings(QSettings &settings)
 {
-	(void)settings;
+	BaseView::restore_settings(settings);
 }
 
 void SequenceOutputView::start_timer()

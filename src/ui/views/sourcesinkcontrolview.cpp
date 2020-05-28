@@ -36,6 +36,8 @@
 #include "src/ui/datatypes/stringcombobox.hpp"
 #include "src/ui/datatypes/stringled.hpp"
 #include "src/ui/datatypes/thresholdcontrol.hpp"
+#include "src/ui/views/baseview.hpp"
+#include "src/ui/views/viewhelper.hpp"
 
 using sv::devices::ConfigKey;
 
@@ -173,17 +175,13 @@ void SourceSinkControlView::setup_ui()
 
 void SourceSinkControlView::save_settings(QSettings &settings) const
 {
-	qWarning() << "SourceSinkControlView::save_settings(): settings.group = " << settings.group();
-
-	settings.setValue("uuid", QVariant(uuid_));
-	settings.setValue("id", QVariant(QString::fromStdString(id_)));
-	settings.setValue("device", QVariant(QString::fromStdString(configurable_->device_id())));
-	settings.setValue("configurable", QVariant(QString::fromStdString(configurable_->name())));
+	BaseView::save_settings(settings);
+	viewhelper::save_configurable(configurable_, settings);
 }
 
 void SourceSinkControlView::restore_settings(QSettings &settings)
 {
-	(void)settings;
+	BaseView::restore_settings(settings);
 }
 
 } // namespace views

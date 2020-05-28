@@ -24,6 +24,7 @@
 
 #include <QMainWindow>
 #include <QSettings>
+#include <QSize>
 #include <QUuid>
 #include <QWidget>
 
@@ -58,18 +59,23 @@ public:
 	Session &session();
 	const Session &session() const;
 
+	QUuid uuid() const;
 	string id() const;
 	virtual QString title() const = 0;
 
-	// TODO: scope
-	virtual void save_settings(QSettings &settings) const = 0;
-	virtual void restore_settings(QSettings &settings) = 0;
+	virtual void save_settings(QSettings &settings) const;
+	virtual void restore_settings(QSettings &settings);
+
+	/** Return a size hint for restoring the correct view size from QSettings. */
+	QSize sizeHint() const override;
 
 protected:
 	Session &session_;
 	QWidget *central_widget_;
 	QUuid uuid_;
 	string id_;
+	/** The size for sizeHint(). */
+	QSize size_;
 
 };
 

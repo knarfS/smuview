@@ -19,7 +19,11 @@
 
 #include <string>
 
+#include <QSettings>
+#include <QSize>
+#include <QString>
 #include <QUuid>
+#include <QVariant>
 
 #include "baseview.hpp"
 #include "src/session.hpp"
@@ -32,7 +36,8 @@ namespace views {
 
 BaseView::BaseView(Session &session, QUuid uuid, QWidget *parent) :
 	QMainWindow(parent),
-	session_(session)
+	session_(session),
+	size_(QSize(-1, -1))
 {
 	// Every view gets its own unique id
 	uuid_ = uuid.isNull() ? QUuid::createUuid() : uuid;
@@ -56,9 +61,39 @@ const Session &BaseView::session() const
 	return session_;
 }
 
+QUuid BaseView::uuid() const
+{
+	return uuid_;
+}
+
 string BaseView::id() const
 {
 	return id_;
+}
+
+void BaseView::save_settings(QSettings &settings) const
+{
+	settings.setValue("uuid", QVariant(uuid()));
+	settings.setValue("id", QVariant(QString::fromStdString(id())));
+	// NOTE: The size must be saved together with the geometry (saveGeometry())
+	//       of all dock widgets, see DeviceTab::save_settings().
+	settings.setValue("size", size());
+}
+
+void BaseView::restore_settings(QSettings &settings)
+{
+	// NOTE: The size must be restored together with the geometry
+	//       (restoreGeometry()) of all dock widgets, see
+	//       DeviceTab::restore_settings().
+	size_ = settings.value("size").toSize();
+}
+
+QSize BaseView::sizeHint() const
+{
+	if (size_.width() >= 0 && size_.height() >= 0)
+		return size_;
+	else
+		return QMainWindow::sizeHint();
 }
 
 } // namespace views

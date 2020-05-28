@@ -40,6 +40,8 @@
 #include "src/data/datautil.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/ui/dialogs/selectsignaldialog.hpp"
+#include "src/ui/views/baseview.hpp"
+#include "src/ui/views/viewhelper.hpp"
 
 using std::dynamic_pointer_cast;
 
@@ -110,32 +112,20 @@ void DataView::setup_toolbar()
 
 void DataView::save_settings(QSettings &settings) const
 {
-	qWarning() << "DataView::save_settings(): settings.group = " << settings.group();
-
-	settings.setValue("uuid", QVariant(uuid_));
-	settings.setValue("id", QVariant(QString::fromStdString(id_)));
+	BaseView::save_settings(settings);
 
 	size_t i = 0;
 	qWarning() << "DataView::save_settings(): signals_.size = " << signals_.size();
 	for (const auto &signal : signals_) {
 		settings.beginGroup(QString("signal%1").arg(i++));
-
-		settings.setValue("device", QVariant(
-			QString::fromStdString(signal->parent_channel()->parent_device()->id())));
-		settings.setValue("channel", QVariant(
-			QString::fromStdString(signal->parent_channel()->name())));
-		settings.setValue("signal_sr_q",
-			sv::data::datautil::get_sr_quantity_id(signal->quantity()));
-		settings.setValue("signal_sr_qf", QVariant::fromValue<uint64_t>(
-			sv::data::datautil::get_sr_quantity_flags_id(signal->quantity_flags())));
-
+		viewhelper::save_signal(signal, settings);
 		settings.endGroup();
 	}
 }
 
 void DataView::restore_settings(QSettings &settings)
 {
-	(void)settings;
+	BaseView::restore_settings(settings);
 }
 
 void DataView::add_signal(shared_ptr<sv::data::AnalogTimeSignal> signal)

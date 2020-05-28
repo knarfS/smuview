@@ -40,6 +40,8 @@
 #include "src/ui/data/quantityflagslist.hpp"
 #include "src/ui/datatypes/doublecontrol.hpp"
 #include "src/ui/datatypes/stringcombobox.hpp"
+#include "src/ui/views/baseview.hpp"
+#include "src/ui/views/viewhelper.hpp"
 
 using std::static_pointer_cast;
 using sv::devices::ConfigKey;
@@ -134,17 +136,13 @@ void DemoControlView::connect_signals()
 
 void DemoControlView::save_settings(QSettings &settings) const
 {
-	qWarning() << "DemoControlView::save_settings(): settings.group = " << settings.group();
-
-	settings.setValue("uuid", QVariant(uuid_));
-	settings.setValue("id", QVariant(QString::fromStdString(id_)));
-	settings.setValue("device", QVariant(QString::fromStdString(configurable_->device_id())));
-	settings.setValue("configurable", QVariant(QString::fromStdString(configurable_->name())));
+	BaseView::save_settings(settings);
+	viewhelper::save_configurable(configurable_, settings);
 }
 
 void DemoControlView::restore_settings(QSettings &settings)
 {
-	(void)settings;
+	BaseView::restore_settings(settings);
 }
 
 void DemoControlView::on_quantity_set()

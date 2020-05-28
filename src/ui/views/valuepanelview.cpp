@@ -37,12 +37,12 @@
 #include "src/data/analogtimesignal.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/devices/basedevice.hpp"
+#include "src/ui/views/baseview.hpp"
+#include "src/ui/views/viewhelper.hpp"
 #include "src/ui/widgets/monofontdisplay.hpp"
 
 using std::dynamic_pointer_cast;
 using std::make_pair;
-
-Q_DECLARE_METATYPE(sv::data::measured_quantity_t)
 
 namespace sv {
 namespace ui {
@@ -240,23 +240,17 @@ void ValuePanelView::disconnect_signals_displays()
 
 void ValuePanelView::save_settings(QSettings &settings) const
 {
-	qWarning() << "ValuePanelView::save_settings(): settings.group = " << settings.group();
+	BaseView::save_settings(settings);
 
-	settings.setValue("uuid", QVariant(uuid_));
-	settings.setValue("id", QVariant(QString::fromStdString(id_)));
-	settings.setValue("device", QVariant(
-		QString::fromStdString(channel_->parent_device()->id())));
-	settings.setValue("channel", QVariant(
-		QString::fromStdString(channel_->name())));
-	if (signal_) {
-		settings.setValue("signal", QVariant::fromValue(
-			make_pair(signal_->quantity(), signal_->quantity_flags())));
-	}
+	if (signal_)
+		viewhelper::save_signal(signal_, settings);
+	else
+		viewhelper::save_channel(channel_, settings);
 }
 
 void ValuePanelView::restore_settings(QSettings &settings)
 {
-	(void)settings;
+	BaseView::restore_settings(settings);
 }
 
 void ValuePanelView::reset_display()

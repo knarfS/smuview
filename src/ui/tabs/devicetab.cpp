@@ -38,6 +38,7 @@
 #include "src/ui/dialogs/addviewdialog.hpp"
 #include "src/ui/dialogs/savedialog.hpp"
 #include "src/ui/tabs/basetab.hpp"
+#include "src/ui/tabs/tabdockwidget.hpp"
 #include "src/ui/views/viewhelper.hpp"
 
 using std::shared_ptr;
@@ -182,31 +183,20 @@ void DeviceTab::restore_settings()
 		settings.beginGroup(view_key);
 		qWarning() << "DeviceTab::restore_settings(): view_key = " << view_key;
 		auto view = views::viewhelper::get_view_from_settings(session_, settings);
-		if (view) {
-			qWarning() << "DeviceTab::restore_settings(): view = " << QString::fromStdString(view->id());
+		if (view)
 			add_view(view, Qt::DockWidgetArea::TopDockWidgetArea);
-		}
 		settings.endGroup();
 	}
 
 	// Restore state and geometry for all view widgets.
+	// NOTE: restoreGeometry() must be called _and_ the sizeHint() of the widget
+	//       (view) must be set to the last size, in order to restore the
+	//       correct size of the dock widget. Calling/Setting only one of them
+	//       is not working!
 	if (settings.contains("geometry"))
-		//restoreGeometry(settings.value("geometry").toByteArray());
-		setGeometry(settings.value("geometry").toRect());
+		restoreGeometry(settings.value("geometry").toByteArray());
 	if (settings.contains("state"))
 		restoreState(settings.value("state").toByteArray());
-
-	for (const auto &view_key : view_keys) {
-		settings.beginGroup(view_key);
-		if (settings.contains("id") && settings.contains("geometry")) {
-			string id = settings.value("id").toString().toStdString();
-			qWarning() << "DeviceTab::restore_settings(): geometry view = " << QString::fromStdString(id);
-			//view_docks_map_[view_id_map_[id]]->restoreGeometry(settings.value("geometry").toByteArray());
-			//view_docks_map_[view_id_map_[id]]->move(settings.value("position").toPoint()); // TODO: to child widget!
-			//view_docks_map_[view_id_map_[id]]->resize(settings.value("size").toSize()); // TODO: to child widget!
-		}
-		settings.endGroup();
-	}
 
 	settings.endGroup();
 }
@@ -215,7 +205,6 @@ void DeviceTab::save_settings() const
 {
 	qWarning() << "DeviceTab::save_settings(): " <<
 		QString::fromStdString(device_->id());
-	qWarning() << "DeviceTab::save_settings(): isMaximized = " << isMaximized();
 
 	QSettings settings;
 
@@ -223,28 +212,18 @@ void DeviceTab::save_settings() const
 	settings.remove("");  // Remove all keys in this group
 
 	size_t i = 0;
-	qWarning() << "DeviceTab::save_settings(): views.size() = " << view_docks_map_.size();
 	for (const auto &view_dock_pair : view_docks_map_) {
 		qWarning() << "DeviceTab::save_settings(): group = " << QString("view%1").arg(i);
 		qWarning() << "DeviceTab::save_settings(): view type = " << QString::fromStdString(view_dock_pair.first->id());
 		settings.beginGroup(QString("view%1").arg(i));
 		view_dock_pair.first->save_settings(settings);
-		/*
-		settings.setValue("geometry", view_dock_pair.second->saveGeometry());
-		settings.setValue("position", view_dock_pair.second->pos());
-		settings.setValue("size", view_dock_pair.second->size());
-		*/
-		/*
-		view_dock_pair.second->allowedAreas();
-		//view_dock_pair.second->tabified()
-		*/
 		settings.endGroup();
 		++i;
 	}
 
 	// Save state and geometry for all view widgets.
-	//settings.setValue("geometry", saveGeometry());
-	settings.setValue("geometry", geometry());
+	// NOTE: geometry must be saved. See restore_settings().
+	settings.setValue("geometry", saveGeometry());
 	settings.setValue("state", saveState());
 
 	settings.endGroup();
@@ -252,27 +231,8 @@ void DeviceTab::save_settings() const
 
 void DeviceTab::closeEvent(QCloseEvent *event)
 {
-	qWarning() << "DeviceTab::closeEvent()";
-
-	//bool data_saved = true;
-
-	/*
-	for (auto& entry : session_windows_)
-		if (!entry.first->data_saved())
-			data_saved = false;
-	*/
-
-	/*
-	if (!data_saved && (QMessageBox::question(this, tr("Confirmation"),
-			tr("There is unsaved data. Close anyway?"),
-			QMessageBox::Yes | QMessageBox::No) == QMessageBox::No)) {
-		event->ignore();
-	}
-	else {
-	*/
-		save_settings();
-		event->accept();
-	//}
+	save_settings();
+	event->accept();
 }
 
 void DeviceTab::on_action_aquire_triggered()

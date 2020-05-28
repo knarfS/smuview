@@ -58,7 +58,6 @@ public:
 	QString title() const override;
 	void add_signal(shared_ptr<sv::data::AnalogTimeSignal> signal);
 
-	// TODO: scope
 	void save_settings(QSettings &settings) const override;
 	void restore_settings(QSettings &settings) override;
 

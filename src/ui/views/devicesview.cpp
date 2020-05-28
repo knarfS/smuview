@@ -41,6 +41,7 @@
 #include "src/ui/devices/devicetree/treeitem.hpp"
 #include "src/ui/dialogs/connectdialog.hpp"
 #include "src/ui/views/baseview.hpp"
+#include "src/ui/views/baseview.hpp"
 
 using std::shared_ptr;
 using sv::ui::devices::devicetree::DeviceTreeModel;

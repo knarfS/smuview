@@ -30,6 +30,7 @@
 #include "src/session.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/data/analogtimesignal.hpp"
+#include "src/data/basesignal.hpp"
 #include "src/data/datautil.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/devices/configurable.hpp"
@@ -47,6 +48,7 @@
 using std::dynamic_pointer_cast;
 using std::make_pair;
 using std::shared_ptr;
+using std::static_pointer_cast;
 using std::vector;
 
 using sv::devices::ConfigKey;
@@ -111,7 +113,6 @@ shared_ptr<sv::channels::BaseChannel> get_channel(Session &session,
 	return device->channel_map()[channel_id];
 }
 
-/*
 shared_ptr<sv::channels::BaseChannel> get_channel_from_group(Session &session,
 	QSettings &settings, QString group, QString key_prefix = "")
 {
@@ -121,7 +122,6 @@ shared_ptr<sv::channels::BaseChannel> get_channel_from_group(Session &session,
 
 	return channel;
 }
-*/
 
 shared_ptr<sv::data::AnalogTimeSignal> get_signal(Session &session,
 	QSettings &settings, QString key_prefix = "")
@@ -259,6 +259,7 @@ BaseView *get_view_from_settings(Session &session, QSettings &settings)
 	QString type = id_list[0];
 	qWarning() << "get_view_from_settings(): type = " << type;
 
+	BaseView *view = nullptr;
 	if (type == "data") {
 		vector<shared_ptr<sv::data::AnalogTimeSignal>> signals;
 		for (const auto &group : settings.childGroups()) {
@@ -267,29 +268,30 @@ BaseView *get_view_from_settings(Session &session, QSettings &settings)
 					get_signal_from_group(session, settings, group));
 			}
 		}
-		DataView *view = nullptr;
 		if (!signals.empty()) {
 			view = new DataView(session, signals.at(0), uuid);
 			for (size_t i=1; i<signals.size(); i++)
-				view->add_signal(signals.at(i));
+				qobject_cast<DataView *>(view)->add_signal(signals.at(i));
 		}
-		return view;
 	}
 	if (type == "plot_ch") {
-		vector<shared_ptr<sv::data::AnalogTimeSignal>> signals;
+		vector<shared_ptr<sv::channels::BaseChannel>> channels;
 		for (const auto &group : settings.childGroups()) {
 			if (group.startsWith("curve")) {
-				signals.push_back(
-					get_signal_from_group(session, settings, group));
+				auto channel = get_channel_from_group(session, settings, group);
+				if (channel)
+					channels.push_back(channel);
 			}
 		}
-		PlotView *view = nullptr;
-		if (!signals.empty()) {
-			view = new PlotView(session, signals.at(0)->parent_channel(), uuid);
-			for (size_t i=1; i<signals.size(); i++)
-				view->add_time_curve(signals.at(i));
+		if (!channels.empty()) {
+			view = new PlotView(session, channels.at(0), uuid);
+			// TODO: Add the channel and not the actual signal?
+			for (size_t i=1; i<channels.size(); i++) {
+				qobject_cast<PlotView *>(view)->add_time_curve(
+					static_pointer_cast<sv::data::AnalogTimeSignal>(
+						channels.at(i)->actual_signal()));
+			}
 		}
-		return view;
 	}
 	if (type == "plot_sig") {
 		vector<shared_ptr<sv::data::AnalogTimeSignal>> signals;
@@ -299,75 +301,62 @@ BaseView *get_view_from_settings(Session &session, QSettings &settings)
 					get_signal_from_group(session, settings, group));
 			}
 		}
-		PlotView *view = nullptr;
 		if (!signals.empty()) {
 			view = new PlotView(session, signals.at(0), uuid);
 			for (size_t i=1; i<signals.size(); i++)
-				view->add_time_curve(signals.at(i));
+				qobject_cast<PlotView *>(view)->add_time_curve(signals.at(i));
 		}
-		return view;
 	}
 	if (type == "plot_xy") {
-		/*
 		auto x_signal = get_signal(session, settings, "x_");
-		if (!x_signal)
-			return nullptr;
 		auto y_signal = get_signal(session, settings, "y_");
-		if (!y_signal)
-			return nullptr;
-		return new PlotView(session, x_signal, y_signal, uuid);
-		*/
+		if (x_signal && y_signal)
+			view = new PlotView(session, x_signal, y_signal, uuid);
 	}
 	if (type == "powerpanel") {
 		auto v_signal = get_signal(session, settings, "v_");
-		if (!v_signal)
-			return nullptr;
 		auto i_signal = get_signal(session, settings, "i_");
-		if (!i_signal)
-			return nullptr;
-		return new PowerPanelView(session, v_signal, i_signal, uuid);
+		if (v_signal && i_signal)
+			view = new PowerPanelView(session, v_signal, i_signal, uuid);
 	}
 	if (type == "valuepanel_ch") {
 		auto channel = get_channel(session, settings);
-		if (!channel)
-			return nullptr;
-		return new ValuePanelView(session, channel, uuid);
+		if (channel)
+			view = new ValuePanelView(session, channel, uuid);
 	}
 	if (type == "valuepanel_sig") {
 		auto signal = get_signal(session, settings);
-		if (!signal)
-			return nullptr;
-		return new ValuePanelView(session, signal, uuid);
+		if (signal)
+			view = new ValuePanelView(session, signal, uuid);
 	}
 	if (type == "sequenceoutput") {
 		// TODO
 	}
 	if (type == "democontrol") {
 		auto configurable = get_configurable(session, settings);
-		if (!configurable)
-			return nullptr;
-		return new DemoControlView(session, configurable, uuid);
+		if (configurable)
+			view = new DemoControlView(session, configurable, uuid);
 	}
 	if (type == "genericcontrol") {
 		auto configurable = get_configurable(session, settings);
-		if (!configurable)
-			return nullptr;
-		return new GenericControlView(session, configurable, uuid);
+		if (configurable)
+			view = new GenericControlView(session, configurable, uuid);
 	}
 	if (type == "measurementcontrol") {
 		auto configurable = get_configurable(session, settings);
-		if (!configurable)
-			return nullptr;
-		return new MeasurementControlView(session, configurable, uuid);
+		if (configurable)
+			view = new MeasurementControlView(session, configurable, uuid);
 	}
 	if (type == "sourcesinkcontrol") {
 		auto configurable = get_configurable(session, settings);
-		if (!configurable)
-			return nullptr;
-		return new SourceSinkControlView(session, configurable, uuid);
+		if (configurable)
+			view = new SourceSinkControlView(session, configurable, uuid);
 	}
 
-	return nullptr;
+	if (view)
+		view->restore_settings(settings);
+
+	return view;
 
 	/*
 	"sequence:" + property_->name(); // SequenceOutputView
@@ -375,6 +364,36 @@ BaseView *get_view_from_settings(Session &session, QSettings &settings)
 	"smuscriptoutput:"; // SmuScriptOutputView
 	"smuscript:"; // SmuScriptView
 	*/
+}
+
+void save_configurable(
+	const shared_ptr<sv::devices::Configurable> &configurable,
+	QSettings &settings, const QString &key_prefix)
+{
+	settings.setValue(key_prefix + "device",
+		QVariant(QString::fromStdString(configurable->device_id())));
+	settings.setValue(key_prefix + "configurable",
+		QVariant(QString::fromStdString(configurable->name())));
+}
+
+void save_channel(const shared_ptr<sv::channels::BaseChannel> &channel,
+	QSettings &settings, const QString &key_prefix)
+{
+	settings.setValue(key_prefix + "device", QVariant(QString::fromStdString(
+		channel->parent_device()->id())));
+	settings.setValue(key_prefix + "channel", QVariant(QString::fromStdString(
+		channel->name())));
+}
+
+void save_signal(const shared_ptr<sv::data::BaseSignal> &signal,
+	QSettings &settings, const QString &key_prefix)
+{
+	save_channel(signal->parent_channel(), settings, key_prefix);
+
+	settings.setValue(key_prefix + "signal_sr_q",
+		sv::data::datautil::get_sr_quantity_id(signal->quantity()));
+	settings.setValue(key_prefix + "signal_sr_qf", QVariant::fromValue<uint64_t>(
+		sv::data::datautil::get_sr_quantity_flags_id(signal->quantity_flags())));
 }
 
 } // namespace viewhelper

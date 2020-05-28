@@ -64,7 +64,6 @@ public:
 
 	QString title() const override;
 
-	// TODO: scope
 	void save_settings(QSettings &settings) const override;
 	void restore_settings(QSettings &settings) override;
 

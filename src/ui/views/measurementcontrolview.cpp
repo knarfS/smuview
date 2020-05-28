@@ -32,6 +32,8 @@
 #include "src/devices/deviceutil.hpp"
 #include "src/ui/datatypes/measuredquantitycombobox.hpp"
 #include "src/ui/datatypes/stringcombobox.hpp"
+#include "src/ui/views/baseview.hpp"
+#include "src/ui/views/viewhelper.hpp"
 
 using sv::devices::ConfigKey;
 
@@ -76,17 +78,13 @@ void MeasurementControlView::setup_ui()
 
 void MeasurementControlView::save_settings(QSettings &settings) const
 {
-	qWarning() << "MeasurementControlView::save_settings(): settings.group = " << settings.group();
-
-	settings.setValue("uuid", QVariant(uuid_));
-	settings.setValue("id", QVariant(QString::fromStdString(id_)));
-	settings.setValue("device", QVariant(QString::fromStdString(configurable_->device_id())));
-	settings.setValue("configurable", QVariant(QString::fromStdString(configurable_->name())));
+	BaseView::save_settings(settings);
+	viewhelper::save_configurable(configurable_, settings);
 }
 
 void MeasurementControlView::restore_settings(QSettings &settings)
 {
-	(void)settings;
+	BaseView::restore_settings(settings);
 }
 
 } // namespace views

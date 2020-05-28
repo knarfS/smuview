@@ -34,12 +34,12 @@
 #include "src/data/analogtimesignal.hpp"
 #include "src/data/datautil.hpp"
 #include "src/devices/basedevice.hpp"
+#include "src/ui/views/baseview.hpp"
+#include "src/ui/views/viewhelper.hpp"
 #include "src/ui/widgets/monofontdisplay.hpp"
 
 using std::set;
 using sv::data::QuantityFlag;
-
-Q_DECLARE_METATYPE(sv::data::measured_quantity_t)
 
 namespace sv {
 namespace ui {
@@ -264,33 +264,14 @@ void PowerPanelView::connect_signals()
 
 void PowerPanelView::save_settings(QSettings &settings) const
 {
-	qWarning() << "PowerPanelView::save_settings(): settings.group = " << settings.group();
-
-	settings.setValue("uuid", QVariant(uuid_));
-	settings.setValue("id", QVariant(QString::fromStdString(id_)));
-
-	settings.setValue("v_device", QVariant(
-		QString::fromStdString(voltage_signal_->parent_channel()->parent_device()->id())));
-	settings.setValue("v_channel", QVariant(
-		QString::fromStdString(voltage_signal_->parent_channel()->name())));
-	settings.setValue("v_signal_sr_q",
-		sv::data::datautil::get_sr_quantity_id(voltage_signal_->quantity()));
-	settings.setValue("v_signal_sr_qf", QVariant::fromValue<uint64_t>(
-		sv::data::datautil::get_sr_quantity_flags_id(voltage_signal_->quantity_flags())));
-
-	settings.setValue("i_device", QVariant(
-		QString::fromStdString(current_signal_->parent_channel()->parent_device()->id())));
-	settings.setValue("i_channel", QVariant(
-		QString::fromStdString(current_signal_->parent_channel()->name())));
-	settings.setValue("i_signal_sr_q",
-		sv::data::datautil::get_sr_quantity_id(current_signal_->quantity()));
-	settings.setValue("i_signal_sr_qf", QVariant::fromValue<uint64_t>(
-		sv::data::datautil::get_sr_quantity_flags_id(current_signal_->quantity_flags())));
+	BaseView::save_settings(settings);
+	viewhelper::save_signal(voltage_signal_, settings, "v_");
+	viewhelper::save_signal(current_signal_, settings, "i_");
 }
 
 void PowerPanelView::restore_settings(QSettings &settings)
 {
-	(void)settings;
+	BaseView::restore_settings(settings);
 }
 
 void PowerPanelView::reset_displays()
