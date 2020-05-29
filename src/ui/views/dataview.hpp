@@ -51,9 +51,7 @@ class DataView : public BaseView
 	Q_OBJECT
 
 public:
-	DataView(Session& session,
-		shared_ptr<sv::data::AnalogTimeSignal> signal, QUuid uuid = QUuid(),
-		QWidget* parent = nullptr);
+	DataView(Session& session, QUuid uuid = QUuid(), QWidget* parent = nullptr);
 
 	QString title() const override;
 	void add_signal(shared_ptr<sv::data::AnalogTimeSignal> signal);

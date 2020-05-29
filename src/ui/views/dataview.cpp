@@ -49,10 +49,7 @@ namespace sv {
 namespace ui {
 namespace views {
 
-DataView::DataView(Session &session,
-		shared_ptr<sv::data::AnalogTimeSignal> signal,
-		QUuid uuid,
-		QWidget *parent) :
+DataView::DataView(Session &session, QUuid uuid, QWidget *parent) :
 	BaseView(session, uuid, parent),
 	auto_scroll_(true),
 	action_auto_scroll_(new QAction(this)),
@@ -62,12 +59,14 @@ DataView::DataView(Session &session,
 
 	setup_ui();
 	setup_toolbar();
-	add_signal(signal);
 }
 
 QString DataView::title() const
 {
-	return signals_[0]->display_name() + " " + tr("Data");
+	QString title = tr("Data");
+	if (!signals_.empty())
+		title = title.append(" ").append(signals_.at(0)->display_name());
+	return title;
 }
 
 void DataView::setup_ui()
@@ -144,6 +143,8 @@ void DataView::add_signal(shared_ptr<sv::data::AnalogTimeSignal> signal)
 	this->populate_table();
 	connect(signal.get(), SIGNAL(sample_appended()),
 		this, SLOT(populate_table()));
+
+	Q_EMIT title_changed();
 }
 
 void DataView::populate_table()

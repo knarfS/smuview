@@ -292,11 +292,10 @@ void AddViewDialog::accept()
 		{
 			auto signals = data_table_signal_tree_->checked_signals();
 			if (!signals.empty()) {
-				auto view = new ui::views::DataView(session_,
-					static_pointer_cast<data::AnalogTimeSignal>(signals[0]));
-				for (size_t i=1; i<signals.size(); ++i) {
+				auto view = new ui::views::DataView(session_);
+				for (const auto &signal : signals) {
 					view->add_signal(
-						static_pointer_cast<data::AnalogTimeSignal>(signals[i]));
+						static_pointer_cast<data::AnalogTimeSignal>(signal));
 				}
 				views_.push_back(view);
 			}

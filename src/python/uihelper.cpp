@@ -76,7 +76,8 @@ void UiHelper::add_data_view(std::string tab_id, Qt::DockWidgetArea area,
 		return;
 	}
 
-	auto view = new ui::views::DataView(session_, signal);
+	auto view = new ui::views::DataView(session_);
+	view->add_signal(signal);
 	tab->add_view(view, area);
 	Q_EMIT view_added(view->id());
 }
