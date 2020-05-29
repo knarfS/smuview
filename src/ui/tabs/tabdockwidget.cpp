@@ -17,28 +17,41 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <string>
+
 #include <QCloseEvent>
 #include <QDebug>
 #include <QDockWidget>
 #include <QString>
+#include <QWidget>
 
 #include "tabdockwidget.hpp"
+#include "src/ui/views/baseview.hpp"
 
 namespace sv {
 namespace ui {
 namespace tabs {
 
-TabDockWidget::TabDockWidget(const QString &title, const string &view_id,
+TabDockWidget::TabDockWidget(const QString &title, views::BaseView *view,
 		QWidget *parent) :
-	QDockWidget(title, parent),
-	view_id_(view_id)
+	QDockWidget(title, parent)
 {
+	setWidget(view);
+	connect(view, &views::BaseView::title_changed,
+		this, &TabDockWidget::on_view_title_changed);
 }
 
 void TabDockWidget::closeEvent(QCloseEvent *event)
 {
-	Q_EMIT closed(view_id_);
+	string view_id = qobject_cast<views::BaseView *>(widget())->id();
+	Q_EMIT closed(view_id);
 	event->accept();
+}
+
+void TabDockWidget::on_view_title_changed()
+{
+	QString title = qobject_cast<views::BaseView *>(widget())->title();
+	setWindowTitle(title);
 }
 
 } // namespace tabs

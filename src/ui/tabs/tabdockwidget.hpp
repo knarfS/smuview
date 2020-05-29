@@ -20,8 +20,6 @@
 #ifndef UI_TABS_TABDOCKWIDGET_HPP
 #define UI_TABS_TABDOCKWIDGET_HPP
 
-#include <string>
-
 #include <QCloseEvent>
 #include <QDockWidget>
 #include <QString>
@@ -30,6 +28,11 @@ using std::string;
 
 namespace sv {
 namespace ui {
+
+namespace views {
+class BaseView;
+}
+
 namespace tabs {
 
 class TabDockWidget : public QDockWidget
@@ -37,13 +40,14 @@ class TabDockWidget : public QDockWidget
 	Q_OBJECT
 
 public:
-	TabDockWidget(const QString &title, const string &view_id,
+	TabDockWidget(const QString &title, views::BaseView *view,
 		QWidget *parent = nullptr);
 
 private:
 	void closeEvent(QCloseEvent *event) override;
 
-	string view_id_;
+private Q_SLOTS:
+	void on_view_title_changed();
 
 Q_SIGNALS:
 	void closed(const std::string &view_id);

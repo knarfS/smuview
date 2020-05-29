@@ -73,7 +73,7 @@ TabDockWidget *BaseTab::create_dock_widget(views::BaseView *view,
 	// the central widget of the view main window before dock->setWidget() is
 	// called.
 	// Otherwise the application will flicker at startup....
-	TabDockWidget *dock = new TabDockWidget(view->title(), view->id());
+	TabDockWidget *dock = new TabDockWidget(view->title(), view);
 	// objectName is needed for QSettings
 	dock->setObjectName(QString::fromStdString(this->id()) + ":" +
 		QString::fromStdString(view->id()));
@@ -81,7 +81,6 @@ TabDockWidget *BaseTab::create_dock_widget(views::BaseView *view,
 	dock->setAllowedAreas(Qt::AllDockWidgetAreas);
 	dock->setContextMenuPolicy(Qt::PreventContextMenu);
 	dock->setFeatures(features);
-	dock->setWidget(view);
 
 	view_docks_map_[view] = dock;
 	view_id_map_[view->id()] = view;

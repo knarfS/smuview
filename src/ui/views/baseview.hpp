@@ -25,6 +25,7 @@
 #include <QMainWindow>
 #include <QSettings>
 #include <QSize>
+#include <QString>
 #include <QUuid>
 #include <QWidget>
 
@@ -76,6 +77,9 @@ protected:
 	string id_;
 	/** The size for sizeHint(). */
 	QSize size_;
+
+Q_SIGNALS:
+	void title_changed();
 
 };
 
