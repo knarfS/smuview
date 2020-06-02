@@ -37,6 +37,7 @@ class BaseChannel;
 }
 
 namespace data {
+class AnalogTimeSignal;
 class BaseSignal;
 }
 
@@ -112,6 +113,30 @@ void save_channel(const shared_ptr<sv::channels::BaseChannel> &channel,
  * @param[in] key_prefix The prefix of the settings keys for the signal.
  */
 void save_signal(const shared_ptr<sv::data::BaseSignal> &signal,
+	QSettings &settings, const QString &key_prefix = "");
+
+/**
+ * Restore the channel from the settings.
+ *
+ * @param[in] session The SmuView session.
+ * @param[in] settings The settings.
+ * @param[in] key_prefix The prefix of the settings keys for the channel.
+ *
+ * @return The restored channel.
+ */
+shared_ptr<sv::channels::BaseChannel> restore_channel(Session &session,
+	QSettings &settings, const QString &key_prefix = "");
+
+/**
+ * Restore the signal from the settings.
+ *
+ * @param[in] session The SmuView session.
+ * @param[in] settings The settings.
+ * @param[in] key_prefix The prefix of the settings keys for the signal.
+ *
+ * @return The restored signal.
+ */
+shared_ptr<sv::data::AnalogTimeSignal> restore_signal(Session &session,
 	QSettings &settings, const QString &key_prefix = "");
 
 } // namespace viewhelper

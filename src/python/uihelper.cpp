@@ -194,7 +194,8 @@ void UiHelper::add_value_panel_view(std::string tab_id,
 		return;
 	}
 
-	auto view = new ui::views::ValuePanelView(session_, channel);
+	auto view = new ui::views::ValuePanelView(session_);
+	view->set_channel(channel);
 	tab->add_view(view, area);
 	Q_EMIT view_added(view->id());
 }
@@ -212,7 +213,8 @@ void UiHelper::add_value_panel_view(std::string tab_id,
 		return;
 	}
 
-	auto view = new ui::views::ValuePanelView(session_, signal);
+	auto view = new ui::views::ValuePanelView(session_);
+	view->set_signal(signal);
 	tab->add_view(view, area);
 	Q_EMIT view_added(view->id());
 }

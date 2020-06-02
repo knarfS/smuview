@@ -60,19 +60,14 @@ class ValuePanelView : public BaseView
 	Q_OBJECT
 
 public:
-	ValuePanelView(Session& session,
-		shared_ptr<channels::BaseChannel> channel,
-		QUuid uuid = QUuid(),
-		QWidget* parent = nullptr);
-
-	ValuePanelView(Session& session,
-		shared_ptr<sv::data::AnalogTimeSignal> signal,
-		QUuid uuid = QUuid(),
+	ValuePanelView(Session& session, QUuid uuid = QUuid(),
 		QWidget* parent = nullptr);
 
 	~ValuePanelView();
 
 	QString title() const override;
+	void set_channel(shared_ptr<channels::BaseChannel> channel);
+	void set_signal(shared_ptr<sv::data::AnalogTimeSignal> signal);
 
 	void save_settings(QSettings &settings) const override;
 	void restore_settings(QSettings &settings) override;
@@ -80,13 +75,6 @@ public:
 private:
 	shared_ptr<channels::BaseChannel> channel_;
 	shared_ptr<sv::data::AnalogTimeSignal> signal_;
-	QString unit_;
-	QString unit_suffix_;
-	set<sv::data::QuantityFlag> quantity_flags_;
-	set<sv::data::QuantityFlag> quantity_flags_min_;
-	set<sv::data::QuantityFlag> quantity_flags_max_;
-	int digits_;
-	int decimal_places_;
 
 	QTimer *timer_;
 
@@ -102,9 +90,11 @@ private:
 
 	void setup_ui();
 	void setup_toolbar();
-	void setup_unit();
-	void connect_signals_displays();
-	void disconnect_signals_displays();
+	void init_displays();
+	void connect_signals_channel();
+	void disconnect_signals_channel();
+	void connect_signals_signal();
+	void disconnect_signals_signal();
 	void reset_display();
 	void init_timer();
 	void stop_timer();

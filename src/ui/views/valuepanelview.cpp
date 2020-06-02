@@ -27,6 +27,7 @@
 #include <QDebug>
 #include <QHBoxLayout>
 #include <QSettings>
+#include <QTimer>
 #include <QUuid>
 #include <QVariant>
 #include <QVBoxLayout>
@@ -48,74 +49,18 @@ namespace sv {
 namespace ui {
 namespace views {
 
-ValuePanelView::ValuePanelView(Session &session,
-		shared_ptr<channels::BaseChannel> channel,
-		QUuid uuid,
-		QWidget *parent) :
-	BaseView(session, uuid, parent),
-	channel_(channel),
-	unit_(""),
-	unit_suffix_(""),
-	value_min_(std::numeric_limits<double>::max()),
-	value_max_(std::numeric_limits<double>::lowest()),
-	action_reset_display_(new QAction(this))
-{
-	assert(channel_);
-
-	signal_ = dynamic_pointer_cast<sv::data::AnalogTimeSignal>(
-		channel_->actual_signal());
-
-	id_ = "valuepanel_ch:" + uuid_.toString(QUuid::WithoutBraces).toStdString();
-
-	if (signal_) {
-		digits_ = signal_->digits();
-		decimal_places_ = signal_->decimal_places();
-		setup_unit();
-	}
-	else {
-		digits_ = 7; // TODO
-		decimal_places_ = 3;
-	}
-
-	setup_ui();
-	setup_toolbar();
-	connect_signals_displays();
-	reset_display();
-
-	// Signal (aka Quantity + Flags + Unit) can change, e.g. DMM signals
-	connect(channel_.get(), SIGNAL(signal_added(shared_ptr<sv::data::BaseSignal>)),
-		this, SLOT(on_signal_changed()));
-	connect(channel_.get(), SIGNAL(signal_changed(shared_ptr<sv::data::BaseSignal>)),
-		this, SLOT(on_signal_changed()));
-
-	timer_ = new QTimer(this);
-	init_timer();
-}
-
-ValuePanelView::ValuePanelView(Session& session,
-		shared_ptr<sv::data::AnalogTimeSignal> signal,
-		QUuid uuid,
-		QWidget* parent) :
+ValuePanelView::ValuePanelView(Session &session, QUuid uuid, QWidget *parent) :
 	BaseView(session, uuid, parent),
 	channel_(nullptr),
-	signal_(signal),
-	unit_(""),
-	unit_suffix_(""),
+	signal_(nullptr),
 	value_min_(std::numeric_limits<double>::max()),
 	value_max_(std::numeric_limits<double>::lowest()),
 	action_reset_display_(new QAction(this))
 {
-	assert(signal_);
+	id_ = "valuepanel:" + uuid_.toString(QUuid::WithoutBraces).toStdString();
 
-	id_ = "valuepanel_sig:" + uuid_.toString(QUuid::WithoutBraces).toStdString();
-
-	digits_ = signal_->digits();
-	decimal_places_ = signal_->decimal_places();
-
-	setup_unit();
 	setup_ui();
 	setup_toolbar();
-	connect_signals_displays();
 	reset_display();
 
 	timer_ = new QTimer(this);
@@ -136,56 +81,66 @@ QString ValuePanelView::title() const
 	else
 		title = tr("Signal");
 
-	if (signal_)
-		title = title.append(" ").append(signal_->display_name());
-	else if (channel_)
+	if (channel_)
 		title = title.append(" ").append(channel_->display_name());
+	else if (signal_)
+		title = title.append(" ").append(signal_->display_name());
 
 	return title;
 }
 
-void ValuePanelView::setup_unit()
+void ValuePanelView::set_channel(shared_ptr<channels::BaseChannel> channel)
 {
-	unit_ = signal_->unit_name();
-	quantity_flags_ = signal_->quantity_flags();
+	assert(channel);
 
-	if (quantity_flags_.count(sv::data::QuantityFlag::AC) > 0) {
-		//unit_suffix_ = QString::fromUtf8("\u23E6");
-		unit_suffix_ = sv::data::datautil::format_quantity_flag(
-			sv::data::QuantityFlag::AC);
-		quantity_flags_.erase(sv::data::QuantityFlag::AC);
-	}
-	else if (quantity_flags_.count(sv::data::QuantityFlag::DC) > 0) {
-		//unit_suffix_ = QString::fromUtf8("\u2393");
-		unit_suffix_ = sv::data::datautil::format_quantity_flag(
-			sv::data::QuantityFlag::DC);
-		quantity_flags_.erase(sv::data::QuantityFlag::DC);
+	disconnect_signals_channel();
+	disconnect_signals_signal();
+
+	channel_ = channel;
+	signal_ = dynamic_pointer_cast<sv::data::AnalogTimeSignal>(
+		channel_->actual_signal());
+	if (signal_) {
+		init_displays();
+		connect_signals_signal();
 	}
 
-	quantity_flags_min_ = quantity_flags_;
-	quantity_flags_min_.insert(sv::data::QuantityFlag::Min);
-	quantity_flags_max_ = quantity_flags_;
-	quantity_flags_max_.insert(sv::data::QuantityFlag::Max);
+	connect_signals_channel();
+
+	Q_EMIT title_changed();
+}
+
+void ValuePanelView::set_signal(shared_ptr<sv::data::AnalogTimeSignal> signal)
+{
+	assert(signal);
+
+	disconnect_signals_channel();
+	disconnect_signals_signal();
+
+	channel_ = nullptr;
+	signal_ = signal;
+	init_displays();
+
+	connect_signals_signal();
+
+	Q_EMIT title_changed();
 }
 
 void ValuePanelView::setup_ui()
 {
-	QVBoxLayout *layout = new QVBoxLayout();
+	int digits = 7;
+	int decimal_places = 3;
 
+	QVBoxLayout *layout = new QVBoxLayout();
 	QGridLayout *panel_layout = new QGridLayout();
 
 	value_display_ = new widgets::MonoFontDisplay(
-		digits_, decimal_places_, true, unit_, unit_suffix_,
-		sv::data::datautil::format_quantity_flags(quantity_flags_, "\n"),
-		false);
+		digits, decimal_places, true, "", "", "", false);
 	value_min_display_ = new widgets::MonoFontDisplay(
-		digits_, decimal_places_, true, unit_, unit_suffix_,
-		sv::data::datautil::format_quantity_flags(quantity_flags_min_, "\n"),
-		true);
+		digits, decimal_places, true, "", "",
+		data::datautil::format_quantity_flag(data::QuantityFlag::Min), true);
 	value_max_display_ = new widgets::MonoFontDisplay(
-		digits_, decimal_places_, true, unit_, unit_suffix_,
-		sv::data::datautil::format_quantity_flags(quantity_flags_max_, "\n"),
-		true);
+		digits, decimal_places, true, "", "",
+		data::datautil::format_quantity_flag(data::QuantityFlag::Max), true);
 
 	panel_layout->addWidget(value_display_, 0, 0, 1, 2, Qt::AlignHCenter);
 	panel_layout->addWidget(value_min_display_, 1, 0, 1, 1, Qt::AlignHCenter);
@@ -202,40 +157,108 @@ void ValuePanelView::setup_toolbar()
 	action_reset_display_->setIcon(
 		QIcon::fromTheme("view-refresh",
 		QIcon(":/icons/view-refresh.png")));
-	connect(action_reset_display_, SIGNAL(triggered(bool)),
-		this, SLOT(on_action_reset_display_triggered()));
+	connect(action_reset_display_, &QAction::triggered,
+		this, &ValuePanelView::on_action_reset_display_triggered);
 
 	toolbar_ = new QToolBar("Panel Toolbar");
 	toolbar_->addAction(action_reset_display_);
 	this->addToolBar(Qt::TopToolBarArea, toolbar_);
 }
 
-void ValuePanelView::connect_signals_displays()
+void ValuePanelView::init_displays()
 {
-	if (signal_) {
-		//connect(signal_.get(), SIGNAL(unit_changed(QString)),
-		//	value_display_, SLOT(set_unit(const String)));
-		connect(signal_.get(), SIGNAL(digits_changed(const int, const int)),
-			value_display_, SLOT(set_digits(const int, const int)));
-		connect(signal_.get(), SIGNAL(digits_changed(const int, const int)),
-			value_min_display_, SLOT(set_digits(const int, const int)));
-		connect(signal_.get(), SIGNAL(digits_changed(const int, const int)),
-			value_max_display_, SLOT(set_digits(const int, const int)));
+	QString unit = signal_->unit_name();
+	QString unit_suffix;
+	set<sv::data::QuantityFlag> quantity_flags = signal_->quantity_flags();
+	int digits = signal_->digits();
+	int decimal_places = signal_->decimal_places();
+
+	if (quantity_flags.count(sv::data::QuantityFlag::AC) > 0) {
+		//unit_suffix = QString::fromUtf8("\u23E6");
+		unit_suffix = sv::data::datautil::format_quantity_flag(
+			sv::data::QuantityFlag::AC);
+		quantity_flags.erase(sv::data::QuantityFlag::AC);
 	}
+	else if (quantity_flags.count(sv::data::QuantityFlag::DC) > 0) {
+		//unit_suffix = QString::fromUtf8("\u2393");
+		unit_suffix = sv::data::datautil::format_quantity_flag(
+			sv::data::QuantityFlag::DC);
+		quantity_flags.erase(sv::data::QuantityFlag::DC);
+	}
+	set<sv::data::QuantityFlag> quantity_flags_min = quantity_flags;
+	quantity_flags_min.insert(sv::data::QuantityFlag::Min);
+	set<sv::data::QuantityFlag> quantity_flags_max = quantity_flags;
+	quantity_flags_max.insert(sv::data::QuantityFlag::Max);
+
+	value_display_->set_unit(unit);
+	value_display_->set_unit_suffix(unit_suffix);
+	value_display_->set_extra_text(
+		sv::data::datautil::format_quantity_flags(quantity_flags, "\n"));
+	value_display_->set_digits(digits, decimal_places);
+
+	value_min_display_->set_unit(unit);
+	value_min_display_->set_unit_suffix(unit_suffix);
+	value_min_display_->set_extra_text(
+		sv::data::datautil::format_quantity_flags(quantity_flags_min, "\n"));
+	value_min_display_->set_digits(digits, decimal_places);
+
+	value_max_display_->set_unit(unit);
+	value_max_display_->set_unit_suffix(unit_suffix);
+	value_max_display_->set_extra_text(
+		sv::data::datautil::format_quantity_flags(quantity_flags_max, "\n"));
+	value_max_display_->set_digits(digits, decimal_places);
 }
 
-void ValuePanelView::disconnect_signals_displays()
+void ValuePanelView::connect_signals_channel()
 {
-	if (signal_) {
-		//disconnect(signal_.get(), SIGNAL(unit_changed(QString)),
-		//	value_display_, SLOT(set_unit(QString)));
-		disconnect(signal_.get(), SIGNAL(digits_changed(const int, const int)),
-			value_display_, SLOT(set_digits(const int, const int)));
-		disconnect(signal_.get(), SIGNAL(digits_changed(const int, const int)),
-			value_min_display_, SLOT(set_digits(const int, const int)));
-		disconnect(signal_.get(), SIGNAL(digits_changed(const int, const int)),
-			value_max_display_, SLOT(set_digits(const int, const int)));
-	}
+	if (!channel_)
+		return;
+
+	connect(channel_.get(), &channels::BaseChannel::signal_added,
+		this, &ValuePanelView::on_signal_changed);
+	connect(channel_.get(), &channels::BaseChannel::signal_changed,
+		this, &ValuePanelView::on_signal_changed);
+}
+
+void ValuePanelView::disconnect_signals_channel()
+{
+	if (!channel_)
+		return;
+
+	disconnect(channel_.get(), &channels::BaseChannel::signal_added,
+		this, &ValuePanelView::on_signal_changed);
+	disconnect(channel_.get(), &channels::BaseChannel::signal_changed,
+		this, &ValuePanelView::on_signal_changed);
+}
+
+void ValuePanelView::connect_signals_signal()
+{
+	if (!signal_)
+		return;
+
+	//connect(signal_.get(), SIGNAL(unit_changed(QString)),
+	//	value_display_, SLOT(set_unit(const String)));
+	connect(signal_.get(), &data::AnalogTimeSignal::digits_changed,
+		value_display_, &widgets::ValueDisplay::set_digits);
+	connect(signal_.get(), &data::AnalogTimeSignal::digits_changed,
+		value_min_display_, &widgets::ValueDisplay::set_digits);
+	connect(signal_.get(), &data::AnalogTimeSignal::digits_changed,
+		value_max_display_, &widgets::ValueDisplay::set_digits);
+}
+
+void ValuePanelView::disconnect_signals_signal()
+{
+	if (!signal_)
+		return;
+
+	//disconnect(signal_.get(), SIGNAL(unit_changed(QString)),
+	//	value_display_, SLOT(set_unit(QString)));
+	disconnect(signal_.get(), &data::AnalogTimeSignal::digits_changed,
+		value_display_, &widgets::ValueDisplay::set_digits);
+	disconnect(signal_.get(), &data::AnalogTimeSignal::digits_changed,
+		value_min_display_, &widgets::ValueDisplay::set_digits);
+	disconnect(signal_.get(), &data::AnalogTimeSignal::digits_changed,
+		value_max_display_, &widgets::ValueDisplay::set_digits);
 }
 
 void ValuePanelView::save_settings(QSettings &settings) const
@@ -251,11 +274,23 @@ void ValuePanelView::save_settings(QSettings &settings) const
 void ValuePanelView::restore_settings(QSettings &settings)
 {
 	BaseView::restore_settings(settings);
+
+	auto signal = viewhelper::restore_signal(session_, settings);
+	if (signal) {
+		set_signal(signal);
+		return;
+	}
+
+	auto channel = viewhelper::restore_channel(session_, settings);
+	if (channel)
+		set_channel(channel);
 }
 
 void ValuePanelView::reset_display()
 {
 	value_display_->reset_value();
+	value_min_display_->reset_value();
+	value_max_display_->reset_value();
 }
 
 void ValuePanelView::init_timer()
@@ -263,7 +298,7 @@ void ValuePanelView::init_timer()
 	value_min_ = std::numeric_limits<double>::max();
 	value_max_ = std::numeric_limits<double>::lowest();
 
-	connect(timer_, SIGNAL(timeout()), this, SLOT(on_update()));
+	connect(timer_, &QTimer::timeout, this, &ValuePanelView::on_update);
 	timer_->start(250);
 }
 
@@ -273,7 +308,7 @@ void ValuePanelView::stop_timer()
 		return;
 
 	timer_->stop();
-	disconnect(timer_, SIGNAL(timeout()), this, SLOT(on_update()));
+	disconnect(timer_, &QTimer::timeout, this, &ValuePanelView::on_update);
 
 	reset_display();
 }
@@ -303,38 +338,17 @@ void ValuePanelView::on_signal_changed()
 	if (!channel_)
 		return;
 
-	disconnect_signals_displays();
+	disconnect_signals_signal();
 
 	signal_ = dynamic_pointer_cast<sv::data::AnalogTimeSignal>(
 		channel_->actual_signal());
 	if (!signal_)
 		return;
+	init_displays();
 
-	setup_unit();
-	digits_ = signal_->digits();
-	decimal_places_ = signal_->decimal_places();
+	connect_signals_signal();
 
-	value_display_->set_unit(unit_);
-	value_display_->set_unit_suffix(unit_suffix_);
-	value_display_->set_extra_text(
-		sv::data::datautil::format_quantity_flags(quantity_flags_, "\n"));
-	value_display_->set_digits(digits_, decimal_places_);
-
-	value_min_display_->set_unit(unit_);
-	value_min_display_->set_unit_suffix(unit_suffix_);
-	value_min_display_->set_extra_text(
-		sv::data::datautil::format_quantity_flags(quantity_flags_min_, "\n"));
-	value_min_display_->set_digits(digits_, decimal_places_);
-
-	value_max_display_->set_unit(unit_);
-	value_max_display_->set_unit_suffix(unit_suffix_);
-	value_max_display_->set_extra_text(
-		sv::data::datautil::format_quantity_flags(quantity_flags_max_, "\n"));
-	value_max_display_->set_digits(digits_, decimal_places_);
-
-	this->parentWidget()->setWindowTitle(this->title());
-
-	connect_signals_displays();
+	Q_EMIT title_changed();
 }
 
 void ValuePanelView::on_action_reset_display_triggered()

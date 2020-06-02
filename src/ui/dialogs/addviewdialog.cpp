@@ -262,7 +262,9 @@ void AddViewDialog::accept()
 	case 2:
 		// Add value panel view
 		for (const auto &channel : panel_channel_tree_->checked_channels()) {
-			views_.push_back(new ui::views::ValuePanelView(session_, channel));
+			auto view = new ui::views::ValuePanelView(session_);
+			view->set_channel(channel);
+			views_.push_back(view);
 		}
 		break;
 	case 3:

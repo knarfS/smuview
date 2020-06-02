@@ -89,8 +89,8 @@ void MeasurementTab::setup_ui()
 		auto channel = ch_pair.second;
 
 		// Value panel(s)
-		ui::views::BaseView *value_panel_view =
-			new ui::views::ValuePanelView(session_, channel);
+		auto value_panel_view = new ui::views::ValuePanelView(session_);
+		value_panel_view->set_channel(channel);
 		if (!first_panel_view) {
 			first_panel_view = value_panel_view;
 			add_view(value_panel_view, Qt::TopDockWidgetArea);
@@ -99,8 +99,7 @@ void MeasurementTab::setup_ui()
 			add_view_ontop(value_panel_view, first_panel_view);
 
 		// Value plot(s)
-		ui::views::BaseView *value_plot_view =
-			new ui::views::PlotView(session_, channel);
+		auto value_plot_view = new ui::views::PlotView(session_, channel);
 		add_view(value_plot_view, Qt::BottomDockWidgetArea);
 	}
 	if (first_panel_view != nullptr &&

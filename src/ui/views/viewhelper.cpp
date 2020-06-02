@@ -94,69 +94,21 @@ shared_ptr<sv::devices::Configurable> get_configurable(Session &session,
 	return device->configurable_map()[conf_id];
 }
 
-shared_ptr<sv::channels::BaseChannel> get_channel(Session &session,
-	QSettings &settings, QString key_prefix = "")
-{
-	QString channel_key = key_prefix + "channel";
-
-	auto device = get_device(session, settings, key_prefix);
-	if (!device)
-		return nullptr;
-
-	if (!settings.contains(channel_key))
-		return nullptr;
-
-	string channel_id = settings.value(channel_key).toString().toStdString();
-	if (device->channel_map().count(channel_id) == 0)
-		return nullptr;
-
-	return device->channel_map()[channel_id];
-}
-
 shared_ptr<sv::channels::BaseChannel> get_channel_from_group(Session &session,
 	QSettings &settings, QString group, QString key_prefix = "")
 {
 	settings.beginGroup(group);
-	auto channel = get_channel(session, settings, key_prefix);
+	auto channel = restore_channel(session, settings, key_prefix);
 	settings.endGroup();
 
 	return channel;
-}
-
-shared_ptr<sv::data::AnalogTimeSignal> get_signal(Session &session,
-	QSettings &settings, QString key_prefix = "")
-{
-	QString signal_key = key_prefix + "signal";
-
-	auto channel = get_channel(session, settings, key_prefix);
-	if (!channel)
-		return nullptr;
-
-	if (!settings.contains(signal_key+"_sr_q") ||
-			!settings.contains(signal_key+"_sr_qf"))
-		return nullptr;
-
-	auto sr_q = settings.value(signal_key+"_sr_q").value<uint32_t>();
-	auto sr_qf = settings.value(signal_key+"_sr_qf").value<uint64_t>();
-	auto mq = make_pair(
-		sv::data::datautil::get_quantity(sr_q),
-		sv::data::datautil::get_quantity_flags(sr_qf));
-	if (channel->signal_map().count(mq) == 0)
-		return nullptr;
-
-	auto signal = dynamic_pointer_cast<sv::data::AnalogTimeSignal>(
-		channel->signal_map()[mq][0]);
-	if (!signal)
-		return nullptr;
-
-	return signal;
 }
 
 shared_ptr<sv::data::AnalogTimeSignal> get_signal_from_group(Session &session,
 	QSettings &settings, QString group, QString key_prefix = "")
 {
 	settings.beginGroup(group);
-	auto signal = get_signal(session, settings, key_prefix);
+	auto signal = restore_signal(session, settings, key_prefix);
 	settings.endGroup();
 
 	return signal;
@@ -261,17 +213,13 @@ BaseView *get_view_from_settings(Session &session, QSettings &settings)
 
 	BaseView *view = nullptr;
 	if (type == "data") {
-		vector<shared_ptr<sv::data::AnalogTimeSignal>> signals;
+		view = new DataView(session, uuid);
 		for (const auto &group : settings.childGroups()) {
 			if (group.startsWith("signal")) {
-				signals.push_back(
-					get_signal_from_group(session, settings, group));
+				auto signal = get_signal_from_group(session, settings, group);
+				if (signal)
+					qobject_cast<DataView *>(view)->add_signal(signal);
 			}
-		}
-		if (!signals.empty()) {
-			view = new DataView(session, signals.at(0), uuid);
-			for (size_t i=1; i<signals.size(); i++)
-				qobject_cast<DataView *>(view)->add_signal(signals.at(i));
 		}
 	}
 	if (type == "plot_ch") {
@@ -308,26 +256,19 @@ BaseView *get_view_from_settings(Session &session, QSettings &settings)
 		}
 	}
 	if (type == "plot_xy") {
-		auto x_signal = get_signal(session, settings, "x_");
-		auto y_signal = get_signal(session, settings, "y_");
+		auto x_signal = restore_signal(session, settings, "x_");
+		auto y_signal = restore_signal(session, settings, "y_");
 		if (x_signal && y_signal)
 			view = new PlotView(session, x_signal, y_signal, uuid);
 	}
 	if (type == "powerpanel") {
-		auto v_signal = get_signal(session, settings, "v_");
-		auto i_signal = get_signal(session, settings, "i_");
+		auto v_signal = restore_signal(session, settings, "v_");
+		auto i_signal = restore_signal(session, settings, "i_");
 		if (v_signal && i_signal)
 			view = new PowerPanelView(session, v_signal, i_signal, uuid);
 	}
-	if (type == "valuepanel_ch") {
-		auto channel = get_channel(session, settings);
-		if (channel)
-			view = new ValuePanelView(session, channel, uuid);
-	}
-	if (type == "valuepanel_sig") {
-		auto signal = get_signal(session, settings);
-		if (signal)
-			view = new ValuePanelView(session, signal, uuid);
+	if (type == "valuepanel") {
+		view = new ValuePanelView(session, uuid);
 	}
 	if (type == "sequenceoutput") {
 		// TODO
@@ -394,6 +335,54 @@ void save_signal(const shared_ptr<sv::data::BaseSignal> &signal,
 		sv::data::datautil::get_sr_quantity_id(signal->quantity()));
 	settings.setValue(key_prefix + "signal_sr_qf", QVariant::fromValue<uint64_t>(
 		sv::data::datautil::get_sr_quantity_flags_id(signal->quantity_flags())));
+}
+
+shared_ptr<sv::channels::BaseChannel> restore_channel(Session &session,
+	QSettings &settings, const QString &key_prefix)
+{
+	QString channel_key = key_prefix + "channel";
+
+	auto device = get_device(session, settings, key_prefix);
+	if (!device)
+		return nullptr;
+
+	if (!settings.contains(channel_key))
+		return nullptr;
+
+	string channel_id = settings.value(channel_key).toString().toStdString();
+	if (device->channel_map().count(channel_id) == 0)
+		return nullptr;
+
+	return device->channel_map()[channel_id];
+}
+
+shared_ptr<sv::data::AnalogTimeSignal> restore_signal(Session &session,
+	QSettings &settings, const QString &key_prefix)
+{
+	QString signal_key = key_prefix + "signal";
+
+	auto channel = restore_channel(session, settings, key_prefix);
+	if (!channel)
+		return nullptr;
+
+	if (!settings.contains(signal_key+"_sr_q") ||
+			!settings.contains(signal_key+"_sr_qf"))
+		return nullptr;
+
+	auto sr_q = settings.value(signal_key+"_sr_q").value<uint32_t>();
+	auto sr_qf = settings.value(signal_key+"_sr_qf").value<uint64_t>();
+	auto mq = make_pair(
+		sv::data::datautil::get_quantity(sr_q),
+		sv::data::datautil::get_quantity_flags(sr_qf));
+	if (channel->signal_map().count(mq) == 0)
+		return nullptr;
+
+	auto signal = dynamic_pointer_cast<sv::data::AnalogTimeSignal>(
+		channel->signal_map()[mq][0]);
+	if (!signal)
+		return nullptr;
+
+	return signal;
 }
 
 } // namespace viewhelper
