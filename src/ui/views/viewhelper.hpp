@@ -116,7 +116,7 @@ void save_signal(const shared_ptr<sv::data::BaseSignal> &signal,
 	QSettings &settings, const QString &key_prefix = "");
 
 /**
- * Restore the channel from the settings.
+ * Restore a channel from the settings.
  *
  * @param[in] session The SmuView session.
  * @param[in] settings The settings.
@@ -128,7 +128,7 @@ shared_ptr<sv::channels::BaseChannel> restore_channel(Session &session,
 	QSettings &settings, const QString &key_prefix = "");
 
 /**
- * Restore the signal from the settings.
+ * Restore a signal from the settings.
  *
  * @param[in] session The SmuView session.
  * @param[in] settings The settings.

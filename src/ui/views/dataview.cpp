@@ -36,6 +36,7 @@
 #include "dataview.hpp"
 #include "src/session.hpp"
 #include "src/channels/basechannel.hpp"
+#include "src/data/analogbasesignal.hpp"
 #include "src/data/analogtimesignal.hpp"
 #include "src/data/datautil.hpp"
 #include "src/devices/basedevice.hpp"
@@ -92,15 +93,15 @@ void DataView::setup_toolbar()
 		QIcon(":/icons/go-bottom.png")));
 	action_auto_scroll_->setCheckable(true);
 	action_auto_scroll_->setChecked(auto_scroll_);
-	connect(action_auto_scroll_, SIGNAL(triggered(bool)),
-		this, SLOT(on_action_auto_scroll_triggered()));
+	connect(action_auto_scroll_, &QAction::triggered,
+		this, &DataView::on_action_auto_scroll_triggered);
 
 	action_add_signal_->setText(tr("Add signal"));
 	action_add_signal_->setIcon(
 		QIcon::fromTheme("office-chart-line",
 		QIcon(":/icons/office-chart-line.png")));
-	connect(action_add_signal_, SIGNAL(triggered(bool)),
-		this, SLOT(on_action_add_signal_triggered()));
+	connect(action_add_signal_, &QAction::triggered,
+		this, &DataView::on_action_add_signal_triggered);
 
 	toolbar_ = new QToolBar("Data View Toolbar");
 	toolbar_->addAction(action_auto_scroll_);
@@ -114,7 +115,6 @@ void DataView::save_settings(QSettings &settings) const
 	BaseView::save_settings(settings);
 
 	size_t i = 0;
-	qWarning() << "DataView::save_settings(): signals_.size = " << signals_.size();
 	for (const auto &signal : signals_) {
 		settings.beginGroup(QString("signal%1").arg(i++));
 		viewhelper::save_signal(signal, settings);
@@ -125,6 +125,16 @@ void DataView::save_settings(QSettings &settings) const
 void DataView::restore_settings(QSettings &settings)
 {
 	BaseView::restore_settings(settings);
+
+	for (const auto &group : settings.childGroups()) {
+		if (group.startsWith("signal")) {
+			settings.beginGroup(group);
+			auto signal = viewhelper::restore_signal(session_, settings);
+			if (signal)
+				add_signal(signal);
+			settings.endGroup();
+		}
+	}
 }
 
 void DataView::add_signal(shared_ptr<sv::data::AnalogTimeSignal> signal)
@@ -141,8 +151,8 @@ void DataView::add_signal(shared_ptr<sv::data::AnalogTimeSignal> signal)
 	data_table_->setHorizontalHeaderItem(pos, value_header_item);
 
 	this->populate_table();
-	connect(signal.get(), SIGNAL(sample_appended()),
-		this, SLOT(populate_table()));
+	connect(signal.get(), &data::AnalogBaseSignal::sample_appended,
+		this, &DataView::populate_table);
 
 	Q_EMIT title_changed();
 }

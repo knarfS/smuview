@@ -214,13 +214,6 @@ BaseView *get_view_from_settings(Session &session, QSettings &settings)
 	BaseView *view = nullptr;
 	if (type == "data") {
 		view = new DataView(session, uuid);
-		for (const auto &group : settings.childGroups()) {
-			if (group.startsWith("signal")) {
-				auto signal = get_signal_from_group(session, settings, group);
-				if (signal)
-					qobject_cast<DataView *>(view)->add_signal(signal);
-			}
-		}
 	}
 	if (type == "plot_ch") {
 		vector<shared_ptr<sv::channels::BaseChannel>> channels;
