@@ -175,8 +175,8 @@ void UiHelper::add_power_panel_view(std::string tab_id,
 		return;
 	}
 
-	auto view = new ui::views::PowerPanelView(
-		session_, voltage_signal, current_signal);
+	auto view = new ui::views::PowerPanelView(session_);
+	view->set_signals(voltage_signal, current_signal);
 	tab->add_view(view, area);
 	Q_EMIT view_added(view->id());
 }

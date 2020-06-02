@@ -309,9 +309,11 @@ void AddViewDialog::accept()
 			auto v_signal = ppanel_voltage_signal_widget_->selected_signal();
 			auto c_signal = ppanel_current_signal_widget_->selected_signal();
 			if (v_signal != nullptr && c_signal != nullptr) {
-				views_.push_back(new ui::views::PowerPanelView(session_,
+				auto view = new ui::views::PowerPanelView(session_);
+				view->set_signals(
 					static_pointer_cast<data::AnalogTimeSignal>(v_signal),
-					static_pointer_cast<data::AnalogTimeSignal>(c_signal)));
+					static_pointer_cast<data::AnalogTimeSignal>(c_signal));
+				views_.push_back(view);
 			}
 		}
 		break;

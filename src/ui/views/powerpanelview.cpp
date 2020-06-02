@@ -24,6 +24,7 @@
 #include <QDateTime>
 #include <QDebug>
 #include <QSettings>
+#include <QTimer>
 #include <QUuid>
 #include <QVBoxLayout>
 
@@ -31,6 +32,7 @@
 #include "src/session.hpp"
 #include "src/util.hpp"
 #include "src/channels/basechannel.hpp"
+#include "src/data/analogbasesignal.hpp"
 #include "src/data/analogtimesignal.hpp"
 #include "src/data/datautil.hpp"
 #include "src/devices/basedevice.hpp"
@@ -45,14 +47,10 @@ namespace sv {
 namespace ui {
 namespace views {
 
-PowerPanelView::PowerPanelView(Session &session,
-		shared_ptr<sv::data::AnalogTimeSignal> voltage_signal,
-		shared_ptr<sv::data::AnalogTimeSignal> current_signal,
-		QUuid uuid,
-		QWidget *parent) :
+PowerPanelView::PowerPanelView(Session &session, QUuid uuid, QWidget *parent) :
 	BaseView(session, uuid, parent),
-	voltage_signal_(voltage_signal),
-	current_signal_(current_signal),
+	voltage_signal_(nullptr),
+	current_signal_(nullptr),
 	voltage_min_(std::numeric_limits<double>::max()),
 	voltage_max_(std::numeric_limits<double>::lowest()),
 	current_min_(std::numeric_limits<double>::max()),
@@ -83,120 +81,88 @@ PowerPanelView::~PowerPanelView()
 
 QString PowerPanelView::title() const
 {
-	return tr("Power Panel") + " " + voltage_signal_->display_name() +
-		" / " + current_signal_->display_name();
+	QString title = tr("Power Panel");
+	if (voltage_signal_ && current_signal_)
+		title = title.append(" ").append(voltage_signal_->display_name()).
+			append(" / ").append(current_signal_->display_name());
+
+	return title;
+}
+
+void PowerPanelView::set_signals(
+	shared_ptr<sv::data::AnalogTimeSignal> voltage_signal,
+	shared_ptr<sv::data::AnalogTimeSignal> current_signal)
+{
+	assert(voltage_signal);
+	assert(current_signal);
+
+	disconnect_signals();
+	stop_timer();
+	voltage_signal_ = voltage_signal;
+	current_signal_ = current_signal;
+	init_timer();
+	init_displays();
+	connect_signals();
+
+	Q_EMIT title_changed();
 }
 
 void PowerPanelView::setup_ui()
 {
+	int digits = 7;
+	int decimal_places = 3;
+
 	QVBoxLayout *layout = new QVBoxLayout();
 	QGridLayout *panel_layout = new QGridLayout();
 
-	QString voltage_unit_suffix("");
-	set<QuantityFlag> voltage_qfs = voltage_signal_->quantity_flags();
-	if (voltage_qfs.count(QuantityFlag::AC) > 0) {
-		//voltage_unit_suffix = QString::fromUtf8("\u23E6");
-		voltage_unit_suffix = sv::data::datautil::format_quantity_flag(
-			QuantityFlag::AC);
-		voltage_qfs.erase(QuantityFlag::AC);
-	}
-	else if (voltage_qfs.count(QuantityFlag::DC) > 0) {
-		//voltage_unit_suffix = QString::fromUtf8("\u2393");
-		voltage_unit_suffix = sv::data::datautil::format_quantity_flag(
-			QuantityFlag::DC);
-		voltage_qfs.erase(QuantityFlag::DC);
-	}
-	set<QuantityFlag> voltage_qfs_min = voltage_qfs;
-	voltage_qfs_min.insert(QuantityFlag::Min);
-	set<QuantityFlag> voltage_qfs_max = voltage_qfs;
-	voltage_qfs_max.insert(QuantityFlag::Max);
-
 	voltage_display_ = new widgets::MonoFontDisplay(
-		voltage_signal_->digits(), voltage_signal_->decimal_places(), false,
-		voltage_signal_->unit_name(), voltage_unit_suffix,
-		sv::data::datautil::format_quantity_flags(voltage_qfs, "\n"), false);
+		digits, decimal_places, false, "", "", "", false);
 	voltage_min_display_ = new widgets::MonoFontDisplay(
-		voltage_signal_->digits(), voltage_signal_->decimal_places(), false,
-		voltage_signal_->unit_name(), voltage_unit_suffix,
-		sv::data::datautil::format_quantity_flags(voltage_qfs_min, "\n"), true);
+		digits, decimal_places, false, "", "",
+		data::datautil::format_quantity_flag(data::QuantityFlag::Min), true);
 	voltage_max_display_ = new widgets::MonoFontDisplay(
-		voltage_signal_->digits(), voltage_signal_->decimal_places(), false,
-		voltage_signal_->unit_name(), voltage_unit_suffix,
-		sv::data::datautil::format_quantity_flags(voltage_qfs_max, "\n"), true);
-
-	QString current_unit_suffix("");
-	set<QuantityFlag> current_qfs = current_signal_->quantity_flags();
-	if (current_qfs.count(QuantityFlag::AC) > 0) {
-		current_unit_suffix = sv::data::datautil::format_quantity_flag(
-			QuantityFlag::AC);
-		current_qfs.erase(QuantityFlag::AC);
-	}
-	else if (current_qfs.count(QuantityFlag::DC) > 0) {
-		current_unit_suffix = sv::data::datautil::format_quantity_flag(
-			QuantityFlag::DC);
-		current_qfs.erase(QuantityFlag::DC);
-	}
-	set<QuantityFlag> current_qfs_min = current_qfs;
-	current_qfs_min.insert(QuantityFlag::Min);
-	set<QuantityFlag> current_qfs_max = current_qfs;
-	current_qfs_max.insert(QuantityFlag::Max);
+		digits, decimal_places, false, "", "",
+		data::datautil::format_quantity_flag(data::QuantityFlag::Max), true);
 
 	current_display_ = new widgets::MonoFontDisplay(
-		current_signal_->digits(), current_signal_->decimal_places(), false,
-		current_signal_->unit_name(), current_unit_suffix,
-		sv::data::datautil::format_quantity_flags(current_qfs, "\n"), false);
+		digits, decimal_places, false, "", "", "", false);
 	current_min_display_ = new widgets::MonoFontDisplay(
-		current_signal_->digits(), current_signal_->decimal_places(), false,
-		current_signal_->unit_name(), current_unit_suffix,
-		sv::data::datautil::format_quantity_flags(current_qfs_min, "\n"), true);
+		digits, decimal_places, false, "", "",
+		data::datautil::format_quantity_flag(data::QuantityFlag::Min), true);
 	current_max_display_ = new widgets::MonoFontDisplay(
-		current_signal_->digits(), current_signal_->decimal_places(), false,
-		current_signal_->unit_name(), current_unit_suffix,
-		sv::data::datautil::format_quantity_flags(current_qfs_max, "\n"), true);
-
-	// Use the smaller digits count to save space.
-	int digits;
-	if (voltage_signal_->digits() > current_signal_->digits())
-		digits = current_signal_->digits();
-	else
-		digits = voltage_signal_->digits();
-	// Use the smaller decimal_places count to save space.
-	int decimal_places;
-	if (voltage_signal_->decimal_places() > current_signal_->decimal_places())
-		decimal_places = current_signal_->decimal_places();
-	else
-		decimal_places = voltage_signal_->decimal_places();
+		digits, decimal_places, false, "", "",
+		data::datautil::format_quantity_flag(data::QuantityFlag::Max), true);
 
 	resistance_display_ = new widgets::MonoFontDisplay(
 		digits, decimal_places, true,
-		sv::data::datautil::format_unit(data::Unit::Ohm), "", "", false);
+		data::datautil::format_unit(data::Unit::Ohm), "", "", false);
 	resistance_min_display_ = new widgets::MonoFontDisplay(
 		digits, decimal_places, true,
-		sv::data::datautil::format_unit(data::Unit::Ohm), "",
-		sv::data::datautil::format_quantity_flag(QuantityFlag::Min), true);
+		data::datautil::format_unit(data::Unit::Ohm), "",
+		data::datautil::format_quantity_flag(QuantityFlag::Min), true);
 	resistance_max_display_ = new widgets::MonoFontDisplay(
 		digits, decimal_places, true,
-		sv::data::datautil::format_unit(data::Unit::Ohm), "",
-		sv::data::datautil::format_quantity_flag(QuantityFlag::Max), true);
+		data::datautil::format_unit(data::Unit::Ohm), "",
+		data::datautil::format_quantity_flag(QuantityFlag::Max), true);
 
 	power_display_ = new widgets::MonoFontDisplay(
 		digits, decimal_places, true,
-		sv::data::datautil::format_unit(data::Unit::Watt), "", "", false);
+		data::datautil::format_unit(data::Unit::Watt), "", "", false);
 	power_min_display_ = new widgets::MonoFontDisplay(
 		digits, decimal_places, true,
-		sv::data::datautil::format_unit(data::Unit::Watt), "",
-		sv::data::datautil::format_quantity_flag(QuantityFlag::Min), true);
+		data::datautil::format_unit(data::Unit::Watt), "",
+		data::datautil::format_quantity_flag(QuantityFlag::Min), true);
 	power_max_display_ = new widgets::MonoFontDisplay(
 		digits, decimal_places, true,
-		sv::data::datautil::format_unit(data::Unit::Watt), "",
-		sv::data::datautil::format_quantity_flag(QuantityFlag::Max), true);
+		data::datautil::format_unit(data::Unit::Watt), "",
+		data::datautil::format_quantity_flag(QuantityFlag::Max), true);
 
 	amp_hour_display_ = new widgets::MonoFontDisplay(
 		digits, decimal_places, true,
-		sv::data::datautil::format_unit(data::Unit::AmpereHour), "", "", false);
+		data::datautil::format_unit(data::Unit::AmpereHour), "", "", false);
 	watt_hour_display_ = new widgets::MonoFontDisplay(
 		digits, decimal_places, true,
-		sv::data::datautil::format_unit(data::Unit::WattHour), "", "", false);
+		data::datautil::format_unit(data::Unit::WattHour), "", "", false);
 
 	panel_layout->addWidget(voltage_display_, 0, 0, 1, 2, Qt::AlignHCenter);
 	panel_layout->addWidget(voltage_min_display_, 1, 0, 1, 1, Qt::AlignHCenter);
@@ -229,42 +195,148 @@ void PowerPanelView::setup_toolbar()
 	action_reset_displays_->setIcon(
 		QIcon::fromTheme("view-refresh",
 		QIcon(":/icons/view-refresh.png")));
-	connect(action_reset_displays_, SIGNAL(triggered(bool)),
-		this, SLOT(on_action_reset_displays_triggered()));
+	connect(action_reset_displays_, &QAction::triggered,
+		this, &PowerPanelView::on_action_reset_displays_triggered);
 
 	toolbar_ = new QToolBar("Power Panel Toolbar");
 	toolbar_->addAction(action_reset_displays_);
 	this->addToolBar(Qt::TopToolBarArea, toolbar_);
 }
 
+void PowerPanelView::init_displays()
+{
+	QString voltage_unit_suffix("");
+	set<QuantityFlag> voltage_qfs = voltage_signal_->quantity_flags();
+	if (voltage_qfs.count(QuantityFlag::AC) > 0) {
+		//voltage_unit_suffix = QString::fromUtf8("\u23E6");
+		voltage_unit_suffix = sv::data::datautil::format_quantity_flag(
+			QuantityFlag::AC);
+		voltage_qfs.erase(QuantityFlag::AC);
+	}
+	else if (voltage_qfs.count(QuantityFlag::DC) > 0) {
+		//voltage_unit_suffix = QString::fromUtf8("\u2393");
+		voltage_unit_suffix = sv::data::datautil::format_quantity_flag(
+			QuantityFlag::DC);
+		voltage_qfs.erase(QuantityFlag::DC);
+	}
+	set<QuantityFlag> voltage_qfs_min = voltage_qfs;
+	voltage_qfs_min.insert(QuantityFlag::Min);
+	set<QuantityFlag> voltage_qfs_max = voltage_qfs;
+	voltage_qfs_max.insert(QuantityFlag::Max);
+
+	voltage_display_->set_unit(voltage_signal_->unit_name());
+	voltage_display_->set_unit_suffix(voltage_unit_suffix);
+	voltage_display_->set_extra_text(
+		sv::data::datautil::format_quantity_flags(voltage_qfs, "\n"));
+	voltage_display_->set_digits(
+		voltage_signal_->digits(), voltage_signal_->decimal_places());
+
+	voltage_min_display_->set_unit(voltage_signal_->unit_name());
+	voltage_min_display_->set_unit_suffix(voltage_unit_suffix);
+	voltage_min_display_->set_extra_text(
+		sv::data::datautil::format_quantity_flags(voltage_qfs_min, "\n"));
+	voltage_min_display_->set_digits(
+		voltage_signal_->digits(), voltage_signal_->decimal_places());
+
+	voltage_max_display_->set_unit(voltage_signal_->unit_name());
+	voltage_max_display_->set_unit_suffix(voltage_unit_suffix);
+	voltage_max_display_->set_extra_text(
+		sv::data::datautil::format_quantity_flags(voltage_qfs_max, "\n"));
+	voltage_max_display_->set_digits(
+		voltage_signal_->digits(), voltage_signal_->decimal_places());
+
+	QString current_unit_suffix("");
+	set<QuantityFlag> current_qfs = current_signal_->quantity_flags();
+	if (current_qfs.count(QuantityFlag::AC) > 0) {
+		current_unit_suffix = sv::data::datautil::format_quantity_flag(
+			QuantityFlag::AC);
+		current_qfs.erase(QuantityFlag::AC);
+	}
+	else if (current_qfs.count(QuantityFlag::DC) > 0) {
+		current_unit_suffix = sv::data::datautil::format_quantity_flag(
+			QuantityFlag::DC);
+		current_qfs.erase(QuantityFlag::DC);
+	}
+	set<QuantityFlag> current_qfs_min = current_qfs;
+	current_qfs_min.insert(QuantityFlag::Min);
+	set<QuantityFlag> current_qfs_max = current_qfs;
+	current_qfs_max.insert(QuantityFlag::Max);
+
+	current_display_->set_unit(current_signal_->unit_name());
+	current_display_->set_unit_suffix(current_unit_suffix);
+	current_display_->set_extra_text(
+		sv::data::datautil::format_quantity_flags(current_qfs, "\n"));
+	current_display_->set_digits(
+		current_signal_->digits(), current_signal_->decimal_places());
+
+	current_min_display_->set_unit(current_signal_->unit_name());
+	current_min_display_->set_unit_suffix(current_unit_suffix);
+	current_min_display_->set_extra_text(
+		sv::data::datautil::format_quantity_flags(current_qfs_min, "\n"));
+	current_min_display_->set_digits(
+		current_signal_->digits(), current_signal_->decimal_places());
+
+	current_max_display_->set_unit(current_signal_->unit_name());
+	current_max_display_->set_unit_suffix(current_unit_suffix);
+	current_max_display_->set_extra_text(
+		sv::data::datautil::format_quantity_flags(current_qfs_max, "\n"));
+	current_max_display_->set_digits(
+		current_signal_->digits(), current_signal_->decimal_places());
+
+	// Use the smaller digits count to save space.
+	int digits;
+	if (voltage_signal_->digits() > current_signal_->digits())
+		digits = current_signal_->digits();
+	else
+		digits = voltage_signal_->digits();
+	// Use the smaller decimal_places count to save space.
+	int decimal_places;
+	if (voltage_signal_->decimal_places() > current_signal_->decimal_places())
+		decimal_places = current_signal_->decimal_places();
+	else
+		decimal_places = voltage_signal_->decimal_places();
+
+	resistance_display_->set_digits(digits, decimal_places);
+	resistance_min_display_->set_digits(digits, decimal_places);
+	resistance_max_display_->set_digits(digits, decimal_places);
+
+	power_display_->set_digits(digits, decimal_places);
+	power_min_display_->set_digits(digits, decimal_places);
+	power_max_display_->set_digits(digits, decimal_places);
+
+	amp_hour_display_->set_digits(digits, decimal_places);
+	watt_hour_display_->set_digits(digits, decimal_places);
+}
+
 void PowerPanelView::connect_signals()
 {
-	// Change digits for the voltage displays.
-	connect(voltage_signal_.get(), SIGNAL(digits_changed(const int, const int)),
-		voltage_display_, SLOT(set_digits(const int, const int)));
-	connect(voltage_signal_.get(), SIGNAL(digits_changed(const int, const int)),
-		voltage_min_display_, SLOT(set_digits(const int, const int)));
-	connect(voltage_signal_.get(), SIGNAL(digits_changed(const int, const int)),
-		voltage_max_display_, SLOT(set_digits(const int, const int)));
+	if (!voltage_signal_ || !current_signal_)
+		return;
 
-	// Change digits for the current displays.
-	connect(current_signal_.get(), SIGNAL(digits_changed(const int, const int)),
-		current_display_, SLOT(set_digits(const int, const int)));
-	connect(current_signal_.get(), SIGNAL(digits_changed(const int, const int)),
-		current_min_display_, SLOT(set_digits(const int, const int)));
-	connect(current_signal_.get(), SIGNAL(digits_changed(const int, const int)),
-		current_max_display_, SLOT(set_digits(const int, const int)));
+	connect(voltage_signal_.get(), &data::AnalogBaseSignal::digits_changed,
+		this, &PowerPanelView::on_digits_changed);
+	connect(current_signal_.get(), &data::AnalogBaseSignal::digits_changed,
+		this, &PowerPanelView::on_digits_changed);
+}
 
-	// Change digits for all other displays.
-	connect(voltage_signal_.get(), SIGNAL(digits_changed(const int, const int)),
-		this, SLOT(on_digits_changed()));
-	connect(current_signal_.get(), SIGNAL(digits_changed(const int, const int)),
-		this, SLOT(on_digits_changed()));
+void PowerPanelView::disconnect_signals()
+{
+	if (voltage_signal_) {
+		disconnect(
+			voltage_signal_.get(), &data::AnalogBaseSignal::digits_changed,
+			this, &PowerPanelView::on_digits_changed);
+	}
+	if (current_signal_) {
+		disconnect(
+			current_signal_.get(), &data::AnalogBaseSignal::digits_changed,
+			this, &PowerPanelView::on_digits_changed);
+	}
 }
 
 void PowerPanelView::save_settings(QSettings &settings) const
 {
 	BaseView::save_settings(settings);
+
 	viewhelper::save_signal(voltage_signal_, settings, "v_");
 	viewhelper::save_signal(current_signal_, settings, "i_");
 }
@@ -272,6 +344,11 @@ void PowerPanelView::save_settings(QSettings &settings) const
 void PowerPanelView::restore_settings(QSettings &settings)
 {
 	BaseView::restore_settings(settings);
+
+	auto v_signal = viewhelper::restore_signal(session_, settings, "v_");
+	auto i_signal = viewhelper::restore_signal(session_, settings, "i_");
+	if (v_signal && i_signal)
+		set_signals(v_signal, i_signal);
 }
 
 void PowerPanelView::reset_displays()
@@ -298,9 +375,6 @@ void PowerPanelView::reset_displays()
 
 void PowerPanelView::init_timer()
 {
-	if (!voltage_signal_ && !current_signal_)
-		return;
-
 	start_time_ = QDateTime::currentMSecsSinceEpoch();
 	last_time_ = start_time_;
 
@@ -315,7 +389,7 @@ void PowerPanelView::init_timer()
 	actual_amp_hours_ = 0;
 	actual_watt_hours_ = 0;
 
-	connect(timer_, SIGNAL(timeout()), this, SLOT(on_update()));
+	connect(timer_, &QTimer::timeout, this, &PowerPanelView::on_update);
 	timer_->start(250);
 }
 
@@ -325,14 +399,15 @@ void PowerPanelView::stop_timer()
 		return;
 
 	timer_->stop();
-	disconnect(timer_, SIGNAL(timeout()), this, SLOT(on_update()));
+	disconnect(timer_, &QTimer::timeout, this, &PowerPanelView::on_update);
 
 	reset_displays();
 }
 
 void PowerPanelView::on_update()
 {
-	if (voltage_signal_->sample_count() == 0)
+	if (voltage_signal_->sample_count() == 0 ||
+			current_signal_->sample_count() == 0)
 		return;
 
 	qint64 now = QDateTime::currentMSecsSinceEpoch();
@@ -401,6 +476,20 @@ void PowerPanelView::on_action_reset_displays_triggered()
 
 void PowerPanelView::on_digits_changed()
 {
+	voltage_display_->set_digits(
+		voltage_signal_->digits(), voltage_signal_->decimal_places());
+	voltage_min_display_->set_digits(
+		voltage_signal_->digits(), voltage_signal_->decimal_places());
+	voltage_max_display_->set_digits(
+		voltage_signal_->digits(), voltage_signal_->decimal_places());
+
+	current_display_->set_digits(
+		current_signal_->digits(), current_signal_->decimal_places());
+	current_min_display_->set_digits(
+		current_signal_->digits(), current_signal_->decimal_places());
+	current_max_display_->set_digits(
+		current_signal_->digits(), current_signal_->decimal_places());
+
 	// Use the smaller digits count to save space.
 	int digits;
 	if (voltage_signal_->digits() > current_signal_->digits())

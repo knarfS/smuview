@@ -255,10 +255,7 @@ BaseView *get_view_from_settings(Session &session, QSettings &settings)
 			view = new PlotView(session, x_signal, y_signal, uuid);
 	}
 	if (type == "powerpanel") {
-		auto v_signal = restore_signal(session, settings, "v_");
-		auto i_signal = restore_signal(session, settings, "i_");
-		if (v_signal && i_signal)
-			view = new PowerPanelView(session, v_signal, i_signal, uuid);
+		view = new PowerPanelView(session, uuid);
 	}
 	if (type == "valuepanel") {
 		view = new ValuePanelView(session, uuid);

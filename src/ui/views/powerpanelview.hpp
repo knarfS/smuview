@@ -53,14 +53,13 @@ class PowerPanelView : public BaseView
 	Q_OBJECT
 
 public:
-	PowerPanelView(Session& session,
-		shared_ptr<sv::data::AnalogTimeSignal> voltage_signal,
-		shared_ptr<sv::data::AnalogTimeSignal> current_signal,
-		QUuid uuid = QUuid(),
+	PowerPanelView(Session& session, QUuid uuid = QUuid(),
 		QWidget* parent = nullptr);
 	~PowerPanelView();
 
 	QString title() const override;
+	void set_signals(shared_ptr<sv::data::AnalogTimeSignal> voltage_signal,
+		shared_ptr<sv::data::AnalogTimeSignal> current_signal);
 
 	void save_settings(QSettings &settings) const override;
 	void restore_settings(QSettings &settings) override;
@@ -104,7 +103,9 @@ private:
 
 	void setup_ui();
 	void setup_toolbar();
+	void init_displays();
 	void connect_signals();
+	void disconnect_signals();
 	void reset_displays();
 	void init_timer();
 	void stop_timer();
