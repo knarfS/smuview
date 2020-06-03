@@ -37,6 +37,9 @@ class BaseChannel;
 }
 
 namespace data {
+namespace properties {
+class BaseProperty;
+}
 class AnalogTimeSignal;
 class BaseSignal;
 }
@@ -116,6 +119,17 @@ void save_signal(const shared_ptr<sv::data::BaseSignal> &signal,
 	QSettings &settings, const QString &key_prefix = "");
 
 /**
+ * Save the property to the settings.
+ *
+ * @param[in] property The property to save.
+ * @param[in] settings The settings.
+ * @param[in] key_prefix The prefix of the settings keys for the property.
+ */
+void save_property(
+	const shared_ptr<sv::data::properties::BaseProperty> &property,
+	QSettings &settings, const QString &key_prefix = "");
+
+/**
  * Restore a channel from the settings.
  *
  * @param[in] session The SmuView session.
@@ -138,6 +152,18 @@ shared_ptr<sv::channels::BaseChannel> restore_channel(Session &session,
  */
 shared_ptr<sv::data::AnalogTimeSignal> restore_signal(Session &session,
 	QSettings &settings, const QString &key_prefix = "");
+
+/**
+ * Restore a property from the settings.
+ *
+ * @param[in] session The SmuView session.
+ * @param[in] settings The settings.
+ * @param[in] key_prefix The prefix of the settings keys for the property.
+ *
+ * @return The restored property.
+ */
+shared_ptr<sv::data::properties::BaseProperty> restore_property(
+	Session &session, QSettings &settings, const QString &key_prefix = "");
 
 } // namespace viewhelper
 } // namespace views

@@ -253,10 +253,10 @@ void AddViewDialog::accept()
 		// Add sequence view for property
 		{
 			auto property = sequence_property_form_->selected_property();
-			auto view = new ui::views::SequenceOutputView(session_,
+			auto view = new ui::views::SequenceOutputView(session_);
+			view->set_property(
 				static_pointer_cast<sv::data::properties::DoubleProperty>(property));
-			if (view != nullptr)
-				views_.push_back(view);
+			views_.push_back(view);
 		}
 		break;
 	case 2:

@@ -35,6 +35,7 @@
 #include <QLabel>
 #include <QList>
 #include <QLocale>
+#include <QMessageBox>
 #include <QSettings>
 #include <QSpinBox>
 #include <QString>
@@ -45,6 +46,7 @@
 #include <QTimer>
 #include <QToolBar>
 #include <QUuid>
+#include <QVariant>
 #include <QVBoxLayout>
 
 #include "sequenceoutputview.hpp"
@@ -54,7 +56,9 @@
 #include "src/ui/datatypes/doublespinbox.hpp"
 #include "src/ui/dialogs/generatewaveformdialog.hpp"
 #include "src/ui/views/baseview.hpp"
+#include "src/ui/views/viewhelper.hpp"
 
+using std::dynamic_pointer_cast;
 using std::shared_ptr;
 using std::string;
 using std::vector;
@@ -118,12 +122,10 @@ void DoubleSpinBoxDelegate::updateEditorGeometry(QWidget *editor,
 }
 
 
-SequenceOutputView::SequenceOutputView(Session &session,
-		shared_ptr<sv::data::properties::DoubleProperty> property,
-		QUuid uuid,
+SequenceOutputView::SequenceOutputView(Session &session, QUuid uuid,
 		QWidget *parent) :
 	BaseView(session, uuid, parent),
-	property_(property),
+	property_(nullptr),
 	action_run_(new QAction(this)),
 	action_add_row_(new QAction(this)),
 	action_delete_row_(new QAction(this)),
@@ -132,13 +134,12 @@ SequenceOutputView::SequenceOutputView(Session &session,
 	action_generate_waveform_(new QAction(this)),
 	sequence_pos_(0)
 {
-	assert(property_);
-	id_ = "sequence:" + uuid_.toString(QUuid::WithoutBraces).toStdString();
-
-	timer_ = new QTimer(this);
+	id_ = "sequenceoutput:" + uuid_.toString(QUuid::WithoutBraces).toStdString();
 
 	setup_ui();
 	setup_toolbar();
+
+	timer_ = new QTimer(this);
 }
 
 SequenceOutputView::~SequenceOutputView()
@@ -148,7 +149,25 @@ SequenceOutputView::~SequenceOutputView()
 
 QString SequenceOutputView::title() const
 {
-	return tr("Sequence Output") + " " + property_->display_name();
+	QString title = tr("Sequence Output");
+	if (property_)
+		title = title.append(" ").append(property_->display_name());
+	return title;
+}
+
+void SequenceOutputView::set_property(
+	shared_ptr<data::properties::DoubleProperty> property)
+{
+	assert(property);
+
+	stop_timer();
+
+	property_ = property;
+	sequence_table_->setItemDelegateForColumn(0,
+		new DoubleSpinBoxDelegate(property_->min(), property_->max(),
+			property_->step(), property_->decimal_places()));
+
+	Q_EMIT title_changed();
 }
 
 void SequenceOutputView::setup_ui()
@@ -160,8 +179,8 @@ void SequenceOutputView::setup_ui()
 	repeat_layout->addSpacing(8);
 	repeat_infinite_box_ = new QCheckBox(tr("infinite"));
 	repeat_infinite_box_->setChecked(true);
-	connect(repeat_infinite_box_, SIGNAL(stateChanged(int)),
-		this, SLOT(on_repeat_infinite_changed()));
+	connect(repeat_infinite_box_, &QCheckBox::stateChanged,
+		this, &SequenceOutputView::on_repeat_infinite_changed);
 	repeat_layout->addWidget(repeat_infinite_box_);
 	repeat_layout->addSpacing(8);
 	repeat_count_box_ = new QSpinBox();
@@ -187,9 +206,6 @@ void SequenceOutputView::setup_ui()
 	sequence_table_->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
 
 	sequence_table_->verticalHeader()->setSectionResizeMode(QHeaderView::Fixed);
-	sequence_table_->setItemDelegateForColumn(0,
-		new DoubleSpinBoxDelegate(property_->min(), property_->max(),
-			property_->step(), property_->decimal_places()));
 	sequence_table_->setItemDelegateForColumn(1,
 		new DoubleSpinBoxDelegate(0, 100000, 0.1, 3));
 
@@ -207,43 +223,43 @@ void SequenceOutputView::setup_toolbar()
 		QIcon(":/icons/media-playback-start.png")));
 	action_run_->setCheckable(true);
 	action_run_->setChecked(false);
-	connect(action_run_, SIGNAL(triggered(bool)),
-		this, SLOT(on_action_run_triggered()));
+	connect(action_run_, &QAction::triggered,
+		this, &SequenceOutputView::on_action_run_triggered);
 
 	action_add_row_->setText(tr("Insert row"));
 	action_add_row_->setIcon(
 		QIcon::fromTheme("edit-table-insert-row-under",
 		QIcon(":/icons/edit-table-insert-row-under.png")));
-	connect(action_add_row_, SIGNAL(triggered(bool)),
-		this, SLOT(on_action_add_row()));
+	connect(action_add_row_, &QAction::triggered,
+		this, &SequenceOutputView::on_action_add_row);
 
 	action_delete_row_->setText(tr("Delete row"));
 	action_delete_row_->setIcon(
 		QIcon::fromTheme("edit-table-delete-row",
 		QIcon(":/icons/edit-table-delete-row.png")));
-	connect(action_delete_row_, SIGNAL(triggered(bool)),
-		this, SLOT(on_action_delete_row()));
+	connect(action_delete_row_, &QAction::triggered,
+		this, &SequenceOutputView::on_action_delete_row);
 
 	action_delete_all_->setText(tr("Delete all"));
 	action_delete_all_->setIcon(
 		QIcon::fromTheme("edit-delete",
 		QIcon(":/icons/edit-delete.png")));
-	connect(action_delete_all_, SIGNAL(triggered(bool)),
-		this, SLOT(on_action_delete_all()));
+	connect(action_delete_all_, &QAction::triggered,
+		this, &SequenceOutputView::on_action_delete_all);
 
 	action_load_from_file_->setText(tr("Load from file"));
 	action_load_from_file_->setIcon(
 		QIcon::fromTheme("document-open",
 		QIcon(":/icons/document-open.png")));
-	connect(action_load_from_file_, SIGNAL(triggered(bool)),
-		this, SLOT(on_action_load_from_file_triggered()));
+	connect(action_load_from_file_, &QAction::triggered,
+		this, &SequenceOutputView::on_action_load_from_file_triggered);
 
 	action_generate_waveform_->setText(tr("Run generator"));
 	action_generate_waveform_->setIcon(
 		QIcon::fromTheme("office-chart-line", // TODO: better icon
 		QIcon(":/icons/office-chart-line.png")));
-	connect(action_generate_waveform_, SIGNAL(triggered(bool)),
-		this, SLOT(on_action_generate_waveform_triggered()));
+	connect(action_generate_waveform_, &QAction::triggered,
+		this, &SequenceOutputView::on_action_generate_waveform_triggered);
 
 	toolbar_ = new QToolBar("Generator Toolbar");
 	toolbar_->addAction(action_run_);
@@ -260,18 +276,72 @@ void SequenceOutputView::setup_toolbar()
 void SequenceOutputView::save_settings(QSettings &settings) const
 {
 	BaseView::save_settings(settings);
+
+	if (!property_)
+		return;
+	viewhelper::save_property(property_, settings);
+
+	settings.setValue("repeat_infinite",
+		QVariant(repeat_infinite_box_->checkState()));
+	settings.setValue("repeat_count", QVariant(repeat_count_box_->value()));
+
+	// Save sequence
+	int row_count = sequence_table_->rowCount();
+	settings.setValue("sequence_row_count", QVariant(row_count));
+	for (int pos=0; pos<row_count; pos++) {
+		QTableWidgetItem *value_item = sequence_table_->item(pos, 0);
+		QTableWidgetItem *delay_item = sequence_table_->item(pos, 1);
+		if (!value_item || !delay_item)
+			continue;
+
+		settings.beginGroup(QString("sequence_").append(QString::number(pos)));
+		settings.setValue("value", value_item->data(0));
+		settings.setValue("delay", delay_item->data(0));
+		settings.endGroup();
+	}
 }
 
 void SequenceOutputView::restore_settings(QSettings &settings)
 {
 	BaseView::restore_settings(settings);
+
+	auto property = viewhelper::restore_property(session_, settings);
+	if (!property)
+		return;
+	set_property(
+		dynamic_pointer_cast<sv::data::properties::DoubleProperty>(property));
+
+	if (settings.contains("repeat_infinite"))
+		repeat_infinite_box_->setCheckState(
+			settings.value("repeat_infinite").value<Qt::CheckState>());
+	if (settings.contains("repeat_count"))
+		repeat_count_box_->setValue(settings.value("repeat_count").toInt());
+
+	// Restore sequence
+	int row_count = settings.value("sequence_row_count").toInt();
+	for (int pos=0; pos<row_count; pos++) {
+		settings.beginGroup(QString("sequence_").append(QString::number(pos)));
+		QVariant value = settings.value("value");
+		QVariant delay = settings.value("delay");
+		sequence_table_->insertRow(pos);
+		QTableWidgetItem *value_item = new QTableWidgetItem(QString::number(
+			value.toDouble(), 'f', 3));
+		value_item->setData(0, value);
+		sequence_table_->setItem(pos, 0, value_item);
+		QTableWidgetItem *delay_item = new QTableWidgetItem(QString::number(
+			delay.toDouble(), 'f', property_->decimal_places()));
+		delay_item->setData(0, delay);
+		sequence_table_->setItem(pos, 1, delay_item);
+		settings.endGroup();
+	}
 }
 
 void SequenceOutputView::start_timer()
 {
 	if (timer_->isActive()) {
 		timer_->stop();
-		disconnect(timer_, SIGNAL(timeout()), this, SLOT(on_timer_update()));
+		disconnect(timer_, &QTimer::timeout,
+			this, &SequenceOutputView::on_timer_update);
 	}
 
 	sequence_pos_ = 0;
@@ -279,7 +349,8 @@ void SequenceOutputView::start_timer()
 	if (sequence_table_->rowCount() == 0)
 		return;
 
-	connect(timer_, SIGNAL(timeout()), this, SLOT(on_timer_update()));
+	connect(timer_, &QTimer::timeout,
+		this, &SequenceOutputView::on_timer_update);
 	timer_->start();
 
 	action_run_->setText(tr("Stop"));
@@ -301,13 +372,20 @@ void SequenceOutputView::stop_timer()
 		return;
 
 	timer_->stop();
-	disconnect(timer_, SIGNAL(timeout()), this, SLOT(on_timer_update()));
+	disconnect(timer_, &QTimer::timeout,
+		this, &SequenceOutputView::on_timer_update);
 	sequence_pos_ = 0;
 	sequence_reperat_count_ = 0;
 }
 
 void SequenceOutputView::insert_row(int row, double value, double delay)
 {
+	if (!property_) {
+		QMessageBox::warning(this, tr("No property assigned."),
+			tr("Please assign a property to this sequence output view first."),
+			QMessageBox::Ok);
+	}
+
 	sequence_table_->insertRow(row);
 	QTableWidgetItem *value_item = new QTableWidgetItem(
 		QString::number(value, 'f', 3));
@@ -321,6 +399,11 @@ void SequenceOutputView::insert_row(int row, double value, double delay)
 
 void SequenceOutputView::on_timer_update()
 {
+	if (!property_) {
+		stop_timer();
+		return;
+	}
+
 	bool found_value = sequence_pos_ > 0;
 	double value = .0;
 	int delay_ms = 0;
@@ -436,6 +519,12 @@ void SequenceOutputView::on_action_load_from_file_triggered()
 
 void SequenceOutputView::on_action_generate_waveform_triggered()
 {
+	if (!property_) {
+		QMessageBox::warning(this, tr("No property assigned."),
+			tr("Please assign a property to this sequence output view first."),
+			QMessageBox::Ok);
+	}
+
 	ui::dialogs::GenerateWaveformDialog dlg(property_);
 	if (!dlg.exec())
 		return;

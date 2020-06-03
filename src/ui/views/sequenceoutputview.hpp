@@ -85,13 +85,12 @@ class SequenceOutputView : public BaseView
 	Q_OBJECT
 
 public:
-	SequenceOutputView(Session& session,
-		shared_ptr<sv::data::properties::DoubleProperty> property,
-		QUuid uuid = QUuid(),
+	SequenceOutputView(Session& session, QUuid uuid = QUuid(),
 		QWidget* parent = nullptr);
 	~SequenceOutputView();
 
 	QString title() const override;
+	void set_property(shared_ptr<sv::data::properties::DoubleProperty> property);
 
 	void save_settings(QSettings &settings) const override;
 	void restore_settings(QSettings &settings) override;

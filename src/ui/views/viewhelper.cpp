@@ -22,6 +22,8 @@
 #include <utility>
 #include <vector>
 
+#include <libsigrokcxx/libsigrokcxx.hpp>
+
 #include <QDebug>
 #include <QList>
 #include <QSettings>
@@ -29,6 +31,7 @@
 #include "viewhelper.hpp"
 #include "src/session.hpp"
 #include "src/channels/basechannel.hpp"
+#include "src/data/properties/baseproperty.hpp"
 #include "src/data/analogtimesignal.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/data/datautil.hpp"
@@ -42,6 +45,7 @@
 #include "src/ui/views/measurementcontrolview.hpp"
 #include "src/ui/views/plotview.hpp"
 #include "src/ui/views/powerpanelview.hpp"
+#include "src/ui/views/sequenceoutputview.hpp"
 #include "src/ui/views/sourcesinkcontrolview.hpp"
 #include "src/ui/views/valuepanelview.hpp"
 
@@ -75,7 +79,7 @@ shared_ptr<sv::devices::BaseDevice> get_device(Session &session,
 	return session.devices()[device_id];
 }
 
-shared_ptr<sv::devices::Configurable> get_configurable(Session &session,
+shared_ptr<sv::devices::Configurable> restore_configurable(Session &session,
 	QSettings &settings, QString key_prefix = "")
 {
 	QString configurable_key = key_prefix + "configurable";
@@ -261,25 +265,25 @@ BaseView *get_view_from_settings(Session &session, QSettings &settings)
 		view = new ValuePanelView(session, uuid);
 	}
 	if (type == "sequenceoutput") {
-		// TODO
+		view = new SequenceOutputView(session, uuid);
 	}
 	if (type == "democontrol") {
-		auto configurable = get_configurable(session, settings);
+		auto configurable = restore_configurable(session, settings);
 		if (configurable)
 			view = new DemoControlView(session, configurable, uuid);
 	}
 	if (type == "genericcontrol") {
-		auto configurable = get_configurable(session, settings);
+		auto configurable = restore_configurable(session, settings);
 		if (configurable)
 			view = new GenericControlView(session, configurable, uuid);
 	}
 	if (type == "measurementcontrol") {
-		auto configurable = get_configurable(session, settings);
+		auto configurable = restore_configurable(session, settings);
 		if (configurable)
 			view = new MeasurementControlView(session, configurable, uuid);
 	}
 	if (type == "sourcesinkcontrol") {
-		auto configurable = get_configurable(session, settings);
+		auto configurable = restore_configurable(session, settings);
 		if (configurable)
 			view = new SourceSinkControlView(session, configurable, uuid);
 	}
@@ -327,6 +331,19 @@ void save_signal(const shared_ptr<sv::data::BaseSignal> &signal,
 		sv::data::datautil::get_sr_quantity_flags_id(signal->quantity_flags())));
 }
 
+void save_property(
+	const shared_ptr<sv::data::properties::BaseProperty> &property,
+	QSettings &settings, const QString &key_prefix)
+{
+	save_configurable(property->configurable(), settings, key_prefix);
+
+	settings.setValue(key_prefix + "property_sr_type",
+		sv::devices::deviceutil::get_sr_config_key(property->config_key())->
+			data_type()->id());
+	settings.setValue(key_prefix + "property_sr_ck",
+		sv::devices::deviceutil::get_sr_config_key_id(property->config_key()));
+}
+
 shared_ptr<sv::channels::BaseChannel> restore_channel(Session &session,
 	QSettings &settings, const QString &key_prefix)
 {
@@ -367,12 +384,30 @@ shared_ptr<sv::data::AnalogTimeSignal> restore_signal(Session &session,
 	if (channel->signal_map().count(mq) == 0)
 		return nullptr;
 
-	auto signal = dynamic_pointer_cast<sv::data::AnalogTimeSignal>(
+	return dynamic_pointer_cast<sv::data::AnalogTimeSignal>(
 		channel->signal_map()[mq][0]);
-	if (!signal)
+}
+
+shared_ptr<sv::data::properties::BaseProperty> restore_property(
+	Session &session, QSettings &settings, const QString &key_prefix)
+{
+	QString property_key = key_prefix + "property";
+
+	auto configurable = restore_configurable(session, settings, key_prefix);
+	if (!configurable)
 		return nullptr;
 
-	return signal;
+	if (!settings.contains(property_key+"_sr_type") ||
+			!settings.contains(property_key+"_sr_ck"))
+		return nullptr;
+
+	//auto sr_type = settings.value(property_key+"_sr_type").value<int>(); // TODO
+	auto sr_ck = settings.value(property_key+"_sr_ck").value<uint32_t>();
+	auto ck = sv::devices::deviceutil::get_config_key(sr_ck);
+	if (configurable->properties().count(ck) == 0)
+		return nullptr;
+
+	return configurable->properties()[ck]; // TODO: Rename to property_map
 }
 
 } // namespace viewhelper
