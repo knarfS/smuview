@@ -40,7 +40,6 @@ namespace data {
 namespace properties {
 class BaseProperty;
 }
-class AnalogTimeSignal;
 class BaseSignal;
 }
 
@@ -150,7 +149,7 @@ shared_ptr<sv::channels::BaseChannel> restore_channel(Session &session,
  *
  * @return The restored signal.
  */
-shared_ptr<sv::data::AnalogTimeSignal> restore_signal(Session &session,
+shared_ptr<sv::data::BaseSignal> restore_signal(Session &session,
 	QSettings &settings, const QString &key_prefix = "");
 
 /**

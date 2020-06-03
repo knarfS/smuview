@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <memory>
 #include <set>
 #include <string>
 
@@ -40,6 +41,7 @@
 #include "src/ui/views/viewhelper.hpp"
 #include "src/ui/widgets/monofontdisplay.hpp"
 
+using std::dynamic_pointer_cast;
 using std::set;
 using sv::data::QuantityFlag;
 
@@ -347,8 +349,11 @@ void PowerPanelView::restore_settings(QSettings &settings)
 
 	auto v_signal = viewhelper::restore_signal(session_, settings, "v_");
 	auto i_signal = viewhelper::restore_signal(session_, settings, "i_");
-	if (v_signal && i_signal)
-		set_signals(v_signal, i_signal);
+	if (v_signal && i_signal) {
+		set_signals(
+			dynamic_pointer_cast<sv::data::AnalogTimeSignal>(v_signal),
+			dynamic_pointer_cast<sv::data::AnalogTimeSignal>(i_signal));
+	}
 }
 
 void PowerPanelView::reset_displays()

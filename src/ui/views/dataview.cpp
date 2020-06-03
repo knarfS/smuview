@@ -130,8 +130,10 @@ void DataView::restore_settings(QSettings &settings)
 		if (group.startsWith("signal")) {
 			settings.beginGroup(group);
 			auto signal = viewhelper::restore_signal(session_, settings);
-			if (signal)
-				add_signal(signal);
+			if (signal) {
+				add_signal(
+					dynamic_pointer_cast<sv::data::AnalogTimeSignal>(signal));
+			}
 			settings.endGroup();
 		}
 	}

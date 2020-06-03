@@ -108,7 +108,7 @@ shared_ptr<sv::channels::BaseChannel> get_channel_from_group(Session &session,
 	return channel;
 }
 
-shared_ptr<sv::data::AnalogTimeSignal> get_signal_from_group(Session &session,
+shared_ptr<sv::data::BaseSignal> get_signal_from_group(Session &session,
 	QSettings &settings, QString group, QString key_prefix = "")
 {
 	settings.beginGroup(group);
@@ -241,10 +241,12 @@ BaseView *get_view_from_settings(Session &session, QSettings &settings)
 	if (type == "plot_sig") {
 		vector<shared_ptr<sv::data::AnalogTimeSignal>> signals;
 		for (const auto &group : settings.childGroups()) {
-			if (group.startsWith("curve")) {
+			if (!group.startsWith("curve"))
+				continue;
+			auto signal = get_signal_from_group(session, settings, group);
+			if (signal)
 				signals.push_back(
-					get_signal_from_group(session, settings, group));
-			}
+					dynamic_pointer_cast<sv::data::AnalogTimeSignal>(signal));
 		}
 		if (!signals.empty()) {
 			view = new PlotView(session, signals.at(0), uuid);
@@ -255,8 +257,12 @@ BaseView *get_view_from_settings(Session &session, QSettings &settings)
 	if (type == "plot_xy") {
 		auto x_signal = restore_signal(session, settings, "x_");
 		auto y_signal = restore_signal(session, settings, "y_");
-		if (x_signal && y_signal)
-			view = new PlotView(session, x_signal, y_signal, uuid);
+		if (x_signal && y_signal) {
+			view = new PlotView(session,
+				dynamic_pointer_cast<sv::data::AnalogTimeSignal>(x_signal),
+				dynamic_pointer_cast<sv::data::AnalogTimeSignal>(y_signal),
+				uuid);
+		}
 	}
 	if (type == "powerpanel") {
 		view = new PowerPanelView(session, uuid);
@@ -363,7 +369,7 @@ shared_ptr<sv::channels::BaseChannel> restore_channel(Session &session,
 	return device->channel_map()[channel_id];
 }
 
-shared_ptr<sv::data::AnalogTimeSignal> restore_signal(Session &session,
+shared_ptr<sv::data::BaseSignal> restore_signal(Session &session,
 	QSettings &settings, const QString &key_prefix)
 {
 	QString signal_key = key_prefix + "signal";
@@ -384,8 +390,7 @@ shared_ptr<sv::data::AnalogTimeSignal> restore_signal(Session &session,
 	if (channel->signal_map().count(mq) == 0)
 		return nullptr;
 
-	return dynamic_pointer_cast<sv::data::AnalogTimeSignal>(
-		channel->signal_map()[mq][0]);
+	return channel->signal_map()[mq][0];
 }
 
 shared_ptr<sv::data::properties::BaseProperty> restore_property(

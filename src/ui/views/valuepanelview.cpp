@@ -277,7 +277,8 @@ void ValuePanelView::restore_settings(QSettings &settings)
 
 	auto signal = viewhelper::restore_signal(session_, settings);
 	if (signal) {
-		set_signal(signal);
+		set_signal(
+			dynamic_pointer_cast<sv::data::AnalogTimeSignal>(signal));
 		return;
 	}
 
