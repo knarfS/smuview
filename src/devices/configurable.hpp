@@ -147,7 +147,7 @@ public:
 	set<devices::ConfigKey> setable_configs() const;
 	set<devices::ConfigKey> listable_configs() const;
 
-	map<devices::ConfigKey, shared_ptr<data::properties::BaseProperty>> properties() const;
+	map<devices::ConfigKey, shared_ptr<data::properties::BaseProperty>> property_map() const;
 	shared_ptr<data::properties::BaseProperty> get_property(devices::ConfigKey config_key) const;
 
 	bool is_controllable() const;
@@ -164,7 +164,7 @@ private:
 	set<devices::ConfigKey> getable_configs_;
 	set<devices::ConfigKey> setable_configs_;
 	set<devices::ConfigKey> listable_configs_;
-	map<devices::ConfigKey, shared_ptr<data::properties::BaseProperty>> properties_;
+	map<devices::ConfigKey, shared_ptr<data::properties::BaseProperty>> property_map_;
 
 Q_SIGNALS:
 	void config_changed(const devices::ConfigKey config_key, const QVariant qvar);

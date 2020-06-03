@@ -61,22 +61,22 @@ void SourceSinkDevice::init_configurables()
 		// Check if the device has the config key "Range". If so, the config
 		// keys "VoltageTarget" and "CurrentLimit" could have different
 		// min/max/step values for each "Range" value!
-		if (configurable->properties().count(ConfigKey::Range) > 0 &&
-			configurable->properties().count(ConfigKey::VoltageTarget) > 0) {
+		if (configurable->property_map().count(ConfigKey::Range) > 0 &&
+			configurable->property_map().count(ConfigKey::VoltageTarget) > 0) {
 
-			auto range_property = configurable->properties()[ConfigKey::Range];
+			auto range_property = configurable->property_map()[ConfigKey::Range];
 			auto volt_property =
-				configurable->properties()[ConfigKey::VoltageTarget];
+				configurable->property_map()[ConfigKey::VoltageTarget];
 			connect(
 				range_property.get(), &data::properties::BaseProperty::value_changed,
 				volt_property.get(), &data::properties::BaseProperty::list_config);
 		}
-		if (configurable->properties().count(ConfigKey::Range) > 0 &&
-			configurable->properties().count(ConfigKey::CurrentLimit) > 0) {
+		if (configurable->property_map().count(ConfigKey::Range) > 0 &&
+			configurable->property_map().count(ConfigKey::CurrentLimit) > 0) {
 
-			auto range_property = configurable->properties()[ConfigKey::Range];
+			auto range_property = configurable->property_map()[ConfigKey::Range];
 			auto current_property =
-				configurable->properties()[ConfigKey::CurrentLimit];
+				configurable->property_map()[ConfigKey::CurrentLimit];
 			connect(
 				range_property.get(), &data::properties::BaseProperty::value_changed,
 				current_property.get(), &data::properties::BaseProperty::list_config);

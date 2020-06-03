@@ -62,7 +62,7 @@ void GenericControlView::setup_ui()
 {
 	QFormLayout *layout = new QFormLayout();
 
-	for (const auto &prop : configurable_->properties()) {
+	for (const auto &prop : configurable_->property_map()) {
 		QString text = devices::deviceutil::format_config_key(prop.first);
 		QWidget *dt_widget = datatypes::datatypehelper::get_widget_for_property(
 			prop.second, true, true);

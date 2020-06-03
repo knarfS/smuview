@@ -154,7 +154,7 @@ void Configurable::init()
 			assert("Unknown DataType");
 		}
 
-		properties_.insert(make_pair(config_key, property));
+		property_map_.insert(make_pair(config_key, property));
 	}
 }
 
@@ -383,17 +383,17 @@ set<devices::ConfigKey> Configurable::listable_configs() const
 }
 
 map<devices::ConfigKey, shared_ptr<data::properties::BaseProperty>>
-	Configurable::properties() const
+	Configurable::property_map() const
 {
-	return properties_;
+	return property_map_;
 }
 
 shared_ptr<data::properties::BaseProperty>
 	Configurable::get_property(devices::ConfigKey config_key) const
 {
-	if (!properties_.count(config_key))
+	if (!property_map_.count(config_key))
 		return nullptr;
-	return properties_.at(config_key);
+	return property_map_.at(config_key);
 }
 
 bool Configurable::is_controllable() const
@@ -409,13 +409,13 @@ void Configurable::feed_in_meta(shared_ptr<sigrok::Meta> sr_meta)
 		devices::ConfigKey config_key =
 			devices::deviceutil::get_config_key(entry.first);
 
-		if (!properties_.count(config_key)) {
+		if (!property_map_.count(config_key)) {
 			qWarning() << "Configurable::feed_in_meta(): Unknown config key " <<
 				QString::fromStdString(entry.first->name()) << " received";
 			return;
 		}
 
-		properties_[config_key]->on_value_changed(entry.second);
+		property_map_[config_key]->on_value_changed(entry.second);
 
 		// TODO: return QVariant from prop->on_value_changed(); and emit
 		//Q_EMIT config_changed(config_key, qvar);

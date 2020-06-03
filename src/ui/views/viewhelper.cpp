@@ -409,10 +409,10 @@ shared_ptr<sv::data::properties::BaseProperty> restore_property(
 	//auto sr_type = settings.value(property_key+"_sr_type").value<int>(); // TODO
 	auto sr_ck = settings.value(property_key+"_sr_ck").value<uint32_t>();
 	auto ck = sv::devices::deviceutil::get_config_key(sr_ck);
-	if (configurable->properties().count(ck) == 0)
+	if (configurable->property_map().count(ck) == 0)
 		return nullptr;
 
-	return configurable->properties()[ck]; // TODO: Rename to property_map
+	return configurable->property_map()[ck];
 }
 
 } // namespace viewhelper

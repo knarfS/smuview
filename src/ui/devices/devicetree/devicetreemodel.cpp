@@ -257,7 +257,7 @@ void DeviceTreeModel::add_configurable(
 	}
 
 	// ConfigKeys
-	for (const auto &property_pair : configurable->properties()) {
+	for (const auto &property_pair : configurable->property_map()) {
 		add_property(property_pair.second, conf_item);
 	}
 }

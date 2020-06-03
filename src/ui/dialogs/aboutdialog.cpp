@@ -314,7 +314,7 @@ QWidget *AboutDialog::get_device_page(QWidget *parent) const
 				arg(configurable->display_name()));
 			s.append(QString("</b><td>GET</td><td>Value</td><td>SET</td>"));
 			s.append(QString("<td>LIST</td><td>Values</td></tr>"));
-			auto props = configurable->properties();
+			auto props = configurable->property_map();
 			for (const auto &prop : props) {
 				s.append(QString("<tr><td>&nbsp;</td>"));
 				s.append(QString("<td><i>%1</i></td>").arg(
