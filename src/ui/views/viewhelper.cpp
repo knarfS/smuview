@@ -73,10 +73,10 @@ shared_ptr<sv::devices::BaseDevice> get_device(Session &session,
 		return nullptr;
 
 	string device_id = settings.value(device_key).toString().toStdString();
-	if (session.devices().count(device_id) == 0) // TODO: Rename devices() to device_map()
+	if (session.device_map().count(device_id) == 0)
 		return nullptr;
 
-	return session.devices()[device_id];
+	return session.device_map()[device_id];
 }
 
 shared_ptr<sv::devices::Configurable> restore_configurable(Session &session,

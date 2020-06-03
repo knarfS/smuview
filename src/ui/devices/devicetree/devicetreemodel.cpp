@@ -80,7 +80,7 @@ void DeviceTreeModel::setup_model()
 		&session_, SIGNAL(device_removed(shared_ptr<sv::devices::BaseDevice>)),
 		this, SLOT(on_device_removed(shared_ptr<sv::devices::BaseDevice>)));
 
-	for (const auto &device_pair : session_.devices()) {
+	for (const auto &device_pair : session_.device_map()) {
 		shared_ptr<sv::devices::BaseDevice> device = device_pair.second;
 		add_device(device);
 	}

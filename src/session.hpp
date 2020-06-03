@@ -68,7 +68,7 @@ public:
 	DeviceManager &device_manager();
 	const DeviceManager &device_manager() const;
 
-	map<string, shared_ptr<devices::BaseDevice>> devices() const;
+	map<string, shared_ptr<devices::BaseDevice>> device_map() const;
 	list<shared_ptr<devices::HardwareDevice>> connect_device(string conn_string);
 	void add_device(shared_ptr<devices::BaseDevice> device);
 	shared_ptr<devices::UserDevice> add_user_device();
@@ -82,7 +82,7 @@ public:
 
 private:
 	DeviceManager &device_manager_;
-	map<string, shared_ptr<devices::BaseDevice>> devices_;
+	map<string, shared_ptr<devices::BaseDevice>> device_map_;
 	MainWindow *main_window_;
 	shared_ptr<python::SmuScriptRunner> smu_script_runner_;
 

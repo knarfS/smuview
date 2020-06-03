@@ -68,8 +68,8 @@ Session::Session(DeviceManager &device_manager) :
 
 Session::~Session()
 {
-	for (auto &device : devices_)
-		device.second->close();
+	for (auto &device_pair_ : device_map_)
+		device_pair_.second->close();
 }
 
 DeviceManager &Session::device_manager()
@@ -82,9 +82,9 @@ const DeviceManager &Session::device_manager() const
 	return device_manager_;
 }
 
-map<string, shared_ptr<devices::BaseDevice>> Session::devices() const
+map<string, shared_ptr<devices::BaseDevice>> Session::device_map() const
 {
-	return devices_;
+	return device_map_;
 }
 
 list<shared_ptr<devices::HardwareDevice>>
@@ -120,7 +120,7 @@ void Session::add_device(shared_ptr<devices::BaseDevice> device)
 	connect(device.get(), &devices::BaseDevice::device_error,
 		this, &Session::error_handler);
 
-	devices_.insert(make_pair(device->id(), device));
+	device_map_.insert(make_pair(device->id(), device));
 
 	Q_EMIT device_added(device);
 }
@@ -146,7 +146,7 @@ void Session::remove_device(shared_ptr<devices::BaseDevice> device)
 		disconnect(device.get(), &devices::BaseDevice::device_error,
 			this, &Session::error_handler);
 
-		devices_.erase(device->id());
+		device_map_.erase(device->id());
 
 		Q_EMIT device_removed(device);
 	}

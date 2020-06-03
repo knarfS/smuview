@@ -105,7 +105,7 @@ void init_Session(py::module &m)
 {
 	py::class_<sv::Session> py_session(m, "Session");
 	py_session.doc() = "The SmuView `Session` class for accessing the actual state of the application.";
-	py_session.def("devices", &sv::Session::devices,
+	py_session.def("devices", &sv::Session::device_map,
 		"Return all connected devices.\n\n"
 		"Returns\n"
 		"-------\n"
