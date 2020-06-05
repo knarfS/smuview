@@ -87,7 +87,7 @@ void ConfigKeyComboBox::fill_config_keys()
 	for (const auto &config_key : configurable_->setable_configs()) {
 		sv::data::DataType dt =
 			sv::devices::deviceutil::get_data_type_for_config_key(config_key);
-		if (filter_data_types_.empty() || filter_data_types_.count(dt)) {
+		if (filter_data_types_.empty() || filter_data_types_.count(dt) > 0) {
 			this->addItem(
 				sv::devices::deviceutil::format_config_key(config_key),
 				QVariant::fromValue(config_key));

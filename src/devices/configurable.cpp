@@ -96,11 +96,11 @@ void Configurable::init()
 
 		const auto sr_capabilities =
 			sr_configurable_->config_capabilities(sr_config_key);
-		if (sr_capabilities.count(sigrok::Capability::GET))
+		if (sr_capabilities.count(sigrok::Capability::GET) > 0)
 			getable_configs_.insert(config_key);
-		if (sr_capabilities.count(sigrok::Capability::SET))
+		if (sr_capabilities.count(sigrok::Capability::SET) > 0)
 			setable_configs_.insert(config_key);
-		if (sr_capabilities.count(sigrok::Capability::LIST))
+		if (sr_capabilities.count(sigrok::Capability::LIST) > 0)
 			listable_configs_.insert(config_key);
 
 		shared_ptr<data::properties::BaseProperty> property;
@@ -391,7 +391,7 @@ map<devices::ConfigKey, shared_ptr<data::properties::BaseProperty>>
 shared_ptr<data::properties::BaseProperty>
 	Configurable::get_property(devices::ConfigKey config_key) const
 {
-	if (!property_map_.count(config_key))
+	if (property_map_.count(config_key) == 0)
 		return nullptr;
 	return property_map_.at(config_key);
 }
@@ -409,7 +409,7 @@ void Configurable::feed_in_meta(shared_ptr<sigrok::Meta> sr_meta)
 		devices::ConfigKey config_key =
 			devices::deviceutil::get_config_key(entry.first);
 
-		if (!property_map_.count(config_key)) {
+		if (property_map_.count(config_key) == 0) {
 			qWarning() << "Configurable::feed_in_meta(): Unknown config key " <<
 				QString::fromStdString(entry.first->name()) << " received";
 			return;

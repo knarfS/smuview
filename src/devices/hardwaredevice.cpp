@@ -292,7 +292,7 @@ void HardwareDevice::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
 			" channel_data = " << *channel_data;
 		*/
 
-		if (!sr_channel_map_.count(sr_channel))
+		if (sr_channel_map_.count(sr_channel) == 0)
 			assert("Unknown channel");
 		auto channel = static_pointer_cast<channels::HardwareChannel>(
 			sr_channel_map_[sr_channel]);
