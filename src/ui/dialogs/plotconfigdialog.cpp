@@ -43,7 +43,7 @@
 
 #include "plotconfigdialog.hpp"
 #include "src/data/datautil.hpp"
-#include "src/ui/views/plotview.hpp"
+#include "src/ui/views/baseplotview.hpp"
 #include "src/ui/widgets/plot/plot.hpp"
 
 Q_DECLARE_METATYPE(sv::ui::widgets::plot::PlotUpdateMode)

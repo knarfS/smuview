@@ -292,21 +292,23 @@ set(smuview_SOURCES
   src/ui/tabs/tabhelper.cpp
   src/ui/tabs/usertab.cpp
   src/ui/tabs/welcometab.cpp
+  src/ui/views/baseplotview.cpp
   src/ui/views/baseview.cpp
   src/ui/views/dataview.cpp
   src/ui/views/devicesview.cpp
   src/ui/views/democontrolview.cpp
   src/ui/views/genericcontrolview.cpp
   src/ui/views/measurementcontrolview.cpp
-  src/ui/views/plotview.cpp
   src/ui/views/powerpanelview.cpp
   src/ui/views/sequenceoutputview.cpp
   src/ui/views/smuscriptoutputview.cpp
   src/ui/views/smuscripttreeview.cpp
   src/ui/views/smuscriptview.cpp
   src/ui/views/sourcesinkcontrolview.cpp
+  src/ui/views/timeplotview.cpp
   src/ui/views/valuepanelview.cpp
   src/ui/views/viewhelper.cpp
+  src/ui/views/xyplotview.cpp
   src/ui/widgets/clickablelabel.cpp
   src/ui/widgets/colorbutton.cpp
   src/ui/widgets/lcddisplay.cpp

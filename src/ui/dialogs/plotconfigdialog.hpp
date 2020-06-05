@@ -37,7 +37,7 @@
 #include <QWidget>
 
 #include "src/ui/widgets/plot/plot.hpp"
-#include "src/ui/views/plotview.hpp"
+#include "src/ui/views/baseplotview.hpp"
 
 namespace sv {
 namespace ui {

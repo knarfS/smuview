@@ -37,9 +37,6 @@
 #include "src/devices/configurable.hpp"
 #include "src/python/uihelper.hpp"
 #include "src/ui/tabs/basetab.hpp"
-#include "src/ui/views/baseview.hpp"
-#include "src/ui/views/plotview.hpp"
-#include "src/ui/views/valuepanelview.hpp"
 
 using std::shared_ptr;
 using std::string;
@@ -64,12 +61,12 @@ UiProxy::UiProxy(Session &session, shared_ptr<UiHelper> ui_helper) :
 	connect(this, &UiProxy::add_control_view,
 		ui_helper_.get(), &UiHelper::add_control_view);
 
-	connect(this, QOverload<std::string, Qt::DockWidgetArea, shared_ptr<sv::channels::BaseChannel>>::of(&UiProxy::add_plot_view),
-		ui_helper_.get(), QOverload<std::string, Qt::DockWidgetArea, shared_ptr<sv::channels::BaseChannel>>::of(&UiHelper::add_plot_view));
-	connect(this, QOverload<std::string, Qt::DockWidgetArea, shared_ptr<sv::data::AnalogTimeSignal>>::of(&UiProxy::add_plot_view),
-		ui_helper_.get(), QOverload<std::string, Qt::DockWidgetArea, shared_ptr<sv::data::AnalogTimeSignal>>::of(&UiHelper::add_plot_view));
-	connect(this, QOverload<std::string, Qt::DockWidgetArea, shared_ptr<sv::data::AnalogTimeSignal>, shared_ptr<sv::data::AnalogTimeSignal>>::of(&UiProxy::add_plot_view),
-		ui_helper_.get(), QOverload<std::string, Qt::DockWidgetArea, shared_ptr<sv::data::AnalogTimeSignal>, shared_ptr<sv::data::AnalogTimeSignal>>::of(&UiHelper::add_plot_view));
+	connect(this, QOverload<std::string, Qt::DockWidgetArea, shared_ptr<sv::channels::BaseChannel>>::of(&UiProxy::add_time_plot_view),
+		ui_helper_.get(), QOverload<std::string, Qt::DockWidgetArea, shared_ptr<sv::channels::BaseChannel>>::of(&UiHelper::add_time_plot_view));
+	connect(this, QOverload<std::string, Qt::DockWidgetArea, shared_ptr<sv::data::AnalogTimeSignal>>::of(&UiProxy::add_time_plot_view),
+		ui_helper_.get(), QOverload<std::string, Qt::DockWidgetArea, shared_ptr<sv::data::AnalogTimeSignal>>::of(&UiHelper::add_time_plot_view));
+	connect(this, QOverload<std::string, Qt::DockWidgetArea, shared_ptr<sv::data::AnalogTimeSignal>, shared_ptr<sv::data::AnalogTimeSignal>>::of(&UiProxy::add_xy_plot_view),
+		ui_helper_.get(), QOverload<std::string, Qt::DockWidgetArea, shared_ptr<sv::data::AnalogTimeSignal>, shared_ptr<sv::data::AnalogTimeSignal>>::of(&UiHelper::add_xy_plot_view));
 
 	connect(this, &UiProxy::add_power_panel_view,
 		ui_helper_.get(), &UiHelper::add_power_panel_view);
@@ -82,8 +79,10 @@ UiProxy::UiProxy(Session &session, shared_ptr<UiHelper> ui_helper) :
 	connect(this, &UiProxy::add_signal_to_data_view,
 		ui_helper_.get(), &UiHelper::add_signal_to_data_view);
 
-	connect(this, &UiProxy::add_signal_to_plot_view,
-		ui_helper_.get(), &UiHelper::add_signal_to_plot_view);
+	connect(this, &UiProxy::add_signal_to_time_plot_view,
+		ui_helper_.get(), &UiHelper::add_signal_to_time_plot_view);
+	connect(this, &UiProxy::add_signal_to_xy_plot_view,
+		ui_helper_.get(), &UiHelper::add_signal_to_xy_plot_view);
 	connect(this, &UiProxy::add_signals_to_xy_plot_view,
 		ui_helper_.get(), &UiHelper::add_signals_to_xy_plot_view);
 
@@ -133,37 +132,37 @@ string UiProxy::ui_add_control_view(string tab_id, Qt::DockWidgetArea area,
 	return id;
 }
 
-string UiProxy::ui_add_plot_view(string tab_id, Qt::DockWidgetArea area,
+string UiProxy::ui_add_time_plot_view(string tab_id, Qt::DockWidgetArea area,
 	shared_ptr<channels::BaseChannel> channel)
 {
 	string id;
 	init_wait_for_view_added(id);
-	Q_EMIT add_plot_view(tab_id, area, channel);
+	Q_EMIT add_time_plot_view(tab_id, area, channel);
 	event_loop_.exec();
 	finish_wait_for_signal();
 
 	return id;
 }
 
-string UiProxy::ui_add_plot_view(string tab_id, Qt::DockWidgetArea area,
+string UiProxy::ui_add_time_plot_view(string tab_id, Qt::DockWidgetArea area,
 	shared_ptr<data::AnalogTimeSignal> signal)
 {
 	string id;
 	init_wait_for_view_added(id);
-	Q_EMIT add_plot_view(tab_id, area, signal);
+	Q_EMIT add_time_plot_view(tab_id, area, signal);
 	event_loop_.exec();
 	finish_wait_for_signal();
 
 	return id;
 }
 
-string UiProxy::ui_add_plot_view(string tab_id, Qt::DockWidgetArea area,
+string UiProxy::ui_add_xy_plot_view(string tab_id, Qt::DockWidgetArea area,
 	shared_ptr<data::AnalogTimeSignal> x_signal,
 	shared_ptr<data::AnalogTimeSignal> y_signal)
 {
 	string id;
 	init_wait_for_view_added(id);
-	Q_EMIT add_plot_view(tab_id, area, x_signal, y_signal);
+	Q_EMIT add_xy_plot_view(tab_id, area, x_signal, y_signal);
 	event_loop_.exec();
 	finish_wait_for_signal();
 
@@ -213,10 +212,16 @@ void UiProxy::ui_add_signal_to_data_view(string tab_id, string view_id,
 	Q_EMIT add_signal_to_data_view(tab_id, view_id, signal);
 }
 
-void UiProxy::ui_add_signal_to_plot_view(string tab_id, string view_id,
+void UiProxy::ui_add_signal_to_time_plot_view(string tab_id, string view_id,
 	shared_ptr<data::AnalogTimeSignal> signal)
 {
-	Q_EMIT add_signal_to_plot_view(tab_id, view_id, signal);
+	Q_EMIT add_signal_to_time_plot_view(tab_id, view_id, signal);
+}
+
+void UiProxy::ui_add_signal_to_xy_plot_view(string tab_id, string view_id,
+	shared_ptr<data::AnalogTimeSignal> y_signal)
+{
+	Q_EMIT add_signal_to_xy_plot_view(tab_id, view_id, y_signal);
 }
 
 void UiProxy::ui_add_signals_to_xy_plot_view(string tab_id, string view_id,

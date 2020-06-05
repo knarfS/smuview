@@ -41,11 +41,12 @@
 #include "src/ui/devices/devicetree/devicetreeview.hpp"
 #include "src/ui/views/baseview.hpp"
 #include "src/ui/views/dataview.hpp"
-#include "src/ui/views/plotview.hpp"
 #include "src/ui/views/powerpanelview.hpp"
 #include "src/ui/views/sequenceoutputview.hpp"
+#include "src/ui/views/timeplotview.hpp"
 #include "src/ui/views/valuepanelview.hpp"
 #include "src/ui/views/viewhelper.hpp"
+#include "src/ui/views/xyplotview.hpp"
 
 using std::set;
 using std::static_pointer_cast;
@@ -270,11 +271,14 @@ void AddViewDialog::accept()
 	case 3:
 		// Add time plot view
 		for (const auto &channel : time_plot_channel_tree_->checked_channels()) {
-			views_.push_back(new ui::views::PlotView(session_, channel));
+			auto view = new ui::views::TimePlotView(session_);
+			view->set_channel(channel);
+			views_.push_back(view);
 		}
 		for (const auto &signal : time_plot_channel_tree_->checked_signals()) {
-			auto a_signal = static_pointer_cast<data::AnalogTimeSignal>(signal);
-			views_.push_back(new ui::views::PlotView(session_, a_signal));
+			auto view = new ui::views::TimePlotView(session_);
+			view->add_signal(static_pointer_cast<data::AnalogTimeSignal>(signal));
+			views_.push_back(view);
 		}
 		break;
 	case 4:
@@ -283,9 +287,11 @@ void AddViewDialog::accept()
 			auto x_signal = xy_plot_x_signal_widget_->selected_signal();
 			auto y_signal = xy_plot_y_signal_widget_->selected_signal();
 			if (x_signal != nullptr && y_signal != nullptr) {
-				views_.push_back(new ui::views::PlotView(session_,
+				auto view = new ui::views::XYPlotView(session_);
+				view->add_signals(
 					static_pointer_cast<data::AnalogTimeSignal>(x_signal),
-					static_pointer_cast<data::AnalogTimeSignal>(y_signal)));
+					static_pointer_cast<data::AnalogTimeSignal>(y_signal));
+				views_.push_back(view);
 			}
 		}
 		break;

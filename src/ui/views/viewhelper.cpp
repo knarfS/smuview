@@ -43,11 +43,12 @@
 #include "src/ui/views/democontrolview.hpp"
 #include "src/ui/views/genericcontrolview.hpp"
 #include "src/ui/views/measurementcontrolview.hpp"
-#include "src/ui/views/plotview.hpp"
 #include "src/ui/views/powerpanelview.hpp"
 #include "src/ui/views/sequenceoutputview.hpp"
 #include "src/ui/views/sourcesinkcontrolview.hpp"
+#include "src/ui/views/timeplotview.hpp"
 #include "src/ui/views/valuepanelview.hpp"
+#include "src/ui/views/xyplotview.hpp"
 
 using std::dynamic_pointer_cast;
 using std::make_pair;
@@ -64,7 +65,7 @@ namespace views {
 namespace viewhelper {
 namespace {
 
-shared_ptr<sv::devices::BaseDevice> get_device(Session &session,
+shared_ptr<sv::devices::BaseDevice> restore_device(Session &session,
 	QSettings &settings, QString key_prefix = "")
 {
 	QString device_key = key_prefix + "device";
@@ -84,7 +85,7 @@ shared_ptr<sv::devices::Configurable> restore_configurable(Session &session,
 {
 	QString configurable_key = key_prefix + "configurable";
 
-	auto device = get_device(session, settings, key_prefix);
+	auto device = restore_device(session, settings, key_prefix);
 	if (!device)
 		return nullptr;
 
@@ -96,26 +97,6 @@ shared_ptr<sv::devices::Configurable> restore_configurable(Session &session,
 		return nullptr;
 
 	return device->configurable_map()[conf_id];
-}
-
-shared_ptr<sv::channels::BaseChannel> get_channel_from_group(Session &session,
-	QSettings &settings, QString group, QString key_prefix = "")
-{
-	settings.beginGroup(group);
-	auto channel = restore_channel(session, settings, key_prefix);
-	settings.endGroup();
-
-	return channel;
-}
-
-shared_ptr<sv::data::BaseSignal> get_signal_from_group(Session &session,
-	QSettings &settings, QString group, QString key_prefix = "")
-{
-	settings.beginGroup(group);
-	auto signal = restore_signal(session, settings, key_prefix);
-	settings.endGroup();
-
-	return signal;
 }
 
 } // namespace
@@ -219,50 +200,11 @@ BaseView *get_view_from_settings(Session &session, QSettings &settings)
 	if (type == "data") {
 		view = new DataView(session, uuid);
 	}
-	if (type == "plot_ch") {
-		vector<shared_ptr<sv::channels::BaseChannel>> channels;
-		for (const auto &group : settings.childGroups()) {
-			if (group.startsWith("curve")) {
-				auto channel = get_channel_from_group(session, settings, group);
-				if (channel)
-					channels.push_back(channel);
-			}
-		}
-		if (!channels.empty()) {
-			view = new PlotView(session, channels.at(0), uuid);
-			// TODO: Add the channel and not the actual signal?
-			for (size_t i=1; i<channels.size(); i++) {
-				qobject_cast<PlotView *>(view)->add_time_curve(
-					static_pointer_cast<sv::data::AnalogTimeSignal>(
-						channels.at(i)->actual_signal()));
-			}
-		}
+	if (type == "timeplot") {
+		view = new TimePlotView(session, uuid);
 	}
-	if (type == "plot_sig") {
-		vector<shared_ptr<sv::data::AnalogTimeSignal>> signals;
-		for (const auto &group : settings.childGroups()) {
-			if (!group.startsWith("curve"))
-				continue;
-			auto signal = get_signal_from_group(session, settings, group);
-			if (signal)
-				signals.push_back(
-					dynamic_pointer_cast<sv::data::AnalogTimeSignal>(signal));
-		}
-		if (!signals.empty()) {
-			view = new PlotView(session, signals.at(0), uuid);
-			for (size_t i=1; i<signals.size(); i++)
-				qobject_cast<PlotView *>(view)->add_time_curve(signals.at(i));
-		}
-	}
-	if (type == "plot_xy") {
-		auto x_signal = restore_signal(session, settings, "x_");
-		auto y_signal = restore_signal(session, settings, "y_");
-		if (x_signal && y_signal) {
-			view = new PlotView(session,
-				dynamic_pointer_cast<sv::data::AnalogTimeSignal>(x_signal),
-				dynamic_pointer_cast<sv::data::AnalogTimeSignal>(y_signal),
-				uuid);
-		}
+	if (type == "xyplot") {
+		view = new XYPlotView(session, uuid);
 	}
 	if (type == "powerpanel") {
 		view = new PowerPanelView(session, uuid);
@@ -272,6 +214,12 @@ BaseView *get_view_from_settings(Session &session, QSettings &settings)
 	}
 	if (type == "sequenceoutput") {
 		view = new SequenceOutputView(session, uuid);
+	}
+	if (type == "smuscriptoutput") {
+		// TODO
+	}
+	if (type == "smuscript") {
+		// TODO
 	}
 	if (type == "democontrol") {
 		auto configurable = restore_configurable(session, settings);
@@ -298,13 +246,6 @@ BaseView *get_view_from_settings(Session &session, QSettings &settings)
 		view->restore_settings(settings);
 
 	return view;
-
-	/*
-	"sequence:" + property_->name(); // SequenceOutputView
-
-	"smuscriptoutput:"; // SmuScriptOutputView
-	"smuscript:"; // SmuScriptView
-	*/
 }
 
 void save_configurable(
@@ -355,7 +296,7 @@ shared_ptr<sv::channels::BaseChannel> restore_channel(Session &session,
 {
 	QString channel_key = key_prefix + "channel";
 
-	auto device = get_device(session, settings, key_prefix);
+	auto device = restore_device(session, settings, key_prefix);
 	if (!device)
 		return nullptr;
 

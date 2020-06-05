@@ -34,8 +34,8 @@
 #include "src/devices/hardwaredevice.hpp"
 #include "src/ui/tabs/devicetab.hpp"
 #include "src/ui/views/baseview.hpp"
-#include "src/ui/views/plotview.hpp"
 #include "src/ui/views/powerpanelview.hpp"
+#include "src/ui/views/timeplotview.hpp"
 #include "src/ui/views/viewhelper.hpp"
 
 namespace sv {
@@ -83,7 +83,7 @@ void SourceSinkTab::setup_ui()
 	// for power supplys and loads.
 	views::BaseView *first_pp_view = nullptr;
 	for (const auto &chg_pair : device_->channel_group_map()) {
-		ui::views::PlotView *plot_view = nullptr;
+		ui::views::TimePlotView *plot_view = nullptr;
 		shared_ptr<data::AnalogTimeSignal> voltage_signal;
 		shared_ptr<data::AnalogTimeSignal> current_signal;
 		for (const auto &channel : chg_pair.second) {
@@ -96,22 +96,19 @@ void SourceSinkTab::setup_ui()
 					voltage_signal = signal;
 					// Voltage plot(s)
 					if (!plot_view) {
-						plot_view = new ui::views::PlotView(session_, voltage_signal);
+						plot_view = new ui::views::TimePlotView(session_);
 						add_view(plot_view, Qt::BottomDockWidgetArea);
 					}
-					else
-						plot_view->add_time_curve(voltage_signal);
-
+					plot_view->add_signal(voltage_signal);
 				}
 				if (signal->quantity() == data::Quantity::Current) {
 					current_signal = signal;
 					// Current plot(s)
 					if (!plot_view) {
-						plot_view = new ui::views::PlotView(session_, current_signal);
+						plot_view = new ui::views::TimePlotView(session_);
 						add_view(plot_view, Qt::BottomDockWidgetArea);
 					}
-					else
-						plot_view->add_time_curve(current_signal);
+					plot_view->add_signal(current_signal);
 				}
 			}
 		}

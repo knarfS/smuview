@@ -29,7 +29,7 @@
 #include "src/devices/hardwaredevice.hpp"
 #include "src/devices/measurementdevice.hpp"
 #include "src/ui/views/baseview.hpp"
-#include "src/ui/views/plotview.hpp"
+#include "src/ui/views/timeplotview.hpp"
 #include "src/ui/views/valuepanelview.hpp"
 #include "src/ui/views/viewhelper.hpp"
 
@@ -99,7 +99,8 @@ void MeasurementTab::setup_ui()
 			add_view_ontop(value_panel_view, first_panel_view);
 
 		// Value plot(s)
-		auto value_plot_view = new ui::views::PlotView(session_, channel);
+		auto value_plot_view = new ui::views::TimePlotView(session_);
+		value_plot_view->set_channel(channel);
 		add_view(value_plot_view, Qt::BottomDockWidgetArea);
 	}
 	if (first_panel_view != nullptr &&
