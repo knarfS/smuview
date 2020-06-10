@@ -24,6 +24,7 @@
 
 #include "measurementtab.hpp"
 #include "src/util.hpp"
+#include "src/settingsmanager.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/devices/configurable.hpp"
 #include "src/devices/hardwaredevice.hpp"
@@ -42,7 +43,7 @@ MeasurementTab::MeasurementTab(Session &session,
 	DeviceTab(session, device, parent),
 	measurement_device_(device)
 {
-	if (views::viewhelper::has_device_settings(device))
+	if (SettingsManager::has_device_settings(device))
 		restore_settings();
 	else
 		setup_ui();

@@ -27,6 +27,7 @@
 
 #include "measurementcontrolview.hpp"
 #include "src/session.hpp"
+#include "src/settingsmanager.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/devices/configurable.hpp"
 #include "src/devices/deviceutil.hpp"
@@ -79,7 +80,7 @@ void MeasurementControlView::setup_ui()
 void MeasurementControlView::save_settings(QSettings &settings) const
 {
 	BaseView::save_settings(settings);
-	viewhelper::save_configurable(configurable_, settings);
+	SettingsManager::save_configurable(configurable_, settings);
 }
 
 void MeasurementControlView::restore_settings(QSettings &settings)

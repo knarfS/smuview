@@ -25,6 +25,7 @@
 
 #include "timeplotview.hpp"
 #include "src/session.hpp"
+#include "src/settingsmanager.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/data/analogtimesignal.hpp"
 #include "src/devices/basedevice.hpp"
@@ -127,7 +128,7 @@ void TimePlotView::save_settings(QSettings &settings) const
 	BasePlotView::save_settings(settings);
 
 	if (channel_) {
-		viewhelper::save_channel(channel_, settings);
+		SettingsManager::save_channel(channel_, settings);
 		return;
 	}
 
@@ -136,7 +137,7 @@ void TimePlotView::save_settings(QSettings &settings) const
 	for (const auto &curve : curves_) {
 		settings.beginGroup(QString("curve%1").arg(i++));
 		auto t_curve = static_cast<widgets::plot::TimeCurveData *>(curve);
-		viewhelper::save_signal(t_curve->signal(), settings);
+		SettingsManager::save_signal(t_curve->signal(), settings);
 		settings.endGroup();
 	}
 }
@@ -145,7 +146,7 @@ void TimePlotView::restore_settings(QSettings &settings)
 {
 	BasePlotView::restore_settings(settings);
 
-	auto channel = viewhelper::restore_channel(session_, settings);
+	auto channel = SettingsManager::restore_channel(session_, settings);
 	if (channel) {
 		set_channel(channel);
 		return;
@@ -156,7 +157,7 @@ void TimePlotView::restore_settings(QSettings &settings)
 		if (!group.startsWith("curve"))
 			continue;
 		settings.beginGroup(group);
-		auto signal = viewhelper::restore_signal(session_, settings);
+		auto signal = SettingsManager::restore_signal(session_, settings);
 		if (signal)
 			add_signal(dynamic_pointer_cast<sv::data::AnalogTimeSignal>(signal));
 		settings.endGroup();

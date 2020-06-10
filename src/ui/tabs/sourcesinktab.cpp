@@ -25,6 +25,7 @@
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
 #include "sourcesinktab.hpp"
+#include "src/settingsmanager.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/data/analogtimesignal.hpp"
 #include "src/data/basesignal.hpp"
@@ -46,7 +47,7 @@ SourceSinkTab::SourceSinkTab(Session &session,
 		shared_ptr<sv::devices::HardwareDevice> device, QWidget *parent) :
 	DeviceTab(session, device, parent)
 {
-	if (views::viewhelper::has_device_settings(device))
+	if (SettingsManager::has_device_settings(device))
 		restore_settings();
 	else
 		setup_ui();

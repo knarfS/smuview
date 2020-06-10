@@ -29,6 +29,7 @@
 
 #include "genericcontrolview.hpp"
 #include "src/session.hpp"
+#include "src/settingsmanager.hpp"
 #include "src/data/properties/baseproperty.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/devices/configurable.hpp"
@@ -83,7 +84,7 @@ void GenericControlView::connect_signals()
 void GenericControlView::save_settings(QSettings &settings) const
 {
 	BaseView::save_settings(settings);
-	viewhelper::save_configurable(configurable_, settings);
+	SettingsManager::save_configurable(configurable_, settings);
 }
 
 void GenericControlView::restore_settings(QSettings &settings)

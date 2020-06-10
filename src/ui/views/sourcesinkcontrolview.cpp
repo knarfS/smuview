@@ -28,6 +28,7 @@
 
 #include "sourcesinkcontrolview.hpp"
 #include "src/session.hpp"
+#include "src/settingsmanager.hpp"
 #include "src/devices/configurable.hpp"
 #include "src/devices/deviceutil.hpp"
 #include "src/ui/datatypes/boolbutton.hpp"
@@ -176,7 +177,7 @@ void SourceSinkControlView::setup_ui()
 void SourceSinkControlView::save_settings(QSettings &settings) const
 {
 	BaseView::save_settings(settings);
-	viewhelper::save_configurable(configurable_, settings);
+	SettingsManager::save_configurable(configurable_, settings);
 }
 
 void SourceSinkControlView::restore_settings(QSettings &settings)

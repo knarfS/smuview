@@ -26,6 +26,7 @@
 
 #include "xyplotview.hpp"
 #include "src/session.hpp"
+#include "src/settingsmanager.hpp"
 #include "src/data/analogtimesignal.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/ui/dialogs/selectsignaldialog.hpp"
@@ -98,8 +99,8 @@ void XYPlotView::save_settings(QSettings &settings) const
 	for (const auto &curve : curves_) {
 		settings.beginGroup(QString("curve%1").arg(i++));
 		auto xy_curve = static_cast<widgets::plot::XYCurveData *>(curve);
-		viewhelper::save_signal(xy_curve->x_t_signal(), settings, "x_");
-		viewhelper::save_signal(xy_curve->y_t_signal(), settings, "y_");
+		SettingsManager::save_signal(xy_curve->x_t_signal(), settings, "x_");
+		SettingsManager::save_signal(xy_curve->y_t_signal(), settings, "y_");
 		settings.endGroup();
 	}
 }
@@ -112,8 +113,8 @@ void XYPlotView::restore_settings(QSettings &settings)
 		if (!group.startsWith("curve"))
 			continue;
 		settings.beginGroup(group);
-		auto x_t_signal = viewhelper::restore_signal(session_, settings, "x_");
-		auto y_t_signal = viewhelper::restore_signal(session_, settings, "y_");
+		auto x_t_signal = SettingsManager::restore_signal(session_, settings, "x_");
+		auto y_t_signal = SettingsManager::restore_signal(session_, settings, "y_");
 		if (x_t_signal && y_t_signal) {
 			add_signals(
 				dynamic_pointer_cast<sv::data::AnalogTimeSignal>(x_t_signal),

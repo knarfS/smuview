@@ -31,6 +31,7 @@
 
 #include "powerpanelview.hpp"
 #include "src/session.hpp"
+#include "src/settingsmanager.hpp"
 #include "src/util.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/data/analogbasesignal.hpp"
@@ -339,16 +340,16 @@ void PowerPanelView::save_settings(QSettings &settings) const
 {
 	BaseView::save_settings(settings);
 
-	viewhelper::save_signal(voltage_signal_, settings, "v_");
-	viewhelper::save_signal(current_signal_, settings, "i_");
+	SettingsManager::save_signal(voltage_signal_, settings, "v_");
+	SettingsManager::save_signal(current_signal_, settings, "i_");
 }
 
 void PowerPanelView::restore_settings(QSettings &settings)
 {
 	BaseView::restore_settings(settings);
 
-	auto v_signal = viewhelper::restore_signal(session_, settings, "v_");
-	auto i_signal = viewhelper::restore_signal(session_, settings, "i_");
+	auto v_signal = SettingsManager::restore_signal(session_, settings, "v_");
+	auto i_signal = SettingsManager::restore_signal(session_, settings, "i_");
 	if (v_signal && i_signal) {
 		set_signals(
 			dynamic_pointer_cast<sv::data::AnalogTimeSignal>(v_signal),

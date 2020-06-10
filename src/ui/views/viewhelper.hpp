@@ -68,15 +68,6 @@ BaseView *get_view_for_configurable(Session &session,
 	shared_ptr<sv::devices::Configurable> configurable);
 
 /**
- * Check if a setting for this device exists.
- *
- * @param[in] device The device.
- *
- * @return true if a setting exists.
- */
-bool has_device_settings(shared_ptr<sv::devices::BaseDevice> device);
-
-/**
  * Return the view defined in the actual settings group.
  *
  * @param[in] session The reference to the actual SmuView session.
@@ -85,84 +76,6 @@ bool has_device_settings(shared_ptr<sv::devices::BaseDevice> device);
  * @return The view defined by settings.
  */
 BaseView *get_view_from_settings(Session &session, QSettings &settings);
-
-/**
- * Save the configurable to the settings.
- *
- * @param[in] configurable The configurable to save.
- * @param[in] settings The settings.
- * @param[in] key_prefix The prefix of the settings keys for the configurable.
- */
-void save_configurable(
-	const shared_ptr<sv::devices::Configurable> &configurable,
-	QSettings &settings, const QString &key_prefix = "");
-
-/**
- * Save the channel to the settings.
- *
- * @param[in] channel The channel to save.
- * @param[in] settings The settings.
- * @param[in] key_prefix The prefix of the settings keys for the channel.
- */
-void save_channel(const shared_ptr<sv::channels::BaseChannel> &channel,
-	QSettings &settings, const QString &key_prefix = "");
-
-/**
- * Save the signal to the settings.
- *
- * @param[in] signal The signal to save.
- * @param[in] settings The settings.
- * @param[in] key_prefix The prefix of the settings keys for the signal.
- */
-void save_signal(const shared_ptr<sv::data::BaseSignal> &signal,
-	QSettings &settings, const QString &key_prefix = "");
-
-/**
- * Save the property to the settings.
- *
- * @param[in] property The property to save.
- * @param[in] settings The settings.
- * @param[in] key_prefix The prefix of the settings keys for the property.
- */
-void save_property(
-	const shared_ptr<sv::data::properties::BaseProperty> &property,
-	QSettings &settings, const QString &key_prefix = "");
-
-/**
- * Restore a channel from the settings.
- *
- * @param[in] session The SmuView session.
- * @param[in] settings The settings.
- * @param[in] key_prefix The prefix of the settings keys for the channel.
- *
- * @return The restored channel.
- */
-shared_ptr<sv::channels::BaseChannel> restore_channel(Session &session,
-	QSettings &settings, const QString &key_prefix = "");
-
-/**
- * Restore a signal from the settings.
- *
- * @param[in] session The SmuView session.
- * @param[in] settings The settings.
- * @param[in] key_prefix The prefix of the settings keys for the signal.
- *
- * @return The restored signal.
- */
-shared_ptr<sv::data::BaseSignal> restore_signal(Session &session,
-	QSettings &settings, const QString &key_prefix = "");
-
-/**
- * Restore a property from the settings.
- *
- * @param[in] session The SmuView session.
- * @param[in] settings The settings.
- * @param[in] key_prefix The prefix of the settings keys for the property.
- *
- * @return The restored property.
- */
-shared_ptr<sv::data::properties::BaseProperty> restore_property(
-	Session &session, QSettings &settings, const QString &key_prefix = "");
 
 } // namespace viewhelper
 } // namespace views

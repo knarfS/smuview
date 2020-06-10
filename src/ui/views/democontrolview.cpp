@@ -30,6 +30,7 @@
 
 #include "democontrolview.hpp"
 #include "src/session.hpp"
+#include "src/settingsmanager.hpp"
 #include "src/data/datautil.hpp"
 #include "src/data/properties/baseproperty.hpp"
 #include "src/data/properties/measuredquantityproperty.hpp"
@@ -137,7 +138,7 @@ void DemoControlView::connect_signals()
 void DemoControlView::save_settings(QSettings &settings) const
 {
 	BaseView::save_settings(settings);
-	viewhelper::save_configurable(configurable_, settings);
+	SettingsManager::save_configurable(configurable_, settings);
 }
 
 void DemoControlView::restore_settings(QSettings &settings)

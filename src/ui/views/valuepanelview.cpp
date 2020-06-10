@@ -34,6 +34,7 @@
 
 #include "valuepanelview.hpp"
 #include "src/session.hpp"
+#include "src/settingsmanager.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/data/analogtimesignal.hpp"
 #include "src/data/basesignal.hpp"
@@ -266,23 +267,23 @@ void ValuePanelView::save_settings(QSettings &settings) const
 	BaseView::save_settings(settings);
 
 	if (signal_)
-		viewhelper::save_signal(signal_, settings);
+		SettingsManager::save_signal(signal_, settings);
 	else
-		viewhelper::save_channel(channel_, settings);
+		SettingsManager::save_channel(channel_, settings);
 }
 
 void ValuePanelView::restore_settings(QSettings &settings)
 {
 	BaseView::restore_settings(settings);
 
-	auto signal = viewhelper::restore_signal(session_, settings);
+	auto signal = SettingsManager::restore_signal(session_, settings);
 	if (signal) {
 		set_signal(
 			dynamic_pointer_cast<sv::data::AnalogTimeSignal>(signal));
 		return;
 	}
 
-	auto channel = viewhelper::restore_channel(session_, settings);
+	auto channel = SettingsManager::restore_channel(session_, settings);
 	if (channel)
 		set_channel(channel);
 }

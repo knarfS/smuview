@@ -35,6 +35,7 @@
 
 #include "dataview.hpp"
 #include "src/session.hpp"
+#include "src/settingsmanager.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/data/analogbasesignal.hpp"
 #include "src/data/analogtimesignal.hpp"
@@ -117,7 +118,7 @@ void DataView::save_settings(QSettings &settings) const
 	size_t i = 0;
 	for (const auto &signal : signals_) {
 		settings.beginGroup(QString("signal%1").arg(i++));
-		viewhelper::save_signal(signal, settings);
+		SettingsManager::save_signal(signal, settings);
 		settings.endGroup();
 	}
 }
@@ -129,7 +130,7 @@ void DataView::restore_settings(QSettings &settings)
 	for (const auto &group : settings.childGroups()) {
 		if (group.startsWith("signal")) {
 			settings.beginGroup(group);
-			auto signal = viewhelper::restore_signal(session_, settings);
+			auto signal = SettingsManager::restore_signal(session_, settings);
 			if (signal) {
 				add_signal(
 					dynamic_pointer_cast<sv::data::AnalogTimeSignal>(signal));

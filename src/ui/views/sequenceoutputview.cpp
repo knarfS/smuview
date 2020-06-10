@@ -51,6 +51,7 @@
 
 #include "sequenceoutputview.hpp"
 #include "src/session.hpp"
+#include "src/settingsmanager.hpp"
 #include "src/util.hpp"
 #include "src/data/properties/doubleproperty.hpp"
 #include "src/ui/datatypes/doublespinbox.hpp"
@@ -279,7 +280,7 @@ void SequenceOutputView::save_settings(QSettings &settings) const
 
 	if (!property_)
 		return;
-	viewhelper::save_property(property_, settings);
+	SettingsManager::save_property(property_, settings);
 
 	settings.setValue("repeat_infinite",
 		QVariant(repeat_infinite_box_->checkState()));
@@ -305,7 +306,7 @@ void SequenceOutputView::restore_settings(QSettings &settings)
 {
 	BaseView::restore_settings(settings);
 
-	auto property = viewhelper::restore_property(session_, settings);
+	auto property = SettingsManager::restore_property(session_, settings);
 	if (!property)
 		return;
 	set_property(
