@@ -88,6 +88,15 @@ void MeasurementControlView::restore_settings(QSettings &settings)
 	BaseView::restore_settings(settings);
 }
 
+MeasurementControlView *MeasurementControlView::init_from_settings(
+	Session &session, QSettings &settings, QUuid &uuid)
+{
+	auto configurable = SettingsManager::restore_configurable(session, settings);
+	if (configurable)
+		return new MeasurementControlView(session, configurable, uuid);
+	return nullptr;
+}
+
 } // namespace views
 } // namespace ui
 } // namespace sv
