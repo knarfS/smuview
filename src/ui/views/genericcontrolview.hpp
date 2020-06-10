@@ -56,6 +56,8 @@ public:
 
 	void save_settings(QSettings &settings) const override;
 	void restore_settings(QSettings &settings) override;
+	static GenericControlView *init_from_settings(
+		Session &session, QSettings &settings, QUuid &uuid);
 
 private:
 	shared_ptr<sv::devices::Configurable> configurable_;

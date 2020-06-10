@@ -92,6 +92,15 @@ void GenericControlView::restore_settings(QSettings &settings)
 	BaseView::restore_settings(settings);
 }
 
+GenericControlView *GenericControlView::init_from_settings(
+	Session &session, QSettings &settings, QUuid &uuid)
+{
+	auto configurable = SettingsManager::restore_configurable(session, settings);
+	if (configurable)
+		return new GenericControlView(session, configurable, uuid);
+	return nullptr;
+}
+
 } // namespace views
 } // namespace ui
 } // namespace sv
