@@ -185,6 +185,15 @@ void SourceSinkControlView::restore_settings(QSettings &settings)
 	BaseView::restore_settings(settings);
 }
 
+SourceSinkControlView *SourceSinkControlView::init_from_settings(
+	Session &session, QSettings &settings, QUuid &uuid)
+{
+	auto configurable = SettingsManager::restore_configurable(session, settings);
+	if (configurable)
+		return new SourceSinkControlView(session, configurable, uuid);
+	return nullptr;
+}
+
 } // namespace views
 } // namespace ui
 } // namespace sv

@@ -182,11 +182,7 @@ BaseView *get_view_from_settings(Session &session, QSettings &settings)
 		view = MeasurementControlView::init_from_settings(session, settings, uuid);
 	}
 	if (type == "sourcesinkcontrol") {
-		// TODO: Move to *ControlView::init_form_settings()
-		auto configurable = SettingsManager::restore_configurable(
-			session, settings);
-		if (configurable)
-			view = new SourceSinkControlView(session, configurable, uuid);
+		view = SourceSinkControlView::init_from_settings(session, settings, uuid);
 	}
 
 	if (view)
