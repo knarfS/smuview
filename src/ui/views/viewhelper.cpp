@@ -173,11 +173,7 @@ BaseView *get_view_from_settings(Session &session, QSettings &settings)
 		// TODO
 	}
 	if (type == "democontrol") {
-		// TODO: Move to *ControlView::init_form_settings()
-		auto configurable = SettingsManager::restore_configurable(
-			session, settings);
-		if (configurable)
-			view = new DemoControlView(session, configurable, uuid);
+		view = DemoControlView::init_from_settings(session, settings, uuid);
 	}
 	if (type == "genericcontrol") {
 		// TODO: Move to *ControlView::init_form_settings()

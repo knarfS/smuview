@@ -146,6 +146,15 @@ void DemoControlView::restore_settings(QSettings &settings)
 	BaseView::restore_settings(settings);
 }
 
+DemoControlView *DemoControlView::init_from_settings(
+	Session &session, QSettings &settings, QUuid &uuid)
+{
+	auto configurable = SettingsManager::restore_configurable(session, settings);
+	if (configurable)
+		return new DemoControlView(session, configurable, uuid);
+	return nullptr;
+}
+
 void DemoControlView::on_quantity_set()
 {
 	sv::data::Quantity quantity = quantity_box_->selected_quantity();
