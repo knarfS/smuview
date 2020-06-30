@@ -65,19 +65,13 @@ public:
 	BasePlotView(Session &session, QUuid uuid = QUuid(),
 		QWidget *parent = nullptr);
 
-	//QString title() const override;
-
-	/*
 	void save_settings(QSettings &settings) const override;
 	void restore_settings(QSettings &settings) override;
-	*/
 
 protected:
 	void update_add_marker_menu();
 
 	PlotType plot_type_;
-	//shared_ptr<channels::BaseChannel> initial_channel_;
-	vector<widgets::plot::BaseCurveData *> curves_;
 	widgets::plot::Plot *plot_;
 
 private:

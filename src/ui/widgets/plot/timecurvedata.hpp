@@ -22,9 +22,11 @@
 
 #include <memory>
 #include <set>
+#include <string>
 
 #include <QPointF>
 #include <QRectF>
+#include <QSettings>
 #include <QString>
 
 #include "src/data/datautil.hpp"
@@ -32,8 +34,11 @@
 
 using std::set;
 using std::shared_ptr;
+using std::string;
 
 namespace sv {
+
+class Session;
 
 namespace data {
 class AnalogTimeSignal;
@@ -45,6 +50,7 @@ namespace plot {
 
 class TimeCurveData : public BaseCurveData
 {
+	Q_OBJECT
 
 public:
 	TimeCurveData(shared_ptr<sv::data::AnalogTimeSignal> signal);
@@ -57,6 +63,7 @@ public:
 
 	QPointF closest_point(const QPointF &pos, double *dist) const override;
 	QString name() const override;
+	string id_prefix() const override;
 	sv::data::Quantity x_quantity() const override;
 	set<sv::data::QuantityFlag> x_quantity_flags() const override;
 	sv::data::Unit x_unit() const override;
@@ -69,6 +76,10 @@ public:
 	QString y_title() const override;
 
 	shared_ptr<sv::data::AnalogTimeSignal> signal() const;
+
+	void save_settings(QSettings &settings) const override;
+	static TimeCurveData *init_from_settings(
+		Session &session, QSettings &settings);
 
 private:
 	shared_ptr<sv::data::AnalogTimeSignal> signal_;

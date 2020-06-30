@@ -43,14 +43,7 @@ bool SettingsManager::has_device_settings(
 	shared_ptr<devices::BaseDevice> device)
 {
 	QSettings settings;
-	if (settings.childGroups().contains(QString::fromStdString(device->id()))) {
-		qWarning() << "SettingsManager::has_device_settings(): Settings for " <<
-			QString::fromStdString(device->id()) << " found!";
-		return true;
-	}
-	qWarning() << "SettingsManager::has_device_settings(): NO settings for " <<
-		QString::fromStdString(device->id()) << " found!";
-	return false;
+	return settings.childGroups().contains(QString::fromStdString(device->id()));
 }
 
 void SettingsManager::save_configurable(

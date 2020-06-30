@@ -30,6 +30,7 @@
 #include <qwt_symbol.h>
 
 #include "plotcurveconfigdialog.hpp"
+#include "src/ui/widgets/plot/curve.hpp"
 #include "src/ui/widgets/colorbutton.hpp"
 
 Q_DECLARE_METATYPE(Qt::PenStyle)
@@ -39,10 +40,10 @@ namespace sv {
 namespace ui {
 namespace dialogs {
 
-PlotCurveConfigDialog::PlotCurveConfigDialog(QwtPlotCurve *plot_curve,
+PlotCurveConfigDialog::PlotCurveConfigDialog(widgets::plot::Curve *curve,
 		QWidget *parent) :
 	QDialog(parent),
-	plot_curve_(plot_curve)
+	curve_(curve)
 {
 	setup_ui();
 }
@@ -59,11 +60,11 @@ void PlotCurveConfigDialog::setup_ui()
 	QFormLayout *main_layout = new QFormLayout;
 
 	visible_checkbox_ = new QCheckBox();
-	visible_checkbox_->setChecked(plot_curve_->isVisible());
+	visible_checkbox_->setChecked(curve_->plot_curve()->isVisible());
 	main_layout->addRow(tr("Visible"), visible_checkbox_);
 
 	color_button_ = new widgets::ColorButton();
-	color_button_->set_color(plot_curve_->pen().color());
+	color_button_->set_color(curve_->color());
 	main_layout->addRow(tr("Color"), color_button_);
 
 	line_type_box_ = new QComboBox();
@@ -73,7 +74,7 @@ void PlotCurveConfigDialog::setup_ui()
 	line_type_box_->addItem(tr("Dashes"), QVariant::fromValue(Qt::DashLine));
 	for (int i=0; i<line_type_box_->count(); ++i)  {
 		if (line_type_box_->itemData(i).value<Qt::PenStyle>() ==
-				plot_curve_->pen().style()) {
+				curve_->style()) {
 			line_type_box_->setCurrentIndex(i);
 			break;
 		}
@@ -86,7 +87,7 @@ void PlotCurveConfigDialog::setup_ui()
 	symbol_type_box_->addItem(tr("Cross"), QwtSymbol::XCross);
 	for (int i=0; i<line_type_box_->count(); ++i)  {
 		if (symbol_type_box_->itemData(i).value<QwtSymbol::Style>() ==
-				plot_curve_->symbol()->style()) {
+				curve_->symbol()) {
 			symbol_type_box_->setCurrentIndex(i);
 			break;
 		}
@@ -104,23 +105,10 @@ void PlotCurveConfigDialog::setup_ui()
 
 void PlotCurveConfigDialog::accept()
 {
-	plot_curve_->setVisible(visible_checkbox_->isChecked());
-
-	QPen pen = plot_curve_->pen();
-	pen.setColor(color_button_->color());
-	pen.setStyle(line_type_box_->currentData().value<Qt::PenStyle>());
-	plot_curve_->setPen(pen);
-
-	QwtSymbol::Style symbol_style =
-		symbol_type_box_->currentData().value<QwtSymbol::Style>();
-	QwtSymbol *symbol = new QwtSymbol(symbol_style);
-	symbol->setBrush(QBrush(color_button_->color()));
-	symbol->setPen(QPen(color_button_->color(), 2));
-	if (symbol_style == QwtSymbol::XCross)
-		symbol->setSize(QSize(8, 8));
-	else
-		symbol->setSize(QSize(4, 4));
-	plot_curve_->setSymbol(symbol);
+	curve_->plot_curve()->setVisible(visible_checkbox_->isChecked());
+	curve_->set_color(color_button_->color());
+	curve_->set_style(line_type_box_->currentData().value<Qt::PenStyle>());
+	curve_->set_symbol(symbol_type_box_->currentData().value<QwtSymbol::Style>());
 
 	QDialog::accept();
 }

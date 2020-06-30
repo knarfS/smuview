@@ -21,16 +21,20 @@
 #define UI_WIDGETS_PLOT_BASECURVEDATA_HPP
 
 #include <set>
+#include <string>
 
 #include <QColor>
+#include <QObject>
 #include <QPointF>
 #include <QRectF>
+#include <QSettings>
 #include <QString>
 #include <qwt_series_data.h>
 
 #include "src/data/datautil.hpp"
 
 using std::set;
+using std::string;
 
 namespace sv {
 namespace ui {
@@ -42,26 +46,27 @@ enum class CurveType {
 	XYCurve
 };
 
-class BaseCurveData : public QwtSeriesData<QPointF>
+class BaseCurveData : public QObject, public QwtSeriesData<QPointF>
 {
+	Q_OBJECT
 
 public:
 	BaseCurveData(CurveType curve_type);
 	virtual ~BaseCurveData() = default;
 
-	virtual bool is_equal(const BaseCurveData *other) const = 0;
-
 	CurveType type() const;
-	QColor color() const;
+	virtual QString name() const = 0;
+	virtual string id_prefix() const = 0;
 	void set_relative_time(bool is_relative_time);
 	bool is_relative_time() const;
+
+	virtual bool is_equal(const BaseCurveData *other) const = 0;
 
 	virtual QPointF sample(size_t i) const = 0;
 	virtual size_t size() const = 0;
 	virtual QRectF boundingRect() const = 0;
 
 	virtual QPointF closest_point(const QPointF &pos, double *dist) const = 0;
-	virtual QString name() const = 0;
 	virtual sv::data::Quantity x_quantity() const = 0;
 	virtual set<sv::data::QuantityFlag> x_quantity_flags() const = 0;
 	virtual sv::data::Unit x_unit() const = 0;
@@ -73,9 +78,10 @@ public:
 	virtual QString y_unit_str() const = 0;
 	virtual QString y_title() const = 0;
 
+	virtual void save_settings(QSettings &settings) const = 0;
+
 protected:
 	const CurveType type_;
-	QColor color_;
 	bool relative_time_;
 
 };

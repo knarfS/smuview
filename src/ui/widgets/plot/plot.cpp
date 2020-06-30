@@ -20,9 +20,11 @@
 
 #include <cassert>
 #include <cmath>
+#include <string>
 #include <utility>
 
 #include <QBoxLayout>
+#include <QDateTime>
 #include <QDebug>
 #include <QEvent>
 #include <QHBoxLayout>
@@ -32,6 +34,8 @@
 #include <QPushButton>
 #include <QRectF>
 #include <QSize>
+#include <QUuid>
+#include <QVariant>
 #include <QVBoxLayout>
 #include <qwt_scale_widget.h>
 #include <qwt_curve_fitter.h>
@@ -52,13 +56,18 @@
 #include <qwt_symbol.h>
 
 #include "plot.hpp"
+#include "src/session.hpp"
 #include "src/ui/dialogs/plotcurveconfigdialog.hpp"
 #include "src/ui/widgets/plot/axislocklabel.hpp"
 #include "src/ui/widgets/plot/basecurvedata.hpp"
+#include "src/ui/widgets/plot/curve.hpp"
 #include "src/ui/widgets/plot/plotmagnifier.hpp"
 #include "src/ui/widgets/plot/plotscalepicker.hpp"
+#include "src/ui/widgets/plot/timecurvedata.hpp"
+#include "src/ui/widgets/plot/xycurvedata.hpp"
 
 using std::make_pair;
+using std::string;
 
 namespace sv {
 namespace ui {
@@ -123,7 +132,8 @@ private:
 	}
 };
 
-Plot::Plot(QWidget *parent) : QwtPlot(parent),
+Plot::Plot(Session &session, QWidget *parent) : QwtPlot(parent),
+	session_(session),
 	plot_interval_(200),
 	timer_id_(-1),
 	time_span_(120.),
@@ -138,7 +148,7 @@ Plot::Plot(QWidget *parent) : QwtPlot(parent),
 	this->setCanvas(new Canvas());
 
 	// This must be done, because when the QwtPlot widget is directly or
-	// indirectly in a (Main)Window, the minimum size is way to big
+	// indirectly in a (Main)Window, therefor the minimum size is way to big.
 	this->setMinimumSize(250, 250);
 	//qWarning() << "Plot::Plot(): sizeHint() = " << sizeHint() <<
 	//	", minimumSizeHint() = " << minimumSizeHint();
@@ -161,6 +171,9 @@ Plot::Plot(QWidget *parent) : QwtPlot(parent),
 	grid->enableYMin(false);
 	grid->attach(this);
 
+	// Disable all x axis to have a known state for init_x_axis()
+	this->enableAxis(QwtPlot::xBottom, false);
+	this->enableAxis(QwtPlot::xTop, false);
 	// Disable all y axis to have a known state for init_y_axis()
 	this->enableAxis(QwtPlot::yLeft, false);
 	this->enableAxis(QwtPlot::yRight, false);
@@ -181,11 +194,11 @@ Plot::Plot(QWidget *parent) : QwtPlot(parent),
 
 Plot::~Plot()
 {
-	//qWarning() << "Plot::~Plot() for " << curve_data_->name();
 	this->stop();
-	for (auto &direct_painter_pair : plot_direct_painter_map_) {
-		delete direct_painter_pair.second;
-	}
+	for (auto &marker_pair : marker_curve_map_)
+		delete marker_pair.first;
+	for (auto &curve_pair : curve_map_)
+		delete curve_pair.second;
 }
 
 void Plot::start()
@@ -202,92 +215,97 @@ void Plot::stop()
 void Plot::replot()
 {
 	//qWarning() << "Plot::replot()";
-
-	for (const auto &curve_data : curve_datas_) {
-		painted_points_map_[curve_data] = 0;
-	}
+	for (const auto &curve : curves_)
+		curve->set_painted_points(0);
 
 	QwtPlot::replot();
 }
 
-bool Plot::add_curve(widgets::plot::BaseCurveData *curve_data)
+string Plot::add_curve(BaseCurveData *curve_data)
 {
 	assert(curve_data);
-
-	// Check if curve already has been added
-	for (const auto &cd : curve_datas_) {
-		if (cd->is_equal(curve_data))
-			return true;
-	}
 
 	// Check y axis
 	int y_axis_id = this->init_y_axis(curve_data);
 	if (y_axis_id < 0)
-		return false;
+		return "";
 
 	// Check x axis
 	int x_axis_id = this->init_x_axis(curve_data);
 	if (x_axis_id < 0)
+		return "";
+
+	Curve *curve = new Curve(curve_data, x_axis_id, y_axis_id);
+	curve->plot_curve()->attach(this);
+	curves_.push_back(curve);
+
+	QwtPlot::replot();
+
+	return curve->id();
+}
+
+bool Plot::add_curve(Curve *curve)
+{
+	// Check y axis
+	int y_axis_id = this->init_y_axis(curve->curve_data(), curve->y_axis_id());
+	if (y_axis_id < 0)
 		return false;
 
-	curve_datas_.push_back(curve_data);
+	// Check x axis
+	int x_axis_id = this->init_x_axis(curve->curve_data(), curve->x_axis_id());
+	if (x_axis_id < 0)
+		return false;
 
-	QPen pen;
-	pen.setColor(curve_data->color());
-	pen.setWidthF(2.0);
-	pen.setStyle(Qt::SolidLine);
-	pen.setCosmetic(false);
-
-	// Set empty symbol, used in the PlotCurveConfigDialog.
-	QwtSymbol *symbol = new QwtSymbol(QwtSymbol::NoSymbol);
-
-	QwtPlotCurve *plot_curve = new QwtPlotCurve(curve_data->name());
-	plot_curve->setYAxis(y_axis_id);
-	plot_curve->setXAxis(x_axis_id);
-	plot_curve->setStyle(QwtPlotCurve::Lines);
-	plot_curve->setPen(pen);
-	plot_curve->setSymbol(symbol);
-	plot_curve->setRenderHint(QwtPlotItem::RenderAntialiased, true);
-	plot_curve->setPaintAttribute(QwtPlotCurve::ClipPolygons, false);
-	plot_curve->setData(curve_data);
-	//plot_curve->setRawSamples(); // TODO: is this an option?
-	// Curves have the lowest z order, everything else will be painted ontop.
-	plot_curve->setZ(1);
-	plot_curve->attach(this);
-	plot_curve_map_.insert(make_pair(curve_data, plot_curve));
-
-	QwtPlotDirectPainter *direct_painter = new QwtPlotDirectPainter();
-	plot_direct_painter_map_.insert(make_pair(curve_data, direct_painter));
-
-	painted_points_map_.insert(make_pair(curve_data, 0));
+	curve->plot_curve()->attach(this);
+	curves_.push_back(curve);
 
 	QwtPlot::replot();
 
 	return true;
 }
 
-int Plot::init_x_axis(widgets::plot::BaseCurveData *curve_data)
+int Plot::init_x_axis(BaseCurveData *curve_data, int x_axis_id)
 {
 	assert(curve_data);
 
-	int x_axis_id = QwtPlot::xBottom;
-
-	// Check if there already is an axis with the same unit. This is done
-	// via the strings to get potential AC/DC flags.
-	if (!curve_datas_.empty()) {
-		if (curve_data->x_unit_str() != curve_datas_[0]->x_unit_str())
+	if (x_axis_id < 0) {
+		// Check if there already is an axis with the same unit. This is done
+		// via the strings to get potential AC/DC flags.
+		for (const auto &curve : curves_) {
+			if (curve_data->x_unit_str() == curve->curve_data()->x_unit_str())
+				return curve->x_axis_id();
+		}
+		// No existing axis was found, try to use the bottom or top axis.
+		if (!this->axisEnabled(QwtPlot::xBottom))
+			x_axis_id = QwtPlot::xBottom;
+		else if (!this->axisEnabled(QwtPlot::xTop))
+			x_axis_id = QwtPlot::xTop;
+		else
 			return -1;
-		return x_axis_id;
+	}
+	else {
+		// Check if the given axis id is already initialised with the proper
+		// unit.
+		for (const auto &c : curves_) {
+			if (c->x_axis_id() == x_axis_id &&
+					c->curve_data()->x_unit_str() == curve_data->x_unit_str())
+				return x_axis_id;
+			else if (c->x_axis_id() == x_axis_id)
+				return -1;
+		}
 	}
 
-	QString title = curve_data->x_title();
 	double min;
 	double max;
 	if (curve_data->type() == CurveType::TimeCurve &&
 			curve_data->is_relative_time()) {
 		min = 0.;
 		max = add_time_;
-		// TODO: !curve_data->is_relative_time()
+	}
+	else if (curve_data->type() == CurveType::TimeCurve &&
+			!curve_data->is_relative_time()) {
+		min = session_.session_start_timestamp;
+		max = min + add_time_;
 	}
 	else if (curve_data->type() == CurveType::XYCurve) {
 		// Values +/- 10%
@@ -301,18 +319,7 @@ int Plot::init_x_axis(widgets::plot::BaseCurveData *curve_data)
 			"Plot::init_x_axis(): Curve type not implemented!");
 	}
 
-	map<AxisBoundary, bool> locks;
-	locks.insert(make_pair<AxisBoundary, bool>(
-		AxisBoundary::LowerBoundary, false));
-	locks.insert(make_pair<AxisBoundary, bool>(
-		AxisBoundary::UpperBoundary, false));
-	axis_lock_map_.insert(make_pair(x_axis_id, locks));
-
-	this->setAxisTitle(x_axis_id, title);
-	this->setAxisScale(x_axis_id, min, max);
-	//this->setAxisAutoScale(x_axis_id, true); // TODO: Not working!?
-	this->enableAxis(x_axis_id);
-	this->add_axis_icons(x_axis_id);
+	this->init_axis(x_axis_id, min, max, curve_data->x_title(), true);
 
 	if (curve_data->type() == CurveType::TimeCurve &&
 			!curve_data->is_relative_time())
@@ -321,59 +328,63 @@ int Plot::init_x_axis(widgets::plot::BaseCurveData *curve_data)
 	return x_axis_id;
 }
 
-int Plot::init_y_axis(widgets::plot::BaseCurveData *curve_data)
+int Plot::init_y_axis(BaseCurveData *curve_data, int y_axis_id)
 {
 	assert(curve_data);
 
-	bool do_init = false;
-	int y_axis_id = -1;
-	if (!this->axisEnabled(QwtPlot::yLeft)) {
-		y_axis_id = QwtPlot::yLeft;
-		do_init = true;
-	}
-	else {
+	if (y_axis_id < 0) {
 		// Check if there already is an axis with the same unit. This is done
 		// via the strings to get potential AC/DC flags.
-		for (const auto &cid_pair : y_axis_id_map_) {
-			if (cid_pair.first->y_unit_str() == curve_data->y_unit_str()) {
-				y_axis_id = cid_pair.second;
-				do_init = false;
-			}
+		for (const auto &curve : curves_) {
+			if (curve_data->y_unit_str() == curve->curve_data()->y_unit_str())
+				return curve->y_axis_id();
 		}
-	}
-	if (y_axis_id < 0) {
-		if (!this->axisEnabled(QwtPlot::yRight)) {
+		// No existing axis was found, try to use the left or right axis.
+		if (!this->axisEnabled(QwtPlot::yLeft))
+			y_axis_id = QwtPlot::yLeft;
+		else if (!this->axisEnabled(QwtPlot::yRight))
 			y_axis_id = QwtPlot::yRight;
-			do_init = true;
-		}
 		else
-			return y_axis_id;
+			return -1;
+	}
+	else {
+		// Check if the given axis id is already initialised with the proper
+		// unit.
+		for (const auto &c : curves_) {
+			if (c->y_axis_id() == y_axis_id &&
+					c->curve_data()->y_unit_str() == curve_data->y_unit_str())
+				return y_axis_id;
+			else if (c->y_axis_id() == y_axis_id)
+				return -1;
+		}
 	}
 
-	y_axis_id_map_.insert(make_pair(curve_data, y_axis_id));
+	// Values +/- 10%
+	double min = curve_data->boundingRect().bottom() -
+		(std::fabs(curve_data->boundingRect().bottom()) * 0.1);
+	double max = curve_data->boundingRect().top() +
+		(std::fabs(curve_data->boundingRect().top()) * 0.1);
 
-	if (do_init) {
-		map<AxisBoundary, bool> locks;
-		locks.insert(make_pair<AxisBoundary, bool>(
-			AxisBoundary::LowerBoundary, false));
-		locks.insert(make_pair<AxisBoundary, bool>(
-			AxisBoundary::UpperBoundary, false));
-		axis_lock_map_.insert(make_pair(y_axis_id, locks));
-
-		// Values +/- 10%
-		double min = curve_data->boundingRect().bottom() -
-			(std::fabs(curve_data->boundingRect().bottom()) * 0.1);
-		double max = curve_data->boundingRect().top() +
-			(std::fabs(curve_data->boundingRect().top()) * 0.1);
-
-		this->setAxisTitle(y_axis_id, curve_data->y_title());
-		this->setAxisScale(y_axis_id, min, max);
-		this->setAxisAutoScale(y_axis_id, false); // TODO: Not working!?
-		this->enableAxis(y_axis_id);
-		this->add_axis_icons(y_axis_id);
-	}
+	this->init_axis(y_axis_id, min, max, curve_data->y_title(), false);
 
 	return y_axis_id;
+}
+
+void Plot::init_axis(int axis_id, double min, double max, const QString &title,
+	bool auto_scale)
+{
+	map<AxisBoundary, bool> locks;
+	locks.insert(make_pair<AxisBoundary, bool>(
+		AxisBoundary::LowerBoundary, false));
+	locks.insert(make_pair<AxisBoundary, bool>(
+		AxisBoundary::UpperBoundary, false));
+	axis_lock_map_.insert(make_pair(axis_id, locks));
+
+	this->setAxisTitle(axis_id, title);
+	this->setAxisScale(axis_id, min, max);
+	this->setAxisAutoScale(axis_id, auto_scale); // TODO: Not working!?
+	this->enableAxis(axis_id);
+	this->add_axis_icons(axis_id);
 }
 
 void Plot::add_axis_icons(const int axis_id)
@@ -464,9 +475,9 @@ void Plot::set_time_span(double time_span)
 	// last/highest x value/timestamp and use it to calculate the new
 	// x axis interval.
 	double last_timestamp = .0;
-	for (const auto &curve : curve_datas_) {
-		if (curve->boundingRect().right() > last_timestamp)
-			last_timestamp = curve->boundingRect().right();
+	for (const auto &curve : curves_) {
+		if (curve->curve_data()->boundingRect().right() > last_timestamp)
+			last_timestamp = curve->curve_data()->boundingRect().right();
 	}
 	// max must be set to the last timestamp to keep the manual calculation
 	// of the scale divs for oscilloscope mode working.
@@ -476,50 +487,24 @@ void Plot::set_time_span(double time_span)
 	this->replot();
 }
 
-void Plot::add_marker(plot::BaseCurveData *curve_data)
+void Plot::add_marker(Curve *curve)
 {
-	assert(curve_data);
-
-	QwtPlotCurve *plot_curve = plot_curve_map_[curve_data];
-
-	QwtSymbol *marker_sym = new QwtSymbol(
-		QwtSymbol::Diamond, QBrush(Qt::red), QPen(Qt::red), QSize(9, 9));
-	QString marker_name = QString("M%1").arg(markers_.size()+1);
-
-	QwtPlotMarker *marker = new QwtPlotMarker(marker_name);
-	marker->setSymbol(marker_sym);
-	marker->setLineStyle(QwtPlotMarker::Cross);
-	marker->setLinePen(Qt::white, 1.0, Qt::DashLine);
-	marker->setXAxis(plot_curve->xAxis());
-	marker->setYAxis(plot_curve->yAxis());
-	// Markers will be painted ontop of curves but below the markers label box.
-	marker->setZ(2);
+	auto marker = curve->add_marker(
+		QString::number(marker_curve_map().size()+1));
 
 	// Initial marker position is in the middle of the plot screen or
 	// at the end of the curve.
-	QwtInterval x_interval = this->axisInterval(plot_curve->xAxis());
+	QwtInterval x_interval = this->axisInterval(curve->x_axis_id());
 	double x_mid = (x_interval.minValue() + x_interval.maxValue()) / 2;
-	QwtInterval y_interval = this->axisInterval(plot_curve->yAxis());
+	QwtInterval y_interval = this->axisInterval(curve->y_axis_id());
 	double y_mid = (y_interval.minValue() + y_interval.maxValue()) / 2;
-	marker->setValue(curve_data->closest_point(QPointF(x_mid, y_mid), nullptr));
+	marker->setValue(
+		curve->curve_data()->closest_point(QPointF(x_mid, y_mid), nullptr));
 
-	// Label
-	QwtText marker_label = QwtText(marker_name);
-	marker_label.setColor(Qt::black);
-	marker_label.setPaintAttribute(QwtText::PaintBackground, true);
-	QColor c(Qt::gray);
-	c.setAlpha(200);
-	marker_label.setBackgroundBrush(c);
-	QPen pen(Qt::black, 1.0, Qt::SolidLine);
-	marker_label.setBorderPen(pen);
-	marker_label.setBorderRadius(3);
-	marker->setLabel(marker_label);
-	marker->setLabelAlignment(Qt::AlignTop | Qt::AlignRight);
-
+	// Attach to plot
 	marker->attach(this);
 
-	markers_.push_back(marker);
-	marker_map_.insert(make_pair(marker, curve_data));
+	marker_curve_map_.insert(make_pair(marker, curve));
 	active_marker_ = marker;
 
 	// Add pickers for _all_ markers, no matter of the axis
@@ -581,7 +566,7 @@ void Plot::remove_marker()
 
 void Plot::on_marker_selected(const QPointF mouse_pos)
 {
-	if (markers_.empty())
+	if (marker_curve_map_.empty())
 		return;
 
 	// Mouse canvas coordinates. Use QwtPlot::xBottom and QwtPlot::yLeft
@@ -593,20 +578,19 @@ void Plot::on_marker_selected(const QPointF mouse_pos)
 	double d_min = 15.; // Minimum distance to marker for selecting
 	double d_lowest = 1.0e10;
 	QwtPlotMarker *selected_marker = nullptr;
-	for (const auto &marker : markers_) {
+	for (const auto &mc_pair : marker_curve_map_) {
 		// Marker canvas coordinates. Use axis ids form plot.
-		QwtPlotCurve *plot_curve = plot_curve_map_[marker_map_[marker]];
 		const double marker_canvas_x =
-			transform(plot_curve->xAxis(), marker->xValue());
+			transform(mc_pair.second->x_axis_id(), mc_pair.first->xValue());
 		const double marker_canvas_y =
-			transform(plot_curve->yAxis(), marker->yValue());
+			transform(mc_pair.second->y_axis_id(), mc_pair.first->yValue());
 
 		const double d_x = marker_canvas_x - mouse_canvas_x;
 		const double d_y = marker_canvas_y - mouse_canvas_y;
 		const double d = qSqrt(qwtSqr(d_x) + qwtSqr(d_y));
 		if (d <= d_min && d < d_lowest) {
 			d_lowest = d;
-			selected_marker = marker;
+			selected_marker = mc_pair.first;
 		}
 	}
 	if (selected_marker) {
@@ -631,7 +615,7 @@ void Plot::on_marker_moved(const QPointF mouse_pos)
 	if (!active_marker_)
 		return;
 
-	plot::BaseCurveData *curve_data = marker_map_[active_marker_];
+	BaseCurveData *curve_data = marker_curve_map_[active_marker_]->curve_data();
 	QPointF marker_pos = curve_data->closest_point(mouse_pos, nullptr);
 	active_marker_->setValue(marker_pos);
 
@@ -644,24 +628,24 @@ void Plot::on_legend_clicked(const QVariant &item_info, int index)
 	(void)index;
 
 	QwtPlotItem *plot_item = infoToItem(item_info);
-	if (plot_item) {
-		QwtPlotCurve *plot_curve = (QwtPlotCurve *)plot_item;
-		ui::dialogs::PlotCurveConfigDialog dlg(plot_curve);
-		dlg.exec();
-	}
+	if (!plot_item)
+		return;
+	Curve *curve = get_curve_from_plot_curve((QwtPlotCurve *)plot_item);
+	if (!curve)
+		return;
+
+	ui::dialogs::PlotCurveConfigDialog dlg(curve);
+	dlg.exec();
 }
 
 void Plot::update_curves()
 {
-	for (const auto &curve_data : curve_datas_) {
-		const size_t painted_points = painted_points_map_[curve_data];
-		const size_t num_points = curve_data->size();
+	for (const auto &curve : curves_) {
+		const size_t painted_points = curve->painted_points();
+		const size_t num_points = curve->curve_data()->size();
 		if (num_points > painted_points) {
-			QwtPlotCurve *plot_curve = plot_curve_map_[curve_data];
-			QwtPlotDirectPainter *direct_painter =
-				plot_direct_painter_map_[curve_data];
-
-			//qWarning() << QString("Plot::updateCurve(): num_points = %1, painted_points = %2").arg(num_points).arg(painted_points);
+			//qWarning() << QString("Plot::updateCurve(): num_points = %1, painted_points = %2").
+			//	arg(num_points).arg(painted_points);
 			const bool clip = !canvas()->testAttribute(Qt::WA_PaintOnScreen);
 			if (clip) {
 				/*
@@ -672,20 +656,17 @@ void Plot::update_curves()
 				 * out - maybe to an unaccelerated frame buffer device.
 				 */
 
-				const QwtScaleMap x_map = canvasMap(plot_curve->xAxis());
-				const QwtScaleMap y_map = canvasMap(plot_curve->yAxis());
-				QRectF br = qwtBoundingRect(*plot_curve->data(),
+				const QwtScaleMap x_map = canvasMap(curve->x_axis_id());
+				const QwtScaleMap y_map = canvasMap(curve->y_axis_id());
+				QRectF br = qwtBoundingRect(*curve->plot_curve()->data(),
 					(int)painted_points - 1, (int)num_points - 1);
-				const QRect clip_rect =
-					QwtScaleMap::transform(x_map, y_map, br).toRect();
 
-				direct_painter->setClipRegion(clip_rect);
+				curve->plot_direct_painter()->setClipRegion(
+					QwtScaleMap::transform(x_map, y_map, br).toRect());
 			}
-
-			direct_painter->drawSeries(plot_curve,
+			curve->plot_direct_painter()->drawSeries(curve->plot_curve(),
 				(int)painted_points - 1, (int)num_points - 1);
-
-			painted_points_map_[curve_data] = num_points;
+			curve->set_painted_points(num_points);
 		}
 
 		//replot();
@@ -696,10 +677,10 @@ void Plot::update_intervals()
 {
 	bool intervals_changed = false;
 
-	for (const auto &curve_data : curve_datas_) {
-		if (update_x_interval(curve_data))
+	for (const auto &curve : curves_) {
+		if (update_x_interval(curve))
 			intervals_changed = true;
-		if (update_y_interval(curve_data))
+		if (update_y_interval(curve))
 			intervals_changed = true;
 	}
 
@@ -707,20 +688,20 @@ void Plot::update_intervals()
 		replot();
 }
 
-bool Plot::update_x_interval(plot::BaseCurveData *curve_data)
+bool Plot::update_x_interval(Curve *curve)
 {
 	if (axis_lock_map_[QwtPlot::xBottom][AxisBoundary::LowerBoundary] &&
 		axis_lock_map_[QwtPlot::xBottom][AxisBoundary::UpperBoundary])
 		return false;
 
 	bool interval_changed = false;
-	QRectF boundaries = curve_data->boundingRect();
+	QRectF boundaries = curve->curve_data()->boundingRect();
 	QwtInterval x_interval = this->axisInterval(QwtPlot::xBottom);
 	double min = x_interval.minValue();
 	double max = x_interval.maxValue();
 
 	// There are no plot modes when showing xy curves, just extend the intervals
-	if (curve_data->type() == CurveType::XYCurve) {
+	if (curve->curve_data()->type() == CurveType::XYCurve) {
 		if (!axis_lock_map_[QwtPlot::xBottom][AxisBoundary::LowerBoundary] &&
 				boundaries.left() < min) {
 			// New value - 10%
@@ -800,20 +781,20 @@ bool Plot::update_x_interval(plot::BaseCurveData *curve_data)
 
 		interval_changed = true;
 		setAxisScaleDiv(QwtPlot::xBottom, scaleDiv);
-		painted_points_map_[curve_data] = 0;
+		curve->set_painted_points(0);
 	}
 
 	return interval_changed;
 }
 
-bool Plot::update_y_interval(plot::BaseCurveData *curve_data)
+bool Plot::update_y_interval(const Curve *curve)
 {
-	int y_axis_id = y_axis_id_map_[curve_data];
+	int y_axis_id = curve->y_axis_id();
 	if (axis_lock_map_[y_axis_id][AxisBoundary::LowerBoundary] &&
 			axis_lock_map_[y_axis_id][AxisBoundary::UpperBoundary])
 		return false;
 
-	QRectF boundaries = curve_data->boundingRect();
+	QRectF boundaries = curve->curve_data()->boundingRect();
 	QwtInterval y_interval = this->axisInterval(y_axis_id);
 	double min = y_interval.minValue();
 	double max = y_interval.maxValue();
@@ -861,16 +842,16 @@ void Plot::update_markers_label()
 
 	QString table("<table>");
 
-	for (const auto &marker : markers_) {
+	for (const auto &mc_pair : marker_curve_map_) {
 		table.append("<tr>");
 		table.append(QString("<td width=\"50\" align=\"left\">%1:</td>").
-			arg(marker->title().text()));
+			arg(mc_pair.first->title().text()));
 		table.append(QString("<td width=\"70\" align=\"right\">%2 %3</td>").
-			arg(marker->yValue()).
-			arg(marker_map_[marker]->y_unit_str()));
+			arg(mc_pair.first->yValue()).
+			arg(mc_pair.second->curve_data()->y_unit_str()));
 		table.append(QString("<td width=\"70\" align=\"right\">%4 %5</td>").
-			arg(marker->xValue()).
-			arg(marker_map_[marker]->x_unit_str()));
+			arg(mc_pair.first->xValue()).
+			arg(mc_pair.second->curve_data()->x_unit_str()));
 		table.append("</tr>");
 	}
 
@@ -879,14 +860,18 @@ void Plot::update_markers_label()
 		double d_y = marker_pair.first->yValue() - marker_pair.second->yValue();
 
 		QString x_unit("");
-		QString m1_x_unit = marker_map_[marker_pair.first]->x_unit_str();
-		QString m2_x_unit = marker_map_[marker_pair.second]->x_unit_str();
+		QString m1_x_unit =
+			marker_curve_map_[marker_pair.first]->curve_data()->x_unit_str();
+		QString m2_x_unit =
+			marker_curve_map_[marker_pair.second]->curve_data()->x_unit_str();
 		if (m1_x_unit == m2_x_unit)
 			x_unit = m1_x_unit;
 
 		QString y_unit("");
-		QString m1_y_unit = marker_map_[marker_pair.first]->y_unit_str();
-		QString m2_y_unit = marker_map_[marker_pair.second]->y_unit_str();
+		QString m1_y_unit =
+			marker_curve_map_[marker_pair.first]->curve_data()->y_unit_str();
+		QString m2_y_unit =
+			marker_curve_map_[marker_pair.second]->curve_data()->y_unit_str();
 		if (m1_y_unit == m2_y_unit)
 			y_unit = m1_y_unit;
 
@@ -931,8 +916,8 @@ void Plot::timerEvent(QTimerEvent *event)
 
 void Plot::resizeEvent(QResizeEvent *event)
 {
-	for (auto &direct_painter_pair : plot_direct_painter_map_) {
-		direct_painter_pair.second->reset();
+	for (const auto &curve : curves_) {
+		curve->plot_direct_painter()->reset();
 	}
 
 	QwtPlot::resizeEvent(event);
@@ -947,6 +932,50 @@ void Plot::showEvent(QShowEvent *event)
 bool Plot::eventFilter(QObject *object, QEvent *event)
 {
 	return QwtPlot::eventFilter(object, event);
+}
+
+void Plot::save_settings(QSettings &settings, bool save_curves) const
+{
+	// TODO: Use Q_ENUM_NS for PlotUpdateMode to add meta-object support (Qt >= 5.8)
+	settings.setValue("update_mode", (int)update_mode());
+	settings.setValue("time_span", time_span_);
+	settings.setValue("add_time", add_time_);
+
+	if (!save_curves)
+		return;
+	for (const auto &curve : curves_) {
+		curve->save_settings(settings);
+	}
+}
+
+void Plot::restore_settings(QSettings &settings, bool restore_curves)
+{
+	if (settings.contains("update_mode"))
+		update_mode_ = static_cast<PlotUpdateMode>(
+			settings.value("update_mode").toInt());
+	if (settings.contains("time_span"))
+		time_span_ = settings.value("time_span").toDouble();
+	if (settings.contains("add_time"))
+		add_time_ = settings.value("add_time").toDouble();
+
+	if (!restore_curves)
+		return;
+	for (const auto &group : settings.childGroups()) {
+		if (group.startsWith("timecurve:") || group.startsWith("xycurve:")) {
+			Curve *curve = Curve::init_from_settings(session_, settings, group);
+			if (curve)
+				add_curve(curve);
+		}
+	}
+}
+
+Curve *Plot::get_curve_from_plot_curve(const QwtPlotCurve *plot_curve) const
+{
+	for (const auto &curve : curves_) {
+		if (curve->plot_curve() == plot_curve)
+			return curve;
+	}
+	return nullptr;
 }
 
 } // namespace plot

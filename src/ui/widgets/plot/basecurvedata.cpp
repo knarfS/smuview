@@ -17,16 +17,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QColor>
+#include <set>
+
+#include <QSettings>
+#include <QString>
 #include <QtGlobal>
-#if QT_VERSION >= 0x050A00
-	#include <QRandomGenerator>
-#endif
+#include <QVariant>
 
 #include <qwt_series_data.h>
 
 #include "basecurvedata.hpp"
 #include "src/data/datautil.hpp"
+
+using std::set;
 
 namespace sv {
 namespace ui {
@@ -34,6 +37,7 @@ namespace widgets {
 namespace plot {
 
 BaseCurveData::BaseCurveData(CurveType curve_type) :
+	QObject(),
 	QwtSeriesData<QPointF>(),
 	type_(curve_type),
 	relative_time_(true)
@@ -43,61 +47,6 @@ BaseCurveData::BaseCurveData(CurveType curve_type) :
 CurveType BaseCurveData::type() const
 {
 	return type_;
-}
-
-QColor BaseCurveData::color() const
-{
-	// TODO: Implement a better way for color configuration of curves!
-
-	if (y_quantity() == sv::data::Quantity::Voltage &&
-			y_quantity_flags().count(sv::data::QuantityFlag::DC) > 0)
-		return Qt::red;
-	if (y_quantity() == sv::data::Quantity::Voltage &&
-			y_quantity_flags().count(sv::data::QuantityFlag::AC) > 0)
-		return Qt::darkRed;
-	if (y_quantity() == sv::data::Quantity::Voltage)
-		// Fallback for Voltage without quantity flag
-		return Qt::red;
-	if (y_quantity() == sv::data::Quantity::Current &&
-			y_quantity_flags().count(sv::data::QuantityFlag::DC) > 0)
-		return Qt::green;
-	if (y_quantity() == sv::data::Quantity::Current &&
-			y_quantity_flags().count(sv::data::QuantityFlag::AC) > 0)
-		return Qt::darkGreen;
-	if (y_quantity() == sv::data::Quantity::Current)
-		// Fallback for current without quantity flag
-		return Qt::green;
-	if (y_quantity() == sv::data::Quantity::Resistance)
-		return Qt::cyan;
-	if (y_quantity() == sv::data::Quantity::Power)
-		return Qt::yellow;
-	if (y_quantity() == sv::data::Quantity::Work)
-		return Qt::darkYellow;
-	if (y_quantity() == sv::data::Quantity::Temperature)
-		return Qt::darkCyan;
-	if (y_quantity() == sv::data::Quantity::Capacitance)
-		return Qt::gray;
-	if (y_quantity() == sv::data::Quantity::Frequency)
-		return Qt::magenta;
-	if (y_quantity() == sv::data::Quantity::Time)
-		return Qt::darkMagenta;
-	if (y_quantity() == sv::data::Quantity::PowerFactor)
-		return Qt::lightGray;
-
-#if QT_VERSION >= 0x050A00
-	return QColor::fromRgb(QRandomGenerator::global()->generate());
-#else
-	return QColor::fromRgb(qrand());
-#endif
-
-	/*
-	 * Unused colors:
-		Qt::blue
-		Qt::darkBlue
-		Qt::darkGray
-		Qt::white
-		Qt::black
-	*/
 }
 
 void BaseCurveData::set_relative_time(bool is_relative_time)

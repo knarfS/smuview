@@ -22,13 +22,17 @@
 
 #include <QPointF>
 #include <QRectF>
+#include <QSettings>
 #include <QString>
 
 #include "timecurvedata.hpp"
+#include "src/session.hpp"
+#include "src/settingsmanager.hpp"
 #include "src/data/analogtimesignal.hpp"
 #include "src/data/datautil.hpp"
 #include "src/ui/widgets/plot/basecurvedata.hpp"
 
+using std::dynamic_pointer_cast;
 using std::set;
 using std::shared_ptr;
 
@@ -127,6 +131,11 @@ QString TimeCurveData::name() const
 	return signal_->display_name();
 }
 
+string TimeCurveData::id_prefix() const
+{
+	return "timecurve";
+}
+
 sv::data::Quantity TimeCurveData::x_quantity() const
 {
 	return sv::data::Quantity::Time;
@@ -185,6 +194,23 @@ QString TimeCurveData::y_title() const
 shared_ptr<sv::data::AnalogTimeSignal> TimeCurveData::signal() const
 {
 	return signal_;
+}
+
+void TimeCurveData::save_settings(QSettings &settings) const
+{
+	SettingsManager::save_signal(signal_, settings);
+}
+
+TimeCurveData *TimeCurveData::init_from_settings(
+	Session &session, QSettings &settings)
+{
+	auto signal = SettingsManager::restore_signal(session, settings);
+	if (signal) {
+		return new TimeCurveData(
+			dynamic_pointer_cast<sv::data::AnalogTimeSignal>(signal));
+	}
+	else
+		return nullptr;
 }
 
 } // namespace plot

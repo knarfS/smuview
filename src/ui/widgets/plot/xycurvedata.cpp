@@ -24,13 +24,17 @@
 
 #include <QPointF>
 #include <QRectF>
+#include <QSettings>
 #include <QString>
 
 #include "xycurvedata.hpp"
+#include "src/session.hpp"
+#include "src/settingsmanager.hpp"
 #include "src/data/analogtimesignal.hpp"
 #include "src/data/datautil.hpp"
 #include "src/ui/widgets/plot/basecurvedata.hpp"
 
+using std::dynamic_pointer_cast;
 using std::lock_guard;
 using std::make_shared;
 using std::mutex;
@@ -122,6 +126,11 @@ QString XYCurveData::name() const
 		append(x_t_signal_->display_name());
 }
 
+string XYCurveData::id_prefix() const
+{
+	return "xycurve";
+}
+
 sv::data::Quantity XYCurveData::x_quantity() const
 {
 	return x_t_signal_->quantity();
@@ -187,6 +196,26 @@ shared_ptr<sv::data::AnalogTimeSignal> XYCurveData::x_t_signal() const
 shared_ptr<sv::data::AnalogTimeSignal> XYCurveData::y_t_signal() const
 {
 	return y_t_signal_;
+}
+
+void XYCurveData::save_settings(QSettings &settings) const
+{
+	SettingsManager::save_signal(x_t_signal_, settings, "x_");
+	SettingsManager::save_signal(y_t_signal_, settings, "y_");
+}
+
+XYCurveData *XYCurveData::init_from_settings(
+	Session &session, QSettings &settings)
+{
+	auto x_t_signal = SettingsManager::restore_signal(session, settings, "x_");
+	auto y_t_signal = SettingsManager::restore_signal(session, settings, "y_");
+	if (x_t_signal && y_t_signal) {
+		return new XYCurveData(
+			dynamic_pointer_cast<sv::data::AnalogTimeSignal>(x_t_signal),
+			dynamic_pointer_cast<sv::data::AnalogTimeSignal>(y_t_signal));
+	}
+	else
+		return nullptr;
 }
 
 void XYCurveData::on_sample_appended()

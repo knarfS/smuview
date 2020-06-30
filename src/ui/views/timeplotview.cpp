@@ -22,6 +22,7 @@
 #include <QMessageBox>
 #include <QSettings>
 #include <QUuid>
+#include <QVariant>
 
 #include "timeplotview.hpp"
 #include "src/session.hpp"
@@ -32,6 +33,7 @@
 #include "src/ui/dialogs/selectsignaldialog.hpp"
 #include "src/ui/views/baseplotview.hpp"
 #include "src/ui/views/viewhelper.hpp"
+#include <src/ui/widgets/plot/curve.hpp>
 #include "src/ui/widgets/plot/plot.hpp"
 #include "src/ui/widgets/plot/basecurvedata.hpp"
 #include "src/ui/widgets/plot/timecurvedata.hpp"
@@ -64,8 +66,8 @@ QString TimePlotView::title() const
 
 	if (channel_)
 		title = title.append(" ").append(channel_->display_name());
-	else if (!curves_.empty())
-		title = title.append(" ").append(curves_[0]->name());
+	else if (!plot_->curves().empty())
+		title = title.append(" ").append(plot_->curves()[0]->name());
 
 	return title;
 }
@@ -105,14 +107,18 @@ void TimePlotView::add_signal(shared_ptr<sv::data::AnalogTimeSignal> signal)
 	assert(signal);
 
 	// Check if new actual_signal is already added to this plot
-	for (const auto &curve : curves_) {
-		if (((widgets::plot::TimeCurveData *)curve)->signal() == signal)
+	for (const auto &curve : plot_->curves()) {
+		auto curve_data =
+			qobject_cast<widgets::plot::TimeCurveData *>(curve->curve_data());
+		if (!curve_data)
+			continue;
+		if (curve_data->signal() == signal)
 			return;
 	}
 
 	auto curve = new widgets::plot::TimeCurveData(signal);
-	if (plot_->add_curve(curve)) {
-		curves_.push_back(curve);
+	auto id = plot_->add_curve(curve);
+	if (!id.empty()) {
 		update_add_marker_menu();
 		Q_EMIT title_changed();
 	}
@@ -127,41 +133,28 @@ void TimePlotView::save_settings(QSettings &settings) const
 {
 	BasePlotView::save_settings(settings);
 
+	// TODO: Can the channel be saved inside the plot widget?
+	bool save_curves = true;
 	if (channel_) {
 		SettingsManager::save_channel(channel_, settings);
-		return;
+		save_curves = false;
 	}
-
-	// No channel used, save all signals.
-	size_t i = 0;
-	for (const auto &curve : curves_) {
-		settings.beginGroup(QString("curve%1").arg(i++));
-		auto t_curve = static_cast<widgets::plot::TimeCurveData *>(curve);
-		SettingsManager::save_signal(t_curve->signal(), settings);
-		settings.endGroup();
-	}
+	plot_->save_settings(settings, save_curves);
 }
 
 void TimePlotView::restore_settings(QSettings &settings)
 {
 	BasePlotView::restore_settings(settings);
 
+	// TODO: Can the channel be restored inside the plot widget?
+	bool restore_curves = true;
 	auto channel = SettingsManager::restore_channel(session_, settings);
 	if (channel) {
 		set_channel(channel);
-		return;
+		restore_curves = false;
 	}
-
-	// No channel used, restore all signals.
-	for (const auto &group : settings.childGroups()) {
-		if (!group.startsWith("curve"))
-			continue;
-		settings.beginGroup(group);
-		auto signal = SettingsManager::restore_signal(session_, settings);
-		if (signal)
-			add_signal(dynamic_pointer_cast<sv::data::AnalogTimeSignal>(signal));
-		settings.endGroup();
-	}
+	plot_->restore_settings(settings, restore_curves);
+	update_add_marker_menu();
 }
 
 void TimePlotView::on_action_add_signal_triggered()

@@ -23,10 +23,12 @@
 #include <memory>
 #include <mutex>
 #include <set>
+#include <string>
 #include <vector>
 
 #include <QPointF>
 #include <QRectF>
+#include <QSettings>
 #include <QString>
 
 #include "src/data/datautil.hpp"
@@ -35,9 +37,12 @@
 using std::mutex;
 using std::set;
 using std::shared_ptr;
+using std::string;
 using std::vector;
 
 namespace sv {
+
+class Session;
 
 namespace data {
 class AnalogTimeSignal;
@@ -51,7 +56,7 @@ namespace plot {
  * NOTE: XYCurveData must also inherit QObject (Important: first QObject,
  *       then BaseCurvedata), to get signals/slots working!
  */
-class XYCurveData : public QObject, public BaseCurveData
+class XYCurveData : public BaseCurveData
 {
 	Q_OBJECT
 
@@ -67,6 +72,7 @@ public:
 
 	QPointF closest_point(const QPointF &pos, double *dist) const override;
 	QString name() const override;
+	string id_prefix() const override;
 	sv::data::Quantity x_quantity() const override;
 	set<sv::data::QuantityFlag> x_quantity_flags() const override;
 	sv::data::Unit x_unit() const override;
@@ -80,6 +86,10 @@ public:
 
 	shared_ptr<sv::data::AnalogTimeSignal> x_t_signal() const;
 	shared_ptr<sv::data::AnalogTimeSignal> y_t_signal() const;
+
+	void save_settings(QSettings &settings) const override;
+	static XYCurveData *init_from_settings(
+		Session &session, QSettings &settings);
 
 private:
 	shared_ptr<sv::data::AnalogTimeSignal> x_t_signal_;

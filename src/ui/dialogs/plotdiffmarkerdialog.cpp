@@ -59,24 +59,22 @@ void PlotDiffMarkerDialog::setup_ui()
 	QFormLayout *form_layout = new QFormLayout();
 
 	marker_1_combobox_ = new QComboBox();
-	for (const auto &markers_pair : plot_->markers()) {
+	for (const auto &mc_pair : plot_->marker_curve_map()) {
 		marker_1_combobox_->addItem(
-			markers_pair.first->title().text(),
-			QVariant::fromValue(markers_pair.first));
+			mc_pair.first->title().text(), QVariant::fromValue(mc_pair.first));
 	}
-	if (!plot_->markers().empty())
+	if (!plot_->marker_curve_map().empty())
 		marker_1_combobox_->setCurrentIndex(0);
 	form_layout->addRow(tr("Marker 1"), marker_1_combobox_);
 
 	marker_2_combobox_ = new QComboBox();
-	for (const auto &markers_pair : plot_->markers()) {
+	for (const auto &mc_pair : plot_->marker_curve_map()) {
 		marker_2_combobox_->addItem(
-			markers_pair.first->title().text(),
-			QVariant::fromValue(markers_pair.first));
+			mc_pair.first->title().text(), QVariant::fromValue(mc_pair.first));
 	}
-	if (plot_->markers().size() >= 2)
+	if (plot_->marker_curve_map().size() >= 2)
 		marker_2_combobox_->setCurrentIndex(1);
-	else if (!plot_->markers().empty())
+	else if (!plot_->marker_curve_map().empty())
 		marker_2_combobox_->setCurrentIndex(0);
 	form_layout->addRow(tr("Marker 2"), marker_2_combobox_);
 

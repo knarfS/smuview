@@ -32,12 +32,13 @@
 #include "src/ui/dialogs/plotconfigdialog.hpp"
 #include "src/ui/dialogs/plotdiffmarkerdialog.hpp"
 #include "src/ui/views/baseview.hpp"
+#include "src/ui/widgets/plot/curve.hpp"
 #include "src/ui/widgets/plot/plot.hpp"
 #include "src/ui/widgets/plot/basecurvedata.hpp"
 
 using std::dynamic_pointer_cast;
 
-Q_DECLARE_METATYPE(sv::ui::widgets::plot::BaseCurveData *)
+Q_DECLARE_METATYPE(sv::ui::widgets::plot::Curve *)
 
 namespace sv {
 namespace ui {
@@ -63,7 +64,7 @@ void BasePlotView::setup_ui()
 {
 	QVBoxLayout *layout = new QVBoxLayout();
 
-	plot_ = new widgets::plot::Plot();
+	plot_ = new widgets::plot::Plot(session_);
 	plot_->set_update_mode(widgets::plot::PlotUpdateMode::Additive);
 	plot_->set_plot_interval(200); // 200ms
 
@@ -146,7 +147,7 @@ void BasePlotView::update_add_marker_menu()
 	}
 
 	// One add marker action for each curve
-	for (const auto &curve : curves_) {
+	for (const auto &curve : plot_->curves()) {
 		QAction *action = new QAction(this);
 		action->setText(curve->name());
 		action->setData(QVariant::fromValue(curve));
@@ -160,16 +161,31 @@ void BasePlotView::connect_signals()
 {
 }
 
+void BasePlotView::save_settings(QSettings &settings) const
+{
+	BaseView::save_settings(settings);
+
+	settings.setValue("markers_label_alignment",
+		plot_->markers_label_alignment());
+}
+
+void BasePlotView::restore_settings(QSettings &settings)
+{
+	BaseView::restore_settings(settings);
+
+	if (settings.contains("markers_label_alignment")) {
+		plot_->set_markers_label_alignment(
+			settings.value("markers_label_alignment").toInt());
+	}
+}
+
 void BasePlotView::on_action_add_marker_triggered()
 {
 	QAction *action = qobject_cast<QAction *>(sender());
-	if (action) {
-		widgets::plot::BaseCurveData *curve_data =
-			action->data().value<widgets::plot::BaseCurveData *>();
-		plot_->add_marker(curve_data);
-	}
+	if (action)
+		plot_->add_marker(action->data().value<widgets::plot::Curve *>());
 
-	if (plot_->markers().size() >= 2)
+	if (plot_->marker_curve_map().size() >= 2)
 		action_add_diff_marker_->setDisabled(false);
 	else
 		action_add_diff_marker_->setDisabled(true);

@@ -22,8 +22,11 @@
 #define UI_WIDGETS_PLOT_PLOT_HPP
 
 #include <map>
+#include <string>
 #include <vector>
 
+#include <QSettings>
+#include <QString>
 #include <QVariant>
 
 #include <qwt_interval.h>
@@ -34,19 +37,26 @@
 #include <qwt_plot_textlabel.h>
 #include <qwt_plot_panner.h>
 #include <qwt_plot_picker.h>
+#include <qwt_scale_engine.h>
+#include <qwt_symbol.h>
 #include <qwt_system_clock.h>
 #include <qwt_text.h>
 
+using std::string;
 using std::map;
 using std::pair;
 using std::vector;
 
 namespace sv {
+
+class Session;
+
 namespace ui {
 namespace widgets {
 namespace plot {
 
 class BaseCurveData;
+class Curve;
 class PlotMagnifier;
 
 enum class AxisBoundary {
@@ -75,13 +85,18 @@ class Plot : public QwtPlot
 	Q_OBJECT
 
 public:
-	Plot(QWidget *parent = nullptr);
+	Plot(Session &session, QWidget *parent = nullptr);
 	virtual ~Plot();
 
 	virtual void replot() override;
 	virtual bool eventFilter(QObject * object, QEvent *event) override;
-	bool add_curve(plot::BaseCurveData *curve_data);
-	vector<plot::BaseCurveData *> curve_datas() { return curve_datas_; }
+	/**
+	 * Retruns the id of the new curve. Empty string when curve couldn't be
+	 * added.
+	 */
+	string add_curve(BaseCurveData *curve_data);
+	bool add_curve(Curve *curve);
+	vector<Curve *> curves() const { return curves_; }
 	bool is_axis_locked(int axis_id, AxisBoundary axis_boundary) { return axis_lock_map_[axis_id][axis_boundary]; }
 	void set_axis_locked(int axis_id, AxisBoundary axis_boundary, bool locked);
 	void set_all_axis_locked(bool locked);
@@ -89,22 +104,23 @@ public:
 	void set_update_mode(PlotUpdateMode update_mode) { update_mode_ = update_mode; }
 	PlotUpdateMode update_mode() const { return update_mode_; };
 	void set_time_span(double time_span);
-	double time_span() { return time_span_; }
+	double time_span() const { return time_span_; }
 	void set_add_time(double add_time) { add_time_ = add_time; }
-	double add_time() { return add_time_; }
-	map<QwtPlotMarker *, plot::BaseCurveData *> markers() { return marker_map_; }
+	double add_time() const { return add_time_; }
+	map<QwtPlotMarker *, Curve *> marker_curve_map() const { return marker_curve_map_; }
 	void set_markers_label_alignment(int alignment);
-	int markers_label_alignment() { return markers_label_alignment_; }
+	int markers_label_alignment() const { return markers_label_alignment_; }
+
+	void save_settings(QSettings &settings, bool save_curves) const;
+	void restore_settings(QSettings &settings, bool restore_curves);
 
 public Q_SLOTS:
 	void start();
 	void stop();
-	int init_x_axis(plot::BaseCurveData *curve_data);
-	int init_y_axis(plot::BaseCurveData *curve_data);
 	void add_axis_icons(const int axis_id);
 	void lock_all_axis();
 	void on_axis_lock_clicked();
-	void add_marker(plot::BaseCurveData *curve_data);
+	void add_marker(Curve *curve);
 	void add_diff_marker(QwtPlotMarker *marker1, QwtPlotMarker *marker2);
 	void remove_marker();
 	void on_marker_selected(const QPointF mouse_pos);
@@ -120,18 +136,19 @@ protected:
 	virtual void timerEvent(QTimerEvent *event) override;
 
 private:
+	int init_x_axis(BaseCurveData *curve_data, int x_axis_id = -1);
+	int init_y_axis(BaseCurveData *curve_data, int y_axis_id = -1);
+	void init_axis(int axis_id, double min, double max, const QString &title,
+		bool auto_scale);
 	void update_curves();
 	void update_intervals();
-	bool update_x_interval(plot::BaseCurveData *curve_data);
-	bool update_y_interval(plot::BaseCurveData *curve_data);
+	bool update_x_interval(Curve *curve);
+	bool update_y_interval(const Curve *curve);
 	void update_markers_label();
+	Curve *get_curve_from_plot_curve(const QwtPlotCurve *plot_curve) const;
 
-	vector<plot::BaseCurveData *> curve_datas_;
-	map<plot::BaseCurveData *, QwtPlotCurve *> plot_curve_map_;
-	map<plot::BaseCurveData *, QwtPlotDirectPainter *> plot_direct_painter_map_;
-	map<plot::BaseCurveData *, int> y_axis_id_map_;
-	map<plot::BaseCurveData *, size_t> painted_points_map_;
-
+	Session &session_;
+	vector<Curve *> curves_; // TODO: shared_ptr/unique_ptr?
 	map<int, map<AxisBoundary, bool>> axis_lock_map_; // map<axis_id, map<AxisBoundary, locked>>
 	int plot_interval_;
 	int timer_id_;
@@ -142,9 +159,8 @@ private:
 	QwtPlotPanner *plot_panner_;
 	PlotMagnifier *plot_magnifier_;
 
-	vector<QwtPlotMarker *> markers_;
+	map<QwtPlotMarker *, Curve *> marker_curve_map_;
 	vector<pair<QwtPlotMarker *, QwtPlotMarker *>> diff_markers_;
-	map<QwtPlotMarker *, plot::BaseCurveData *> marker_map_;
 	QwtPlotMarker *active_marker_;
 	QwtPlotTextLabel *markers_label_;
 	int markers_label_alignment_;

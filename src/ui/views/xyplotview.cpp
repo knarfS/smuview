@@ -32,6 +32,7 @@
 #include "src/ui/dialogs/selectsignaldialog.hpp"
 #include "src/ui/views/baseplotview.hpp"
 #include "src/ui/views/viewhelper.hpp"
+#include <src/ui/widgets/plot/curve.hpp>
 #include "src/ui/widgets/plot/plot.hpp"
 #include "src/ui/widgets/plot/basecurvedata.hpp"
 #include "src/ui/widgets/plot/xycurvedata.hpp"
@@ -56,8 +57,8 @@ QString XYPlotView::title() const
 {
 	QString title = tr("Signal");
 
-	if (!curves_.empty())
-		title = title.append(" ").append(curves_[0]->name());
+	if (!plot_->curves().empty())
+		title = title.append(" ").append(plot_->curves()[0]->name());
 
 	return title;
 }
@@ -65,23 +66,24 @@ QString XYPlotView::title() const
 void XYPlotView::add_signal(shared_ptr<sv::data::AnalogTimeSignal> y_signal)
 {
 	// Try to get the x signal from a existing curve
-	if (curves_.empty()) {
+	if (plot_->curves().empty()) {
 		QMessageBox::warning(this, tr("Cannot add signal"),
 			tr("Cannot add new y signal without an existing x signal!"),
 			QMessageBox::Ok);
 		return;
 	}
 
-	auto x_signal = ((widgets::plot::XYCurveData *)curves_.at(0))->x_t_signal();
-	this->add_signals(x_signal, y_signal);
+	auto curve_data = qobject_cast<widgets::plot::XYCurveData *>(
+		plot_->curves()[0]->curve_data());
+	this->add_signals(curve_data->x_t_signal(), y_signal);
 }
 
 void XYPlotView::add_signals(shared_ptr<sv::data::AnalogTimeSignal> x_signal,
 	shared_ptr<sv::data::AnalogTimeSignal> y_signal)
 {
 	auto curve = new widgets::plot::XYCurveData(x_signal, y_signal);
-	if (plot_->add_curve(curve)) {
-		curves_.push_back(curve);
+	auto id = plot_->add_curve(curve);
+	if (!id.empty()) {
 		update_add_marker_menu();
 	}
 	else {
@@ -93,35 +95,15 @@ void XYPlotView::add_signals(shared_ptr<sv::data::AnalogTimeSignal> x_signal,
 
 void XYPlotView::save_settings(QSettings &settings) const
 {
-	BaseView::save_settings(settings);
-
-	size_t i = 0;
-	for (const auto &curve : curves_) {
-		settings.beginGroup(QString("curve%1").arg(i++));
-		auto xy_curve = static_cast<widgets::plot::XYCurveData *>(curve);
-		SettingsManager::save_signal(xy_curve->x_t_signal(), settings, "x_");
-		SettingsManager::save_signal(xy_curve->y_t_signal(), settings, "y_");
-		settings.endGroup();
-	}
+	BasePlotView::save_settings(settings);
+	plot_->save_settings(settings, true);
 }
 
 void XYPlotView::restore_settings(QSettings &settings)
 {
-	BaseView::restore_settings(settings);
-
-	for (const auto &group : settings.childGroups()) {
-		if (!group.startsWith("curve"))
-			continue;
-		settings.beginGroup(group);
-		auto x_t_signal = SettingsManager::restore_signal(session_, settings, "x_");
-		auto y_t_signal = SettingsManager::restore_signal(session_, settings, "y_");
-		if (x_t_signal && y_t_signal) {
-			add_signals(
-				dynamic_pointer_cast<sv::data::AnalogTimeSignal>(x_t_signal),
-				dynamic_pointer_cast<sv::data::AnalogTimeSignal>(y_t_signal));
-		}
-		settings.endGroup();
-	}
+	BasePlotView::restore_settings(settings);
+	plot_->restore_settings(settings, true);
+	update_add_marker_menu();
 }
 
 void XYPlotView::on_action_add_signal_triggered()

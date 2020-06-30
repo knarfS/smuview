@@ -25,13 +25,15 @@
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QWidget>
-#include <qwt_plot_curve.h>
 
 namespace sv {
 namespace ui {
 
 namespace widgets {
 class ColorButton;
+namespace plot {
+class Curve;
+}
 }
 
 namespace dialogs {
@@ -41,12 +43,13 @@ class PlotCurveConfigDialog : public QDialog
 	Q_OBJECT
 
 public:
-	PlotCurveConfigDialog(QwtPlotCurve *plot_curve, QWidget *parent = nullptr);
+	PlotCurveConfigDialog(widgets::plot::Curve *curve,
+		QWidget *parent = nullptr);
 
 private:
 	void setup_ui();
 
-	QwtPlotCurve *plot_curve_;
+	widgets::plot::Curve *curve_;
 	QCheckBox *visible_checkbox_;
 	widgets::ColorButton *color_button_;
 	QComboBox *line_type_box_;

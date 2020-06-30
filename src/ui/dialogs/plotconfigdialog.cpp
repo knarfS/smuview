@@ -19,6 +19,7 @@
 
 #include <cmath>
 #include <map>
+#include <set>
 
 #include <QApplication>
 #include <QColor>
@@ -44,9 +45,12 @@
 #include "plotconfigdialog.hpp"
 #include "src/data/datautil.hpp"
 #include "src/ui/views/baseplotview.hpp"
+#include "src/ui/widgets/plot/curve.hpp"
 #include "src/ui/widgets/plot/plot.hpp"
 
 Q_DECLARE_METATYPE(sv::ui::widgets::plot::PlotUpdateMode)
+
+using std::set;
 
 namespace sv {
 namespace ui {
@@ -287,6 +291,8 @@ void PlotConfigDialog::setup_ui_curve_colors_tab()
 		quantity_item->setFlags(quantity_item->flags() ^ Qt::ItemIsEditable);
 		color_table_->setItem(last_row, 0, quantity_item);
 		QTableWidgetItem *color_item = new QTableWidgetItem(q_n_pair.second);
+		color_item->setData(Qt::EditRole, widgets::plot::Curve::default_color(
+			q_n_pair.first, set<data::QuantityFlag>()));
 		color_table_->setItem(last_row, 1, color_item);
 
 		// For Voltage and Current, we want to make AC/DC also configurable.
@@ -301,6 +307,8 @@ void PlotConfigDialog::setup_ui_curve_colors_tab()
 				quantity_item->setFlags(quantity_item->flags() ^ Qt::ItemIsEditable);
 				color_table_->setItem(last_row, 0, quantity_item);
 				QTableWidgetItem *color_item = new QTableWidgetItem(name);
+				color_item->setData(Qt::EditRole, widgets::plot::Curve::default_color(
+					q_n_pair.first, set<data::QuantityFlag>{qf}));
 				color_table_->setItem(last_row, 1, color_item);
 			}
 		}
