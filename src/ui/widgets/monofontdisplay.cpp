@@ -134,7 +134,7 @@ void MonoFontDisplay::update_value_widget_dimensions()
 		str += "-";
 	}
 	QFontMetrics metrics = value_label_->fontMetrics();
-	value_label_->setFixedWidth(metrics.width(str));
+	value_label_->setFixedWidth(metrics.horizontalAdvance(str));
 }
 
 void MonoFontDisplay::update_extra_widget_dimensions()
@@ -156,7 +156,7 @@ void MonoFontDisplay::update_unit_widget_dimensions()
 		str.append(" ").append(unit_suffix_);
 	}
 	QFontMetrics metrics = unit_label_->fontMetrics();
-	unit_label_->setFixedWidth(metrics.width(str));
+	unit_label_->setFixedWidth(metrics.horizontalAdvance(str));
 }
 
 void MonoFontDisplay::show_value(const QString &value)

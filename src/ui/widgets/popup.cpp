@@ -24,7 +24,7 @@
 #include <QApplication>
 #include <QCloseEvent>
 #include <QDebug>
-#include <QDesktopWidget>
+#include <QScreen>
 #include <QEvent>
 #include <QLineEdit>
 #include <QMouseEvent>
@@ -251,8 +251,7 @@ void Popup::reposition_widget()
 {
 	QPoint o;
 
-	const QRect screen_rect = QApplication::desktop()->availableGeometry(
-		QApplication::desktop()->screenNumber(point_));
+	const QRect screen_rect = QGuiApplication::screenAt(point_)->geometry();
 
 	if (pos_ == PopupPosition::Right || pos_ == PopupPosition::Left)
 		o.ry() = -height() / 2;
