@@ -24,6 +24,7 @@
 #include <memory>
 #include <mutex>
 #include <string>
+#include <utility>
 #include <vector>
 #include <glib.h>
 
@@ -48,6 +49,7 @@
 using std::bad_alloc;
 using std::dynamic_pointer_cast;
 using std::lock_guard;
+using std::make_pair;
 using std::make_shared;
 using std::map;
 using std::set;
