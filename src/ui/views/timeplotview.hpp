@@ -21,6 +21,7 @@
 #define UI_VIEWS_TIMEPLOTVIEW_HPP
 
 #include <memory>
+#include <string>
 
 #include <QSettings>
 #include <QUuid>
@@ -28,6 +29,7 @@
 #include "src/ui/views/baseplotview.hpp"
 
 using std::shared_ptr;
+using std::string;
 
 namespace sv {
 
@@ -61,9 +63,9 @@ public:
 	 */
 	void set_channel(shared_ptr<channels::BaseChannel> channel);
 	/**
-	 * Add a new signal to the time plot.
+	 * Add a new signal to the time plot and return the curve id.
 	 */
-	void add_signal(shared_ptr<sv::data::AnalogTimeSignal> signal);
+	string add_signal(shared_ptr<sv::data::AnalogTimeSignal> signal);
 
 private:
 	shared_ptr<channels::BaseChannel> channel_;

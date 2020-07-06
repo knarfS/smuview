@@ -19,6 +19,7 @@
 
 #include <cassert>
 #include <memory>
+#include <string>
 
 #include <QMessageBox>
 #include <QSettings>
@@ -38,6 +39,7 @@
 #include "src/ui/widgets/plot/xycurvedata.hpp"
 
 using std::dynamic_pointer_cast;
+using std::string;
 
 Q_DECLARE_METATYPE(sv::ui::widgets::plot::BaseCurveData *)
 
@@ -63,26 +65,28 @@ QString XYPlotView::title() const
 	return title;
 }
 
-void XYPlotView::add_signal(shared_ptr<sv::data::AnalogTimeSignal> y_signal)
+string XYPlotView::add_signal(shared_ptr<sv::data::AnalogTimeSignal> y_signal)
 {
+	string id = "";
 	// Try to get the x signal from a existing curve
 	if (plot_->curves().empty()) {
 		QMessageBox::warning(this, tr("Cannot add signal"),
 			tr("Cannot add new y signal without an existing x signal!"),
 			QMessageBox::Ok);
-		return;
+		return id;
 	}
 
 	auto curve_data = qobject_cast<widgets::plot::XYCurveData *>(
 		plot_->curves()[0]->curve_data());
-	this->add_signals(curve_data->x_t_signal(), y_signal);
+	id = this->add_signals(curve_data->x_t_signal(), y_signal);
+	return id;
 }
 
-void XYPlotView::add_signals(shared_ptr<sv::data::AnalogTimeSignal> x_signal,
+string XYPlotView::add_signals(shared_ptr<sv::data::AnalogTimeSignal> x_signal,
 	shared_ptr<sv::data::AnalogTimeSignal> y_signal)
 {
 	auto curve = new widgets::plot::XYCurveData(x_signal, y_signal);
-	auto id = plot_->add_curve(curve);
+	string id = plot_->add_curve(curve);
 	if (!id.empty()) {
 		update_add_marker_menu();
 	}
@@ -91,6 +95,7 @@ void XYPlotView::add_signals(shared_ptr<sv::data::AnalogTimeSignal> x_signal,
 			tr("Cannot add signal"), tr("Cannot add xy signal to plot!"),
 			QMessageBox::Ok);
 	}
+	return id;
 }
 
 void XYPlotView::save_settings(QSettings &settings) const

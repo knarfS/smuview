@@ -18,6 +18,7 @@
  */
 
 #include <cassert>
+#include <string>
 
 #include <QMessageBox>
 #include <QSettings>
@@ -40,6 +41,7 @@
 
 using std::dynamic_pointer_cast;
 using std::static_pointer_cast;
+using std::string;
 
 Q_DECLARE_METATYPE(sv::ui::widgets::plot::BaseCurveData *)
 
@@ -102,9 +104,10 @@ void TimePlotView::set_channel(shared_ptr<channels::BaseChannel> channel)
 	Q_EMIT title_changed();
 }
 
-void TimePlotView::add_signal(shared_ptr<sv::data::AnalogTimeSignal> signal)
+string TimePlotView::add_signal(shared_ptr<sv::data::AnalogTimeSignal> signal)
 {
 	assert(signal);
+	string id = "";
 
 	// Check if new actual_signal is already added to this plot
 	for (const auto &curve : plot_->curves()) {
@@ -113,11 +116,11 @@ void TimePlotView::add_signal(shared_ptr<sv::data::AnalogTimeSignal> signal)
 		if (!curve_data)
 			continue;
 		if (curve_data->signal() == signal)
-			return;
+			return id;
 	}
 
 	auto curve = new widgets::plot::TimeCurveData(signal);
-	auto id = plot_->add_curve(curve);
+	id = plot_->add_curve(curve);
 	if (!id.empty()) {
 		update_add_marker_menu();
 		Q_EMIT title_changed();
@@ -127,6 +130,8 @@ void TimePlotView::add_signal(shared_ptr<sv::data::AnalogTimeSignal> signal)
 			tr("Cannot add signal"), tr("Cannot add time signal to plot!"),
 			QMessageBox::Ok);
 	}
+
+	return id;
 }
 
 void TimePlotView::save_settings(QSettings &settings) const

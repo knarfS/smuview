@@ -56,12 +56,13 @@ public:
 	/**
 	 * Add a new signal to the xy plot. The new signal will be time correlated
 	 * with the already set x signal.
+	 * Return the curve id.
 	 */
-	void add_signal(shared_ptr<sv::data::AnalogTimeSignal> y_signal);
+	string add_signal(shared_ptr<sv::data::AnalogTimeSignal> y_signal);
 	/**
-	 * Add a new x/y curve to the xy plot.
+	 * Add a new x/y curve to the xy plot. Return the curve id.
 	 */
-	void add_signals(shared_ptr<sv::data::AnalogTimeSignal> x_signal,
+	string add_signals(shared_ptr<sv::data::AnalogTimeSignal> x_signal,
 		shared_ptr<sv::data::AnalogTimeSignal> y_signal);
 
 protected Q_SLOTS:
