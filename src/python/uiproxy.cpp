@@ -19,6 +19,7 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
 #include <pybind11/pybind11.h>
 
 #include <QDebug>
@@ -40,6 +41,7 @@
 
 using std::shared_ptr;
 using std::string;
+using std::tuple;
 
 namespace py = pybind11;
 
@@ -52,6 +54,9 @@ UiProxy::UiProxy(Session &session, shared_ptr<UiHelper> ui_helper) :
 	event_loop_(),
 	timer_()
 {
+	// For the colors tuple:
+	qRegisterMetaType<std::tuple<int, int, int>>("std::tuple<int, int, int>");
+
 	connect(this, &UiProxy::add_device_tab,
 		ui_helper_.get(), &UiHelper::add_device_tab);
 
@@ -83,6 +88,8 @@ UiProxy::UiProxy(Session &session, shared_ptr<UiHelper> ui_helper) :
 		ui_helper_.get(), &UiHelper::add_curve_to_time_plot_view);
 	connect(this, &UiProxy::add_curve_to_xy_plot_view,
 		ui_helper_.get(), &UiHelper::add_curve_to_xy_plot_view);
+	connect(this, &UiProxy::set_curve_color,
+		ui_helper_.get(), &UiHelper::set_curve_color);
 
 	connect(this, &UiProxy::show_message_box,
 		ui_helper_.get(), &UiHelper::show_message_box);
@@ -224,6 +231,12 @@ string UiProxy::ui_add_curve_to_xy_plot_view(string tab_id, string view_id,
 	finish_wait_for_signal();
 
 	return id;
+}
+
+void UiProxy::ui_set_curve_color(string tab_id, string view_id, string curve_id,
+	tuple<int, int, int> color)
+{
+	Q_EMIT set_curve_color(tab_id, view_id, curve_id, color);
 }
 
 

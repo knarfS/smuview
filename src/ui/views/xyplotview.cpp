@@ -58,10 +58,11 @@ XYPlotView::XYPlotView(Session &session, QUuid uuid, QWidget *parent) :
 QString XYPlotView::title() const
 {
 	QString title = tr("Signal");
-
-	if (!plot_->curves().empty())
-		title = title.append(" ").append(plot_->curves()[0]->name());
-
+	QString sep(" ");
+	for (const auto &curve : plot_->curve_map()) {
+		title = title.append(sep).append(curve.second->name());
+		sep = ", ";
+	}
 	return title;
 }
 
@@ -69,15 +70,17 @@ string XYPlotView::add_signal(shared_ptr<sv::data::AnalogTimeSignal> y_signal)
 {
 	string id = "";
 	// Try to get the x signal from a existing curve
-	if (plot_->curves().empty()) {
+	if (plot_->curve_map().empty()) {
 		QMessageBox::warning(this, tr("Cannot add signal"),
 			tr("Cannot add new y signal without an existing x signal!"),
 			QMessageBox::Ok);
 		return id;
 	}
 
+	// TODO: Propably not the curve_data (first by insertion) we want...
+	// TODO: Remove add_signal(y_signal) completly!
 	auto curve_data = qobject_cast<widgets::plot::XYCurveData *>(
-		plot_->curves()[0]->curve_data());
+		plot_->curve_map().begin()->second->curve_data());
 	id = this->add_signals(curve_data->x_t_signal(), y_signal);
 	return id;
 }

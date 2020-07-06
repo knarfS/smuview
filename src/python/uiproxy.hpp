@@ -22,6 +22,7 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
 #include <pybind11/pybind11.h>
 
 #include <QDockWidget>
@@ -33,6 +34,7 @@
 
 using std::shared_ptr;
 using std::string;
+using std::tuple;
 
 namespace py = pybind11;
 
@@ -94,6 +96,8 @@ public:
 	string ui_add_curve_to_xy_plot_view(string tab_id, string view_id,
 		shared_ptr<data::AnalogTimeSignal> x_signal,
 		shared_ptr<data::AnalogTimeSignal> y_signal);
+	void ui_set_curve_color(string tab_id, string view_id, string curve_id,
+		tuple<int, int, int> color);
 
 	bool ui_show_message_box(const std::string &title, const std::string &text);
 	py::object ui_show_string_input_dialog(const string &title,
@@ -147,6 +151,8 @@ Q_SIGNALS:
 	void add_curve_to_xy_plot_view(std::string tab_id, std::string view_id,
 		shared_ptr<sv::data::AnalogTimeSignal> x_signal,
 		shared_ptr<sv::data::AnalogTimeSignal> y_signal);
+	void set_curve_color(std::string tab_id, std::string view_id,
+		std::string curve_id, std::tuple<int, int, int> color);
 
 	void show_message_box(const std::string &title, const std::string &text);
 	void show_string_input_dialog(const std::string &title,

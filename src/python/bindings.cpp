@@ -473,11 +473,6 @@ void init_Configurable(py::module &m)
 
 void init_UI(py::module &m)
 {
-	/*
-	 * TODO:
-	 *  - Change plot curve color
-	 */
-
 	py::class_<sv::python::UiProxy> py_ui_helper(m, "UiProxy");
 	py_ui_helper.doc() = "Helper class for accessing the UI.";
 	py_ui_helper.def("add_device_tab", &sv::python::UiProxy::ui_add_device_tab,
@@ -666,6 +661,20 @@ void init_UI(py::module &m)
 		"-------\n"
 		"str\n"
 		"    The id of the new curve or empty if the curve couldn't be added.");
+	py_ui_helper.def("set_curve_color", &sv::python::UiProxy::ui_set_curve_color,
+		py::arg("tab_id"), py::arg("view_id"), py::arg("curve_id"),
+		py::arg("color"),
+		"Set the color of the given curve.\n\n"
+		"Parameters\n"
+		"----------\n"
+		"tab_id : str\n"
+		"    The id of the tab.\n"
+		"view_id : str\n"
+		"    The id of the plot view.\n"
+		"curve_id : str\n"
+		"    The id of the curve.\n"
+		"color : Tuple[int, int, int]\n"
+		"    The color for the curve as a Tuple with the RGB values.");
 	py_ui_helper.def("show_message_box", &sv::python::UiProxy::ui_show_message_box,
 		py::arg("title"), py::arg("text"),
 		"Show a (info) message box with the given window title and text. "

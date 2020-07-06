@@ -215,8 +215,8 @@ void Plot::stop()
 void Plot::replot()
 {
 	//qWarning() << "Plot::replot()";
-	for (const auto &curve : curves_)
-		curve->set_painted_points(0);
+	for (const auto &curve : curve_map_)
+		curve.second->set_painted_points(0);
 
 	QwtPlot::replot();
 }
@@ -237,7 +237,7 @@ string Plot::add_curve(BaseCurveData *curve_data)
 
 	Curve *curve = new Curve(curve_data, x_axis_id, y_axis_id);
 	curve->plot_curve()->attach(this);
-	curves_.push_back(curve);
+	curve_map_.insert(make_pair(curve->id(), curve));
 
 	QwtPlot::replot();
 
@@ -246,6 +246,9 @@ string Plot::add_curve(BaseCurveData *curve_data)
 
 bool Plot::add_curve(Curve *curve)
 {
+	if (curve_map_.count(curve->id()) > 0)
+		return false;
+
 	// Check y axis
 	int y_axis_id = this->init_y_axis(curve->curve_data(), curve->y_axis_id());
 	if (y_axis_id < 0)
@@ -257,7 +260,7 @@ bool Plot::add_curve(Curve *curve)
 		return false;
 
 	curve->plot_curve()->attach(this);
-	curves_.push_back(curve);
+	curve_map_.insert(make_pair(curve->id(), curve));
 
 	QwtPlot::replot();
 
@@ -271,9 +274,9 @@ int Plot::init_x_axis(BaseCurveData *curve_data, int x_axis_id)
 	if (x_axis_id < 0) {
 		// Check if there already is an axis with the same unit. This is done
 		// via the strings to get potential AC/DC flags.
-		for (const auto &curve : curves_) {
-			if (curve_data->x_unit_str() == curve->curve_data()->x_unit_str())
-				return curve->x_axis_id();
+		for (const auto &c : curve_map_) {
+			if (curve_data->x_unit_str() == c.second->curve_data()->x_unit_str())
+				return c.second->x_axis_id();
 		}
 		// No existing axis was found, try to use the bottom or top axis.
 		if (!this->axisEnabled(QwtPlot::xBottom))
@@ -286,11 +289,11 @@ int Plot::init_x_axis(BaseCurveData *curve_data, int x_axis_id)
 	else {
 		// Check if the given axis id is already initialised with the proper
 		// unit.
-		for (const auto &c : curves_) {
-			if (c->x_axis_id() == x_axis_id &&
-					c->curve_data()->x_unit_str() == curve_data->x_unit_str())
+		for (const auto &c : curve_map_) {
+			if (c.second->x_axis_id() == x_axis_id &&
+					c.second->curve_data()->x_unit_str() == curve_data->x_unit_str())
 				return x_axis_id;
-			else if (c->x_axis_id() == x_axis_id)
+			else if (c.second->x_axis_id() == x_axis_id)
 				return -1;
 		}
 	}
@@ -335,9 +338,9 @@ int Plot::init_y_axis(BaseCurveData *curve_data, int y_axis_id)
 	if (y_axis_id < 0) {
 		// Check if there already is an axis with the same unit. This is done
 		// via the strings to get potential AC/DC flags.
-		for (const auto &curve : curves_) {
-			if (curve_data->y_unit_str() == curve->curve_data()->y_unit_str())
-				return curve->y_axis_id();
+		for (const auto &c : curve_map_) {
+			if (curve_data->y_unit_str() == c.second->curve_data()->y_unit_str())
+				return c.second->y_axis_id();
 		}
 		// No existing axis was found, try to use the left or right axis.
 		if (!this->axisEnabled(QwtPlot::yLeft))
@@ -350,11 +353,11 @@ int Plot::init_y_axis(BaseCurveData *curve_data, int y_axis_id)
 	else {
 		// Check if the given axis id is already initialised with the proper
 		// unit.
-		for (const auto &c : curves_) {
-			if (c->y_axis_id() == y_axis_id &&
-					c->curve_data()->y_unit_str() == curve_data->y_unit_str())
+		for (const auto &c : curve_map_) {
+			if (c.second->y_axis_id() == y_axis_id &&
+					c.second->curve_data()->y_unit_str() == curve_data->y_unit_str())
 				return y_axis_id;
-			else if (c->y_axis_id() == y_axis_id)
+			else if (c.second->y_axis_id() == y_axis_id)
 				return -1;
 		}
 	}
@@ -475,9 +478,9 @@ void Plot::set_time_span(double time_span)
 	// last/highest x value/timestamp and use it to calculate the new
 	// x axis interval.
 	double last_timestamp = .0;
-	for (const auto &curve : curves_) {
-		if (curve->curve_data()->boundingRect().right() > last_timestamp)
-			last_timestamp = curve->curve_data()->boundingRect().right();
+	for (const auto &curve : curve_map_) {
+		if (curve.second->curve_data()->boundingRect().right() > last_timestamp)
+			last_timestamp = curve.second->curve_data()->boundingRect().right();
 	}
 	// max must be set to the last timestamp to keep the manual calculation
 	// of the scale divs for oscilloscope mode working.
@@ -640,9 +643,9 @@ void Plot::on_legend_clicked(const QVariant &item_info, int index)
 
 void Plot::update_curves()
 {
-	for (const auto &curve : curves_) {
-		const size_t painted_points = curve->painted_points();
-		const size_t num_points = curve->curve_data()->size();
+	for (const auto &curve : curve_map_) {
+		const size_t painted_points = curve.second->painted_points();
+		const size_t num_points = curve.second->curve_data()->size();
 		if (num_points > painted_points) {
 			//qWarning() << QString("Plot::updateCurve(): num_points = %1, painted_points = %2").
 			//	arg(num_points).arg(painted_points);
@@ -656,17 +659,18 @@ void Plot::update_curves()
 				 * out - maybe to an unaccelerated frame buffer device.
 				 */
 
-				const QwtScaleMap x_map = canvasMap(curve->x_axis_id());
-				const QwtScaleMap y_map = canvasMap(curve->y_axis_id());
-				QRectF br = qwtBoundingRect(*curve->plot_curve()->data(),
+				const QwtScaleMap x_map = canvasMap(curve.second->x_axis_id());
+				const QwtScaleMap y_map = canvasMap(curve.second->y_axis_id());
+				QRectF br = qwtBoundingRect(*curve.second->plot_curve()->data(),
 					(int)painted_points - 1, (int)num_points - 1);
 
-				curve->plot_direct_painter()->setClipRegion(
+				curve.second->plot_direct_painter()->setClipRegion(
 					QwtScaleMap::transform(x_map, y_map, br).toRect());
 			}
-			curve->plot_direct_painter()->drawSeries(curve->plot_curve(),
-				(int)painted_points - 1, (int)num_points - 1);
-			curve->set_painted_points(num_points);
+			curve.second->plot_direct_painter()->drawSeries(
+				curve.second->plot_curve(), (int)painted_points - 1,
+				(int)num_points - 1);
+			curve.second->set_painted_points(num_points);
 		}
 
 		//replot();
@@ -677,10 +681,10 @@ void Plot::update_intervals()
 {
 	bool intervals_changed = false;
 
-	for (const auto &curve : curves_) {
-		if (update_x_interval(curve))
+	for (const auto &curve : curve_map_) {
+		if (update_x_interval(curve.second))
 			intervals_changed = true;
-		if (update_y_interval(curve))
+		if (update_y_interval(curve.second))
 			intervals_changed = true;
 	}
 
@@ -916,8 +920,8 @@ void Plot::timerEvent(QTimerEvent *event)
 
 void Plot::resizeEvent(QResizeEvent *event)
 {
-	for (const auto &curve : curves_) {
-		curve->plot_direct_painter()->reset();
+	for (const auto &curve : curve_map_) {
+		curve.second->plot_direct_painter()->reset();
 	}
 
 	QwtPlot::resizeEvent(event);
@@ -943,8 +947,8 @@ void Plot::save_settings(QSettings &settings, bool save_curves) const
 
 	if (!save_curves)
 		return;
-	for (const auto &curve : curves_) {
-		curve->save_settings(settings);
+	for (const auto &curve : curve_map_) {
+		curve.second->save_settings(settings);
 	}
 }
 
@@ -971,9 +975,9 @@ void Plot::restore_settings(QSettings &settings, bool restore_curves)
 
 Curve *Plot::get_curve_from_plot_curve(const QwtPlotCurve *plot_curve) const
 {
-	for (const auto &curve : curves_) {
-		if (curve->plot_curve() == plot_curve)
-			return curve;
+	for (const auto &curve : curve_map_) {
+		if (curve.second->plot_curve() == plot_curve)
+			return curve.second;
 	}
 	return nullptr;
 }

@@ -62,14 +62,15 @@ QString TimePlotView::title() const
 	QString title;
 
 	if (channel_)
-		title = tr("Channel");
-	else
+		title = tr("Channel ").append(channel_->display_name());
+	else {
 		title = tr("Signal");
-
-	if (channel_)
-		title = title.append(" ").append(channel_->display_name());
-	else if (!plot_->curves().empty())
-		title = title.append(" ").append(plot_->curves()[0]->name());
+		QString sep(" ");
+		for (const auto &curve : plot_->curve_map()) {
+			title = title.append(sep).append(curve.second->name());
+			sep = ", ";
+		}
+	}
 
 	return title;
 }
@@ -110,9 +111,9 @@ string TimePlotView::add_signal(shared_ptr<sv::data::AnalogTimeSignal> signal)
 	string id = "";
 
 	// Check if new actual_signal is already added to this plot
-	for (const auto &curve : plot_->curves()) {
-		auto curve_data =
-			qobject_cast<widgets::plot::TimeCurveData *>(curve->curve_data());
+	for (const auto &curve : plot_->curve_map()) {
+		auto curve_data = qobject_cast<widgets::plot::TimeCurveData *>(
+			curve.second->curve_data());
 		if (!curve_data)
 			continue;
 		if (curve_data->signal() == signal)

@@ -20,9 +20,11 @@
 #ifndef UI_VIEWS_BASEPLOTVIEW_HPP
 #define UI_VIEWS_BASEPLOTVIEW_HPP
 
+#include <string>
 #include <vector>
 
 #include <QAction>
+#include <QColor>
 #include <QMenu>
 #include <QSettings>
 #include <QToolBar>
@@ -31,6 +33,7 @@
 
 #include "src/ui/views/baseview.hpp"
 
+using std::string;
 using std::vector;
 
 namespace sv {
@@ -65,6 +68,7 @@ public:
 	BasePlotView(Session &session, QUuid uuid = QUuid(),
 		QWidget *parent = nullptr);
 
+	bool set_curve_color(string curve_id, QColor color);
 	void save_settings(QSettings &settings) const override;
 	void restore_settings(QSettings &settings) override;
 

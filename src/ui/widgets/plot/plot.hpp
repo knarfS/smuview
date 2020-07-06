@@ -91,12 +91,13 @@ public:
 	virtual void replot() override;
 	virtual bool eventFilter(QObject * object, QEvent *event) override;
 	/**
-	 * Retruns the id of the new curve. Empty string when curve couldn't be
+	 * Return the id of the new curve. Empty string when curve couldn't be
 	 * added.
 	 */
 	string add_curve(BaseCurveData *curve_data);
 	bool add_curve(Curve *curve);
-	vector<Curve *> curves() const { return curves_; }
+	/** Return a map of all curves. */
+	map<string, Curve *> curve_map() const { return curve_map_; }
 	bool is_axis_locked(int axis_id, AxisBoundary axis_boundary) { return axis_lock_map_[axis_id][axis_boundary]; }
 	void set_axis_locked(int axis_id, AxisBoundary axis_boundary, bool locked);
 	void set_all_axis_locked(bool locked);
@@ -148,7 +149,7 @@ private:
 	Curve *get_curve_from_plot_curve(const QwtPlotCurve *plot_curve) const;
 
 	Session &session_;
-	vector<Curve *> curves_; // TODO: shared_ptr/unique_ptr?
+	map<string, Curve *> curve_map_;
 	map<int, map<AxisBoundary, bool>> axis_lock_map_; // map<axis_id, map<AxisBoundary, locked>>
 	int plot_interval_;
 	int timer_id_;

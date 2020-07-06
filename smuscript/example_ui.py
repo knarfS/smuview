@@ -75,9 +75,11 @@ print("New time plot view (2) = " + time_plot_view_2)
 # Add a curve (1) to the time plot view (2)
 curve_1 = UiProxy.add_curve_to_time_plot_view(user_dev_tab, time_plot_view_2, demo_dev.channels()["A2"].actual_signal())
 print("New curve (1) = " + curve_1)
+UiProxy.set_curve_color(user_dev_tab, time_plot_view_2, curve_1, (255, 0, 255))
 # Add a curve (2) to the time plot view (2)
 curve_2 = UiProxy.add_curve_to_time_plot_view(user_dev_tab, time_plot_view_2, demo_dev.channels()["A3"].actual_signal())
 print("New curve (2) = " + curve_2)
+UiProxy.set_curve_color(user_dev_tab, time_plot_view_2, curve_2, (0, 255, 0))
 
 # Add a x/y plot view to the device tab
 xy_plot_view = UiProxy.add_xy_plot_view(user_dev_tab, smuview.DockArea.BottomDockArea)
@@ -85,9 +87,11 @@ print("New x/y plot view = " + xy_plot_view)
 # Add a curve (3) to the existing x/y plot view
 curve_3 = UiProxy.add_curve_to_xy_plot_view(user_dev_tab, xy_plot_view, demo_dev.channels()["A1"].actual_signal(), demo_dev.channels()["A2"].actual_signal())
 print("New curve (3) = " + curve_3)
+UiProxy.set_curve_color(user_dev_tab, xy_plot_view, curve_3, (255, 255, 0))
 # Add a curve (4) to the existing x/y plot view
 curve_4 = UiProxy.add_curve_to_xy_plot_view(user_dev_tab, xy_plot_view, demo_dev.channels()["A0"].actual_signal(), demo_dev.channels()["A3"].actual_signal())
 print("New curve (4) = " + curve_4)
+UiProxy.set_curve_color(user_dev_tab, xy_plot_view, curve_4, (0, 255, 255))
 
 # Add a power panel view to the device tab
 power_panel_view = UiProxy.add_power_panel_view(user_dev_tab, smuview.DockArea.BottomDockArea, demo_dev.channels()["A1"].actual_signal(), demo_dev.channels()["A2"].actual_signal())

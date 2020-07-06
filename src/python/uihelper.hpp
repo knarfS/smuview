@@ -22,6 +22,7 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
 
 #include <QDockWidget>
 #include <QObject>
@@ -84,6 +85,8 @@ public Q_SLOTS:
 	void add_curve_to_xy_plot_view(std::string tab_id, std::string view_id,
 		shared_ptr<sv::data::AnalogTimeSignal> x_signal,
 		shared_ptr<sv::data::AnalogTimeSignal> y_signal);
+	void set_curve_color(std::string tab_id, std::string view_id,
+		std::string curve_id, std::tuple<int, int, int> color);
 
 	void show_message_box(const std::string &title, const std::string &text);
 	void show_string_input_dialog(const std::string &title,

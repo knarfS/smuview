@@ -146,11 +146,11 @@ void BasePlotView::update_add_marker_menu()
 		delete action;
 	}
 
-	// One add marker action for each curve
-	for (const auto &curve : plot_->curves()) {
+	// One "add marker" action for each curve
+	for (const auto &curve : plot_->curve_map()) {
 		QAction *action = new QAction(this);
-		action->setText(curve->name());
-		action->setData(QVariant::fromValue(curve));
+		action->setText(curve.second->name());
+		action->setData(QVariant::fromValue(curve.second));
 		connect(action, &QAction::triggered,
 			this, &BasePlotView::on_action_add_marker_triggered);
 		add_marker_menu_->addAction(action);
@@ -159,6 +159,16 @@ void BasePlotView::update_add_marker_menu()
 
 void BasePlotView::connect_signals()
 {
+}
+
+
+bool BasePlotView::set_curve_color(string curve_id, QColor color)
+{
+	if (plot_->curve_map().count(curve_id) == 0)
+		return false;
+
+	plot_->curve_map()[curve_id]->set_color(color);
+	return true;
 }
 
 void BasePlotView::save_settings(QSettings &settings) const

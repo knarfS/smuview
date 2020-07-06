@@ -23,6 +23,14 @@
 import smuview
 import time
 
+# Test settings:
+input_voltages = [8.0, 14.0, 20.0]
+input_colors = [(255, 0, 0), (255, 128, 0), (255, 255, 0)]
+max_current = 2.0
+start_current = 0.01
+current_steps = 0.005
+
+
 # Connect all devices
 load_dev = Session.connect_device("arachnid-labs-re-load-pro:conn=/dev/ttyUSB2")[0]
 load_conf = load_dev.configurables()["1"]
@@ -33,8 +41,8 @@ dmm_conf = dmm_dev.configurables()[""]
 
 # Init device settings
 load_conf.set_config(smuview.ConfigKey.CurrentLimit, .0)
-psu_conf.set_config(smuview.ConfigKey.VoltageTarget, 10.0)
-psu_conf.set_config(smuview.ConfigKey.CurrentLimit, 2.000)
+psu_conf.set_config(smuview.ConfigKey.VoltageTarget, .0)
+psu_conf.set_config(smuview.ConfigKey.CurrentLimit, max_current)
 psu_conf.set_config(smuview.ConfigKey.Enabled, True)
 #dmm_conf.set_config(smuview.ConfigKey.MeasuredQuantity, smuview.Quantity.Current)
 
@@ -59,19 +67,17 @@ UiProxy.add_curve_to_time_plot_view(user_dev_tab, p_plot, p_in_sig)
 UiProxy.add_curve_to_time_plot_view(user_dev_tab, p_plot, p_out_sig)
 xy_plot = UiProxy.add_xy_plot_view(user_dev_tab, smuview.DockArea.TopDockArea)
 
-# Input voltages used
-input_voltages = [8.0, 14.0, 20.0]
-
-for voltage in input_voltages:
+for n in range(len(input_voltages)):
     eff_sig = eff_ch.add_signal(smuview.Quantity.PowerFactor, set(), smuview.Unit.Percentage)
-    UiProxy.add_curve_to_xy_plot_view(user_dev_tab, xy_plot, p_out_sig, eff_sig)
+    curve = UiProxy.add_curve_to_xy_plot_view(user_dev_tab, xy_plot, p_out_sig, eff_sig)
+    UiProxy.set_curve_color(user_dev_tab, xy_plot, curve, input_colors[n])
     load_conf.set_config(smuview.ConfigKey.CurrentLimit, .0)
-    psu_conf.set_config(smuview.ConfigKey.VoltageTarget, voltage)
+    psu_conf.set_config(smuview.ConfigKey.VoltageTarget, input_voltages[n])
     # Wait for 10 s to let the DUT cool down
     time.sleep(10)
-    d = .0
-    while d <= 2.0:
-        load_conf.set_config(smuview.ConfigKey.CurrentLimit, d)
+    current = start_current
+    while current <= max_current:
+        load_conf.set_config(smuview.ConfigKey.CurrentLimit, current)
         time.sleep(0.5)
         u_in = psu_dev.channels()["V1"].actual_signal().get_last_sample(True)[1]
         i_in = dmm_dev.channels()["P1"].actual_signal().get_last_sample(True)[1]
@@ -85,7 +91,7 @@ for voltage in input_voltages:
         p_in_ch.push_sample(power_in, ts, smuview.Quantity.Power, set(), smuview.Unit.Watt, 6, 3)
         p_out_ch.push_sample(power_out, ts, smuview.Quantity.Power, set(), smuview.Unit.Watt, 6, 3)
         eff_ch.push_sample(eff, ts, smuview.Quantity.PowerFactor, set(), smuview.Unit.Percentage, 6, 3)
-        d += 0.005
+        current += current_steps
 
 # Set values to a save state
 load_conf.set_config(smuview.ConfigKey.CurrentLimit, .0)

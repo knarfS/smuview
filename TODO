@@ -42,10 +42,9 @@ ToDo
 - SequenceView: Handle headers (order of columns, time abs/rel) in CSV
 - SequenceView: Handle units (ms, s, h, ...) in CSV
 - PlotView: Make resolution and dpi configurable when saving as image
-- Bindings: Binding for setting the color of a plot curve
 - Bindings: Set name for new signal? e.g. f(x, y, name=nullptr)
 - Implement AnalogXYDataSignal (for python automatisation)? See scope support?
-- MonoFontDisplay/PaowerPanelView: To small for neg. values (esp. W/Ah/Wh with 6632B). B/c of the decimal point?
+- MonoFontDisplay/PowerPanelView: To small for neg. values (esp. W/Ah/Wh with 6632B). B/c of the decimal point?
 - Remove LCDDisplay?
 - Reduce/Simplyfy BaseDevice name methods
 - Bindings: Implement add_math_channel()
@@ -105,6 +104,7 @@ Done
 - static unsigned int device_counter; is changing
 - License headers are not the same
 - Session: move init to main.cpp
+- Bindings: Binding for setting the color of a plot curve
 
 Won't fix
 ---------
