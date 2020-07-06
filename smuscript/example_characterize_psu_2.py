@@ -48,24 +48,23 @@ p_in_sig = p_in_ch.add_signal(smuview.Quantity.Power, set(), smuview.Unit.Watt)
 p_out_ch = user_dev.add_user_channel("P_out", "User")
 p_out_sig = p_out_ch.add_signal(smuview.Quantity.Power, set(), smuview.Unit.Watt)
 eff_ch = user_dev.add_user_channel("eff", "User")
-eff_sig = eff_ch.add_signal(smuview.Quantity.PowerFactor, set(), smuview.Unit.Percentage)
 
 # Show device tabs and plots
 UiProxy.add_device_tab(load_dev)
 UiProxy.add_device_tab(psu_dev)
 UiProxy.add_device_tab(dmm_dev)
-UiProxy.add_device_tab(user_dev)
-p_plot = UiProxy.add_plot_view(user_dev.id(), smuview.DockArea.TopDockArea, p_in_sig)
-UiProxy.add_signal_to_plot_view(user_dev.id(), p_plot, p_out_sig)
-xy_plot = UiProxy.add_plot_view(user_dev.id(), smuview.DockArea.TopDockArea, p_out_sig, eff_sig)
+user_dev_tab = UiProxy.add_device_tab(user_dev)
+p_plot = UiProxy.add_time_plot_view(user_dev_tab, smuview.DockArea.TopDockArea)
+UiProxy.add_curve_to_time_plot_view(user_dev_tab, p_plot, p_in_sig)
+UiProxy.add_curve_to_time_plot_view(user_dev_tab, p_plot, p_out_sig)
+xy_plot = UiProxy.add_xy_plot_view(user_dev_tab, smuview.DockArea.TopDockArea)
 
 # Input voltages used
 input_voltages = [8.0, 14.0, 20.0]
 
 for voltage in input_voltages:
-    if voltage > 11:
-        eff_sig = eff_ch.add_signal(smuview.Quantity.PowerFactor, set(), smuview.Unit.Percentage)
-        UiProxy.add_signal_to_plot_view(user_dev.id(), xy_plot, eff_sig)
+    eff_sig = eff_ch.add_signal(smuview.Quantity.PowerFactor, set(), smuview.Unit.Percentage)
+    UiProxy.add_curve_to_xy_plot_view(user_dev_tab, xy_plot, p_out_sig, eff_sig)
     load_conf.set_config(smuview.ConfigKey.CurrentLimit, .0)
     psu_conf.set_config(smuview.ConfigKey.VoltageTarget, voltage)
     # Wait for 10 s to let the DUT cool down

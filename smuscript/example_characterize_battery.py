@@ -45,8 +45,9 @@ result_ch = user_device.channels()["Results"]
 # Show device tabs and add plot to user device
 UiProxy.add_device_tab(load_device)
 UiProxy.add_device_tab(dmm_device)
-UiProxy.add_device_tab(user_device)
-UiProxy.add_plot_view(user_device.id(), smuview.DockArea.BottomDockArea, result_ch)
+user_device_tab = UiProxy.add_device_tab(user_device)
+plot = UiProxy.add_time_plot_view(user_device_tab, smuview.DockArea.BottomDockArea)
+UiProxy.set_channel_to_time_plot_view(user_device_tab, plot, result_ch)
 
 # Start test
 load_conf.set_config(smuview.ConfigKey.CurrentLimit, .150)

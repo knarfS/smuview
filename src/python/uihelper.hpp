@@ -64,13 +64,8 @@ public Q_SLOTS:
 		shared_ptr<sv::data::AnalogTimeSignal> signal);
 	void add_control_view(std::string tab_id, Qt::DockWidgetArea area,
 		shared_ptr<sv::devices::Configurable> configurable);
-	void add_time_plot_view(std::string tab_id, Qt::DockWidgetArea area,
-		shared_ptr<sv::channels::BaseChannel> channel);
-	void add_time_plot_view(std::string tab_id, Qt::DockWidgetArea area,
-		shared_ptr<sv::data::AnalogTimeSignal> signal);
-	void add_xy_plot_view(std::string tab_id, Qt::DockWidgetArea area,
-		shared_ptr<sv::data::AnalogTimeSignal> x_signal,
-		shared_ptr<sv::data::AnalogTimeSignal> y_signal);
+	void add_time_plot_view(std::string tab_id, Qt::DockWidgetArea area);
+	void add_xy_plot_view(std::string tab_id, Qt::DockWidgetArea area);
 	void add_power_panel_view(std::string tab_id, Qt::DockWidgetArea area,
 		shared_ptr<sv::data::AnalogTimeSignal> voltage_signal,
 		shared_ptr<sv::data::AnalogTimeSignal> current_signal);
@@ -82,11 +77,11 @@ public Q_SLOTS:
 	void add_signal_to_data_view(std::string tab_id, std::string view_id,
 		shared_ptr<sv::data::AnalogTimeSignal> signal);
 
-	void add_signal_to_time_plot_view(std::string tab_id, std::string view_id,
+	void set_channel_to_time_plot_view(std::string tab_id, std::string view_id,
+		shared_ptr<sv::channels::BaseChannel> channel);
+	void add_curve_to_time_plot_view(std::string tab_id, std::string view_id,
 		shared_ptr<sv::data::AnalogTimeSignal> signal);
-	void add_signal_to_xy_plot_view(std::string tab_id, std::string view_id,
-		shared_ptr<sv::data::AnalogTimeSignal> y_signal);
-	void add_signals_to_xy_plot_view(std::string tab_id, std::string view_id,
+	void add_curve_to_xy_plot_view(std::string tab_id, std::string view_id,
 		shared_ptr<sv::data::AnalogTimeSignal> x_signal,
 		shared_ptr<sv::data::AnalogTimeSignal> y_signal);
 
@@ -102,6 +97,7 @@ public Q_SLOTS:
 Q_SIGNALS:
 	void tab_added(std::string tab_id);
 	void view_added(std::string view_id);
+	void curve_added(std::string curve_id);
 	void message_box_finished();
 	void message_box_canceled();
 	void input_dialog_finished(const QVariant &qvar_input);

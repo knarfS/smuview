@@ -29,73 +29,77 @@ print("")
 
 # Connect the demo device (it's just one!)
 demo_dev = Session.connect_device("demo")[0]
-print("DemoDev: " + demo_dev.id())
+print("New demo device = " + demo_dev.id())
 
 # Add a user device
 user_dev = Session.add_user_device()
 
 # Show tab for demo device
 demo_dev_tab = UiProxy.add_device_tab(demo_dev)
-print("DemoDevTab: " + demo_dev_tab)
+print("New device tab (1) = " + demo_dev_tab)
 
 # Show 2nd tab for demo device
 demo_dev_tab_2 = UiProxy.add_device_tab(demo_dev)
-print("DemoDevTab_2: " + demo_dev_tab_2)
+print("New device tab (2) = " + demo_dev_tab_2)
 
 # Show tab for user device
 user_dev_tab = UiProxy.add_device_tab(user_dev)
-print("UserDevTab: " + user_dev_tab)
+print("New user tab = " + user_dev_tab)
 
 # Sleep 1 second to give the newly connected demo device the chance to create data and the corresponding signals. TODO
 time.sleep(1)
 
 # Add a data view to the device tab
 data_view = UiProxy.add_data_view(user_dev_tab, smuview.DockArea.TopDockArea, demo_dev.channels()["A1"].actual_signal())
-print("DataView: " + data_view)
-
-# Add a generic control view to the device tab
-control_view_1 = UiProxy.add_control_view(user_dev_tab, smuview.DockArea.TopDockArea, demo_dev.configurables()[""])
-print("ControlView: " + control_view_1)
-
-# Add a demo control view to the device tab
-control_view_2 = UiProxy.add_control_view(user_dev_tab, smuview.DockArea.TopDockArea, demo_dev.configurables()["A1"])
-print("ControlView: " + control_view_2)
-
-# Add plot view (1) with a channel to the device tab
-plot_view_1 = UiProxy.add_plot_view(user_dev_tab, smuview.DockArea.BottomDockArea, demo_dev.channels()["A1"])
-print("PlotView: " + plot_view_1)
-
-# Add a plot view (2) with a signal to the device tab
-plot_view_2 = UiProxy.add_plot_view(user_dev_tab, smuview.DockArea.BottomDockArea, demo_dev.channels()["A1"].actual_signal())
-print("PlotView: " + plot_view_2)
-
-# Add a x/y plot view (3) with two signals to the device tab
-plot_view_3 = UiProxy.add_plot_view(user_dev_tab, smuview.DockArea.BottomDockArea, demo_dev.channels()["A1"].actual_signal(), demo_dev.channels()["A2"].actual_signal())
-print("PlotView: " + plot_view_3)
-
-# Add a power panel view to the device tab
-power_panel_view = UiProxy.add_power_panel_view(user_dev_tab, smuview.DockArea.BottomDockArea, demo_dev.channels()["A1"].actual_signal(), demo_dev.channels()["A2"].actual_signal())
-print("PowerPanelView: " + power_panel_view)
-
-# Add a value panel view to the device tab
-value_panel_view_1 = UiProxy.add_value_panel_view(user_dev_tab, smuview.DockArea.TopDockArea, demo_dev.channels()["A1"])
-print("ValuePanelView: " + value_panel_view_1)
-
-# Add a value panel view to the device tab
-value_panel_view_2 = UiProxy.add_value_panel_view(user_dev_tab, smuview.DockArea.TopDockArea, demo_dev.channels()["A1"].actual_signal())
-print("ValuePanelView: " + value_panel_view_2)
-
+print("New data view = " + data_view)
 # Add a signal to the existing data view
 UiProxy.add_signal_to_data_view(user_dev_tab, data_view, demo_dev.channels()["A3"].actual_signal())
 
-# Add a signal to the existing plot view (1)
-UiProxy.add_signal_to_plot_view(user_dev_tab, plot_view_1, demo_dev.channels()["A3"].actual_signal())
+# Add a generic control view to the device tab
+control_view_1 = UiProxy.add_control_view(user_dev_tab, smuview.DockArea.TopDockArea, demo_dev.configurables()[""])
+print("New control view (1) = " + control_view_1)
 
-# Add a signal to the existing xy plot view (3)
-UiProxy.add_signal_to_plot_view(user_dev_tab, plot_view_3, demo_dev.channels()["A3"].actual_signal())
+# Add a demo control view to the device tab
+control_view_2 = UiProxy.add_control_view(user_dev_tab, smuview.DockArea.TopDockArea, demo_dev.configurables()["A1"])
+print("New control view (2) = " + control_view_2)
 
-# Add a x/y signal to the existing xy plot view (3)
-UiProxy.add_signals_to_xy_plot_view(user_dev_tab, plot_view_3, demo_dev.channels()["A0"].actual_signal(), demo_dev.channels()["A3"].actual_signal())
+# Add a time plot view (1) to the device tab
+time_plot_view_1 = UiProxy.add_time_plot_view(user_dev_tab, smuview.DockArea.BottomDockArea)
+print("New time plot view (1) = " + time_plot_view_1)
+# Set a channel to time plot view (1)
+UiProxy.set_channel_to_time_plot_view(user_dev_tab, time_plot_view_1, demo_dev.channels()["A1"])
+
+# Add a time plot view (2) to the device tab
+time_plot_view_2 = UiProxy.add_time_plot_view(user_dev_tab, smuview.DockArea.BottomDockArea)
+print("New time plot view (2) = " + time_plot_view_2)
+# Add a curve (1) to the time plot view (2)
+curve_1 = UiProxy.add_curve_to_time_plot_view(user_dev_tab, time_plot_view_2, demo_dev.channels()["A2"].actual_signal())
+print("New curve (1) = " + curve_1)
+# Add a curve (2) to the time plot view (2)
+curve_2 = UiProxy.add_curve_to_time_plot_view(user_dev_tab, time_plot_view_2, demo_dev.channels()["A3"].actual_signal())
+print("New curve (2) = " + curve_2)
+
+# Add a x/y plot view to the device tab
+xy_plot_view = UiProxy.add_xy_plot_view(user_dev_tab, smuview.DockArea.BottomDockArea)
+print("New x/y plot view = " + xy_plot_view)
+# Add a curve (3) to the existing x/y plot view
+curve_3 = UiProxy.add_curve_to_xy_plot_view(user_dev_tab, xy_plot_view, demo_dev.channels()["A1"].actual_signal(), demo_dev.channels()["A2"].actual_signal())
+print("New curve (3) = " + curve_3)
+# Add a curve (4) to the existing x/y plot view
+curve_4 = UiProxy.add_curve_to_xy_plot_view(user_dev_tab, xy_plot_view, demo_dev.channels()["A0"].actual_signal(), demo_dev.channels()["A3"].actual_signal())
+print("New curve (4) = " + curve_4)
+
+# Add a power panel view to the device tab
+power_panel_view = UiProxy.add_power_panel_view(user_dev_tab, smuview.DockArea.BottomDockArea, demo_dev.channels()["A1"].actual_signal(), demo_dev.channels()["A2"].actual_signal())
+print("New powerpanel view = " + power_panel_view)
+
+# Add a value panel view to the device tab
+value_panel_view_1 = UiProxy.add_value_panel_view(user_dev_tab, smuview.DockArea.TopDockArea, demo_dev.channels()["A1"])
+print("New valuepanel view (1) = " + value_panel_view_1)
+
+# Add a value panel view to the device tab
+value_panel_view_2 = UiProxy.add_value_panel_view(user_dev_tab, smuview.DockArea.TopDockArea, demo_dev.channels()["A1"].actual_signal())
+print("New valuepanel view (2) = " + value_panel_view_2)
 
 # Message box
 msg_ret = UiProxy.show_message_box("Message Box", "This is a message box. The script will wait, until you press OK.")

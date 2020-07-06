@@ -521,56 +521,37 @@ void init_UI(py::module &m)
 		"-------\n"
 		"str\n"
 		"    The id of the new view or empty if the view couldn't be added.");
-	py_ui_helper.def("add_time_plot_view",
-		(std::string (sv::python::UiProxy::*) (std::string, Qt::DockWidgetArea, shared_ptr<sv::channels::BaseChannel>))
-			&sv::python::UiProxy::ui_add_time_plot_view,
-		py::arg("tab_id"), py::arg("area"), py::arg("channel"),
-		"Add a time plot view for a channel to the given tab.\n\n"
+	py_ui_helper.def("add_time_plot_view",  &sv::python::UiProxy::ui_add_time_plot_view,
+		py::arg("tab_id"), py::arg("area"),
+		"Add a time plot view to the given tab. Use "
+		"[`UiProxy.set_channel_to_time_plot_view()`](UiProxy.set_channel_to_time_plot_view) "
+		"to set a channel to the plot view or use "
+		"[`UiProxy.add_curve_to_time_plot_view()`](UiProxy.add_curve_to_time_plot_view) "
+		"to set a signal to the plot view.\n"
+		"When you have set a channel to the plot, new curves will be automatically "
+		"created, when the channel changes (e.g. for multimeters when switching "
+		"functions).\n\n"
 		"Parameters\n"
 		"----------\n"
 		"tab_id : str\n"
 		"    The id of the tab.\n"
 		"area : DockArea\n"
-		"    Where to put the new view.\n"
-		"channel : BaseChannel\n"
-		"    The channel object.\n\n"
+		"    Where to put the new view.\n\n"
 		"Returns\n"
 		"-------\n"
 		"str\n"
 		"    The id of the new view or empty if the view couldn't be added.");
-	py_ui_helper.def("add_time_plot_view",
-		(std::string (sv::python::UiProxy::*) (std::string, Qt::DockWidgetArea, shared_ptr<sv::data::AnalogTimeSignal>))
-			&sv::python::UiProxy::ui_add_time_plot_view,
-		py::arg("tab_id"), py::arg("area"), py::arg("signal"),
-		"Add a time plot view for a signal to the given tab.\n\n"
+	py_ui_helper.def("add_xy_plot_view", &sv::python::UiProxy::ui_add_xy_plot_view,
+		py::arg("tab_id"), py::arg("area"),
+		"Add a x/y plot view for two signals to the given tab. Use "
+		"[`UiProxy.add_curve_to_xy_plot_view()`](UiProxy.add_curve_to_xy_plot_view) "
+		"to add a new curve (a set of two signals) to the plot view.\n\n"
 		"Parameters\n"
 		"----------\n"
 		"tab_id : str\n"
 		"    The id of the tab.\n"
 		"area : DockArea\n"
-		"    Where to put the new view.\n"
-		"signal : AnalogTimeSignal\n"
-		"    The signal object.\n\n"
-		"Returns\n"
-		"-------\n"
-		"str\n"
-		"    The id of the new view or empty if the view couldn't be added.");
-	py_ui_helper.def("add_xy_plot_view",
-		(std::string (sv::python::UiProxy::*) (std::string, Qt::DockWidgetArea, shared_ptr<sv::data::AnalogTimeSignal>, shared_ptr<sv::data::AnalogTimeSignal>))
-			&sv::python::UiProxy::ui_add_xy_plot_view,
-		py::arg("tab_id"), py::arg("area"), py::arg("x_signal"),
-		py::arg("y_signal"),
-		"Add a x/y plot view for two signals to the given tab.\n\n"
-		"Parameters\n"
-		"----------\n"
-		"tab_id : str\n"
-		"    The id of the tab.\n"
-		"area : DockArea\n"
-		"    Where to put the new view.\n"
-		"x_signal : AnalogTimeSignal\n"
-		"    The x signal object.\n"
-		"y_signal : AnalogTimeSignal\n"
-		"    The y signal object.\n\n"
+		"    Where to put the new view.\n\n"
 		"Returns\n"
 		"-------\n"
 		"str\n"
@@ -639,7 +620,20 @@ void init_UI(py::module &m)
 		"    The id of the data view.\n"
 		"signal : AnalogTimeSignal\n"
 		"    The signal object.");
-	py_ui_helper.def("add_signal_to_time_plot_view", &sv::python::UiProxy::ui_add_signal_to_time_plot_view,
+	py_ui_helper.def("set_channel_to_time_plot_view", &sv::python::UiProxy::ui_set_channel_to_time_plot_view,
+		py::arg("tab_id"), py::arg("view_id"), py::arg("channel"),
+		"Set a channel to the given time plot view. New curves will be "
+		"automatically created, when the channel changes (e.g. for multimeters "
+		"when switching functions).\n\n"
+		"Parameters\n"
+		"----------\n"
+		"tab_id : str\n"
+		"    The id of the tab.\n"
+		"view_id : str\n"
+		"    The id of the time plot view.\n"
+		"channel : BaseChannel\n"
+		"    The channel object.");
+	py_ui_helper.def("add_curve_to_time_plot_view", &sv::python::UiProxy::ui_add_curve_to_time_plot_view,
 		py::arg("tab_id"), py::arg("view_id"), py::arg("signal"),
 		"Add a signal to the given time plot view.\n\n"
 		"Parameters\n"
@@ -649,19 +643,12 @@ void init_UI(py::module &m)
 		"view_id : str\n"
 		"    The id of the time plot view.\n"
 		"signal : AnalogTimeSignal\n"
-		"    The signal object.");
-	py_ui_helper.def("add_signal_to_xy_plot_view", &sv::python::UiProxy::ui_add_signal_to_xy_plot_view,
-		py::arg("tab_id"), py::arg("view_id"), py::arg("y_signal"),
-		"Add a y signal to the given x/y plot view.\n\n"
-		"Parameters\n"
-		"----------\n"
-		"tab_id : str\n"
-		"    The id of the tab.\n"
-		"view_id : str\n"
-		"    The id of the x/y plot view.\n"
-		"y_signal : AnalogTimeSignal\n"
-		"    The y signal object.");
-	py_ui_helper.def("add_signals_to_xy_plot_view", &sv::python::UiProxy::ui_add_signals_to_xy_plot_view,
+		"    The signal object.\n\n"
+		"Returns\n"
+		"-------\n"
+		"str\n"
+		"    The id of the new curve or empty if the curve couldn't be added.");
+	py_ui_helper.def("add_curve_to_xy_plot_view", &sv::python::UiProxy::ui_add_curve_to_xy_plot_view,
 		py::arg("tab_id"), py::arg("view_id"), py::arg("x_signal"),
 		py::arg("y_signal"),
 		"Add x/y signals to the given x/y plot view.\n\n"
@@ -674,8 +661,11 @@ void init_UI(py::module &m)
 		"x_signal : AnalogTimeSignal\n"
 		"    The x signal object.\n"
 		"y_signal : AnalogTimeSignal\n"
-		"    The y signal object.");
-
+		"    The y signal object.\n\n"
+		"Returns\n"
+		"-------\n"
+		"str\n"
+		"    The id of the new curve or empty if the curve couldn't be added.");
 	py_ui_helper.def("show_message_box", &sv::python::UiProxy::ui_show_message_box,
 		py::arg("title"), py::arg("text"),
 		"Show a (info) message box with the given window title and text. "

@@ -54,10 +54,12 @@ eff_sig = eff_ch.add_signal(smuview.Quantity.PowerFactor, set(), smuview.Unit.Pe
 UiProxy.add_device_tab(load_dev)
 UiProxy.add_device_tab(psu_dev)
 UiProxy.add_device_tab(dmm_dev)
-UiProxy.add_device_tab(user_dev)
-p_plot = UiProxy.add_plot_view(user_dev.id(), smuview.DockArea.TopDockArea, p_in_sig)
-UiProxy.add_signal_to_plot(user_dev.id(), p_plot, p_out_sig)
-UiProxy.add_plot_view(user_dev.id(), smuview.DockArea.TopDockArea, p_out_sig, eff_sig)
+user_dev_tab = UiProxy.add_device_tab(user_dev)
+p_plot = UiProxy.add_plot_view(user_dev_tab, smuview.DockArea.TopDockArea)
+UiProxy.add_curve_to_time_plot(user_dev_tab, p_plot, p_in_sig)
+UiProxy.add_curve_to_time_plot(user_dev_tab, p_plot, p_out_sig)
+xy_plot = UiProxy.add_xy_plot_view(user_dev_tab, smuview.DockArea.TopDockArea)
+UiProxy.add_curve_to_xy_plot_view(user_dev_tab, xy_plot, p_out_sig, eff_sig)
 
 d = .0
 while d <= 2.0:

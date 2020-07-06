@@ -106,8 +106,7 @@ void UiHelper::add_control_view(std::string tab_id, Qt::DockWidgetArea area,
 	Q_EMIT view_added(view->id());
 }
 
-void UiHelper::add_time_plot_view(std::string tab_id, Qt::DockWidgetArea area,
-	shared_ptr<sv::channels::BaseChannel> channel)
+void UiHelper::add_time_plot_view(std::string tab_id, Qt::DockWidgetArea area)
 {
 	if (!session_.main_window()) {
 		Q_EMIT view_added("");
@@ -120,33 +119,11 @@ void UiHelper::add_time_plot_view(std::string tab_id, Qt::DockWidgetArea area,
 	}
 
 	auto view = new ui::views::TimePlotView(session_);
-	view->set_channel(channel);
 	tab->add_view(view, area);
 	Q_EMIT view_added(view->id());
 }
 
-void UiHelper::add_time_plot_view(std::string tab_id, Qt::DockWidgetArea area,
-	shared_ptr<sv::data::AnalogTimeSignal> signal)
-{
-	if (!session_.main_window()) {
-		Q_EMIT view_added("");
-		return;
-	}
-	auto tab = session_.main_window()->get_tab_from_tab_id(tab_id);
-	if (!tab) {
-		Q_EMIT view_added("");
-		return;
-	}
-
-	auto view = new ui::views::TimePlotView(session_);
-	view->add_signal(signal);
-	tab->add_view(view, area);
-	Q_EMIT view_added(view->id());
-}
-
-void UiHelper::add_xy_plot_view(std::string tab_id, Qt::DockWidgetArea area,
-	shared_ptr<sv::data::AnalogTimeSignal> x_signal,
-	shared_ptr<sv::data::AnalogTimeSignal> y_signal)
+void UiHelper::add_xy_plot_view(std::string tab_id, Qt::DockWidgetArea area)
 {
 	if (!session_.main_window()) {
 		Q_EMIT view_added("");
@@ -159,7 +136,6 @@ void UiHelper::add_xy_plot_view(std::string tab_id, Qt::DockWidgetArea area,
 	}
 
 	auto view = new ui::views::XYPlotView(session_);
-	view->add_signals(x_signal, y_signal);
 	tab->add_view(view, area);
 	Q_EMIT view_added(view->id());
 }
@@ -238,87 +214,100 @@ void UiHelper::add_signal_to_data_view(std::string tab_id,
 	((ui::views::DataView *)view)->add_signal(signal);
 }
 
-void UiHelper::add_signal_to_time_plot_view(std::string tab_id,
-	std::string view_id, shared_ptr<sv::data::AnalogTimeSignal> signal)
+void UiHelper::set_channel_to_time_plot_view(std::string tab_id,
+	std::string view_id, shared_ptr<sv::channels::BaseChannel> channel)
 {
-	if (!session_.main_window())
+	if (!session_.main_window()) {
 		return;
+	}
 	auto tab = session_.main_window()->get_tab_from_tab_id(tab_id);
 	if (!tab) {
-		qWarning() << "UiHelper::add_signal_to_plot_view(): Tab not found: " <<
-			QString::fromStdString(tab_id);
+		qWarning() << "UiHelper::set_channel_to_time_plot_view(): Tab not "
+			"found: " << QString::fromStdString(tab_id);
 		return;
 	}
 	auto view = tab->get_view_from_view_id(view_id);
 	if (!view) {
-		qWarning() << "UiHelper::add_signal_to_plot_view(): View not found: " <<
-			QString::fromStdString(view_id);
+		qWarning() << "UiHelper::set_channel_to_time_plot_view(): View not "
+			"found: " << QString::fromStdString(view_id);
 		return;
 	}
 	auto plot_view = qobject_cast<ui::views::TimePlotView *>(view);
 	if (!plot_view) {
-		qWarning() << "UiHelper::add_signal_to_plot_view(): View is not a " <<
-			"plot view: " << QString::fromStdString(view_id);
+		qWarning() << "UiHelper::set_channel_to_time_plot_view(): View is not "
+			"a time plot view: " << QString::fromStdString(view_id);
 		return;
 	}
 
-	plot_view->add_signal(signal);
+	plot_view->set_channel(channel);
 }
 
-void UiHelper::add_signal_to_xy_plot_view(std::string tab_id,
-	std::string view_id, shared_ptr<sv::data::AnalogTimeSignal> y_signal)
+void UiHelper::add_curve_to_time_plot_view(std::string tab_id,
+	std::string view_id, shared_ptr<sv::data::AnalogTimeSignal> signal)
 {
-	if (!session_.main_window())
+	if (!session_.main_window()) {
+		Q_EMIT curve_added("");
 		return;
+	}
 	auto tab = session_.main_window()->get_tab_from_tab_id(tab_id);
 	if (!tab) {
-		qWarning() << "UiHelper::add_signals_to_xy_plot_view(): Tab not " <<
-			"found:" << QString::fromStdString(tab_id);
+		qWarning() << "UiHelper::add_curve_to_time_plot_view(): Tab not "
+			"found: " << QString::fromStdString(tab_id);
+		Q_EMIT curve_added("");
 		return;
 	}
 	auto view = tab->get_view_from_view_id(view_id);
 	if (!view) {
-		qWarning() << "UiHelper::add_signals_to_xy_plot_view(): View not " <<
+		qWarning() << "UiHelper::add_curve_to_time_plot_view(): View not "
 			"found: " << QString::fromStdString(view_id);
+		Q_EMIT curve_added("");
 		return;
 	}
-	auto plot_view = qobject_cast<ui::views::XYPlotView *>(view);
+	auto plot_view = qobject_cast<ui::views::TimePlotView *>(view);
 	if (!plot_view) {
-		qWarning() << "UiHelper::add_signals_to_xy_plot_view(): View is not " <<
-			"a plot view: " << QString::fromStdString(view_id);
+		qWarning() << "UiHelper::add_curve_to_time_plot_view(): View is not a "
+			"time plot view: " << QString::fromStdString(view_id);
+		Q_EMIT curve_added("");
 		return;
 	}
 
-	plot_view->add_signal(y_signal);
+	string id = plot_view->add_signal(signal);
+	Q_EMIT curve_added(id);
 }
 
-void UiHelper::add_signals_to_xy_plot_view(std::string tab_id,
+void UiHelper::add_curve_to_xy_plot_view(std::string tab_id,
 	std::string view_id,
 	shared_ptr<sv::data::AnalogTimeSignal> x_signal,
 	shared_ptr<sv::data::AnalogTimeSignal> y_signal)
 {
-	if (!session_.main_window())
+	if (!session_.main_window()) {
+		Q_EMIT curve_added("");
 		return;
+	}
 	auto tab = session_.main_window()->get_tab_from_tab_id(tab_id);
 	if (!tab) {
-		qWarning() << "UiHelper::add_signals_to_xy_plot_view(): Tab not " <<
-			"found:" << QString::fromStdString(tab_id);
+		qWarning() << "UiHelper::add_curve_to_xy_plot_view(): Tab not "
+			"found: " << QString::fromStdString(tab_id);
+		Q_EMIT curve_added("");
 		return;
 	}
 	auto view = tab->get_view_from_view_id(view_id);
 	if (!view) {
-		qWarning() << "UiHelper::add_signals_to_xy_plot_view(): View not " <<
+		qWarning() << "UiHelper::add_curve_to_xy_plot_view(): View not "
 			"found: " << QString::fromStdString(view_id);
+		Q_EMIT curve_added("");
 		return;
 	}
 	auto plot_view = qobject_cast<ui::views::XYPlotView *>(view);
 	if (!plot_view) {
-		qWarning() << "UiHelper::add_signals_to_xy_plot_view(): View is not " <<
-			"a plot view: " << QString::fromStdString(view_id);
+		qWarning() << "UiHelper::add_curve_to_xy_plot_view(): View is not a "
+			"xy plot view: " << QString::fromStdString(view_id);
+		Q_EMIT curve_added("");
 		return;
 	}
 
-	plot_view->add_signals(x_signal, y_signal);
+	string id = plot_view->add_signals(x_signal, y_signal);
+	Q_EMIT curve_added(id);
 }
 
 void UiHelper::show_message_box(const std::string &title,

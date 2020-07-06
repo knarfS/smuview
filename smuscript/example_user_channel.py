@@ -31,9 +31,11 @@ user_device.add_user_channel("Results", "User")
 result_ch = user_device.channels()["Results"]
 
 # Show tab for the user device
-UiProxy.add_device_tab(user_device)
-# Add a plot view. We don't have to wait for the signal to be created, because we are using the channel here
-UiProxy.add_plot_view(user_device.id(), smuview.DockArea.TopDockArea, user_device.channels()["Results"])
+user_device_tab = UiProxy.add_device_tab(user_device)
+# Add a time plot view.
+plot = UiProxy.add_time_plot_view(user_device_tab, smuview.DockArea.TopDockArea)
+# We don't have to wait for the signal to be created, because we are using the channel here.
+UiProxy.set_channel_to_time_plot_view(user_device_tab, plot, user_device.channels()["Results"])
 
 # Fill the user channel with some data
 print("Starting loop...")
