@@ -283,6 +283,7 @@ set(smuview_SOURCES
   src/ui/dialogs/plotdiffmarkerdialog.cpp
   src/ui/dialogs/savedialog.cpp
   src/ui/dialogs/selectsignaldialog.cpp
+  src/ui/dialogs/selectxysignalsdialog.cpp
   src/ui/tabs/basetab.cpp
   src/ui/tabs/devicetab.cpp
   src/ui/tabs/measurementtab.cpp

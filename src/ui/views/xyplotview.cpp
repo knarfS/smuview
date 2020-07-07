@@ -30,7 +30,7 @@
 #include "src/settingsmanager.hpp"
 #include "src/data/analogtimesignal.hpp"
 #include "src/devices/basedevice.hpp"
-#include "src/ui/dialogs/selectsignaldialog.hpp"
+#include "src/ui/dialogs/selectxysignalsdialog.hpp"
 #include "src/ui/views/baseplotview.hpp"
 #include "src/ui/views/viewhelper.hpp"
 #include <src/ui/widgets/plot/curve.hpp>
@@ -66,25 +66,6 @@ QString XYPlotView::title() const
 	return title;
 }
 
-string XYPlotView::add_signal(shared_ptr<sv::data::AnalogTimeSignal> y_signal)
-{
-	string id = "";
-	// Try to get the x signal from a existing curve
-	if (plot_->curve_map().empty()) {
-		QMessageBox::warning(this, tr("Cannot add signal"),
-			tr("Cannot add new y signal without an existing x signal!"),
-			QMessageBox::Ok);
-		return id;
-	}
-
-	// TODO: Propably not the curve_data (first by insertion) we want...
-	// TODO: Remove add_signal(y_signal) completly!
-	auto curve_data = qobject_cast<widgets::plot::XYCurveData *>(
-		plot_->curve_map().begin()->second->curve_data());
-	id = this->add_signals(curve_data->x_t_signal(), y_signal);
-	return id;
-}
-
 string XYPlotView::add_signals(shared_ptr<sv::data::AnalogTimeSignal> x_signal,
 	shared_ptr<sv::data::AnalogTimeSignal> y_signal)
 {
@@ -114,17 +95,15 @@ void XYPlotView::restore_settings(QSettings &settings)
 	update_add_marker_menu();
 }
 
-void XYPlotView::on_action_add_signal_triggered()
+void XYPlotView::on_action_add_curve_triggered()
 {
-	shared_ptr<sv::devices::BaseDevice> selected_device;
-
-	ui::dialogs::SelectSignalDialog dlg(session(), selected_device);
+	ui::dialogs::SelectXYSignalsDialog dlg(session(), nullptr);
 	if (!dlg.exec())
 		return;
 
-	for (const auto &signal : dlg.signals()) {
-		add_signal(dynamic_pointer_cast<sv::data::AnalogTimeSignal>(signal));
-	}
+	add_signals(
+		dynamic_pointer_cast<sv::data::AnalogTimeSignal>(dlg.x_signal()),
+		dynamic_pointer_cast<sv::data::AnalogTimeSignal>(dlg.y_signal()));
 }
 
 } // namespace views

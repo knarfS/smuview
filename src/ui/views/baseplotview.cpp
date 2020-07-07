@@ -49,7 +49,7 @@ BasePlotView::BasePlotView(Session &session, QUuid uuid, QWidget *parent) :
 	action_add_marker_(new QAction(this)),
 	action_add_diff_marker_(new QAction(this)),
 	action_zoom_best_fit_(new QAction(this)),
-	action_add_signal_(new QAction(this)),
+	action_add_curve_(new QAction(this)),
 	action_save_(new QAction(this)),
 	action_config_plot_(new QAction(this))
 {
@@ -101,12 +101,12 @@ void BasePlotView::setup_toolbar()
 	connect(action_zoom_best_fit_, &QAction::triggered,
 		this, &BasePlotView::on_action_zoom_best_fit_triggered);
 
-	action_add_signal_->setText(tr("Add Signal"));
-	action_add_signal_->setIcon(
+	action_add_curve_->setText(tr("Add Curve"));
+	action_add_curve_->setIcon(
 		QIcon::fromTheme("office-chart-line",
 		QIcon(":/icons/office-chart-line.png")));
-	connect(action_add_signal_, &QAction::triggered,
-		this, &BasePlotView::on_action_add_signal_triggered);
+	connect(action_add_curve_, &QAction::triggered,
+		this, &BasePlotView::on_action_add_curve_triggered);
 
 	action_save_->setText(tr("Save"));
 	action_save_->setIcon(
@@ -128,7 +128,7 @@ void BasePlotView::setup_toolbar()
 	toolbar_->addSeparator();
 	toolbar_->addAction(action_zoom_best_fit_);
 	toolbar_->addSeparator();
-	toolbar_->addAction(action_add_signal_);
+	toolbar_->addAction(action_add_curve_);
 	toolbar_->addSeparator();
 	toolbar_->addAction(action_save_);
 	toolbar_->addSeparator();

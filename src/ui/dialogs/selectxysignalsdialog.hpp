@@ -17,55 +17,61 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UI_VIEWS_XYPLOTVIEW_HPP
-#define UI_VIEWS_XYPLOTVIEW_HPP
+#ifndef UI_DIALOGS_SELECTXYSIGNALSDIALOG_HPP
+#define UI_DIALOGS_SELECTXYSIGNALSDIALOG_HPP
 
 #include <memory>
 
-#include <QSettings>
-#include <QUuid>
+#include <QDialog>
+#include <QDialogButtonBox>
 
-#include "src/ui/views/baseplotview.hpp"
+#include "src/session.hpp"
 
 using std::shared_ptr;
 
 namespace sv {
 
-class Session;
-
 namespace data {
-class AnalogTimeSignal;
+class BaseSignal;
+}
+namespace devices {
+class BaseDevice;
 }
 
 namespace ui {
-namespace views {
 
-class XYPlotView : public BasePlotView
+namespace devices {
+class SelectSignalWidget;
+}
+
+namespace dialogs {
+
+class SelectXYSignalsDialog : public QDialog
 {
 	Q_OBJECT
 
 public:
-	XYPlotView(Session &session, QUuid uuid = QUuid(),
+	SelectXYSignalsDialog(const Session &session,
+		const shared_ptr<sv::devices::BaseDevice> selected_device,
 		QWidget *parent = nullptr);
 
-	QString title() const override;
+	shared_ptr<sv::data::BaseSignal> x_signal();
+	shared_ptr<sv::data::BaseSignal> y_signal();
 
-	void save_settings(QSettings &settings) const override;
-	void restore_settings(QSettings &settings) override;
+private:
+	void setup_ui();
 
-	/**
-	 * Add a new x/y curve to the xy plot. Return the curve id.
-	 */
-	string add_signals(shared_ptr<sv::data::AnalogTimeSignal> x_signal,
-		shared_ptr<sv::data::AnalogTimeSignal> y_signal);
+	const Session &session_;
+	const shared_ptr<sv::devices::BaseDevice> selected_device_;
 
-protected Q_SLOTS:
-	void on_action_add_curve_triggered() override;
+	ui::devices::SelectSignalWidget *x_signal_widget_;
+	ui::devices::SelectSignalWidget *y_signal_widget_;
+	QDialogButtonBox *button_box_;
 
 };
 
-} // namespace views
+} // namespace dialogs
 } // namespace ui
 } // namespace sv
 
-#endif // UI_VIEWS_XYPLOTVIEW_HPP
+#endif // UI_DIALOGS_SELECTXYSIGNALSDIALOG_HPP

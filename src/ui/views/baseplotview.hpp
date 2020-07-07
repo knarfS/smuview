@@ -88,13 +88,13 @@ private:
 	QAction *const action_add_marker_;
 	QAction *const action_add_diff_marker_;
 	QAction *const action_zoom_best_fit_;
-	QAction *const action_add_signal_;
+	QAction *const action_add_curve_;
 	QAction *const action_save_;
 	QAction *const action_config_plot_;
 	QToolBar *toolbar_;
 
 protected Q_SLOTS:
-	virtual void on_action_add_signal_triggered() = 0;
+	virtual void on_action_add_curve_triggered() = 0;
 
 private Q_SLOTS:
 	void on_action_add_marker_triggered();

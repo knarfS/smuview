@@ -71,7 +71,7 @@ private:
 	shared_ptr<channels::BaseChannel> channel_;
 
 protected Q_SLOTS:
-	void on_action_add_signal_triggered() override;
+	void on_action_add_curve_triggered() override;
 
 private Q_SLOTS:
 	void on_signal_changed();

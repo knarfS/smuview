@@ -163,7 +163,7 @@ void TimePlotView::restore_settings(QSettings &settings)
 	update_add_marker_menu();
 }
 
-void TimePlotView::on_action_add_signal_triggered()
+void TimePlotView::on_action_add_curve_triggered()
 {
 	shared_ptr<sv::devices::BaseDevice> selected_device;
 	if (channel_)
