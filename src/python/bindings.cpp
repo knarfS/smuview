@@ -201,9 +201,10 @@ void init_Channel(py::module &m)
 		"    The name of the channel.");
 	py_base_channel.def("add_signal",
 		(shared_ptr<sv::data::BaseSignal> (sv::channels::BaseChannel::*)
-		(sv::data::Quantity, set<sv::data::QuantityFlag>, sv::data::Unit))
+		(sv::data::Quantity, set<sv::data::QuantityFlag>, sv::data::Unit, std::string))
 			&sv::channels::BaseChannel::add_signal,
 		py::arg("quantity"), py::arg("quantity_flags"), py::arg("unit"),
+		py::arg("custom_name") = "",
 		"Add a new signal to the channel.\n\n"
 		"Parameters\n"
 		"----------\n"
@@ -212,7 +213,9 @@ void init_Channel(py::module &m)
 		"quantity_flags : Set[QuantityFlag]\n"
 		"    The `QuantityFlag`s of the new signal.\n"
 		"unit : Unit\n"
-		"    The `Unit` of the new signal.\n\n"
+		"    The `Unit` of the new signal.\n"
+		"custom_name: str\n"
+		"    A custom name for the new signal. If empty (default), the signal name will be automatically generated.\n\n"
 		"Returns\n"
 		"-------\n"
 		"BaseSignal\n"
@@ -273,6 +276,12 @@ void init_Signal(py::module &m)
 		"-------\n"
 		"str\n"
 		"    The name of the signal.");
+	py_base_signal.def("set_name", &sv::data::BaseSignal::set_name,
+		"Set a custom name for the signal.\n\n"
+		"Parameters\n"
+		"----------\n"
+		"custom_name : str\n"
+		"    A custom name for the signal. If empty, the signal name will be automatically generated.");
 	py_base_signal.def("sample_count", &sv::data::BaseSignal::sample_count,
 		"Return the number of samples of the signal.\n\n"
 		"Returns\n"
