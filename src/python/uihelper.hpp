@@ -46,6 +46,17 @@ class BaseDevice;
 class Configurable;
 }
 
+namespace ui {
+namespace tabs {
+class BaseTab;
+}
+namespace views {
+class BasePlotView;
+class BaseView;
+class TimePlotView;
+}
+}
+
 namespace python {
 
 class UiHelper : public QObject
@@ -54,9 +65,6 @@ class UiHelper : public QObject
 
 public:
 	UiHelper(Session &session);
-
-private:
-	Session &session_;
 
 public Q_SLOTS:
 	void add_device_tab(shared_ptr<sv::devices::BaseDevice> device);
@@ -98,6 +106,16 @@ public Q_SLOTS:
 		double min, double max);
 	void show_int_input_dialog(const std::string &title,
 		const std::string &label, int value, int step, int min, int max);
+
+private:
+	Session &session_;
+
+	ui::tabs::BaseTab *get_tab(string tab_id) const;
+	ui::views::BaseView *get_view(string tab_id, string view_id) const;
+	ui::views::BasePlotView *get_base_plot_view(string tab_id,
+		string view_id) const;
+	ui::views::TimePlotView *get_time_plot_view(string tab_id,
+		string view_id) const;
 
 Q_SIGNALS:
 	void tab_added(std::string tab_id);
