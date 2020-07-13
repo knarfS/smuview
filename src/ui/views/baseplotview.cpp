@@ -22,6 +22,7 @@
 #include <QImageWriter>
 #include <QFileDialog>
 #include <QSettings>
+#include <QString>
 #include <QToolButton>
 #include <QUuid>
 #include <QVBoxLayout>
@@ -159,6 +160,16 @@ void BasePlotView::update_add_marker_menu()
 
 void BasePlotView::connect_signals()
 {
+}
+
+
+bool BasePlotView::set_curve_name(string curve_id, QString name)
+{
+	if (plot_->curve_map().count(curve_id) == 0)
+		return false;
+
+	plot_->curve_map()[curve_id]->set_name(name);
+	return true;
 }
 
 

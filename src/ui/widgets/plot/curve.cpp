@@ -58,7 +58,6 @@ Curve::Curve(BaseCurveData *curve_data, int x_axis_id, int y_axis_id,
 	id_ = curve_data->id_prefix() + ":" +
 		uuid.toString(QUuid::WithoutBraces).toStdString();
 
-	set_name(custom_name);
 
 	QPen pen;
 	//pen.setColor(color_);
@@ -66,7 +65,7 @@ Curve::Curve(BaseCurveData *curve_data, int x_axis_id, int y_axis_id,
 	pen.setStyle(Qt::SolidLine);
 	pen.setCosmetic(false);
 
-	plot_curve_ = new QwtPlotCurve(name_);
+	plot_curve_ = new QwtPlotCurve();
 	plot_curve_->setYAxis(y_axis_id);
 	plot_curve_->setXAxis(x_axis_id);
 	plot_curve_->setStyle(QwtPlotCurve::Lines);
@@ -80,6 +79,7 @@ Curve::Curve(BaseCurveData *curve_data, int x_axis_id, int y_axis_id,
 	// Curves have the lowest z order, everything else will be painted ontop.
 	plot_curve_->setZ(1);
 
+	set_name(custom_name);
 	set_color(custom_color);
 }
 
@@ -115,8 +115,7 @@ void Curve::set_name(const QString &custom_name)
 		has_custom_name_ = false;
 		name_ = curve_data_->name();
 	}
-
-	//Q_EMIT name_changed();
+	plot_curve_->setTitle(name_);
 }
 
 QString Curve::name() const

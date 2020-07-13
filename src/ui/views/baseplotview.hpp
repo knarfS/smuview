@@ -27,6 +27,7 @@
 #include <QColor>
 #include <QMenu>
 #include <QSettings>
+#include <QString>
 #include <QToolBar>
 #include <QToolButton>
 #include <QUuid>
@@ -68,6 +69,9 @@ public:
 	BasePlotView(Session &session, QUuid uuid = QUuid(),
 		QWidget *parent = nullptr);
 
+	/** Helper function to change a curve name. */
+	bool set_curve_name(string curve_id, QString name);
+	/** Helper function to change a curve color. */
 	bool set_curve_color(string curve_id, QColor color);
 	void save_settings(QSettings &settings) const override;
 	void restore_settings(QSettings &settings) override;
