@@ -68,11 +68,13 @@ UiProxy.add_curve_to_time_plot_view(user_dev_tab, p_plot, p_out_sig)
 xy_plot = UiProxy.add_xy_plot_view(user_dev_tab, smuview.DockArea.TopDockArea)
 
 for n in range(len(input_voltages)):
-    eff_sig = eff_ch.add_signal(smuview.Quantity.PowerFactor, set(), smuview.Unit.Percentage)
+    u_in_set = input_voltages[n]
+    eff_sig = eff_ch.add_signal(smuview.Quantity.PowerFactor, set(), smuview.Unit.Percentage, "eff@{}V".format(str(u_in_set)))
     curve = UiProxy.add_curve_to_xy_plot_view(user_dev_tab, xy_plot, p_out_sig, eff_sig)
+    UiProxy.set_curve_name(user_dev_tab, xy_plot, curve, "V_in = {}V".format(str(u_in_set)))
     UiProxy.set_curve_color(user_dev_tab, xy_plot, curve, input_colors[n])
     load_conf.set_config(smuview.ConfigKey.CurrentLimit, .0)
-    psu_conf.set_config(smuview.ConfigKey.VoltageTarget, input_voltages[n])
+    psu_conf.set_config(smuview.ConfigKey.VoltageTarget, u_in_set)
     # Wait for 10 s to let the DUT cool down
     time.sleep(10)
     current = start_current

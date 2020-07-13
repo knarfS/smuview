@@ -96,6 +96,8 @@ public:
 	string ui_add_curve_to_xy_plot_view(string tab_id, string view_id,
 		shared_ptr<data::AnalogTimeSignal> x_signal,
 		shared_ptr<data::AnalogTimeSignal> y_signal);
+	void ui_set_curve_name(string tab_id, string view_id, string curve_id,
+		string name);
 	void ui_set_curve_color(string tab_id, string view_id, string curve_id,
 		tuple<int, int, int> color);
 
@@ -151,6 +153,8 @@ Q_SIGNALS:
 	void add_curve_to_xy_plot_view(std::string tab_id, std::string view_id,
 		shared_ptr<sv::data::AnalogTimeSignal> x_signal,
 		shared_ptr<sv::data::AnalogTimeSignal> y_signal);
+	void set_curve_name(std::string tab_id, std::string view_id,
+		std::string curve_id, std::string name);
 	void set_curve_color(std::string tab_id, std::string view_id,
 		std::string curve_id, std::tuple<int, int, int> color);
 

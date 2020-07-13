@@ -312,6 +312,35 @@ void UiHelper::add_curve_to_xy_plot_view(std::string tab_id,
 	Q_EMIT curve_added(id);
 }
 
+void UiHelper::set_curve_name(std::string tab_id, std::string view_id,
+	std::string curve_id, std::string name)
+{
+	auto tab = session_.main_window()->get_tab_from_tab_id(tab_id);
+	if (!tab) {
+		qWarning() << "UiHelper::set_curve_name(): Tab not found: " <<
+			QString::fromStdString(tab_id);
+		return;
+	}
+	auto view = tab->get_view_from_view_id(view_id);
+	if (!view) {
+		qWarning() << "UiHelper::set_curve_name(): View not found: " <<
+			QString::fromStdString(view_id);
+		return;
+	}
+	auto plot_view = qobject_cast<ui::views::BasePlotView *>(view);
+	if (!plot_view) {
+		qWarning() << "UiHelper::set_curve_name(): View is not a plot view: " <<
+			QString::fromStdString(view_id);
+		return;
+	}
+
+	bool ret = plot_view->set_curve_name(curve_id, QString::fromStdString(name));
+	if (!ret) {
+		qWarning() << "UiHelper::set_curve_name(): Curve not found: " <<
+			QString::fromStdString(curve_id);
+	}
+}
+
 void UiHelper::set_curve_color(std::string tab_id, std::string view_id,
 	std::string curve_id, std::tuple<int, int, int> color)
 {

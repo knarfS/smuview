@@ -670,6 +670,20 @@ void init_UI(py::module &m)
 		"-------\n"
 		"str\n"
 		"    The id of the new curve or empty if the curve couldn't be added.");
+	py_ui_helper.def("set_curve_name", &sv::python::UiProxy::ui_set_curve_name,
+		py::arg("tab_id"), py::arg("view_id"), py::arg("curve_id"),
+		py::arg("name"),
+		"Set the name of the given curve.\n\n"
+		"Parameters\n"
+		"----------\n"
+		"tab_id : str\n"
+		"    The id of the tab.\n"
+		"view_id : str\n"
+		"    The id of the plot view.\n"
+		"curve_id : str\n"
+		"    The id of the curve.\n"
+		"name : str\n"
+		"    The name for the curve.");
 	py_ui_helper.def("set_curve_color", &sv::python::UiProxy::ui_set_curve_color,
 		py::arg("tab_id"), py::arg("view_id"), py::arg("curve_id"),
 		py::arg("color"),

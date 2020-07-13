@@ -88,6 +88,8 @@ UiProxy::UiProxy(Session &session, shared_ptr<UiHelper> ui_helper) :
 		ui_helper_.get(), &UiHelper::add_curve_to_time_plot_view);
 	connect(this, &UiProxy::add_curve_to_xy_plot_view,
 		ui_helper_.get(), &UiHelper::add_curve_to_xy_plot_view);
+	connect(this, &UiProxy::set_curve_name,
+		ui_helper_.get(), &UiHelper::set_curve_name);
 	connect(this, &UiProxy::set_curve_color,
 		ui_helper_.get(), &UiHelper::set_curve_color);
 
@@ -231,6 +233,12 @@ string UiProxy::ui_add_curve_to_xy_plot_view(string tab_id, string view_id,
 	finish_wait_for_signal();
 
 	return id;
+}
+
+void UiProxy::ui_set_curve_name(string tab_id, string view_id, string curve_id,
+	string name)
+{
+	Q_EMIT set_curve_name(tab_id, view_id, curve_id, name);
 }
 
 void UiProxy::ui_set_curve_color(string tab_id, string view_id, string curve_id,
