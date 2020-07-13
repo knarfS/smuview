@@ -482,9 +482,9 @@ void init_Configurable(py::module &m)
 
 void init_UI(py::module &m)
 {
-	py::class_<sv::python::UiProxy> py_ui_helper(m, "UiProxy");
-	py_ui_helper.doc() = "Helper class for accessing the UI.";
-	py_ui_helper.def("add_device_tab", &sv::python::UiProxy::ui_add_device_tab,
+	py::class_<sv::python::UiProxy> py_ui_proxy(m, "UiProxy");
+	py_ui_proxy.doc() = "Helper class for accessing the UI.";
+	py_ui_proxy.def("add_device_tab", &sv::python::UiProxy::ui_add_device_tab,
 		py::arg("device"),
 		"Add a device tab with standard view for a device to the UI.\n\n"
 		"Parameters\n"
@@ -495,7 +495,7 @@ void init_UI(py::module &m)
 		"-------\n"
 		"str\n"
 		"    The id of the new tab or empty if the tab couldn't be added.");
-	py_ui_helper.def("add_data_view", &sv::python::UiProxy::ui_add_data_view,
+	py_ui_proxy.def("add_data_view", &sv::python::UiProxy::ui_add_data_view,
 		py::arg("tab_id"), py::arg("area"), py::arg("signal"),
 		"Add a data view for a signal to the given tab.\n\n"
 		"Parameters\n"
@@ -510,7 +510,7 @@ void init_UI(py::module &m)
 		"-------\n"
 		"str\n"
 		"    The id of the new view or empty if the view couldn't be added.");
-	py_ui_helper.def("add_control_view", &sv::python::UiProxy::ui_add_control_view,
+	py_ui_proxy.def("add_control_view", &sv::python::UiProxy::ui_add_control_view,
 		py::arg("tab_id"), py::arg("area"), py::arg("configurable"),
 		"Add a control view for a configurable to the given tab.\n\n"
 		"Parameters\n"
@@ -525,7 +525,7 @@ void init_UI(py::module &m)
 		"-------\n"
 		"str\n"
 		"    The id of the new view or empty if the view couldn't be added.");
-	py_ui_helper.def("add_time_plot_view",  &sv::python::UiProxy::ui_add_time_plot_view,
+	py_ui_proxy.def("add_time_plot_view",  &sv::python::UiProxy::ui_add_time_plot_view,
 		py::arg("tab_id"), py::arg("area"),
 		"Add a time plot view to the given tab. Use "
 		"[`UiProxy.set_channel_to_time_plot_view()`](UiProxy.set_channel_to_time_plot_view) "
@@ -545,7 +545,7 @@ void init_UI(py::module &m)
 		"-------\n"
 		"str\n"
 		"    The id of the new view or empty if the view couldn't be added.");
-	py_ui_helper.def("add_xy_plot_view", &sv::python::UiProxy::ui_add_xy_plot_view,
+	py_ui_proxy.def("add_xy_plot_view", &sv::python::UiProxy::ui_add_xy_plot_view,
 		py::arg("tab_id"), py::arg("area"),
 		"Add a x/y plot view for two signals to the given tab. Use "
 		"[`UiProxy.add_curve_to_xy_plot_view()`](UiProxy.add_curve_to_xy_plot_view) "
@@ -560,7 +560,7 @@ void init_UI(py::module &m)
 		"-------\n"
 		"str\n"
 		"    The id of the new view or empty if the view couldn't be added.");
-	py_ui_helper.def("add_power_panel_view", &sv::python::UiProxy::ui_add_power_panel_view,
+	py_ui_proxy.def("add_power_panel_view", &sv::python::UiProxy::ui_add_power_panel_view,
 		py::arg("tab_id"), py::arg("area"), py::arg("voltage_signal"),
 		py::arg("current_signal"),
 		"Add a power panel view for a voltage and a current signal to the given tab.\n\n"
@@ -578,7 +578,7 @@ void init_UI(py::module &m)
 		"-------\n"
 		"str\n"
 		"    The id of the new view or empty if the view couldn't be added.");
-	py_ui_helper.def("add_value_panel_view",
+	py_ui_proxy.def("add_value_panel_view",
 		(std::string (sv::python::UiProxy::*) (std::string, Qt::DockWidgetArea, shared_ptr<sv::channels::BaseChannel>))
 			&sv::python::UiProxy::ui_add_value_panel_view,
 		py::arg("tab_id"), py::arg("area"), py::arg("channel"),
@@ -595,7 +595,7 @@ void init_UI(py::module &m)
 		"-------\n"
 		"str\n"
 		"    The id of the new view or empty if the view couldn't be added.");
-	py_ui_helper.def("add_value_panel_view",
+	py_ui_proxy.def("add_value_panel_view",
 		(std::string (sv::python::UiProxy::*) (std::string, Qt::DockWidgetArea, shared_ptr<sv::data::AnalogTimeSignal>))
 			&sv::python::UiProxy::ui_add_value_panel_view,
 		py::arg("tab_id"), py::arg("area"), py::arg("signal"),
@@ -613,7 +613,7 @@ void init_UI(py::module &m)
 		"str\n"
 		"    The id of the new view or empty if the view couldn't be added.");
 
-	py_ui_helper.def("add_signal_to_data_view", &sv::python::UiProxy::ui_add_signal_to_data_view,
+	py_ui_proxy.def("add_signal_to_data_view", &sv::python::UiProxy::ui_add_signal_to_data_view,
 		py::arg("tab_id"), py::arg("view_id"), py::arg("signal"),
 		"Add a signal to the given data view.\n\n"
 		"Parameters\n"
@@ -624,7 +624,7 @@ void init_UI(py::module &m)
 		"    The id of the data view.\n"
 		"signal : AnalogTimeSignal\n"
 		"    The signal object.");
-	py_ui_helper.def("set_channel_to_time_plot_view", &sv::python::UiProxy::ui_set_channel_to_time_plot_view,
+	py_ui_proxy.def("set_channel_to_time_plot_view", &sv::python::UiProxy::ui_set_channel_to_time_plot_view,
 		py::arg("tab_id"), py::arg("view_id"), py::arg("channel"),
 		"Set a channel to the given time plot view. New curves will be "
 		"automatically created, when the channel changes (e.g. for multimeters "
@@ -637,7 +637,7 @@ void init_UI(py::module &m)
 		"    The id of the time plot view.\n"
 		"channel : BaseChannel\n"
 		"    The channel object.");
-	py_ui_helper.def("add_curve_to_time_plot_view", &sv::python::UiProxy::ui_add_curve_to_time_plot_view,
+	py_ui_proxy.def("add_curve_to_time_plot_view", &sv::python::UiProxy::ui_add_curve_to_time_plot_view,
 		py::arg("tab_id"), py::arg("view_id"), py::arg("signal"),
 		"Add a signal to the given time plot view.\n\n"
 		"Parameters\n"
@@ -652,7 +652,7 @@ void init_UI(py::module &m)
 		"-------\n"
 		"str\n"
 		"    The id of the new curve or empty if the curve couldn't be added.");
-	py_ui_helper.def("add_curve_to_xy_plot_view", &sv::python::UiProxy::ui_add_curve_to_xy_plot_view,
+	py_ui_proxy.def("add_curve_to_xy_plot_view", &sv::python::UiProxy::ui_add_curve_to_xy_plot_view,
 		py::arg("tab_id"), py::arg("view_id"), py::arg("x_signal"),
 		py::arg("y_signal"),
 		"Add x/y signals to the given x/y plot view.\n\n"
@@ -670,7 +670,7 @@ void init_UI(py::module &m)
 		"-------\n"
 		"str\n"
 		"    The id of the new curve or empty if the curve couldn't be added.");
-	py_ui_helper.def("set_curve_name", &sv::python::UiProxy::ui_set_curve_name,
+	py_ui_proxy.def("set_curve_name", &sv::python::UiProxy::ui_set_curve_name,
 		py::arg("tab_id"), py::arg("view_id"), py::arg("curve_id"),
 		py::arg("name"),
 		"Set the name of the given curve.\n\n"
@@ -684,7 +684,7 @@ void init_UI(py::module &m)
 		"    The id of the curve.\n"
 		"name : str\n"
 		"    The name for the curve.");
-	py_ui_helper.def("set_curve_color", &sv::python::UiProxy::ui_set_curve_color,
+	py_ui_proxy.def("set_curve_color", &sv::python::UiProxy::ui_set_curve_color,
 		py::arg("tab_id"), py::arg("view_id"), py::arg("curve_id"),
 		py::arg("color"),
 		"Set the color of the given curve.\n\n"
@@ -698,7 +698,7 @@ void init_UI(py::module &m)
 		"    The id of the curve.\n"
 		"color : Tuple[int, int, int]\n"
 		"    The color for the curve as a Tuple with the RGB values.");
-	py_ui_helper.def("show_message_box", &sv::python::UiProxy::ui_show_message_box,
+	py_ui_proxy.def("show_message_box", &sv::python::UiProxy::ui_show_message_box,
 		py::arg("title"), py::arg("text"),
 		"Show a (info) message box with the given window title and text. "
 		"Returns `True` when the Ok button was pressed.\n\n"
@@ -712,7 +712,7 @@ void init_UI(py::module &m)
 		"-------\n"
 		"bool\n"
 		"    `True` when the Ok button was pressed, else `False`.");
-	py_ui_helper.def("show_string_input_dialog", &sv::python::UiProxy::ui_show_string_input_dialog,
+	py_ui_proxy.def("show_string_input_dialog", &sv::python::UiProxy::ui_show_string_input_dialog,
 		py::arg("title"), py::arg("label"), py::arg("value") = "",
 		"Show a dialog window to get a string value from the user. It returns "
 		"the entered string value or `None` if the Cancel button was pressed.\n\n"
@@ -728,7 +728,7 @@ void init_UI(py::module &m)
 		"-------\n"
 		"str or None\n"
 		"    The user entered string value or `None` when the Cancel button was pressed.");
-	py_ui_helper.def("show_double_input_dialog", &sv::python::UiProxy::ui_show_double_input_dialog,
+	py_ui_proxy.def("show_double_input_dialog", &sv::python::UiProxy::ui_show_double_input_dialog,
 		py::arg("title"), py::arg("label"),
 		py::arg("value") = 0.0, py::arg("decimals") = 1, py::arg("step") = 0.1,
 		py::arg("min") = std::numeric_limits<double>::min(),
@@ -756,7 +756,7 @@ void init_UI(py::module &m)
 		"-------\n"
 		"float or None\n"
 		"    The user entered float value or `None` when the Cancel button was pressed.");
-	py_ui_helper.def("show_int_input_dialog", &sv::python::UiProxy::ui_show_int_input_dialog,
+	py_ui_proxy.def("show_int_input_dialog", &sv::python::UiProxy::ui_show_int_input_dialog,
 		py::arg("title"), py::arg("label"),
 		py::arg("value") = 0, py::arg("step") = 1,
 		py::arg("min") = std::numeric_limits<int>::min(),
