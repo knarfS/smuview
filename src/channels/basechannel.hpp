@@ -169,7 +169,8 @@ public:
 	shared_ptr<data::BaseSignal> add_signal(
 		data::Quantity quantity,
 		set<data::QuantityFlag> quantity_flags,
-		data::Unit unit);
+		data::Unit unit,
+		string custom_name = "");
 
 	/**
 	 * Get the actual signal

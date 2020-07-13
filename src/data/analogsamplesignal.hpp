@@ -22,6 +22,7 @@
 
 #include <memory>
 #include <set>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -33,6 +34,7 @@
 using std::pair;
 using std::set;
 using std::shared_ptr;
+using std::string;
 using std::vector;
 
 namespace sv {
@@ -49,7 +51,8 @@ public:
 		data::Quantity quantity,
 		set<data::QuantityFlag> quantity_flags,
 		data::Unit unit,
-		shared_ptr<channels::BaseChannel> parent_channel);
+		shared_ptr<channels::BaseChannel> parent_channel,
+		string custom_name = "");
 
 	/**
 	 * Clear all samples from this signal.

@@ -53,7 +53,8 @@ public:
 		data::Quantity quantity,
 		set<data::QuantityFlag> quantity_flags,
 		data::Unit unit,
-		shared_ptr<channels::BaseChannel> parent_channel);
+		shared_ptr<channels::BaseChannel> parent_channel,
+		string custom_name);
 	virtual ~BaseSignal();
 
 public:
@@ -103,6 +104,11 @@ public:
 	shared_ptr<channels::BaseChannel> parent_channel() const;
 
 	/**
+	 * Set a custom name for this signal.
+	 */
+	void set_name(string custom_name);
+
+	/**
 	 * Get the name of this signal.
 	 */
 	string name() const;
@@ -122,6 +128,9 @@ protected:
 	shared_ptr<channels::BaseChannel> parent_channel_;
 
 	string name_;
+
+Q_SIGNALS:
+	void name_changed(const string &name);
 
 };
 

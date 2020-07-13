@@ -21,6 +21,7 @@
 #include <cassert>
 #include <memory>
 #include <set>
+#include <string>
 
 #include <QDebug>
 #include <QString>
@@ -35,6 +36,7 @@ using std::make_pair;
 using std::make_shared;
 using std::set;
 using std::shared_ptr;
+using std::string;
 using std::vector;
 
 namespace sv {
@@ -44,8 +46,9 @@ AnalogSampleSignal::AnalogSampleSignal(
 		data::Quantity quantity,
 		set<data::QuantityFlag> quantity_flags,
 		data::Unit unit,
-		shared_ptr<channels::BaseChannel> parent_channel) :
-	AnalogBaseSignal(quantity, quantity_flags, unit, parent_channel),
+		shared_ptr<channels::BaseChannel> parent_channel,
+		string custom_name) :
+	AnalogBaseSignal(quantity, quantity_flags, unit, parent_channel, custom_name),
 	last_pos_(0)
 {
 	qWarning() << "Init analog sample signal " << display_name();

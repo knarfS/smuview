@@ -22,6 +22,7 @@
 
 #include <memory>
 #include <set>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -33,6 +34,7 @@
 using std::pair;
 using std::set;
 using std::shared_ptr;
+using std::string;
 using std::vector;
 
 namespace sv {
@@ -50,7 +52,8 @@ public:
 		set<data::QuantityFlag> quantity_flags,
 		data::Unit unit,
 		shared_ptr<channels::BaseChannel> parent_channel,
-		double signal_start_timestamp);
+		double signal_start_timestamp,
+		string custom_name = "");
 
 	/**
 	 * Clear all samples from this signal.

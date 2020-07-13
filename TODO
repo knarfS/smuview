@@ -37,12 +37,11 @@ ToDo
 - DeviceTree: Button for expand/close all
 - Plot: Add gradient (dY/dX) to diff marker in plot marker box
 - Plot: Movable polt marker box. Maybe not possible b/c of missing stuff in qwt?
-- Plot: Highlight polt marker and polt marker box when mouse over (near by for marker)
+- Plot: Highlight polt marker and plot marker box when mouse over (near by for marker)
 - Plot: Class for marker -> qwt curve tracker playground
 - SequenceView: Handle headers (order of columns, time abs/rel) in CSV
 - SequenceView: Handle units (ms, s, h, ...) in CSV
 - PlotView: Make resolution and dpi configurable when saving as image
-- Bindings: Set name for new signal? e.g. f(x, y, name=nullptr)
 - Implement AnalogXYDataSignal (for python automatisation)? See scope support?
 - MonoFontDisplay/PowerPanelView: To small for neg. values (esp. W/Ah/Wh with 6632B). B/c of the decimal point?
 - Remove LCDDisplay?
@@ -54,6 +53,9 @@ ToDo
 - Remove devicetab.hpp time_unit_
 - Cycle: replace BaseChannel::parent_device_ with device_id_, and so on....
 - main.cpp: Remove while loop.
+- AnalogTimeSignal: Move signal_start_timestamp_ to BaseSignal
+- *Signal: Clean up Signal classes
+- Add a way to change a channel/signal name in the GUI. Connect BaseSignal::name_changed() signal.
 
 Done
 ----
@@ -105,6 +107,7 @@ Done
 - License headers are not the same
 - Session: move init to main.cpp
 - Bindings: Binding for setting the color of a plot curve
+- Bindings: Set name for new signal? e.g. f(x, y, name=nullptr)
 
 Won't fix
 ---------

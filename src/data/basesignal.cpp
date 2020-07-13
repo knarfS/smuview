@@ -40,7 +40,8 @@ BaseSignal::BaseSignal(
 		data::Quantity quantity,
 		set<data::QuantityFlag> quantity_flags,
 		data::Unit unit,
-		shared_ptr<channels::BaseChannel> parent_channel) :
+		shared_ptr<channels::BaseChannel> parent_channel,
+		string custom_name) :
 	quantity_(quantity),
 	quantity_flags_(quantity_flags),
 	unit_(unit),
@@ -56,10 +57,15 @@ BaseSignal::BaseSignal(
 		quantity_flags_, QString(" "));
 	unit_name_ = data::datautil::format_unit(unit_);
 
-	name_ = parent_channel_->name() + " [" + unit_name_.toStdString();
-	if (!quantity_flags_.empty())
-		name_ += " " + quantity_flags_name_.toStdString();
-	name_ += "]";
+	if (custom_name.empty()) {
+		name_ = parent_channel_->name() + " [" + unit_name_.toStdString();
+		if (!quantity_flags_.empty())
+			name_ += " " + quantity_flags_name_.toStdString();
+		name_ += "]";
+	}
+	else {
+		name_ = custom_name;
+	}
 }
 
 BaseSignal::~BaseSignal()
@@ -100,6 +106,14 @@ QString BaseSignal::unit_name() const
 shared_ptr<channels::BaseChannel> BaseSignal::parent_channel() const
 {
 	return parent_channel_;
+}
+
+void BaseSignal::set_name(string custom_name)
+{
+	if (!custom_name.empty()) {
+		name_ = custom_name;
+		Q_EMIT name_changed(name_);
+	}
 }
 
 string BaseSignal::name() const

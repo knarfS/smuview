@@ -177,7 +177,8 @@ void BaseChannel::add_signal(shared_ptr<data::AnalogTimeSignal> signal)
 shared_ptr<data::BaseSignal> BaseChannel::add_signal(
 	data::Quantity quantity,
 	set<data::QuantityFlag> quantity_flags,
-	data::Unit unit)
+	data::Unit unit,
+	string custom_name)
 {
 	/*
 	 * TODO: Remove shared_from_this() / (channel pointer in signal), so that
@@ -185,7 +186,7 @@ shared_ptr<data::BaseSignal> BaseChannel::add_signal(
 	 */
 	auto signal = make_shared<data::AnalogTimeSignal>(
 		quantity, quantity_flags, unit,
-		shared_from_this(), channel_start_timestamp_);
+		shared_from_this(), channel_start_timestamp_, custom_name);
 
 	this->add_signal(signal);
 
