@@ -77,8 +77,6 @@ public:
 	void restore_settings(QSettings &settings) override;
 
 protected:
-	void update_add_marker_menu();
-
 	PlotType plot_type_;
 	widgets::plot::Plot *plot_;
 
@@ -98,6 +96,7 @@ private:
 	QToolBar *toolbar_;
 
 protected Q_SLOTS:
+	void update_add_marker_menu();
 	virtual void on_action_add_curve_triggered() = 0;
 
 private Q_SLOTS:

@@ -123,7 +123,6 @@ string TimePlotView::add_signal(shared_ptr<sv::data::AnalogTimeSignal> signal)
 	auto curve = new widgets::plot::TimeCurveData(signal);
 	id = plot_->add_curve(curve);
 	if (!id.empty()) {
-		update_add_marker_menu();
 		Q_EMIT title_changed();
 	}
 	else {
@@ -160,7 +159,6 @@ void TimePlotView::restore_settings(QSettings &settings)
 		restore_curves = false;
 	}
 	plot_->restore_settings(settings, restore_curves);
-	update_add_marker_menu();
 }
 
 void TimePlotView::on_action_add_curve_triggered()

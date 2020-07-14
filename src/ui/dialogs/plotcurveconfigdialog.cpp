@@ -17,13 +17,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <cassert>
+
 #include <QCheckBox>
 #include <QComboBox>
 #include <QBrush>
 #include <QDebug>
 #include <QFormLayout>
 #include <QIcon>
+#include <QLineEdit>
 #include <QPen>
+#include <QPushButton>
 #include <QSize>
 #include <QWidget>
 #include <qwt_plot_curve.h>
@@ -31,6 +35,7 @@
 
 #include "plotcurveconfigdialog.hpp"
 #include "src/ui/widgets/plot/curve.hpp"
+#include "src/ui/widgets/plot/plot.hpp"
 #include "src/ui/widgets/colorbutton.hpp"
 
 Q_DECLARE_METATYPE(Qt::PenStyle)
@@ -41,10 +46,14 @@ namespace ui {
 namespace dialogs {
 
 PlotCurveConfigDialog::PlotCurveConfigDialog(widgets::plot::Curve *curve,
-		QWidget *parent) :
+		widgets::plot::Plot *plot, QWidget *parent) :
 	QDialog(parent),
-	curve_(curve)
+	curve_(curve),
+	plot_(plot)
 {
+	assert(curve_);
+	assert(plot_);
+
 	setup_ui();
 }
 
@@ -54,10 +63,14 @@ void PlotCurveConfigDialog::setup_ui()
 	main_icon.addFile(QStringLiteral(":/icons/smuview.ico"),
 		QSize(), QIcon::Normal, QIcon::Off);
 	this->setWindowIcon(main_icon);
-	this->setWindowTitle(tr("Plot Config"));
+	this->setWindowTitle(tr("Curve Config"));
 	this->setMinimumWidth(500);
 
 	QFormLayout *main_layout = new QFormLayout;
+
+	name_edit_ = new QLineEdit();
+	name_edit_->setText(curve_->name());
+	main_layout->addRow(tr("Name"), name_edit_);
 
 	visible_checkbox_ = new QCheckBox();
 	visible_checkbox_->setChecked(curve_->plot_curve()->isVisible());
@@ -96,21 +109,36 @@ void PlotCurveConfigDialog::setup_ui()
 
 	button_box_ = new QDialogButtonBox(
 		QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
+	QPushButton *remove_button = new QPushButton(
+		QIcon::fromTheme("edit-delete", QIcon(":/icons/edit-delete.png")),
+		tr("Remove Curve"));
+	button_box_->addButton(remove_button, QDialogButtonBox::DestructiveRole);
 	main_layout->addWidget(button_box_);
-	connect(button_box_, SIGNAL(accepted()), this, SLOT(accept()));
-	connect(button_box_, SIGNAL(rejected()), this, SLOT(reject()));
+	connect(button_box_, &QDialogButtonBox::accepted,
+		this, &PlotCurveConfigDialog::accept);
+	connect(button_box_, &QDialogButtonBox::rejected,
+		this, &PlotCurveConfigDialog::reject);
+	connect(remove_button, &QPushButton::clicked,
+		this, &PlotCurveConfigDialog::remove_curve);
 
 	this->setLayout(main_layout);
 }
 
 void PlotCurveConfigDialog::accept()
 {
+	curve_->set_name(name_edit_->text());
 	curve_->plot_curve()->setVisible(visible_checkbox_->isChecked());
 	curve_->set_color(color_button_->color());
 	curve_->set_style(line_type_box_->currentData().value<Qt::PenStyle>());
 	curve_->set_symbol(symbol_type_box_->currentData().value<QwtSymbol::Style>());
 
 	QDialog::accept();
+}
+
+void PlotCurveConfigDialog::remove_curve()
+{
+	plot_->remove_curve(curve_);
+	QDialog::close();
 }
 
 } // namespace dialogs

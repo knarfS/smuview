@@ -240,6 +240,7 @@ string Plot::add_curve(BaseCurveData *curve_data)
 	curve_map_.insert(make_pair(curve->id(), curve));
 
 	QwtPlot::replot();
+	Q_EMIT curve_added();
 
 	return curve->id();
 }
@@ -263,8 +264,29 @@ bool Plot::add_curve(Curve *curve)
 	curve_map_.insert(make_pair(curve->id(), curve));
 
 	QwtPlot::replot();
+	Q_EMIT curve_added();
 
 	return true;
+}
+
+void Plot::remove_curve(Curve *curve)
+{
+	// Delete markers
+	vector<QwtPlotMarker *> delete_markers;
+	for (const auto &mc_pair : marker_curve_map_) {
+		if (mc_pair.second == curve)
+			delete_markers.push_back(mc_pair.first);
+	}
+	for (const auto &marker : delete_markers) {
+		remove_marker(marker);
+	}
+
+	// Delete curve
+	curve_map_.erase(curve->id());
+	curve->plot_curve()->detach();
+	delete curve;
+
+	Q_EMIT curve_removed();
 }
 
 int Plot::init_x_axis(BaseCurveData *curve_data, int x_axis_id)
@@ -540,6 +562,7 @@ void Plot::add_marker(Curve *curve)
 
 	update_markers_label();
 	replot();
+	Q_EMIT marker_added();
 }
 
 void Plot::add_diff_marker(QwtPlotMarker *marker1, QwtPlotMarker *marker2)
@@ -551,20 +574,42 @@ void Plot::add_diff_marker(QwtPlotMarker *marker1, QwtPlotMarker *marker2)
 
 	update_markers_label();
 	replot();
+	Q_EMIT marker_added();
 }
 
-// TODO: implement remove marker call
-void Plot::remove_marker()
+// TODO: Implement GUI remove marker function
+void Plot::remove_marker(QwtPlotMarker *marker)
 {
-	// If last marker of this axis.
-	disconnect(marker_select_picker_, SIGNAL(selected(const QPointF &)),
-		this, SLOT(on_marker_selected(const QPointF)));
-	delete marker_select_picker_;
-	marker_select_picker_ = nullptr;
-	disconnect(marker_move_picker_, SIGNAL(moved(QPointF)),
-		this, SLOT(on_marker_moved(QPointF)));
-	delete marker_move_picker_;
-	marker_move_picker_ = nullptr;
+	// Delete diff markers.
+	for (auto it = diff_markers_.begin(); it != diff_markers_.end(); ) {
+		if (it->first == marker || it->second == marker)
+			it = diff_markers_.erase(it);
+		else
+			++it;
+	}
+
+	// Delete marker.
+	marker_curve_map_.erase(marker);
+	if (active_marker_ == marker)
+		active_marker_ = nullptr;
+	marker->detach();
+	delete marker;
+
+	if (marker_curve_map_.empty()) {
+		// No markers left.
+		disconnect(marker_select_picker_, SIGNAL(selected(const QPointF &)),
+			this, SLOT(on_marker_selected(const QPointF)));
+		delete marker_select_picker_;
+		marker_select_picker_ = nullptr;
+		disconnect(marker_move_picker_, SIGNAL(moved(QPointF)),
+			this, SLOT(on_marker_moved(QPointF)));
+		delete marker_move_picker_;
+		marker_move_picker_ = nullptr;
+	}
+
+	update_markers_label();
+	replot();
+	Q_EMIT marker_removed();
 }
 
 void Plot::on_marker_selected(const QPointF mouse_pos)
@@ -637,7 +682,7 @@ void Plot::on_legend_clicked(const QVariant &item_info, int index)
 	if (!curve)
 		return;
 
-	ui::dialogs::PlotCurveConfigDialog dlg(curve);
+	ui::dialogs::PlotCurveConfigDialog dlg(curve, this);
 	dlg.exec();
 }
 

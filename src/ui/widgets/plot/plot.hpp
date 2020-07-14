@@ -96,6 +96,7 @@ public:
 	 */
 	string add_curve(BaseCurveData *curve_data);
 	bool add_curve(Curve *curve);
+	void remove_curve(Curve *curve);
 	/** Return a map of all curves. */
 	map<string, Curve *> curve_map() const { return curve_map_; }
 	bool is_axis_locked(int axis_id, AxisBoundary axis_boundary) { return axis_lock_map_[axis_id][axis_boundary]; }
@@ -123,13 +124,10 @@ public Q_SLOTS:
 	void on_axis_lock_clicked();
 	void add_marker(Curve *curve);
 	void add_diff_marker(QwtPlotMarker *marker1, QwtPlotMarker *marker2);
-	void remove_marker();
+	void remove_marker(QwtPlotMarker *marker);
 	void on_marker_selected(const QPointF mouse_pos);
 	void on_marker_moved(const QPointF mouse_pos);
 	void on_legend_clicked(const QVariant &item_info, int index);
-
-Q_SIGNALS:
-	void axis_lock_changed(int axis_id, AxisBoundary axis_boundary, bool locked);
 
 protected:
 	virtual void showEvent(QShowEvent *event) override;
@@ -167,6 +165,13 @@ private:
 	int markers_label_alignment_;
 	QwtPlotPicker *marker_select_picker_;
 	QwtPlotPicker *marker_move_picker_;
+
+Q_SIGNALS:
+	void axis_lock_changed(int axis_id, AxisBoundary axis_boundary, bool locked);
+	void curve_added();
+	void curve_removed();
+	void marker_added();
+	void marker_removed();
 
 };
 

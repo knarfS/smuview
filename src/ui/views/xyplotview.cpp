@@ -71,10 +71,7 @@ string XYPlotView::add_signals(shared_ptr<sv::data::AnalogTimeSignal> x_signal,
 {
 	auto curve = new widgets::plot::XYCurveData(x_signal, y_signal);
 	string id = plot_->add_curve(curve);
-	if (!id.empty()) {
-		update_add_marker_menu();
-	}
-	else {
+	if (id.empty()) {
 		QMessageBox::warning(this,
 			tr("Cannot add signal"), tr("Cannot add xy signal to plot!"),
 			QMessageBox::Ok);
@@ -92,7 +89,6 @@ void XYPlotView::restore_settings(QSettings &settings)
 {
 	BasePlotView::restore_settings(settings);
 	plot_->restore_settings(settings, true);
-	update_add_marker_menu();
 }
 
 void XYPlotView::on_action_add_curve_triggered()

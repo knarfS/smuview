@@ -24,6 +24,7 @@
 #include <QComboBox>
 #include <QDialog>
 #include <QDialogButtonBox>
+#include <QLineEdit>
 #include <QWidget>
 
 namespace sv {
@@ -33,6 +34,7 @@ namespace widgets {
 class ColorButton;
 namespace plot {
 class Curve;
+class Plot;
 }
 }
 
@@ -44,12 +46,14 @@ class PlotCurveConfigDialog : public QDialog
 
 public:
 	PlotCurveConfigDialog(widgets::plot::Curve *curve,
-		QWidget *parent = nullptr);
+		widgets::plot::Plot *plot, QWidget *parent = nullptr);
 
 private:
 	void setup_ui();
 
 	widgets::plot::Curve *curve_;
+	widgets::plot::Plot *plot_;
+	QLineEdit *name_edit_;
 	QCheckBox *visible_checkbox_;
 	widgets::ColorButton *color_button_;
 	QComboBox *line_type_box_;
@@ -58,6 +62,7 @@ private:
 
 public Q_SLOTS:
 	void accept() override;
+	void remove_curve();
 
 };
 

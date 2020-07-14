@@ -160,6 +160,10 @@ void BasePlotView::update_add_marker_menu()
 
 void BasePlotView::connect_signals()
 {
+	connect(plot_, &ui::widgets::plot::Plot::curve_added,
+		this, &BasePlotView::update_add_marker_menu);
+	connect(plot_, &ui::widgets::plot::Plot::curve_removed,
+		this, &BasePlotView::update_add_marker_menu);
 }
 
 
