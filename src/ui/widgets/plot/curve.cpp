@@ -344,7 +344,7 @@ QColor Curve::default_color(sv::data::Quantity quantity,
 		return Qt::cyan;
 	if (quantity == sv::data::Quantity::Power)
 		return Qt::yellow;
-	if (quantity == sv::data::Quantity::Work)
+	if (quantity == sv::data::Quantity::Energy)
 		return Qt::darkYellow;
 	if (quantity == sv::data::Quantity::Temperature)
 		return Qt::darkCyan;

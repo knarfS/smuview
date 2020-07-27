@@ -136,7 +136,7 @@ void SourceSinkDevice::init_channels()
 				handle_channel_name_suffix(channel->name(), 1, ch_suffix);
 			}
 			else if (util::starts_with(channel->name(), "Wh")) {
-				quantity = data::Quantity::Work;
+				quantity = data::Quantity::Energy;
 				unit = data::Unit::WattHour;
 				init = true;
 				handle_channel_name_suffix(channel->name(), 2, ch_suffix);
@@ -185,7 +185,7 @@ void SourceSinkDevice::init_channels()
 				resistance_signal =
 					static_pointer_cast<data::AnalogTimeSignal>(signal);
 			}
-			else if (signal->quantity() == data::Quantity::Work) {
+			else if (signal->quantity() == data::Quantity::Energy) {
 				wh_signal =
 					static_pointer_cast<data::AnalogTimeSignal>(signal);
 			}
@@ -229,7 +229,7 @@ void SourceSinkDevice::init_channels()
 		if (power_signal && !wh_signal) {
 			shared_ptr<channels::IntegrateChannel> wh_channel =
 				make_shared<channels::IntegrateChannel>(
-					data::Quantity::Work,
+					data::Quantity::Energy,
 					set<data::QuantityFlag>(),
 					data::Unit::WattHour,
 					power_signal,

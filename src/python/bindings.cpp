@@ -1014,8 +1014,6 @@ void init_Enums(py::module &m)
 		"Conductance");
 	py_quantity.value("Power", sv::data::Quantity::Power,
 		"Electrical power, usually in W, or dBm.");
-	py_quantity.value("Work", sv::data::Quantity::Work,
-		"Work, also Energy");
 	py_quantity.value("ElectricCharge", sv::data::Quantity::ElectricCharge,
 		"Electric charge");
 	py_quantity.value("Gain", sv::data::Quantity::Gain,
@@ -1062,6 +1060,8 @@ void init_Enums(py::module &m)
 		"Mass");
 	py_quantity.value("HarmonicRatio", sv::data::Quantity::HarmonicRatio,
 		"Harmonic ratio");
+	py_quantity.value("Energy", sv::data::Quantity::Energy,
+		"Energy (also Work)");
 	py_quantity.value("Unknown", sv::data::Quantity::Unknown,
 		"Unknown");
 

@@ -60,8 +60,6 @@ enum class Quantity
 	Conductance,
 	/** Electrical power, usually in W, or dBm. */
 	Power,
-	/** Also "Energy". TODO: Implement in libsigrok */
-	Work,
 	/** TODO: Implement in libsigrok */
 	ElectricCharge,
 	/** Gain (a transistor's gain, or hFE, for example). */
@@ -92,6 +90,7 @@ enum class Quantity
 	ApparentPower,
 	Mass,
 	HarmonicRatio,
+	Energy,
 	Unknown,
 };
 
@@ -263,7 +262,6 @@ quantity_name_map_t quantity_name_map = {
 	{ Quantity::PulseWidth, QString("Pulse Width") },
 	{ Quantity::Conductance, QString("Conductance") },
 	{ Quantity::Power, QString("Power") },
-	{ Quantity::Work, QString("Work") },
 	{ Quantity::ElectricCharge, QString("Electric Charge") },
 	{ Quantity::Gain, QString("Gain") },
 	{ Quantity::SoundPressureLevel, QString("Sound Pressure Level") },
@@ -287,6 +285,7 @@ quantity_name_map_t quantity_name_map = {
 	{ Quantity::ApparentPower, QString("Apparent Power") },
 	{ Quantity::Mass, QString("Mass") },
 	{ Quantity::HarmonicRatio, QString("Harmonic Ratio") },
+	{ Quantity::Energy, QString("Energy") },
 	{ Quantity::Unknown, QString("Unknown") },
 };
 
@@ -410,6 +409,7 @@ map<const sigrok::Quantity *, Quantity> sr_quantity_quantity_map = {
 	{ sigrok::Quantity::APPARENT_POWER, Quantity::ApparentPower },
 	{ sigrok::Quantity::MASS, Quantity::Mass },
 	{ sigrok::Quantity::HARMONIC_RATIO, Quantity::HarmonicRatio },
+	{ sigrok::Quantity::ENERGY, Quantity::Energy },
 };
 
 map<Quantity, const sigrok::Quantity *> quantity_sr_quantity_map = {
@@ -446,6 +446,7 @@ map<Quantity, const sigrok::Quantity *> quantity_sr_quantity_map = {
 	{ Quantity::ApparentPower, sigrok::Quantity::APPARENT_POWER },
 	{ Quantity::Mass, sigrok::Quantity::MASS },
 	{ Quantity::HarmonicRatio, sigrok::Quantity::HARMONIC_RATIO },
+	{ Quantity::Energy, sigrok::Quantity::ENERGY },
 };
 
 map<const sigrok::QuantityFlag *, QuantityFlag> sr_quantity_flag_quantity_flag_map = {
@@ -618,7 +619,6 @@ quantity_unit_map_t quantity_unit_map = {
 	{ Quantity::PulseWidth, { Unit::Percentage } },
 	{ Quantity::Conductance, { Unit::Siemens } },
 	{ Quantity::Power, { Unit::Watt, Unit::VoltAmpere } },
-	{ Quantity::Work, { Unit::WattHour, Unit::Joule } },
 	{ Quantity::ElectricCharge, { Unit::AmpereHour, Unit::Coulomb } },
 	{ Quantity::Gain, { Unit::Decibel, Unit::Unitless } },
 	{ Quantity::SoundPressureLevel, { Unit::DecibelSpl } },
@@ -644,6 +644,7 @@ quantity_unit_map_t quantity_unit_map = {
 						Unit::Pound, Unit::Pennyweight, Unit::Grain, Unit::Tael,
 						Unit::Momme, Unit::Tola} },
 	{ Quantity::HarmonicRatio, { Unit::Unitless } },
+	{ Quantity::Energy, { Unit::WattHour, Unit::Joule } },
 };
 
 } // namespace
