@@ -103,7 +103,6 @@ void BaseTab::add_view(views::BaseView *view, Qt::DockWidgetArea area,
 	this->addDockWidget(area, dock);
 
 	// This fixes a qt bug. See: https://bugreports.qt.io/browse/QTBUG-65592
-	// resizeDocks() was introduced in Qt 5.6.
 	this->resizeDocks({dock}, {40}, Qt::Horizontal);
 }
 
@@ -120,7 +119,6 @@ void BaseTab::add_view_ontop(views::BaseView *view,
 	this->tabifyDockWidget(view_docks_map_[existing_view], dock);
 
 	// This fixes a qt bug. See: https://bugreports.qt.io/browse/QTBUG-65592
-	// resizeDocks() was introduced in Qt 5.6.
 	this->resizeDocks({dock}, {40}, Qt::Horizontal);
 }
 

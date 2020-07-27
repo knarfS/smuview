@@ -99,7 +99,7 @@ pkg_check_modules(PKGDEPS REQUIRED ${PKGDEPS})
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 
-find_package(Qt5 COMPONENTS Core Gui Widgets Svg REQUIRED)
+find_package(Qt5 5.7 COMPONENTS Core Gui Widgets Svg REQUIRED)
 
 if(MINGW)
 	# MXE workaround: Use pkg-config to find Qt5 libs.

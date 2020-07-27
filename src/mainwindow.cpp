@@ -226,7 +226,6 @@ void MainWindow::setup_ui()
 	this->addDockWidget(Qt::LeftDockWidgetArea, dev_dock);
 
 	// This fixes a qt bug. See: https://bugreports.qt.io/browse/QTBUG-65592
-	// resizeDocks() was introduced in Qt 5.6.
 	this->resizeDocks({dev_dock}, {40}, Qt::Horizontal);
 
 	// SmuScript Tree Dock

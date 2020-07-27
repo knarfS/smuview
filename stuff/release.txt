@@ -32,7 +32,7 @@ For QCodeEditor and (modified) pybind11 you need cmake >= 3.6:
  $ sudo apt-key --keyring /etc/apt/trusted.gpg del C1F34CDD40CD72DA
  $ sudo apt -y install cmake
 
-Install Qt 5.12.3 (SmuView needs Qt >= 5.6 but Ubuntu 16.04 comes with 5.5)
+Install Qt 5.12.3 (SmuView needs Qt >= 5.7 but Ubuntu 16.04 comes with 5.5)
  $ sudo add-apt-repository -y ppa:beineri/opt-qt-5.12.3-xenial
  $ sudo apt update
  $ sudo apt -y install qt512base qt512-meta-full
