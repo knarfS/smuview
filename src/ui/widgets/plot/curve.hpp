@@ -58,7 +58,8 @@ public:
 
 	static QColor default_color(sv::data::Quantity quantity,
 		set<sv::data::QuantityFlag> quantity_flags);
-	//static void save_settings_default_colors();
+	static void save_settings_default_color(sv::data::Quantity quantity,
+		set<sv::data::QuantityFlag> quantity_flags, QColor &color);
 
 	void save_settings(QSettings &settings) const;
 	static Curve *init_from_settings(Session &session, QSettings &settings,

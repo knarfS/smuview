@@ -262,12 +262,12 @@ void PlotConfigDialog::setup_ui_style_tab()
 
 void PlotConfigDialog::setup_ui_curve_colors_tab()
 {
-	QString title(tr("Curve Colors"));
+	QString title(tr("Default Curve Colors"));
 
 	QWidget *widget = new QWidget();
 	QVBoxLayout *layout = new QVBoxLayout();
 
-	QTableWidget *color_table_ = new QTableWidget();
+	color_table_ = new QTableWidget();
 	color_table_->setColumnCount(2);
 
 	QTableWidgetItem *quantity_header_item = new QTableWidgetItem(tr("Quantity"));
@@ -288,6 +288,8 @@ void PlotConfigDialog::setup_ui_curve_colors_tab()
 		int last_row = color_table_->rowCount();
 		color_table_->insertRow(last_row);
 		QTableWidgetItem *quantity_item = new QTableWidgetItem(q_n_pair.second);
+		quantity_item->setData(Qt::UserRole, QString("%1_0").arg(
+			data::datautil::get_sr_quantity_id(q_n_pair.first)));
 		quantity_item->setFlags(quantity_item->flags() ^ Qt::ItemIsEditable);
 		color_table_->setItem(last_row, 0, quantity_item);
 		QTableWidgetItem *color_item = new QTableWidgetItem(q_n_pair.second);
@@ -301,14 +303,18 @@ void PlotConfigDialog::setup_ui_curve_colors_tab()
 			for (auto const &qf : {data::QuantityFlag::AC, data::QuantityFlag::DC}) {
 				QString name = QString("%1 %2").arg(
 					q_n_pair.second, data::datautil::format_quantity_flag(qf));
+				auto qfs = set<data::QuantityFlag>{qf};
 				int last_row = color_table_->rowCount();
 				color_table_->insertRow(last_row);
 				QTableWidgetItem *quantity_item = new QTableWidgetItem(name);
+				quantity_item->setData(Qt::UserRole, QString("%1_%2").
+					arg(data::datautil::get_sr_quantity_id(q_n_pair.first)).
+					arg(data::datautil::get_sr_quantity_flags_id(qfs)));
 				quantity_item->setFlags(quantity_item->flags() ^ Qt::ItemIsEditable);
 				color_table_->setItem(last_row, 0, quantity_item);
 				QTableWidgetItem *color_item = new QTableWidgetItem(name);
-				color_item->setData(Qt::EditRole, widgets::plot::Curve::default_color(
-					q_n_pair.first, set<data::QuantityFlag>{qf}));
+				color_item->setData(Qt::EditRole,
+					widgets::plot::Curve::default_color(q_n_pair.first, qfs));
 				color_table_->setItem(last_row, 1, color_item);
 			}
 		}
@@ -372,7 +378,14 @@ void PlotConfigDialog::accept()
 	plot_->set_markers_label_alignment(
 		markers_box_pos_combobox_->currentData().toInt());
 
-	// TODO: Set color to QSettings?
+	QSettings settings;
+	settings.beginGroup("DefaultCurveColors");
+	for (int i=0; i<color_table_->rowCount(); i++) {
+		settings.setValue(
+			color_table_->item(i, 0)->data(Qt::UserRole).toString(),
+			color_table_->item(i, 1)->data(Qt::EditRole));
+	}
+	settings.endGroup();
 
 	QDialog::accept();
 }

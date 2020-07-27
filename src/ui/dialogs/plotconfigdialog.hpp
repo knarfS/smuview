@@ -33,6 +33,7 @@
 #include <QString>
 #include <QStyledItemDelegate>
 #include <QStyleOptionViewItem>
+#include <QTableWidget>
 #include <QTabWidget>
 #include <QWidget>
 
@@ -87,6 +88,7 @@ private:
 	QLineEdit *time_span_edit_;
 	QLineEdit *add_time_edit_;
 	QComboBox *markers_box_pos_combobox_;
+	QTableWidget *color_table_;
 	QDialogButtonBox *button_box_;
 
 public Q_SLOTS:

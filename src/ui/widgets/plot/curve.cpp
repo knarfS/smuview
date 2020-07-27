@@ -287,41 +287,25 @@ Curve *Curve::init_from_settings(Session &session, QSettings &settings,
 	return curve;
 }
 
-/*
-void BaseCurveData::save_settings_default_colors()
-{
-	QSettings settings;
-
-	settings.beginGroup("CurveColors");
-
-	for (const auto &q_n_pair : data::datautil::get_quantity_name_map()) {
-		QString key = QString("%1:0").arg(
-			data::datautil::get_sr_quantity_id(q_n_pair.first));
-		QColor color = BaseCurveData::default_color(
-			q_n_pair.first, set<data::QuantityFlag>());
-		settings.setValue(key, QVariant::fromValue(color));
-
-		// We want to save another color for Voltage/Current AC/DC.
-		if (q_n_pair.first == data::Quantity::Voltage ||
-				q_n_pair.first == data::Quantity::Current) {
-			for (auto const &qf : {data::QuantityFlag::AC, data::QuantityFlag::DC}) {
-				QString key = QString("%1:%2").arg(
-					data::datautil::get_sr_quantity_id(q_n_pair.first),
-					data::datautil::get_sr_quantity_flag_id(qf));
-				QColor color = BaseCurveData::default_color(
-					q_n_pair.first, {qf});
-				settings.setValue(key, QVariant::fromValue(color));
-			}
-		}
-	}
-
-	settings.endGroup();
-}
-*/
-
 QColor Curve::default_color(sv::data::Quantity quantity,
 	set<sv::data::QuantityFlag> quantity_flags)
 {
+	// First, try to get color from QSettings
+	QColor color = QColor();
+	QSettings settings;
+	if (settings.childGroups().contains("DefaultCurveColors")) {
+		settings.beginGroup("DefaultCurveColors");
+		QString key = QString("%1_%2").
+			arg(data::datautil::get_sr_quantity_id(quantity)).
+			arg(data::datautil::get_sr_quantity_flags_id(quantity_flags));
+		if (settings.childKeys().contains(key))
+			color = settings.value(key).value<QColor>();
+		settings.endGroup();
+	}
+	if (color.isValid())
+		return color;
+
+	// Predefined colors
 	if (quantity == sv::data::Quantity::Voltage &&
 			quantity_flags.count(sv::data::QuantityFlag::DC) > 0)
 		return Qt::red;
@@ -356,21 +340,27 @@ QColor Curve::default_color(sv::data::Quantity quantity,
 		return Qt::darkMagenta;
 	if (quantity == sv::data::Quantity::PowerFactor)
 		return Qt::lightGray;
+	if (quantity == sv::data::Quantity::ElectricCharge)
+		return Qt::darkGray;
 
+	// Random color for the rest
 #if QT_VERSION >= 0x050A00
 	return QColor::fromRgb(QRandomGenerator::global()->generate());
 #else
 	return QColor::fromRgb(qrand());
 #endif
+}
 
-	/*
-		Unused colors:
-		Qt::blue
-		Qt::darkBlue
-		Qt::darkGray
-		Qt::white
-		Qt::black
-	*/
+void Curve::save_settings_default_color(sv::data::Quantity quantity,
+	set<sv::data::QuantityFlag> quantity_flags, QColor &color)
+{
+	QSettings settings;
+	settings.beginGroup("DefaultCurveColors");
+	QString key = QString("%1_%2").
+		arg(data::datautil::get_sr_quantity_id(quantity)).
+		arg(data::datautil::get_sr_quantity_flags_id(quantity_flags));
+	settings.setValue(key, QVariant::fromValue(color));
+	settings.endGroup();
 }
 
 } // namespace plot
