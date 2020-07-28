@@ -35,6 +35,7 @@
 #include "config.h"
 #include "src/devicemanager.hpp"
 #include "src/session.hpp"
+#include "src/settingsmanager.hpp"
 #include "src/util.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/data/analogtimesignal.hpp"
@@ -93,7 +94,8 @@ MainWindow::MainWindow(DeviceManager &device_manager,
 	session_->set_main_window(this);
 
 	setup_ui();
-	restore_settings();
+	if (SettingsManager::restore_settings())
+		restore_settings();
 	connect_signals();
 	init_device_tabs();
 }

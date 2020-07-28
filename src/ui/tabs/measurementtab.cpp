@@ -43,8 +43,10 @@ MeasurementTab::MeasurementTab(Session &session,
 	DeviceTab(session, device, parent),
 	measurement_device_(device)
 {
-	if (SettingsManager::has_device_settings(device))
+	if (SettingsManager::restore_settings() &&
+			SettingsManager::has_device_settings(device)) {
 		restore_settings();
+	}
 	else
 		setup_ui();
 }

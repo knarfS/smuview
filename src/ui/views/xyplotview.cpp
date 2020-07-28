@@ -27,7 +27,6 @@
 
 #include "xyplotview.hpp"
 #include "src/session.hpp"
-#include "src/settingsmanager.hpp"
 #include "src/data/analogtimesignal.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/ui/dialogs/selectxysignalsdialog.hpp"

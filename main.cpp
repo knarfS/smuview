@@ -32,6 +32,7 @@
 #include "src/application.hpp"
 #include "src/devicemanager.hpp"
 #include "src/session.hpp"
+#include "src/settingsmanager.hpp"
 #include "src/mainwindow.hpp"
 #include "src/ui/tabs/smuscripttab.hpp"
 
@@ -66,10 +67,10 @@ void usage()
 		"  -d, --driver               Specify the device driver(s) to use\n"
 		"  -D, --dont-scan            Don't auto-scan for devices, use -d spec only\n"
 		"  -s, --script               Specify the SmuScript to load and execute\n"
-		/* Disable cmd line options i, I and c
+		"  -c, --clean                Don't restore previous settings on startup\n"
+		/* Disable cmd line options i and I
 		"  -i, --input-file           Load input from file\n"
 		"  -I, --input-format         Input format\n"
-		"  -c, --clean                Don't restore previous session on startup\n"
 		*/
 		"\n"
 		"Examples:\n"
@@ -88,11 +89,11 @@ int main(int argc, char *argv[])
 	int ret = 0;
 	shared_ptr<sigrok::Context> context;
 	vector<string> drivers;
-	string open_file;
-	string open_file_format;
-	bool restore_session = true;
+	//string open_file;
+	//string open_file_format;
 	bool do_scan = true;
 	string script_file;
+	bool restore_settings = true;
 
 	Application app(argc, argv);
 
@@ -160,7 +161,7 @@ int main(int argc, char *argv[])
 			break;
 
 		case 'c':
-			restore_session = false;
+			restore_settings = false;
 			break;
 
 		/* Disable cmd line options i and I
@@ -175,6 +176,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
+	/* Disable cmd line options i and I
 	if (argc - optind > 1) {
 		fprintf(stderr, "Only one file can be opened.\n");
 		return 1;
@@ -182,6 +184,7 @@ int main(int argc, char *argv[])
 
 	if (argc - optind == 1)
 		open_file = argv[argc - 1];
+	*/
 
 	// Initialise libsigrok
 	context = sigrok::Context::create();
@@ -189,6 +192,8 @@ int main(int argc, char *argv[])
 
 	do {
 		try {
+			sv::SettingsManager::set_restore_settings(restore_settings);
+
 			// Initialize global start timestamp
 			// TODO: use std::chrono / std::time
 			sv::Session::session_start_timestamp =
@@ -203,12 +208,6 @@ int main(int argc, char *argv[])
 			// Initialise the main window.
 			sv::MainWindow w(device_manager, session);
 			w.show();
-
-			(void)restore_session;
-			/* TODO: atm in MainWindow ctor
-			if (restore_session)
-				w.restore_session();
-			*/
 
 			if (!script_file.empty())
 				w.add_smuscript_tab(script_file)->run_script();

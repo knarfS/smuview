@@ -34,10 +34,21 @@ using std::shared_ptr;
 
 namespace sv {
 
+bool SettingsManager::restore_settings_ = true;
+
 SettingsManager::SettingsManager()
 {
 }
 
+bool SettingsManager::restore_settings()
+{
+	return SettingsManager::restore_settings_;
+}
+
+void SettingsManager::set_restore_settings(bool restore_settings)
+{
+	SettingsManager::restore_settings_ = restore_settings;
+}
 
 bool SettingsManager::has_device_settings(
 	shared_ptr<devices::BaseDevice> device)

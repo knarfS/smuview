@@ -52,6 +52,22 @@ public:
 	SettingsManager();
 
 	/**
+	 * Check if setting should be restored. This is controlled by the command
+	 * line option -c.
+	 *
+	 * @return true if a setting should be restored.
+	 */
+	static bool restore_settings();
+
+	/**
+	 * Set if the setting should be restored. This is used by the command
+	 * line option -c.
+	 *
+	 * @param[in] restore_settings The restore_settings flag.
+	 */
+	static void set_restore_settings(bool restore_settings);
+
+	/**
 	 * Check if a setting for this device exists.
 	 *
 	 * @param[in] device The device.
@@ -163,6 +179,9 @@ public:
 	 */
 	static shared_ptr<sv::data::BaseSignal> restore_signal(
 		Session &session, QSettings &settings, const QString &key_prefix = "");
+
+private:
+	static bool restore_settings_;
 
 };
 

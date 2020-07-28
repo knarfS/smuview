@@ -293,7 +293,8 @@ QColor Curve::default_color(sv::data::Quantity quantity,
 	// First, try to get color from QSettings
 	QColor color = QColor();
 	QSettings settings;
-	if (settings.childGroups().contains("DefaultCurveColors")) {
+	if (SettingsManager::restore_settings() &&
+			settings.childGroups().contains("DefaultCurveColors")) {
 		settings.beginGroup("DefaultCurveColors");
 		QString key = QString("%1_%2").
 			arg(data::datautil::get_sr_quantity_id(quantity)).
