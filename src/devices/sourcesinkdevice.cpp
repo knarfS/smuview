@@ -135,7 +135,8 @@ void SourceSinkDevice::init_channels()
 				init = true;
 				handle_channel_name_suffix(channel->name(), 1, ch_suffix);
 			}
-			else if (util::starts_with(channel->name(), "Wh")) {
+			else if (util::starts_with(channel->name(), "Wh") ||
+					util::starts_with(channel->name(), "E")) {
 				quantity = data::Quantity::Energy;
 				unit = data::Unit::WattHour;
 				init = true;

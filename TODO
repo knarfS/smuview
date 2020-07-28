@@ -48,7 +48,6 @@ ToDo
 - Reduce/Simplyfy BaseDevice name methods
 - Bindings: Implement add_math_channel()
 - Can we inherit MathChannel from UserChannel?
-- Add "E" for detecting energy (Wh) channels
 - Unify name of static (const) variables
 - Remove devicetab.hpp time_unit_
 - Cycle: replace BaseChannel::parent_device_ with device_id_, and so on....
@@ -109,6 +108,7 @@ Done
 - Session: move init to main.cpp
 - Bindings: Binding for setting the color of a plot curve
 - Bindings: Set name for new signal? e.g. f(x, y, name=nullptr)
+- Add "E" for detecting energy (Wh) channels
 
 Won't fix
 ---------
