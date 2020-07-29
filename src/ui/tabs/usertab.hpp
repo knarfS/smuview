@@ -44,7 +44,7 @@ public:
 	UserTab(Session &session,
  		shared_ptr<sv::devices::UserDevice> device, QWidget *parent = nullptr);
 
-	// TODO: scope
+protected:
 	void save_settings() const override;
 	void restore_settings() override;
 

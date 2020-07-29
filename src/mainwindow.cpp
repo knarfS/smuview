@@ -157,8 +157,9 @@ void MainWindow::remove_tab(int tab_index)
 		}
 	}
 
-	//tab_window->deleteLater();
-	delete tab_window;
+	// Call close() of the tab window to save settings (*Tab::closeEvent())
+	tab_window->close();
+	tab_window->deleteLater();
 
 	if (tab_window_map_.empty()) {
 		// When there are no more tabs, display the WelcomeTab
@@ -313,8 +314,10 @@ void MainWindow::on_tab_close_requested(int tab_index)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-	for (const auto &tab_window_pair : this->tab_window_map_)
-		tab_window_pair.second->save_settings();
+	for (const auto &tab_window_pair : this->tab_window_map_) {
+		// Call close() of the tab window to save settings (*Tab::closeEvent())
+		tab_window_pair.second->close();
+	}
 
 	save_settings();
 	event->accept();

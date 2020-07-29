@@ -52,7 +52,7 @@ public:
 	QString title() override;
 	bool request_close() override;
 
-	// TODO: scope
+protected:
 	void save_settings() const override;
 	void restore_settings() override;
 

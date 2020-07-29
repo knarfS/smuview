@@ -54,19 +54,15 @@ public:
 	bool request_close() override;
 	virtual void clear_signals();
 
-	// TODO: scope
+protected:
 	void save_settings() const override;
 	void restore_settings() override;
 
-protected:
 	shared_ptr<sv::devices::BaseDevice> device_;
 	util::TimeUnit time_unit_;
 
 private:
 	void setup_toolbar();
-
-	/** This event is handling the saving of the settings */
-	void closeEvent(QCloseEvent *event) override;
 
 	QAction *const action_aquire_;
 	QAction *const action_save_as_;

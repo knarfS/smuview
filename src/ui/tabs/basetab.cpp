@@ -45,7 +45,6 @@ BaseTab::BaseTab(Session &session, QWidget *parent) :
 	this->centralWidget()->hide();
 }
 
-
 Session& BaseTab::session()
 {
 	return session_;
@@ -88,6 +87,12 @@ TabDockWidget *BaseTab::create_dock_widget(views::BaseView *view,
 	connect(dock, &TabDockWidget::closed, this, &BaseTab::remove_view);
 
 	return dock;
+}
+
+void BaseTab::closeEvent(QCloseEvent *event)
+{
+	save_settings();
+	event->accept();
 }
 
 void BaseTab::add_view(views::BaseView *view, Qt::DockWidgetArea area,

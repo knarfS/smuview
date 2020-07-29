@@ -69,19 +69,21 @@ public:
 	views::BaseView *get_view_from_view_id(string id);
 	virtual bool request_close() = 0;
 
-	// TODO: scope
-	virtual void save_settings() const = 0;
-	virtual void restore_settings() = 0;
-
 private:
 	TabDockWidget *create_dock_widget(views::BaseView *view,
 		QDockWidget::DockWidgetFeatures features);
+
+	/** This event is handling the saving of the settings. */
+	void closeEvent(QCloseEvent *event) override;
 
 protected:
 	Session &session_;
 	string id_;
 	map<views::BaseView *, TabDockWidget *> view_docks_map_;
 	map<string, views::BaseView *> view_id_map_;
+
+	virtual void save_settings() const = 0;
+	virtual void restore_settings() = 0;
 
 public Q_SLOTS:
 	/*

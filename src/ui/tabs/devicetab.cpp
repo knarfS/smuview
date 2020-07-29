@@ -229,12 +229,6 @@ void DeviceTab::save_settings() const
 	settings.endGroup();
 }
 
-void DeviceTab::closeEvent(QCloseEvent *event)
-{
-	save_settings();
-	event->accept();
-}
-
 void DeviceTab::on_action_aquire_triggered()
 {
 	if (action_aquire_->isChecked()) {
