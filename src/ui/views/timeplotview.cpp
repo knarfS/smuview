@@ -86,7 +86,7 @@ void TimePlotView::set_channel(shared_ptr<channels::BaseChannel> channel)
 			this, &TimePlotView::on_signal_changed);
 	}
 
-	// TODO: Remove old curves??
+	plot_->remove_all_curves();
 
 	channel_ = channel;
 

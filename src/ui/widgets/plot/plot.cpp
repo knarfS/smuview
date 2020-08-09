@@ -289,6 +289,13 @@ void Plot::remove_curve(Curve *curve)
 	Q_EMIT curve_removed();
 }
 
+void Plot::remove_all_curves()
+{
+	for (const auto &curve_pair : curve_map_) {
+		remove_curve(curve_pair.second);
+	}
+}
+
 int Plot::init_x_axis(BaseCurveData *curve_data, int x_axis_id)
 {
 	assert(curve_data);

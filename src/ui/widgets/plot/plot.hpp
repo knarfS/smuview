@@ -97,6 +97,7 @@ public:
 	string add_curve(BaseCurveData *curve_data);
 	bool add_curve(Curve *curve);
 	void remove_curve(Curve *curve);
+	void remove_all_curves();
 	/** Return a map of all curves. */
 	map<string, Curve *> curve_map() const { return curve_map_; }
 	bool is_axis_locked(int axis_id, AxisBoundary axis_boundary) { return axis_lock_map_[axis_id][axis_boundary]; }
