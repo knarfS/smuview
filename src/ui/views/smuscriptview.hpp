@@ -45,10 +45,11 @@ class SmuScriptView : public BaseView
 	Q_OBJECT
 
 public:
-	SmuScriptView(Session& session, string script_file_name,
-		QUuid uuid = QUuid(), QWidget* parent = nullptr);
+	SmuScriptView(Session& session, QUuid uuid = QUuid(),
+		QWidget* parent = nullptr);
 
 	QString title() const override;
+	void load_file(const string &file_name);
 	bool ask_to_save(const QString &title);
 
 	void save_settings(QSettings &settings) const override;

@@ -27,10 +27,12 @@
 #include "smuscripttab.hpp"
 #include "src/mainwindow.hpp"
 #include "src/session.hpp"
+#include "src/settingsmanager.hpp"
 #include "src/python/smuscriptrunner.hpp"
 #include "src/ui/tabs/basetab.hpp"
 #include "src/ui/views/smuscriptoutputview.hpp"
 #include "src/ui/views/smuscriptview.hpp"
+#include "src/ui/views/viewhelper.hpp"
 
 using std::string;
 
@@ -49,7 +51,14 @@ SmuScriptTab::SmuScriptTab(Session &session,
 	std::replace(file_name_tmp.begin(), file_name_tmp.end(), '\\', '_');
 	id_ = "smuscripttab:" + file_name_tmp;
 
-	setup_ui();
+	QSettings settings;
+	if (SettingsManager::restore_settings() &&
+			settings.childGroups().contains("SmuScriptTab")) {
+		restore_settings();
+	}
+	else {
+		setup_ui();
+	}
 	connect_signals();
 }
 
@@ -66,7 +75,8 @@ bool SmuScriptTab::request_close()
 
 void SmuScriptTab::setup_ui()
 {
-	smu_script_view_ = new views::SmuScriptView(session_, script_file_name_);
+	smu_script_view_ = new views::SmuScriptView(session_);
+	smu_script_view_->load_file(script_file_name_);
 	add_view(smu_script_view_, Qt::TopDockWidgetArea,
 		QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
 
@@ -101,10 +111,62 @@ void SmuScriptTab::stop_script()
 
 void SmuScriptTab::restore_settings()
 {
+	QSettings settings;
+
+	// Restore device views
+	settings.beginGroup("SmuScriptTab");
+
+	QStringList view_keys = settings.childGroups();
+	for (const auto &view_key : view_keys) {
+		settings.beginGroup(view_key);
+		auto view = views::viewhelper::get_view_from_settings(session_, settings);
+		if (view) {
+			add_view(view, Qt::DockWidgetArea::TopDockWidgetArea);
+			if (view->id().rfind("smuscript:", 0) == 0) {
+				smu_script_view_ = qobject_cast<views::SmuScriptView *>(view);
+				smu_script_view_->load_file(script_file_name_);
+			}
+			else if (view->id().rfind("smuscriptoutput:", 0) == 0) {
+				smu_script_output_view_ =
+					qobject_cast<views::SmuScriptOutputView *>(view);
+			}
+		}
+		settings.endGroup();
+	}
+
+	// NOTE: restoreGeometry() must be called _and_ the sizeHint() of the widget
+	//       (view) must be set to the last size, in order to restore the
+	//       correct size of the dock widget. Calling/Setting only one of them
+	//       is not working!
+	if (settings.contains("geometry"))
+		restoreGeometry(settings.value("geometry").toByteArray());
+	if (settings.contains("state"))
+		restoreState(settings.value("state").toByteArray());
+
+	settings.endGroup();
 }
 
 void SmuScriptTab::save_settings() const
 {
+	QSettings settings;
+
+	settings.beginGroup("SmuScriptTab");
+	settings.remove("");
+
+	size_t i = 0;
+	for (const auto &view_dock_pair : view_docks_map_) {
+		settings.beginGroup(QString("view%1").arg(i));
+		view_dock_pair.first->save_settings(settings);
+		settings.endGroup();
+		++i;
+	}
+
+	// Save state and geometry for all view widgets.
+	// NOTE: geometry must be saved. See restore_settings().
+	settings.setValue("geometry", saveGeometry());
+	settings.setValue("state", saveState());
+
+	settings.endGroup();
 }
 
 void SmuScriptTab::on_file_name_changed(const QString &file_name)

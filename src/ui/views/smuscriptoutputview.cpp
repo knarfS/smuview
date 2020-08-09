@@ -102,12 +102,12 @@ void SmuScriptOutputView::setup_toolbar()
 
 void SmuScriptOutputView::save_settings(QSettings &settings) const
 {
-	(void)settings;
+	BaseView::save_settings(settings);
 }
 
 void SmuScriptOutputView::restore_settings(QSettings &settings)
 {
-	(void)settings;
+	BaseView::restore_settings(settings);
 }
 
 void SmuScriptOutputView::scroll_to_bottom()

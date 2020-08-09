@@ -46,6 +46,8 @@
 #include "src/ui/views/measurementcontrolview.hpp"
 #include "src/ui/views/powerpanelview.hpp"
 #include "src/ui/views/sequenceoutputview.hpp"
+#include "src/ui/views/smuscriptoutputview.hpp"
+#include "src/ui/views/smuscriptview.hpp"
 #include "src/ui/views/sourcesinkcontrolview.hpp"
 #include "src/ui/views/timeplotview.hpp"
 #include "src/ui/views/valuepanelview.hpp"
@@ -167,10 +169,10 @@ BaseView *get_view_from_settings(Session &session, QSettings &settings)
 		view = new SequenceOutputView(session, uuid);
 	}
 	if (type == "smuscriptoutput") {
-		// TODO
+		view = new SmuScriptOutputView(session, uuid);
 	}
 	if (type == "smuscript") {
-		// TODO
+		view = new SmuScriptView(session, uuid);
 	}
 	if (type == "democontrol") {
 		view = DemoControlView::init_from_settings(session, settings, uuid);

@@ -47,10 +47,9 @@ namespace sv {
 namespace ui {
 namespace views {
 
-SmuScriptView::SmuScriptView(Session &session, string script_file_name,
-		QUuid uuid, QWidget *parent) :
+SmuScriptView::SmuScriptView(Session &session, QUuid uuid, QWidget *parent) :
 	BaseView(session, uuid, parent),
-	script_file_name_(script_file_name),
+	script_file_name_(""),
 	action_open_(new QAction(this)),
 	action_save_(new QAction(this)),
 	action_save_as_(new QAction(this)),
@@ -67,11 +66,32 @@ SmuScriptView::SmuScriptView(Session &session, string script_file_name,
 
 QString SmuScriptView::title() const
 {
-	if (script_file_name_.length() <= 0)
+	if (script_file_name_.empty())
 		return tr("Untitled");
 
 	std::size_t found = script_file_name_.find_last_of("/\\");
 	return QString::fromStdString(script_file_name_.substr(found+1));
+}
+
+void SmuScriptView::load_file(const string &file_name)
+{
+	if (file_name.empty())
+		return;
+
+	QFile file(QString::fromStdString(file_name));
+	if (file.open(QFile::ReadOnly | QFile::Text)) {
+		editor_->setPlainText(file.readAll());
+		file.close();
+
+		text_changed_ = false;
+		Q_EMIT file_save_state_changed(false);
+	}
+
+	// Check if filename has changed
+	if (script_file_name_ != file_name) {
+		script_file_name_ = file_name;
+		Q_EMIT file_name_changed(QString::fromStdString(file_name));
+	}
 }
 
 bool SmuScriptView::ask_to_save(const QString &title)
@@ -105,11 +125,6 @@ void SmuScriptView::setup_ui()
 	editor_->setAutoIndentation(true);
 	editor_->setAutoParentheses(true);
 	editor_->setWordWrapMode(QTextOption::WordWrap);
-	if (!script_file_name_.empty()) {
-		QFile script_file(script_file_name_.c_str());
-		if (script_file.open(QFile::ReadOnly | QFile::Text))
-			editor_->setPlainText(script_file.readAll());
-	}
 	layout->addWidget(editor_);
 
 	this->central_widget_->setLayout(layout);
@@ -178,12 +193,12 @@ void SmuScriptView::connect_signals()
 
 void SmuScriptView::save_settings(QSettings &settings) const
 {
-	(void)settings;
+	BaseView::save_settings(settings);
 }
 
 void SmuScriptView::restore_settings(QSettings &settings)
 {
-	(void)settings;
+	BaseView::restore_settings(settings);
 }
 
 bool SmuScriptView::save(QString file_name)
@@ -248,23 +263,7 @@ void SmuScriptView::on_action_open_triggered()
 
 	QString file_name = QFileDialog::getOpenFileName(this,
 		tr("Open SmuScript-File"), QDir::homePath(), tr("Python Files (*.py)"));
-	if (file_name.length() <= 0)
-		return;
-
-	QFile file(file_name);
-	if (file.open(QFile::ReadOnly | QFile::Text)) {
-		editor_->setPlainText(file.readAll());
-		file.close();
-
-		text_changed_ = false;
-		Q_EMIT file_save_state_changed(false);
-	}
-
-	// Check if filename has changed
-	if (script_file_name_ != file_name.toStdString()) {
-		script_file_name_ = file_name.toStdString();
-		Q_EMIT file_name_changed(file_name);
-	}
+	load_file(file_name.toStdString());
 }
 
 void SmuScriptView::on_action_save_triggered()
