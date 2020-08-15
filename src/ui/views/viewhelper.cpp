@@ -146,37 +146,37 @@ BaseView *get_view_from_settings(Session &session, QSettings &settings)
 	if (type == "data") {
 		view = new DataView(session, uuid);
 	}
-	if (type == "timeplot") {
+	else if (type == "timeplot") {
 		view = new TimePlotView(session, uuid);
 	}
-	if (type == "xyplot") {
+	else if (type == "xyplot") {
 		view = new XYPlotView(session, uuid);
 	}
-	if (type == "powerpanel") {
+	else if (type == "powerpanel") {
 		view = new PowerPanelView(session, uuid);
 	}
-	if (type == "valuepanel") {
+	else if (type == "valuepanel") {
 		view = new ValuePanelView(session, uuid);
 	}
-	if (type == "sequenceoutput") {
+	else if (type == "sequenceoutput") {
 		view = new SequenceOutputView(session, uuid);
 	}
-	if (type == "smuscriptoutput") {
+	else if (type == "smuscriptoutput") {
 		view = new SmuScriptOutputView(session, uuid);
 	}
-	if (type == "smuscript") {
+	else if (type == "smuscript") {
 		view = new SmuScriptView(session, uuid);
 	}
-	if (type == "democontrol") {
+	else if (type == "democontrol") {
 		view = DemoControlView::init_from_settings(session, settings, uuid);
 	}
-	if (type == "genericcontrol") {
+	else if (type == "genericcontrol") {
 		view = GenericControlView::init_from_settings(session, settings, uuid);
 	}
-	if (type == "measurementcontrol") {
+	else if (type == "measurementcontrol") {
 		view = MeasurementControlView::init_from_settings(session, settings, uuid);
 	}
-	if (type == "sourcesinkcontrol") {
+	else if (type == "sourcesinkcontrol") {
 		view = SourceSinkControlView::init_from_settings(session, settings, uuid);
 	}
 
