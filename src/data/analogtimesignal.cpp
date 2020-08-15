@@ -87,6 +87,7 @@ analog_time_sample_t AnalogTimeSignal::get_sample(
 		return make_pair(timestamp, data_->at(pos));
 	}
 
+	// TODO: throw exception
 	return make_pair(0., 0.);
 }
 
@@ -316,31 +317,75 @@ void AnalogTimeSignal::combine_signals(
 	// Ignore the first sample(s)
 	// TODO: Use last of the ignored samples?
 	if (signal1_pos == 0 && signal2_pos == 0) {
+		qWarning() << "AnalogSignal::combine_signals(): -2-";
+
+		qWarning() << "AnalogSignal::combine_signals(): signal1_size = "
+				<< signal1->sample_count() << ", signal1_pos = " << signal1_pos;
+		qWarning() << "AnalogSignal::combine_signals(): signal2_size = "
+				<< signal2->sample_count() << ", signal2_pos = " << signal2_pos;
+
 		if (signal1->sample_count() <= signal1_pos ||
 			signal2->sample_count() <= signal2_pos)
 			return;
 
+		qWarning() << "AnalogSignal::combine_signals(): -3-";
 		double signal1_ts = signal1->get_sample(signal1_pos, false).first;
 		double signal2_ts = signal2->get_sample(signal2_pos, false).first;
+		qWarning() << "AnalogSignal::combine_signals(): signal1_ts = " <<  signal1_ts - signal1->signal_start_timestamp() <<
+			" signal2_ts = " << signal2_ts - signal2->signal_start_timestamp();
 		if (signal1_ts < signal2_ts) {
-			while (signal1_ts < signal2_ts)
+			qWarning() << "AnalogSignal::combine_signals(): -4-";
+			qWarning() << "AnalogSignal::combine_signals(): signal1_pos+1 < signal1->sample_count() = " << signal1_pos+1 <<
+				" < " << signal1->sample_count() ;
+			qWarning() << "AnalogSignal::combine_signals(): signal1->get_sample(signal1_pos+1, false).first < signal2_ts = " <<
+				signal1->get_sample(signal1_pos+1, false).first - signal1->signal_start_timestamp() << " < " << signal2_ts - signal2->signal_start_timestamp();
+			/*
+			while (signal1_pos+1 < signal1->sample_count() &&
+					signal1->get_sample(signal1_pos+1, false).first < signal2_ts) {
+			*/
+			while (signal1_pos+1 < signal1->sample_count() &&
+					signal1_ts < signal2_ts) {
+				qWarning() << "AnalogSignal::combine_signals(): signal1_ts < signal2_ts = " <<
+					signal1_ts - signal1->signal_start_timestamp() << " < " << signal2_ts - signal2->signal_start_timestamp();
 				signal1_ts = signal1->get_sample(++signal1_pos, false).first;
+				qWarning() << "AnalogSignal::combine_signals(): signal1_ts = " << signal1_ts << "(" << signal1_ts - signal1->signal_start_timestamp() << ")";
+				qWarning() << "AnalogSignal::combine_signals(): signal1_pos = " << signal1_pos;
+			}
 		}
-		else if (signal1_ts > signal2_ts) {
-			while (signal1_ts > signal2_ts)
+		else if (signal2_ts < signal1_ts) {
+			qWarning() << "AnalogSignal::combine_signals(): -5-";
+			qWarning() << "AnalogSignal::combine_signals(): signal2_pos+1 < signal2->sample_count() = " << signal2_pos+1 <<
+				" < " << signal2->sample_count() ;
+			qWarning() << "AnalogSignal::combine_signals(): signal2->get_sample(signal2_pos+1, false).first < signal1_ts = " <<
+				signal2->get_sample(signal2_pos+1, false).first - signal2->signal_start_timestamp() << " < " << signal1_ts - signal1->signal_start_timestamp();
+			/*
+			while (signal2_pos+1 < signal2->sample_count() &&
+					signal2->get_sample(signal2_pos+1, false).first < signal1_ts) {
+			*/
+			while (signal2_pos+1 < signal2->sample_count() &&
+					signal2_ts < signal1_ts) {
+				qWarning() << "AnalogSignal::combine_signals(): signal1_ts > signal2_ts = " <<
+					signal1_ts - signal1->signal_start_timestamp() << " > " << signal2_ts - signal2->signal_start_timestamp();
 				signal2_ts = signal2->get_sample(++signal2_pos, false).first;
+				qWarning() << "AnalogSignal::combine_signals(): signal2_ts = " << signal2_ts << "(" << signal2_ts - signal2->signal_start_timestamp() << ")";
+				qWarning() << "AnalogSignal::combine_signals(): signal2_pos = " << signal2_pos;
+			}
 		}
+		qWarning() << "AnalogSignal::combine_signals(): -6-";
 	}
 
 	while (true) {
+		//qWarning() << "AnalogSignal::combine_signals(): -7-";
+
 		if (signal1->sample_count() <= signal1_pos ||
 			signal2->sample_count() <= signal2_pos)
 			break;
 
+		//qWarning() << "AnalogSignal::combine_signals(): -8-";
 		/*
-		qWarning() << "AnalogSignal::merge_signals(): signal1_size = "
+		qWarning() << "AnalogSignal::combine_signals(): signal1_size = "
 				<< signal1->sample_count() << ", signal1_pos = " << signal1_pos;
-		qWarning() << "AnalogSignal::merge_signals(): signal2_size = "
+		qWarning() << "AnalogSignal::combine_signals(): signal2_size = "
 				<< signal2->sample_count() << ", signal2_pos = " << signal2_pos;
 		*/
 
@@ -351,6 +396,7 @@ void AnalogTimeSignal::combine_signals(
 		auto signal1_sample = signal1->get_sample(signal1_pos, false);
 		auto signal2_sample = signal2->get_sample(signal2_pos, false);
 		if (signal1_sample.first == signal2_sample.first) {
+			//qWarning() << "AnalogSignal::combine_signals(): -9-";
 			time = signal1_sample.first;
 			value1 = signal1_sample.second;
 			value2 = signal2_sample.second;
@@ -360,22 +406,27 @@ void AnalogTimeSignal::combine_signals(
 		else if (signal1_sample.first < signal2_sample.first &&
 			signal2->sample_count() > signal2_pos+1) {
 
+			//qWarning() << "AnalogSignal::combine_signals(): -10-";
 			time = signal1_sample.first;
 			value1 = signal1_sample.second;
 			if (!signal2->get_value_at_timestamp(time, value2, false))
 				return;
+			//qWarning() << "AnalogSignal::combine_signals(): -11-";
 			++signal1_pos;
 		}
 		else if (signal1_sample.first > signal2_sample.first &&
 			signal1->sample_count() > signal1_pos+1) {
 
+			//qWarning() << "AnalogSignal::combine_signals(): -12-";
 			time = signal2_sample.first;
 			if (!signal1->get_value_at_timestamp(time, value1, false))
 				return;
+			//qWarning() << "AnalogSignal::combine_signals(): -13-";
 			value2 = signal2_sample.second;
 			++signal2_pos;
 		}
 		else {
+			//qWarning() << "AnalogSignal::combine_signals(): -14-";
 			return;
 		}
 
