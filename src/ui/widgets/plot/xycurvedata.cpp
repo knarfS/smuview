@@ -209,13 +209,12 @@ XYCurveData *XYCurveData::init_from_settings(
 {
 	auto x_t_signal = SettingsManager::restore_signal(session, settings, "x_");
 	auto y_t_signal = SettingsManager::restore_signal(session, settings, "y_");
-	if (x_t_signal && y_t_signal) {
-		return new XYCurveData(
-			dynamic_pointer_cast<sv::data::AnalogTimeSignal>(x_t_signal),
-			dynamic_pointer_cast<sv::data::AnalogTimeSignal>(y_t_signal));
-	}
-	else
+	if (!x_t_signal || !y_t_signal)
 		return nullptr;
+
+	return new XYCurveData(
+		dynamic_pointer_cast<sv::data::AnalogTimeSignal>(x_t_signal),
+		dynamic_pointer_cast<sv::data::AnalogTimeSignal>(y_t_signal));
 }
 
 void XYCurveData::on_sample_appended()

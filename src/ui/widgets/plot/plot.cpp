@@ -322,7 +322,7 @@ int Plot::init_x_axis(BaseCurveData *curve_data, int x_axis_id)
 			if (c.second->x_axis_id() == x_axis_id &&
 					c.second->curve_data()->x_unit_str() == curve_data->x_unit_str())
 				return x_axis_id;
-			else if (c.second->x_axis_id() == x_axis_id)
+			else if (c.second->x_axis_id() == x_axis_id) // NOLINT
 				return -1;
 		}
 	}
@@ -386,7 +386,7 @@ int Plot::init_y_axis(BaseCurveData *curve_data, int y_axis_id)
 			if (c.second->y_axis_id() == y_axis_id &&
 					c.second->curve_data()->y_unit_str() == curve_data->y_unit_str())
 				return y_axis_id;
-			else if (c.second->y_axis_id() == y_axis_id)
+			else if (c.second->y_axis_id() == y_axis_id) // NOLINT
 				return -1;
 		}
 	}

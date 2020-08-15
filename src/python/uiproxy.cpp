@@ -270,10 +270,9 @@ py::object UiProxy::ui_show_string_input_dialog(const string &title,
 	event_loop_.exec();
 	finish_wait_for_signal();
 
-	if (ok)
-		return py::cast(qvar.toString().toStdString());
-	else
+	if (!ok)
 		return py::cast<py::none>(Py_None);
+	return py::cast(qvar.toString().toStdString());
 }
 
 py::object UiProxy::ui_show_double_input_dialog(const string &title,
@@ -288,10 +287,9 @@ py::object UiProxy::ui_show_double_input_dialog(const string &title,
 	event_loop_.exec();
 	finish_wait_for_signal();
 
-	if (ok)
-		return py::cast(qvar.toDouble());
-	else
+	if (!ok)
 		return py::cast<py::none>(Py_None);
+	return py::cast(qvar.toDouble());
 }
 
 py::object UiProxy::ui_show_int_input_dialog(const string &title,
@@ -304,10 +302,9 @@ py::object UiProxy::ui_show_int_input_dialog(const string &title,
 	event_loop_.exec();
 	finish_wait_for_signal();
 
-	if (ok)
-		return py::cast(qvar.toInt());
-	else
+	if (!ok)
 		return py::cast<py::none>(Py_None);
+	return py::cast(qvar.toInt());
 }
 
 void UiProxy::init_wait_for_tab_added(string &id, int timeout)

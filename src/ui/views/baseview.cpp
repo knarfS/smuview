@@ -92,8 +92,7 @@ QSize BaseView::sizeHint() const
 {
 	if (size_.width() >= 0 && size_.height() >= 0)
 		return size_;
-	else
-		return QMainWindow::sizeHint();
+	return QMainWindow::sizeHint();
 }
 
 } // namespace views
