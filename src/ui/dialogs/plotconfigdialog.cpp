@@ -83,7 +83,7 @@ void ColorItemDelegate::paint(QPainter *painter,
 	QStyleOptionViewItem item_option(option);
     initStyleOption(&item_option, index);
 	item_option.text = color.name();
-	float brightness = std::sqrt(
+	double brightness = std::sqrt(
 		color.red() * color.red() * 0.241 +
 		color.green() * color.green() * 0.691 +
 		color.blue() * color.blue() * 0.068);
