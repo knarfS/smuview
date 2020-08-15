@@ -54,7 +54,7 @@ SmuScriptTab::SmuScriptTab(Session &session,
 	QSettings settings;
 	if (SettingsManager::restore_settings() &&
 			settings.childGroups().contains("SmuScriptTab")) {
-		restore_settings();
+		SmuScriptTab::restore_settings();
 	}
 	else {
 		setup_ui();
