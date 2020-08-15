@@ -29,8 +29,6 @@
 #include "basecurvedata.hpp"
 #include "src/data/datautil.hpp"
 
-using std::set;
-
 namespace sv {
 namespace ui {
 namespace widgets {

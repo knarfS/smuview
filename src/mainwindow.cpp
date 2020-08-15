@@ -58,7 +58,6 @@
 #include "src/ui/views/smuscripttreeview.hpp"
 
 using std::make_pair;
-using std::make_shared;
 using std::shared_ptr;
 using std::string;
 

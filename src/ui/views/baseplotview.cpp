@@ -37,8 +37,6 @@
 #include "src/ui/widgets/plot/plot.hpp"
 #include "src/ui/widgets/plot/basecurvedata.hpp"
 
-using std::dynamic_pointer_cast;
-
 Q_DECLARE_METATYPE(sv::ui::widgets::plot::Curve *)
 
 namespace sv {

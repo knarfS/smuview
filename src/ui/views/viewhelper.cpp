@@ -53,11 +53,7 @@
 #include "src/ui/views/valuepanelview.hpp"
 #include "src/ui/views/xyplotview.hpp"
 
-using std::dynamic_pointer_cast;
-using std::make_pair;
 using std::shared_ptr;
-using std::static_pointer_cast;
-using std::vector;
 
 using sv::devices::ConfigKey;
 using sv::devices::DeviceType;

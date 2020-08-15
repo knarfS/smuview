@@ -44,7 +44,6 @@
 #include "src/ui/widgets/monofontdisplay.hpp"
 
 using std::dynamic_pointer_cast;
-using std::make_pair;
 
 namespace sv {
 namespace ui {
