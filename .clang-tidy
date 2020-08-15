@@ -14,6 +14,8 @@
 #     https://stackoverflow.com/questions/52916410/why-is-const-allowed-in-function-declarations
 # - readability-braces-around-statements
 #     Even with `ShortStatementLines` = 3 there are too many false positives.
+# -readability-convert-member-functions-to-static,
+#     TODO: Could this be useful in some cases?
 # - readability-inconsistent-declaration-parameter-name
 #     This check shows to many false positives for Qt signal declarations. We can
 #     use CppChecks "funcArgNamesDifferent" instead.
@@ -40,6 +42,7 @@ Checks: >-
   readability-*,
   -readability-avoid-const-params-in-decls,
   -readability-braces-around-statements,
+  -readability-convert-member-functions-to-static,
   -readability-inconsistent-declaration-parameter-name,
   -readability-magic-numbers,
 
