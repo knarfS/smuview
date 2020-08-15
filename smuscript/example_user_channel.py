@@ -27,8 +27,17 @@ from math import sin
 # Add user device
 user_device = Session.add_user_device()
 # Add a user channel for measurement values to user device
-user_device.add_user_channel("Results", "User")
-result_ch = user_device.channels()["Results"]
+result_ch = user_device.add_user_channel("Results", "User")
+
+# Set first dummy sample
+result_ch.push_sample(0, time.time(), smuview.Quantity.Power, set(), smuview.Unit.Watt, 6, 3)
+result_ch.actual_signal().set_name("My user signal")
+
+# TEST
+test_ch = user_device.add_user_channel("TestCh", "User")
+eff_sig_1 = test_ch.add_signal(smuview.Quantity.PowerFactor, set(), smuview.Unit.Percentage)
+eff_sig_2 = test_ch.add_signal(smuview.Quantity.PowerFactor, set(), smuview.Unit.Percentage, "Eff 10V")
+eff_sig_3 = test_ch.add_signal(smuview.Quantity.PowerFactor, set(), smuview.Unit.Percentage, "Eff 18V")
 
 # Show tab for the user device
 user_device_tab = UiProxy.add_device_tab(user_device)
@@ -37,12 +46,20 @@ plot = UiProxy.add_time_plot_view(user_device_tab, smuview.DockArea.TopDockArea)
 # We don't have to wait for the signal to be created, because we are using the channel here.
 UiProxy.set_channel_to_time_plot_view(user_device_tab, plot, user_device.channels()["Results"])
 
+# Add a time plot view.
+plot_2 = UiProxy.add_time_plot_view(user_device_tab, smuview.DockArea.TopDockArea)
+UiProxy.add_curve_to_time_plot_view(user_device_tab, plot_2, eff_sig_1)
+UiProxy.add_curve_to_time_plot_view(user_device_tab, plot_2, eff_sig_2)
+UiProxy.add_curve_to_time_plot_view(user_device_tab, plot_2, eff_sig_3)
+
+
 # Fill the user channel with some data
 print("Starting loop...")
 i = 0
 while i<10000:
     ts = time.time()
     result_ch.push_sample(sin(i), ts, smuview.Quantity.Power, set(), smuview.Unit.Watt, 6, 3)
-    print("  new value = {}".format(result_ch.actual_signal().get_last_sample(True)[1]))
+    result_ch.actual_signal().set_name("My user signal " + str(ts))
+    print("  new value for {} = {}".format(result_ch.actual_signal().name(), result_ch.actual_signal().get_last_sample(True)[1]))
     time.sleep(0.25)
     i = i + 0.1
