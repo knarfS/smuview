@@ -132,9 +132,6 @@ void Configurable::init()
 				shared_from_this(), config_key);
 			break;
 		case data::DataType::RationalPeriod:
-			property = make_shared<data::properties::RationalProperty>(
-				shared_from_this(), config_key);
-			break;
 		case data::DataType::RationalVolt:
 			property = make_shared<data::properties::RationalProperty>(
 				shared_from_this(), config_key);
