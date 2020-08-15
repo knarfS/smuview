@@ -35,7 +35,6 @@ namespace widgets {
 namespace plot {
 
 BaseCurveData::BaseCurveData(CurveType curve_type) :
-	QObject(),
 	QwtSeriesData<QPointF>(),
 	type_(curve_type),
 	relative_time_(true)

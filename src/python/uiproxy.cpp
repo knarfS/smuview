@@ -50,9 +50,7 @@ namespace python {
 
 UiProxy::UiProxy(Session &session, shared_ptr<UiHelper> ui_helper) :
 	session_(session),
-	ui_helper_(ui_helper),
-	event_loop_(),
-	timer_()
+	ui_helper_(ui_helper)
 {
 	// For the colors tuple:
 	qRegisterMetaType<std::tuple<int, int, int>>("std::tuple<int, int, int>");

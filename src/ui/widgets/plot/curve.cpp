@@ -49,7 +49,6 @@ namespace plot {
 
 Curve::Curve(BaseCurveData *curve_data, int x_axis_id, int y_axis_id,
 		QString custom_name, QColor custom_color) :
-	QObject(),
 	curve_data_(curve_data),
 	plot_direct_painter_(new QwtPlotDirectPainter()),
 	painted_points_(0)
