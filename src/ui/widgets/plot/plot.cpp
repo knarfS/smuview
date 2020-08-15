@@ -336,7 +336,7 @@ int Plot::init_x_axis(BaseCurveData *curve_data, int x_axis_id)
 	}
 	else if (curve_data->type() == CurveType::TimeCurve &&
 			!curve_data->is_relative_time()) {
-		min = session_.session_start_timestamp;
+		min = Session::session_start_timestamp;
 		max = min + add_time_;
 	}
 	else if (curve_data->type() == CurveType::XYCurve) {
