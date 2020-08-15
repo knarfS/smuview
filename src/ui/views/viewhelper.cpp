@@ -141,13 +141,10 @@ BaseView *get_view_for_configurable(Session &session,
 
 BaseView *get_view_from_settings(Session &session, QSettings &settings)
 {
-	qWarning() << "get_view_from_settings(): current group = " << settings.group();
-
 	QString id = settings.value("id").toString();
 	QUuid uuid = settings.value("uuid").toUuid();
 	QStringList id_list = id.split(':');
 	QString type = id_list[0];
-	qWarning() << "get_view_from_settings(): type = " << type;
 
 	BaseView *view = nullptr;
 	if (type == "data") {

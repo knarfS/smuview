@@ -170,9 +170,6 @@ void DeviceTab::setup_toolbar()
 
 void DeviceTab::restore_settings()
 {
-	qWarning() << "DeviceTab::restore_settings(): " <<
-		QString::fromStdString(device_->id());
-
 	QSettings settings;
 
 	// Restore device views
@@ -181,7 +178,6 @@ void DeviceTab::restore_settings()
 	QStringList view_keys = settings.childGroups();
 	for (const auto &view_key : view_keys) {
 		settings.beginGroup(view_key);
-		qWarning() << "DeviceTab::restore_settings(): view_key = " << view_key;
 		auto view = views::viewhelper::get_view_from_settings(session_, settings);
 		if (view)
 			add_view(view, Qt::DockWidgetArea::TopDockWidgetArea);
@@ -203,9 +199,6 @@ void DeviceTab::restore_settings()
 
 void DeviceTab::save_settings() const
 {
-	qWarning() << "DeviceTab::save_settings(): " <<
-		QString::fromStdString(device_->id());
-
 	QSettings settings;
 
 	settings.beginGroup(QString::fromStdString(device_->id()));
@@ -213,8 +206,6 @@ void DeviceTab::save_settings() const
 
 	size_t i = 0;
 	for (const auto &view_dock_pair : view_docks_map_) {
-		qWarning() << "DeviceTab::save_settings(): group = " << QString("view%1").arg(i);
-		qWarning() << "DeviceTab::save_settings(): view type = " << QString::fromStdString(view_dock_pair.first->id());
 		settings.beginGroup(QString("view%1").arg(i));
 		view_dock_pair.first->save_settings(settings);
 		settings.endGroup();
