@@ -108,7 +108,7 @@ void TimePlotView::set_channel(shared_ptr<channels::BaseChannel> channel)
 string TimePlotView::add_signal(shared_ptr<sv::data::AnalogTimeSignal> signal)
 {
 	assert(signal);
-	string id = "";
+	string id;
 
 	// Check if new actual_signal is already added to this plot
 	for (const auto &curve : plot_->curve_map()) {
