@@ -27,7 +27,6 @@ namespace sv {
 namespace data {
 namespace datautil {
 
-
 quantity_name_map_t get_quantity_name_map()
 {
 	return quantity_name_map;
