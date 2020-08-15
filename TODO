@@ -57,6 +57,9 @@ ToDo
 - Add a way to change a channel/signal name in the GUI. Connect BaseSignal::name_changed() signal.
 - Add a way to change the plot curves that have a default color to the new default color configured in the PlotConfigDialog. E.g. with a singleton to connect a dialog to multiple curves from different plots.
 - Use singleton for SettingsManager instead of static methods?
+- Use deleteLater() instead of delete
+- Add AddPlotCurveDialog with channel and signals.
+- Manage axes in plot.cpp: Per Quantity and not per curve! Test: Remove all curves and add a new one....
 
 Done
 ----
