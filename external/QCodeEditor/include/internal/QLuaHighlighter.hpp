@@ -1,14 +1,14 @@
 #pragma once
 
 // QCodeEditor
-#include <QStyleSyntaxHighlighter> // Required for inheritance
-#include <QHighlightRule>
 #include <QHighlightBlockRule>
+#include <QHighlightRule>
+#include <QStyleSyntaxHighlighter> // Required for inheritance
 
 // Qt
+#include <QMap>
 #include <QRegularExpression>
 #include <QVector>
-#include <QMap>
 
 class QSyntaxStyle;
 
@@ -19,18 +19,17 @@ class QSyntaxStyle;
 class QLuaHighlighter : public QStyleSyntaxHighlighter
 {
     Q_OBJECT
-public:
-
+  public:
     /**
      * @brief Constructor.
      * @param document Pointer to document.
      */
-    explicit QLuaHighlighter(QTextDocument* document=nullptr);
+    explicit QLuaHighlighter(QTextDocument *document = nullptr);
 
-protected:
-    void highlightBlock(const QString& text) override;
+  protected:
+    void highlightBlock(const QString &text) override;
 
-private:
+  private:
     QVector<QHighlightRule> m_highlightRules;
     QVector<QHighlightBlockRule> m_highlightBlockRules;
 

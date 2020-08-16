@@ -1,21 +1,17 @@
 // QCodeEditor
-#include <QCXXHighlighter>
+#include <QJSHighlighter>
 #include <QLanguage>
 #include <QSyntaxStyle>
 
 // Qt
 #include <QFile>
 
-QCXXHighlighter::QCXXHighlighter(QTextDocument *document)
-    : QStyleSyntaxHighlighter(document), m_highlightRules(),
-      m_includePattern(QRegularExpression(R"(^\s*#\s*include\s*([<"][^:?"<>\|]+[">]))")),
-      m_functionPattern(QRegularExpression(
-          R"(\b([_a-zA-Z][_a-zA-Z0-9]*\s+)?((?:[_a-zA-Z][_a-zA-Z0-9]*\s*::\s*)*[_a-zA-Z][_a-zA-Z0-9]*)(?=\s*\())")),
-      m_defTypePattern(QRegularExpression(R"(\b([_a-zA-Z][_a-zA-Z0-9]*)\s+[_a-zA-Z][_a-zA-Z0-9]*\s*[;=])")),
-      m_commentStartPattern(QRegularExpression(R"(/\*)")), m_commentEndPattern(QRegularExpression(R"(\*/)"))
+QJSHighlighter::QJSHighlighter(QTextDocument *document)
+    : QStyleSyntaxHighlighter(document), m_highlightRules(), m_commentStartPattern(QRegularExpression(R"(/\*)")),
+      m_commentEndPattern(QRegularExpression(R"(\*/)"))
 {
     Q_INIT_RESOURCE(qcodeeditor_resources);
-    QFile fl(":/languages/cpp.xml");
+    QFile fl(":/languages/js.xml");
 
     if (!fl.open(QIODevice::ReadOnly))
     {
@@ -48,9 +44,6 @@ QCXXHighlighter::QCXXHighlighter(QTextDocument *document)
     // Strings
     m_highlightRules.append({QRegularExpression(R"("[^\n"]*")"), "String"});
 
-    // Define
-    m_highlightRules.append({QRegularExpression(R"(#[a-zA-Z_]+)"), "Preprocessor"});
-
     // Single line
     m_highlightRules.append({QRegularExpression(R"(//[^\n]*)"), "Comment"});
 
@@ -60,45 +53,8 @@ QCXXHighlighter::QCXXHighlighter(QTextDocument *document)
     m_endCommentBlockSequence = "*/";
 }
 
-void QCXXHighlighter::highlightBlock(const QString &text)
+void QJSHighlighter::highlightBlock(const QString &text)
 {
-    // Checking for include
-    {
-        auto matchIterator = m_includePattern.globalMatch(text);
-
-        while (matchIterator.hasNext())
-        {
-            auto match = matchIterator.next();
-
-            setFormat(match.capturedStart(), match.capturedLength(), syntaxStyle()->getFormat("Preprocessor"));
-
-            setFormat(match.capturedStart(1), match.capturedLength(1), syntaxStyle()->getFormat("String"));
-        }
-    }
-    // Checking for function
-    {
-        auto matchIterator = m_functionPattern.globalMatch(text);
-
-        while (matchIterator.hasNext())
-        {
-            auto match = matchIterator.next();
-
-            setFormat(match.capturedStart(), match.capturedLength(), syntaxStyle()->getFormat("Type"));
-
-            setFormat(match.capturedStart(2), match.capturedLength(2), syntaxStyle()->getFormat("Function"));
-        }
-    }
-    {
-        auto matchIterator = m_defTypePattern.globalMatch(text);
-
-        while (matchIterator.hasNext())
-        {
-            auto match = matchIterator.next();
-
-            setFormat(match.capturedStart(1), match.capturedLength(1), syntaxStyle()->getFormat("Type"));
-        }
-    }
-
     for (auto &rule : m_highlightRules)
     {
         auto matchIterator = rule.pattern.globalMatch(text);

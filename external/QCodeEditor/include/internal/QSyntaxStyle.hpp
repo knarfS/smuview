@@ -1,8 +1,8 @@
 #pragma once
 
 // Qt
-#include <QObject> // Required for inheritance
 #include <QMap>
+#include <QObject> // Required for inheritance
 #include <QString>
 #include <QTextCharFormat>
 
@@ -14,13 +14,12 @@ class QSyntaxStyle : public QObject
 {
     Q_OBJECT
 
-public:
-
+  public:
     /**
      * @brief Constructor.
      * @param parent Pointer to parent QObject
      */
-    explicit QSyntaxStyle(QObject* parent=nullptr);
+    explicit QSyntaxStyle(QObject *parent = nullptr);
 
     /**
      * @brief Method for loading and parsing
@@ -28,7 +27,7 @@ public:
      * @param fl Style.
      * @return Success.
      */
-    bool load(QString fl);
+    bool load(const QString &fl);
 
     /**
      * @brief Method for getting style name.
@@ -48,23 +47,18 @@ public:
      * @param name Property name.
      * @return Text char format.
      */
-    QTextCharFormat getFormat(QString name) const;
+    QTextCharFormat getFormat(const QString &name) const;
 
     /**
      * @brief Static method for getting default style.
      * @return Pointer to default style.
      */
-    static QSyntaxStyle* defaultStyle();
+    static QSyntaxStyle *defaultStyle();
 
-private:
-
+  private:
     QString m_name;
 
-    QMap<
-        QString,
-        QTextCharFormat
-    > m_data;
+    QMap<QString, QTextCharFormat> m_data;
 
     bool m_loaded;
 };
-

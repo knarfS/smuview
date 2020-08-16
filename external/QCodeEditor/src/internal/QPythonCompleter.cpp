@@ -1,13 +1,12 @@
 // QCodeEditor
-#include <QPythonCompleter>
 #include <QLanguage>
+#include <QPythonCompleter>
 
 // Qt
-#include <QStringListModel>
 #include <QFile>
+#include <QStringListModel>
 
-QPythonCompleter::QPythonCompleter(QObject *parent) :
-    QCompleter(parent)
+QPythonCompleter::QPythonCompleter(QObject *parent) : QCompleter(parent)
 {
     // Setting up Python types
     QStringList list;
@@ -28,7 +27,7 @@ QPythonCompleter::QPythonCompleter(QObject *parent) :
     }
 
     auto keys = language.keys();
-    for (auto&& key : keys)
+    for (auto &&key : keys)
     {
         auto names = language.names(key);
         list.append(names);

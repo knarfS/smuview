@@ -11,13 +11,10 @@ class QLuaCompleter : public QCompleter
 {
     Q_OBJECT
 
-public:
-
+  public:
     /**
      * @brief Constructor.
      * @param parent Pointer to parent QObject.
      */
-    explicit QLuaCompleter(QObject* parent=nullptr);
+    explicit QLuaCompleter(QObject *parent = nullptr);
 };
-
-

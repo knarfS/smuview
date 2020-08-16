@@ -1,9 +1,9 @@
 #pragma once
 
 // Qt
+#include <QMap>
 #include <QObject> // Required for inheritance
 #include <QString>
-#include <QMap>
 
 class QIODevice;
 
@@ -15,20 +15,19 @@ class QLanguage : public QObject
 {
     Q_OBJECT
 
-public:
-
+  public:
     /**
      * @brief Constructor.
      * @param parent Pointer to parent QObject.
      */
-    explicit QLanguage(QIODevice* device=nullptr, QObject* parent=nullptr);
+    explicit QLanguage(QIODevice *device = nullptr, QObject *parent = nullptr);
 
     /**
      * @brief Method for parsing.
      * @param device Pointer to device.
      * @return Success.
      */
-    bool load(QIODevice* device);
+    bool load(QIODevice *device);
 
     /**
      * @brief Method for getting available keys.
@@ -41,21 +40,15 @@ public:
      * @param name
      * @return
      */
-    QStringList names(const QString& key);
+    QStringList names(const QString &key);
 
     /**
      * @brief Method for getting is object loaded.
      */
     bool isLoaded() const;
 
-private:
-
+  private:
     bool m_loaded;
 
-    QMap<
-        QString,
-        QStringList
-    > m_list;
-
+    QMap<QString, QStringList> m_list;
 };
-

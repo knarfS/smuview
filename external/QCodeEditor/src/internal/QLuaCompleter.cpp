@@ -1,13 +1,12 @@
 // QCodeEditor
-#include <QLuaCompleter>
 #include <QLanguage>
+#include <QLuaCompleter>
 
 // Qt
-#include <QStringListModel>
 #include <QFile>
+#include <QStringListModel>
 
-QLuaCompleter::QLuaCompleter(QObject *parent) :
-    QCompleter(parent)
+QLuaCompleter::QLuaCompleter(QObject *parent) : QCompleter(parent)
 {
     // Setting up GLSL types
     QStringList list;
@@ -28,7 +27,7 @@ QLuaCompleter::QLuaCompleter(QObject *parent) :
     }
 
     auto keys = language.keys();
-    for (auto&& key : keys)
+    for (auto &&key : keys)
     {
         auto names = language.names(key);
         list.append(names);

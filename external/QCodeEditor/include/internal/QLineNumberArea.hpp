@@ -3,7 +3,8 @@
 // Qt
 #include <QWidget> // Required for inheritance
 
-class QCodeEditor;
+#include <QCodeEditor>
+
 class QSyntaxStyle;
 
 /**
@@ -13,17 +14,16 @@ class QLineNumberArea : public QWidget
 {
     Q_OBJECT
 
-public:
-
+  public:
     /**
      * @brief Constructor.
      * @param parent Pointer to parent QTextEdit widget.
      */
-    explicit QLineNumberArea(QCodeEditor* parent=nullptr);
+    explicit QLineNumberArea(QCodeEditor *parent = nullptr);
 
     // Disable copying
-    QLineNumberArea(const QLineNumberArea&) = delete;
-    QLineNumberArea& operator=(const QLineNumberArea&) = delete;
+    QLineNumberArea(const QLineNumberArea &) = delete;
+    QLineNumberArea &operator=(const QLineNumberArea &) = delete;
 
     /**
      * @brief Overridden method for getting line number area
@@ -35,22 +35,25 @@ public:
      * @brief Method for setting syntax style object.
      * @param style Pointer to syntax style.
      */
-    void setSyntaxStyle(QSyntaxStyle* style);
+    void setSyntaxStyle(QSyntaxStyle *style);
 
     /**
      * @brief Method for getting syntax style.
      * @return Pointer to syntax style.
      */
-    QSyntaxStyle* syntaxStyle() const;
+    QSyntaxStyle *syntaxStyle() const;
 
-protected:
-    void paintEvent(QPaintEvent* event) override;
+    void lint(QCodeEditor::SeverityLevel level, int from, int to);
 
-private:
+    void clearLint();
 
-    QSyntaxStyle* m_syntaxStyle;
+  protected:
+    void paintEvent(QPaintEvent *event) override;
 
-    QCodeEditor* m_codeEditParent;
+  private:
+    QSyntaxStyle *m_syntaxStyle;
 
+    QCodeEditor *m_codeEditParent;
+
+    QMap<int, QCodeEditor::SeverityLevel> m_squiggles;
 };
-

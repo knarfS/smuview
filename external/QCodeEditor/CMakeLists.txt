@@ -24,17 +24,20 @@ set(INCLUDE_FILES
     include/QSyntaxStyle
     include/QGLSLCompleter
     include/QGLSLHighlighter
+    include/QJavaHighlighter
+    include/QJSHighlighter
     include/QLanguage
     include/QXMLHighlighter
     include/QJSONHighlighter
     include/QLuaCompleter
     include/QLuaHighlighter
     include/QPythonHighlighter
-    include/QFramedTextAttribute
     include/internal/QHighlightRule.hpp
     include/internal/QHighlightBlockRule.hpp
     include/internal/QCodeEditor.hpp
     include/internal/QCXXHighlighter.hpp
+    include/internal/QJavaHighlighter.hpp
+    include/internal/QJSHighlighter.hpp
     include/internal/QLineNumberArea.hpp
     include/internal/QStyleSyntaxHighlighter.hpp
     include/internal/QSyntaxStyle.hpp
@@ -47,7 +50,6 @@ set(INCLUDE_FILES
     include/internal/QLuaHighlighter.hpp
     include/internal/QPythonCompleter.hpp
     include/internal/QPythonHighlighter.hpp
-    include/internal/QFramedTextAttribute.hpp
 )
 
 set(SOURCE_FILES
@@ -58,6 +60,8 @@ set(SOURCE_FILES
     src/internal/QStyleSyntaxHighlighter.cpp
     src/internal/QGLSLCompleter.cpp
     src/internal/QGLSLHighlighter.cpp
+    src/internal/QJavaHighlighter.cpp
+    src/internal/QJSHighlighter.cpp
     src/internal/QLanguage.cpp
     src/internal/QXMLHighlighter.cpp
     src/internal/QJSONHighlighter.cpp
@@ -65,7 +69,6 @@ set(SOURCE_FILES
     src/internal/QLuaHighlighter.cpp
     src/internal/QPythonCompleter.cpp
     src/internal/QPythonHighlighter.cpp
-    src/internal/QFramedTextAttribute.cpp
 )
 
 # Create code for QObjects
@@ -73,6 +76,9 @@ set(CMAKE_AUTOMOC On)
 
 # Create code from resource files
 set(CMAKE_AUTORCC ON)
+
+# Generate compile_commands.json in build/ for analyzers like clang-tidy.
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Find includes in corresponding build directories
 find_package(Qt5Core    CONFIG REQUIRED)
@@ -91,16 +97,16 @@ target_include_directories(QCodeEditor PUBLIC
 
 if(CMAKE_COMPILER_IS_GNUCXX)
     target_compile_options(QCodeEditor
-		PRIVATE
-		-ansi
-		-pedantic
-		-Wall
-		-Wextra
-		-Weffc++
-		-Woverloaded-virtual
-		-Winit-self
-		-Wunreachable-code
-	)
+        PRIVATE
+        -ansi
+        -pedantic
+        -Wall
+        -Wextra
+        -Weffc++
+        -Woverloaded-virtual
+        -Winit-self
+        -Wunreachable-code
+    )
 endif(CMAKE_COMPILER_IS_GNUCXX)
 
 target_link_libraries(QCodeEditor

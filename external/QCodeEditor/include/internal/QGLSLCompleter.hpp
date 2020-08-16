@@ -11,13 +11,10 @@ class QGLSLCompleter : public QCompleter
 {
     Q_OBJECT
 
-public:
-
+  public:
     /**
      * @brief Constructor.
      * @param parent Pointer to parent QObject.
      */
-    explicit QGLSLCompleter(QObject* parent=nullptr);
+    explicit QGLSLCompleter(QObject *parent = nullptr);
 };
-
-

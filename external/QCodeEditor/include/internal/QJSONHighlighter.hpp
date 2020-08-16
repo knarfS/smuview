@@ -1,8 +1,8 @@
 #pragma once
 
 // QCodeEditor
-#include <QStyleSyntaxHighlighter> // Required for inheritance
 #include <QHighlightRule>
+#include <QStyleSyntaxHighlighter> // Required for inheritance
 
 // Qt
 #include <QVector>
@@ -14,20 +14,17 @@
 class QJSONHighlighter : public QStyleSyntaxHighlighter
 {
     Q_OBJECT
-public:
-
+  public:
     /**
      * @brief Constructor.
      * @param document Pointer to document.
      */
-    explicit QJSONHighlighter(QTextDocument* document=nullptr);
+    explicit QJSONHighlighter(QTextDocument *document = nullptr);
 
-protected:
+  protected:
+    void highlightBlock(const QString &text) override;
 
-    void highlightBlock(const QString& text) override;
-
-private:
+  private:
     QVector<QHighlightRule> m_highlightRules;
     QRegularExpression m_keyRegex;
 };
-

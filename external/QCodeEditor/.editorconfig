@@ -1,0 +1,29 @@
+# EditorConfig file (https://editorconfig.org) for the QCodeEditor project
+
+root = true
+
+[*]
+end_of_line = lf
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+# QCodeEditor C++ files
+[**.cpp]
+indent_style = space
+indent_size = 4
+[**.hpp]
+indent_style = space
+indent_size = 2
+
+# QCodeEditor XML files
+[**.xml]
+indent_style = space
+indent_size = 4
+[**.qrc]
+indent_style = space
+indent_size = 4
+
+# QCodeEditor CMake files
+[CMakeLists.txt]
+indent_style = space
+indent_size = 4

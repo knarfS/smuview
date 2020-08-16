@@ -4,17 +4,15 @@
 #include <QSyntaxStyle>
 
 // Qt
-#include <QFile>
 #include <QDebug>
+#include <QFile>
 
-QGLSLHighlighter::QGLSLHighlighter(QTextDocument* document) :
-    QStyleSyntaxHighlighter(document),
-    m_highlightRules     (),
-    m_includePattern     (QRegularExpression(R"(#include\s+([<"][a-zA-Z0-9*._]+[">]))")),
-    m_functionPattern    (QRegularExpression(R"(\b([A-Za-z0-9_]+(?:\s+|::))*([A-Za-z0-9_]+)(?=\())")),
-    m_defTypePattern     (QRegularExpression(R"(\b([A-Za-z0-9_]+)\s+[A-Za-z]{1}[A-Za-z0-9_]+\s*[;=])")),
-    m_commentStartPattern(QRegularExpression(R"(/\*)")),
-    m_commentEndPattern  (QRegularExpression(R"(\*/)"))
+QGLSLHighlighter::QGLSLHighlighter(QTextDocument *document)
+    : QStyleSyntaxHighlighter(document), m_highlightRules(),
+      m_includePattern(QRegularExpression(R"(#include\s+([<"][a-zA-Z0-9*._]+[">]))")),
+      m_functionPattern(QRegularExpression(R"(\b([A-Za-z0-9_]+(?:\s+|::))*([A-Za-z0-9_]+)(?=\())")),
+      m_defTypePattern(QRegularExpression(R"(\b([A-Za-z0-9_]+)\s+[A-Za-z]{1}[A-Za-z0-9_]+\s*[;=])")),
+      m_commentStartPattern(QRegularExpression(R"(/\*)")), m_commentEndPattern(QRegularExpression(R"(\*/)"))
 {
     Q_INIT_RESOURCE(qcodeeditor_resources);
     QFile fl(":/languages/glsl.xml");
@@ -32,15 +30,12 @@ QGLSLHighlighter::QGLSLHighlighter(QTextDocument* document) :
     }
 
     auto keys = language.keys();
-    for (auto&& key : keys)
+    for (auto &&key : keys)
     {
         auto names = language.names(key);
-        for (auto&& name : names)
+        for (auto &&name : names)
         {
-            m_highlightRules.append({
-                QRegularExpression(QString(R"(\b%1\b)").arg(name)),
-                key
-            });
+            m_highlightRules.append({QRegularExpression(QString(R"(\b%1\b)").arg(name)), key});
         }
     }
 
@@ -48,25 +43,21 @@ QGLSLHighlighter::QGLSLHighlighter(QTextDocument* document) :
     // than language specific keys
     // So they must be applied at last.
     // Numbers
-    m_highlightRules.append({
-        QRegularExpression(R"(\b(0b|0x){0,1}[\d.']+\b)"),
-        "Number"
-    });
+    m_highlightRules.append({QRegularExpression(R"(\b(0b|0x){0,1}[\d.']+\b)"), "Number"});
 
     // Define
-    m_highlightRules.append({
-        QRegularExpression(R"(#[a-zA-Z_]+)"),
-        "Preprocessor"
-    });
+    m_highlightRules.append({QRegularExpression(R"(#[a-zA-Z_]+)"), "Preprocessor"});
 
     // Single line
-    m_highlightRules.append({
-        QRegularExpression("//[^\n]*"),
-        "Comment"
-    });
+    m_highlightRules.append({QRegularExpression("//[^\n]*"), "Comment"});
+
+    // Comment sequences for toggling support
+    m_commentLineSequence = "//";
+    m_startCommentBlockSequence = "/*";
+    m_endCommentBlockSequence = "*/";
 }
 
-void QGLSLHighlighter::highlightBlock(const QString& text)
+void QGLSLHighlighter::highlightBlock(const QString &text)
 {
 
     {
@@ -76,17 +67,9 @@ void QGLSLHighlighter::highlightBlock(const QString& text)
         {
             auto match = matchIterator.next();
 
-            setFormat(
-                match.capturedStart(),
-                match.capturedLength(),
-                syntaxStyle()->getFormat("Preprocessor")
-            );
+            setFormat(match.capturedStart(), match.capturedLength(), syntaxStyle()->getFormat("Preprocessor"));
 
-            setFormat(
-                match.capturedStart(1),
-                match.capturedLength(1),
-                syntaxStyle()->getFormat("String")
-            );
+            setFormat(match.capturedStart(1), match.capturedLength(1), syntaxStyle()->getFormat("String"));
         }
     }
     // Checking for function
@@ -97,21 +80,13 @@ void QGLSLHighlighter::highlightBlock(const QString& text)
         {
             auto match = matchIterator.next();
 
-            setFormat(
-                match.capturedStart(),
-                match.capturedLength(),
-                syntaxStyle()->getFormat("Type")
-            );
+            setFormat(match.capturedStart(), match.capturedLength(), syntaxStyle()->getFormat("Type"));
 
-            setFormat(
-                match.capturedStart(2),
-                match.capturedLength(2),
-                syntaxStyle()->getFormat("Function")
-            );
+            setFormat(match.capturedStart(2), match.capturedLength(2), syntaxStyle()->getFormat("Function"));
         }
     }
 
-    for (auto& rule : m_highlightRules)
+    for (auto &rule : m_highlightRules)
     {
         auto matchIterator = rule.pattern.globalMatch(text);
 
@@ -119,11 +94,7 @@ void QGLSLHighlighter::highlightBlock(const QString& text)
         {
             auto match = matchIterator.next();
 
-            setFormat(
-                match.capturedStart(),
-                match.capturedLength(),
-                syntaxStyle()->getFormat(rule.formatName)
-            );
+            setFormat(match.capturedStart(), match.capturedLength(), syntaxStyle()->getFormat(rule.formatName));
         }
     }
 
@@ -152,11 +123,7 @@ void QGLSLHighlighter::highlightBlock(const QString& text)
             commentLength = endIndex - startIndex + match.capturedLength();
         }
 
-        setFormat(
-            startIndex,
-            commentLength,
-            syntaxStyle()->getFormat("Comment")
-        );
+        setFormat(startIndex, commentLength, syntaxStyle()->getFormat("Comment"));
         startIndex = text.indexOf(m_commentStartPattern, startIndex + commentLength);
     }
 }

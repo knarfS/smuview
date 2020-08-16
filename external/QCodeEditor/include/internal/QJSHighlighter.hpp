@@ -1,6 +1,5 @@
 #pragma once
 
-// QCodeEditor
 #include <QHighlightRule>
 #include <QStyleSyntaxHighlighter> // Required for inheritance
 
@@ -11,28 +10,25 @@
 class QSyntaxStyle;
 
 /**
- * @brief Class, that describes C++ code
- * highlighter.
+ * @brief Derived to implement highlighting of JavaScript code.
  */
-class QCXXHighlighter : public QStyleSyntaxHighlighter
+class QJSHighlighter : public QStyleSyntaxHighlighter
 {
     Q_OBJECT
+
   public:
     /**
-     * @brief Constructor.
-     * @param document Pointer to document.
+     * @brief Constructs a new instance of a JavaScript highlighter.
+     * @param document The text document to be highlighted.
+     * This may be a null pointer.
      */
-    explicit QCXXHighlighter(QTextDocument *document = nullptr);
+    explicit QJSHighlighter(QTextDocument *document = nullptr);
 
   protected:
     void highlightBlock(const QString &text) override;
 
   private:
     QVector<QHighlightRule> m_highlightRules;
-
-    QRegularExpression m_includePattern;
-    QRegularExpression m_functionPattern;
-    QRegularExpression m_defTypePattern;
 
     QRegularExpression m_commentStartPattern;
     QRegularExpression m_commentEndPattern;

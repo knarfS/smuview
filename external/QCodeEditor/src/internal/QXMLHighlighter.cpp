@@ -1,27 +1,20 @@
 // QCodeEditor
-#include <QXMLHighlighter>
 #include <QSyntaxStyle>
+#include <QXMLHighlighter>
 
-
-QXMLHighlighter::QXMLHighlighter(QTextDocument* document) :
-    QStyleSyntaxHighlighter(document),
-    m_xmlKeywordRegexes   (),
-    m_xmlElementRegex     (R"(<[\s]*[/]?[\s]*([^\n][a-zA-Z-_:]*)(?=[\s/>]))"),
-    m_xmlAttributeRegex   (R"(\w+(?=\=))"),
-    m_xmlValueRegex       (R"("[^\n"]+"(?=\??[\s/>]))"),
-    m_xmlCommentBeginRegex(R"(<!--)"),
-    m_xmlCommentEndRegex  (R"(-->)")
+QXMLHighlighter::QXMLHighlighter(QTextDocument *document)
+    : QStyleSyntaxHighlighter(document), m_xmlKeywordRegexes(),
+      m_xmlElementRegex(R"(<[\s]*[/]?[\s]*([^\n][a-zA-Z-_:]*)(?=[\s/>]))"), m_xmlAttributeRegex(R"(\w+(?=\=))"),
+      m_xmlValueRegex(R"("[^\n"]+"(?=\??[\s/>]))"), m_xmlCommentBeginRegex(R"(<!--)"), m_xmlCommentEndRegex(R"(-->)")
 {
-    m_xmlKeywordRegexes
-        << QRegularExpression("<\\?")
-        << QRegularExpression("/>")
-        << QRegularExpression(">")
-        << QRegularExpression("<")
-        << QRegularExpression("</")
-        << QRegularExpression("\\?>");
+    m_xmlKeywordRegexes << QRegularExpression("<\\?") << QRegularExpression("/>") << QRegularExpression(">")
+                        << QRegularExpression("<") << QRegularExpression("</") << QRegularExpression("\\?>");
+
+    m_startCommentBlockSequence = "<!--";
+    m_endCommentBlockSequence = "-->";
 }
 
-void QXMLHighlighter::highlightBlock(const QString& text)
+void QXMLHighlighter::highlightBlock(const QString &text)
 {
     // Special treatment for xml element regex as we use captured text to emulate lookbehind
     auto matchIterator = m_xmlElementRegex.globalMatch(text);
@@ -29,29 +22,19 @@ void QXMLHighlighter::highlightBlock(const QString& text)
     {
         auto match = matchIterator.next();
 
-        setFormat(
-            match.capturedStart(),
-            match.capturedLength(),
-            syntaxStyle()->getFormat("Keyword") // XML ELEMENT FORMAT
+        setFormat(match.capturedStart(), match.capturedLength(),
+                  syntaxStyle()->getFormat("Keyword") // XML ELEMENT FORMAT
         );
     }
 
     // Highlight xml keywords *after* xml elements to fix any occasional / captured into the enclosing element
 
-    for (auto&& regex : m_xmlKeywordRegexes)
+    for (auto &&regex : m_xmlKeywordRegexes)
     {
-        highlightByRegex(
-            syntaxStyle()->getFormat("Keyword"),
-            regex,
-            text
-        );
+        highlightByRegex(syntaxStyle()->getFormat("Keyword"), regex, text);
     }
 
-    highlightByRegex(
-        syntaxStyle()->getFormat("Text"),
-        m_xmlAttributeRegex,
-        text
-    );
+    highlightByRegex(syntaxStyle()->getFormat("Text"), m_xmlAttributeRegex, text);
 
     setCurrentBlockState(0);
 
@@ -78,23 +61,16 @@ void QXMLHighlighter::highlightBlock(const QString& text)
             commentLength = endIndex - startIndex + match.capturedLength();
         }
 
-        setFormat(
-            startIndex,
-            commentLength,
-            syntaxStyle()->getFormat("Comment")
-        );
+        setFormat(startIndex, commentLength, syntaxStyle()->getFormat("Comment"));
 
         startIndex = text.indexOf(m_xmlCommentBeginRegex, startIndex + commentLength);
     }
 
-    highlightByRegex(
-        syntaxStyle()->getFormat("String"),
-        m_xmlValueRegex,
-        text
-    );
+    highlightByRegex(syntaxStyle()->getFormat("String"), m_xmlValueRegex, text);
 }
 
-void QXMLHighlighter::highlightByRegex(const QTextCharFormat& format, const QRegularExpression& regex, const QString& text)
+void QXMLHighlighter::highlightByRegex(const QTextCharFormat &format, const QRegularExpression &regex,
+                                       const QString &text)
 {
     auto matchIterator = regex.globalMatch(text);
 
@@ -102,10 +78,6 @@ void QXMLHighlighter::highlightByRegex(const QTextCharFormat& format, const QReg
     {
         auto match = matchIterator.next();
 
-        setFormat(
-            match.capturedStart(),
-            match.capturedLength(),
-            format
-        );
+        setFormat(match.capturedStart(), match.capturedLength(), format);
     }
 }

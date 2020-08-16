@@ -6,15 +6,13 @@
 
 struct QHighlightRule
 {
-    QHighlightRule() :
-        pattern(),
-        formatName()
-    {}
+    QHighlightRule() : pattern(), formatName()
+    {
+    }
 
-    QHighlightRule(QRegularExpression p, QString f) :
-        pattern(std::move(p)),
-        formatName(std::move(f))
-    {}
+    QHighlightRule(QRegularExpression p, QString f) : pattern(std::move(p)), formatName(std::move(f))
+    {
+    }
 
     QRegularExpression pattern;
     QString formatName;

@@ -1,9 +1,9 @@
 #pragma once
 
 // QCodeEditor
-#include <QStyleSyntaxHighlighter> // Required for inheritance
-#include <QHighlightRule>
 #include <QHighlightBlockRule>
+#include <QHighlightRule>
+#include <QStyleSyntaxHighlighter> // Required for inheritance
 
 // Qt
 #include <QRegularExpression>
@@ -18,19 +18,17 @@ class QSyntaxStyle;
 class QPythonHighlighter : public QStyleSyntaxHighlighter
 {
     Q_OBJECT
-public:
-
+  public:
     /**
      * @brief Constructor.
      * @param document Pointer to document.
      */
-    explicit QPythonHighlighter(QTextDocument* document=nullptr);
+    explicit QPythonHighlighter(QTextDocument *document = nullptr);
 
-protected:
-    void highlightBlock(const QString& text) override;
+  protected:
+    void highlightBlock(const QString &text) override;
 
-private:
-
+  private:
     QVector<QHighlightRule> m_highlightRules;
     QVector<QHighlightBlockRule> m_highlightBlockRules;
 
@@ -38,4 +36,3 @@ private:
     QRegularExpression m_functionPattern;
     QRegularExpression m_defTypePattern;
 };
-
