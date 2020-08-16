@@ -139,7 +139,7 @@ public:
 	/**
 	 * Set if this channel has just one signal, thats quantity doesn't change
 	 */
-	void set_fixed_signal(bool has_fixed_signal);
+	void set_fixed_signal(bool fixed_signal);
 
 	/**
 	 * Return the device, this channel belongs to.
