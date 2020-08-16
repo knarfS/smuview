@@ -53,7 +53,8 @@ class SelectSignalWidget : public QWidget
 	Q_OBJECT
 
 public:
-	SelectSignalWidget(const Session &session, QWidget *parent = nullptr);
+	explicit SelectSignalWidget(const Session &session,
+		QWidget *parent = nullptr);
 
 	void filter_quantity(sv::data::Quantity quantity);
 	void select_device(shared_ptr<sv::devices::BaseDevice> device);

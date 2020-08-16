@@ -53,7 +53,7 @@ class PowerPanelView : public BaseView
 	Q_OBJECT
 
 public:
-	PowerPanelView(Session& session, QUuid uuid = QUuid(),
+	explicit PowerPanelView(Session& session, QUuid uuid = QUuid(),
 		QWidget* parent = nullptr);
 	~PowerPanelView();
 

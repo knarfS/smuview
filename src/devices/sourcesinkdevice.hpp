@@ -54,7 +54,10 @@ public:
 	shared_ptr<SourceSinkDevice> static create(Arg&&...arg)
 	{
 		struct make_shared_enabler : public SourceSinkDevice {
-			make_shared_enabler(Arg&&...arg) : SourceSinkDevice(forward<Arg>(arg)...) {}
+			explicit make_shared_enabler(Arg&&...arg) :
+				SourceSinkDevice(forward<Arg>(arg)...)
+			{
+			}
 		};
 
 		return make_shared<make_shared_enabler>(forward<Arg>(arg)...);

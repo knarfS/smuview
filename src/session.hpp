@@ -62,7 +62,7 @@ public:
 	static double session_start_timestamp;
 
 public:
-	Session(DeviceManager &device_manager);
+	explicit Session(DeviceManager &device_manager);
 	~Session();
 
 	DeviceManager &device_manager();

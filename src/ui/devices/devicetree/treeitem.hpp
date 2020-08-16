@@ -41,7 +41,7 @@ class TreeItem : public QStandardItem
 {
 
 public:
-	TreeItem(TreeItemType type);
+	explicit TreeItem(TreeItemType type);
 
 	int type() const override;
 

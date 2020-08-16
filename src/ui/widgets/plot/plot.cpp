@@ -77,7 +77,7 @@ namespace plot {
 class Canvas : public QwtPlotCanvas
 {
 public:
-	Canvas(QwtPlot *plot = nullptr) : QwtPlotCanvas(plot)
+	explicit Canvas(QwtPlot *plot = nullptr) : QwtPlotCanvas(plot)
 	{
 		/*
 		 * NOTE:

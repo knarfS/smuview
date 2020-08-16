@@ -49,7 +49,7 @@ class ColorItemDelegate : public QStyledItemDelegate
 	Q_OBJECT
 
 public:
-	ColorItemDelegate(QObject *parent = nullptr);
+	explicit ColorItemDelegate(QObject *parent = nullptr);
 
 	QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option,
 		const QModelIndex &index) const override;

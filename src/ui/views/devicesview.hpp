@@ -50,7 +50,7 @@ class DevicesView : public BaseView
 	Q_OBJECT
 
 public:
-	DevicesView(Session &session, QUuid uuid = QUuid(),
+	explicit DevicesView(Session &session, QUuid uuid = QUuid(),
 		QWidget *parent = nullptr);
 
 	QString title() const override;

@@ -42,7 +42,7 @@ class ConfigurableComboBox : public QComboBox
 	Q_OBJECT
 
 public:
-	ConfigurableComboBox(
+	explicit ConfigurableComboBox(
 		shared_ptr<sv::devices::BaseDevice> device,
 		QWidget *parent = nullptr);
 

@@ -56,7 +56,8 @@ class SelectPropertyForm : public QFormLayout
 	Q_OBJECT
 
 public:
-	SelectPropertyForm(const Session &session, QWidget *parent = nullptr);
+	explicit SelectPropertyForm(const Session &session,
+		QWidget *parent = nullptr);
 
 	void filter_config_keys(set<sv::data::DataType> data_types);
 	void select_device(shared_ptr<sv::devices::BaseDevice> device);

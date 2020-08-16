@@ -34,7 +34,7 @@ class QuantityComboBox : public QComboBox
 	Q_OBJECT
 
 public:
-	QuantityComboBox(QWidget *parent = nullptr);
+	explicit QuantityComboBox(QWidget *parent = nullptr);
 
 	void select_quantity(sv::data::Quantity quantity);
 	sv::data::Quantity selected_quantity();

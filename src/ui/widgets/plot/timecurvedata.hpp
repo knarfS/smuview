@@ -53,7 +53,7 @@ class TimeCurveData : public BaseCurveData
 	Q_OBJECT
 
 public:
-	TimeCurveData(shared_ptr<sv::data::AnalogTimeSignal> signal);
+	explicit TimeCurveData(shared_ptr<sv::data::AnalogTimeSignal> signal);
 
 	bool is_equal(const BaseCurveData *other) const override;
 

@@ -46,7 +46,8 @@ class SelectConfigurableForm : public QFormLayout
 	Q_OBJECT
 
 public:
-	SelectConfigurableForm(const Session &session, QWidget *parent = nullptr);
+	explicit SelectConfigurableForm(const Session &session,
+		QWidget *parent = nullptr);
 
 	void select_device(shared_ptr<sv::devices::BaseDevice> device);
 	shared_ptr<sv::devices::Configurable> selected_configurable() const;

@@ -64,7 +64,7 @@ class UiHelper : public QObject
 	Q_OBJECT
 
 public:
-	UiHelper(Session &session);
+	explicit UiHelper(Session &session);
 
 public Q_SLOTS:
 	void add_device_tab(shared_ptr<sv::devices::BaseDevice> device);

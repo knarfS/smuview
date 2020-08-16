@@ -43,7 +43,7 @@ class SmuScriptOutputView : public BaseView
 	Q_OBJECT
 
 public:
-	SmuScriptOutputView(Session& session, QUuid uuid = QUuid(),
+	explicit SmuScriptOutputView(Session& session, QUuid uuid = QUuid(),
 		QWidget* parent = nullptr);
 
 	QString title() const override;

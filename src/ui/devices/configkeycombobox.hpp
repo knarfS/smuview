@@ -45,7 +45,7 @@ class ConfigKeyComboBox : public QComboBox
 	Q_OBJECT
 
 public:
-	ConfigKeyComboBox(
+	explicit ConfigKeyComboBox(
 		shared_ptr<sv::devices::Configurable> configurable,
 		QWidget *parent = nullptr);
 

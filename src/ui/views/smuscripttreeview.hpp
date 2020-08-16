@@ -43,7 +43,7 @@ class SmuScriptTreeView : public BaseView
 	Q_OBJECT
 
 public:
-	SmuScriptTreeView(Session &session, QUuid uuid = QUuid(),
+	explicit SmuScriptTreeView(Session &session, QUuid uuid = QUuid(),
 		QWidget *parent = nullptr);
 
 	QString title() const override;

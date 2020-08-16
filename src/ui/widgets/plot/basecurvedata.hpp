@@ -51,7 +51,7 @@ class BaseCurveData : public QObject, public QwtSeriesData<QPointF>
 	Q_OBJECT
 
 public:
-	BaseCurveData(CurveType curve_type);
+	explicit BaseCurveData(CurveType curve_type);
 	virtual ~BaseCurveData() = default;
 
 	CurveType type() const;

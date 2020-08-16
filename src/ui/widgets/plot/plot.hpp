@@ -85,7 +85,7 @@ class Plot : public QwtPlot
 	Q_OBJECT
 
 public:
-	Plot(Session &session, QWidget *parent = nullptr);
+	explicit Plot(Session &session, QWidget *parent = nullptr);
 	virtual ~Plot();
 
 	virtual void replot() override;

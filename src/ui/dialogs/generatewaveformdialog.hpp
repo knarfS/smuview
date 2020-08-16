@@ -59,7 +59,7 @@ class GenerateWaveformDialog : public QDialog
 public:
 	GenerateWaveformDialog(double min_value, double max_value, double step,
 		int decimals = 3, QString unit = "", QWidget *parent = nullptr);
-	GenerateWaveformDialog(
+	explicit GenerateWaveformDialog(
 		shared_ptr<sv::data::properties::DoubleProperty> property,
 		QWidget *parent = nullptr);
 

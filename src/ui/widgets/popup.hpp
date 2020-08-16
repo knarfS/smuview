@@ -56,7 +56,7 @@ private:
 	static const int MarginWidth;
 
 public:
-	Popup(QWidget *parent);
+	explicit Popup(QWidget *parent);
 
 	const QPoint &point() const;
 	PopupPosition position() const;

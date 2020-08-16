@@ -44,7 +44,7 @@ class __attribute__((visibility("hidden"))) PyStreamRedirect : public QObject
 	Q_OBJECT
 
 public:
-    PyStreamRedirect(shared_ptr<SmuScriptRunner> script_runner) :
+    explicit PyStreamRedirect(shared_ptr<SmuScriptRunner> script_runner) :
 		script_runner_(script_runner)
 	{
 		auto sys_module = py::module::import("sys");

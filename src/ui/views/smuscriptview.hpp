@@ -45,7 +45,7 @@ class SmuScriptView : public BaseView
 	Q_OBJECT
 
 public:
-	SmuScriptView(Session& session, QUuid uuid = QUuid(),
+	explicit SmuScriptView(Session& session, QUuid uuid = QUuid(),
 		QWidget* parent = nullptr);
 
 	QString title() const override;

@@ -66,7 +66,7 @@ class BasePlotView : public BaseView
 	Q_OBJECT
 
 public:
-	BasePlotView(Session &session, QUuid uuid = QUuid(),
+	explicit BasePlotView(Session &session, QUuid uuid = QUuid(),
 		QWidget *parent = nullptr);
 
 	/** Helper function to change a curve name. */

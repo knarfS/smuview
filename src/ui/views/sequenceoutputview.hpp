@@ -85,7 +85,7 @@ class SequenceOutputView : public BaseView
 	Q_OBJECT
 
 public:
-	SequenceOutputView(Session& session, QUuid uuid = QUuid(),
+	explicit SequenceOutputView(Session& session, QUuid uuid = QUuid(),
 		QWidget* parent = nullptr);
 	~SequenceOutputView();
 

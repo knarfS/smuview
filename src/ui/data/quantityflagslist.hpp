@@ -38,7 +38,7 @@ class QuantityFlagsList : public QListWidget
 	Q_OBJECT
 
 public:
-	QuantityFlagsList(QWidget *parent = nullptr);
+	explicit QuantityFlagsList(QWidget *parent = nullptr);
 
 	void select_quantity_flags(set<sv::data::QuantityFlag> quantity_flags);
 	set<sv::data::QuantityFlag> selected_quantity_flags();

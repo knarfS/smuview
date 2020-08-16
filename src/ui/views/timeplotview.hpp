@@ -50,7 +50,7 @@ class TimePlotView : public BasePlotView
 	Q_OBJECT
 
 public:
-	TimePlotView(Session &session, QUuid uuid = QUuid(),
+	explicit TimePlotView(Session &session, QUuid uuid = QUuid(),
 		QWidget *parent = nullptr);
 
 	QString title() const override;

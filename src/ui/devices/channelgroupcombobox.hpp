@@ -42,7 +42,7 @@ class ChannelGroupComboBox : public QComboBox
 	Q_OBJECT
 
 public:
-	ChannelGroupComboBox(
+	explicit ChannelGroupComboBox(
 		shared_ptr<sv::devices::BaseDevice> device,
 		QWidget *parent = nullptr);
 

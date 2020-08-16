@@ -34,7 +34,7 @@ class UnitComboBox : public QComboBox
 	Q_OBJECT
 
 public:
-	UnitComboBox(QWidget *parent = nullptr);
+	explicit UnitComboBox(QWidget *parent = nullptr);
 
 	void select_unit(sv::data::Unit unit);
 	sv::data::Unit selected_unit();

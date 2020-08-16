@@ -45,7 +45,7 @@ class SmuScriptRunner :
 	Q_OBJECT
 
 public:
-	SmuScriptRunner(Session &session);
+	explicit SmuScriptRunner(Session &session);
 	~SmuScriptRunner();
 
 	void run(std::string file_name);

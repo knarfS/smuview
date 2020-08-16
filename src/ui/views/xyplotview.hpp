@@ -45,7 +45,7 @@ class XYPlotView : public BasePlotView
 	Q_OBJECT
 
 public:
-	XYPlotView(Session &session, QUuid uuid = QUuid(),
+	explicit XYPlotView(Session &session, QUuid uuid = QUuid(),
 		QWidget *parent = nullptr);
 
 	QString title() const override;

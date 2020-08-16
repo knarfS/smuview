@@ -50,7 +50,10 @@ public:
 	shared_ptr<MeasurementDevice> static create(Arg&&...arg)
 	{
 		struct make_shared_enabler : public MeasurementDevice {
-			make_shared_enabler(Arg&&...arg) : MeasurementDevice(forward<Arg>(arg)...) {}
+			explicit make_shared_enabler(Arg&&...arg) :
+				MeasurementDevice(forward<Arg>(arg)...)
+			{
+			}
 		};
 
 		return make_shared<make_shared_enabler>(forward<Arg>(arg)...);

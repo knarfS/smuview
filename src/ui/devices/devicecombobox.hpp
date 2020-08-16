@@ -43,7 +43,7 @@ class DeviceComboBox : public QComboBox
 	Q_OBJECT
 
 public:
-	DeviceComboBox(const Session &session, QWidget *parent = nullptr);
+	explicit DeviceComboBox(const Session &session, QWidget *parent = nullptr);
 
 	void select_device(shared_ptr<sv::devices::BaseDevice> device);
 	shared_ptr<sv::devices::BaseDevice> selected_device() const;

@@ -46,7 +46,7 @@ class SignalComboBox : public QComboBox
 	Q_OBJECT
 
 public:
-	SignalComboBox(
+	explicit SignalComboBox(
 		shared_ptr<sv::channels::BaseChannel> channel,
 		QWidget *parent = nullptr);
 

@@ -60,7 +60,7 @@ class ValuePanelView : public BaseView
 	Q_OBJECT
 
 public:
-	ValuePanelView(Session& session, QUuid uuid = QUuid(),
+	explicit ValuePanelView(Session& session, QUuid uuid = QUuid(),
 		QWidget* parent = nullptr);
 
 	~ValuePanelView();

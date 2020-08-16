@@ -40,7 +40,8 @@ class PlotDiffMarkerDialog : public QDialog
 	Q_OBJECT
 
 public:
-	PlotDiffMarkerDialog(widgets::plot::Plot *plot, QWidget *parent = nullptr);
+	explicit PlotDiffMarkerDialog(widgets::plot::Plot *plot,
+		QWidget *parent = nullptr);
 
 private:
 	void setup_ui();
