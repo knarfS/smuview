@@ -44,10 +44,10 @@ namespace data {
 
 AnalogSampleSignal::AnalogSampleSignal(
 		data::Quantity quantity,
-		set<data::QuantityFlag> quantity_flags,
+		const set<data::QuantityFlag> &quantity_flags,
 		data::Unit unit,
 		shared_ptr<channels::BaseChannel> parent_channel,
-		string custom_name) :
+		const string &custom_name) :
 	AnalogBaseSignal(quantity, quantity_flags, unit, parent_channel, custom_name),
 	last_pos_(0)
 {

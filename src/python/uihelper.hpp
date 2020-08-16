@@ -69,34 +69,39 @@ public:
 public Q_SLOTS:
 	void add_device_tab(shared_ptr<sv::devices::BaseDevice> device);
 
-	void add_data_view(std::string tab_id, Qt::DockWidgetArea area,
+	void add_data_view(const std::string &tab_id, Qt::DockWidgetArea area,
 		shared_ptr<sv::data::AnalogTimeSignal> signal);
-	void add_control_view(std::string tab_id, Qt::DockWidgetArea area,
+	void add_control_view(const std::string &tab_id, Qt::DockWidgetArea area,
 		shared_ptr<sv::devices::Configurable> configurable);
-	void add_time_plot_view(std::string tab_id, Qt::DockWidgetArea area);
-	void add_xy_plot_view(std::string tab_id, Qt::DockWidgetArea area);
-	void add_power_panel_view(std::string tab_id, Qt::DockWidgetArea area,
+	void add_time_plot_view(const std::string &tab_id, Qt::DockWidgetArea area);
+	void add_xy_plot_view(const std::string &tab_id, Qt::DockWidgetArea area);
+	void add_power_panel_view(const std::string &tab_id,
+		Qt::DockWidgetArea area,
 		shared_ptr<sv::data::AnalogTimeSignal> voltage_signal,
 		shared_ptr<sv::data::AnalogTimeSignal> current_signal);
-	void add_value_panel_view(std::string tab_id, Qt::DockWidgetArea area,
-		shared_ptr<sv::channels::BaseChannel> channel);
-	void add_value_panel_view(std::string tab_id, Qt::DockWidgetArea area,
+	void add_value_panel_view(const std::string &tab_id,
+		Qt::DockWidgetArea area, shared_ptr<sv::channels::BaseChannel> channel);
+	void add_value_panel_view(const std::string &tab_id,
+		Qt::DockWidgetArea area, shared_ptr<sv::data::AnalogTimeSignal> signal);
+
+	void add_signal_to_data_view(const std::string &tab_id,
+		const std::string &view_id,
 		shared_ptr<sv::data::AnalogTimeSignal> signal);
 
-	void add_signal_to_data_view(std::string tab_id, std::string view_id,
-		shared_ptr<sv::data::AnalogTimeSignal> signal);
-
-	void set_channel_to_time_plot_view(std::string tab_id, std::string view_id,
+	void set_channel_to_time_plot_view(const std::string &tab_id,
+		const std::string &view_id,
 		shared_ptr<sv::channels::BaseChannel> channel);
-	void add_curve_to_time_plot_view(std::string tab_id, std::string view_id,
+	void add_curve_to_time_plot_view(const std::string &tab_id,
+		const std::string &view_id,
 		shared_ptr<sv::data::AnalogTimeSignal> signal);
-	void add_curve_to_xy_plot_view(std::string tab_id, std::string view_id,
+	void add_curve_to_xy_plot_view(const std::string &tab_id,
+		const std::string &view_id,
 		shared_ptr<sv::data::AnalogTimeSignal> x_signal,
 		shared_ptr<sv::data::AnalogTimeSignal> y_signal);
-	void set_curve_name(std::string tab_id, std::string view_id,
-		std::string curve_id, std::string name);
-	void set_curve_color(std::string tab_id, std::string view_id,
-		std::string curve_id, std::tuple<int, int, int> color);
+	void set_curve_name(const std::string &tab_id, const std::string &view_id,
+		const std::string &curve_id, const std::string &name);
+	void set_curve_color(const std::string &tab_id, const std::string &view_id,
+		const std::string &curve_id, const std::tuple<int, int, int> &color);
 
 	void show_message_box(const std::string &title, const std::string &text);
 	void show_string_input_dialog(const std::string &title,
@@ -110,17 +115,18 @@ public Q_SLOTS:
 private:
 	Session &session_;
 
-	ui::tabs::BaseTab *get_tab(string tab_id) const;
-	ui::views::BaseView *get_view(string tab_id, string view_id) const;
-	ui::views::BasePlotView *get_base_plot_view(string tab_id,
-		string view_id) const;
-	ui::views::TimePlotView *get_time_plot_view(string tab_id,
-		string view_id) const;
+	ui::tabs::BaseTab *get_tab(const string &tab_id) const;
+	ui::views::BaseView *get_view(const string &tab_id,
+		const string &view_id) const;
+	ui::views::BasePlotView *get_base_plot_view(const string &tab_id,
+		const string &view_id) const;
+	ui::views::TimePlotView *get_time_plot_view(const string &tab_id,
+		const string &view_id) const;
 
 Q_SIGNALS:
-	void tab_added(std::string tab_id);
-	void view_added(std::string view_id);
-	void curve_added(std::string curve_id);
+	void tab_added(const std::string &tab_id);
+	void view_added(const std::string &view_id);
+	void curve_added(const std::string &curve_id);
 	void message_box_finished();
 	void message_box_canceled();
 	void input_dialog_finished(const QVariant &qvar_input);

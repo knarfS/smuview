@@ -89,7 +89,7 @@ TreeItem *DeviceTreeView::selected_item() const
 }
 
 void DeviceTreeView::check_channels(
-	const vector<shared_ptr<sv::channels::BaseChannel>> channels)
+	const vector<shared_ptr<sv::channels::BaseChannel>> &channels)
 {
 	if (!is_channel_checkable_)
 		return;
@@ -138,7 +138,7 @@ vector<shared_ptr<sv::channels::BaseChannel>>
 }
 
 void DeviceTreeView::check_signals(
-	const vector<shared_ptr<sv::data::BaseSignal>> signals)
+	const vector<shared_ptr<sv::data::BaseSignal>> &signals)
 {
 	if (!is_signal_checkable_)
 		return;

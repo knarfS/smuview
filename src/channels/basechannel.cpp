@@ -54,7 +54,7 @@ namespace channels {
 BaseChannel::BaseChannel(
 		shared_ptr<sigrok::Channel> sr_channel,
 		shared_ptr<devices::BaseDevice> parent_device,
-		set<string> channel_group_names,
+		const set<string> &channel_group_names,
 		double channel_start_timestamp) :
 	sr_channel_(sr_channel),
 	channel_start_timestamp_(channel_start_timestamp),

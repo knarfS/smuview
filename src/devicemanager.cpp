@@ -310,7 +310,7 @@ map<string, string> DeviceManager::get_device_info(
 }
 
 shared_ptr<devices::HardwareDevice> DeviceManager::find_device_from_info(
-	const map<string, string> search_info)
+	const map<string, string> &search_info)
 {
 	shared_ptr<devices::HardwareDevice> last_resort_dev;
 	map<string, string> dev_info;

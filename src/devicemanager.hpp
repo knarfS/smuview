@@ -79,7 +79,7 @@ public:
 		const shared_ptr<devices::BaseDevice> device);
 
 	shared_ptr<devices::HardwareDevice> find_device_from_info(
-		const map<string, string> search_info);
+		const map<string, string> &search_info);
 
 private:
 	bool compare_devices(shared_ptr<devices::BaseDevice> a,

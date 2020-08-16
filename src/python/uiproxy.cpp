@@ -72,10 +72,10 @@ UiProxy::UiProxy(Session &session, shared_ptr<UiHelper> ui_helper) :
 	connect(this, &UiProxy::add_power_panel_view,
 		ui_helper_.get(), &UiHelper::add_power_panel_view);
 
-	connect(this, QOverload<std::string, Qt::DockWidgetArea, shared_ptr<sv::channels::BaseChannel>>::of(&UiProxy::add_value_panel_view),
-		ui_helper_.get(), QOverload<std::string, Qt::DockWidgetArea, shared_ptr<sv::channels::BaseChannel>>::of(&UiHelper::add_value_panel_view));
-	connect(this, QOverload<std::string, Qt::DockWidgetArea, shared_ptr<sv::data::AnalogTimeSignal>>::of(&UiProxy::add_value_panel_view),
-		ui_helper_.get(), QOverload<std::string, Qt::DockWidgetArea, shared_ptr<sv::data::AnalogTimeSignal>>::of(&UiHelper::add_value_panel_view));
+	connect(this, QOverload<const std::string &, Qt::DockWidgetArea, shared_ptr<sv::channels::BaseChannel>>::of(&UiProxy::add_value_panel_view),
+		ui_helper_.get(), QOverload<const std::string &, Qt::DockWidgetArea, shared_ptr<sv::channels::BaseChannel>>::of(&UiHelper::add_value_panel_view));
+	connect(this, QOverload<const std::string &, Qt::DockWidgetArea, shared_ptr<sv::data::AnalogTimeSignal>>::of(&UiProxy::add_value_panel_view),
+		ui_helper_.get(), QOverload<const std::string &, Qt::DockWidgetArea, shared_ptr<sv::data::AnalogTimeSignal>>::of(&UiHelper::add_value_panel_view));
 
 	connect(this, &UiProxy::add_signal_to_data_view,
 		ui_helper_.get(), &UiHelper::add_signal_to_data_view);
@@ -113,7 +113,7 @@ string UiProxy::ui_add_device_tab(shared_ptr<devices::BaseDevice> device)
 	return id;
 }
 
-string UiProxy::ui_add_data_view(string tab_id, Qt::DockWidgetArea area,
+string UiProxy::ui_add_data_view(const string &tab_id, Qt::DockWidgetArea area,
 	shared_ptr<data::AnalogTimeSignal> signal)
 {
 	string id;
@@ -125,7 +125,8 @@ string UiProxy::ui_add_data_view(string tab_id, Qt::DockWidgetArea area,
 	return id;
 }
 
-string UiProxy::ui_add_control_view(string tab_id, Qt::DockWidgetArea area,
+string UiProxy::ui_add_control_view(const string &tab_id,
+	Qt::DockWidgetArea area,
 	shared_ptr<devices::Configurable> configurable)
 {
 	string id;
@@ -137,7 +138,8 @@ string UiProxy::ui_add_control_view(string tab_id, Qt::DockWidgetArea area,
 	return id;
 }
 
-string UiProxy::ui_add_time_plot_view(string tab_id, Qt::DockWidgetArea area)
+string UiProxy::ui_add_time_plot_view(const string &tab_id,
+	Qt::DockWidgetArea area)
 {
 	string id;
 	init_wait_for_view_added(id);
@@ -148,7 +150,8 @@ string UiProxy::ui_add_time_plot_view(string tab_id, Qt::DockWidgetArea area)
 	return id;
 }
 
-string UiProxy::ui_add_xy_plot_view(string tab_id, Qt::DockWidgetArea area)
+string UiProxy::ui_add_xy_plot_view(const string &tab_id,
+	Qt::DockWidgetArea area)
 {
 	string id;
 	init_wait_for_view_added(id);
@@ -159,7 +162,8 @@ string UiProxy::ui_add_xy_plot_view(string tab_id, Qt::DockWidgetArea area)
 	return id;
 }
 
-string UiProxy::ui_add_power_panel_view(string tab_id, Qt::DockWidgetArea area,
+string UiProxy::ui_add_power_panel_view(const string &tab_id,
+	Qt::DockWidgetArea area,
 	shared_ptr<data::AnalogTimeSignal> voltage_signal,
 	shared_ptr<data::AnalogTimeSignal> current_signal)
 {
@@ -172,7 +176,8 @@ string UiProxy::ui_add_power_panel_view(string tab_id, Qt::DockWidgetArea area,
 	return id;
 }
 
-string UiProxy::ui_add_value_panel_view(string tab_id, Qt::DockWidgetArea area,
+string UiProxy::ui_add_value_panel_view(const string &tab_id,
+	Qt::DockWidgetArea area,
 	shared_ptr<channels::BaseChannel> channel)
 {
 	string id;
@@ -184,7 +189,8 @@ string UiProxy::ui_add_value_panel_view(string tab_id, Qt::DockWidgetArea area,
 	return id;
 }
 
-string UiProxy::ui_add_value_panel_view(string tab_id, Qt::DockWidgetArea area,
+string UiProxy::ui_add_value_panel_view(const string &tab_id,
+	Qt::DockWidgetArea area,
 	shared_ptr<data::AnalogTimeSignal> signal)
 {
 	string id;
@@ -196,19 +202,22 @@ string UiProxy::ui_add_value_panel_view(string tab_id, Qt::DockWidgetArea area,
 	return id;
 }
 
-void UiProxy::ui_add_signal_to_data_view(string tab_id, string view_id,
+void UiProxy::ui_add_signal_to_data_view(const string &tab_id,
+	const string &view_id,
 	shared_ptr<data::AnalogTimeSignal> signal)
 {
 	Q_EMIT add_signal_to_data_view(tab_id, view_id, signal);
 }
 
-void UiProxy::ui_set_channel_to_time_plot_view(string tab_id, string view_id,
+void UiProxy::ui_set_channel_to_time_plot_view(const string &tab_id,
+	const string &view_id,
 	shared_ptr<channels::BaseChannel> channel)
 {
 	Q_EMIT set_channel_to_time_plot_view(tab_id, view_id, channel);
 }
 
-string UiProxy::ui_add_curve_to_time_plot_view(string tab_id, string view_id,
+string UiProxy::ui_add_curve_to_time_plot_view(const string &tab_id,
+	const string &view_id,
 	shared_ptr<data::AnalogTimeSignal> signal)
 {
 	string id;
@@ -220,7 +229,8 @@ string UiProxy::ui_add_curve_to_time_plot_view(string tab_id, string view_id,
 	return id;
 }
 
-string UiProxy::ui_add_curve_to_xy_plot_view(string tab_id, string view_id,
+string UiProxy::ui_add_curve_to_xy_plot_view(const string &tab_id,
+	const string &view_id,
 	shared_ptr<data::AnalogTimeSignal> x_signal,
 	shared_ptr<data::AnalogTimeSignal> y_signal)
 {
@@ -233,14 +243,14 @@ string UiProxy::ui_add_curve_to_xy_plot_view(string tab_id, string view_id,
 	return id;
 }
 
-void UiProxy::ui_set_curve_name(string tab_id, string view_id, string curve_id,
-	string name)
+void UiProxy::ui_set_curve_name(const string &tab_id, const string &view_id,
+	const string &curve_id, const string &name)
 {
 	Q_EMIT set_curve_name(tab_id, view_id, curve_id, name);
 }
 
-void UiProxy::ui_set_curve_color(string tab_id, string view_id, string curve_id,
-	tuple<int, int, int> color)
+void UiProxy::ui_set_curve_color(const string &tab_id, const string &view_id,
+	const string &curve_id, const tuple<int, int, int> &color)
 {
 	Q_EMIT set_curve_color(tab_id, view_id, curve_id, color);
 }
@@ -309,7 +319,7 @@ void UiProxy::init_wait_for_tab_added(string &id, int timeout)
 {
 	event_loop_finished_conn_ =
 		connect(ui_helper_.get(), &UiHelper::tab_added,
-			[this, &id](std::string tab_id) {
+			[this, &id](const std::string &tab_id) {
 				id = tab_id;
 				event_loop_.quit();
 			});
@@ -326,7 +336,7 @@ void UiProxy::init_wait_for_view_added(string &id, int timeout)
 {
 	event_loop_finished_conn_ =
 		connect(ui_helper_.get(), &UiHelper::view_added,
-			[this, &id](std::string view_id) {
+			[this, &id](const std::string &view_id) {
 				id = view_id;
 				event_loop_.quit();
 			});
@@ -343,7 +353,7 @@ void UiProxy::init_wait_for_curve_added(string &id, int timeout)
 {
 	event_loop_finished_conn_ =
 		connect(ui_helper_.get(), &UiHelper::curve_added,
-			[this, &id](std::string curve_id) {
+			[this, &id](const std::string &curve_id) {
 				id = curve_id;
 				event_loop_.quit();
 			});

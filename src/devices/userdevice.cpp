@@ -36,7 +36,7 @@ namespace devices {
 
 UserDevice::UserDevice(
 		const shared_ptr<sigrok::Context> &sr_context,
-		string vendor, string model, string version) :
+		const string &vendor, const string &model, const string &version) :
 	BaseDevice(sr_context, nullptr),
 	vendor_(vendor),
 	model_(model),

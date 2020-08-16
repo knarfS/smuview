@@ -44,7 +44,7 @@ class UserDevice : public BaseDevice
 
 public:
 	UserDevice(const shared_ptr<sigrok::Context> &sr_context,
-		string vendor, string model, string version);
+		const string &vendor, const string &model, const string &version);
 
 	/**
 	 * Builds the name

@@ -47,10 +47,10 @@ class AnalogBaseSignal : public BaseSignal
 public:
 	AnalogBaseSignal(
 		data::Quantity quantity,
-		set<data::QuantityFlag> quantity_flags,
+		const set<data::QuantityFlag> &quantity_flags,
 		data::Unit unit,
 		shared_ptr<channels::BaseChannel> parent_channel,
-		string custom_name);
+		const string &custom_name);
 
 	/**
 	 * Return the number of samples in this signal.

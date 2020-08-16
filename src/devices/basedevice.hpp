@@ -169,7 +169,7 @@ public:
 	 * Add a math channel to the device
 	 */
 	void add_math_channel(shared_ptr<channels::MathChannel> math_channel,
-		string channel_group_name);
+		const string &channel_group_name);
 
 	/**
 	 * Add a user channel to the device
@@ -261,7 +261,7 @@ private:
 Q_SIGNALS:
 	void aquisition_start_timestamp_changed(double timestamp);
 	void channel_added(shared_ptr<sv::channels::BaseChannel> channel);
-	void device_error(const std::string sender, const std::string msg);
+	void device_error(const std::string &sender, const std::string &msg);
 
 };
 

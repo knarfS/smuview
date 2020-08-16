@@ -49,11 +49,11 @@ class AnalogTimeSignal : public AnalogBaseSignal
 public:
 	AnalogTimeSignal(
 		data::Quantity quantity,
-		set<data::QuantityFlag> quantity_flags,
+		const set<data::QuantityFlag> &quantity_flags,
 		data::Unit unit,
 		shared_ptr<channels::BaseChannel> parent_channel,
 		double signal_start_timestamp,
-		string custom_name = "");
+		const string &custom_name = "");
 
 	/**
 	 * Clear all samples from this signal.

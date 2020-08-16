@@ -49,10 +49,10 @@ class AnalogSampleSignal : public AnalogBaseSignal
 public:
 	AnalogSampleSignal(
 		data::Quantity quantity,
-		set<data::QuantityFlag> quantity_flags,
+		const set<data::QuantityFlag> &quantity_flags,
 		data::Unit unit,
 		shared_ptr<channels::BaseChannel> parent_channel,
-		string custom_name = "");
+		const string &custom_name = "");
 
 	/**
 	 * Clear all samples from this signal.

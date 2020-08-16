@@ -581,7 +581,7 @@ void init_UI(py::module &m)
 		"str\n"
 		"    The id of the new view or empty if the view couldn't be added.");
 	py_ui_proxy.def("add_value_panel_view",
-		(std::string (sv::python::UiProxy::*) (std::string, Qt::DockWidgetArea, shared_ptr<sv::channels::BaseChannel>))
+		(std::string (sv::python::UiProxy::*) (const std::string &, Qt::DockWidgetArea, shared_ptr<sv::channels::BaseChannel>))
 			&sv::python::UiProxy::ui_add_value_panel_view,
 		py::arg("tab_id"), py::arg("area"), py::arg("channel"),
 		"Add a value panel view for a channel to the given tab.\n\n"
@@ -598,7 +598,7 @@ void init_UI(py::module &m)
 		"str\n"
 		"    The id of the new view or empty if the view couldn't be added.");
 	py_ui_proxy.def("add_value_panel_view",
-		(std::string (sv::python::UiProxy::*) (std::string, Qt::DockWidgetArea, shared_ptr<sv::data::AnalogTimeSignal>))
+		(std::string (sv::python::UiProxy::*) (const std::string &, Qt::DockWidgetArea, shared_ptr<sv::data::AnalogTimeSignal>))
 			&sv::python::UiProxy::ui_add_value_panel_view,
 		py::arg("tab_id"), py::arg("area"), py::arg("signal"),
 		"Add a value panel view for a signal to the given tab.\n\n"

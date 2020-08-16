@@ -67,9 +67,9 @@ public:
 	void select_item(TreeItem *item);
 	TreeItem *selected_item() const;
 
-	void check_channels(const vector<shared_ptr<sv::channels::BaseChannel>> channels);
+	void check_channels(const vector<shared_ptr<sv::channels::BaseChannel>> &channels);
 	vector<shared_ptr<sv::channels::BaseChannel>> checked_channels() const;
-	void check_signals(const vector<shared_ptr<sv::data::BaseSignal>> signals);
+	void check_signals(const vector<shared_ptr<sv::data::BaseSignal>> &signals);
 	vector<shared_ptr<sv::data::BaseSignal>> checked_signals() const;
 
 	void expand_device(shared_ptr<sv::devices::BaseDevice> device);

@@ -82,7 +82,7 @@ public:
 	BaseChannel(
 		shared_ptr<sigrok::Channel> sr_channel,
 		shared_ptr<devices::BaseDevice> parent_device,
-		set<string> channel_group_names,
+		const set<string> &channel_group_names,
 		double channel_start_timestamp);
 	virtual ~BaseChannel();
 
@@ -227,7 +227,7 @@ public Q_SLOTS:
 Q_SIGNALS:
 	void channel_start_timestamp_changed(double timestamp);
 	void enabled_changed(const bool enabled);
-	void name_changed(const string name);
+	void name_changed(const string &name);
 	void signal_added(shared_ptr<sv::data::BaseSignal> signal);
 	void signal_changed(shared_ptr<sv::data::BaseSignal> signal);
 

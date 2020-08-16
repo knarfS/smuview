@@ -380,7 +380,8 @@ shared_ptr<channels::BaseChannel> BaseDevice::add_sr_channel(
 }
 
 void BaseDevice::add_math_channel(
-	shared_ptr<channels::MathChannel> math_channel, string channel_group_name)
+	shared_ptr<channels::MathChannel> math_channel,
+	const string &channel_group_name)
 {
 	add_channel(math_channel, channel_group_name);
 

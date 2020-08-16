@@ -44,11 +44,11 @@ namespace data {
 
 AnalogTimeSignal::AnalogTimeSignal(
 		data::Quantity quantity,
-		set<data::QuantityFlag> quantity_flags,
+		const set<data::QuantityFlag> &quantity_flags,
 		data::Unit unit,
 		shared_ptr<channels::BaseChannel> parent_channel,
 		double signal_start_timestamp,
-		string custom_name) :
+		const string &custom_name) :
 	AnalogBaseSignal(quantity, quantity_flags, unit, parent_channel, custom_name),
 	signal_start_timestamp_(signal_start_timestamp),
 	last_timestamp_(0.)

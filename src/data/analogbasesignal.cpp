@@ -43,10 +43,10 @@ namespace data {
 
 AnalogBaseSignal::AnalogBaseSignal(
 		data::Quantity quantity,
-		set<data::QuantityFlag> quantity_flags,
+		const set<data::QuantityFlag> &quantity_flags,
 		data::Unit unit,
 		shared_ptr<channels::BaseChannel> parent_channel,
-		string custom_name) :
+		const string &custom_name) :
 	BaseSignal(quantity, quantity_flags, unit, parent_channel, custom_name),
 	sample_count_(0),
 	digits_(7), // A good start value for digits

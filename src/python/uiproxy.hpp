@@ -72,34 +72,40 @@ public:
 
 	string ui_add_device_tab(shared_ptr<devices::BaseDevice> device);
 
-	string ui_add_data_view(string tab_id, Qt::DockWidgetArea area,
+	string ui_add_data_view(const string &tab_id, Qt::DockWidgetArea area,
 		shared_ptr<data::AnalogTimeSignal> signal);
-	string ui_add_control_view(string tab_id, Qt::DockWidgetArea area,
+	string ui_add_control_view(const string &tab_id, Qt::DockWidgetArea area,
 		shared_ptr<devices::Configurable> configurable);
-	string ui_add_time_plot_view(string tab_id, Qt::DockWidgetArea area);
-	string ui_add_xy_plot_view(string tab_id, Qt::DockWidgetArea area);
-	string ui_add_power_panel_view(string tab_id, Qt::DockWidgetArea area,
+	string ui_add_time_plot_view(const string &tab_id, Qt::DockWidgetArea area);
+	string ui_add_xy_plot_view(const string &tab_id, Qt::DockWidgetArea area);
+	string ui_add_power_panel_view(const string &tab_id,
+		Qt::DockWidgetArea area,
 		shared_ptr<data::AnalogTimeSignal> voltage_signal,
 		shared_ptr<data::AnalogTimeSignal> current_signal);
-	string ui_add_value_panel_view(string tab_id, Qt::DockWidgetArea area,
+	string ui_add_value_panel_view(const string &tab_id,
+		Qt::DockWidgetArea area,
 		shared_ptr<channels::BaseChannel> channel);
-	string ui_add_value_panel_view(string tab_id, Qt::DockWidgetArea area,
+	string ui_add_value_panel_view(const string &tab_id,
+		Qt::DockWidgetArea area,
 		shared_ptr<data::AnalogTimeSignal> signal);
 
-	void ui_add_signal_to_data_view(string tab_id, string view_id,
+	void ui_add_signal_to_data_view(const string &tab_id, const string &view_id,
 		shared_ptr<data::AnalogTimeSignal> signal);
 
-	void ui_set_channel_to_time_plot_view(string tab_id, string view_id,
+	void ui_set_channel_to_time_plot_view(const string &tab_id,
+		const string &view_id,
 		shared_ptr<channels::BaseChannel> channel);
-	string ui_add_curve_to_time_plot_view(string tab_id, string view_id,
+	string ui_add_curve_to_time_plot_view(const string &tab_id,
+		const string &view_id,
 		shared_ptr<data::AnalogTimeSignal> signal);
-	string ui_add_curve_to_xy_plot_view(string tab_id, string view_id,
+	string ui_add_curve_to_xy_plot_view(const string &tab_id,
+		const string &view_id,
 		shared_ptr<data::AnalogTimeSignal> x_signal,
 		shared_ptr<data::AnalogTimeSignal> y_signal);
-	void ui_set_curve_name(string tab_id, string view_id, string curve_id,
-		string name);
-	void ui_set_curve_color(string tab_id, string view_id, string curve_id,
-		tuple<int, int, int> color);
+	void ui_set_curve_name(const string &tab_id, const string &view_id,
+		const string &curve_id, const string &name);
+	void ui_set_curve_color(const string &tab_id, const string &view_id,
+		const string &curve_id, const tuple<int, int, int> &color);
 
 	bool ui_show_message_box(const std::string &title, const std::string &text);
 	py::object ui_show_string_input_dialog(const string &title,
@@ -129,34 +135,41 @@ private:
 Q_SIGNALS:
 	void add_device_tab(shared_ptr<sv::devices::BaseDevice> device);
 
-	void add_data_view(std::string tab_id, Qt::DockWidgetArea area,
+	void add_data_view(const std::string &tab_id, Qt::DockWidgetArea area,
 		shared_ptr<sv::data::AnalogTimeSignal> signal);
-	void add_control_view(std::string tab_id, Qt::DockWidgetArea area,
+	void add_control_view(const std::string &tab_id, Qt::DockWidgetArea area,
 		shared_ptr<sv::devices::Configurable> configurable);
-	void add_time_plot_view(std::string tab_id, Qt::DockWidgetArea area);
-	void add_xy_plot_view(std::string tab_id, Qt::DockWidgetArea area);
-	void add_power_panel_view(std::string tab_id, Qt::DockWidgetArea area,
+	void add_time_plot_view(const std::string &tab_id, Qt::DockWidgetArea area);
+	void add_xy_plot_view(const std::string &tab_id, Qt::DockWidgetArea area);
+	void add_power_panel_view(const std::string &tab_id,
+		Qt::DockWidgetArea area,
 		shared_ptr<sv::data::AnalogTimeSignal> voltage_signal,
 		shared_ptr<sv::data::AnalogTimeSignal> current_signal);
-	void add_value_panel_view(std::string tab_id, Qt::DockWidgetArea area,
+	void add_value_panel_view(const std::string &tab_id,
+		Qt::DockWidgetArea area,
 		shared_ptr<sv::channels::BaseChannel> channel);
-	void add_value_panel_view(std::string tab_id, Qt::DockWidgetArea area,
+	void add_value_panel_view(const std::string &tab_id,
+		Qt::DockWidgetArea area,
 		shared_ptr<sv::data::AnalogTimeSignal> signal);
 
-	void add_signal_to_data_view(std::string tab_id, std::string view_id,
+	void add_signal_to_data_view(const std::string &tab_id,
+		const std::string &view_id,
 		shared_ptr<sv::data::AnalogTimeSignal> signal);
 
-	void set_channel_to_time_plot_view(std::string tab_id, std::string view_id,
+	void set_channel_to_time_plot_view(const std::string &tab_id,
+		const std::string &view_id,
 		shared_ptr<sv::channels::BaseChannel> channel);
-	void add_curve_to_time_plot_view(std::string tab_id, std::string view_id,
+	void add_curve_to_time_plot_view(const std::string &tab_id,
+		const std::string &view_id,
 		shared_ptr<sv::data::AnalogTimeSignal> signal);
-	void add_curve_to_xy_plot_view(std::string tab_id, std::string view_id,
+	void add_curve_to_xy_plot_view(const std::string &tab_id,
+		const std::string &view_id,
 		shared_ptr<sv::data::AnalogTimeSignal> x_signal,
 		shared_ptr<sv::data::AnalogTimeSignal> y_signal);
-	void set_curve_name(std::string tab_id, std::string view_id,
-		std::string curve_id, std::string name);
-	void set_curve_color(std::string tab_id, std::string view_id,
-		std::string curve_id, std::tuple<int, int, int> color);
+	void set_curve_name(const std::string &tab_id, const std::string &view_id,
+		const std::string &curve_id, const std::string &name);
+	void set_curve_color(const std::string &tab_id, const std::string &view_id,
+		const std::string &curve_id, const std::tuple<int, int, int> &color);
 
 	void show_message_box(const std::string &title, const std::string &text);
 	void show_string_input_dialog(const std::string &title,
