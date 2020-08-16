@@ -323,7 +323,6 @@ TreeItem *DeviceTreeModel::find_channel(
 	shared_ptr<sv::channels::BaseChannel> channel,
 	set<string> channel_group_names, TreeItem *parent_item) const
 {
-	vector<TreeItem *> channels;
 	TreeItem *new_parent_item;
 	for (const auto &chg_name : channel_group_names) {
 		if (!chg_name.empty()) {
