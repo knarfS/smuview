@@ -490,10 +490,10 @@ void SequenceOutputView::on_action_load_from_file_triggered()
 	if (file_name.length() <= 0)
 		return;
 
-	int row = 0;
-	string line;
 	std::ifstream file(file_name.toStdString());
 	if (file.is_open()) {
+		string line;
+		int row = 0;
 		while (std::getline(file, line)) {
 			auto fields = sv::util::parse_csv_line(line);
 
