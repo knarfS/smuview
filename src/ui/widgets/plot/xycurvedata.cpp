@@ -98,7 +98,7 @@ QRectF XYCurveData::boundingRect() const
 QPointF XYCurveData::closest_point(const QPointF &pos, double *dist) const
 {
 	const size_t num_samples = size();
-	if (num_samples <= 0)
+	if (num_samples == 0)
 		return QPointF(0, 0); // TODO
 
 	size_t index = -1;
