@@ -299,7 +299,7 @@ TreeItem *DeviceTreeModel::find_device(
 
 		if (device.get() == child->data(DeviceTreeModel::DataRole).
 				value<shared_ptr<sv::devices::BaseDevice>>().get())
-			return (TreeItem *)child;
+			return static_cast<TreeItem *>(child);
 	}
 	return nullptr;
 }
@@ -314,7 +314,7 @@ TreeItem *DeviceTreeModel::find_channel_group(string channel_group_name,
 
 		QString chg_name_qstr = QString::fromStdString(channel_group_name);
 		if (chg_name_qstr == child->data(DeviceTreeModel::DataRole).toString())
-			return (TreeItem *)child;
+			return static_cast<TreeItem *>(child);
 	}
 	return nullptr;
 }
@@ -340,7 +340,7 @@ TreeItem *DeviceTreeModel::find_channel(
 
 			if (channel.get() == child->data(DeviceTreeModel::DataRole).
 					value<shared_ptr<sv::channels::BaseChannel>>().get())
-				return (TreeItem *)child;
+				return static_cast<TreeItem *>(child);
 		}
 	}
 	return nullptr;
@@ -356,7 +356,7 @@ TreeItem *DeviceTreeModel::find_signal (
 
 		if (signal.get() == child->data(DeviceTreeModel::DataRole).
 				value<shared_ptr<sv::data::BaseSignal>>().get())
-			return (TreeItem *)child;
+			return static_cast<TreeItem *>(child);
 	}
 	return nullptr;
 }
@@ -382,7 +382,7 @@ TreeItem *DeviceTreeModel::find_configurable(
 
 		if (configurable.get() == child->data(DeviceTreeModel::DataRole).
 				value<shared_ptr<sv::devices::Configurable>>().get())
-			return (TreeItem *)child;
+			return static_cast<TreeItem *>(child);
 	}
 	return nullptr;
 }
@@ -398,7 +398,7 @@ TreeItem *DeviceTreeModel::find_property(
 
 		if (property.get() == child->data(DeviceTreeModel::DataRole).
 				value<shared_ptr<sv::data::properties::BaseProperty>>().get())
-			return (TreeItem *)child;
+			return static_cast<TreeItem *>(child);
 	}
 	return nullptr;
 }
