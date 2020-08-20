@@ -291,12 +291,12 @@ void ConnectDialog::on_scan_pressed()
 {
 	device_list_.clear();
 
-	const int index = drivers_.currentIndex();
-	if (index == -1)
+	const int d_index = drivers_.currentIndex();
+	if (d_index == -1)
 		return;
 
 	shared_ptr<Driver> driver =
-		drivers_.itemData(index).value<shared_ptr<Driver>>();
+		drivers_.itemData(d_index).value<shared_ptr<Driver>>();
 
 	assert(driver);
 
@@ -304,10 +304,10 @@ void ConnectDialog::on_scan_pressed()
 
 	if (serial_devices_.isEnabled()) {
 		QString serial;
-		const int index = serial_devices_.currentIndex();
-		if (index >= 0 && index < serial_devices_.count() &&
-			serial_devices_.currentText() == serial_devices_.itemText(index))
-			serial = serial_devices_.itemData(index).value<QString>();
+		const int s_index = serial_devices_.currentIndex();
+		if (s_index >= 0 && s_index < serial_devices_.count() &&
+			serial_devices_.currentText() == serial_devices_.itemText(s_index))
+			serial = serial_devices_.itemData(s_index).value<QString>();
 		else
 			serial = serial_devices_.currentText();
 		drvopts[ConfigKey::CONN] = Variant<ustring>::create(

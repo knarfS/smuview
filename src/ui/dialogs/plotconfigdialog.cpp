@@ -304,18 +304,18 @@ void PlotConfigDialog::setup_ui_curve_colors_tab()
 				QString name = QString("%1 %2").arg(
 					q_n_pair.second, data::datautil::format_quantity_flag(qf));
 				auto qfs = set<data::QuantityFlag>{qf};
-				int last_row = color_table_->rowCount();
+				last_row = color_table_->rowCount();
 				color_table_->insertRow(last_row);
-				QTableWidgetItem *quantity_item = new QTableWidgetItem(name);
-				quantity_item->setData(Qt::UserRole, QString("%1_%2").
+				QTableWidgetItem *q_item = new QTableWidgetItem(name);
+				q_item->setData(Qt::UserRole, QString("%1_%2").
 					arg(data::datautil::get_sr_quantity_id(q_n_pair.first)).
 					arg(data::datautil::get_sr_quantity_flags_id(qfs)));
-				quantity_item->setFlags(quantity_item->flags() ^ Qt::ItemIsEditable);
-				color_table_->setItem(last_row, 0, quantity_item);
-				QTableWidgetItem *color_item = new QTableWidgetItem(name);
-				color_item->setData(Qt::EditRole,
+				q_item->setFlags(q_item->flags() ^ Qt::ItemIsEditable);
+				color_table_->setItem(last_row, 0, q_item);
+				QTableWidgetItem *c_item = new QTableWidgetItem(name);
+				c_item->setData(Qt::EditRole,
 					widgets::plot::Curve::default_color(q_n_pair.first, qfs));
-				color_table_->setItem(last_row, 1, color_item);
+				color_table_->setItem(last_row, 1, c_item);
 			}
 		}
 	}
