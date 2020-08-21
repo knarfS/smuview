@@ -84,8 +84,8 @@ void AxisLockLabel::set_locked(bool locked)
 		this->setPixmap(unlocked_pixmap_);
 }
 
-void AxisLockLabel::on_axis_lock_changed(
-	const int axis_id, const AxisBoundary axis_boundary, bool locked)
+void AxisLockLabel::on_axis_lock_changed(const int axis_id,
+	const sv::ui::widgets::plot::AxisBoundary axis_boundary, bool locked)
 {
 	if (axis_id != axis_id_ || axis_boundary != axis_boundary_)
 		return;

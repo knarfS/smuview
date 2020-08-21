@@ -123,7 +123,7 @@ public Q_SLOTS:
 	void add_axis_icons(const int axis_id);
 	void lock_all_axis();
 	void on_axis_lock_clicked();
-	void add_marker(Curve *curve);
+	void add_marker(sv::ui::widgets::plot::Curve *curve);
 	void add_diff_marker(QwtPlotMarker *marker1, QwtPlotMarker *marker2);
 	void remove_marker(QwtPlotMarker *marker);
 	void on_marker_selected(const QPointF mouse_pos);
@@ -168,7 +168,8 @@ private:
 	QwtPlotPicker *marker_move_picker_;
 
 Q_SIGNALS:
-	void axis_lock_changed(int axis_id, AxisBoundary axis_boundary, bool locked);
+	void axis_lock_changed(int axis_id,
+		sv::ui::widgets::plot::AxisBoundary axis_boundary, bool locked);
 	void curve_added();
 	void curve_removed();
 	void marker_added();

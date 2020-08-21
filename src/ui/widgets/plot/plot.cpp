@@ -519,7 +519,7 @@ void Plot::set_time_span(double time_span)
 	this->replot();
 }
 
-void Plot::add_marker(Curve *curve)
+void Plot::add_marker(sv::ui::widgets::plot::Curve *curve)
 {
 	auto marker = curve->add_marker(
 		QString::number(marker_curve_map().size()+1));

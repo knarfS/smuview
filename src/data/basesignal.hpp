@@ -130,7 +130,7 @@ protected:
 	string name_;
 
 Q_SIGNALS:
-	void name_changed(const string &name);
+	void name_changed(const std::string &name);
 
 };
 

@@ -47,8 +47,8 @@ public:
 	void set_locked(bool locked);
 
 public Q_SLOTS:
-	void on_axis_lock_changed(
-		const int axis_id, const AxisBoundary axis_boundary, bool locked);
+	void on_axis_lock_changed(const int axis_id,
+		const sv::ui::widgets::plot::AxisBoundary axis_boundary, bool locked);
 private:
 	void setup_ui();
 
