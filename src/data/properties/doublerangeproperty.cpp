@@ -77,9 +77,8 @@ double_range_t DoubleRangeProperty::double_range_value() const
 
 QString DoubleRangeProperty::to_string(data::double_range_t value) const
 {
-	QString str = QString("%1 - %2").
-		arg(QString::number(value.first, 'f')).
-		arg(QString::number(value.second, 'f'));
+	QString str = QString("%1 - %2").arg(
+		QString::number(value.first, 'f'), QString::number(value.second, 'f'));
 	if (unit_ != data::Unit::Unknown && unit_ != data::Unit::Unitless)
 		str.append(" ").append(datautil::format_unit(unit_));
 

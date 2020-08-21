@@ -159,8 +159,7 @@ QString TimeCurveData::x_unit_str() const
 QString TimeCurveData::x_title() const
 {
 	return QString("%1 [%2]").
-		arg(data::datautil::format_quantity(x_quantity())).
-		arg(x_unit_str());
+		arg(data::datautil::format_quantity(x_quantity()), x_unit_str());
 }
 
 sv::data::Quantity TimeCurveData::y_quantity() const
@@ -187,8 +186,7 @@ QString TimeCurveData::y_title() const
 {
 	// Don't use only the unit, so we can add AC/DC to axis label.
 	return QString("%1 [%2]").
-		arg(data::datautil::format_quantity(y_quantity())).
-		arg(y_unit_str());
+		arg(data::datautil::format_quantity(y_quantity()), y_unit_str());
 }
 
 shared_ptr<sv::data::AnalogTimeSignal> TimeCurveData::signal() const

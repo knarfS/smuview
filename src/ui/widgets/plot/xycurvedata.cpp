@@ -156,8 +156,7 @@ QString XYCurveData::x_title() const
 {
 	// Don't use only the unit, so we can add AC/DC to axis label.
 	return QString("%1 [%2]").
-		arg(data::datautil::format_quantity(x_quantity())).
-		arg(x_unit_str());
+		arg(data::datautil::format_quantity(x_quantity()), x_unit_str());
 }
 
 sv::data::Quantity XYCurveData::y_quantity() const
@@ -184,8 +183,7 @@ QString XYCurveData::y_title() const
 {
 	// Don't use only the unit, so we can add AC/DC to axis label.
 	return QString("%1 [%2]").
-		arg(data::datautil::format_quantity(y_quantity())).
-		arg(y_unit_str());
+		arg(data::datautil::format_quantity(y_quantity()), y_unit_str());
 }
 
 shared_ptr<sv::data::AnalogTimeSignal> XYCurveData::x_t_signal() const

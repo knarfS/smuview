@@ -205,9 +205,9 @@ void SaveDialog::save(QString file_name)
 					time = util::format_time_date(sample.first);
 			}
 
-			line.append(QString("%1%2%3%4").
-				arg(QString::fromStdString(start_sep)).arg(time).
-				arg(QString::fromStdString(sep)).arg(value));
+			line.append(QString("%1%2%3%4").arg(
+				QString::fromStdString(start_sep), time,
+				QString::fromStdString(sep), value));
 			start_sep = sep;
 
 			++j;

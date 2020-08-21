@@ -194,7 +194,7 @@ void MainWindow::setup_ui()
 	this->setWindowIcon(mainIcon);
 
 	QString window_title = QString("%1 %2").
-		arg(tr("SmuView")).arg(SV_VERSION_STRING);
+		arg(tr("SmuView"), SV_VERSION_STRING);
 	this->setWindowTitle(window_title);
 
 	QHBoxLayout *centralLayout = new QHBoxLayout();

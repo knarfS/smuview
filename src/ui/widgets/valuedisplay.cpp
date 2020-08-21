@@ -135,7 +135,7 @@ void ValueDisplay::update_display()
 
 	if (si_prefix != unit_si_prefix_ || unit_changed_) {
 		unit_si_prefix_ = si_prefix;
-		QString unit_str = QString("%1%2").arg(unit_si_prefix_).arg(unit_);
+		QString unit_str = QString("%1%2").arg(unit_si_prefix_, unit_);
 		if (!unit_suffix_.isEmpty()) {
 			unit_str.append(" ").append(unit_suffix_);
 		}

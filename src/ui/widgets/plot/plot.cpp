@@ -932,12 +932,12 @@ void Plot::update_markers_label()
 			y_unit = m1_y_unit;
 
 		table.append("<tr>");
-		table.append(QString("<td width=\"50\" align=\"left\">%1 - %2:</td>").
-			arg(marker_pair.first->title().text()).
-			arg(marker_pair.second->title().text()));
-		table.append(QString("<td width=\"70\" align=\"right\">%2 %3</td>").
+		table.append(QString("<td width=\"50\" align=\"left\">%1 - %2:</td>").arg(
+			marker_pair.first->title().text(),
+			marker_pair.second->title().text()));
+		table.append(QString("<td width=\"70\" align=\"right\">%1 %2</td>").
 			arg(d_y).arg(y_unit));
-		table.append(QString("<td width=\"70\" align=\"right\">%4 %5</td>").
+		table.append(QString("<td width=\"70\" align=\"right\">%1 %2</td>").
 			arg(d_x).arg(x_unit));
 		table.append("</tr>");
 	}
