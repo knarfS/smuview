@@ -57,7 +57,7 @@ DoubleKnob::DoubleKnob(
 
 void DoubleKnob::setup_ui()
 {
-	this->knobRect().setSize(QSize(100, 100));
+	this->setKnobWidth(100);
 	this->setNumTurns(1);
 	if (property_ != nullptr && property_->is_listable()) {
 		shared_ptr<data::properties::DoubleProperty> double_prop =
