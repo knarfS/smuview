@@ -318,7 +318,7 @@ py::object UiProxy::ui_show_int_input_dialog(const string &title,
 void UiProxy::init_wait_for_tab_added(string &id, int timeout)
 {
 	event_loop_finished_conn_ =
-		connect(ui_helper_.get(), &UiHelper::tab_added,
+		connect(ui_helper_.get(), &UiHelper::tab_added, this,
 			[this, &id](const std::string &tab_id) {
 				id = tab_id;
 				event_loop_.quit();
@@ -335,7 +335,7 @@ void UiProxy::init_wait_for_tab_added(string &id, int timeout)
 void UiProxy::init_wait_for_view_added(string &id, int timeout)
 {
 	event_loop_finished_conn_ =
-		connect(ui_helper_.get(), &UiHelper::view_added,
+		connect(ui_helper_.get(), &UiHelper::view_added, this,
 			[this, &id](const std::string &view_id) {
 				id = view_id;
 				event_loop_.quit();
@@ -352,7 +352,7 @@ void UiProxy::init_wait_for_view_added(string &id, int timeout)
 void UiProxy::init_wait_for_curve_added(string &id, int timeout)
 {
 	event_loop_finished_conn_ =
-		connect(ui_helper_.get(), &UiHelper::curve_added,
+		connect(ui_helper_.get(), &UiHelper::curve_added, this,
 			[this, &id](const std::string &curve_id) {
 				id = curve_id;
 				event_loop_.quit();
@@ -369,13 +369,13 @@ void UiProxy::init_wait_for_curve_added(string &id, int timeout)
 void UiProxy::init_wait_for_message_box(bool &ok, int timeout)
 {
 	event_loop_finished_conn_ =
-		connect(ui_helper_.get(), &UiHelper::message_box_finished,
+		connect(ui_helper_.get(), &UiHelper::message_box_finished, this,
 			[this, &ok]() {
 				ok = true;
 				event_loop_.quit();
 			});
 	event_loop_canceled_conn_ =
-		connect(ui_helper_.get(), &UiHelper::message_box_canceled,
+		connect(ui_helper_.get(), &UiHelper::message_box_canceled, this,
 			[this, &ok]() {
 				ok = false;;
 				event_loop_.quit();
@@ -392,14 +392,14 @@ void UiProxy::init_wait_for_message_box(bool &ok, int timeout)
 void UiProxy::init_wait_for_input_dialog(bool &ok, QVariant &qvar, int timeout)
 {
 	event_loop_finished_conn_ =
-		connect(ui_helper_.get(), &UiHelper::input_dialog_finished,
+		connect(ui_helper_.get(), &UiHelper::input_dialog_finished, this,
 			[this, &ok, &qvar](const QVariant &qvar_input) {
 				ok = true;
 				qvar = qvar_input;
 				event_loop_.quit();
 			});
 	event_loop_canceled_conn_ =
-		connect(ui_helper_.get(), &UiHelper::input_dialog_canceled,
+		connect(ui_helper_.get(), &UiHelper::input_dialog_canceled, this,
 			[this, &ok]() {
 				ok = false;;
 				event_loop_.quit();
