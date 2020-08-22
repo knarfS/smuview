@@ -127,7 +127,8 @@ void DataView::restore_settings(QSettings &settings)
 {
 	BaseView::restore_settings(settings);
 
-	for (const auto &group : settings.childGroups()) {
+	const auto groups = settings.childGroups();
+	for (const auto &group : groups) {
 		if (group.startsWith("signal")) {
 			settings.beginGroup(group);
 			auto signal = SettingsManager::restore_signal(session_, settings);

@@ -138,7 +138,8 @@ void BasePlotView::setup_toolbar()
 void BasePlotView::update_add_marker_menu()
 {
 	// First remove all existing actions
-	for (QAction *action : add_marker_menu_->actions()) {
+	const auto actions = add_marker_menu_->actions();
+	for (QAction *action : actions) {
 		disconnect(action, &QAction::triggered,
 			this, &BasePlotView::on_action_add_marker_triggered);
 		add_marker_menu_->removeAction(action);
@@ -228,7 +229,8 @@ void BasePlotView::on_action_zoom_best_fit_triggered()
 void BasePlotView::on_action_save_triggered()
 {
 	QString filter("SVG Image (*.svg);;PDF File (*.pdf)");
-	for (const auto &supported : QImageWriter::supportedImageFormats()) {
+	const auto supported_formats = QImageWriter::supportedImageFormats();
+	for (const auto &supported : supported_formats) {
 		filter += ";;" + supported.toUpper() + " Image (*." + supported + ")";
 	}
 	QString *selected_filter = new QString("SVG Image (*.svg)");

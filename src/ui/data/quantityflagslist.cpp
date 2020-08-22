@@ -55,7 +55,7 @@ void QuantityFlagsList::select_quantity_flags(
 set<sv::data::QuantityFlag> QuantityFlagsList::selected_quantity_flags()
 {
 	set<sv::data::QuantityFlag> flags;
-	auto items = this->selectedItems();
+	const auto items = this->selectedItems();
 	for (const auto &item : items) {
 		QVariant data = item->data(Qt::UserRole);
 		if (data.isNull())

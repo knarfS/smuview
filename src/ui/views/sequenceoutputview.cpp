@@ -472,7 +472,7 @@ void SequenceOutputView::on_action_delete_row()
 {
 	// NOTE: If the cells are empty, there is no item to be returned by
 	//       selectedItems() and selectedIndexes() is protected...
-	auto items = sequence_table_->selectedItems();
+	const auto items = sequence_table_->selectedItems();
 	for (const auto &item : items) {
 		sequence_table_->removeRow(item->row());
 	}

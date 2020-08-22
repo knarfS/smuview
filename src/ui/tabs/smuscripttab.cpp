@@ -116,7 +116,7 @@ void SmuScriptTab::restore_settings()
 	// Restore device views
 	settings.beginGroup("SmuScriptTab");
 
-	QStringList view_keys = settings.childGroups();
+	const QStringList view_keys = settings.childGroups();
 	for (const auto &view_key : view_keys) {
 		settings.beginGroup(view_key);
 		auto view = views::viewhelper::get_view_from_settings(session_, settings);

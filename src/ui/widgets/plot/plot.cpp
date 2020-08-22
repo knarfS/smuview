@@ -1016,7 +1016,8 @@ void Plot::restore_settings(QSettings &settings, bool restore_curves)
 
 	if (!restore_curves)
 		return;
-	for (const auto &group : settings.childGroups()) {
+	const auto groups = settings.childGroups();
+	for (const auto &group : groups) {
 		if (group.startsWith("timecurve:") || group.startsWith("xycurve:")) {
 			Curve *curve = Curve::init_from_settings(session_, settings, group);
 			if (curve)

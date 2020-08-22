@@ -94,7 +94,7 @@ void DeviceTreeView::check_channels(
 	if (!is_channel_checkable_)
 		return;
 
-	QList<QStandardItem *> all_items =
+	const QList<QStandardItem *> all_items =
 		tree_model_->findItems("", Qt::MatchContains | Qt::MatchRecursive);
 
 	// First uncheck all channels
@@ -125,7 +125,7 @@ vector<shared_ptr<sv::channels::BaseChannel>>
 	if (!is_channel_checkable_)
 		return channels;
 
-	QList<QStandardItem *> all_items =
+	const QList<QStandardItem *> all_items =
 		tree_model_->findItems("", Qt::MatchContains | Qt::MatchRecursive);
 	for (const auto &item : all_items) {
 		if (item->checkState() > 0 &&
@@ -143,7 +143,7 @@ void DeviceTreeView::check_signals(
 	if (!is_signal_checkable_)
 		return;
 
-	QList<QStandardItem *> all_items =
+	const QList<QStandardItem *> all_items =
 		tree_model_->findItems("", Qt::MatchContains | Qt::MatchRecursive);
 
 	// First uncheck all signals
@@ -174,7 +174,7 @@ vector<shared_ptr<sv::data::BaseSignal>>
 	if (!is_signal_checkable_)
 		return signals;
 
-	QList<QStandardItem *> all_items =
+	const QList<QStandardItem *> all_items =
 		tree_model_->findItems("", Qt::MatchContains | Qt::MatchRecursive);
 	for (const auto &item : all_items) {
 		if (item->checkState() > 0 &&
