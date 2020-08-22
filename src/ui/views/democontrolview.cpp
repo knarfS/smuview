@@ -147,7 +147,7 @@ void DemoControlView::restore_settings(QSettings &settings)
 }
 
 DemoControlView *DemoControlView::init_from_settings(
-	Session &session, QSettings &settings, const QUuid &uuid)
+	Session &session, QSettings &settings, QUuid uuid)
 {
 	auto configurable = SettingsManager::restore_configurable(session, settings);
 	if (configurable)
