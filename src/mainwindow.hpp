@@ -68,10 +68,10 @@ public:
 
 	ui::tabs::DeviceTab *add_device_tab(
 		shared_ptr<sv::devices::BaseDevice> device);
-	ui::tabs::SmuScriptTab *add_smuscript_tab(string file_name);
-	void remove_tab(string tab_id);
-	void change_tab_icon(string tab_id, QIcon icon);
-	void change_tab_title(string tab_id, QString title);
+	ui::tabs::SmuScriptTab *add_smuscript_tab(const string &file_name);
+	void remove_tab(const string &tab_id);
+	void change_tab_icon(const string &tab_id, const QIcon &icon);
+	void change_tab_title(const string &tab_id, const QString &title);
 	ui::tabs::BaseTab *get_tab_from_tab_id(const string &id);
 
 private:

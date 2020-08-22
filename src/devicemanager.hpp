@@ -57,7 +57,7 @@ class DeviceManager
 
 public:
 	DeviceManager(shared_ptr<sigrok::Context> context,
-		vector<std::string> drivers, bool do_scan);
+		const vector<std::string> &drivers, bool do_scan);
 
 	~DeviceManager() = default;
 
@@ -69,11 +69,11 @@ public:
 	list<shared_ptr<devices::HardwareDevice>> user_spec_devices() const;
 
 	list<shared_ptr<devices::HardwareDevice>> driver_scan(
-		string driver_name, vector<string> driver_opts);
+		const string &driver_name, const vector<string> &driver_opts);
 
 	list<shared_ptr<devices::HardwareDevice>> driver_scan(
 		shared_ptr<sigrok::Driver> sr_driver,
-		map<const sigrok::ConfigKey *, Glib::VariantBase> drvopts);
+		const map<const sigrok::ConfigKey *, Glib::VariantBase> &drvopts);
 
 	map<string, string> get_device_info(
 		const shared_ptr<devices::BaseDevice> device);
@@ -86,7 +86,7 @@ private:
 		shared_ptr<devices::BaseDevice> b);
 
 	static map<const sigrok::ConfigKey *, Glib::VariantBase>
-	driver_scan_options(vector<string> user_spec,
+	driver_scan_options(const vector<string> &user_spec,
 		set<const sigrok::ConfigKey *> driver_opts);
 
 protected:

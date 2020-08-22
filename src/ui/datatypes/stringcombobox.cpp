@@ -119,13 +119,13 @@ QVariant StringComboBox::variant_value() const
 	return QVariant(this->currentText());
 }
 
-void StringComboBox::value_changed(const QString value)
+void StringComboBox::value_changed(const QString &value)
 {
 	if (property_ != nullptr)
 		property_->change_value(QVariant(value));
 }
 
-void StringComboBox::on_value_changed(const QVariant qvar)
+void StringComboBox::on_value_changed(const QVariant &qvar)
 {
 	// Disconnect Widget -> Property signal to prevent echoing
 	disconnect_widget_2_prop_signals();

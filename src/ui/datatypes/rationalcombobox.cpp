@@ -124,7 +124,7 @@ void RationalComboBox::value_changed(int index)
 	}
 }
 
-void RationalComboBox::on_value_changed(const QVariant qvar)
+void RationalComboBox::on_value_changed(const QVariant &qvar)
 {
 	// Disconnect Widget -> Property signal to prevent echoing
 	disconnect_widget_2_prop_signals();

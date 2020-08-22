@@ -48,7 +48,7 @@ namespace widgets {
 namespace plot {
 
 Curve::Curve(BaseCurveData *curve_data, int x_axis_id, int y_axis_id,
-		QString custom_name, QColor custom_color) :
+		const QString &custom_name, const QColor &custom_color) :
 	curve_data_(curve_data),
 	plot_direct_painter_(new QwtPlotDirectPainter()),
 	painted_points_(0)
@@ -287,7 +287,7 @@ Curve *Curve::init_from_settings(Session &session, QSettings &settings,
 }
 
 QColor Curve::default_color(sv::data::Quantity quantity,
-	set<sv::data::QuantityFlag> quantity_flags)
+	const set<sv::data::QuantityFlag> &quantity_flags)
 {
 	// First, try to get color from QSettings
 	QColor color = QColor();
@@ -352,7 +352,7 @@ QColor Curve::default_color(sv::data::Quantity quantity,
 }
 
 void Curve::save_settings_default_color(sv::data::Quantity quantity,
-	set<sv::data::QuantityFlag> quantity_flags, QColor &color)
+	const set<sv::data::QuantityFlag> &quantity_flags, const QColor &color)
 {
 	QSettings settings;
 	settings.beginGroup("DefaultCurveColors");

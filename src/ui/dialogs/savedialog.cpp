@@ -100,7 +100,7 @@ void SaveDialog::setup_ui()
 	this->setLayout(main_layout);
 }
 
-void SaveDialog::save(QString file_name)
+void SaveDialog::save(const QString &file_name)
 {
 	ofstream output_file;
 	string str_file_name = file_name.toStdString();
@@ -218,7 +218,7 @@ void SaveDialog::save(QString file_name)
 	output_file.close();
 }
 
-void SaveDialog::save_combined(QString file_name)
+void SaveDialog::save_combined(const QString &file_name)
 {
 	ofstream output_file;
 	string str_file_name = file_name.toStdString();

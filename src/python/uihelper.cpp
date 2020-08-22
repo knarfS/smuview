@@ -256,7 +256,7 @@ void UiHelper::set_curve_name(const std::string &tab_id,
 
 void UiHelper::set_curve_color(const std::string &tab_id,
 	const std::string &view_id, const std::string &curve_id,
-	const std::tuple<int, int, int> &color)
+	std::tuple<int, int, int> color)
 {
 	auto plot_view = get_base_plot_view(tab_id, view_id);
 	if (!plot_view)

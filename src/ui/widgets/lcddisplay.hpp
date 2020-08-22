@@ -37,8 +37,8 @@ class LcdDisplay : public ValueDisplay
 public:
 	LcdDisplay(
 		int digits, int decimal_places, const bool auto_range,
-		const QString unit, const QString unit_suffix, const QString extra_text,
-		const bool small, QWidget *parent = nullptr);
+		const QString &unit, const QString &unit_suffix,
+		const QString &extra_text, const bool small, QWidget *parent = nullptr);
 
 private:
 	uint height_;

@@ -50,7 +50,7 @@ public:
 	DoubleSmallControl(
 		shared_ptr<sv::data::properties::BaseProperty> property,
 		const bool auto_commit, const bool auto_update,
-		QString title, QWidget *parent = nullptr);
+		const QString &title, QWidget *parent = nullptr);
 
 	QVariant variant_value() const override;
 
@@ -64,7 +64,7 @@ private:
 
 private Q_SLOTS:
 	/** Signal handling for Property -> Widget. Nothing to do here. */
-	void on_value_changed(const QVariant qvar);
+	void on_value_changed(const QVariant &qvar);
 	/** Signal handling for Property -> Widget. Nothing to do here. */
 	void on_list_changed();
 

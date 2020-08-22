@@ -38,10 +38,10 @@ namespace data {
 
 BaseSignal::BaseSignal(
 		data::Quantity quantity,
-		set<data::QuantityFlag> quantity_flags,
+		const set<data::QuantityFlag> &quantity_flags,
 		data::Unit unit,
 		shared_ptr<channels::BaseChannel> parent_channel,
-		string custom_name) :
+		const string &custom_name) :
 	quantity_(quantity),
 	quantity_flags_(quantity_flags),
 	unit_(unit),
@@ -108,7 +108,7 @@ shared_ptr<channels::BaseChannel> BaseSignal::parent_channel() const
 	return parent_channel_;
 }
 
-void BaseSignal::set_name(string custom_name)
+void BaseSignal::set_name(const string &custom_name)
 {
 	if (!custom_name.empty()) {
 		name_ = custom_name;

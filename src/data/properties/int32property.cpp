@@ -60,7 +60,7 @@ QString Int32Property::to_string(int32_t value) const
 	return str;
 }
 
-QString Int32Property::to_string(const QVariant qvar) const
+QString Int32Property::to_string(const QVariant &qvar) const
 {
 	return this->to_string(qvar.toInt());
 }
@@ -104,7 +104,7 @@ bool Int32Property::list_config()
 	return true;
 }
 
-void Int32Property::change_value(const QVariant qvar)
+void Int32Property::change_value(const QVariant &qvar)
 {
 	configurable_->set_config(config_key_, qvar.toInt());
 	Q_EMIT value_changed(qvar);

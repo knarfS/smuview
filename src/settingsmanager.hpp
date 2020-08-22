@@ -130,7 +130,7 @@ public:
 	 * @return The restored device.
 	 */
 	static shared_ptr<sv::devices::BaseDevice> restore_device(
-		Session &session, QSettings &settings, QString key_prefix = "");
+		Session &session, QSettings &settings, const QString &key_prefix = "");
 
 	/**
 	 * Restore a configurable from the settings.
@@ -142,7 +142,7 @@ public:
 	 * @return The restored configurable.
 	 */
 	static shared_ptr<sv::devices::Configurable> restore_configurable(
-		Session &session, QSettings &settings, QString key_prefix = "");
+		Session &session, QSettings &settings, const QString &key_prefix = "");
 
 	/**
 	 * Restore a property from the settings.

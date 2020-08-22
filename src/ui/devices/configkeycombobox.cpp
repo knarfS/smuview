@@ -46,7 +46,8 @@ ConfigKeyComboBox::ConfigKeyComboBox(
 	setup_ui();
 }
 
-void ConfigKeyComboBox::filter_config_keys(set<sv::data::DataType> data_types)
+void ConfigKeyComboBox::filter_config_keys(
+	const set<sv::data::DataType> &data_types)
 {
 	filter_data_types_ = data_types;
 	this->fill_config_keys();

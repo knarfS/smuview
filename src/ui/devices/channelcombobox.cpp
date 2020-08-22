@@ -43,7 +43,7 @@ namespace devices {
 
 ChannelComboBox::ChannelComboBox(
 		shared_ptr<sv::devices::BaseDevice> device,
-		QString channel_group, QWidget *parent) :
+		const QString &channel_group, QWidget *parent) :
 	QComboBox(parent),
 	device_(device),
 	channel_group_(channel_group),
@@ -121,7 +121,7 @@ void ChannelComboBox::fill_channels()
 }
 
 void ChannelComboBox::change_device_channel_group(
-	shared_ptr<sv::devices::BaseDevice> device, QString channel_group)
+	shared_ptr<sv::devices::BaseDevice> device, const QString &channel_group)
 {
 	device_ = device;
 	channel_group_ = channel_group;

@@ -48,7 +48,7 @@ public:
 	explicit SmuScriptRunner(Session &session);
 	~SmuScriptRunner();
 
-	void run(std::string file_name);
+	void run(const std::string &file_name);
 	void stop();
 	bool is_running();
 

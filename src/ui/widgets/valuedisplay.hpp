@@ -34,8 +34,8 @@ class ValueDisplay : public QFrame
 public:
 	ValueDisplay(
 		int digits, int decimal_places, const bool auto_range,
-		const QString unit, const QString unit_suffix, const QString extra_text,
-		const bool small, QWidget *parent = nullptr);
+		const QString &unit, const QString &unit_suffix,
+		const QString &extra_text, const bool small, QWidget *parent = nullptr);
 
 	double value() const;
 
@@ -63,9 +63,9 @@ protected:
 
 public Q_SLOTS:
 	void set_value(const double value);
-	void set_extra_text(const QString extra_text);
-	void set_unit(const QString unit);
-	void set_unit_suffix(const QString unit_suffix);
+	void set_extra_text(const QString &extra_text);
+	void set_unit(const QString &unit);
+	void set_unit_suffix(const QString &unit_suffix);
 	void set_digits(const int digits, const int decimal_places);
 	void reset_value();
 	void update_display();

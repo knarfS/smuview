@@ -96,7 +96,7 @@ void DoubleDisplay::value_changed(const double value)
 	// Nothing to do here.
 }
 
-void DoubleDisplay::on_value_changed(const QVariant qvar)
+void DoubleDisplay::on_value_changed(const QVariant &qvar)
 {
 	this->set_value(qvar.toDouble());
 }

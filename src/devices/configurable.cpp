@@ -270,7 +270,7 @@ template<typename T> void Configurable::set_config(
 }
 
 void Configurable::set_container_config(
-	devices::ConfigKey config_key, vector<Glib::VariantBase> childs)
+	devices::ConfigKey config_key, const vector<Glib::VariantBase> &childs)
 {
 	assert(sr_configurable_);
 

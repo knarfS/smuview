@@ -131,14 +131,14 @@ ui::tabs::WelcomeTab *MainWindow::add_welcome_tab()
 	return tab;
 }
 
-ui::tabs::SmuScriptTab *MainWindow::add_smuscript_tab(string file_name)
+ui::tabs::SmuScriptTab *MainWindow::add_smuscript_tab(const string &file_name)
 {
 	auto tab = new ui::tabs::SmuScriptTab(*session_, file_name);
 	add_tab(tab);
 	return tab;
 }
 
-void MainWindow::remove_tab(string tab_id)
+void MainWindow::remove_tab(const string &tab_id)
 {
 	remove_tab(tab_widget_->indexOf(tab_window_map_[tab_id]));
 }
@@ -166,13 +166,13 @@ void MainWindow::remove_tab(int tab_index)
 	}
 }
 
-void MainWindow::change_tab_icon(string tab_id, QIcon icon)
+void MainWindow::change_tab_icon(const string &tab_id, const QIcon &icon)
 {
 	int tab_index = tab_widget_->indexOf(tab_window_map_[tab_id]);
 	tab_widget_->setTabIcon(tab_index, icon);
 }
 
-void MainWindow::change_tab_title(string tab_id, QString title)
+void MainWindow::change_tab_title(const string &tab_id, const QString &title)
 {
 	int tab_index = tab_widget_->indexOf(tab_window_map_[tab_id]);
 	tab_widget_->setTabText(tab_index, title);

@@ -93,7 +93,7 @@ QString UInt64RangeProperty::to_string(data::uint64_range_t value) const
 	return str;
 }
 
-QString UInt64RangeProperty::to_string(const QVariant qvar) const
+QString UInt64RangeProperty::to_string(const QVariant &qvar) const
 {
 	return this->to_string(qvar.value<data::uint64_range_t>());
 }
@@ -137,7 +137,7 @@ bool UInt64RangeProperty::list_config()
  *
  *       set_config(config_key_, std::tuple<uint32_t, uint64_t>);
  */
-void UInt64RangeProperty::change_value(const QVariant qvar)
+void UInt64RangeProperty::change_value(const QVariant &qvar)
 {
 	data::uint64_range_t range = qvar.value<data::uint64_range_t>();
 

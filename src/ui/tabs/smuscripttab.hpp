@@ -46,7 +46,7 @@ class SmuScriptTab : public BaseTab
 private:
 
 public:
-	SmuScriptTab(Session &session, string script_file_name,
+	SmuScriptTab(Session &session, const string &script_file_name,
 		QWidget *parent = nullptr);
 
 	QString title() override;

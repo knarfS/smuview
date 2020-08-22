@@ -130,7 +130,7 @@ void DeviceTreeModel::add_device(shared_ptr<sv::devices::BaseDevice> device)
 	}
 }
 
-TreeItem *DeviceTreeModel::add_channel_group(string channel_group_name,
+TreeItem *DeviceTreeModel::add_channel_group(const string &channel_group_name,
 	TreeItem *device_item)
 {
 	if (channel_group_name.empty())
@@ -161,7 +161,7 @@ TreeItem *DeviceTreeModel::add_channel_group(string channel_group_name,
 }
 
 void DeviceTreeModel::add_channel(shared_ptr<channels::BaseChannel> channel,
-	set<string> channel_group_names, TreeItem *parent_item)
+	const set<string> &channel_group_names, TreeItem *parent_item)
 {
 	std::lock_guard<std::recursive_mutex> lock(mutex_);
 
@@ -304,7 +304,7 @@ TreeItem *DeviceTreeModel::find_device(
 	return nullptr;
 }
 
-TreeItem *DeviceTreeModel::find_channel_group(string channel_group_name,
+TreeItem *DeviceTreeModel::find_channel_group(const string &channel_group_name,
 	TreeItem *parent_item) const
 {
 	for (int i=0; i<parent_item->rowCount(); ++i) {
@@ -321,7 +321,7 @@ TreeItem *DeviceTreeModel::find_channel_group(string channel_group_name,
 
 TreeItem *DeviceTreeModel::find_channel(
 	shared_ptr<sv::channels::BaseChannel> channel,
-	set<string> channel_group_names, TreeItem *parent_item) const
+	const set<string> &channel_group_names, TreeItem *parent_item) const
 {
 	TreeItem *new_parent_item;
 	for (const auto &chg_name : channel_group_names) {

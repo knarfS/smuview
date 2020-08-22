@@ -66,7 +66,7 @@ QString DoubleProperty::to_string(double value) const
 	return str;
 }
 
-QString DoubleProperty::to_string(const QVariant qvar) const
+QString DoubleProperty::to_string(const QVariant &qvar) const
 {
 	return this->to_string(qvar.toDouble());
 }
@@ -120,7 +120,7 @@ bool DoubleProperty::list_config()
 	return true;
 }
 
-void DoubleProperty::change_value(const QVariant qvar)
+void DoubleProperty::change_value(const QVariant &qvar)
 {
 	configurable_->set_config(config_key_, qvar.toDouble());
 	Q_EMIT value_changed(qvar);

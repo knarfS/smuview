@@ -33,8 +33,8 @@ namespace widgets {
 
 LcdDisplay::LcdDisplay(
 		int digits, int decimal_places, const bool auto_range,
-		const QString unit, const QString unit_suffix, const QString extra_text,
-		const bool small, QWidget *parent) :
+		const QString &unit, const QString &unit_suffix,
+		const QString &extra_text, const bool small, QWidget *parent) :
 	ValueDisplay(digits, decimal_places, auto_range, unit, unit_suffix,
 		extra_text, small, parent)
 {

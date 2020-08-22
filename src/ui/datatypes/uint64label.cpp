@@ -81,13 +81,13 @@ QVariant UInt64Label::variant_value() const
 	return QVariant(this->text());
 }
 
-void UInt64Label::value_changed(const QString value)
+void UInt64Label::value_changed(const QString &value)
 {
 	(void)value;
 	// Nothing to do here.
 }
 
-void UInt64Label::on_value_changed(const QVariant qvar)
+void UInt64Label::on_value_changed(const QVariant &qvar)
 {
 	shared_ptr<data::properties::UInt64Property> uint64_prop =
 		dynamic_pointer_cast<data::properties::UInt64Property>(property_);

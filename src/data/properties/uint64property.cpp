@@ -71,7 +71,7 @@ QString UInt64Property::to_string(uint64_t value) const
 	return str;
 }
 
-QString UInt64Property::to_string(const QVariant qvar) const
+QString UInt64Property::to_string(const QVariant &qvar) const
 {
 	return this->to_string(qvar.toULongLong());
 }
@@ -162,7 +162,7 @@ bool UInt64Property::list_config()
 	return true;
 }
 
-void UInt64Property::change_value(const QVariant qvar)
+void UInt64Property::change_value(const QVariant &qvar)
 {
 	/*
 	 * TODO: This is a dirty hack to limit the sample rate of the (demo) device

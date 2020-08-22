@@ -31,8 +31,8 @@ namespace widgets {
 
 ValueDisplay::ValueDisplay(
 		int digits, int decimal_places, const bool auto_range,
-		const QString unit, const QString unit_suffix, const QString extra_text,
-		const bool small, QWidget *parent) :
+		const QString &unit, const QString &unit_suffix,
+		const QString &extra_text, const bool small, QWidget *parent) :
 	QFrame(parent),
 	digits_(digits),
 	decimal_places_(decimal_places),
@@ -60,21 +60,21 @@ void ValueDisplay::set_value(const double value)
 	update_display();
 }
 
-void ValueDisplay::set_extra_text(const QString extra_text)
+void ValueDisplay::set_extra_text(const QString &extra_text)
 {
 	extra_text_ = extra_text;
 	extra_text_changed_ = true;
 	update_display();
 }
 
-void ValueDisplay::set_unit(const QString unit)
+void ValueDisplay::set_unit(const QString &unit)
 {
 	unit_ = unit;
 	unit_changed_ = true;
 	update_display();
 }
 
-void ValueDisplay::set_unit_suffix(const QString unit_suffix)
+void ValueDisplay::set_unit_suffix(const QString &unit_suffix)
 {
 	unit_suffix_ = unit_suffix;
 	unit_changed_ = true;

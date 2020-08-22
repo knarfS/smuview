@@ -120,7 +120,7 @@ void UInt64RangeComboBox::value_changed(int index)
 	}
 }
 
-void UInt64RangeComboBox::on_value_changed(const QVariant qvar)
+void UInt64RangeComboBox::on_value_changed(const QVariant &qvar)
 {
 	// Disconnect Widget -> Property signal to prevent echoing
 	disconnect_widget_2_prop_signals();

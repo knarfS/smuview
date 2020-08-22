@@ -62,8 +62,8 @@ public:
 
 private:
 	void setup_ui();
-	void save(QString file_name);
-	void save_combined(QString file_name);
+	void save(const QString &file_name);
+	void save_combined(const QString &file_name);
 
 	const Session &session_;
 	const shared_ptr<sv::devices::BaseDevice> selected_device_;

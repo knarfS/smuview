@@ -85,7 +85,7 @@ QString DoubleRangeProperty::to_string(data::double_range_t value) const
 	return str;
 }
 
-QString DoubleRangeProperty::to_string(const QVariant qvar) const
+QString DoubleRangeProperty::to_string(const QVariant &qvar) const
 {
 	return this->to_string(qvar.value<data::double_range_t>());
 }
@@ -129,7 +129,7 @@ bool DoubleRangeProperty::list_config()
  *
  *       set_config(config_key_, std::tuple<double, double>);
  */
-void DoubleRangeProperty::change_value(const QVariant qvar)
+void DoubleRangeProperty::change_value(const QVariant &qvar)
 {
 	data::double_range_t range = qvar.value<data::double_range_t>();
 

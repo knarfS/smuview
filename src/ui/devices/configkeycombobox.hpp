@@ -49,7 +49,7 @@ public:
 		shared_ptr<sv::devices::Configurable> configurable,
 		QWidget *parent = nullptr);
 
-	void filter_config_keys(set<sv::data::DataType> data_types);
+	void filter_config_keys(const set<sv::data::DataType> &data_types);
 	void select_config_key(sv::devices::ConfigKey config_key);
 	sv::devices::ConfigKey selected_config_key() const;
 

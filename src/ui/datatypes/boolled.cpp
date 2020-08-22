@@ -34,8 +34,8 @@ namespace datatypes {
 BoolLed::BoolLed(
 		shared_ptr<sv::data::properties::BaseProperty> property,
 		const bool auto_update,
-		const QIcon on_icon, const QIcon off_icon, const QIcon dis_icon,
-		QString text, QWidget *parent) :
+		const QIcon &on_icon, const QIcon &off_icon, const QIcon &dis_icon,
+		const QString &text, QWidget *parent) :
 	QWidget(parent),
 	BaseWidget(property, false, auto_update),
 	on_icon_(on_icon),
@@ -109,7 +109,7 @@ void BoolLed::value_changed(const bool value)
 	// Nothing to do here.
 }
 
-void BoolLed::on_value_changed(const QVariant qvar)
+void BoolLed::on_value_changed(const QVariant &qvar)
 {
 	if (qvar.toBool()) {
 		led_label_->setPixmap(

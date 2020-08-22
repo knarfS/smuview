@@ -59,7 +59,7 @@ public:
 	explicit SelectPropertyForm(const Session &session,
 		QWidget *parent = nullptr);
 
-	void filter_config_keys(set<sv::data::DataType> data_types);
+	void filter_config_keys(const set<sv::data::DataType> &data_types);
 	void select_device(shared_ptr<sv::devices::BaseDevice> device);
 	void select_configurable(shared_ptr<sv::devices::Configurable> configurable);
 	void select_config_key(sv::devices::ConfigKey config_key);

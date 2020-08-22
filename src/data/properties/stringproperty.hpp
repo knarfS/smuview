@@ -57,7 +57,7 @@ public:
 	QVariant value() const override;
 	QString string_value() const;
 	QStringList list_values() const;
-	QString to_string(const QVariant qvar) const override;
+	QString to_string(const QVariant &qvar) const override;
 	QString to_string() const override;
 
 private:
@@ -65,7 +65,7 @@ private:
 
 public Q_SLOTS:
 	bool list_config() override;
-	void change_value(const QVariant qvar) override;
+	void change_value(const QVariant &qvar) override;
 	void on_value_changed(Glib::VariantBase gvar) override;
 
 };

@@ -103,7 +103,7 @@ bool PyStreamBuf::py_writable()
 	return true;
 }
 
-void PyStreamBuf::py_writelines(std::vector<std::string> lines)
+void PyStreamBuf::py_writelines(const std::vector<std::string> &lines)
 {
 	if (py_closed)
 		PyErr_SetString(PyExc_ValueError, "PyStreamBuf is already closed!");
@@ -146,7 +146,7 @@ int PyStreamBuf::py_tell()
 	return 0;
 }
 
-int PyStreamBuf::py_write(std::string s)
+int PyStreamBuf::py_write(const std::string &s)
 {
 	if (py_closed)
 		PyErr_SetString(PyExc_ValueError, "PyStreamBuf is already closed!");

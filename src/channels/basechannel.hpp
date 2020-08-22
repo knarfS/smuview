@@ -103,7 +103,7 @@ public:
 	/**
 	 * Set the name of the signal.
 	 */
-	void set_name(string name);
+	void set_name(const string &name);
 
 	/**
 	 * Get the display name of this channel.
@@ -155,7 +155,7 @@ public:
 	/**
 	 * Add a channel group name
 	 */
-	void add_channel_group_name(string channel_group_name);
+	void add_channel_group_name(const string &channel_group_name);
 
 	/**
 	 * Add a signal to the channel. For now only AnalogTimeSignals

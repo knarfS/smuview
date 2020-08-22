@@ -127,7 +127,7 @@ void MeasuredQuantityComboBox::value_changed(int index)
 	}
 }
 
-void MeasuredQuantityComboBox::on_value_changed(const QVariant qvar)
+void MeasuredQuantityComboBox::on_value_changed(const QVariant &qvar)
 {
 	// Disconnect Widget -> Property signal to prevent echoing
 	disconnect_widget_2_prop_signals();

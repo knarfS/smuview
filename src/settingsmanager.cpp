@@ -105,7 +105,7 @@ void SettingsManager::save_property(
 }
 
 shared_ptr<devices::BaseDevice> SettingsManager::restore_device(
-	Session &session, QSettings &settings, QString key_prefix)
+	Session &session, QSettings &settings, const QString &key_prefix)
 {
 	QString device_key = key_prefix + "device";
 
@@ -120,7 +120,7 @@ shared_ptr<devices::BaseDevice> SettingsManager::restore_device(
 }
 
 shared_ptr<devices::Configurable> SettingsManager::restore_configurable(
-	Session &session, QSettings &settings, QString key_prefix)
+	Session &session, QSettings &settings, const QString &key_prefix)
 {
 	QString configurable_key = key_prefix + "configurable";
 

@@ -149,7 +149,7 @@ void format_value_si(
 }
 
 QString format_time_si(const Timestamp& v, SIPrefix prefix,
-	unsigned int precision, QString unit, bool sign)
+	unsigned int precision, const QString &unit, bool sign)
 {
 	if (prefix == SIPrefix::unspecified) {
 		// No prefix given, calculate it
@@ -183,7 +183,7 @@ QString format_time_si(const Timestamp& v, SIPrefix prefix,
 }
 
 QString format_time_si_adjusted(const Timestamp& t, SIPrefix prefix,
-	unsigned precision, QString unit, bool sign)
+	unsigned precision, const QString &unit, bool sign)
 {
 	// The precision is always given without taking the prefix into account
 	// so we need to deduct the number of decimals the prefix might imply

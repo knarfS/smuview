@@ -49,7 +49,7 @@ QString BoolProperty::to_string(bool value) const
 	return value ? QString("true") : QString("false");
 }
 
-QString BoolProperty::to_string(const QVariant qvar) const
+QString BoolProperty::to_string(const QVariant &qvar) const
 {
 	return this->to_string(qvar.toBool());
 }
@@ -65,7 +65,7 @@ bool BoolProperty::list_config()
 	return false;
 }
 
-void BoolProperty::change_value(const QVariant qvar)
+void BoolProperty::change_value(const QVariant &qvar)
 {
 	configurable_->set_config(config_key_, qvar.toBool());
 	Q_EMIT value_changed(qvar);

@@ -49,7 +49,8 @@ SelectPropertyForm::SelectPropertyForm(
 	connect_signals();
 }
 
-void SelectPropertyForm::filter_config_keys(set<sv::data::DataType> data_types)
+void SelectPropertyForm::filter_config_keys(
+	const set<sv::data::DataType> &data_types)
 {
 	config_key_box_->filter_config_keys(data_types);
 }

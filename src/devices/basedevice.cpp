@@ -331,7 +331,7 @@ unsigned int BaseDevice::next_channel_index()
 
 
 void BaseDevice::add_channel(shared_ptr<channels::BaseChannel> channel,
-	string channel_group_name)
+	const string &channel_group_name)
 {
 	// Check if channel already exists. Channel names are unique per device.
 	if (channel_map_.count(channel->name()) == 0) {
@@ -357,7 +357,7 @@ void BaseDevice::add_channel(shared_ptr<channels::BaseChannel> channel,
 }
 
 shared_ptr<channels::BaseChannel> BaseDevice::add_sr_channel(
-	shared_ptr<sigrok::Channel> sr_channel, string channel_group_name)
+	shared_ptr<sigrok::Channel> sr_channel, const string &channel_group_name)
 {
 	// Check if channel already exists.
 	// NOTE: Channel names are unique per device.
@@ -396,7 +396,7 @@ void BaseDevice::add_math_channel(
 }
 
 shared_ptr<channels::UserChannel> BaseDevice::add_user_channel(
-	string channel_name, string channel_group_name)
+	const string &channel_name, const string &channel_group_name)
 {
 	shared_ptr<channels::UserChannel> channel =
 		make_shared<channels::UserChannel>(

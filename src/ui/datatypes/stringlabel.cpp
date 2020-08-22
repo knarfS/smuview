@@ -83,13 +83,13 @@ QVariant StringLabel::variant_value() const
 	return QVariant(this->text());
 }
 
-void StringLabel::value_changed(const QString value)
+void StringLabel::value_changed(const QString &value)
 {
 	(void)value;
 	// Nothing to do here.
 }
 
-void StringLabel::on_value_changed(const QVariant qvar)
+void StringLabel::on_value_changed(const QVariant &qvar)
 {
 	this->setText(qvar.toString());
 }

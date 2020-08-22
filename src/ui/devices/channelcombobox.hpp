@@ -49,7 +49,7 @@ class ChannelComboBox : public QComboBox
 public:
 	ChannelComboBox(
 		shared_ptr<sv::devices::BaseDevice> device,
-		QString channel_group, QWidget *parent = nullptr);
+		const QString &channel_group, QWidget *parent = nullptr);
 
 	void filter_quantity(sv::data::Quantity quantity);
 	void select_channel(shared_ptr<sv::channels::BaseChannel> channel);
@@ -66,7 +66,8 @@ private:
 
 public Q_SLOTS:
 	void change_device_channel_group(
-		shared_ptr<sv::devices::BaseDevice> device, QString channel_group);
+		shared_ptr<sv::devices::BaseDevice> device,
+		const QString &channel_group);
 
 };
 

@@ -97,7 +97,7 @@ QString RationalProperty::to_string(data::rational_t value) const
 	return str_val;
 }
 
-QString RationalProperty::to_string(const QVariant qvar) const
+QString RationalProperty::to_string(const QVariant &qvar) const
 {
 	return this->to_string(qvar.value<data::rational_t>());
 }
@@ -141,7 +141,7 @@ bool RationalProperty::list_config()
  *
  *       set_config(config_key_, std::tuple<uint32_t, uint64_t>);
  */
-void RationalProperty::change_value(const QVariant qvar)
+void RationalProperty::change_value(const QVariant &qvar)
 {
 	data::rational_t rational = qvar.value<data::rational_t>();
 

@@ -103,7 +103,7 @@ QString UserDevice::display_name(
 }
 
 void UserDevice::add_channel(shared_ptr<channels::BaseChannel> channel,
-	string channel_group_name)
+	const string &channel_group_name)
 {
 	auto sr_user_device = static_pointer_cast<sigrok::UserDevice>(sr_device_);
 	sr_user_device->add_channel(

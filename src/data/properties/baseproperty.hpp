@@ -63,7 +63,7 @@ public:
 	string name() const;
 	QString display_name() const;
 	virtual QVariant value() const = 0;
-	virtual QString to_string(const QVariant qvar) const = 0;
+	virtual QString to_string(const QVariant &qvar) const = 0;
 	virtual QString to_string() const = 0;
 
 protected:
@@ -84,14 +84,14 @@ public Q_SLOTS:
 	/**
 	 * Value has changed within SmuView and should be send to the device.
 	 */
-	virtual void change_value(const QVariant qvar) = 0;
+	virtual void change_value(const QVariant &qvar) = 0;
 	/**
 	 * Devices has send a changed value via a meta package.
 	 */
 	virtual void on_value_changed(Glib::VariantBase gvar) = 0;
 
 Q_SIGNALS:
-	void value_changed(const QVariant qvar);
+	void value_changed(const QVariant &qvar);
 	void list_changed();
 
 };

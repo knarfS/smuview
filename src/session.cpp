@@ -88,7 +88,7 @@ map<string, shared_ptr<devices::BaseDevice>> Session::device_map() const
 }
 
 list<shared_ptr<devices::HardwareDevice>>
-	Session::connect_device(string conn_string)
+	Session::connect_device(const string &conn_string)
 {
 	// Determine the driver name and options (in generic format).
 	vector<string> driver_opts = sv::util::split_string(conn_string, ":");
@@ -158,7 +158,7 @@ shared_ptr<python::SmuScriptRunner> Session::smu_script_runner()
 	return smu_script_runner_;
 }
 
-void Session::run_smu_script(string script_file)
+void Session::run_smu_script(const string &script_file)
 {
 	smu_script_runner_->run(script_file);
 }

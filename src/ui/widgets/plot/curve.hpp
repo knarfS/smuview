@@ -53,13 +53,14 @@ class Curve : public QObject
 
 public:
 	Curve(BaseCurveData *curve_data, int x_axis_id, int y_axis_id,
-		  QString custom_name = "", QColor custom_color = QColor());
+		const QString &custom_name = "",
+		const QColor &custom_color = QColor());
 	~Curve();
 
 	static QColor default_color(sv::data::Quantity quantity,
-		set<sv::data::QuantityFlag> quantity_flags);
+		const set<sv::data::QuantityFlag> &quantity_flags);
 	static void save_settings_default_color(sv::data::Quantity quantity,
-		set<sv::data::QuantityFlag> quantity_flags, QColor &color);
+		const set<sv::data::QuantityFlag> &quantity_flags, const QColor &color);
 
 	void save_settings(QSettings &settings) const;
 	static Curve *init_from_settings(Session &session, QSettings &settings,

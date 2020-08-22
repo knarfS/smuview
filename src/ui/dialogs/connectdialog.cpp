@@ -241,7 +241,7 @@ void ConnectDialog::populate_serials_start(shared_ptr<Driver> driver)
 }
 
 void ConnectDialog::on_populate_serials_done(
-	std::map<std::string, std::string> serials)
+	const std::map<std::string, std::string> &serials)
 {
 	std::lock_guard<std::mutex> lock(populate_serials_mtx_);
 

@@ -86,7 +86,7 @@ string BaseChannel::name() const
 	return (sr_channel_) ? sr_channel_->name() : name_;
 }
 
-void BaseChannel::set_name(string name)
+void BaseChannel::set_name(const string &name)
 {
 	if (sr_channel_)
 		sr_channel_->set_name(name);
@@ -143,7 +143,7 @@ set<string> BaseChannel::channel_group_names() const
 	return channel_group_names_;
 }
 
-void BaseChannel::add_channel_group_name(string channel_group_name)
+void BaseChannel::add_channel_group_name(const string &channel_group_name)
 {
 	channel_group_names_.insert(channel_group_name);
 }

@@ -105,7 +105,7 @@ void format_value_si(
  */
 QString format_time_si(const Timestamp& v,
 	SIPrefix prefix = SIPrefix::unspecified, unsigned precision = 0,
-	QString unit = "s", bool sign = true);
+	const QString &unit = "s", bool sign = true);
 
 /**
  * Wrapper around 'format_time_si()' that interprets the given 'precision'
@@ -125,7 +125,7 @@ QString format_time_si(const Timestamp& v,
  * TODO: move to data
  */
 QString format_time_si_adjusted(const Timestamp& t, SIPrefix prefix,
-	unsigned precision = 0, QString unit = "s", bool sign = true);
+	unsigned precision = 0, const QString &unit = "s", bool sign = true);
 
 /**
  * Formats the given timestamp using "[+-]DD:HH:MM:SS.mmm uuu nnn ppp..." format.

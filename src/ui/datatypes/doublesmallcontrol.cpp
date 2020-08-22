@@ -32,7 +32,7 @@ namespace datatypes {
 DoubleSmallControl::DoubleSmallControl(
 		shared_ptr<sv::data::properties::BaseProperty> property,
 		const bool auto_commit, const bool auto_update,
-		QString title, QWidget *parent) :
+		const QString &title, QWidget *parent) :
 	QGroupBox(parent),
 	BaseWidget(property, auto_commit, auto_update),
 	title_(title)
@@ -65,7 +65,7 @@ QVariant DoubleSmallControl::variant_value() const
 	return QVariant(spin_box_->value());
 }
 
-void DoubleSmallControl::on_value_changed(const QVariant qvar)
+void DoubleSmallControl::on_value_changed(const QVariant &qvar)
 {
 	(void)qvar;
 	// Nothing to do here.

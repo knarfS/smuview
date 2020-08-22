@@ -250,7 +250,7 @@ void UiProxy::ui_set_curve_name(const string &tab_id, const string &view_id,
 }
 
 void UiProxy::ui_set_curve_color(const string &tab_id, const string &view_id,
-	const string &curve_id, const tuple<int, int, int> &color)
+	const string &curve_id, tuple<int, int, int> color)
 {
 	Q_EMIT set_curve_color(tab_id, view_id, curve_id, color);
 }

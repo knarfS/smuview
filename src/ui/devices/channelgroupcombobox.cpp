@@ -43,7 +43,7 @@ ChannelGroupComboBox::ChannelGroupComboBox(
 	this->setup_ui();
 }
 
-void ChannelGroupComboBox::select_channel_group(QString channel_group)
+void ChannelGroupComboBox::select_channel_group(const QString &channel_group)
 {
 	for (int i = 0; i < this->count(); ++i) {
 		QString cg = this->itemText(i);

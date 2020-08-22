@@ -66,7 +66,7 @@ public:
 
 	string id() const;
 	virtual QString title() = 0;
-	views::BaseView *get_view_from_view_id(string id);
+	views::BaseView *get_view_from_view_id(const string &id);
 	virtual bool request_close() = 0;
 
 private:

@@ -120,7 +120,7 @@ void DoubleRangeComboBox::value_changed(int index)
 	}
 }
 
-void DoubleRangeComboBox::on_value_changed(const QVariant qvar)
+void DoubleRangeComboBox::on_value_changed(const QVariant &qvar)
 {
 	// Disconnect Widget -> Property signal to prevent echoing
 	disconnect_widget_2_prop_signals();

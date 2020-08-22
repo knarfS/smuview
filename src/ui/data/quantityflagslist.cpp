@@ -38,7 +38,7 @@ QuantityFlagsList::QuantityFlagsList(QWidget *parent) :
 }
 
 void QuantityFlagsList::select_quantity_flags(
-	set<sv::data::QuantityFlag> quantity_flags)
+	const set<sv::data::QuantityFlag> &quantity_flags)
 {
 	for (int i = 0; i < this->count(); ++i) {
 		QListWidgetItem* item = this->item(i);

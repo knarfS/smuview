@@ -53,8 +53,8 @@ class UserChannel : public BaseChannel
 
 public:
 	UserChannel(
-		string channel_name,
-		set<string> channel_group_names,
+		const string &channel_name,
+		const set<string> &channel_group_names,
 		shared_ptr<devices::BaseDevice> parent_device,
 		double channel_start_timestamp);
 

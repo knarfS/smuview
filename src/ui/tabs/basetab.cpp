@@ -60,7 +60,7 @@ string BaseTab::id() const
 	return id_;
 }
 
-views::BaseView *BaseTab::get_view_from_view_id(string id)
+views::BaseView *BaseTab::get_view_from_view_id(const string &id)
 {
 	return view_id_map_[id];
 }

@@ -119,7 +119,7 @@ void DoubleSlider::value_changed(const double value)
 		property_->change_value(QVariant(value));
 }
 
-void DoubleSlider::on_value_changed(const QVariant qvar)
+void DoubleSlider::on_value_changed(const QVariant &qvar)
 {
 	// Disconnect Widget -> Property signal to prevent echoing
 	disconnect_widget_2_prop_signals();

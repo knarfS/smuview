@@ -89,7 +89,7 @@ bool is_valid_sr_quantity(data::Quantity quantity)
 }
 
 set<QuantityFlag> get_quantity_flags(
-	vector<const sigrok::QuantityFlag *> sr_quantity_flags)
+	const vector<const sigrok::QuantityFlag *> &sr_quantity_flags)
 {
 	set<data::QuantityFlag> quantity_flag_set;
 	for (const auto &sr_qf : sr_quantity_flags) {
@@ -116,7 +116,7 @@ set<QuantityFlag> get_quantity_flags(uint64_t sr_quantity_flags)
 	return quantity_flag_set;
 }
 
-uint64_t get_sr_quantity_flags_id(set<QuantityFlag> quantity_flags)
+uint64_t get_sr_quantity_flags_id(const set<QuantityFlag> &quantity_flags)
 {
 	uint64_t sr_qfs_id = 0;
 	for (const auto &quantity_flag : quantity_flags) {
@@ -179,8 +179,8 @@ QString format_quantity_flag(QuantityFlag quantity_flag)
 	return quantity_flag_name_map[QuantityFlag::Unknown];
 }
 
-QString format_quantity_flags(set<QuantityFlag> quantity_flags,
-	const QString seperator)
+QString format_quantity_flags(const set<QuantityFlag> &quantity_flags,
+	const QString &seperator)
 {
 	QString qfs_str("");
 	QString sep("");
@@ -236,7 +236,7 @@ QString format_quantity_flags(set<QuantityFlag> quantity_flags,
 	return qfs_str;
 }
 
-QString format_measured_quantity(measured_quantity_t measured_quantity)
+QString format_measured_quantity(const measured_quantity_t &measured_quantity)
 {
 	Quantity q = measured_quantity.first;
 	set<QuantityFlag> qfs = measured_quantity.second;
@@ -254,7 +254,7 @@ QString format_unit(Unit unit)
 	return unit_name_map[Unit::Unknown];
 }
 
-QString format_unit(Unit unit, set<QuantityFlag> quantity_flags)
+QString format_unit(Unit unit, const set<QuantityFlag> &quantity_flags)
 {
 	QString unit_str = format_unit(unit);
 	if (unit == Unit::Volt || unit == Unit::Ampere) {

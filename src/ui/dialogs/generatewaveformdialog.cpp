@@ -48,7 +48,7 @@ namespace dialogs {
 
 GenerateWaveformDialog::GenerateWaveformDialog(
 		double min_value, double max_value, double step, int decimals,
-		QString unit, QWidget *parent) :
+		const QString &unit, QWidget *parent) :
 	QDialog(parent),
 	min_value_(min_value),
 	max_value_(max_value),

@@ -41,7 +41,7 @@ namespace ui {
 namespace tabs {
 
 SmuScriptTab::SmuScriptTab(Session &session,
-		string script_file_name, QWidget *parent) :
+		const string &script_file_name, QWidget *parent) :
 	BaseTab(session, parent),
 	script_file_name_(script_file_name)
 {

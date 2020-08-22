@@ -101,7 +101,7 @@ void BoolCheckBox::value_changed()
 	}
 }
 
-void BoolCheckBox::on_value_changed(const QVariant qvar)
+void BoolCheckBox::on_value_changed(const QVariant &qvar)
 {
 	// Disconnect Widget -> Property signal to prevent echoing
 	disconnect_widget_2_prop_signals();

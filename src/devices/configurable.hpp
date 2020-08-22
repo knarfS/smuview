@@ -116,7 +116,8 @@ public:
 	 * Tuple types are only supported with version >= 2.52 of glibmm, but we
 	 * need to use version 2.42, because of mxe.
 	 */
-	void set_container_config(devices::ConfigKey config_key, vector<Glib::VariantBase> childs);
+	void set_container_config(devices::ConfigKey config_key,
+		const vector<Glib::VariantBase> &childs);
 
 	bool has_list_config(devices::ConfigKey config_key) const;
 	bool list_config(devices::ConfigKey config_key, Glib::VariantContainerBase &gvar);
@@ -170,7 +171,8 @@ private:
 	map<devices::ConfigKey, shared_ptr<data::properties::BaseProperty>> property_map_;
 
 Q_SIGNALS:
-	void config_changed(const devices::ConfigKey config_key, const QVariant qvar);
+	void config_changed(
+		const devices::ConfigKey config_key, const QVariant &qvar);
 
 };
 

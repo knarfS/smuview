@@ -56,7 +56,7 @@ public:
 	QVariant value() const override;
 	data::rational_t rational_value() const;
 	QString to_string(data::rational_t value) const;
-	QString to_string(const QVariant qvar) const override;
+	QString to_string(const QVariant &qvar) const override;
 	QString to_string() const override;
 	vector<data::rational_t> list_values() const;
 
@@ -65,7 +65,7 @@ private:
 
 public Q_SLOTS:
 	bool list_config() override;
-	void change_value(const QVariant qvar) override;
+	void change_value(const QVariant &qvar) override;
 	void on_value_changed(Glib::VariantBase gvar) override;
 
 };

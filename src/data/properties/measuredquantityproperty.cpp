@@ -91,12 +91,13 @@ MeasuredQuantityProperty::measured_quantity_value() const
 	return make_pair(quantity, quantity_flags);
 }
 
-QString MeasuredQuantityProperty::to_string(data::measured_quantity_t value) const
+QString MeasuredQuantityProperty::to_string(
+	const data::measured_quantity_t &value) const
 {
 	return data::datautil::format_measured_quantity(value);
 }
 
-QString MeasuredQuantityProperty::to_string(const QVariant qvar) const
+QString MeasuredQuantityProperty::to_string(const QVariant &qvar) const
 {
 	return this->to_string(qvar.value<data::measured_quantity_t>());
 }
@@ -143,7 +144,7 @@ bool MeasuredQuantityProperty::list_config()
  *
  *       set_config(config_key_, std::tuple<uint32_t, uint64_t>);
  */
-void MeasuredQuantityProperty::change_value(const QVariant qvar)
+void MeasuredQuantityProperty::change_value(const QVariant &qvar)
 {
 	data::measured_quantity_t mq = qvar.value<data::measured_quantity_t>();
 

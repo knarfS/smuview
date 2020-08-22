@@ -49,8 +49,8 @@ class BoolLed : public QWidget, public BaseWidget
 public:
 	BoolLed(shared_ptr<sv::data::properties::BaseProperty> property,
 		const bool auto_update,
-		const QIcon on_icon, const QIcon off_icon, const QIcon dis_icon,
-		QString text = nullptr, QWidget *parent = nullptr);
+		const QIcon &on_icon, const QIcon &off_icon, const QIcon &dis_icon,
+		const QString &text = nullptr, QWidget *parent = nullptr);
 
 	QVariant variant_value() const override;
 
@@ -70,7 +70,7 @@ private Q_SLOTS:
 	/** Signal handling for Widget -> Property. Nothing to do here. */
 	void value_changed(const bool value);
 	/** Signal handling for Property -> Widget */
-	void on_value_changed(const QVariant qvar);
+	void on_value_changed(const QVariant &qvar);
 	/** Signal handling for Property -> Widget. Nothing to do here. */
 	void on_list_changed();
 

@@ -69,13 +69,14 @@ public:
 	const DeviceManager &device_manager() const;
 
 	map<string, shared_ptr<devices::BaseDevice>> device_map() const;
-	list<shared_ptr<devices::HardwareDevice>> connect_device(string conn_string);
+	list<shared_ptr<devices::HardwareDevice>> connect_device(
+		const string &conn_string);
 	void add_device(shared_ptr<devices::BaseDevice> device);
 	shared_ptr<devices::UserDevice> add_user_device();
 	void remove_device(shared_ptr<devices::BaseDevice> device);
 
 	shared_ptr<python::SmuScriptRunner> smu_script_runner();
-	void run_smu_script(string script_file);
+	void run_smu_script(const string &script_file);
 
 	void set_main_window(MainWindow *main_window);
 	MainWindow *main_window() const;

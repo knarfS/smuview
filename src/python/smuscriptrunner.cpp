@@ -60,7 +60,7 @@ SmuScriptRunner::~SmuScriptRunner()
 	*/
 }
 
-void SmuScriptRunner::run(string file_name)
+void SmuScriptRunner::run(const string &file_name)
 {
 	if (file_name.length() == 0) {
 		Q_EMIT script_error("SmuScriptRunner",

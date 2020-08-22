@@ -33,7 +33,7 @@ ThresholdControl::ThresholdControl(
 		shared_ptr<sv::data::properties::BaseProperty> property,
 		shared_ptr<sv::data::properties::BaseProperty> bool_prop,
 		const bool auto_commit, const bool auto_update,
-		QString title, QWidget *parent) :
+		const QString &title, QWidget *parent) :
 	QGroupBox(parent),
 	BaseWidget(property, auto_commit, auto_update),
 	bool_prop_(bool_prop),
@@ -71,7 +71,7 @@ QVariant ThresholdControl::variant_value() const
 	return QVariant(spin_box_->value());
 }
 
-void ThresholdControl::on_value_changed(const QVariant qvar)
+void ThresholdControl::on_value_changed(const QVariant &qvar)
 {
 	(void)qvar;
 	// Nothing to do here.

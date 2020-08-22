@@ -105,7 +105,7 @@ public:
 	void ui_set_curve_name(const string &tab_id, const string &view_id,
 		const string &curve_id, const string &name);
 	void ui_set_curve_color(const string &tab_id, const string &view_id,
-		const string &curve_id, const tuple<int, int, int> &color);
+		const string &curve_id, tuple<int, int, int> color);
 
 	bool ui_show_message_box(const std::string &title, const std::string &text);
 	py::object ui_show_string_input_dialog(const string &title,
@@ -169,7 +169,7 @@ Q_SIGNALS:
 	void set_curve_name(const std::string &tab_id, const std::string &view_id,
 		const std::string &curve_id, const std::string &name);
 	void set_curve_color(const std::string &tab_id, const std::string &view_id,
-		const std::string &curve_id, const std::tuple<int, int, int> &color);
+		const std::string &curve_id, std::tuple<int, int, int> color);
 
 	void show_message_box(const std::string &title, const std::string &text);
 	void show_string_input_dialog(const std::string &title,

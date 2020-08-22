@@ -59,7 +59,7 @@ using Glib::VariantBase;
 namespace sv {
 
 DeviceManager::DeviceManager(shared_ptr<sigrok::Context> context,
-		vector<string> drivers, bool do_scan) :
+		const vector<string> &drivers, bool do_scan) :
 	context_(context)
 {
 	unique_ptr<QProgressDialog> progress(new QProgressDialog("",
@@ -171,7 +171,7 @@ DeviceManager::user_spec_devices() const
  * @return Map of options suitable for Driver::scan().
  */
 map<const sigrok::ConfigKey *, VariantBase>
-DeviceManager::driver_scan_options(vector<string> user_spec,
+DeviceManager::driver_scan_options(const vector<string> &user_spec,
 	set<const sigrok::ConfigKey *> driver_opts)
 {
 	map<const sigrok::ConfigKey *, VariantBase> result;
@@ -215,7 +215,7 @@ DeviceManager::driver_scan_options(vector<string> user_spec,
 
 list<shared_ptr<devices::HardwareDevice>>
 DeviceManager::driver_scan(
-	string driver_name, vector<string> driver_opts)
+	const string &driver_name, const vector<string> &driver_opts)
 {
 	shared_ptr<sigrok::Driver> scan_drv;
 	map<const sigrok::ConfigKey *, VariantBase> scan_opts;
@@ -250,7 +250,7 @@ DeviceManager::driver_scan(
 list<shared_ptr<devices::HardwareDevice>>
 DeviceManager::driver_scan(
 	shared_ptr<sigrok::Driver> sr_driver,
-	map<const sigrok::ConfigKey *, VariantBase> drvopts)
+	const map<const sigrok::ConfigKey *, VariantBase> &drvopts)
 {
 	list< shared_ptr<devices::HardwareDevice> > driver_devices;
 

@@ -120,7 +120,7 @@ void UInt64SpinBox::value_changed()
 	}
 }
 
-void UInt64SpinBox::on_value_changed(const QVariant qvar)
+void UInt64SpinBox::on_value_changed(const QVariant &qvar)
 {
 	// Disconnect Widget -> Property signal to prevent echoing
 	disconnect_widget_2_prop_signals();

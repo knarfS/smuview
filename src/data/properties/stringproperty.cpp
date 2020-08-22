@@ -56,7 +56,7 @@ QString StringProperty::string_value() const
 		configurable_->get_config<string>(config_key_));
 }
 
-QString StringProperty::to_string(const QVariant qvar) const
+QString StringProperty::to_string(const QVariant &qvar) const
 {
 	return qvar.toString();
 }
@@ -90,7 +90,7 @@ bool StringProperty::list_config()
 	return true;
 }
 
-void StringProperty::change_value(const QVariant qvar)
+void StringProperty::change_value(const QVariant &qvar)
 {
 	// We have to use Glib::ustring here, to get a variant type of 's'.
 	// std::string will create a variant type of 'ay'

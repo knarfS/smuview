@@ -54,7 +54,7 @@ public:
 	QVariant value() const override;
 	uint64_t uint64_value() const;
 	QString to_string(uint64_t value) const;
-	QString to_string(const QVariant qvar) const override;
+	QString to_string(const QVariant &qvar) const override;
 	QString to_string() const override;
 	uint64_t min() const;
 	uint64_t max() const;
@@ -69,7 +69,7 @@ private:
 
 public Q_SLOTS:
 	bool list_config() override;
-	void change_value(const QVariant qvar) override;
+	void change_value(const QVariant &qvar) override;
 	void on_value_changed(Glib::VariantBase gvar) override;
 
 };

@@ -66,7 +66,7 @@ public:
 	/** Always return True. */
 	bool py_writable();
 	/** Write a list of lines to the stream. */
-	void py_writelines(std::vector<std::string> lines);
+	void py_writelines(const std::vector<std::string> &lines);
 	/** Prepare for object destruction. */
 	void py_del();
 	/** Raises an OSError, because PyStreamBuf is write only. */
@@ -81,7 +81,7 @@ public:
 	 * Write the string s to the stream and return the number of
 	 * characters written.
 	 */
-	int py_write(std::string s);
+	int py_write(const std::string &s);
 
 private:
 	std::string string_;

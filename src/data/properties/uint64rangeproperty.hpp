@@ -55,7 +55,7 @@ public:
 	QVariant value() const override;
 	data::uint64_range_t uint64_range_value() const;
 	QString to_string(data::uint64_range_t value) const;
-	QString to_string(const QVariant qvar) const override;
+	QString to_string(const QVariant &qvar) const override;
 	QString to_string() const override;
 	vector<data::uint64_range_t> list_values() const;
 
@@ -64,7 +64,7 @@ private:
 
 public Q_SLOTS:
 	bool list_config() override;
-	void change_value(const QVariant qvar) override;
+	void change_value(const QVariant &qvar) override;
 	void on_value_changed(Glib::VariantBase gvar) override;
 
 };

@@ -70,9 +70,9 @@ public:
 		QWidget *parent = nullptr);
 
 	/** Helper function to change a curve name. */
-	bool set_curve_name(string curve_id, QString name);
+	bool set_curve_name(const string &curve_id, const QString &name);
 	/** Helper function to change a curve color. */
-	bool set_curve_color(string curve_id, QColor color);
+	bool set_curve_color(const string &curve_id, const QColor &color);
 	void save_settings(QSettings &settings) const override;
 	void restore_settings(QSettings &settings) override;
 

@@ -165,7 +165,7 @@ void BasePlotView::connect_signals()
 }
 
 
-bool BasePlotView::set_curve_name(string curve_id, QString name)
+bool BasePlotView::set_curve_name(const string &curve_id, const QString &name)
 {
 	if (plot_->curve_map().count(curve_id) == 0)
 		return false;
@@ -175,7 +175,7 @@ bool BasePlotView::set_curve_name(string curve_id, QString name)
 }
 
 
-bool BasePlotView::set_curve_color(string curve_id, QColor color)
+bool BasePlotView::set_curve_color(const string &curve_id, const QColor &color)
 {
 	if (plot_->curve_map().count(curve_id) == 0)
 		return false;

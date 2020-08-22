@@ -51,10 +51,10 @@ class BaseSignal : public QObject
 public:
 	BaseSignal(
 		data::Quantity quantity,
-		set<data::QuantityFlag> quantity_flags,
+		const set<data::QuantityFlag> &quantity_flags,
 		data::Unit unit,
 		shared_ptr<channels::BaseChannel> parent_channel,
-		string custom_name);
+		const string &custom_name);
 	virtual ~BaseSignal();
 
 public:
@@ -106,7 +106,7 @@ public:
 	/**
 	 * Set a custom name for this signal.
 	 */
-	void set_name(string custom_name);
+	void set_name(const string &custom_name);
 
 	/**
 	 * Get the name of this signal.

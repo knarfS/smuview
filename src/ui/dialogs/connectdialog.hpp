@@ -85,7 +85,8 @@ private Q_SLOTS:
 	void on_tcp_toggled(bool checked);
 	void on_gpib_toggled(bool checked);
 	void on_scan_pressed();
-	void on_populate_serials_done(std::map<std::string, std::string> serials);
+	void on_populate_serials_done(
+		const std::map<std::string, std::string> &serials);
 
 private:
 	sv::DeviceManager &device_manager_;

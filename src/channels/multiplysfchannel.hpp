@@ -53,13 +53,13 @@ class MultiplySFChannel : public MathChannel
 public:
 	MultiplySFChannel(
 		data::Quantity quantity,
-		set<data::QuantityFlag> quantity_flags,
+		const set<data::QuantityFlag> &quantity_flags,
 		data::Unit unit,
 		shared_ptr<data::AnalogTimeSignal> signal,
 		double factor,
 		shared_ptr<devices::BaseDevice> parent_device,
-		set<string> channel_group_names,
-		string channel_name,
+		const set<string> &channel_group_names,
+		const string &channel_name,
 		double channel_start_timestamp);
 
 private:

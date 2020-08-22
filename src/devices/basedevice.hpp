@@ -157,13 +157,14 @@ public:
 	 * Add a sv::channels:.Channel to the device
 	 */
 	virtual void add_channel(shared_ptr<channels::BaseChannel> channel,
-		string channel_group_name);
+		const string &channel_group_name);
 
 	/**
 	 * Add a sigrok::Channel to the device.
 	 */
 	shared_ptr<channels::BaseChannel> add_sr_channel(
-		shared_ptr<sigrok::Channel> sr_channel, string channel_group_name);
+		shared_ptr<sigrok::Channel> sr_channel,
+		const string &channel_group_name);
 
 	/**
 	 * Add a math channel to the device
@@ -175,7 +176,7 @@ public:
 	 * Add a user channel to the device
 	 */
 	shared_ptr<channels::UserChannel> add_user_channel(
-		string channel_name, string channel_group_name);
+		const string &channel_name, const string &channel_group_name);
 
 	/**
 	 * Returns a map with all configurables of this device

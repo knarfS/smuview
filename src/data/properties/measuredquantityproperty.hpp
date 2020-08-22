@@ -55,8 +55,8 @@ public:
 	QVariant value() const override;
 	data::measured_quantity_t measured_quantity_value() const;
 	vector<data::measured_quantity_t> list_values() const;
-	QString to_string(data::measured_quantity_t value) const;
-	QString to_string(const QVariant qvar) const override;
+	QString to_string(const data::measured_quantity_t &value) const;
+	QString to_string(const QVariant &qvar) const override;
 	QString to_string() const override;
 
 private:
@@ -64,7 +64,7 @@ private:
 
 public Q_SLOTS:
 	bool list_config() override;
-	void change_value(const QVariant qvar) override;
+	void change_value(const QVariant &qvar) override;
 	void on_value_changed(Glib::VariantBase gvar) override;
 
 };

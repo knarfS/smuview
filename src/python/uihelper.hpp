@@ -101,7 +101,7 @@ public Q_SLOTS:
 	void set_curve_name(const std::string &tab_id, const std::string &view_id,
 		const std::string &curve_id, const std::string &name);
 	void set_curve_color(const std::string &tab_id, const std::string &view_id,
-		const std::string &curve_id, const std::tuple<int, int, int> &color);
+		const std::string &curve_id, std::tuple<int, int, int> color);
 
 	void show_message_box(const std::string &title, const std::string &text);
 	void show_string_input_dialog(const std::string &title,

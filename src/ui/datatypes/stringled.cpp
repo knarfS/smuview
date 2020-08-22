@@ -34,9 +34,9 @@ namespace datatypes {
 StringLed::StringLed(
 		shared_ptr<sv::data::properties::BaseProperty> property,
 		const bool auto_update,
-		const QIcon on_icon, const QIcon off_icon, const QIcon dis_icon,
-		const QString on_value, const QString off_value,
-		QString text, QWidget *parent) :
+		const QIcon &on_icon, const QIcon &off_icon, const QIcon &dis_icon,
+		const QString &on_value, const QString &off_value,
+		const QString &text, QWidget *parent) :
 	QWidget(parent),
 	BaseWidget(property, false, auto_update),
 	on_icon_(on_icon),
@@ -112,7 +112,7 @@ void StringLed::value_changed(const bool value)
 	// Nothing to do here.
 }
 
-void StringLed::on_value_changed(const QVariant qvar)
+void StringLed::on_value_changed(const QVariant &qvar)
 {
 	QString value = qvar.toString();
 	if (on_value_ != nullptr && value == on_value_) {

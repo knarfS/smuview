@@ -69,7 +69,7 @@ public:
 	QString display_name(const DeviceManager &device_manager) const override;
 
 	void add_channel(shared_ptr<channels::BaseChannel> channel,
-		string channel_group_name) override;
+		const string &channel_group_name) override;
 
 protected:
 	/**

@@ -742,7 +742,7 @@ uint64_t get_sr_quantity_flag_id(QuantityFlag quantity_flag);
  * @return The QuantityFlags as set.
  */
 set<QuantityFlag> get_quantity_flags(
-	vector<const sigrok::QuantityFlag *> sr_quantity_flags);
+	const vector<const sigrok::QuantityFlag *> &sr_quantity_flags);
 
 /**
  * Return the corresponding QuantityFlags as a set for the
@@ -761,7 +761,7 @@ set<QuantityFlag> get_quantity_flags(uint64_t sr_quantity_flags);
  *
  * @return The sigrok QuantityFlags IDs
  */
-uint64_t get_sr_quantity_flags_id(set<QuantityFlag> quantity_flags);
+uint64_t get_sr_quantity_flags_id(const set<QuantityFlag> &quantity_flags);
 
 
 /**
@@ -846,8 +846,8 @@ QString format_quantity_flag(QuantityFlag quantity_flag);
  *
  * @return The formatted QuantityFlags.
  */
-QString format_quantity_flags(set<QuantityFlag> quantity_flags,
-	const QString seperator);
+QString format_quantity_flags(const set<QuantityFlag> &quantity_flags,
+	const QString &seperator);
 
 /**
  * Format a measured_quantity_t (pair<Quantity, set<QuantityFlag>>) to a string
@@ -856,7 +856,7 @@ QString format_quantity_flags(set<QuantityFlag> quantity_flags,
  *
  * @return The formated measured_quantity.
  */
-QString format_measured_quantity(measured_quantity_t measured_quantity);
+QString format_measured_quantity(const measured_quantity_t &measured_quantity);
 
 /**
  * Format a Unit to a string
@@ -875,7 +875,7 @@ QString format_unit(Unit unit);
  *
  * @return The formatted unit.
  */
-QString format_unit(Unit unit, set<QuantityFlag> quantity_flags);
+QString format_unit(Unit unit, const set<QuantityFlag> &quantity_flags);
 
 /**
  * Format a DataType to a string
