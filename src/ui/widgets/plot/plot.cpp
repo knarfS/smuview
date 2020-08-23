@@ -423,19 +423,17 @@ void Plot::add_axis_icons(const int axis_id)
 {
 	AxisLockLabel *upper_lock_label = new AxisLockLabel(
 		axis_id, AxisBoundary::UpperBoundary, "");
-	connect(upper_lock_label, SIGNAL(clicked()),
-		this, SLOT(on_axis_lock_clicked()));
-	connect(this, SIGNAL(axis_lock_changed(int, AxisBoundary, bool)),
-		upper_lock_label,
-		SLOT(on_axis_lock_changed(const int, const AxisBoundary, bool)));
+	connect(upper_lock_label, &AxisLockLabel::clicked,
+		this, &Plot::on_axis_lock_clicked);
+	connect(this, &Plot::axis_lock_changed,
+		upper_lock_label, &AxisLockLabel::on_axis_lock_changed);
 
 	AxisLockLabel *lower_lock_label = new AxisLockLabel(
 		axis_id, AxisBoundary::LowerBoundary, "");
-	connect(lower_lock_label, SIGNAL(clicked()),
-		this, SLOT(on_axis_lock_clicked()));
-	connect(this, SIGNAL(axis_lock_changed(int, AxisBoundary, bool)),
-		lower_lock_label,
-		SLOT(on_axis_lock_changed(const int, const AxisBoundary, bool)));
+	connect(lower_lock_label, &AxisLockLabel::clicked,
+		this, &Plot::on_axis_lock_clicked);
+	connect(this, &Plot::axis_lock_changed,
+		lower_lock_label, &AxisLockLabel::on_axis_lock_changed);
 
 	QBoxLayout *scale_layout;
 	if (axis_id == QwtPlot::xTop || axis_id == QwtPlot::xBottom) {
