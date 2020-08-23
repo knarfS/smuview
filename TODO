@@ -167,7 +167,7 @@ libsigrok
 - Can't add 2x scpi_libgpib devices: scpi_libgpib.c -> scpi_gpib_source_add() calls session.c -> sr_session_source_add() with fd = -1. This calls session.c -> sr_session_fd_source_add() with key = GINT_TO_POINTER(fd) and finally throws an error in session.c -> sr_session_source_add_internal() because "Event source with key %p already exists."
 - scpi-pps: when in acquisition send one write ":MEAS:VOLT?;:MEAS:CURR?" instead of 2 writes when possible
 - Add channel.meaning.mq, channel.meaning.mqflags, channel.meaning.unit (+channel.fixed) to PPU and load channels, to make it easy to init signals in smuview
-- Add missing units: sigrok::Unit::DECIBEL, sigrok::Unit::JOULE, sigrok::Unit::AMPEREHOUR, sigrok::Unit::COULOMB, sigrok::Unit::(HECTO)PASCAL
+- Add missing units: sigrok::Unit::DECIBEL
 - scpi-pps/hp66xxx: Return always TRUE for OVP_ENABLED
 - hp3478a: spec_digits and enc_digits are used in the wrong way!
 - Fix UserDevice::open() and ::close() -> virtual in BaseDevice and empty in UserDevice
@@ -204,11 +204,13 @@ Done
 - scpi-pps/hp66xxB: Don't send SCPI_CMD_REMOTE and SCPI_CMD_LOCAL when GPIB is used. Will result in error 602.
 - scpi-pps/hp66xxx: Check if SPoll is faster than sending *STB? / FAULT?, if so implement and use SPoll (or SRQ) when using GPIB.
 - scpi-pps's have channel groups but options/keys/_lists_ (voltage_target, ...) apply to device
+- Add missing units: sigrok::Unit::JOULE, sigrok::Unit::AMPEREHOUR, sigrok::Unit::COULOMB
 
 Won't fix
 ---------
 
 - Re:load Pro: Don't use "monitor 200", Instead "read" values every aquisition cycle with serial "read line blocking" and use a mutex around every read, write and write+read
+- Add missing units: sigrok::Unit::(HECTO)PASCAL
 
 
 

@@ -1159,8 +1159,6 @@ void init_Enums(py::module &m)
 	m.attr("__pdoc__")["Unit.DecibelMW"] = "Decibel milliWatt (dBm)";
 	py_unit.value("DecibelVolt", sv::data::Unit::DecibelVolt);
 	m.attr("__pdoc__")["Unit.DecibelVolt"] = "Decibel Volt (dBV)";
-	py_unit.value("Decibel", sv::data::Unit::Decibel);
-	m.attr("__pdoc__")["Unit.Decibel"] = "Decibel (dB)";
 	py_unit.value("Unitless", sv::data::Unit::Unitless);
 	m.attr("__pdoc__")["Unit.Unitless"] = "Unitless";
 	py_unit.value("DecibelSpl", sv::data::Unit::DecibelSpl);
@@ -1175,12 +1173,6 @@ void init_Enums(py::module &m)
 	m.attr("__pdoc__")["Unit.Watt"] = "Watt";
 	py_unit.value("WattHour", sv::data::Unit::WattHour);
 	m.attr("__pdoc__")["Unit.WattHour"] = "WattHour (Wh)";
-	py_unit.value("Joule", sv::data::Unit::Joule);
-	m.attr("__pdoc__")["Unit.Joule"] = "Joule";
-	py_unit.value("AmpereHour", sv::data::Unit::AmpereHour);
-	m.attr("__pdoc__")["Unit.AmpereHour"] = "AmpereHour (Ah)";
-	py_unit.value("Coulomb", sv::data::Unit::Coulomb);
-	m.attr("__pdoc__")["Unit.Coulomb"] = "Coulomb";
 	py_unit.value("MeterPerSecond", sv::data::Unit::MeterPerSecond);
 	m.attr("__pdoc__")["Unit.MeterPerSecond"] = "Meter per second (m/s)";
 	py_unit.value("HectoPascal", sv::data::Unit::HectoPascal);
@@ -1213,6 +1205,15 @@ void init_Enums(py::module &m)
 	m.attr("__pdoc__")["Unit.Tola"] = "Weight in tola.";
 	py_unit.value("Piece", sv::data::Unit::Piece);
 	m.attr("__pdoc__")["Unit.Piece"] = "Piece";
+	py_unit.value("Joule", sv::data::Unit::Joule);
+	m.attr("__pdoc__")["Unit.Joule"] = "Joule";
+	py_unit.value("AmpereHour", sv::data::Unit::AmpereHour);
+	m.attr("__pdoc__")["Unit.AmpereHour"] = "AmpereHour (Ah)";
+	py_unit.value("Coulomb", sv::data::Unit::Coulomb);
+	m.attr("__pdoc__")["Unit.Coulomb"] = "Coulomb";
+	// TODO: Implement in libsigrok
+	//py_unit.value("Decibel", sv::data::Unit::Decibel);
+	//m.attr("__pdoc__")["Unit.Decibel"] = "Decibel (dB)";
 	py_unit.value("Unknown", sv::data::Unit::Unknown);
 	m.attr("__pdoc__")["Unit.Unknown"] = "Unknown";
 

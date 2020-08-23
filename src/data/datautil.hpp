@@ -173,8 +173,6 @@ enum class Unit
 	Siemens,
 	DecibelMW,
 	DecibelVolt,
-	/** TODO: Implement in libsigrok */
-	Decibel,
 	Unitless,
 	DecibelSpl,
 	Concentration,
@@ -182,14 +180,10 @@ enum class Unit
 	VoltAmpere,
 	Watt,
 	WattHour,
-	/** TODO: Implement in libsigrok */
 	Joule,
-	/** TODO: Implement in libsigrok */
 	AmpereHour,
-	/** TODO: Implement in libsigrok */
 	Coulomb,
 	MeterPerSecond,
-	/** TODO: Use Pascal instead? */
 	HectoPascal,
 	Humidity293K,
 	Degree,
@@ -208,6 +202,8 @@ enum class Unit
 	Momme,
 	Tola,
 	Piece,
+	// TODO: Implement in libsigrok
+	//Decibel,
 	Unknown,
 };
 
@@ -330,7 +326,6 @@ unit_name_map_t unit_name_map = {
 	{ Unit::Siemens, QString("S") },
 	{ Unit::DecibelMW, QString("dBm") },
 	{ Unit::DecibelVolt, QString("dBV") },
-	{ Unit::Decibel, QString("dB") },
 	{ Unit::Unitless, QString("") },
 	{ Unit::DecibelSpl, QString("dB") },
 	{ Unit::Concentration, QString("ppx") },
@@ -338,9 +333,6 @@ unit_name_map_t unit_name_map = {
 	{ Unit::VoltAmpere, QString("VA") },
 	{ Unit::Watt, QString("W") },
 	{ Unit::WattHour, QString("Wh") },
-	{ Unit::Joule, QString("J") },
-	{ Unit::AmpereHour, QString("Ah") },
-	{ Unit::Coulomb, QString("C") },
 	{ Unit::MeterPerSecond, QString("m/s") },
 	{ Unit::HectoPascal, QString("hPa") },
 	{ Unit::Humidity293K, QString("%") },
@@ -357,6 +349,11 @@ unit_name_map_t unit_name_map = {
 	{ Unit::Momme, QString::fromUtf8("\u5301") },
 	{ Unit::Tola, QString("tola") },
 	{ Unit::Piece, QString("pc.") },
+	{ Unit::Joule, QString("J") },
+	{ Unit::AmpereHour, QString("Ah") },
+	{ Unit::Coulomb, QString("C") },
+	// TODO: Implement in libsigrok
+	//{ Unit::Decibel, QString("dB") },
 	{ Unit::Unknown, QString("??") },
 };
 
@@ -537,6 +534,9 @@ map<const sigrok::Unit *, Unit> sr_unit_unit_map = {
 	{ sigrok::Unit::MOMME, Unit::Momme },
 	{ sigrok::Unit::TOLA, Unit::Tola },
 	{ sigrok::Unit::PIECE, Unit::Piece },
+	{ sigrok::Unit::JOULE, Unit::Joule },
+	{ sigrok::Unit::COULOMB, Unit::Coulomb },
+	{ sigrok::Unit::AMPERE_HOUR, Unit::AmpereHour },
 };
 
 map<Unit, const sigrok::Unit *> unit_sr_unit_map = {
@@ -577,6 +577,9 @@ map<Unit, const sigrok::Unit *> unit_sr_unit_map = {
 	{ Unit::Momme, sigrok::Unit::MOMME },
 	{ Unit::Tola, sigrok::Unit::TOLA },
 	{ Unit::Piece, sigrok::Unit::PIECE },
+	{ Unit::Joule, sigrok::Unit::JOULE },
+	{ Unit::Coulomb, sigrok::Unit::COULOMB },
+	{ Unit::AmpereHour, sigrok::Unit::AMPERE_HOUR },
 };
 
 map<const sigrok::DataType *, DataType> sr_data_type_data_type_map = {
@@ -620,7 +623,7 @@ quantity_unit_map_t quantity_unit_map = {
 	{ Quantity::Conductance, { Unit::Siemens } },
 	{ Quantity::Power, { Unit::Watt, Unit::VoltAmpere } },
 	{ Quantity::ElectricCharge, { Unit::AmpereHour, Unit::Coulomb } },
-	{ Quantity::Gain, { Unit::Decibel, Unit::Unitless } },
+	{ Quantity::Gain, { /* TODO Unit::Decibel,*/ Unit::Unitless } },
 	{ Quantity::SoundPressureLevel, { Unit::DecibelSpl } },
 	{ Quantity::CarbonMonoxide, { Unit::Concentration } },
 	{ Quantity::RelativeHumidity, { Unit::Humidity293K } },
