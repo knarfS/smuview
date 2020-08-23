@@ -153,8 +153,7 @@ void BaseChannel::add_signal(shared_ptr<data::AnalogTimeSignal> signal)
 	if (!signal_map_.empty() && fixed_signal_) {
 		qWarning() << "Warning: Adding new signal " << signal->display_name() <<
 			"to fixed channel " << display_name();
-		// TODO: return, when the korad-kaxxxxp driver adds the missing flag!
-		//return;
+		return;
 	}
 
 	connect(this, SIGNAL(channel_start_timestamp_changed(double)),
