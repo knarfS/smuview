@@ -1,24 +1,14 @@
 SmuView
 =======
 
-ToDo Code
----------
-
-- BaseChannel::add_signal(), L. 156, Korad PSU TODO
-- Connection dialog thread
-
-
 ToDo clang-tidy
 ---------------
 
 - Unify readability-implicit-bool-conversion (AllowPointerConditions) -> " == nullptr" and " != nullptr"
 - readability-redundant-member-init.IgnoreBaseInCopyConstructors = 1 not always working!
 - src/ui/datatypes/doubledisplay.hpp 	void setup_ui(); // TODO: widgets::MonoFontDisplay also has setup_ui()
-- *.hpp: virtual f_name() = 0; -> virtual f_name() = nullptr;
-- src/data/properties/* on_value_changed(gvar) -> on_value_changed(const gvar)
 - src/ui/datatypes/basewidget.hpp Q_SLOTS redesign?
 - src/ui/datatypes/doubledisplay.hpp: setup_ui() override, b/c of widgets::MonoFontDisplay.
-- ValueDisplay SLOTS: CallByRef &?
 - bugprone-narrowing-conversions: Maybe use boost convert_to<>() -> see util.cpp, format_time_minutes()
 
 
@@ -140,6 +130,9 @@ Done
 - Bindings: Binding for setting the color of a plot curve
 - Bindings: Set name for new signal? e.g. f(x, y, name=nullptr)
 - Add "E" for detecting energy (Wh) channels
+- ValueDisplay SLOTS: CallByRef &?
+- Connection dialog thread
+- BaseChannel::add_signal(), L. 156, Korad PSU TODO
 
 Won't fix
 ---------
@@ -147,6 +140,8 @@ Won't fix
 - QWT Multiaxis
 - Refactore:
 	- src/data -> src/signals
+- src/data/properties/* on_value_changed(gvar) -> on_value_changed(const gvar)
+- *.hpp: virtual f_name() = 0; -> virtual f_name() = nullptr;
 
 
 
