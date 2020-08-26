@@ -35,6 +35,7 @@
 #include "curve.hpp"
 #include "src/session.hpp"
 #include "src/settingsmanager.hpp"
+#include "src/util.hpp"
 #include "src/data/datautil.hpp"
 #include "src/ui/widgets/plot/basecurvedata.hpp"
 #include "src/ui/widgets/plot/timecurvedata.hpp"
@@ -53,10 +54,8 @@ Curve::Curve(BaseCurveData *curve_data, int x_axis_id, int y_axis_id,
 	plot_direct_painter_(new QwtPlotDirectPainter()),
 	painted_points_(0)
 {
-	QUuid uuid = QUuid::createUuid();
 	id_ = curve_data->id_prefix() + ":" +
-		uuid.toString(QUuid::WithoutBraces).toStdString();
-
+		util::format_uuid(QUuid::createUuid());
 
 	QPen pen;
 	//pen.setColor(color_);

@@ -36,6 +36,7 @@
 #include "dataview.hpp"
 #include "src/session.hpp"
 #include "src/settingsmanager.hpp"
+#include "src/util.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/data/analogbasesignal.hpp"
 #include "src/data/analogtimesignal.hpp"
@@ -57,7 +58,7 @@ DataView::DataView(Session &session, QUuid uuid, QWidget *parent) :
 	action_auto_scroll_(new QAction(this)),
 	action_add_signal_(new QAction(this))
 {
-	id_ = "data:" + uuid_.toString(QUuid::WithoutBraces).toStdString();
+	id_ = "data:" + util::format_uuid(uuid_);
 
 	setup_ui();
 	setup_toolbar();

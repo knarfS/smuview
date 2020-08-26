@@ -66,7 +66,7 @@ PowerPanelView::PowerPanelView(Session &session, QUuid uuid, QWidget *parent) :
 	actual_watt_hours_(0),
 	action_reset_displays_(new QAction(this))
 {
-	id_ = "powerpanel:" + uuid_.toString(QUuid::WithoutBraces).toStdString();
+	id_ = "powerpanel:" + util::format_uuid(uuid_);
 
 	setup_ui();
 	setup_toolbar();

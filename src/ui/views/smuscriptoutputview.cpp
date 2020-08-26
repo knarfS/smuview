@@ -34,6 +34,7 @@
 
 #include "smuscriptoutputview.hpp"
 #include "src/session.hpp"
+#include "src/util.hpp"
 #include "src/ui/views/baseview.hpp"
 
 namespace sv {
@@ -47,7 +48,7 @@ SmuScriptOutputView::SmuScriptOutputView(Session &session,
 	action_auto_scroll_(new QAction(this)),
 	action_clear_output_(new QAction(this))
 {
-	id_ = "smuscriptoutput:" + uuid_.toString(QUuid::WithoutBraces).toStdString();
+	id_ = "smuscriptoutput:" + util::format_uuid(uuid_);
 
 	setup_ui();
 	setup_toolbar();

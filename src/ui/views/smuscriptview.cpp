@@ -38,6 +38,7 @@
 
 #include "smuscriptview.hpp"
 #include "src/session.hpp"
+#include "src/util.hpp"
 #include "src/python/smuscriptrunner.hpp"
 #include "src/ui/views/baseview.hpp"
 
@@ -57,7 +58,7 @@ SmuScriptView::SmuScriptView(Session &session, QUuid uuid, QWidget *parent) :
 	text_changed_(false),
 	started_from_here_(false)
 {
-	id_ = "smuscript:" + uuid_.toString(QUuid::WithoutBraces).toStdString();
+	id_ = "smuscript:" + util::format_uuid(uuid_);
 
 	setup_ui();
 	setup_toolbar();

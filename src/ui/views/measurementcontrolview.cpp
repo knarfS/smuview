@@ -28,6 +28,7 @@
 #include "measurementcontrolview.hpp"
 #include "src/session.hpp"
 #include "src/settingsmanager.hpp"
+#include "src/util.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/devices/configurable.hpp"
 #include "src/devices/deviceutil.hpp"
@@ -48,7 +49,7 @@ MeasurementControlView::MeasurementControlView(Session &session,
 	BaseView(session, uuid, parent),
 	configurable_(configurable)
 {
-	id_ = "measurementcontrol:" + uuid_.toString(QUuid::WithoutBraces).toStdString();
+	id_ = "measurementcontrol:" + util::format_uuid(uuid_);
 
 	setup_ui();
 }

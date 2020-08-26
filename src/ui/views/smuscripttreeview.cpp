@@ -37,6 +37,7 @@
 #include "smuscripttreeview.hpp"
 #include "src/mainwindow.hpp"
 #include "src/session.hpp"
+#include "src/util.hpp"
 #include "src/python/smuscriptrunner.hpp"
 #include "src/ui/views/baseview.hpp"
 
@@ -53,7 +54,7 @@ SmuScriptTreeView::SmuScriptTreeView(Session &session,
 	action_open_script_(new QAction(this)),
 	action_run_script_(new QAction(this))
 {
-	id_ = "smuscripttree:" + uuid_.toString(QUuid::WithoutBraces).toStdString();
+	id_ = "smuscripttree:" + util::format_uuid(uuid_);
 
 	// TODO: Set path to example files dir (how to do this in an AppImage?)
 	//       or save last directory in Session

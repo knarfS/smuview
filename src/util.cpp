@@ -30,6 +30,7 @@
 #include <QDateTime>
 #include <QDebug>
 #include <QTextStream>
+#include <QUuid>
 
 #include "extdef.h"
 #include "util.hpp"
@@ -268,6 +269,15 @@ QString format_time_date(double t)
 	timestamp.setMSecsSinceEpoch(t*1000);
 	QString date = timestamp.toString("yyyy.MM.dd hh:mm:ss.zzz");
 	return date;
+}
+
+string format_uuid(QUuid uuid)
+{
+#if QT_VERSION >= 0x050B00
+	return uuid.toString(QUuid::WithoutBraces).toStdString();
+#else
+	return uuid.toString().replace("{", "").replace("}", "").toStdString();
+#endif
 }
 
 vector<string> split_string(string text, const string &separator)

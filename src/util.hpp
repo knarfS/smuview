@@ -35,6 +35,7 @@
 
 #include <QMetaType>
 #include <QString>
+#include <QUuid>
 
 using std::map;
 using std::set;
@@ -160,6 +161,15 @@ QString format_time_minutes(const Timestamp& t, signed precision = 0,
  * TODO: move to data
  */
 QString format_time_date(double t);
+
+/**
+ * Format the given UUID as a string without braches.
+ *
+ * @param uuid The UUID to format.
+ *
+ * @return The formated UUID.
+ */
+string format_uuid(QUuid uuid);
 
 /**
  * Split a string into tokens at occurences of the separator.

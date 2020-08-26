@@ -31,6 +31,7 @@
 #include "democontrolview.hpp"
 #include "src/session.hpp"
 #include "src/settingsmanager.hpp"
+#include "src/util.hpp"
 #include "src/data/datautil.hpp"
 #include "src/data/properties/baseproperty.hpp"
 #include "src/data/properties/measuredquantityproperty.hpp"
@@ -59,7 +60,7 @@ DemoControlView::DemoControlView(Session &session,
 	BaseView(session, uuid, parent),
 	configurable_(configurable)
 {
-	id_ = "democontrol:" + uuid_.toString(QUuid::WithoutBraces).toStdString();
+	id_ = "democontrol:" + util::format_uuid(uuid_);
 
 	setup_ui();
 	connect_signals();

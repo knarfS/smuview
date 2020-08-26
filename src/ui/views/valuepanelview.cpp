@@ -35,6 +35,7 @@
 #include "valuepanelview.hpp"
 #include "src/session.hpp"
 #include "src/settingsmanager.hpp"
+#include "src/util.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/data/analogtimesignal.hpp"
 #include "src/data/basesignal.hpp"
@@ -57,7 +58,7 @@ ValuePanelView::ValuePanelView(Session &session, QUuid uuid, QWidget *parent) :
 	value_max_(std::numeric_limits<double>::lowest()),
 	action_reset_display_(new QAction(this))
 {
-	id_ = "valuepanel:" + uuid_.toString(QUuid::WithoutBraces).toStdString();
+	id_ = "valuepanel:" + util::format_uuid(uuid_);
 
 	setup_ui();
 	setup_toolbar();

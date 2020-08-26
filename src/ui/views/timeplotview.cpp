@@ -28,6 +28,7 @@
 #include "timeplotview.hpp"
 #include "src/session.hpp"
 #include "src/settingsmanager.hpp"
+#include "src/util.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/data/analogtimesignal.hpp"
 #include "src/devices/basedevice.hpp"
@@ -53,7 +54,7 @@ TimePlotView::TimePlotView(Session &session, QUuid uuid, QWidget *parent) :
 	BasePlotView(session, uuid, parent),
 	channel_(nullptr)
 {
-	id_ = "timeplot:" + uuid_.toString(QUuid::WithoutBraces).toStdString();
+	id_ = "timeplot:" + util::format_uuid(uuid_);
 	plot_type_ = PlotType::TimePlot;
 }
 

@@ -135,7 +135,7 @@ SequenceOutputView::SequenceOutputView(Session &session, QUuid uuid,
 	action_generate_waveform_(new QAction(this)),
 	sequence_pos_(0)
 {
-	id_ = "sequenceoutput:" + uuid_.toString(QUuid::WithoutBraces).toStdString();
+	id_ = "sequenceoutput:" + util::format_uuid(uuid_);
 
 	setup_ui();
 	setup_toolbar();

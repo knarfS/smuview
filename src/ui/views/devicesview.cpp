@@ -31,6 +31,7 @@
 #include "src/devicemanager.hpp"
 #include "src/mainwindow.hpp"
 #include "src/session.hpp"
+#include "src/util.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/devices/basedevice.hpp"
@@ -60,7 +61,7 @@ DevicesView::DevicesView(Session &session, QUuid uuid, QWidget *parent) :
 	action_add_userdevice_(new QAction(this)),
 	action_disconnect_device_(new QAction(this))
 {
-	id_ = "devices:" + uuid_.toString(QUuid::WithoutBraces).toStdString();
+	id_ = "devices:" + util::format_uuid(uuid_);
 
 	setup_ui();
 	setup_toolbar();

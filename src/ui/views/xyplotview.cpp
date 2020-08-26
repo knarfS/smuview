@@ -27,6 +27,7 @@
 
 #include "xyplotview.hpp"
 #include "src/session.hpp"
+#include "src/util.hpp"
 #include "src/data/analogtimesignal.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/ui/dialogs/selectxysignalsdialog.hpp"
@@ -49,7 +50,7 @@ namespace views {
 XYPlotView::XYPlotView(Session &session, QUuid uuid, QWidget *parent) :
 	BasePlotView(session, uuid, parent)
 {
-	id_ = "xyplot:" + uuid_.toString(QUuid::WithoutBraces).toStdString();
+	id_ = "xyplot:" + util::format_uuid(uuid_);
 	plot_type_ = PlotType::XYPlot;
 }
 

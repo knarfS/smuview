@@ -30,6 +30,7 @@
 #include "genericcontrolview.hpp"
 #include "src/session.hpp"
 #include "src/settingsmanager.hpp"
+#include "src/util.hpp"
 #include "src/data/properties/baseproperty.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/devices/configurable.hpp"
@@ -48,7 +49,7 @@ GenericControlView::GenericControlView(Session &session,
 	BaseView(session, uuid, parent),
 	configurable_(configurable)
 {
-	id_ = "genericcontrol:" + uuid_.toString(QUuid::WithoutBraces).toStdString();
+	id_ = "genericcontrol:" + util::format_uuid(uuid_);
 
 	setup_ui();
 	connect_signals();
