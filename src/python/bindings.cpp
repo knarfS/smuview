@@ -737,6 +737,7 @@ void init_UI(py::module &m)
 		py::arg("max") = std::numeric_limits<double>::max(),
 		"Show a dialog window to get a float value from the user. It returns "
 		"the entered float value or `None` if the Cancel button was pressed.\n\n"
+		"Only has effect if the used Qt version is equal or greater than 5.10!\n\n"
 		"Parameters\n"
 		"----------\n"
 		"title : str\n"
@@ -750,6 +751,7 @@ void init_UI(py::module &m)
 		"step : float\n"
 		"    The amount by which the value can be incremented or decremented by the user."
 		"    Default is 0.1.\n"
+		"    Only has effect for Qt versions >= 5.10!\n"
 		"min : float\n"
 		"    The minimum value the user may choose.\n"
 		"max : float\n"
