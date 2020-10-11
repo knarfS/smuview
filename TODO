@@ -77,6 +77,7 @@ ToDo
 - Use deleteLater() instead of delete
 - Add AddPlotCurveDialog with channel and signals.
 - Manage axes in plot.cpp: Per Quantity and not per curve! Test: Remove all curves and add a new one....
+- UiHelper/UiProxy: Remove tab_id?
 
 Done
 ----
