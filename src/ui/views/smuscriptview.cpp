@@ -121,11 +121,13 @@ void SmuScriptView::setup_ui()
 	QVBoxLayout *layout = new QVBoxLayout();
 
 	editor_ = new QCodeEditor();
-	//editor->setSyntaxStyle();
+	//editor_->setSyntaxStyle();
 	editor_->setCompleter(new QPythonCompleter);
 	editor_->setHighlighter(new QPythonHighlighter);
 	editor_->setAutoIndentation(true);
 	editor_->setWordWrapMode(QTextOption::WordWrap);
+	// NOTE: The extra bottom margin will mess up the textChanged() signal!
+	editor_->setExtraBottomMargin(false);
 	layout->addWidget(editor_);
 
 	this->central_widget_->setLayout(layout);
