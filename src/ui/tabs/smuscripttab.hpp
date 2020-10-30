@@ -20,6 +20,9 @@
 #ifndef UI_TABS_SMUSCRIPTTAB_HPP
 #define UI_TABS_SMUSCRIPTTAB_HPP
 
+# include <string>
+
+#include <QString>
 #include <QWidget>
 
 #include "src/ui/tabs/basetab.hpp"
