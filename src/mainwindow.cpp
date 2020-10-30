@@ -105,10 +105,13 @@ MainWindow::~MainWindow()
 
 void MainWindow::add_tab(ui::tabs::BaseTab *tab_window)
 {
+	// NOTE: This must be before QTabWidget::addTab() and
+	//       QTabWidget::setCurrentIndex() otherwise the tab_window is null for
+	//       the SmuScriptTab after inserting into tab_window_map_.
+	tab_window_map_.insert(make_pair(tab_window->id(), tab_window));
+
 	int index = tab_widget_->addTab(tab_window, tab_window->title());
 	tab_widget_->setCurrentIndex(index);
-
-	tab_window_map_.insert(make_pair(tab_window->id(), tab_window));
 }
 
 ui::tabs::DeviceTab *MainWindow::add_device_tab(
