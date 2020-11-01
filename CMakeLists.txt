@@ -126,6 +126,8 @@ find_package(Threads REQUIRED)
 add_subdirectory(external/pybind11)
 # SmuView has its own copy of QCodeEditor
 add_subdirectory(external/QCodeEditor)
+# SmuView has its own copy of QtFindReplaceDialog
+add_subdirectory(external/QtFindReplaceDialog/dialogs)
 
 
 #===============================================================================
@@ -406,6 +408,7 @@ set(SMUVIEW_LINK_LIBS
 	PkgConfig::LIBSRCXX
 	pybind11::embed
 	QCodeEditor
+	QtFindReplaceDialog
 )
 
 if(STATIC_PKGDEPS_LIBS)

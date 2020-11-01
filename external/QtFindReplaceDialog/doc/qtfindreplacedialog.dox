@@ -1,0 +1,85 @@
+/* -*- mode: C++ ; c-file-style: "stroustrup" -*- *****************************
+ * QtFindReplaceDialog
+ * Copyright (C) 2009   Lorenzo Bettini <http://www.lorenzobettini.it>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the Qwt License, Version 1.0
+ *****************************************************************************/
+
+/*
+  This file contains NO source code, just some documentation for doxygen to
+  parse.
+*/
+
+/*!
+  \mainpage QtFindReplaceDialog - Find/Replace Qt dialog
+
+  QtFindReplaceDialog is an implementation of a Find/Replace Qt dialog to be used in qt text edit based applications.
+  A simple Find (only) dialog is also provided.
+
+  The dialogs can be used as a library, or simply by importing the sources into your own applications.
+
+  \section homepage Project page
+
+  The project page for QtFindReplaceDialog is:
+  http://qtfindreplace.sourceforge.net
+
+  The git repository for QtFindReplaceDialog can be found here:
+  http://gitorious.org/qtfindreplacedialog/qtfindreplacedialog
+
+  \section install Installation
+
+  You can use these dialogs in your applications either by copying the files in
+  the \c dialogs directory, or by building the dialogs as library.
+
+  You can build the library by using qmake and then make.
+  For instance, if you use a shadow build (which is reccomended), simply create
+  a build directory and enter there.  Then run
+
+  \verbatim
+  qmake -recursive ../qtfindreplacedialog.pro
+  make  \endverbatim
+
+  A running example, using the find and find/replace dialogs, can be found in
+  the directory <tt>examples</tt> (this will be built also).  You can take
+  a look at the examples in the section \ref examples.
+
+  You can specify additional arguments for qmake, for instance, if you want to build the
+  library statically use <tt>CONFIG+=static</tt>.  Then, you can install it using <tt>make install</tt>,
+  possibly by using a specific installation root:
+
+  \verbatim
+  INSTALL_ROOT=$HOME/usr/local make install   \endverbatim
+
+  \section screenshots Screenshots
+
+  Here are some screenshots:
+
+  \image html Screenshot-FindReplace.png Find/Replace dialog in Gnome
+
+  \image html Screenshot-FindReplace2.png Find/Replace dialog after a replace all operation
+
+  \image html Screenshot-FindReplaceKDE.png Find/Replace dialog in KDE
+
+  \image html Screenshot-FindReplaceWin.png Find/Replace dialog in Windows XP
+
+  \image html Screenshot-Find.png Find dialog
+
+
+
+  \section license License
+
+  QtFindReplaceDialog is distributed under the terms of the \ref gpllicence.
+
+*/
+
+/*!
+  \page gpllicence GNU LGPL Licence
+  \verbinclude "COPYING"
+*/
+
+/*!
+  \page examples Examples
+  \include mainwindow.h
+  \include mainwindow.cpp
+*/
