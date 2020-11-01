@@ -30,6 +30,7 @@
 #include "src/settingsmanager.hpp"
 #include "src/python/smuscriptrunner.hpp"
 #include "src/ui/tabs/basetab.hpp"
+#include "src/ui/tabs/tabdockwidget.hpp"
 #include "src/ui/views/smuscriptoutputview.hpp"
 #include "src/ui/views/smuscriptview.hpp"
 #include "src/ui/views/viewhelper.hpp"
@@ -172,6 +173,7 @@ void SmuScriptTab::save_settings() const
 void SmuScriptTab::on_file_name_changed(const QString &file_name)
 {
 	(void)file_name;
+	view_docks_map_[smu_script_view_]->setWindowTitle(smu_script_view_->title());
 	session_.main_window()->change_tab_title(id_, smu_script_view_->title());
 }
 
