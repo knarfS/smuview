@@ -101,8 +101,6 @@ void BaseTab::add_view(views::BaseView *view, Qt::DockWidgetArea area,
 	if (!view)
 		return;
 
-	//GlobalSettings settings;
-
 	QDockWidget *dock = create_dock_widget(
 		view, (QDockWidget::DockWidgetFeatures)features);
 	this->addDockWidget(area, dock);
@@ -116,8 +114,6 @@ void BaseTab::add_view_ontop(views::BaseView *view,
 {
 	if (!view)
 		return;
-
-	//GlobalSettings settings;
 
 	QDockWidget *dock = create_dock_widget(
 		view, (QDockWidget::DockWidgetFeatures)features);
