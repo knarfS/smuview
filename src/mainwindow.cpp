@@ -275,6 +275,8 @@ void MainWindow::save_settings()
 {
 	QSettings settings;
 
+	smu_script_tree_view_->save_settings(settings);
+
 	settings.beginGroup("MainWindow");
 	settings.setValue("geometry", saveGeometry());
 	settings.setValue("state", saveState());

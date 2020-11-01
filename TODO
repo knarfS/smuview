@@ -78,6 +78,8 @@ ToDo
 - Add AddPlotCurveDialog with channel and signals.
 - Manage axes in plot.cpp: Per Quantity and not per curve! Test: Remove all curves and add a new one....
 - UiHelper/UiProxy: Remove tab_id?
+- Settingsmanager: Method for getting the QSettings object and maybe load an user defined QSettings-file.
+
 
 Done
 ----

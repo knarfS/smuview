@@ -37,6 +37,7 @@
 #include "smuscripttreeview.hpp"
 #include "src/mainwindow.hpp"
 #include "src/session.hpp"
+#include "src/settingsmanager.hpp"
 #include "src/util.hpp"
 #include "src/python/smuscriptrunner.hpp"
 #include "src/ui/views/baseview.hpp"
@@ -56,9 +57,13 @@ SmuScriptTreeView::SmuScriptTreeView(Session &session,
 {
 	id_ = "smuscripttree:" + util::format_uuid(uuid_);
 
-	// TODO: Set path to example files dir (how to do this in an AppImage?)
-	//       or save last directory in Session
-	script_dir_ = QDir::homePath();
+	QSettings settings;
+	if (SettingsManager::restore_settings() &&
+			settings.childGroups().contains("SmuScriptTree")) {
+		restore_settings(settings);
+	}
+	else
+		script_dir_ = QDir::homePath();
 
 	setup_ui();
 	setup_toolbar();
@@ -96,7 +101,7 @@ void SmuScriptTreeView::setup_ui()
 	QModelIndex script_path_index = file_system_model_->index(script_dir_);
 	file_system_tree_->expand(script_path_index);
 	file_system_tree_->setCurrentIndex(script_path_index);
-	QTimer::singleShot(100, this, &SmuScriptTreeView::scroll_to_script_dir);
+	QTimer::singleShot(250, this, &SmuScriptTreeView::scroll_to_script_dir);
 }
 
 void SmuScriptTreeView::setup_toolbar()
@@ -151,12 +156,40 @@ void SmuScriptTreeView::connect_signals()
 
 void SmuScriptTreeView::save_settings(QSettings &settings) const
 {
-	(void)settings;
+	settings.beginGroup("SmuScriptTree");
+	settings.remove("");  // Remove all keys in this group
+
+	BaseView::save_settings(settings);
+
+	QModelIndex index = file_system_tree_->selectionModel()->currentIndex();
+	if (index.isValid()) {
+		QFileInfo file_info = file_system_model_->fileInfo(index);
+		if (file_info.isDir())
+			settings.setValue("directory", file_info.canonicalFilePath());
+		else
+			settings.setValue("directory", file_info.canonicalPath());
+	}
+	else
+		settings.setValue("directory", script_dir_);
+
+	settings.endGroup();
 }
 
 void SmuScriptTreeView::restore_settings(QSettings &settings)
 {
-	(void)settings;
+	settings.beginGroup("SmuScriptTree");
+
+	BaseView::restore_settings(settings);
+
+	if (settings.contains("directory")) {
+		script_dir_ = settings.value("directory").toString();
+		if (!QFileInfo::exists(script_dir_))
+			script_dir_ = QDir::homePath();
+	}
+	else
+		script_dir_ = QDir::homePath();
+
+	settings.endGroup();
 }
 
 void SmuScriptTreeView::scroll_to_script_dir()
