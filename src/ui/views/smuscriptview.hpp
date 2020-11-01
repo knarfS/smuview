@@ -28,6 +28,7 @@
 #include <QUuid>
 
 #include <QCodeEditor>
+#include <findreplacedialog.h>
 
 #include "src/ui/views/baseview.hpp"
 
@@ -61,8 +62,10 @@ private:
 	QAction *const action_save_;
 	QAction *const action_save_as_;
 	QAction *const action_run_;
+	QAction *const action_find_;
 	QToolBar *toolbar_;
 	QCodeEditor *editor_;
+	FindReplaceDialog *find_dialog_;
 	bool text_changed_;
 	bool started_from_here_;
 
@@ -80,6 +83,7 @@ private Q_SLOTS:
 	void on_action_save_triggered();
 	void on_action_save_as_triggered();
 	void on_action_run_triggered();
+	void on_action_find_triggered();
 	void on_text_changed();
 	void on_script_started();
 	void on_script_finished();

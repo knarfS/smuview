@@ -36,6 +36,7 @@
 #include <QCodeEditor>
 #include <QPythonCompleter>
 #include <QPythonHighlighter>
+#include <findreplacedialog.h>
 
 #include "smuscriptview.hpp"
 #include "src/session.hpp"
@@ -56,6 +57,7 @@ SmuScriptView::SmuScriptView(Session &session, QUuid uuid, QWidget *parent) :
 	action_save_(new QAction(this)),
 	action_save_as_(new QAction(this)),
 	action_run_(new QAction(this)),
+	action_find_(new QAction(this)),
 	text_changed_(false),
 	started_from_here_(false)
 {
@@ -131,6 +133,12 @@ void SmuScriptView::setup_ui()
 	layout->addWidget(editor_);
 
 	this->central_widget_->setLayout(layout);
+
+	find_dialog_ = new FindReplaceDialog(this);
+	find_dialog_->setModal(false);
+	find_dialog_->setWindowFlags(Qt::Window | Qt::WindowMinimizeButtonHint |
+		Qt::WindowMaximizeButtonHint | Qt::WindowCloseButtonHint);
+	find_dialog_->setTextEdit(editor_);
 }
 
 void SmuScriptView::setup_toolbar()
@@ -158,7 +166,6 @@ void SmuScriptView::setup_toolbar()
 	action_save_as_->setIcon(
 		QIcon::fromTheme("document-save-as",
 		QIcon(":/icons/document-save-as.png")));
-	action_save_as_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_A));
 	connect(action_save_as_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_save_as_triggered()));
 
@@ -174,12 +181,23 @@ void SmuScriptView::setup_toolbar()
 	if (session_.smu_script_runner()->is_running())
 		action_run_->setDisabled(true);
 
+	action_find_->setText(tr("&Find and Replace"));
+	action_find_->setIconText(tr("Find and Replace"));
+	action_find_->setIcon(
+		QIcon::fromTheme("edit-find",
+		QIcon(":/icons/edit-find.png")));
+	action_find_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_F));
+	connect(action_find_, SIGNAL(triggered(bool)),
+		this, SLOT(on_action_find_triggered()));
+
 	toolbar_ = new QToolBar("SmuScript Toolbar");
 	toolbar_->addAction(action_open_);
 	toolbar_->addAction(action_save_);
 	toolbar_->addAction(action_save_as_);
 	toolbar_->addSeparator();
 	toolbar_->addAction(action_run_);
+	toolbar_->addSeparator();
+	toolbar_->addAction(action_find_);
 	this->addToolBar(Qt::TopToolBarArea, toolbar_);
 }
 
@@ -197,11 +215,13 @@ void SmuScriptView::connect_signals()
 void SmuScriptView::save_settings(QSettings &settings) const
 {
 	BaseView::save_settings(settings);
+	find_dialog_->writeSettings(settings);
 }
 
 void SmuScriptView::restore_settings(QSettings &settings)
 {
 	BaseView::restore_settings(settings);
+	find_dialog_->readSettings(settings);
 }
 
 bool SmuScriptView::save(QString file_name)
@@ -277,6 +297,11 @@ void SmuScriptView::on_action_save_triggered()
 void SmuScriptView::on_action_save_as_triggered()
 {
 	this->save("");
+}
+
+void SmuScriptView::on_action_find_triggered()
+{
+	find_dialog_->showDialog(editor_->textCursor().selectedText());
 }
 
 void SmuScriptView::on_text_changed()
