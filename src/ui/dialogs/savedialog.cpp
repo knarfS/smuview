@@ -19,6 +19,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <limits>
 #include <memory>
 #include <string>
 
@@ -28,6 +29,7 @@
 #include <QFormLayout>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QSpinBox>
 #include <QVBoxLayout>
 
 #include "savedialog.hpp"
@@ -82,6 +84,16 @@ void SaveDialog::setup_ui()
 	timestamps_combined_ = new QCheckBox(tr("Combine all time stamps"));
 	form_layout->addRow("", timestamps_combined_);
 
+	timestamps_combined_timeframe_ = new QSpinBox();
+	timestamps_combined_timeframe_->setValue(0);
+	timestamps_combined_timeframe_->setRange(
+		0, std::numeric_limits<int32_t>::max());
+	timestamps_combined_timeframe_->setSuffix(" ms");
+	timestamps_combined_timeframe_->setDisabled(
+		!timestamps_combined_->isChecked());
+	form_layout->addRow(tr("Combination time frame"),
+		timestamps_combined_timeframe_);
+
 	time_absolut_ = new QCheckBox(tr("Absolut time"));
 	form_layout->addRow("", time_absolut_);
 
@@ -94,6 +106,9 @@ void SaveDialog::setup_ui()
 	button_box_ = new QDialogButtonBox(
 		QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
 	main_layout->addWidget(button_box_);
+
+	connect(timestamps_combined_, SIGNAL(stateChanged(int)),
+		this, SLOT(toggle_combined()));
 	connect(button_box_, SIGNAL(accepted()), this, SLOT(accept()));
 	connect(button_box_, SIGNAL(rejected()), this, SLOT(reject()));
 
@@ -218,7 +233,8 @@ void SaveDialog::save(const QString &file_name)
 	output_file.close();
 }
 
-void SaveDialog::save_combined(const QString &file_name)
+void SaveDialog::save_combined(const QString &file_name,
+	const double combined_timeframe)
 {
 	ofstream output_file;
 	string str_file_name = file_name.toStdString();
@@ -320,7 +336,7 @@ void SaveDialog::save_combined(const QString &file_name)
 			auto sample =
 				analog_signal->get_sample(sample_pos[i], relative_time);
 			double timestamp = sample.first;
-			if (timestamp == next_timestamp) {
+			if (timestamp + combined_timeframe >= next_timestamp) {
 				line.append(QString("%1").arg(sample.second, 0, 'g', -1));
 				++sample_pos[i];
 			}
@@ -340,13 +356,25 @@ void SaveDialog::accept()
 		tr("Save CSV-File"), QDir::homePath(), tr("CSV Files (*.csv)"));
 
 	if (file_name.length() > 0) {
-		if (timestamps_combined_->isChecked())
-			save_combined(file_name);
+		if (timestamps_combined_->isChecked()) {
+			int combined_timeframe_ms = timestamps_combined_timeframe_->value();
+			double combined_timeframe = .0;
+			if (combined_timeframe_ms != 0)
+				combined_timeframe = ((double)combined_timeframe_ms) / 1000;
+
+			save_combined(file_name, combined_timeframe);
+		}
 		else
 			save(file_name);
 
 		QDialog::accept();
 	}
+}
+
+void SaveDialog::toggle_combined()
+{
+	timestamps_combined_timeframe_->setDisabled(
+		!timestamps_combined_->isChecked());
 }
 
 } // namespace dialogs
