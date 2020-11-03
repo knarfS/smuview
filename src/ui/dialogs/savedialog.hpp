@@ -63,19 +63,21 @@ public:
 private:
 	void setup_ui();
 	void save(const QString &file_name);
-	void save_combined(const QString &file_name);
+	void save_combined(const QString &file_name, const double combined_timeframe = 0);
 
 	const Session &session_;
 	const shared_ptr<sv::devices::BaseDevice> selected_device_;
 
 	ui::devices::devicetree::DeviceTreeView *device_tree_;
 	QCheckBox *timestamps_combined_;
+	QLineEdit *timestamps_combined_timeframe_;
 	QCheckBox *time_absolut_;
 	QLineEdit *separator_edit_;
 	QDialogButtonBox *button_box_;
 
 public Q_SLOTS:
 	void accept() override;
+	void toggle_combined(int state);
 
 };
 
