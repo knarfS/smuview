@@ -46,21 +46,18 @@ SmuScriptTab::SmuScriptTab(Session &session,
 	BaseTab(session, parent),
 	script_file_name_(script_file_name)
 {
-	// Replacing some special characters for QSettings.
-	string file_name_tmp = script_file_name_;
-	std::replace(file_name_tmp.begin(), file_name_tmp.end(), '/', '_');
-	std::replace(file_name_tmp.begin(), file_name_tmp.end(), '\\', '_');
-	id_ = "smuscripttab:" + file_name_tmp;
+	// The id is the same for all SmuScriptTabs, so they all look the same when
+	// restored from the settings, independed of the filename.
+	id_ = "smuscripttab:";
+
+	setup_ui();
+	connect_signals();
 
 	QSettings settings;
 	if (SettingsManager::restore_settings() &&
 			settings.childGroups().contains("SmuScriptTab")) {
 		SmuScriptTab::restore_settings();
 	}
-	else {
-		setup_ui();
-	}
-	connect_signals();
 }
 
 
@@ -114,26 +111,18 @@ void SmuScriptTab::restore_settings()
 {
 	QSettings settings;
 
-	// Restore device views
 	settings.beginGroup("SmuScriptTab");
 
-	const QStringList view_keys = settings.childGroups();
-	for (const auto &view_key : view_keys) {
-		settings.beginGroup(view_key);
-		auto view = views::viewhelper::get_view_from_settings(session_, settings);
-		if (view) {
-			add_view(view, Qt::DockWidgetArea::TopDockWidgetArea);
-			if (view->id().rfind("smuscript:", 0) == 0) {
-				smu_script_view_ = qobject_cast<views::SmuScriptView *>(view);
-				smu_script_view_->load_file(script_file_name_);
-			}
-			else if (view->id().rfind("smuscriptoutput:", 0) == 0) {
-				smu_script_output_view_ =
-					qobject_cast<views::SmuScriptOutputView *>(view);
-			}
-		}
-		settings.endGroup();
-	}
+	// Both views are fixed and will not be restored by their uuid, to give all
+	// SmuScriptTabs the same setings.
+
+	settings.beginGroup("view0");
+	smu_script_view_->restore_settings(settings);
+	settings.endGroup();
+
+	settings.beginGroup("view1");
+	smu_script_output_view_->restore_settings(settings);
+	settings.endGroup();
 
 	// NOTE: restoreGeometry() must be called _and_ the sizeHint() of the widget
 	//       (view) must be set to the last size, in order to restore the
@@ -154,13 +143,16 @@ void SmuScriptTab::save_settings() const
 	settings.beginGroup("SmuScriptTab");
 	settings.remove("");
 
-	size_t i = 0;
-	for (const auto &view_dock_pair : view_docks_map_) {
-		settings.beginGroup(QString("view%1").arg(i));
-		view_dock_pair.first->save_settings(settings);
-		settings.endGroup();
-		++i;
-	}
+	// Both views are fixed and will not be restored by their uuid, to give all
+	// SmuScriptTabs the same setings.
+
+	settings.beginGroup("view0");
+	smu_script_view_->save_settings(settings);
+	settings.endGroup();
+
+	settings.beginGroup("view1");
+	smu_script_output_view_->save_settings(settings);
+	settings.endGroup();
 
 	// Save state and geometry for all view widgets.
 	// NOTE: geometry must be saved. See restore_settings().

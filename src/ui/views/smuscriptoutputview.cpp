@@ -48,7 +48,9 @@ SmuScriptOutputView::SmuScriptOutputView(Session &session,
 	action_auto_scroll_(new QAction(this)),
 	action_clear_output_(new QAction(this))
 {
-	id_ = "smuscriptoutput:" + util::format_uuid(uuid_);
+	// The uuid is ignored here to give all SmuScriptOutputViews the same look,
+	// when restored from the settings.
+	id_ = "smuscriptoutput:";
 
 	setup_ui();
 	setup_toolbar();

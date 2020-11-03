@@ -61,7 +61,9 @@ SmuScriptView::SmuScriptView(Session &session, QUuid uuid, QWidget *parent) :
 	text_changed_(false),
 	started_from_here_(false)
 {
-	id_ = "smuscript:" + util::format_uuid(uuid_);
+	// The uuid is ignored here to give all SmuScriptViews the same look, when
+	// restored from the settings.
+	id_ = "smuscript:";
 
 	setup_ui();
 	setup_toolbar();
