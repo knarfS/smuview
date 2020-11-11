@@ -881,7 +881,13 @@ bool QCodeEditor::tabReplace() const
 void QCodeEditor::setTabReplaceSize(int val)
 {
     m_tabReplace.fill(' ', val);
+#if QT_VERSION >= 0x050B00
     setTabStopDistance(fontMetrics().horizontalAdvance(QString(val * 1000, ' ')) / 1000.0);
+#elif QT_VERSION == 0x050A00
+    setTabStopDistance(fontMetrics().width(QString(val * 1000, ' ')) / 1000.0);
+#else
+    setTabStopWidth(fontMetrics().width(QString(val * 1000, ' ')) / 1000.0);
+#endif
 }
 
 int QCodeEditor::tabReplaceSize() const
