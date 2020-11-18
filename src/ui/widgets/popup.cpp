@@ -251,7 +251,7 @@ QRegion Popup::popup_region() const
 void Popup::reposition_widget()
 {
 	QPoint o;
-#if QT_VERSION >= 0x050A00
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
 	QScreen *screen = QGuiApplication::screenAt(point_);
 	if(!screen)
 		return;

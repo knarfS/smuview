@@ -47,7 +47,11 @@
 #include <qwt_plot_curve.h>
 #include <qwt_plot_directpainter.h>
 #include <qwt_plot_grid.h>
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+// This header uses deprecated declarations, disable checks.
 #include <qwt_plot_layout.h>
+#pragma GCC diagnostic pop
 #include <qwt_plot_textlabel.h>
 #include <qwt_plot_panner.h>
 #include <qwt_plot_picker.h>

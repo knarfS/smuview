@@ -20,8 +20,8 @@
 #include <QColor>
 #include <QDebug>
 #include <QObject>
-#if QT_VERSION >= 0x050A00
-	#include <QRandomGenerator>
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
+#include <QRandomGenerator>
 #endif
 #include <QPen>
 #include <QSettings>
@@ -343,7 +343,7 @@ QColor Curve::default_color(sv::data::Quantity quantity,
 		return Qt::darkGray;
 
 	// Random color for the rest
-#if QT_VERSION >= 0x050A00
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
 	return QColor::fromRgb(QRandomGenerator::global()->generate());
 #else
 	return QColor::fromRgb(qrand());

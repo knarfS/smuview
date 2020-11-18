@@ -176,7 +176,7 @@ QString format_time_si(const Timestamp& v, SIPrefix prefix,
 	QString s;
 	QTextStream ts(&s);
 	if (sign && !v.is_zero())
-		ts << forcesign;
+		ts.setNumberFlags(ts.numberFlags() | QTextStream::ForceSign);
 	ts << qSetRealNumberPrecision((int)precision) << (v * multiplier) << ' '
 		<< prefix << unit;
 
@@ -273,7 +273,7 @@ QString format_time_date(double t)
 
 string format_uuid(QUuid uuid)
 {
-#if QT_VERSION >= 0x050B00
+#if QT_VERSION >= QT_VERSION_CHECK(5, 11, 0)
 	return uuid.toString(QUuid::WithoutBraces).toStdString();
 #else
 	return uuid.toString().replace("{", "").replace("}", "").toStdString();

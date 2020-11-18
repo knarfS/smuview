@@ -239,7 +239,8 @@ bool SmuScriptView::save(QString file_name)
 	QFile file(file_name);
 	if (file.open(QFile::WriteOnly | QFile::Text | QFile::Truncate)) {
 		QTextStream stream(&file);
-		stream << editor_->toPlainText() << flush;
+		stream << editor_->toPlainText();
+		stream.flush();
 		file.close();
 
 		text_changed_ = false;

@@ -25,6 +25,7 @@
 #include <QMouseEvent>
 #include <QObject>
 #include <QPoint>
+#include <QPointF>
 #include <QWheelEvent>
 
 #include <qwt_scale_draw.h>
@@ -136,9 +137,9 @@ bool PlotScalePicker::eventFilter(QObject *object, QEvent *event)
 		if (scale_widget) {
 			QWheelEvent *wheel_event = static_cast<QWheelEvent *>(event);
 			if (wheel_event) {
-				double factor = std::pow(
-					wheel_factor_, std::fabs(wheel_event->delta() / 120.0));
-				if (wheel_event->delta() > 0)
+				double factor = std::pow(wheel_factor_,
+					std::fabs(wheel_event->angleDelta().y() / 120.0));
+				if (wheel_event->angleDelta().y() > 0)
 					factor = 1 / factor;
 				factor = std::fabs(factor);
 				if (factor == 1.0 || factor == 0.0)
@@ -149,19 +150,19 @@ bool PlotScalePicker::eventFilter(QObject *object, QEvent *event)
 				switch (scale_widget->alignment()) {
 				case QwtScaleDraw::LeftScale:
 					axis_id = QwtPlot::yLeft;
-					mouse_pos = wheel_event->pos().y();
+					mouse_pos = get_wheel_pos(wheel_event).y();
 					break;
 				case QwtScaleDraw::RightScale:
 					axis_id = QwtPlot::yRight;
-					mouse_pos = wheel_event->pos().y();
+					mouse_pos = get_wheel_pos(wheel_event).y();
 					break;
 				case QwtScaleDraw::BottomScale:
 					axis_id = QwtPlot::xBottom;
-					mouse_pos = wheel_event->pos().x();
+					mouse_pos = get_wheel_pos(wheel_event).x();
 					break;
 				case QwtScaleDraw::TopScale:
 					axis_id = QwtPlot::xTop;
-					mouse_pos = wheel_event->pos().x();
+					mouse_pos = get_wheel_pos(wheel_event).x();
 					break;
 				}
 
@@ -251,6 +252,15 @@ bool PlotScalePicker::eventFilter(QObject *object, QEvent *event)
 	}
 
 	return QObject::eventFilter(object, event);
+}
+
+QPointF PlotScalePicker::get_wheel_pos(QWheelEvent *wheel_event)
+{
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+	return wheel_event->position();
+#else
+	return wheel_event->posF();
+#endif
 }
 
 } // namespace plot

@@ -23,6 +23,8 @@
 
 #include <QEvent>
 #include <QObject>
+#include <QPointF>
+#include <QWheelEvent>
 
 namespace sv {
 namespace ui {
@@ -45,6 +47,8 @@ private:
 	bool is_double_clicked;
 	int last_pan_p_value_;
 	double wheel_factor_;
+
+	QPointF get_wheel_pos(QWheelEvent *wheel_event);
 
 };
 

@@ -318,7 +318,7 @@ void UiHelper::show_double_input_dialog(const std::string &title,
 	}
 
 	bool ok;
-#if QT_VERSION >= 0x050A00
+#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
 	double d = QInputDialog::getDouble(session_.main_window(),
 		QString::fromStdString(title), QString::fromStdString(label),
 		value, min, max, decimals, &ok, Qt::WindowFlags(), step);
