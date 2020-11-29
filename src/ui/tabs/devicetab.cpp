@@ -36,7 +36,7 @@
 #include "src/ui/dialogs/aboutdialog.hpp"
 #include "src/ui/dialogs/addmathchanneldialog.hpp"
 #include "src/ui/dialogs/addviewdialog.hpp"
-#include "src/ui/dialogs/savedialog.hpp"
+#include "src/ui/dialogs/signalsavedialog.hpp"
 #include "src/ui/tabs/basetab.hpp"
 #include "src/ui/tabs/tabdockwidget.hpp"
 #include "src/ui/views/viewhelper.hpp"
@@ -238,7 +238,7 @@ void DeviceTab::on_action_aquire_triggered()
 
 void DeviceTab::on_action_save_as_triggered()
 {
-	ui::dialogs::SaveDialog dlg(session(), device_);
+	ui::dialogs::SignalSaveDialog dlg(session(), device_);
 	dlg.exec();
 }
 

@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UI_DIALOGS_SAVEDIALOG_HPP
-#define UI_DIALOGS_SAVEDIALOG_HPP
+#ifndef UI_DIALOGS_SIGNALSAVEDIALOG_HPP
+#define UI_DIALOGS_SIGNALSAVEDIALOG_HPP
 
 #include <memory>
 #include <vector>
@@ -52,12 +52,12 @@ class DeviceTreeView;
 
 namespace dialogs {
 
-class SaveDialog : public QDialog
+class SignalSaveDialog : public QDialog
 {
 	Q_OBJECT
 
 public:
-	SaveDialog(const Session &session,
+	SignalSaveDialog(const Session &session,
 		const shared_ptr<sv::devices::BaseDevice> selected_device,
 		QWidget *parent = nullptr);
 
@@ -89,4 +89,4 @@ private Q_SLOTS:
 } // namespace ui
 } // namespace sv
 
-#endif // UI_DIALOGS_SAVEDIALOG_HPP
+#endif // UI_DIALOGS_SIGNALSAVEDIALOG_HPP

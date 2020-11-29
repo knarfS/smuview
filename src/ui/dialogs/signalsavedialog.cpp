@@ -32,7 +32,7 @@
 #include <QSpinBox>
 #include <QVBoxLayout>
 
-#include "savedialog.hpp"
+#include "signalsavedialog.hpp"
 #include "src/util.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/data/analogtimesignal.hpp"
@@ -51,7 +51,7 @@ namespace sv {
 namespace ui {
 namespace dialogs {
 
-SaveDialog::SaveDialog(const Session &session,
+SignalSaveDialog::SignalSaveDialog(const Session &session,
 		const shared_ptr<sv::devices::BaseDevice> selected_device,
 		QWidget *parent) :
 	QDialog(parent),
@@ -61,7 +61,7 @@ SaveDialog::SaveDialog(const Session &session,
 	setup_ui();
 }
 
-void SaveDialog::setup_ui()
+void SignalSaveDialog::setup_ui()
 {
 	QIcon main_icon;
 	main_icon.addFile(QStringLiteral(":/icons/smuview.ico"),
@@ -115,7 +115,7 @@ void SaveDialog::setup_ui()
 	this->setLayout(main_layout);
 }
 
-void SaveDialog::save(const QString &file_name)
+void SignalSaveDialog::save(const QString &file_name)
 {
 	ofstream output_file;
 	string str_file_name = file_name.toStdString();
@@ -233,7 +233,7 @@ void SaveDialog::save(const QString &file_name)
 	output_file.close();
 }
 
-void SaveDialog::save_combined(const QString &file_name,
+void SignalSaveDialog::save_combined(const QString &file_name,
 	const double combined_timeframe)
 {
 	ofstream output_file;
@@ -349,7 +349,7 @@ void SaveDialog::save_combined(const QString &file_name,
 	output_file.close();
 }
 
-void SaveDialog::accept()
+void SignalSaveDialog::accept()
 {
 	// Get file name
 	QString file_name = QFileDialog::getSaveFileName(this,
@@ -371,7 +371,7 @@ void SaveDialog::accept()
 	}
 }
 
-void SaveDialog::toggle_combined()
+void SignalSaveDialog::toggle_combined()
 {
 	timestamps_combined_timeframe_->setDisabled(
 		!timestamps_combined_->isChecked());
