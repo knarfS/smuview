@@ -60,7 +60,7 @@ SmuScriptTreeView::SmuScriptTreeView(Session &session,
 	QSettings settings;
 	if (SettingsManager::restore_settings() &&
 			settings.childGroups().contains("SmuScriptTree")) {
-		restore_settings(settings);
+		SmuScriptTreeView::restore_settings(settings);
 	}
 	else
 		script_dir_ = QDir::homePath();
