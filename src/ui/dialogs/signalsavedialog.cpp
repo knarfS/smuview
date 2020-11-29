@@ -29,10 +29,12 @@
 #include <QFormLayout>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QSettings>
 #include <QSpinBox>
 #include <QVBoxLayout>
 
 #include "signalsavedialog.hpp"
+#include "src/settingsmanager.hpp"
 #include "src/util.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/data/analogtimesignal.hpp"
@@ -59,6 +61,12 @@ SignalSaveDialog::SignalSaveDialog(const Session &session,
 	selected_device_(selected_device)
 {
 	setup_ui();
+
+	QSettings settings;
+	if (SettingsManager::restore_settings() &&
+			settings.childGroups().contains("SignalSaveDialog")) {
+		restore_settings(settings);
+	}
 }
 
 void SignalSaveDialog::setup_ui()
@@ -349,6 +357,42 @@ void SignalSaveDialog::save_combined(const QString &file_name,
 	output_file.close();
 }
 
+void SignalSaveDialog::save_settings(QSettings &settings) const
+{
+	settings.beginGroup("SignalSaveDialog");
+	settings.remove("");  // Remove all keys in this group
+
+	settings.setValue("timestamps_combined", timestamps_combined_->isChecked());
+	settings.setValue("timestamps_combined_timeframe",
+		timestamps_combined_timeframe_->value());
+	settings.setValue("time_absolut", time_absolut_->isChecked());
+	settings.setValue("csv_separator", separator_edit_->text());
+
+	settings.endGroup();
+}
+
+void SignalSaveDialog::restore_settings(QSettings &settings)
+{
+	settings.beginGroup("SignalSaveDialog");
+
+	if (settings.contains("timestamps_combined")) {
+		timestamps_combined_->setChecked(
+			settings.value("timestamps_combined").toBool());
+	}
+	if (settings.contains("timestamps_combined_timeframe")) {
+		timestamps_combined_timeframe_->setValue(
+			settings.value("timestamps_combined_timeframe").toInt());
+	}
+	if (settings.contains("time_absolut")) {
+		time_absolut_->setChecked(settings.value("time_absolut").toBool());
+	}
+	if (settings.contains("csv_separator")) {
+		separator_edit_->setText(settings.value("csv_separator").toString());
+	}
+
+	settings.endGroup();
+}
+
 void SignalSaveDialog::accept()
 {
 	// Get file name
@@ -369,6 +413,14 @@ void SignalSaveDialog::accept()
 
 		QDialog::accept();
 	}
+}
+
+void SignalSaveDialog::done(int r)
+{
+	QSettings settings;
+	save_settings(settings);
+
+	QDialog::done(r);
 }
 
 void SignalSaveDialog::toggle_combined()

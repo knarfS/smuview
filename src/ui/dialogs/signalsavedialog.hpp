@@ -27,6 +27,7 @@
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QLineEdit>
+#include <QSettings>
 #include <QSpinBox>
 #include <QString>
 #include <QTreeWidget>
@@ -66,6 +67,8 @@ private:
 	void save(const QString &file_name);
 	void save_combined(const QString &file_name,
 		const double combined_timeframe = .0);
+	void save_settings(QSettings &settings) const;
+	void restore_settings(QSettings &settings);
 
 	const Session &session_;
 	const shared_ptr<sv::devices::BaseDevice> selected_device_;
@@ -79,6 +82,8 @@ private:
 
 public Q_SLOTS:
 	void accept() override;
+	/** The done() slot is handling the saving of the settings */
+	void done(int r) override;
 
 private Q_SLOTS:
 	void toggle_combined();
