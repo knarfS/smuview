@@ -28,6 +28,7 @@
 #include <vector>
 
 #ifndef Q_MOC_RUN
+#include <boost/serialization/nvp.hpp>
 #include <boost/multiprecision/cpp_dec_float.hpp>
 #endif
 
