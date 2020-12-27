@@ -65,8 +65,8 @@ public:
 private:
 	void setup_ui();
 	void save(const QString &file_name);
-	void save_combined(const QString &file_name,
-		const double combined_timeframe = .0);
+	void save_combined(const QString &file_name);
+	bool validate_combined_timeframe();
 	void save_settings(QSettings &settings) const;
 	void restore_settings(QSettings &settings);
 

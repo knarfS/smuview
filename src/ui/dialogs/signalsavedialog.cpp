@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <cmath>
 #include <iostream>
 #include <fstream>
 #include <limits>
@@ -29,6 +30,8 @@
 #include <QFormLayout>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QMessageBox>
+#include <QProgressDialog>
 #include <QSettings>
 #include <QSpinBox>
 #include <QVBoxLayout>
@@ -241,8 +244,7 @@ void SignalSaveDialog::save(const QString &file_name)
 	output_file.close();
 }
 
-void SignalSaveDialog::save_combined(const QString &file_name,
-	const double combined_timeframe)
+void SignalSaveDialog::save_combined(const QString &file_name)
 {
 	ofstream output_file;
 	string str_file_name = file_name.toStdString();
@@ -250,6 +252,11 @@ void SignalSaveDialog::save_combined(const QString &file_name,
 	vector<size_t> sample_pos;
 
 	output_file.open(str_file_name);
+
+	double combined_timeframe = .0;
+	int combined_timeframe_ms = timestamps_combined_timeframe_->value();
+	if (combined_timeframe_ms != 0)
+		combined_timeframe = ((double)combined_timeframe_ms) / 1000;
 
 	auto signals = device_tree_->checked_signals();
 	bool relative_time = !time_absolut_->isChecked();
@@ -357,6 +364,61 @@ void SignalSaveDialog::save_combined(const QString &file_name,
 	output_file.close();
 }
 
+bool SignalSaveDialog::validate_combined_timeframe()
+{
+	int combined_timeframe_ms = timestamps_combined_timeframe_->value();
+	if (combined_timeframe_ms == 0)
+		return true;
+	const double combined_timeframe = ((double)combined_timeframe_ms) / 1000;
+
+	size_t num_signals = device_tree_->checked_signals().size();
+	size_t act_signal = 0;
+	QProgressDialog progress(tr("Validating combined timeframe ..."),
+		tr("Abort validation"), 0, num_signals, this);
+	progress.setMinimumDuration(500);
+	progress.setWindowModality(Qt::WindowModal);
+
+	double min_delta = combined_timeframe;
+	for (const auto &signal : device_tree_->checked_signals()) {
+		progress.setValue(act_signal++);
+		size_t count = signal->sample_count();
+		if (count < 2)
+			continue;
+
+		// Only handle AnalogSignals
+		auto analog_signal =
+			dynamic_pointer_cast<sv::data::AnalogTimeSignal>(signal);
+		if (!analog_signal)
+			continue;
+
+		double ts1 = analog_signal->get_sample(0, false).first;
+		for (size_t i = 1; i<count; i++) {
+			const double ts2 = analog_signal->get_sample(i, false).first;
+			const double delta = ts2 - ts1;
+			if (delta < min_delta)
+				min_delta = delta;
+			ts1 = ts2;
+
+			if (progress.wasCanceled())
+				return false;
+		}
+	}
+
+	progress.setValue(num_signals);
+
+	if (min_delta < combined_timeframe) {
+		int min_delta_ms = (int)std::floor(min_delta * 1000);
+		QMessageBox::critical(this,
+			tr("Combination time frame too large"),
+			tr("The combination time frame is too large. Time span must be "
+				"smaller than %1 ms.").arg(min_delta_ms),
+			QMessageBox::Ok);
+		timestamps_combined_timeframe_->setValue(min_delta_ms - 1);
+		return false;
+	}
+	return true;
+}
+
 void SignalSaveDialog::save_settings(QSettings &settings) const
 {
 	settings.beginGroup("SignalSaveDialog");
@@ -398,21 +460,19 @@ void SignalSaveDialog::accept()
 	// Get file name
 	QString file_name = QFileDialog::getSaveFileName(this,
 		tr("Save CSV-File"), QDir::homePath(), tr("CSV Files (*.csv)"));
+	if (file_name.isEmpty())
+		return;
 
-	if (file_name.length() > 0) {
-		if (timestamps_combined_->isChecked()) {
-			int combined_timeframe_ms = timestamps_combined_timeframe_->value();
-			double combined_timeframe = .0;
-			if (combined_timeframe_ms != 0)
-				combined_timeframe = ((double)combined_timeframe_ms) / 1000;
-
-			save_combined(file_name, combined_timeframe);
-		}
-		else
-			save(file_name);
-
-		QDialog::accept();
+	if (timestamps_combined_->isChecked()) {
+		if (!validate_combined_timeframe())
+			return;
+		save_combined(file_name);
 	}
+	else {
+		save(file_name);
+	}
+
+	QDialog::accept();
 }
 
 void SignalSaveDialog::done(int r)
