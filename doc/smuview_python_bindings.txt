@@ -17,9 +17,9 @@ DESCRIPTION
     
     # Connect device.
     dmm_dev = Session.connect_device("hp-3478a:conn=libgpib/hp3478a")[0]
-    # Sleep 1s to give the devices the chance to create signals
+    # Sleep 1s to give the devices the chance to create signals.
     time.sleep(1)
-    # Get last sample from channel P1
+    # Get last sample from channel P1.
     sample = dmm_dev.channels()["P1"].actual_signal().get_last_sample(True)
     print(sample)
     
@@ -42,6 +42,7 @@ CLASSES
             AnalogTimeSignal
         ConfigKey
         Configurable
+        DataType
         DockArea
         PyStreamBuf
         Quantity
@@ -120,6 +121,16 @@ CLASSES
      |      int
      |          The number of samples.
      |  
+     |  set_name(...)
+     |      set_name(self: smuview.BaseSignal, arg0: str) -> None
+     |      
+     |      Set a custom name for the signal.
+     |      
+     |      Parameters
+     |      ----------
+     |      custom_name : str
+     |          A custom name for the signal. If empty, the signal name will be automatically generated.
+     |  
      |  ----------------------------------------------------------------------
      |  Static methods inherited from pybind11_builtins.pybind11_object:
      |  
@@ -148,7 +159,7 @@ CLASSES
      |      Parameters
      |      ----------
      |      relative_time : bool
-     |          When true, the returned timestamp is relative to the start of the SmuView session.
+     |          When `True`, the returned timestamp is relative to the start of the SmuView session.
      |      
      |      Returns
      |      -------
@@ -165,7 +176,7 @@ CLASSES
      |      pos : int
      |          The position/number of the sample.
      |      relative_time : bool
-     |          When true, the returned timestamp is relative to the start of the SmuView session.
+     |          When `True`, the returned timestamp is relative to the start of the SmuView session.
      |      
      |      Returns
      |      -------
@@ -213,6 +224,16 @@ CLASSES
      |      int
      |          The number of samples.
      |  
+     |  set_name(...)
+     |      set_name(self: smuview.BaseSignal, arg0: str) -> None
+     |      
+     |      Set a custom name for the signal.
+     |      
+     |      Parameters
+     |      ----------
+     |      custom_name : str
+     |          A custom name for the signal. If empty, the signal name will be automatically generated.
+     |  
      |  ----------------------------------------------------------------------
      |  Static methods inherited from pybind11_builtins.pybind11_object:
      |  
@@ -243,7 +264,7 @@ CLASSES
      |          The actual signal object.
      |  
      |  add_signal(...)
-     |      add_signal(self: smuview.BaseChannel, quantity: smuview.Quantity, quantity_flags: Set[smuview.QuantityFlag], unit: smuview.Unit) -> smuview.BaseSignal
+     |      add_signal(self: smuview.BaseChannel, quantity: smuview.Quantity, quantity_flags: Set[smuview.QuantityFlag], unit: smuview.Unit, custom_name: str = '') -> smuview.BaseSignal
      |      
      |      Add a new signal to the channel.
      |      
@@ -255,6 +276,8 @@ CLASSES
      |          The `QuantityFlag`s of the new signal.
      |      unit : Unit
      |          The `Unit` of the new signal.
+     |      custom_name: str
+     |          A custom name for the new signal. If empty (default), the signal name will be automatically generated.
      |      
      |      Returns
      |      -------
@@ -396,6 +419,16 @@ CLASSES
      |      int
      |          The number of samples.
      |  
+     |  set_name(...)
+     |      set_name(self: smuview.BaseSignal, arg0: str) -> None
+     |      
+     |      Set a custom name for the signal.
+     |      
+     |      Parameters
+     |      ----------
+     |      custom_name : str
+     |          A custom name for the signal. If empty, the signal name will be automatically generated.
+     |  
      |  ----------------------------------------------------------------------
      |  Static methods inherited from pybind11_builtins.pybind11_object:
      |  
@@ -421,6 +454,9 @@ CLASSES
      |  __hash__ = (...)
      |      (self: object) -> int_
      |  
+     |  __index__(...)
+     |      __index__(self: smuview.ConfigKey) -> int
+     |  
      |  __init__(...)
      |      __init__(self: smuview.ConfigKey, arg0: int) -> None
      |  
@@ -437,7 +473,25 @@ CLASSES
      |      (self: smuview.ConfigKey, arg0: int) -> None
      |  
      |  ----------------------------------------------------------------------
-     |  Data descriptors defined here:
+     |  Static methods defined here:
+     |  
+     |  get_data_type(...) from builtins.PyCapsule
+     |      get_data_type(config_key: smuview.ConfigKey) -> smuview.DataType
+     |      
+     |      Helper function to get the data type for a config key.
+     |      
+     |      Parameters
+     |      ----------
+     |      config_key : ConfigKey
+     |          The config key.
+     |      
+     |      Returns
+     |      -------
+     |      DataType
+     |          The data type of the config key.
+     |  
+     |  ----------------------------------------------------------------------
+     |  Readonly properties defined here:
      |  
      |  __members__
      |  
@@ -614,11 +668,8 @@ CLASSES
      |  __init__(self, /, *args, **kwargs)
      |      Initialize self.  See help(type(self)) for accurate signature.
      |  
-     |  get_config(...)
-     |      get_config(*args, **kwargs)
-     |      Overloaded function.
-     |      
-     |      1. get_config(self: smuview.Configurable, config_key: smuview.ConfigKey) -> bool
+     |  get_bool_config(...)
+     |      get_bool_config(self: smuview.Configurable, config_key: smuview.ConfigKey) -> bool
      |      
      |      Return a boolean value from the given config key.
      |      
@@ -631,36 +682,9 @@ CLASSES
      |      -------
      |      bool
      |          The bool value of the config key.
-     |      
-     |      2. get_config(self: smuview.Configurable, config_key: smuview.ConfigKey) -> int
-     |      
-     |      Return an integer value from the given config key.
-     |      
-     |      Parameters
-     |      ----------
-     |      config_key : ConfigKey
-     |          The `ConfigKey` to get.
-     |      
-     |      Returns
-     |      -------
-     |      int
-     |          The int value of the config key.
-     |      
-     |      3. get_config(self: smuview.Configurable, config_key: smuview.ConfigKey) -> int
-     |      
-     |      Return an unsigned integer value from the given config key.
-     |      
-     |      Parameters
-     |      ----------
-     |      config_key : ConfigKey
-     |          The `ConfigKey` to get.
-     |      
-     |      Returns
-     |      -------
-     |      int
-     |          The (unsigned) int value of the config key.
-     |      
-     |      4. get_config(self: smuview.Configurable, config_key: smuview.ConfigKey) -> float
+     |  
+     |  get_double_config(...)
+     |      get_double_config(self: smuview.Configurable, config_key: smuview.ConfigKey) -> float
      |      
      |      Return a double value from the given config key.
      |      
@@ -673,8 +697,24 @@ CLASSES
      |      -------
      |      float
      |          The float value of the config key.
+     |  
+     |  get_int_config(...)
+     |      get_int_config(self: smuview.Configurable, config_key: smuview.ConfigKey) -> int
      |      
-     |      5. get_config(self: smuview.Configurable, config_key: smuview.ConfigKey) -> str
+     |      Return an integer value from the given config key.
+     |      
+     |      Parameters
+     |      ----------
+     |      config_key : ConfigKey
+     |          The `ConfigKey` to get.
+     |      
+     |      Returns
+     |      -------
+     |      int
+     |          The int value of the config key.
+     |  
+     |  get_string_config(...)
+     |      get_string_config(self: smuview.Configurable, config_key: smuview.ConfigKey) -> str
      |      
      |      Return a string value from the given config key.
      |      
@@ -687,6 +727,41 @@ CLASSES
      |      -------
      |      str
      |          The string value of the config key.
+     |  
+     |  get_uint_config(...)
+     |      get_uint_config(self: smuview.Configurable, config_key: smuview.ConfigKey) -> int
+     |      
+     |      Return an unsigned integer value from the given config key.
+     |      
+     |      Parameters
+     |      ----------
+     |      config_key : ConfigKey
+     |          The `ConfigKey` to get.
+     |      
+     |      Returns
+     |      -------
+     |      int
+     |          The (unsigned) int value of the config key.
+     |  
+     |  getable_configs(...)
+     |      getable_configs(self: smuview.Configurable) -> Set[smuview.ConfigKey]
+     |      
+     |      Return all getable config keys.
+     |      
+     |      Returns
+     |      -------
+     |      List[ConfigKey]
+     |          All getable config keys.
+     |  
+     |  listable_configs(...)
+     |      listable_configs(self: smuview.Configurable) -> Set[smuview.ConfigKey]
+     |      
+     |      Return all listable config keys.
+     |      
+     |      Returns
+     |      -------
+     |      List[ConfigKey]
+     |          All listable config keys.
      |  
      |  name(...)
      |      name(self: smuview.Configurable) -> str
@@ -757,6 +832,94 @@ CLASSES
      |      value : str
      |          The string value to set.
      |  
+     |  setable_configs(...)
+     |      setable_configs(self: smuview.Configurable) -> Set[smuview.ConfigKey]
+     |      
+     |      Return all setable config keys.
+     |      
+     |      Returns
+     |      -------
+     |      List[ConfigKey]
+     |          All setable config keys.
+     |  
+     |  ----------------------------------------------------------------------
+     |  Static methods inherited from pybind11_builtins.pybind11_object:
+     |  
+     |  __new__(*args, **kwargs) from pybind11_builtins.pybind11_type
+     |      Create and return a new object.  See help(type) for accurate signature.
+    
+    class DataType(pybind11_builtins.pybind11_object)
+     |  Enum of all available data types.
+     |  
+     |  Method resolution order:
+     |      DataType
+     |      pybind11_builtins.pybind11_object
+     |      builtins.object
+     |  
+     |  Methods defined here:
+     |  
+     |  __eq__ = (...)
+     |      (self: object, arg0: object) -> bool
+     |  
+     |  __getstate__ = (...)
+     |      (self: object) -> int_
+     |  
+     |  __hash__ = (...)
+     |      (self: object) -> int_
+     |  
+     |  __index__(...)
+     |      __index__(self: smuview.DataType) -> int
+     |  
+     |  __init__(...)
+     |      __init__(self: smuview.DataType, arg0: int) -> None
+     |  
+     |  __int__(...)
+     |      __int__(self: smuview.DataType) -> int
+     |  
+     |  __ne__ = (...)
+     |      (self: object, arg0: object) -> bool
+     |  
+     |  __repr__ = (...)
+     |      (self: handle) -> str
+     |  
+     |  __setstate__ = (...)
+     |      (self: smuview.DataType, arg0: int) -> None
+     |  
+     |  ----------------------------------------------------------------------
+     |  Readonly properties defined here:
+     |  
+     |  __members__
+     |  
+     |  name
+     |      (self: handle) -> str
+     |  
+     |  ----------------------------------------------------------------------
+     |  Data and other attributes defined here:
+     |  
+     |  Bool = DataType.Bool
+     |  
+     |  Double = DataType.Double
+     |  
+     |  DoubleRange = DataType.DoubleRange
+     |  
+     |  Int32 = DataType.Int32
+     |  
+     |  KeyValue = DataType.KeyValue
+     |  
+     |  MQ = DataType.MQ
+     |  
+     |  RationalPeriod = DataType.RationalPeriod
+     |  
+     |  RationalVolt = DataType.RationalVolt
+     |  
+     |  String = DataType.String
+     |  
+     |  UInt64 = DataType.UInt64
+     |  
+     |  UInt64Range = DataType.UInt64Range
+     |  
+     |  Unknown = DataType.Unknown
+     |  
      |  ----------------------------------------------------------------------
      |  Static methods inherited from pybind11_builtins.pybind11_object:
      |  
@@ -782,6 +945,9 @@ CLASSES
      |  __hash__ = (...)
      |      (self: object) -> int_
      |  
+     |  __index__(...)
+     |      __index__(self: smuview.DockArea) -> int
+     |  
      |  __init__(...)
      |      __init__(self: smuview.DockArea, arg0: int) -> None
      |  
@@ -798,7 +964,7 @@ CLASSES
      |      (self: smuview.DockArea, arg0: int) -> None
      |  
      |  ----------------------------------------------------------------------
-     |  Data descriptors defined here:
+     |  Readonly properties defined here:
      |  
      |  __members__
      |  
@@ -850,7 +1016,7 @@ CLASSES
      |          The actual signal object.
      |  
      |  add_signal(...)
-     |      add_signal(self: smuview.BaseChannel, quantity: smuview.Quantity, quantity_flags: Set[smuview.QuantityFlag], unit: smuview.Unit) -> smuview.BaseSignal
+     |      add_signal(self: smuview.BaseChannel, quantity: smuview.Quantity, quantity_flags: Set[smuview.QuantityFlag], unit: smuview.Unit, custom_name: str = '') -> smuview.BaseSignal
      |      
      |      Add a new signal to the channel.
      |      
@@ -862,6 +1028,8 @@ CLASSES
      |          The `QuantityFlag`s of the new signal.
      |      unit : Unit
      |          The `Unit` of the new signal.
+     |      custom_name: str
+     |          A custom name for the new signal. If empty (default), the signal name will be automatically generated.
      |      
      |      Returns
      |      -------
@@ -975,7 +1143,7 @@ CLASSES
      |      Create and return a new object.  See help(type) for accurate signature.
     
     class PyStreamBuf(pybind11_builtins.pybind11_object)
-     |  Redirect Python output to SmuView console. This class is for internal SmuView use only!
+     |  Redirect all Python output to a SmuView console. This class is for internal SmuView use only!
      |  
      |  Method resolution order:
      |      PyStreamBuf
@@ -1000,7 +1168,7 @@ CLASSES
      |  fileno(...)
      |      fileno(self: smuview.PyStreamBuf) -> int
      |      
-     |      Raises an OSError, because PyStreamBuf doesn't use a file descriptor.
+     |      Raises an `OSError`, because `PyStreamBuf` doesn't use a file descriptor.
      |  
      |  flush(...)
      |      flush(self: smuview.PyStreamBuf) -> None
@@ -1010,57 +1178,57 @@ CLASSES
      |  isatty(...)
      |      isatty(self: smuview.PyStreamBuf) -> bool
      |      
-     |      Always return False.
+     |      Always returns `False`.
      |  
      |  read(...)
      |      read(self: smuview.PyStreamBuf, size: int) -> str
      |      
-     |      Raises an OSError, because PyStreamBuf is write only.
+     |      Raises an `OSError`, because `PyStreamBuf` is write only.
      |  
      |  readable(...)
      |      readable(self: smuview.PyStreamBuf) -> bool
      |      
-     |      Always return False.
+     |      Always returns `False`.
      |  
      |  readline(...)
      |      readline(self: smuview.PyStreamBuf, size: int) -> str
      |      
-     |      Raises an OSError, because PyStreamBuf is write only.
+     |      Raises an `OSError`, because `PyStreamBuf` is write only.
      |  
      |  readlines(...)
      |      readlines(self: smuview.PyStreamBuf, hint: int) -> List[str]
      |      
-     |      Raises an OSError, because PyStreamBuf is write only.
+     |      Raises an `OSError`, because `PyStreamBuf` is write only.
      |  
      |  seek(...)
      |      seek(self: smuview.PyStreamBuf, offset: int, whence: int) -> int
      |      
-     |      Raises an OSError, because PyStreamBuf is not seekable.
+     |      Raises an `OSError`, because `PyStreamBuf` is not seekable.
      |  
      |  seekable(...)
      |      seekable(self: smuview.PyStreamBuf) -> bool
      |      
-     |      Always return False. PyStreamBuf is not seekable atm.
+     |      Always returns `False`. `PyStreamBuf` is not seekable atm.
      |  
      |  tell(...)
      |      tell(self: smuview.PyStreamBuf) -> int
      |      
-     |      Raises an OSError, because PyStreamBuf is not seekable.
+     |      Raises an `OSError`, because `PyStreamBuf` is not seekable.
      |  
      |  truncate(...)
      |      truncate(self: smuview.PyStreamBuf, size: int) -> int
      |      
-     |      Raises an OSError, because PyStreamBuf is not seekable.
+     |      Raises an `OSError`, because `PyStreamBuf` is not seekable.
      |  
      |  writable(...)
      |      writable(self: smuview.PyStreamBuf) -> bool
      |      
-     |      Always return True.
+     |      Always return `True`.
      |  
      |  write(...)
      |      write(self: smuview.PyStreamBuf, s: str) -> int
      |      
-     |      Write the string s to the stream and return the number of characters written.
+     |      Write the string `s` to the stream and return the number of characters written.
      |  
      |  writelines(...)
      |      writelines(self: smuview.PyStreamBuf, lines: List[str]) -> None
@@ -1068,10 +1236,10 @@ CLASSES
      |      Write a list of lines to the stream.
      |  
      |  ----------------------------------------------------------------------
-     |  Data descriptors defined here:
+     |  Readonly properties defined here:
      |  
      |  closed
-     |      True if the stream is closed.
+     |      `True` if the stream is closed.
      |  
      |  encoding
      |      The name of the encoding that is used.
@@ -1104,6 +1272,9 @@ CLASSES
      |  __hash__ = (...)
      |      (self: object) -> int_
      |  
+     |  __index__(...)
+     |      __index__(self: smuview.Quantity) -> int
+     |  
      |  __init__(...)
      |      __init__(self: smuview.Quantity, arg0: int) -> None
      |  
@@ -1120,7 +1291,7 @@ CLASSES
      |      (self: smuview.Quantity, arg0: int) -> None
      |  
      |  ----------------------------------------------------------------------
-     |  Data descriptors defined here:
+     |  Readonly properties defined here:
      |  
      |  __members__
      |  
@@ -1151,6 +1322,8 @@ CLASSES
      |  DutyCyle = Quantity.DutyCyle
      |  
      |  ElectricCharge = Quantity.ElectricCharge
+     |  
+     |  Energy = Quantity.Energy
      |  
      |  Frequency = Quantity.Frequency
      |  
@@ -1200,8 +1373,6 @@ CLASSES
      |  
      |  WindSpeed = Quantity.WindSpeed
      |  
-     |  Work = Quantity.Work
-     |  
      |  ----------------------------------------------------------------------
      |  Static methods inherited from pybind11_builtins.pybind11_object:
      |  
@@ -1227,6 +1398,9 @@ CLASSES
      |  __hash__ = (...)
      |      (self: object) -> int_
      |  
+     |  __index__(...)
+     |      __index__(self: smuview.QuantityFlag) -> int
+     |  
      |  __init__(...)
      |      __init__(self: smuview.QuantityFlag, arg0: int) -> None
      |  
@@ -1243,7 +1417,7 @@ CLASSES
      |      (self: smuview.QuantityFlag, arg0: int) -> None
      |  
      |  ----------------------------------------------------------------------
-     |  Data descriptors defined here:
+     |  Readonly properties defined here:
      |  
      |  __members__
      |  
@@ -1331,7 +1505,16 @@ CLASSES
      |  connect_device(...)
      |      connect_device(self: smuview.Session, conn_str: str) -> List[smuview.HardwareDevice]
      |      
-     |      Connect a new device.
+     |      Connect a new device. For some devices (like DMMs) you may want to wait a fixed time, until the first sample has arrived and an `AnalogSignal` object has been created. Example:
+     |      ```
+     |      import smuview
+     |      import time
+     |      
+     |      # Connect device.
+     |      dmm_dev = Session.connect_device("hp-3478a:conn=libgpib/hp3478a")[0]
+     |      # Sleep 1s to give the devices the chance to create signals.
+     |      time.sleep(1)
+     |      ```
      |      
      |      Parameters
      |      ----------
@@ -1373,14 +1556,14 @@ CLASSES
      |      Initialize self.  See help(type(self)) for accurate signature.
      |  
      |  add_control_view(...)
-     |      add_control_view(self: smuview.UiProxy, device_id: str, area: smuview.DockArea, configurable: smuview.Configurable) -> str
+     |      add_control_view(self: smuview.UiProxy, tab_id: str, area: smuview.DockArea, configurable: smuview.Configurable) -> str
      |      
      |      Add a control view for a configurable to the given tab.
      |      
      |      Parameters
      |      ----------
-     |      device_id : str
-     |          The id (device id) of the tab.
+     |      tab_id : str
+     |          The id of the tab.
      |      area : DockArea
      |          Where to put the new view.
      |      configurable : Configurable
@@ -1389,87 +1572,38 @@ CLASSES
      |      Returns
      |      -------
      |      str
-     |          The id of the new view.
+     |          The id of the new view or empty if the view couldn't be added.
      |  
-     |  add_data_view(...)
-     |      add_data_view(self: smuview.UiProxy, device_id: str, area: smuview.DockArea, signal: smuview.AnalogTimeSignal) -> str
+     |  add_curve_to_time_plot_view(...)
+     |      add_curve_to_time_plot_view(self: smuview.UiProxy, tab_id: str, view_id: str, signal: smuview.AnalogTimeSignal) -> str
      |      
-     |      Add a data view for a signal to the given tab.
+     |      Add a signal to the given time plot view.
      |      
      |      Parameters
      |      ----------
-     |      device_id : str
-     |          The id (device id) of the tab.
-     |      area : DockArea
-     |          Where to put the new view.
+     |      tab_id : str
+     |          The id of the tab.
+     |      view_id : str
+     |          The id of the time plot view.
      |      signal : AnalogTimeSignal
      |          The signal object.
      |      
      |      Returns
      |      -------
      |      str
-     |          The id of the new view.
+     |          The id of the new curve or empty if the curve couldn't be added.
      |  
-     |  add_device_tab(...)
-     |      add_device_tab(self: smuview.UiProxy, device: smuview.BaseDevice) -> None
+     |  add_curve_to_xy_plot_view(...)
+     |      add_curve_to_xy_plot_view(self: smuview.UiProxy, tab_id: str, view_id: str, x_signal: smuview.AnalogTimeSignal, y_signal: smuview.AnalogTimeSignal) -> str
      |      
-     |      Add a device tab with standard view for a device to the UI.
-     |      
-     |      Parameters
-     |      ----------
-     |      device : BaseDevice
-     |          The device object.
-     |  
-     |  add_plot_view(...)
-     |      add_plot_view(*args, **kwargs)
-     |      Overloaded function.
-     |      
-     |      1. add_plot_view(self: smuview.UiProxy, device_id: str, area: smuview.DockArea, channel: smuview.BaseChannel) -> str
-     |      
-     |      Add a time plot view for a channel to the given tab.
+     |      Add x/y signals to the given x/y plot view.
      |      
      |      Parameters
      |      ----------
-     |      device_id : str
-     |          The id (device id) of the tab.
-     |      area : DockArea
-     |          Where to put the new view.
-     |      channel : BaseChannel
-     |          The channel object.
-     |      
-     |      Returns
-     |      -------
-     |      str
-     |          The id of the new view.
-     |      
-     |      2. add_plot_view(self: smuview.UiProxy, device_id: str, area: smuview.DockArea, signal: smuview.AnalogTimeSignal) -> str
-     |      
-     |      Add a time plot view for a signal to the given tab.
-     |      
-     |      Parameters
-     |      ----------
-     |      device_id : str
-     |          The id (device id) of the tab.
-     |      area : DockArea
-     |          Where to put the new view.
-     |      signal : AnalogTimeSignal
-     |          The signal object.
-     |      
-     |      Returns
-     |      -------
-     |      str
-     |          The id of the new view.
-     |      
-     |      3. add_plot_view(self: smuview.UiProxy, device_id: str, area: smuview.DockArea, x_signal: smuview.AnalogTimeSignal, y_signal: smuview.AnalogTimeSignal) -> str
-     |      
-     |      Add a x/y plot view for two signals to the given tab.
-     |      
-     |      Parameters
-     |      ----------
-     |      device_id : str
-     |          The id (device id) of the tab.
-     |      area : DockArea
-     |          Where to put the new view.
+     |      tab_id : str
+     |          The id of the tab.
+     |      view_id : str
+     |          The id of the x/y plot view.
      |      x_signal : AnalogTimeSignal
      |          The x signal object.
      |      y_signal : AnalogTimeSignal
@@ -1478,17 +1612,51 @@ CLASSES
      |      Returns
      |      -------
      |      str
-     |          The id of the new view.
+     |          The id of the new curve or empty if the curve couldn't be added.
+     |  
+     |  add_data_view(...)
+     |      add_data_view(self: smuview.UiProxy, tab_id: str, area: smuview.DockArea, signal: smuview.AnalogTimeSignal) -> str
+     |      
+     |      Add a data view for a signal to the given tab.
+     |      
+     |      Parameters
+     |      ----------
+     |      tab_id : str
+     |          The id of the tab.
+     |      area : DockArea
+     |          Where to put the new view.
+     |      signal : AnalogTimeSignal
+     |          The signal object.
+     |      
+     |      Returns
+     |      -------
+     |      str
+     |          The id of the new view or empty if the view couldn't be added.
+     |  
+     |  add_device_tab(...)
+     |      add_device_tab(self: smuview.UiProxy, device: smuview.BaseDevice) -> str
+     |      
+     |      Add a device tab with standard view for a device to the UI.
+     |      
+     |      Parameters
+     |      ----------
+     |      device : BaseDevice
+     |          The device object.
+     |      
+     |      Returns
+     |      -------
+     |      str
+     |          The id of the new tab or empty if the tab couldn't be added.
      |  
      |  add_power_panel_view(...)
-     |      add_power_panel_view(self: smuview.UiProxy, device_id: str, area: smuview.DockArea, voltage_signal: smuview.AnalogTimeSignal, current_signal: smuview.AnalogTimeSignal) -> str
+     |      add_power_panel_view(self: smuview.UiProxy, tab_id: str, area: smuview.DockArea, voltage_signal: smuview.AnalogTimeSignal, current_signal: smuview.AnalogTimeSignal) -> str
      |      
      |      Add a power panel view for a voltage and a current signal to the given tab.
      |      
      |      Parameters
      |      ----------
-     |      device_id : str
-     |          The id (device id) of the tab.
+     |      tab_id : str
+     |          The id of the tab.
      |      area : DockArea
      |          Where to put the new view.
      |      voltage_signal : AnalogTimeSignal
@@ -1499,64 +1667,52 @@ CLASSES
      |      Returns
      |      -------
      |      str
-     |          The id of the new view.
+     |          The id of the new view or empty if the view couldn't be added.
      |  
      |  add_signal_to_data_view(...)
-     |      add_signal_to_data_view(self: smuview.UiProxy, device_id: str, view_id: str, signal: smuview.AnalogTimeSignal) -> None
+     |      add_signal_to_data_view(self: smuview.UiProxy, tab_id: str, view_id: str, signal: smuview.AnalogTimeSignal) -> None
      |      
      |      Add a signal to the given data view.
      |      
      |      Parameters
      |      ----------
-     |      device_id : str
-     |          The id (device id) of the tab.
+     |      tab_id : str
+     |          The id of the tab.
      |      view_id : str
      |          The id of the data view.
      |      signal : AnalogTimeSignal
      |          The signal object.
      |  
-     |  add_signal_to_plot_view(...)
-     |      add_signal_to_plot_view(self: smuview.UiProxy, device_id: str, view_id: str, signal: smuview.AnalogTimeSignal) -> None
+     |  add_time_plot_view(...)
+     |      add_time_plot_view(self: smuview.UiProxy, tab_id: str, area: smuview.DockArea) -> str
      |      
-     |      Add a signal to the given plot view. If the plot is a x/y plot, the signal will be added as a new y signal.
-     |      
-     |      Parameters
-     |      ----------
-     |      device_id : str
-     |          The id (device id) of the tab.
-     |      view_id : str
-     |          The id of the plot view.
-     |      signal : AnalogTimeSignal
-     |          The signal object.
-     |  
-     |  add_signals_to_xy_plot_view(...)
-     |      add_signals_to_xy_plot_view(self: smuview.UiProxy, device_id: str, view_id: str, x_signal: smuview.AnalogTimeSignal, y_signal: smuview.AnalogTimeSignal) -> None
-     |      
-     |      Add x/y signals to the given x/y plot view.
+     |      Add a time plot view to the given tab. Use [`UiProxy.set_channel_to_time_plot_view()`](UiProxy.set_channel_to_time_plot_view) to set a channel to the plot view or use [`UiProxy.add_curve_to_time_plot_view()`](UiProxy.add_curve_to_time_plot_view) to set a signal to the plot view.
+     |      When you have set a channel to the plot, new curves will be automatically created, when the channel changes (e.g. for multimeters when switching functions).
      |      
      |      Parameters
      |      ----------
-     |      device_id : str
-     |          The id (device id) of the tab.
-     |      view_id : str
-     |          The id of the plot view.
-     |      x_signal : AnalogTimeSignal
-     |          The x signal object.
-     |      y_signal : AnalogTimeSignal
-     |          The y signal object.
+     |      tab_id : str
+     |          The id of the tab.
+     |      area : DockArea
+     |          Where to put the new view.
+     |      
+     |      Returns
+     |      -------
+     |      str
+     |          The id of the new view or empty if the view couldn't be added.
      |  
      |  add_value_panel_view(...)
      |      add_value_panel_view(*args, **kwargs)
      |      Overloaded function.
      |      
-     |      1. add_value_panel_view(self: smuview.UiProxy, device_id: str, area: smuview.DockArea, channel: smuview.BaseChannel) -> str
+     |      1. add_value_panel_view(self: smuview.UiProxy, tab_id: str, area: smuview.DockArea, channel: smuview.BaseChannel) -> str
      |      
      |      Add a value panel view for a channel to the given tab.
      |      
      |      Parameters
      |      ----------
-     |      device_id : str
-     |          The id (device id) of the tab.
+     |      tab_id : str
+     |          The id of the tab.
      |      area : DockArea
      |          Where to put the new view.
      |      channel : BaseChannel
@@ -1565,16 +1721,16 @@ CLASSES
      |      Returns
      |      -------
      |      str
-     |          The id of the new view.
+     |          The id of the new view or empty if the view couldn't be added.
      |      
-     |      2. add_value_panel_view(self: smuview.UiProxy, device_id: str, area: smuview.DockArea, signal: smuview.AnalogTimeSignal) -> str
+     |      2. add_value_panel_view(self: smuview.UiProxy, tab_id: str, area: smuview.DockArea, signal: smuview.AnalogTimeSignal) -> str
      |      
      |      Add a value panel view for a signal to the given tab.
      |      
      |      Parameters
      |      ----------
-     |      device_id : str
-     |          The id (device id) of the tab.
+     |      tab_id : str
+     |          The id of the tab.
      |      area : DockArea
      |          Where to put the new view.
      |      signal : AnalogTimeSignal
@@ -1583,7 +1739,161 @@ CLASSES
      |      Returns
      |      -------
      |      str
-     |          The id of the new view.
+     |          The id of the new view or empty if the view couldn't be added.
+     |  
+     |  add_xy_plot_view(...)
+     |      add_xy_plot_view(self: smuview.UiProxy, tab_id: str, area: smuview.DockArea) -> str
+     |      
+     |      Add a x/y plot view for two signals to the given tab. Use [`UiProxy.add_curve_to_xy_plot_view()`](UiProxy.add_curve_to_xy_plot_view) to add a new curve (a set of two signals) to the plot view.
+     |      
+     |      Parameters
+     |      ----------
+     |      tab_id : str
+     |          The id of the tab.
+     |      area : DockArea
+     |          Where to put the new view.
+     |      
+     |      Returns
+     |      -------
+     |      str
+     |          The id of the new view or empty if the view couldn't be added.
+     |  
+     |  set_channel_to_time_plot_view(...)
+     |      set_channel_to_time_plot_view(self: smuview.UiProxy, tab_id: str, view_id: str, channel: smuview.BaseChannel) -> None
+     |      
+     |      Set a channel to the given time plot view. New curves will be automatically created, when the channel changes (e.g. for multimeters when switching functions).
+     |      
+     |      Parameters
+     |      ----------
+     |      tab_id : str
+     |          The id of the tab.
+     |      view_id : str
+     |          The id of the time plot view.
+     |      channel : BaseChannel
+     |          The channel object.
+     |  
+     |  set_curve_color(...)
+     |      set_curve_color(self: smuview.UiProxy, tab_id: str, view_id: str, curve_id: str, color: Tuple[int, int, int]) -> None
+     |      
+     |      Set the color of the given curve.
+     |      
+     |      Parameters
+     |      ----------
+     |      tab_id : str
+     |          The id of the tab.
+     |      view_id : str
+     |          The id of the plot view.
+     |      curve_id : str
+     |          The id of the curve.
+     |      color : Tuple[int, int, int]
+     |          The color for the curve as a Tuple with the RGB values.
+     |  
+     |  set_curve_name(...)
+     |      set_curve_name(self: smuview.UiProxy, tab_id: str, view_id: str, curve_id: str, name: str) -> None
+     |      
+     |      Set the name of the given curve.
+     |      
+     |      Parameters
+     |      ----------
+     |      tab_id : str
+     |          The id of the tab.
+     |      view_id : str
+     |          The id of the plot view.
+     |      curve_id : str
+     |          The id of the curve.
+     |      name : str
+     |          The name for the curve.
+     |  
+     |  show_double_input_dialog(...)
+     |      show_double_input_dialog(self: smuview.UiProxy, title: str, label: str, value: float = 0.0, decimals: int = 1, step: float = 0.1, min: float = 2.2250738585072014e-308, max: float = 1.7976931348623157e+308) -> object
+     |      
+     |      Show a dialog window to get a float value from the user. It returns the entered float value or `None` if the Cancel button was pressed.
+     |      
+     |      Only has effect if the used Qt version is equal or greater than 5.10!
+     |      
+     |      Parameters
+     |      ----------
+     |      title : str
+     |          The window title of the input dialog.
+     |      label : str
+     |          The label to display in the input dialog.
+     |      value : float
+     |          The default value of the float.
+     |      decimals : int
+     |          The maximum number of decimal places the number may have. Default is 1.
+     |      step : float
+     |          The amount by which the value can be incremented or decremented by the user.    Default is 0.1.
+     |          Only has effect for Qt versions >= 5.10!
+     |      min : float
+     |          The minimum value the user may choose.
+     |      max : float
+     |          The maximum value the user may choose.
+     |      
+     |      Returns
+     |      -------
+     |      float or None
+     |          The user entered float value or `None` when the Cancel button was pressed.
+     |  
+     |  show_int_input_dialog(...)
+     |      show_int_input_dialog(self: smuview.UiProxy, title: str, label: str, value: int = 0, step: int = 1, min: int = -2147483648, max: int = 2147483647) -> object
+     |      
+     |      Show a dialog window to get an integer value from the user. It returns the entered float value or `None` if the Cancel button was pressed.
+     |      
+     |      Parameters
+     |      ----------
+     |      title : str
+     |          The window title of the input dialog.
+     |      label : str
+     |          The label to display in the input dialog.
+     |      value : int
+     |          The default value of the integer.
+     |      step : int
+     |          The amount by which the value can be incremented or decremented by the user. Default is 1.
+     |      min : int
+     |          The minimum value the user may choose.
+     |      max : int
+     |          The maximum value the user may choose.
+     |      
+     |      Returns
+     |      -------
+     |      int or None
+     |          The user entered integer value or `None` when the Cancel button was pressed.
+     |  
+     |  show_message_box(...)
+     |      show_message_box(self: smuview.UiProxy, title: str, text: str) -> bool
+     |      
+     |      Show a (info) message box with the given window title and text. Returns `True` when the Ok button was pressed.
+     |      
+     |      Parameters
+     |      ----------
+     |      title : str
+     |          The window title of the message box.
+     |      text : str
+     |          The text to display in the message box.
+     |      
+     |      Returns
+     |      -------
+     |      bool
+     |          `True` when the Ok button was pressed, else `False`.
+     |  
+     |  show_string_input_dialog(...)
+     |      show_string_input_dialog(self: smuview.UiProxy, title: str, label: str, value: str = '') -> object
+     |      
+     |      Show a dialog window to get a string value from the user. It returns the entered string value or `None` if the Cancel button was pressed.
+     |      
+     |      Parameters
+     |      ----------
+     |      title : str
+     |          The window title of the input dialog.
+     |      label : str
+     |          The label to display in the input dialog.
+     |      value : str
+     |          The default value of the string.
+     |      
+     |      Returns
+     |      -------
+     |      str or None
+     |          The user entered string value or `None` when the Cancel button was pressed.
      |  
      |  ----------------------------------------------------------------------
      |  Static methods inherited from pybind11_builtins.pybind11_object:
@@ -1610,6 +1920,9 @@ CLASSES
      |  __hash__ = (...)
      |      (self: object) -> int_
      |  
+     |  __index__(...)
+     |      __index__(self: smuview.Unit) -> int
+     |  
      |  __init__(...)
      |      __init__(self: smuview.Unit, arg0: int) -> None
      |  
@@ -1626,7 +1939,7 @@ CLASSES
      |      (self: smuview.Unit, arg0: int) -> None
      |  
      |  ----------------------------------------------------------------------
-     |  Data descriptors defined here:
+     |  Readonly properties defined here:
      |  
      |  __members__
      |  
@@ -1649,8 +1962,6 @@ CLASSES
      |  Concentration = Unit.Concentration
      |  
      |  Coulomb = Unit.Coulomb
-     |  
-     |  Decibel = Unit.Decibel
      |  
      |  DecibelMW = Unit.DecibelMW
      |  
@@ -1776,7 +2087,7 @@ CLASSES
      |          The actual signal object.
      |  
      |  add_signal(...)
-     |      add_signal(self: smuview.BaseChannel, quantity: smuview.Quantity, quantity_flags: Set[smuview.QuantityFlag], unit: smuview.Unit) -> smuview.BaseSignal
+     |      add_signal(self: smuview.BaseChannel, quantity: smuview.Quantity, quantity_flags: Set[smuview.QuantityFlag], unit: smuview.Unit, custom_name: str = '') -> smuview.BaseSignal
      |      
      |      Add a new signal to the channel.
      |      
@@ -1788,6 +2099,8 @@ CLASSES
      |          The `QuantityFlag`s of the new signal.
      |      unit : Unit
      |          The `Unit` of the new signal.
+     |      custom_name: str
+     |          A custom name for the new signal. If empty (default), the signal name will be automatically generated.
      |      
      |      Returns
      |      -------

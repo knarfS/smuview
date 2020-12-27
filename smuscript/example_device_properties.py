@@ -39,6 +39,38 @@ for deviceId in devices:
         print("  configurable   = " + configurable.name())
         print("  configurableId = " + configruableId)
 
+        print("")
+        print("    Getable ConfigKeys:")
+        config_keys = configurable.getable_configs()
+        for config_key in config_keys:
+            data_type = smuview.ConfigKey.get_data_type(config_key)
+            if data_type == smuview.DataType.Double:
+                print("      {} = {} ({})".format(config_key.name, configurable.get_double_config(config_key), data_type.name))
+            elif data_type == smuview.DataType.Int32:
+                print("      {} = {} ({})".format(config_key.name, configurable.get_int_config(config_key), data_type.name))
+            elif data_type == smuview.DataType.UInt64:
+                print("      {} = {} ({})".format(config_key.name, configurable.get_uint_config(config_key), data_type.name))
+            elif data_type == smuview.DataType.String:
+                print("      {} = {} ({})".format(config_key.name, configurable.get_string_config(config_key), data_type.name))
+            elif data_type == smuview.DataType.Bool:
+                print("      {} = {} ({})".format(config_key.name, configurable.get_bool_config(config_key), data_type.name))
+            else:
+                print("      {} = ?? ({})".format(config_key.name, data_type.name))
+
+        print("")
+        print("    Setable ConfigKeys:")
+        config_keys = configurable.setable_configs()
+        for config_key in config_keys:
+            data_type = smuview.ConfigKey.get_data_type(config_key)
+            print("      {} ({})".format(config_key.name, data_type.name))
+
+        print("")
+        print("    Listable ConfigKeys:")
+        config_keys = configurable.listable_configs()
+        for config_key in config_keys:
+            data_type = smuview.ConfigKey.get_data_type(config_key)
+            print("      {} ({})".format(config_key.name, data_type.name))
+
     channels = device.channels()
     for channelId in channels:
         channel = channels[channelId]

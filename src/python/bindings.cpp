@@ -425,7 +425,7 @@ void init_Configurable(py::module &m)
 		"    The `ConfigKey` to set.\n"
 		"value : str\n"
 		"    The string value to set.");
-	py_configurable.def("get_config", &sv::devices::Configurable::get_config<bool>,
+	py_configurable.def("get_bool_config", &sv::devices::Configurable::get_config<bool>,
 		py::arg("config_key"),
 		"Return a boolean value from the given config key.\n\n"
 		"Parameters\n"
@@ -436,7 +436,7 @@ void init_Configurable(py::module &m)
 		"-------\n"
 		"bool\n"
 		"    The bool value of the config key.");
-	py_configurable.def("get_config", &sv::devices::Configurable::get_config<int32_t>,
+	py_configurable.def("get_int_config", &sv::devices::Configurable::get_config<int32_t>,
 		py::arg("config_key"),
 		"Return an integer value from the given config key.\n\n"
 		"Parameters\n"
@@ -447,7 +447,7 @@ void init_Configurable(py::module &m)
 		"-------\n"
 		"int\n"
 		"    The int value of the config key.");
-	py_configurable.def("get_config", &sv::devices::Configurable::get_config<uint64_t>,
+	py_configurable.def("get_uint_config", &sv::devices::Configurable::get_config<uint64_t>,
 		py::arg("config_key"),
 		"Return an unsigned integer value from the given config key.\n\n"
 		"Parameters\n"
@@ -458,7 +458,7 @@ void init_Configurable(py::module &m)
 		"-------\n"
 		"int\n"
 		"    The (unsigned) int value of the config key.");
-	py_configurable.def("get_config", &sv::devices::Configurable::get_config<double>,
+	py_configurable.def("get_double_config", &sv::devices::Configurable::get_config<double>,
 		py::arg("config_key"),
 		"Return a double value from the given config key.\n\n"
 		"Parameters\n"
@@ -469,7 +469,7 @@ void init_Configurable(py::module &m)
 		"-------\n"
 		"float\n"
 		"    The float value of the config key.");
-	py_configurable.def("get_config", &sv::devices::Configurable::get_config<std::string>,
+	py_configurable.def("get_string_config", &sv::devices::Configurable::get_config<std::string>,
 		py::arg("config_key"),
 		"Return a string value from the given config key.\n\n"
 		"Parameters\n"
@@ -480,6 +480,24 @@ void init_Configurable(py::module &m)
 		"-------\n"
 		"str\n"
 		"    The string value of the config key.");
+	py_configurable.def("getable_configs", &sv::devices::Configurable::getable_configs,
+		"Return all getable config keys.\n\n"
+		"Returns\n"
+		"-------\n"
+		"List[ConfigKey]\n"
+		"    All getable config keys.");
+	py_configurable.def("setable_configs", &sv::devices::Configurable::setable_configs,
+		"Return all setable config keys.\n\n"
+		"Returns\n"
+		"-------\n"
+		"List[ConfigKey]\n"
+		"    All setable config keys.");
+	py_configurable.def("listable_configs", &sv::devices::Configurable::listable_configs,
+		"Return all listable config keys.\n\n"
+		"Returns\n"
+		"-------\n"
+		"List[ConfigKey]\n"
+		"    All listable config keys.");
 }
 
 void init_UI(py::module &m)
@@ -795,21 +813,21 @@ void init_StreamBuf(py::module &m)
 	py_stream_buf.def("close", &sv::python::PyStreamBuf::py_close,
 		"Flush and close this stream.");
 	py_stream_buf.def("fileno", &sv::python::PyStreamBuf::py_fileno,
-		"Raises an OSError, because PyStreamBuf doesn't use a file descriptor.");
+		"Raises an `OSError`, because `PyStreamBuf` doesn't use a file descriptor.");
 	py_stream_buf.def("flush", &sv::python::PyStreamBuf::py_flush,
 		"Flush the write buffers of the stream.");
 	py_stream_buf.def("isatty", &sv::python::PyStreamBuf::py_isatty,
-		"Always return False.");
+		"Always returns `False`.");
 	py_stream_buf.def("readable", &sv::python::PyStreamBuf::py_readable,
-		"Always return False.");
+		"Always returns `False`.");
 	py_stream_buf.def("readlines", &sv::python::PyStreamBuf::py_readlines,
 		py::arg("hint"),
-		"Raises an OSError, because PyStreamBuf is write only.");
+		"Raises an `OSError`, because `PyStreamBuf` is write only.");
 	py_stream_buf.def("seekable", &sv::python::PyStreamBuf::py_seekable,
-		"Always return False. PyStreamBuf is not seekable atm.");
+		"Always returns `False`. `PyStreamBuf` is not seekable atm.");
 	py_stream_buf.def("truncate", &sv::python::PyStreamBuf::py_truncate,
 		py::arg("size"),
-		"Raises an OSError, because PyStreamBuf is not seekable.");
+		"Raises an `OSError`, because `PyStreamBuf` is not seekable.");
 	py_stream_buf.def("writable", &sv::python::PyStreamBuf::py_writable,
 		"Always return `True`.");
 	py_stream_buf.def("writelines", &sv::python::PyStreamBuf::py_writelines,
@@ -819,20 +837,20 @@ void init_StreamBuf(py::module &m)
 		"Prepare for object destruction.");
 	py_stream_buf.def("read", &sv::python::PyStreamBuf::py_read,
 		py::arg("size"),
-		"Raises an OSError, because PyStreamBuf is write only.");
+		"Raises an `OSError`, because `PyStreamBuf` is write only.");
 	py_stream_buf.def("readline", &sv::python::PyStreamBuf::py_readline,
 		py::arg("size"),
-		"Raises an OSError, because PyStreamBuf is write only.");
+		"Raises an `OSError`, because `PyStreamBuf` is write only.");
 	py_stream_buf.def("seek", &sv::python::PyStreamBuf::py_seek,
 		py::arg("offset"), py::arg("whence"),
-		"Raises an OSError, because PyStreamBuf is not seekable.");
+		"Raises an `OSError`, because `PyStreamBuf` is not seekable.");
 	py_stream_buf.def("tell", &sv::python::PyStreamBuf::py_tell,
-		"Raises an OSError, because PyStreamBuf is not seekable.");
+		"Raises an `OSError`, because `PyStreamBuf` is not seekable.");
 	py_stream_buf.def("write", &sv::python::PyStreamBuf::py_write,
 		py::arg("s"),
-		"Write the string s to the stream and return the number of characters written.");
+		"Write the string `s` to the stream and return the number of characters written.");
 	py_stream_buf.def_readonly("closed", &sv::python::PyStreamBuf::py_closed,
-		"True if the stream is closed.");
+		"`True` if the stream is closed.");
 	py_stream_buf.def_readonly("encoding", &sv::python::PyStreamBuf::py_encoding,
 		"The name of the encoding that is used.");
 	py_stream_buf.def_readonly("errors", &sv::python::PyStreamBuf::py_errors,
@@ -841,6 +859,33 @@ void init_StreamBuf(py::module &m)
 
 void init_Enums(py::module &m)
 {
+	py::enum_<sv::data::DataType> py_data_type(m, "DataType",
+		"Enum of all available data types.");
+	py_data_type.value("UInt64", sv::data::DataType::UInt64);
+	m.attr("__pdoc__")["DataType.UInt64"] = "UInt64";
+	py_data_type.value("String", sv::data::DataType::String);
+	m.attr("__pdoc__")["DataType.String"] = "String";
+	py_data_type.value("Bool", sv::data::DataType::Bool);
+	m.attr("__pdoc__")["DataType.Bool"] = "Bool";
+	py_data_type.value("Double", sv::data::DataType::Double);
+	m.attr("__pdoc__")["DataType.Double"] = "Double";
+	py_data_type.value("RationalPeriod", sv::data::DataType::RationalPeriod);
+	m.attr("__pdoc__")["DataType.RationalPeriod"] = "RationalPeriod";
+	py_data_type.value("RationalVolt", sv::data::DataType::RationalVolt);
+	m.attr("__pdoc__")["DataType.RationalVolt"] = "RationalVolt";
+	py_data_type.value("KeyValue", sv::data::DataType::KeyValue);
+	m.attr("__pdoc__")["DataType.KeyValue"] = "KeyValue";
+	py_data_type.value("UInt64Range", sv::data::DataType::UInt64Range);
+	m.attr("__pdoc__")["DataType.UInt64Range"] = "UInt64Range";
+	py_data_type.value("DoubleRange", sv::data::DataType::DoubleRange);
+	m.attr("__pdoc__")["DataType.DoubleRange"] = "DoubleRange";
+	py_data_type.value("Int32", sv::data::DataType::Int32);
+	m.attr("__pdoc__")["DataType.Int32"] = "Int32";
+	py_data_type.value("MQ", sv::data::DataType::MQ);
+	m.attr("__pdoc__")["DataType.MQ"] = "MQ";
+	py_data_type.value("Unknown", sv::data::DataType::Unknown);
+	m.attr("__pdoc__")["DataType.Unknown"] = "Unknown";
+
 	py::enum_<sv::devices::ConfigKey> py_config_key(m, "ConfigKey",
 		"Enum of all available config keys for controlling a device.");
 	py_config_key.value("Samplerate", sv::devices::ConfigKey::Samplerate);
@@ -998,6 +1043,17 @@ void init_Enums(py::module &m)
 	m.attr("__pdoc__")["ConfigKey.TestMode"] = "Self test mode.";
 	py_config_key.value("Unknown", sv::devices::ConfigKey::Unknown);
 	m.attr("__pdoc__")["ConfigKey.Unknown"] = "Unknown config key.";
+	py_config_key.def_static("get_data_type", &sv::devices::deviceutil::get_data_type_for_config_key,
+		py::arg("config_key"),
+		"Helper function to get the data type for a config key.\n\n"
+		"Parameters\n"
+		"----------\n"
+		"config_key : ConfigKey\n"
+		"    The config key.\n\n"
+		"Returns\n"
+		"-------\n"
+		"DataType\n"
+		"    The data type of the config key.");
 
 	py::enum_<sv::data::Quantity> py_quantity(m, "Quantity",
 		"Enum of all available quantities.");
