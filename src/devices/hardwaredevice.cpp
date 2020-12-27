@@ -62,6 +62,7 @@ HardwareDevice::HardwareDevice(
 {
 	// Set options for different device types
 	// TODO: Multiple DeviceTypes per HardwareDevice
+	// TODO: Use deviceutil::is_supported_driver() instead
 	type_ = DeviceType::Unknown;
 	const auto sr_keys = sr_device->driver()->config_keys();
 	for (const auto &sr_key : sr_keys) {
