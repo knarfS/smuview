@@ -47,6 +47,9 @@ class Session;
 namespace data {
 class AnalogTimeSignal;
 }
+namespace devices {
+class BaseDevice;
+}
 
 namespace ui {
 namespace widgets {
@@ -87,9 +90,11 @@ public:
 	shared_ptr<sv::data::AnalogTimeSignal> x_t_signal() const;
 	shared_ptr<sv::data::AnalogTimeSignal> y_t_signal() const;
 
-	void save_settings(QSettings &settings) const override;
+	void save_settings(QSettings &settings,
+		shared_ptr<sv::devices::BaseDevice> origin_device) const override;
 	static XYCurveData *init_from_settings(
-		Session &session, QSettings &settings);
+		Session &session, QSettings &settings,
+		shared_ptr<sv::devices::BaseDevice> origin_device);
 
 private:
 	shared_ptr<sv::data::AnalogTimeSignal> x_t_signal_;

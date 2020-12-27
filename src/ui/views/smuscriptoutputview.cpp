@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <memory>
 #include <string>
 
 #include <QAction>
@@ -35,7 +36,10 @@
 #include "smuscriptoutputview.hpp"
 #include "src/session.hpp"
 #include "src/util.hpp"
+#include "src/devices/basedevice.hpp"
 #include "src/ui/views/baseview.hpp"
+
+using std::shared_ptr;
 
 namespace sv {
 namespace ui {
@@ -103,14 +107,16 @@ void SmuScriptOutputView::setup_toolbar()
 	this->addToolBar(Qt::TopToolBarArea, toolbar_);
 }
 
-void SmuScriptOutputView::save_settings(QSettings &settings) const
+void SmuScriptOutputView::save_settings(QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device) const
 {
-	BaseView::save_settings(settings);
+	BaseView::save_settings(settings, origin_device);
 }
 
-void SmuScriptOutputView::restore_settings(QSettings &settings)
+void SmuScriptOutputView::restore_settings(QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device)
 {
-	BaseView::restore_settings(settings);
+	BaseView::restore_settings(settings, origin_device);
 }
 
 void SmuScriptOutputView::scroll_to_bottom()

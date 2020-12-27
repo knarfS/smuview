@@ -135,7 +135,8 @@ BaseView *get_view_for_configurable(Session &session,
 	return nullptr;
 }
 
-BaseView *get_view_from_settings(Session &session, QSettings &settings)
+BaseView *get_view_from_settings(Session &session, QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device)
 {
 	QString id = settings.value("id").toString();
 	QUuid uuid = settings.value("uuid").toUuid();
@@ -168,20 +169,24 @@ BaseView *get_view_from_settings(Session &session, QSettings &settings)
 		view = new SmuScriptView(session, uuid);
 	}
 	else if (type == "democontrol") {
-		view = DemoControlView::init_from_settings(session, settings, uuid);
+		view = DemoControlView::init_from_settings(
+			session, settings, uuid, origin_device);
 	}
 	else if (type == "genericcontrol") {
-		view = GenericControlView::init_from_settings(session, settings, uuid);
+		view = GenericControlView::init_from_settings(
+			session, settings, uuid, origin_device);
 	}
 	else if (type == "measurementcontrol") {
-		view = MeasurementControlView::init_from_settings(session, settings, uuid);
+		view = MeasurementControlView::init_from_settings(
+			session, settings, uuid, origin_device);
 	}
 	else if (type == "sourcesinkcontrol") {
-		view = SourceSinkControlView::init_from_settings(session, settings, uuid);
+		view = SourceSinkControlView::init_from_settings(
+			session, settings, uuid, origin_device);
 	}
 
 	if (view)
-		view->restore_settings(settings);
+		view->restore_settings(settings, origin_device);
 
 	return view;
 }

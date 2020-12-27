@@ -20,6 +20,7 @@
 #ifndef UI_VIEWS_BASEPLOTVIEW_HPP
 #define UI_VIEWS_BASEPLOTVIEW_HPP
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -34,6 +35,7 @@
 
 #include "src/ui/views/baseview.hpp"
 
+using std::shared_ptr;
 using std::string;
 using std::vector;
 
@@ -43,6 +45,10 @@ class Session;
 
 namespace channels {
 class BaseChannel;
+}
+
+namespace devices {
+class BaseDevice;
 }
 
 namespace ui {
@@ -73,8 +79,10 @@ public:
 	bool set_curve_name(const string &curve_id, const QString &name);
 	/** Helper function to change a curve color. */
 	bool set_curve_color(const string &curve_id, const QColor &color);
-	void save_settings(QSettings &settings) const override;
-	void restore_settings(QSettings &settings) override;
+	void save_settings(QSettings &settings,
+		shared_ptr<sv::devices::BaseDevice> origin_device = nullptr) const override;
+	void restore_settings(QSettings &settings,
+		shared_ptr<sv::devices::BaseDevice> origin_device = nullptr) override;
 
 protected:
 	PlotType plot_type_;

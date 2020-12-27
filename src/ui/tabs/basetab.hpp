@@ -78,7 +78,15 @@ private:
 
 protected:
 	Session &session_;
+	/**
+	 * id_ is used for accessing the tab (e.g. for the python bindings UiProxy).
+	 */
 	string id_;
+	/**
+	 * settings_id_ is used for the objectNames of the tab and its views for
+	 * identification in the settings (e.g. geometry and status).
+	 */
+	QString settings_id_;
 	map<views::BaseView *, TabDockWidget *> view_docks_map_;
 	map<string, views::BaseView *> view_id_map_;
 

@@ -46,6 +46,9 @@ class BaseChannel;
 namespace data {
 class AnalogTimeSignal;
 }
+namespace devices {
+class BaseDevice;
+}
 
 namespace ui {
 
@@ -69,8 +72,10 @@ public:
 	void set_channel(shared_ptr<channels::BaseChannel> channel);
 	void set_signal(shared_ptr<sv::data::AnalogTimeSignal> signal);
 
-	void save_settings(QSettings &settings) const override;
-	void restore_settings(QSettings &settings) override;
+	void save_settings(QSettings &settings,
+		shared_ptr<sv::devices::BaseDevice> origin_device = nullptr) const override;
+	void restore_settings(QSettings &settings,
+		shared_ptr<sv::devices::BaseDevice> origin_device = nullptr) override;
 
 private:
 	shared_ptr<channels::BaseChannel> channel_;

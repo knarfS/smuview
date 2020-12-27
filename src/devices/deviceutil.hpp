@@ -714,6 +714,15 @@ bool is_source_sink_driver(shared_ptr<sigrok::Driver> sr_driver);
  bool is_measurement_driver(shared_ptr<sigrok::Driver> sr_driver);
 
 /**
+ * Check if the driver is a demo device.
+ *
+ * @param sr_driver The sigrok Driver to check.
+ *
+ * @return true, if the driver is a demo device.
+ */
+ bool is_demo_driver(shared_ptr<sigrok::Driver> sr_driver);
+
+/**
  * Return the corresponding DeviceType for a sigrok ConfigKey
  *
  * @param sr_config_key The sigrok ConfigKey

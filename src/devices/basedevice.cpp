@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <algorithm>
 #include <cassert>
 #include <map>
 #include <memory>
@@ -32,9 +31,11 @@
 
 #include <QDebug>
 #include <QString>
+#include <QUuid>
 
 #include "basedevice.hpp"
 #include "src/session.hpp"
+#include "src/settingsmanager.hpp"
 #include "src/util.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/channels/hardwarechannel.hpp"
@@ -42,6 +43,7 @@
 #include "src/channels/userchannel.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/devices/configurable.hpp"
+#include "src/devices/deviceutil.hpp"
 
 #define USER_CHANNEL_START_INDEX 1000
 #define CONFIGURABLE_START_INDEX 5000
@@ -105,31 +107,33 @@ DeviceType BaseDevice::type() const
 
 string BaseDevice::id() const
 {
-	string vendor = sr_device_->vendor();
-	std::replace(vendor.begin(), vendor.end(), ':', '_');
-	string model = sr_device_->model();
-	std::replace(model.begin(), model.end(), ':', '_');
-
+	string vendor = SettingsManager::format_key(sr_device_->vendor());
+	string model = SettingsManager::format_key(sr_device_->model());
 	string id = vendor + ":" + model;
 
 	if (!sr_device_->serial_number().empty()) {
-		string serial_number = sr_device_->serial_number();
-		std::replace(serial_number.begin(), serial_number.end(), ':', '_');
-		// Replacing some special characters for QSettings.
-		std::replace(serial_number.begin(), serial_number.end(), '/', '_');
-		std::replace(serial_number.begin(), serial_number.end(), '\\', '_');
-		id +=  ":" + serial_number;
+		id +=  ":" + SettingsManager::format_key(sr_device_->serial_number());
 	}
 	else if (!sr_device_->connection_id().empty()) {
-		string connection_id = sr_device_->connection_id();
-		std::replace(connection_id.begin(), connection_id.end(), ':', '_');
-		// Replacing some special characters for QSettings.
-		std::replace(connection_id.begin(), connection_id.end(), '/', '_');
-		std::replace(connection_id.begin(), connection_id.end(), '\\', '_');
-		id += ":" + connection_id;
+		id += ":" + SettingsManager::format_key(sr_device_->connection_id());
+	}
+	else if (type_ == DeviceType::DemoDev) {
+		// Create a random id for the demo device, to make it available and
+		// identifiable in the device tree or via the python API.
+		id += ":" + util::format_uuid(QUuid::createUuid());
 	}
 
 	return id;
+}
+
+QString BaseDevice::settings_id() const
+{
+	if (type_ == DeviceType::DemoDev) {
+		string vendor = SettingsManager::format_key(sr_device_->vendor());
+		string model = SettingsManager::format_key(sr_device_->model());
+		return QString::fromStdString(vendor + ":" + model);
+	}
+	return QString::fromStdString(this->id());
 }
 
 void BaseDevice::open()

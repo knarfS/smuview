@@ -35,6 +35,10 @@ namespace sv {
 
 class Session;
 
+namespace devices {
+class BaseDevice;
+}
+
 namespace ui {
 
 namespace devices {
@@ -55,8 +59,10 @@ public:
 
 	QString title() const override;
 
-	void save_settings(QSettings &settings) const override;
-	void restore_settings(QSettings &settings) override;
+	void save_settings(QSettings &settings,
+		shared_ptr<sv::devices::BaseDevice> origin_device = nullptr) const override;
+	void restore_settings(QSettings &settings,
+		shared_ptr<sv::devices::BaseDevice> origin_device = nullptr) override;
 
 private:
 	QAction *const action_add_device_;

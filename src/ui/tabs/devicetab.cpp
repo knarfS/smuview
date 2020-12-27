@@ -61,6 +61,7 @@ DeviceTab::DeviceTab(Session &session,
 	action_about_(new QAction(this))
 {
 	id_ = "devicetab:" + device_->id();
+	settings_id_ = "devicetab:" + device_->settings_id();
 
 	setup_toolbar();
 }
@@ -152,7 +153,7 @@ void DeviceTab::setup_toolbar()
 
 	toolbar_ = new QToolBar("Device Toolbar");
 	// objectName is needed for QSettings
-	toolbar_->setObjectName("toolbar:" + QString::fromStdString(id()));
+	toolbar_->setObjectName("toolbar:" + settings_id_);
 	toolbar_->addWidget(aquire_button_);
 	toolbar_->addSeparator();
 	toolbar_->addAction(action_save_as_);
@@ -173,12 +174,13 @@ void DeviceTab::restore_settings()
 	QSettings settings;
 
 	// Restore device views
-	settings.beginGroup(QString::fromStdString(device_->id()));
+	settings.beginGroup(device_->settings_id());
 
 	const QStringList view_keys = settings.childGroups();
 	for (const auto &view_key : view_keys) {
 		settings.beginGroup(view_key);
-		auto view = views::viewhelper::get_view_from_settings(session_, settings);
+		auto view = views::viewhelper::get_view_from_settings(
+			session_, settings, device_);
 		if (view)
 			add_view(view, Qt::DockWidgetArea::TopDockWidgetArea);
 		settings.endGroup();
@@ -201,13 +203,13 @@ void DeviceTab::save_settings() const
 {
 	QSettings settings;
 
-	settings.beginGroup(QString::fromStdString(device_->id()));
+	settings.beginGroup(device_->settings_id());
 	settings.remove("");  // Remove all keys in this group
 
 	size_t i = 0;
 	for (const auto &view_dock_pair : view_docks_map_) {
 		settings.beginGroup(QString("view%1").arg(i));
-		view_dock_pair.first->save_settings(settings);
+		view_dock_pair.first->save_settings(settings, device_);
 		settings.endGroup();
 		++i;
 	}

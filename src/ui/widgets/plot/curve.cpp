@@ -17,6 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <memory>
+
 #include <QColor>
 #include <QDebug>
 #include <QObject>
@@ -37,9 +39,12 @@
 #include "src/settingsmanager.hpp"
 #include "src/util.hpp"
 #include "src/data/datautil.hpp"
+#include "src/devices/basedevice.hpp"
 #include "src/ui/widgets/plot/basecurvedata.hpp"
 #include "src/ui/widgets/plot/timecurvedata.hpp"
 #include "src/ui/widgets/plot/xycurvedata.hpp"
+
+using std::shared_ptr;
 
 Q_DECLARE_METATYPE(QwtSymbol::Style)
 
@@ -228,10 +233,11 @@ QwtPlotMarker *Curve::add_marker(const QString &name_postfix)
 	return marker;
 }
 
-void Curve::save_settings(QSettings &settings) const
+void Curve::save_settings(QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device) const
 {
 	settings.beginGroup(QString::fromStdString(id_));
-	curve_data_->save_settings(settings);
+	curve_data_->save_settings(settings, origin_device);
 	settings.setValue("x_axis_id", x_axis_id());
 	settings.setValue("y_axis_id", y_axis_id());
 	if (has_custom_name_)
@@ -245,8 +251,9 @@ void Curve::save_settings(QSettings &settings) const
 	settings.endGroup();
 }
 
-Curve *Curve::init_from_settings(Session &session, QSettings &settings,
-	const QString &group)
+Curve *Curve::init_from_settings(
+	Session &session, QSettings &settings, const QString &group,
+	shared_ptr<sv::devices::BaseDevice> origin_device)
 {
 	if (!group.startsWith("timecurve:") && !group.startsWith("xycurve:"))
 		return nullptr;
@@ -254,10 +261,14 @@ Curve *Curve::init_from_settings(Session &session, QSettings &settings,
 	settings.beginGroup(group);
 
 	BaseCurveData *curve_data = nullptr;
-	if (group.startsWith("timecurve:"))
-		curve_data = TimeCurveData::init_from_settings(session, settings);
-	else if (group.startsWith("xycurve:"))
-		curve_data = XYCurveData::init_from_settings(session, settings);
+	if (group.startsWith("timecurve:")) {
+		curve_data = TimeCurveData::init_from_settings(
+			session, settings, origin_device);
+	}
+	else if (group.startsWith("xycurve:")) {
+		curve_data = XYCurveData::init_from_settings(
+			session, settings, origin_device);
+	}
 	if (!curve_data) {
 		settings.endGroup();
 		return nullptr;

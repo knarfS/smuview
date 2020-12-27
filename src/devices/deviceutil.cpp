@@ -78,6 +78,14 @@ bool is_measurement_driver(shared_ptr<sigrok::Driver> sr_driver)
 		|| keys.count(sigrok::ConfigKey::DEMO_DEV) > 0;
 }
 
+bool is_demo_driver(shared_ptr<sigrok::Driver> sr_driver)
+{
+	assert(sr_driver);
+
+	const auto keys = sr_driver->config_keys();
+	return keys.count(sigrok::ConfigKey::DEMO_DEV) > 0;
+}
+
 DeviceType get_device_type(const sigrok::ConfigKey *sr_config_key)
 {
 	if (sr_config_key_device_type_map.count(sr_config_key) > 0)

@@ -18,6 +18,7 @@
  */
 
 #include <cassert>
+#include <memory>
 #include <string>
 
 #include <QMessageBox>
@@ -41,6 +42,7 @@
 #include "src/ui/widgets/plot/timecurvedata.hpp"
 
 using std::dynamic_pointer_cast;
+using std::shared_ptr;
 using std::static_pointer_cast;
 using std::string;
 
@@ -135,31 +137,34 @@ string TimePlotView::add_signal(shared_ptr<sv::data::AnalogTimeSignal> signal)
 	return id;
 }
 
-void TimePlotView::save_settings(QSettings &settings) const
+void TimePlotView::save_settings(QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device) const
 {
-	BasePlotView::save_settings(settings);
+	BasePlotView::save_settings(settings, origin_device);
 
 	// TODO: Can the channel be saved inside the plot widget?
 	bool save_curves = true;
 	if (channel_) {
-		SettingsManager::save_channel(channel_, settings);
+		SettingsManager::save_channel(channel_, settings, origin_device);
 		save_curves = false;
 	}
-	plot_->save_settings(settings, save_curves);
+	plot_->save_settings(settings, save_curves, origin_device);
 }
 
-void TimePlotView::restore_settings(QSettings &settings)
+void TimePlotView::restore_settings(QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device)
 {
-	BasePlotView::restore_settings(settings);
+	BasePlotView::restore_settings(settings, origin_device);
 
 	// TODO: Can the channel be restored inside the plot widget?
 	bool restore_curves = true;
-	auto channel = SettingsManager::restore_channel(session_, settings);
+	auto channel = SettingsManager::restore_channel(
+		session_, settings, origin_device);
 	if (channel) {
 		set_channel(channel);
 		restore_curves = false;
 	}
-	plot_->restore_settings(settings, restore_curves);
+	plot_->restore_settings(settings, restore_curves, origin_device);
 }
 
 void TimePlotView::on_action_add_curve_triggered()

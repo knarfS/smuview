@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <memory>
 #include <string>
 
 #include <QAction>
@@ -41,9 +42,11 @@
 #include "smuscriptview.hpp"
 #include "src/session.hpp"
 #include "src/util.hpp"
+#include "src/devices/basedevice.hpp"
 #include "src/python/smuscriptrunner.hpp"
 #include "src/ui/views/baseview.hpp"
 
+using std::shared_ptr;
 using std::string;
 
 namespace sv {
@@ -214,15 +217,17 @@ void SmuScriptView::connect_signals()
 		this, &SmuScriptView::on_script_finished);
 }
 
-void SmuScriptView::save_settings(QSettings &settings) const
+void SmuScriptView::save_settings(QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device) const
 {
-	BaseView::save_settings(settings);
+	BaseView::save_settings(settings, origin_device);
 	find_dialog_->writeSettings(settings);
 }
 
-void SmuScriptView::restore_settings(QSettings &settings)
+void SmuScriptView::restore_settings(QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device)
 {
-	BaseView::restore_settings(settings);
+	BaseView::restore_settings(settings, origin_device);
 	find_dialog_->readSettings(settings);
 }
 

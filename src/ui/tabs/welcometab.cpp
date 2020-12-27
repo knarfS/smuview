@@ -34,6 +34,7 @@ WelcomeTab::WelcomeTab(Session &session, QWidget *parent) :
 	BaseTab(session, parent)
 {
 	id_ = "welcometab:0";
+	settings_id_ = "welcometab:0";
 
 	setup_ui();
 }

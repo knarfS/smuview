@@ -35,6 +35,7 @@ namespace sv {
 class Session;
 
 namespace devices {
+class BaseDevice;
 class Configurable;
 }
 
@@ -63,10 +64,13 @@ public:
 
 	QString title() const override;
 
-	void save_settings(QSettings &settings) const override;
-	void restore_settings(QSettings &settings) override;
+	void save_settings(QSettings &settings,
+		shared_ptr<sv::devices::BaseDevice> origin_device = nullptr) const override;
+	void restore_settings(QSettings &settings,
+		shared_ptr<sv::devices::BaseDevice> origin_device = nullptr) override;
 	static SourceSinkControlView *init_from_settings(
-		Session &session, QSettings &settings, QUuid uuid);
+		Session &session, QSettings &settings, QUuid uuid,
+		shared_ptr<sv::devices::BaseDevice> origin_device);
 
 private:
 	shared_ptr<sv::devices::Configurable> configurable_;

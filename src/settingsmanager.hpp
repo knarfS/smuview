@@ -21,11 +21,13 @@
 #define SETTINGSMANAGER_HPP
 
 #include <memory>
+#include <string>
 
 #include <QSettings>
 #include <QString>
 
 using std::shared_ptr;
+using std::string;
 
 namespace sv {
 
@@ -50,6 +52,16 @@ class SettingsManager
 
 public:
 	SettingsManager();
+
+	/**
+	 * Replace some special character (like ':', '/' or '\'), to use the given
+	 * string as a settings key.
+	 *
+	 * @param[in] str The string to format.
+	 *
+	 * @return The formated key.
+	 */
+	static string format_key(const string &str);
 
 	/**
 	 * Check if setting should be restored. This is controlled by the command
@@ -81,104 +93,131 @@ public:
 	 *
 	 * @param[in] configurable The configurable to save.
 	 * @param[in] settings The settings.
+	 * @param[in] origin_device The origin device, this settings belongs to.
 	 * @param[in] key_prefix The prefix of the settings keys for the configurable.
 	 */
 	static void save_configurable(
 		const shared_ptr<sv::devices::Configurable> &configurable,
-		QSettings &settings, const QString &key_prefix = "");
+		QSettings &settings,
+		shared_ptr<sv::devices::BaseDevice> origin_device,
+		const QString &key_prefix = "");
 
 	/**
 	 * Save the channel to the settings.
 	 *
 	 * @param[in] channel The channel to save.
 	 * @param[in] settings The settings.
+	 * @param[in] origin_device The origin device, this settings belongs to.
 	 * @param[in] key_prefix The prefix of the settings keys for the channel.
 	 */
 	static void save_channel(
 		const shared_ptr<sv::channels::BaseChannel> &channel,
-		QSettings &settings, const QString &key_prefix = "");
+		QSettings &settings,
+		shared_ptr<sv::devices::BaseDevice> origin_device,
+		const QString &key_prefix = "");
 
 	/**
 	 * Save the signal to the settings.
 	 *
 	 * @param[in] signal The signal to save.
 	 * @param[in] settings The settings.
+	 * @param[in] origin_device The origin device, this settings belongs to.
 	 * @param[in] key_prefix The prefix of the settings keys for the signal.
 	 */
 	static void save_signal(
 		const shared_ptr<sv::data::BaseSignal> &signal,
-		QSettings &settings, const QString &key_prefix = "");
+		QSettings &settings,
+		shared_ptr<sv::devices::BaseDevice> origin_device,
+		const QString &key_prefix = "");
 
 	/**
 	 * Save the property to the settings.
 	 *
 	 * @param[in] property The property to save.
 	 * @param[in] settings The settings.
+	 * @param[in] origin_device The origin device, this settings belongs to.
 	 * @param[in] key_prefix The prefix of the settings keys for the property.
 	 */
 	static void save_property(
 		const shared_ptr<sv::data::properties::BaseProperty> &property,
-		QSettings &settings, const QString &key_prefix = "");
+		QSettings &settings,
+		shared_ptr<sv::devices::BaseDevice> origin_device,
+		const QString &key_prefix = "");
 
 	/**
 	 * Restore a device from the settings.
 	 *
 	 * @param[in] session The SmuView session.
 	 * @param[in] settings The settings.
+	 * @param[in] origin_device The origin device, this settings belongs to.
 	 * @param[in] key_prefix The prefix of the settings keys for the device.
 	 *
 	 * @return The restored device.
 	 */
 	static shared_ptr<sv::devices::BaseDevice> restore_device(
-		Session &session, QSettings &settings, const QString &key_prefix = "");
+		Session &session, QSettings &settings,
+		shared_ptr<sv::devices::BaseDevice> origin_device,
+		const QString &key_prefix = "");
 
 	/**
 	 * Restore a configurable from the settings.
 	 *
 	 * @param[in] session The SmuView session.
 	 * @param[in] settings The settings.
+	 * @param[in] origin_device The origin device, this settings belongs to.
 	 * @param[in] key_prefix The prefix of the settings keys for the configurable.
 	 *
 	 * @return The restored configurable.
 	 */
 	static shared_ptr<sv::devices::Configurable> restore_configurable(
-		Session &session, QSettings &settings, const QString &key_prefix = "");
+		Session &session, QSettings &settings,
+		shared_ptr<sv::devices::BaseDevice> origin_device,
+		const QString &key_prefix = "");
 
 	/**
 	 * Restore a property from the settings.
 	 *
 	 * @param[in] session The SmuView session.
 	 * @param[in] settings The settings.
+	 * @param[in] origin_device The origin device, this settings belongs to.
 	 * @param[in] key_prefix The prefix of the settings keys for the property.
 	 *
 	 * @return The restored property.
 	 */
 	static shared_ptr<sv::data::properties::BaseProperty> restore_property(
-		Session &session, QSettings &settings, const QString &key_prefix = "");
+		Session &session, QSettings &settings,
+		shared_ptr<sv::devices::BaseDevice> origin_device,
+		const QString &key_prefix = "");
 
 	/**
 	 * Restore a channel from the settings.
 	 *
 	 * @param[in] session The SmuView session.
 	 * @param[in] settings The settings.
+	 * @param[in] origin_device The origin device, this settings belongs to.
 	 * @param[in] key_prefix The prefix of the settings keys for the channel.
 	 *
 	 * @return The restored channel.
 	 */
 	static shared_ptr<sv::channels::BaseChannel> restore_channel(
-		Session &session, QSettings &settings, const QString &key_prefix = "");
+		Session &session, QSettings &settings,
+		shared_ptr<sv::devices::BaseDevice> origin_device,
+		const QString &key_prefix = "");
 
 	/**
 	 * Restore a signal from the settings.
 	 *
 	 * @param[in] session The SmuView session.
 	 * @param[in] settings The settings.
+	 * @param[in] origin_device The origin device, this settings belongs to.
 	 * @param[in] key_prefix The prefix of the settings keys for the signal.
 	 *
 	 * @return The restored signal.
 	 */
 	static shared_ptr<sv::data::BaseSignal> restore_signal(
-		Session &session, QSettings &settings, const QString &key_prefix = "");
+		Session &session, QSettings &settings,
+		shared_ptr<sv::devices::BaseDevice> origin_device,
+		const QString &key_prefix = "");
 
 private:
 	static bool restore_settings_;

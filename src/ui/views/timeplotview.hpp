@@ -41,6 +41,9 @@ class BaseChannel;
 namespace data {
 class AnalogTimeSignal;
 }
+namespace devices {
+class BaseDevice;
+}
 
 namespace ui {
 namespace views {
@@ -55,8 +58,10 @@ public:
 
 	QString title() const override;
 
-	void save_settings(QSettings &settings) const override;
-	void restore_settings(QSettings &settings) override;
+	void save_settings(QSettings &settings,
+		shared_ptr<sv::devices::BaseDevice> origin_device = nullptr) const override;
+	void restore_settings(QSettings &settings,
+		shared_ptr<sv::devices::BaseDevice> origin_device = nullptr) override;
 
 	/**
 	 * Add a new channel to the time plot.

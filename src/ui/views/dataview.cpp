@@ -46,6 +46,7 @@
 #include "src/ui/views/baseview.hpp"
 #include "src/ui/views/viewhelper.hpp"
 
+using std::shared_ptr;
 using std::dynamic_pointer_cast;
 
 namespace sv {
@@ -112,27 +113,30 @@ void DataView::setup_toolbar()
 	this->addToolBar(Qt::TopToolBarArea, toolbar_);
 }
 
-void DataView::save_settings(QSettings &settings) const
+void DataView::save_settings(QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device) const
 {
-	BaseView::save_settings(settings);
+	BaseView::save_settings(settings, origin_device);
 
 	size_t i = 0;
 	for (const auto &signal : signals_) {
 		settings.beginGroup(QString("signal%1").arg(i++));
-		SettingsManager::save_signal(signal, settings);
+		SettingsManager::save_signal(signal, settings, origin_device);
 		settings.endGroup();
 	}
 }
 
-void DataView::restore_settings(QSettings &settings)
+void DataView::restore_settings(QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device)
 {
-	BaseView::restore_settings(settings);
+	BaseView::restore_settings(settings, origin_device);
 
 	const auto groups = settings.childGroups();
 	for (const auto &group : groups) {
 		if (group.startsWith("signal")) {
 			settings.beginGroup(group);
-			auto signal = SettingsManager::restore_signal(session_, settings);
+			auto signal = SettingsManager::restore_signal(
+				session_, settings, origin_device);
 			if (signal) {
 				add_signal(
 					dynamic_pointer_cast<sv::data::AnalogTimeSignal>(signal));

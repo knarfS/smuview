@@ -20,6 +20,7 @@
 #ifndef UI_WIDGETS_PLOT_CURVE_HPP
 #define UI_WIDGETS_PLOT_CURVE_HPP
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -34,12 +35,17 @@
 
 #include "src/data/datautil.hpp"
 
+using std::shared_ptr;
 using std::string;
 using std::vector;
 
 namespace sv {
 
 class Session;
+
+namespace devices {
+class BaseDevice;
+}
 
 namespace ui {
 namespace widgets {
@@ -62,9 +68,11 @@ public:
 	static void save_settings_default_color(sv::data::Quantity quantity,
 		const set<sv::data::QuantityFlag> &quantity_flags, const QColor &color);
 
-	void save_settings(QSettings &settings) const;
-	static Curve *init_from_settings(Session &session, QSettings &settings,
-		const QString &group);
+	void save_settings(QSettings &settings,
+		shared_ptr<sv::devices::BaseDevice> origin_device) const;
+	static Curve *init_from_settings(
+		Session &session, QSettings &settings, const QString &group,
+		shared_ptr<sv::devices::BaseDevice> origin_device);
 
 	BaseCurveData *curve_data() const;
 	QwtPlotCurve *plot_curve() const;

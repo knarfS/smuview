@@ -20,6 +20,7 @@
 #ifndef UI_VIEWS_SMUSCRIPTVIEW_HPP
 #define UI_VIEWS_SMUSCRIPTVIEW_HPP
 
+#include <memory>
 #include <string>
 
 #include <QAction>
@@ -32,11 +33,16 @@
 
 #include "src/ui/views/baseview.hpp"
 
+using std::shared_ptr;
 using std::string;
 
 namespace sv {
 
 class Session;
+
+namespace devices {
+class BaseDevice;
+}
 
 namespace ui {
 namespace views {
@@ -53,8 +59,10 @@ public:
 	void load_file(const string &file_name);
 	bool ask_to_save(const QString &title);
 
-	void save_settings(QSettings &settings) const override;
-	void restore_settings(QSettings &settings) override;
+	void save_settings(QSettings &settings,
+		shared_ptr<sv::devices::BaseDevice> origin_device = nullptr) const override;
+	void restore_settings(QSettings &settings,
+		shared_ptr<sv::devices::BaseDevice> origin_device = nullptr) override;
 
 private:
 	string script_file_name_;

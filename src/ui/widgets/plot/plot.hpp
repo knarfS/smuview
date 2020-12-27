@@ -22,6 +22,7 @@
 #define UI_WIDGETS_PLOT_PLOT_HPP
 
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -42,14 +43,19 @@
 #include <qwt_system_clock.h>
 #include <qwt_text.h>
 
-using std::string;
 using std::map;
 using std::pair;
+using std::shared_ptr;
+using std::string;
 using std::vector;
 
 namespace sv {
 
 class Session;
+
+namespace devices {
+class BaseDevice;
+}
 
 namespace ui {
 namespace widgets {
@@ -114,8 +120,10 @@ public:
 	void set_markers_label_alignment(int alignment);
 	int markers_label_alignment() const { return markers_label_alignment_; }
 
-	void save_settings(QSettings &settings, bool save_curves) const;
-	void restore_settings(QSettings &settings, bool restore_curves);
+	void save_settings(QSettings &settings, bool save_curves,
+		shared_ptr<sv::devices::BaseDevice> origin_device) const;
+	void restore_settings(QSettings &settings, bool restore_curves,
+		shared_ptr<sv::devices::BaseDevice> origin_device);
 
 public Q_SLOTS:
 	void start();

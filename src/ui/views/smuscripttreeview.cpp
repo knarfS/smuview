@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <memory>
 #include <string>
 
 #include <QAbstractItemView>
@@ -39,9 +40,11 @@
 #include "src/session.hpp"
 #include "src/settingsmanager.hpp"
 #include "src/util.hpp"
+#include "src/devices/basedevice.hpp"
 #include "src/python/smuscriptrunner.hpp"
 #include "src/ui/views/baseview.hpp"
 
+using std::shared_ptr;
 using std::string;
 
 namespace sv {
@@ -154,12 +157,13 @@ void SmuScriptTreeView::connect_signals()
 		this, &SmuScriptTreeView::on_script_finished);
 }
 
-void SmuScriptTreeView::save_settings(QSettings &settings) const
+void SmuScriptTreeView::save_settings(QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device) const
 {
 	settings.beginGroup("SmuScriptTree");
 	settings.remove("");  // Remove all keys in this group
 
-	BaseView::save_settings(settings);
+	BaseView::save_settings(settings, origin_device);
 
 	QModelIndex index = file_system_tree_->selectionModel()->currentIndex();
 	if (index.isValid()) {
@@ -175,11 +179,12 @@ void SmuScriptTreeView::save_settings(QSettings &settings) const
 	settings.endGroup();
 }
 
-void SmuScriptTreeView::restore_settings(QSettings &settings)
+void SmuScriptTreeView::restore_settings(QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device)
 {
 	settings.beginGroup("SmuScriptTree");
 
-	BaseView::restore_settings(settings);
+	BaseView::restore_settings(settings, origin_device);
 
 	if (settings.contains("directory")) {
 		script_dir_ = settings.value("directory").toString();

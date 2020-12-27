@@ -20,6 +20,7 @@
 #ifndef UI_VIEWS_BASEVIEW_HPP
 #define UI_VIEWS_BASEVIEW_HPP
 
+#include <memory>
 #include <string>
 
 #include <QMainWindow>
@@ -29,11 +30,16 @@
 #include <QUuid>
 #include <QWidget>
 
+using std::shared_ptr;
 using std::string;
 
 namespace sv {
 
 class Session;
+
+namespace devices {
+class BaseDevice;
+}
 
 namespace ui {
 namespace views {
@@ -64,8 +70,10 @@ public:
 	string id() const;
 	virtual QString title() const = 0;
 
-	virtual void save_settings(QSettings &settings) const;
-	virtual void restore_settings(QSettings &settings);
+	virtual void save_settings(QSettings &settings,
+		shared_ptr<sv::devices::BaseDevice> origin_device = nullptr) const;
+	virtual void restore_settings(QSettings &settings,
+		shared_ptr<sv::devices::BaseDevice> origin_device = nullptr);
 
 	/** Return a size hint for restoring the correct view size from QSettings. */
 	QSize sizeHint() const override;

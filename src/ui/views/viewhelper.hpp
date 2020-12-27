@@ -72,10 +72,12 @@ BaseView *get_view_for_configurable(Session &session,
  *
  * @param[in] session The reference to the actual SmuView session.
  * @param[in] settings The settings.
+ * @param[in] origin_device The origin device for this settings.
  *
  * @return The view defined by settings.
  */
-BaseView *get_view_from_settings(Session &session, QSettings &settings);
+BaseView *get_view_from_settings(Session &session, QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device);
 
 } // namespace viewhelper
 } // namespace views

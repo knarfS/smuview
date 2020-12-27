@@ -39,6 +39,7 @@
 #include "src/ui/widgets/plot/xycurvedata.hpp"
 
 using std::dynamic_pointer_cast;
+using std::shared_ptr;
 using std::string;
 
 Q_DECLARE_METATYPE(sv::ui::widgets::plot::BaseCurveData *)
@@ -79,16 +80,18 @@ string XYPlotView::add_signals(shared_ptr<sv::data::AnalogTimeSignal> x_signal,
 	return id;
 }
 
-void XYPlotView::save_settings(QSettings &settings) const
+void XYPlotView::save_settings(QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device) const
 {
-	BasePlotView::save_settings(settings);
-	plot_->save_settings(settings, true);
+	BasePlotView::save_settings(settings, origin_device);
+	plot_->save_settings(settings, true, origin_device);
 }
 
-void XYPlotView::restore_settings(QSettings &settings)
+void XYPlotView::restore_settings(QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device)
 {
-	BasePlotView::restore_settings(settings);
-	plot_->restore_settings(settings, true);
+	BasePlotView::restore_settings(settings, origin_device);
+	plot_->restore_settings(settings, true, origin_device);
 }
 
 void XYPlotView::on_action_add_curve_triggered()

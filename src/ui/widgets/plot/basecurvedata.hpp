@@ -20,6 +20,7 @@
 #ifndef UI_WIDGETS_PLOT_BASECURVEDATA_HPP
 #define UI_WIDGETS_PLOT_BASECURVEDATA_HPP
 
+#include <memory>
 #include <set>
 #include <string>
 
@@ -34,9 +35,15 @@
 #include "src/data/datautil.hpp"
 
 using std::set;
+using std::shared_ptr;
 using std::string;
 
 namespace sv {
+
+namespace devices {
+class BaseDevice;
+}
+
 namespace ui {
 namespace widgets {
 namespace plot {
@@ -78,7 +85,8 @@ public:
 	virtual QString y_unit_str() const = 0;
 	virtual QString y_title() const = 0;
 
-	virtual void save_settings(QSettings &settings) const = 0;
+	virtual void save_settings(QSettings &settings,
+		shared_ptr<sv::devices::BaseDevice> origin_device) const = 0;
 
 protected:
 	const CurveType type_;

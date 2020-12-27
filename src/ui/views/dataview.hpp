@@ -42,6 +42,9 @@ class Session;
 namespace data {
 class AnalogTimeSignal;
 }
+namespace devices {
+class BaseDevice;
+}
 
 namespace ui {
 namespace views {
@@ -57,8 +60,10 @@ public:
 	QString title() const override;
 	void add_signal(shared_ptr<sv::data::AnalogTimeSignal> signal);
 
-	void save_settings(QSettings &settings) const override;
-	void restore_settings(QSettings &settings) override;
+	void save_settings(QSettings &settings,
+		shared_ptr<sv::devices::BaseDevice> origin_device = nullptr) const override;
+	void restore_settings(QSettings &settings,
+		shared_ptr<sv::devices::BaseDevice> origin_device = nullptr) override;
 
 private:
 	vector<shared_ptr<sv::data::AnalogTimeSignal>> signals_;

@@ -32,6 +32,7 @@
 #include "src/settingsmanager.hpp"
 #include "src/data/analogtimesignal.hpp"
 #include "src/data/datautil.hpp"
+#include "src/devices/basedevice.hpp"
 #include "src/ui/widgets/plot/basecurvedata.hpp"
 
 using std::dynamic_pointer_cast;
@@ -196,17 +197,21 @@ shared_ptr<sv::data::AnalogTimeSignal> XYCurveData::y_t_signal() const
 	return y_t_signal_;
 }
 
-void XYCurveData::save_settings(QSettings &settings) const
+void XYCurveData::save_settings(QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device) const
 {
-	SettingsManager::save_signal(x_t_signal_, settings, "x_");
-	SettingsManager::save_signal(y_t_signal_, settings, "y_");
+	SettingsManager::save_signal(x_t_signal_, settings, origin_device, "x_");
+	SettingsManager::save_signal(y_t_signal_, settings, origin_device, "y_");
 }
 
 XYCurveData *XYCurveData::init_from_settings(
-	Session &session, QSettings &settings)
+	Session &session, QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device)
 {
-	auto x_t_signal = SettingsManager::restore_signal(session, settings, "x_");
-	auto y_t_signal = SettingsManager::restore_signal(session, settings, "y_");
+	auto x_t_signal = SettingsManager::restore_signal(
+		session, settings, origin_device, "x_");
+	auto y_t_signal = SettingsManager::restore_signal(
+		session, settings, origin_device, "y_");
 	if (!x_t_signal || !y_t_signal)
 		return nullptr;
 

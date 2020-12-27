@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <memory>
 #include <string>
 
 #include <QImageWriter>
@@ -30,12 +31,15 @@
 
 #include "baseplotview.hpp"
 #include "src/session.hpp"
+#include "src/devices/basedevice.hpp"
 #include "src/ui/dialogs/plotconfigdialog.hpp"
 #include "src/ui/dialogs/plotdiffmarkerdialog.hpp"
 #include "src/ui/views/baseview.hpp"
 #include "src/ui/widgets/plot/curve.hpp"
 #include "src/ui/widgets/plot/plot.hpp"
 #include "src/ui/widgets/plot/basecurvedata.hpp"
+
+using std::shared_ptr;
 
 Q_DECLARE_METATYPE(sv::ui::widgets::plot::Curve *)
 
@@ -185,17 +189,19 @@ bool BasePlotView::set_curve_color(const string &curve_id, const QColor &color)
 	return true;
 }
 
-void BasePlotView::save_settings(QSettings &settings) const
+void BasePlotView::save_settings(QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device) const
 {
-	BaseView::save_settings(settings);
+	BaseView::save_settings(settings, origin_device);
 
 	settings.setValue("markers_label_alignment",
 		plot_->markers_label_alignment());
 }
 
-void BasePlotView::restore_settings(QSettings &settings)
+void BasePlotView::restore_settings(QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device)
 {
-	BaseView::restore_settings(settings);
+	BaseView::restore_settings(settings, origin_device);
 
 	if (settings.contains("markers_label_alignment")) {
 		plot_->set_markers_label_alignment(

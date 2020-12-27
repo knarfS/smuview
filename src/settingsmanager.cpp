@@ -17,7 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <algorithm>
 #include <memory>
+#include <string>
 
 #include <QDebug>
 #include <QSettings>
@@ -29,8 +31,11 @@
 #include "src/data/basesignal.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/devices/configurable.hpp"
+#include "src/devices/deviceutil.hpp"
 
 using std::shared_ptr;
+using std::string;
+using sv::devices::DeviceType;
 
 namespace sv {
 
@@ -38,6 +43,15 @@ bool SettingsManager::restore_settings_ = true;
 
 SettingsManager::SettingsManager()
 {
+}
+
+string SettingsManager::format_key(const string &str)
+{
+	string str_formated = str;
+	std::replace(str_formated.begin(), str_formated.end(), ':', '_');
+	std::replace(str_formated.begin(), str_formated.end(), '/', '_');
+	std::replace(str_formated.begin(), str_formated.end(), '\\', '_');
+	return str_formated;
 }
 
 bool SettingsManager::restore_settings()
@@ -54,35 +68,50 @@ bool SettingsManager::has_device_settings(
 	shared_ptr<devices::BaseDevice> device)
 {
 	QSettings settings;
-	return settings.childGroups().contains(QString::fromStdString(device->id()));
+	return settings.childGroups().contains(device->settings_id());
 }
 
 void SettingsManager::save_configurable(
 	const shared_ptr<devices::Configurable> &configurable,
-	QSettings &settings, const QString &key_prefix)
+	QSettings &settings, shared_ptr<sv::devices::BaseDevice> origin_device,
+	const QString &key_prefix)
 {
-	settings.setValue(key_prefix + "device",
-		QVariant(QString::fromStdString(configurable->device_id())));
+	if (origin_device == nullptr ||
+			origin_device->settings_id() != configurable->device_settings_id()) {
+		// Only store the device value if this specific configurable belongs to
+		// an other device than the tab-/device-setting (origin_device) it is
+		// stored into, belongs to (>= 0.0.5).
+		settings.setValue(key_prefix + "device",
+			QVariant(configurable->device_settings_id()));
+	}
 	settings.setValue(key_prefix + "configurable",
 		QVariant(QString::fromStdString(configurable->name())));
 }
 
 void SettingsManager::save_channel(
 	const shared_ptr<channels::BaseChannel> &channel,
-	QSettings &settings, const QString &key_prefix)
+	QSettings &settings, shared_ptr<sv::devices::BaseDevice> origin_device,
+	const QString &key_prefix)
 {
-	settings.setValue(key_prefix + "device", QVariant(QString::fromStdString(
-		channel->parent_device()->id())));
-	settings.setValue(key_prefix + "channel", QVariant(QString::fromStdString(
-		channel->name())));
+	if (origin_device == nullptr ||
+			origin_device->settings_id() != channel->parent_device()->settings_id()) {
+		// Only store the device value if this specific channel belongs to
+		// an other device than the tab-/device-setting (origin_device) it is
+		// stored into, belongs to (>= 0.0.5).
+		settings.setValue(key_prefix + "device",
+			QVariant(channel->parent_device()->settings_id()));
+	}
+	settings.setValue(key_prefix + "channel",
+		QVariant(QString::fromStdString(channel->name())));
 }
 
 void SettingsManager::save_signal(
 	const shared_ptr<data::BaseSignal> &signal,
-	QSettings &settings, const QString &key_prefix)
+	QSettings &settings, shared_ptr<sv::devices::BaseDevice> origin_device,
+	const QString &key_prefix)
 {
 	SettingsManager::save_channel(
-		signal->parent_channel(), settings, key_prefix);
+		signal->parent_channel(), settings, origin_device, key_prefix);
 
 	settings.setValue(key_prefix + "signal_sr_q",
 		data::datautil::get_sr_quantity_id(signal->quantity()));
@@ -92,10 +121,11 @@ void SettingsManager::save_signal(
 
 void SettingsManager::save_property(
 	const shared_ptr<data::properties::BaseProperty> &property,
-	QSettings &settings, const QString &key_prefix)
+	QSettings &settings, shared_ptr<sv::devices::BaseDevice> origin_device,
+	const QString &key_prefix)
 {
 	SettingsManager::save_configurable(
-		property->configurable(), settings, key_prefix);
+		property->configurable(), settings, origin_device, key_prefix);
 
 	settings.setValue(key_prefix + "property_sr_type",
 		devices::deviceutil::get_sr_config_key(property->config_key())->
@@ -104,14 +134,25 @@ void SettingsManager::save_property(
 		devices::deviceutil::get_sr_config_key_id(property->config_key()));
 }
 
-shared_ptr<devices::BaseDevice> SettingsManager::restore_device(
-	Session &session, QSettings &settings, const QString &key_prefix)
+std::shared_ptr< sv::devices::BaseDevice > sv::SettingsManager::restore_device(
+	Session& session, QSettings& settings,
+	std::shared_ptr< sv::devices::BaseDevice > origin_device,
+	const QString &key_prefix)
 {
 	QString device_key = key_prefix + "device";
 
-	if (!settings.contains(device_key))
-		return nullptr;
+	if (!settings.contains(device_key)) {
+		// Use the supplied origin_device here when no device (key) is stored in
+		// this setting (>= 0.0.5).
+		return origin_device;
+	}
+	if (origin_device != nullptr && origin_device->type() == DeviceType::DemoDev) {
+		// This is a fallback for older settings (pre 0.0.5):
+		return origin_device;
+	}
 
+	// If a device (key) is stored in the settings, it means, that this device
+	// differs from the device (origin_device) this tab belongs to.
 	string device_id = settings.value(device_key).toString().toStdString();
 	if (session.device_map().count(device_id) == 0)
 		return nullptr;
@@ -120,12 +161,14 @@ shared_ptr<devices::BaseDevice> SettingsManager::restore_device(
 }
 
 shared_ptr<devices::Configurable> SettingsManager::restore_configurable(
-	Session &session, QSettings &settings, const QString &key_prefix)
+	Session &session, QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device,
+	const QString &key_prefix)
 {
 	QString configurable_key = key_prefix + "configurable";
 
 	auto device = SettingsManager::restore_device(
-		session, settings, key_prefix);
+		session, settings, origin_device, key_prefix);
 	if (!device)
 		return nullptr;
 
@@ -140,12 +183,14 @@ shared_ptr<devices::Configurable> SettingsManager::restore_configurable(
 }
 
 shared_ptr<data::properties::BaseProperty> SettingsManager::restore_property(
-	Session &session, QSettings &settings, const QString &key_prefix)
+	Session &session, QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device,
+	const QString &key_prefix)
 {
 	QString property_key = key_prefix + "property";
 
 	auto configurable = SettingsManager::restore_configurable(
-		session, settings, key_prefix);
+		session, settings, origin_device, key_prefix);
 	if (!configurable)
 		return nullptr;
 
@@ -163,12 +208,14 @@ shared_ptr<data::properties::BaseProperty> SettingsManager::restore_property(
 }
 
 shared_ptr<channels::BaseChannel> SettingsManager::restore_channel(
-	Session &session, QSettings &settings, const QString &key_prefix)
+	Session &session, QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device,
+	const QString &key_prefix)
 {
 	QString channel_key = key_prefix + "channel";
 
 	auto device = SettingsManager::restore_device(
-		session, settings, key_prefix);
+		session, settings, origin_device, key_prefix);
 	if (!device)
 		return nullptr;
 
@@ -183,12 +230,14 @@ shared_ptr<channels::BaseChannel> SettingsManager::restore_channel(
 }
 
 shared_ptr<data::BaseSignal> SettingsManager::restore_signal(
-	Session &session, QSettings &settings, const QString &key_prefix)
+	Session &session, QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device,
+	const QString &key_prefix)
 {
 	QString signal_key = key_prefix + "signal";
 
 	auto channel = SettingsManager::restore_channel(
-		session, settings, key_prefix);
+		session, settings, origin_device, key_prefix);
 	if (!channel)
 		return nullptr;
 

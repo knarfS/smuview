@@ -54,6 +54,7 @@
 #include "src/settingsmanager.hpp"
 #include "src/util.hpp"
 #include "src/data/properties/doubleproperty.hpp"
+#include "src/devices/basedevice.hpp"
 #include "src/ui/datatypes/doublespinbox.hpp"
 #include "src/ui/dialogs/generatewaveformdialog.hpp"
 #include "src/ui/views/baseview.hpp"
@@ -274,13 +275,14 @@ void SequenceOutputView::setup_toolbar()
 	this->addToolBar(Qt::TopToolBarArea, toolbar_);
 }
 
-void SequenceOutputView::save_settings(QSettings &settings) const
+void SequenceOutputView::save_settings(QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device) const
 {
-	BaseView::save_settings(settings);
+	BaseView::save_settings(settings, origin_device);
 
 	if (!property_)
 		return;
-	SettingsManager::save_property(property_, settings);
+	SettingsManager::save_property(property_, settings, origin_device);
 
 	settings.setValue("repeat_infinite",
 		QVariant(repeat_infinite_box_->checkState()));
@@ -302,11 +304,13 @@ void SequenceOutputView::save_settings(QSettings &settings) const
 	}
 }
 
-void SequenceOutputView::restore_settings(QSettings &settings)
+void SequenceOutputView::restore_settings(QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device)
 {
-	BaseView::restore_settings(settings);
+	BaseView::restore_settings(settings, origin_device);
 
-	auto property = SettingsManager::restore_property(session_, settings);
+	auto property = SettingsManager::restore_property(
+		session_, settings, origin_device);
 	if (!property)
 		return;
 	set_property(

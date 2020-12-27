@@ -45,6 +45,7 @@
 #include "src/ui/views/baseview.hpp"
 #include "src/ui/views/viewhelper.hpp"
 
+using std::shared_ptr;
 using std::static_pointer_cast;
 using sv::devices::ConfigKey;
 
@@ -136,21 +137,25 @@ void DemoControlView::connect_signals()
 	// Device -> control elements
 }
 
-void DemoControlView::save_settings(QSettings &settings) const
+void DemoControlView::save_settings(QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device) const
 {
-	BaseView::save_settings(settings);
-	SettingsManager::save_configurable(configurable_, settings);
+	BaseView::save_settings(settings, origin_device);
+	SettingsManager::save_configurable(configurable_, settings, origin_device);
 }
 
-void DemoControlView::restore_settings(QSettings &settings)
+void DemoControlView::restore_settings(QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device)
 {
-	BaseView::restore_settings(settings);
+	BaseView::restore_settings(settings, origin_device);
 }
 
 DemoControlView *DemoControlView::init_from_settings(
-	Session &session, QSettings &settings, QUuid uuid)
+	Session &session, QSettings &settings, QUuid uuid,
+	shared_ptr<sv::devices::BaseDevice> origin_device)
 {
-	auto configurable = SettingsManager::restore_configurable(session, settings);
+	auto configurable = SettingsManager::restore_configurable(
+		session, settings, origin_device);
 	if (configurable)
 		return new DemoControlView(session, configurable, uuid);
 	return nullptr;

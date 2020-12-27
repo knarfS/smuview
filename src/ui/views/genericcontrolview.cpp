@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <memory>
 #include <string>
 
 #include <QDebug>
@@ -38,6 +39,8 @@
 #include "src/ui/datatypes/datatypehelper.hpp"
 #include "src/ui/views/baseview.hpp"
 #include "src/ui/views/viewhelper.hpp"
+
+using std::shared_ptr;
 
 namespace sv {
 namespace ui {
@@ -82,21 +85,25 @@ void GenericControlView::connect_signals()
 	// Device -> control elements
 }
 
-void GenericControlView::save_settings(QSettings &settings) const
+void GenericControlView::save_settings(QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device) const
 {
-	BaseView::save_settings(settings);
-	SettingsManager::save_configurable(configurable_, settings);
+	BaseView::save_settings(settings, origin_device);
+	SettingsManager::save_configurable(configurable_, settings, origin_device);
 }
 
-void GenericControlView::restore_settings(QSettings &settings)
+void GenericControlView::restore_settings(QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device)
 {
-	BaseView::restore_settings(settings);
+	BaseView::restore_settings(settings, origin_device);
 }
 
 GenericControlView *GenericControlView::init_from_settings(
-	Session &session, QSettings &settings, QUuid uuid)
+	Session &session, QSettings &settings, QUuid uuid,
+	shared_ptr<sv::devices::BaseDevice> origin_device)
 {
-	auto configurable = SettingsManager::restore_configurable(session, settings);
+	auto configurable = SettingsManager::restore_configurable(
+		session, settings, origin_device);
 	if (configurable)
 		return new GenericControlView(session, configurable, uuid);
 	return nullptr;

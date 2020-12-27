@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <memory>
 #include <string>
 
 #include <QSettings>
@@ -27,7 +28,9 @@
 
 #include "baseview.hpp"
 #include "src/session.hpp"
+#include "src/devices/basedevice.hpp"
 
+using std::shared_ptr;
 using std::string;
 
 namespace sv {
@@ -71,8 +74,11 @@ string BaseView::id() const
 	return id_;
 }
 
-void BaseView::save_settings(QSettings &settings) const
+void BaseView::save_settings(QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device) const
 {
+	(void)origin_device;
+
 	settings.setValue("uuid", QVariant(uuid()));
 	settings.setValue("id", QVariant(QString::fromStdString(id())));
 	// NOTE: The size must be saved together with the geometry (saveGeometry())
@@ -80,8 +86,11 @@ void BaseView::save_settings(QSettings &settings) const
 	settings.setValue("size", size());
 }
 
-void BaseView::restore_settings(QSettings &settings)
+void BaseView::restore_settings(QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device)
 {
+	(void)origin_device;
+
 	// NOTE: The size must be restored together with the geometry
 	//       (restoreGeometry()) of all dock widgets, see
 	//       DeviceTab::restore_settings().

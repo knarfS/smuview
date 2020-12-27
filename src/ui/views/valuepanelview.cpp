@@ -45,6 +45,7 @@
 #include "src/ui/widgets/monofontdisplay.hpp"
 
 using std::dynamic_pointer_cast;
+using std::shared_ptr;
 
 namespace sv {
 namespace ui {
@@ -262,28 +263,32 @@ void ValuePanelView::disconnect_signals_signal()
 		value_max_display_, &widgets::ValueDisplay::set_digits);
 }
 
-void ValuePanelView::save_settings(QSettings &settings) const
+void ValuePanelView::save_settings(QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device) const
 {
-	BaseView::save_settings(settings);
+	BaseView::save_settings(settings, origin_device);
 
 	if (signal_)
-		SettingsManager::save_signal(signal_, settings);
+		SettingsManager::save_signal(signal_, settings, origin_device);
 	else
-		SettingsManager::save_channel(channel_, settings);
+		SettingsManager::save_channel(channel_, settings, origin_device);
 }
 
-void ValuePanelView::restore_settings(QSettings &settings)
+void ValuePanelView::restore_settings(QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device)
 {
-	BaseView::restore_settings(settings);
+	BaseView::restore_settings(settings, origin_device);
 
-	auto signal = SettingsManager::restore_signal(session_, settings);
+	auto signal = SettingsManager::restore_signal(
+		session_, settings, origin_device);
 	if (signal) {
 		set_signal(
 			dynamic_pointer_cast<sv::data::AnalogTimeSignal>(signal));
 		return;
 	}
 
-	auto channel = SettingsManager::restore_channel(session_, settings);
+	auto channel = SettingsManager::restore_channel(
+		session_, settings, origin_device);
 	if (channel)
 		set_channel(channel);
 }

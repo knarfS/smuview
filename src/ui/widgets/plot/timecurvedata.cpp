@@ -30,6 +30,7 @@
 #include "src/settingsmanager.hpp"
 #include "src/data/analogtimesignal.hpp"
 #include "src/data/datautil.hpp"
+#include "src/devices/basedevice.hpp"
 #include "src/ui/widgets/plot/basecurvedata.hpp"
 
 using std::dynamic_pointer_cast;
@@ -194,15 +195,18 @@ shared_ptr<sv::data::AnalogTimeSignal> TimeCurveData::signal() const
 	return signal_;
 }
 
-void TimeCurveData::save_settings(QSettings &settings) const
+void TimeCurveData::save_settings(QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device) const
 {
-	SettingsManager::save_signal(signal_, settings);
+	SettingsManager::save_signal(signal_, settings, origin_device);
 }
 
 TimeCurveData *TimeCurveData::init_from_settings(
-	Session &session, QSettings &settings)
+	Session &session, QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device)
 {
-	auto signal = SettingsManager::restore_signal(session, settings);
+	auto signal = SettingsManager::restore_signal(
+		session, settings, origin_device);
 	if (!signal)
 		return nullptr;
 

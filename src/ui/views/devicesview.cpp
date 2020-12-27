@@ -119,14 +119,18 @@ void DevicesView::connect_signals()
 {
 }
 
-void DevicesView::save_settings(QSettings &settings) const
+void DevicesView::save_settings(QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device) const
 {
 	(void)settings;
+	(void)origin_device;
 }
 
-void DevicesView::restore_settings(QSettings &settings)
+void DevicesView::restore_settings(QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device)
 {
 	(void)settings;
+	(void)origin_device;
 }
 
 void DevicesView::on_action_add_device_triggered()

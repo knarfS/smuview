@@ -44,6 +44,7 @@
 
 using std::dynamic_pointer_cast;
 using std::set;
+using std::shared_ptr;
 using sv::data::QuantityFlag;
 
 namespace sv {
@@ -336,20 +337,24 @@ void PowerPanelView::disconnect_signals()
 	}
 }
 
-void PowerPanelView::save_settings(QSettings &settings) const
+void PowerPanelView::save_settings(QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device) const
 {
-	BaseView::save_settings(settings);
+	BaseView::save_settings(settings, origin_device);
 
-	SettingsManager::save_signal(voltage_signal_, settings, "v_");
-	SettingsManager::save_signal(current_signal_, settings, "i_");
+	SettingsManager::save_signal(voltage_signal_, settings, origin_device, "v_");
+	SettingsManager::save_signal(current_signal_, settings, origin_device, "i_");
 }
 
-void PowerPanelView::restore_settings(QSettings &settings)
+void PowerPanelView::restore_settings(QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device)
 {
-	BaseView::restore_settings(settings);
+	BaseView::restore_settings(settings, origin_device);
 
-	auto v_signal = SettingsManager::restore_signal(session_, settings, "v_");
-	auto i_signal = SettingsManager::restore_signal(session_, settings, "i_");
+	auto v_signal = SettingsManager::restore_signal(
+		session_, settings, origin_device, "v_");
+	auto i_signal = SettingsManager::restore_signal(
+		session_, settings, origin_device, "i_");
 	if (v_signal && i_signal) {
 		set_signals(
 			dynamic_pointer_cast<sv::data::AnalogTimeSignal>(v_signal),

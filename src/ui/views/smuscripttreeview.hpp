@@ -20,6 +20,8 @@
 #ifndef UI_VIEWS_SMUSCRIPTTREEVIEW_HPP
 #define UI_VIEWS_SMUSCRIPTTREEVIEW_HPP
 
+#include <memory>
+
 #include <QAction>
 #include <QFileSystemModel>
 #include <QModelIndex>
@@ -31,9 +33,15 @@
 
 #include "src/ui/views/baseview.hpp"
 
+using std::shared_ptr;
+
 namespace sv {
 
 class Session;
+
+namespace devices {
+class BaseDevice;
+}
 
 namespace ui {
 namespace views {
@@ -48,8 +56,10 @@ public:
 
 	QString title() const override;
 
-	void save_settings(QSettings &settings) const override;
-	void restore_settings(QSettings &settings) override;
+	void save_settings(QSettings &settings,
+		shared_ptr<sv::devices::BaseDevice> origin_device = nullptr) const override;
+	void restore_settings(QSettings &settings,
+		shared_ptr<sv::devices::BaseDevice> origin_device = nullptr) override;
 
 private:
 	QAction *const action_new_script_;

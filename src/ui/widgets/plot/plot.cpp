@@ -20,6 +20,7 @@
 
 #include <cassert>
 #include <cmath>
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -61,6 +62,7 @@
 
 #include "plot.hpp"
 #include "src/session.hpp"
+#include "src/devices/basedevice.hpp"
 #include "src/ui/dialogs/plotcurveconfigdialog.hpp"
 #include "src/ui/widgets/plot/axislocklabel.hpp"
 #include "src/ui/widgets/plot/basecurvedata.hpp"
@@ -71,6 +73,7 @@
 #include "src/ui/widgets/plot/xycurvedata.hpp"
 
 using std::make_pair;
+using std::shared_ptr;
 using std::string;
 
 namespace sv {
@@ -992,7 +995,8 @@ bool Plot::eventFilter(QObject *object, QEvent *event)
 	return QwtPlot::eventFilter(object, event);
 }
 
-void Plot::save_settings(QSettings &settings, bool save_curves) const
+void Plot::save_settings(QSettings &settings, bool save_curves,
+	shared_ptr<sv::devices::BaseDevice> origin_device) const
 {
 	// TODO: Use Q_ENUM_NS for PlotUpdateMode to add meta-object support (Qt >= 5.8)
 	settings.setValue("update_mode", (int)update_mode());
@@ -1002,11 +1006,12 @@ void Plot::save_settings(QSettings &settings, bool save_curves) const
 	if (!save_curves)
 		return;
 	for (const auto &curve : curve_map_) {
-		curve.second->save_settings(settings);
+		curve.second->save_settings(settings, origin_device);
 	}
 }
 
-void Plot::restore_settings(QSettings &settings, bool restore_curves)
+void Plot::restore_settings(QSettings &settings, bool restore_curves,
+	shared_ptr<sv::devices::BaseDevice> origin_device)
 {
 	if (settings.contains("update_mode"))
 		update_mode_ = static_cast<PlotUpdateMode>(
@@ -1021,7 +1026,8 @@ void Plot::restore_settings(QSettings &settings, bool restore_curves)
 	const auto groups = settings.childGroups();
 	for (const auto &group : groups) {
 		if (group.startsWith("timecurve:") || group.startsWith("xycurve:")) {
-			Curve *curve = Curve::init_from_settings(session_, settings, group);
+			Curve *curve = Curve::init_from_settings(
+				session_, settings, group, origin_device);
 			if (curve)
 				add_curve(curve);
 		}

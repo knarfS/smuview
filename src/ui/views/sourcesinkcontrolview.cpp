@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <memory>
 #include <string>
 
 #include <QDebug>
@@ -30,6 +31,7 @@
 #include "src/session.hpp"
 #include "src/settingsmanager.hpp"
 #include "src/util.hpp"
+#include "src/devices/basedevice.hpp"
 #include "src/devices/configurable.hpp"
 #include "src/devices/deviceutil.hpp"
 #include "src/ui/datatypes/boolbutton.hpp"
@@ -41,6 +43,7 @@
 #include "src/ui/views/baseview.hpp"
 #include "src/ui/views/viewhelper.hpp"
 
+using std::shared_ptr;
 using sv::devices::ConfigKey;
 
 namespace sv {
@@ -175,21 +178,25 @@ void SourceSinkControlView::setup_ui()
 	this->central_widget_->setLayout(layout);
 }
 
-void SourceSinkControlView::save_settings(QSettings &settings) const
+void SourceSinkControlView::save_settings(QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device) const
 {
-	BaseView::save_settings(settings);
-	SettingsManager::save_configurable(configurable_, settings);
+	BaseView::save_settings(settings, origin_device);
+	SettingsManager::save_configurable(configurable_, settings, origin_device);
 }
 
-void SourceSinkControlView::restore_settings(QSettings &settings)
+void SourceSinkControlView::restore_settings(QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device)
 {
-	BaseView::restore_settings(settings);
+	BaseView::restore_settings(settings, origin_device);
 }
 
 SourceSinkControlView *SourceSinkControlView::init_from_settings(
-	Session &session, QSettings &settings, QUuid uuid)
+	Session &session, QSettings &settings, QUuid uuid,
+	shared_ptr<sv::devices::BaseDevice> origin_device)
 {
-	auto configurable = SettingsManager::restore_configurable(session, settings);
+	auto configurable = SettingsManager::restore_configurable(
+		session, settings, origin_device);
 	if (configurable)
 		return new SourceSinkControlView(session, configurable, uuid);
 	return nullptr;

@@ -58,12 +58,12 @@ Configurable::Configurable(
 		const shared_ptr<sigrok::Configurable> sr_configurable,
 		unsigned int configurable_index,
 		const string &device_name, const DeviceType device_type,
-		const string &device_id):
+		const QString &device_settings_id):
 	sr_configurable_(sr_configurable),
 	index_(configurable_index),
 	device_name_(device_name),
 	device_type_(device_type),
-	device_id_(device_id)
+	device_settings_id_(device_settings_id)
 {
 }
 
@@ -359,9 +359,9 @@ DeviceType Configurable::device_type() const
 	return device_type_;
 }
 
-string Configurable::device_id() const
+QString Configurable::device_settings_id() const
 {
-	return device_id_;
+	return device_settings_id_;
 }
 
 set<devices::ConfigKey> Configurable::getable_configs() const

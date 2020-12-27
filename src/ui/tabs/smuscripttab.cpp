@@ -17,7 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <algorithm>
 #include <string>
 
 #include <QDebug>
@@ -46,9 +45,10 @@ SmuScriptTab::SmuScriptTab(Session &session,
 	BaseTab(session, parent),
 	script_file_name_(script_file_name)
 {
-	// The id is the same for all SmuScriptTabs, so they all look the same when
-	// restored from the settings, independed of the filename.
-	id_ = "smuscripttab:";
+	id_ = "smuscripttab:" + SettingsManager::format_key(script_file_name);
+	// The settings_id_ is the same for all SmuScriptTabs, so they all look the
+	// same when restored from the settings, independed of the filename.
+	settings_id_ = "smuscripttab:";
 
 	setup_ui();
 	connect_signals();

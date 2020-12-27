@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <memory>
 #include <string>
 
 #include <QDebug>
@@ -37,6 +38,7 @@
 #include "src/ui/views/baseview.hpp"
 #include "src/ui/views/viewhelper.hpp"
 
+using std::shared_ptr;
 using sv::devices::ConfigKey;
 
 namespace sv {
@@ -78,21 +80,25 @@ void MeasurementControlView::setup_ui()
 	this->central_widget_->setLayout(layout);
 }
 
-void MeasurementControlView::save_settings(QSettings &settings) const
+void MeasurementControlView::save_settings(QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device) const
 {
-	BaseView::save_settings(settings);
-	SettingsManager::save_configurable(configurable_, settings);
+	BaseView::save_settings(settings, origin_device);
+	SettingsManager::save_configurable(configurable_, settings, origin_device);
 }
 
-void MeasurementControlView::restore_settings(QSettings &settings)
+void MeasurementControlView::restore_settings(QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device)
 {
-	BaseView::restore_settings(settings);
+	BaseView::restore_settings(settings, origin_device);
 }
 
 MeasurementControlView *MeasurementControlView::init_from_settings(
-	Session &session, QSettings &settings, QUuid uuid)
+	Session &session, QSettings &settings, QUuid uuid,
+	shared_ptr<sv::devices::BaseDevice> origin_device)
 {
-	auto configurable = SettingsManager::restore_configurable(session, settings);
+	auto configurable = SettingsManager::restore_configurable(
+		session, settings, origin_device);
 	if (configurable)
 		return new MeasurementControlView(session, configurable, uuid);
 	return nullptr;
