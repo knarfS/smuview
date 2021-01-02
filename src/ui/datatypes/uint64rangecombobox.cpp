@@ -43,7 +43,7 @@ UInt64RangeComboBox::UInt64RangeComboBox(
 {
 	// Check property
 	if (property_ != nullptr &&
-			property_->data_type() != data::DataType::Uint64Range) {
+			property_->data_type() != data::DataType::UInt64Range) {
 
 		QString msg = QString("UInt64RangeComboBox with property of type ").append(
 			data::datautil::format_data_type(property_->data_type()));

@@ -84,7 +84,7 @@ QWidget *get_widget_for_property(
 	case data::DataType::DoubleRange:
 		return new DoubleRangeComboBox(property, auto_commit, auto_update);
 		break;
-	case data::DataType::Uint64Range:
+	case data::DataType::UInt64Range:
 		return new UInt64RangeComboBox(property, auto_commit, auto_update);
 		break;
 	case data::DataType::KeyValue:

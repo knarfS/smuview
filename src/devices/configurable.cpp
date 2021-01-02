@@ -136,7 +136,7 @@ void Configurable::init()
 			property = make_shared<data::properties::RationalProperty>(
 				shared_from_this(), config_key);
 			break;
-		case data::DataType::Uint64Range:
+		case data::DataType::UInt64Range:
 			property = make_shared<data::properties::UInt64RangeProperty>(
 				shared_from_this(), config_key);
 			break;
