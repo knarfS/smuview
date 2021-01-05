@@ -1,3 +1,36 @@
+0.0.5 (2021-01-09)
+------------------
+
+For a detailed list of changes, please see the git commit history.
+
+ * Save and restore settings:
+   - Save/restore the size and position of the main window.
+   - Save/restore the shown views and their size/position for a specific device.
+   - Add a tab for curve color settings in the plot config dialog.
+   - Add -c cmd line parameter for don't restoring the settings.
+   - Save/restore the settings of the find and replace dialog.
+   - Save/restore last directory of the SmuScript tree.
+   - Save/restore the settings of the save signals dialog.
+ * Enhance the Python API:
+   - Message Boxes and input dialoges for various data types.
+   - Return the view id when adding a new view.
+   - Improve bindings for time and x/y plots.
+   - Add function to set/change a curve color.
+   - Add function to set a custom signal name.
+   - Add function to set a custom plot curve name.
+   - Add functions for getting the available config keys.
+ * More verbose device info in the about dialog.
+ * Plot view:
+   - Make curve name editable and curve removable.
+   - Fix the axis lock labels.
+ * Many improvements for the python editor.
+ * Add a find and replace dialog for the python editor.
+ * Add a time window option to combine analog values when saving signals (Thanks to Cymaphore).
+ * Support for the new "force_detect" connection parameter of libsigrok.
+ * Update libsigrok for new devices and bugfixes.
+ * Update manual for SmuView.
+ * Many more bug fixes and improvements.
+
 0.0.4 (2020-02-18)
 ------------------
 
