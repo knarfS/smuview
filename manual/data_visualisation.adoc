@@ -63,8 +63,8 @@ When double clicking an axis, you can manually set the axis boundaries, lock the
 boundaries and set an axis scale (linear or logarithmic). With the lock symbols
 (image:numbers/1.png[1,22,22] and image:numbers/2.png[2,22,22]) at the axis, you
 can also lock a axis boundary. When clicking on a signal label
-(image:numbers/3.png[3,22,22]), you can change the visibility, color, line type
-and symbol type of the corresponding signal.
+(image:numbers/3.png[3,22,22]), you can change the curve name, the visibility,
+color, line type and symbol type of the corresponding signal.
 
 You can add plot markers (image:numbers/4.png[4,22,22]), differential markers
 (image:numbers/5.png[5,22,22]), resize to best fit (image:numbers/6.png[6,22,22]),

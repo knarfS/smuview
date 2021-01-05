@@ -1,0 +1,8 @@
+Time,Demo device,Demo device,Demo device
+Time,Analog,Analog,Analog
+Time,A1,A2,A3
+Time,A1 [V DC],A2 [V DC],A3 [V DC]
+0.3400,0,0,0
+0.5400,3.09017,2,1
+0.7300,5.87785,4,2
+0.9410,8.09017,6,3

@@ -1,6 +1,6 @@
 SmuView User Manual
 ===================
-Version 0.0.4, dated 2020-02-10
+Version 0.0.5, dated 2021-01-09
 :doctype: book
 :imagesdir: ./images
 :sectnums:
@@ -9,6 +9,7 @@ Version 0.0.4, dated 2020-02-10
 :icons: font
 :figure-caption: Image
 :source-highlighter: coderay
+:experimental:
 
 ifdef::ebook-format[:leveloffset: -1]
 

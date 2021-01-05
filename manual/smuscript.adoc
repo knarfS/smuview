@@ -5,7 +5,8 @@ SmuView has a python scripting extension to automate, setup and control complex
 or repetitive measurements, to process the incoming data and to create a
 standardized user interface for those measurements.
 
-The smuview module offers two default object instances: `Session` and `UiProxy`.
+The `smuview` python module offers two default object instances: `Session` and
+`UiProxy`.
 The `Session` object gives access to already connected devices or connects new
 devices. The returned device object can then be used to read data from the
 device or control the device.
@@ -15,8 +16,12 @@ adding tabs or views.
 [WARNING]
 Only one script can be executed at a time!
 
-You can find an API documentation https://knarfs.github.io/doc/smuview/0.0.4/python_bindings_api.html[here]
+You can find an API documentation https://knarfs.github.io/doc/smuview/0.0.5/python_bindings_api.html[here]
 and example scripts in the `smuscript` folder.
+
+SmuView provides a basic editor to edit and run scripts. Here you can use the
+keyboard shortcuts kbd:[Ctrl+S] to save the actual file and kbd:[Ctrl+F] to open
+the search and replace dialog.
 
 image::SmuScript.png[]
 
@@ -30,8 +35,16 @@ image:numbers/7.png[7,22,22] Open new script file. +
 image:numbers/8.png[8,22,22] Save script file. +
 image:numbers/9.png[9,22,22] Save script file with a new name. +
 image:numbers/10.png[10,22,22] Execute script file. +
-image:numbers/11.png[11,22,22] Scroll to bottom. +
-image:numbers/12.png[11,22,22] Clear output window.
+image:numbers/11.png[11,22,22] Open Search & Replace dialog. +
+image:numbers/12.png[11,22,22] Scroll to bottom. +
+image:numbers/13.png[11,22,22] Clear output window.
+
+SmuScripts can also be started on startup, using the command line parameter
+`-s`:
+[listing, subs="normal"]
+smuview -s /path/to/script.py
+
+=== Examples
 
 The following short example connects the HP 3378A DMM via GPIB, reads a sample
 and creates the default tab for the device:

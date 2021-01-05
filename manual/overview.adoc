@@ -7,9 +7,10 @@ data. It is part of the sigrok suite, just like the libraries that it makes use
 of.
 
 The sigrok suite needs some kind of hardware to interface to the signals you
-want to examine or control. SmuView currently supports devices that can either
-work as a https://sigrok.org/wiki/Supported_hardware#Power_supplies[power supply]
-or an https://sigrok.org/wiki/Supported_hardware#Digital_loads[electronic load].
+want to examine or control. SmuView currently supports a wide variarity of
+analog devices like
+https://sigrok.org/wiki/Supported_hardware#Power_supplies[power supplies]
+or https://sigrok.org/wiki/Supported_hardware#Digital_loads[electronic loads].
 Both of these device types are most of the time controllable. There is also a
 large number of measurement devices that are supported by SmuView like
 https://sigrok.org/wiki/Supported_hardware#Multimeters[multimeters],
@@ -22,6 +23,18 @@ https://sigrok.org/wiki/Supported_hardware#Light_meters[light meters],
 https://sigrok.org/wiki/Supported_hardware#Energy_meters[energy meters],
 https://sigrok.org/wiki/Supported_hardware#Tachometers[tachometers] and
 https://sigrok.org/wiki/Supported_hardware#Scales[scales].
+
+Please be aware that SmuView does not support devices that either work as
+https://sigrok.org/wiki/Supported_hardware#Oscilloscopes[oscilloscopes],
+https://sigrok.org/wiki/Supported_hardware#Logic_analyzers[logic analyzers] or
+https://sigrok.org/wiki/Supported_hardware#Mixed-signal_devices[mixed-signal devices].
+This device types are currently only usable with either
+https://sigrok.org/wiki/Sigrok-cli[sigrok-cli] or
+https://sigrok.org/wiki/PulseView[PulseView].
+
+However, oscilloscopes will be supported in the future to perform high frequency
+measurements (like voltage ripple on switch mode power supplies) or measurements
+in the frequency domain (e.g. for filter characterization).
 
 image::sv_with_psu.png[SmuView with a power supply.]
 

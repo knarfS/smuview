@@ -30,9 +30,22 @@ The remaining parameters are mostly for debug purposes:
 [listing, subs="normal"]
 -V / --version		Shows the release version
 -l / --loglevel		Sets the libsigrok/libsigrokdecode log level (max is 5)
--D / --dont-scan	Do not auto-scan for devices
+-D / --dont-scan	Do not auto-scan for devices and use -d spec only
+-c / --clean		Do not restore previous settings on startup
 
 Of these, `-D` / `--dont-scan` can be useful when SmuView gets stuck during
 the startup device scan. No such scan will be performed then, allowing the
 program to start up but you'll have to scan for your acquisition device(s)
 manually before you can use them.
+
+Another potentially useful option is `-c` / `--clean`, which can be used when
+SmuView doesn’t start up and you don’t know what could cause this.
+
+Thus, the combination of both parameters can be seen as some kind of "safe mode"
+for SmuView:
+[listing, subs="normal"]
+smuview -c -D
+
+
+
+
