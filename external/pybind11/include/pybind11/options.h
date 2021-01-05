@@ -11,7 +11,7 @@
 
 #include "detail/common.h"
 
-NAMESPACE_BEGIN(PYBIND11_NAMESPACE)
+PYBIND11_NAMESPACE_BEGIN(PYBIND11_NAMESPACE)
 
 class options {
 public:
@@ -42,10 +42,6 @@ public:
 
     options& enable_enum_members_docstring() & { global_state().show_enum_members_docstring = true; return *this; }
 
-    options& disable_enum_pdoc() & { global_state().populate_enum_pdoc = false; return *this; }
-
-    options& enable_enum_pdoc() & { global_state().populate_enum_pdoc = true; return *this; }
-
     // Getter methods (return the global state):
 
     static bool show_user_defined_docstrings() { return global_state().show_user_defined_docstrings; }
@@ -53,8 +49,6 @@ public:
     static bool show_function_signatures() { return global_state().show_function_signatures; }
 
     static bool show_enum_members_docstring() { return global_state().show_enum_members_docstring; }
-
-    static bool populate_enum_pdoc() { return global_state().populate_enum_pdoc; }
 
     // This type is not meant to be allocated on the heap.
     void* operator new(size_t) = delete;
@@ -65,7 +59,6 @@ private:
         bool show_user_defined_docstrings = true;  //< Include user-supplied texts in docstrings.
         bool show_function_signatures = true;      //< Include auto-generated function signatures in docstrings.
         bool show_enum_members_docstring = true;   //< Include auto-generated member list in enum docstring.
-        bool populate_enum_pdoc = false;           //< Add auto-generated __pdoc__ Dict for enum members.
     };
 
     static state &global_state() {
@@ -76,4 +69,4 @@ private:
     state previous_state;
 };
 
-NAMESPACE_END(PYBIND11_NAMESPACE)
+PYBIND11_NAMESPACE_END(PYBIND11_NAMESPACE)
