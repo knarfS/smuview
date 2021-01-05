@@ -122,7 +122,23 @@ find_package(Boost 1.54 REQUIRED)
 # This will set ${CMAKE_THREAD_LIBS_INIT} to the correct, OS-specific value.
 find_package(Threads REQUIRED)
 
-# SmuView has its own copy of pybind11 2.4.3
+if(MINGW)
+	# MXE workaround: Use PkgConfig to find the supplied Python 3.4 (see MXE build
+	# script sigrok-cross-mingw-smuview in sigrok-util) and disable the find
+	# python functionality in pybind11
+	set(PYBIND11_NOPYTHON ON)
+
+	# Python 3.8 no longer links to libpython, but it provides a python3-embed.pc
+	# now, so let's try using that first and only fall back on the normal case if
+	# that fails.
+	# See: https://docs.python.org/3.8/whatsnew/3.8.html#debug-build-uses-the-same-abi-as-release-build
+	pkg_check_modules(PYTHON3 python3-embed)
+	if(NOT PYTHON3_FOUND)
+		pkg_check_modules(PYTHON3 python3)
+	endif()
+endif()
+
+# SmuView has its own copy of pybind11 2.6.1 dev1
 add_subdirectory(external/pybind11)
 # SmuView has its own copy of QCodeEditor
 add_subdirectory(external/QCodeEditor)
@@ -171,11 +187,15 @@ endif()
 
 message(STATUS "${SV_TITLE} version: ${SV_VERSION_STRING}")
 
-# Used libraries
+# Library versions
 set(SV_GLIBMM_VERSION ${PKGDEPS_glibmm-2.4_VERSION})
 set(SV_PYBIND11_VERSION ${PYBIND11_VERSION_MAJOR}.${PYBIND11_VERSION_MINOR}.${PYBIND11_VERSION_PATCH})
-# TODO: Patch version is missing!
-set(SV_PYTHON_VERSION ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR})
+if(MINGW)
+	# MXE workaround: Use PkgConfig to find Python
+	set(SV_PYTHON_VERSION ${PYTHON3_VERSION})
+else()
+	set(SV_PYTHON_VERSION ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR})
+endif()
 
 configure_file (
 	${PROJECT_SOURCE_DIR}/config.h.in
@@ -386,6 +406,11 @@ include_directories(
 	${Boost_INCLUDE_DIRS}
 )
 
+if(MINGW)
+	# MXE workaround: Use PkgConfig to find Python
+	include_directories(${PYTHON3_INCLUDE_DIRS})
+endif()
+
 if(STATIC_PKGDEPS_LIBS)
 	include_directories(${PKGDEPS_STATIC_INCLUDE_DIRS})
 else()
@@ -417,6 +442,16 @@ if(STATIC_PKGDEPS_LIBS)
 else()
 	link_directories(${PKGDEPS_LIBRARY_DIRS})
 	list(APPEND SMUVIEW_LINK_LIBS ${PKGDEPS_LIBRARIES})
+endif()
+
+if(MINGW)
+	# MXE workaround: Use PkgConfig to find Python
+	if(PYTHON3_LINK_LIBRARIES)
+		# Try to use the fully qualified name for cross compiling
+		list(APPEND SMUVIEW_LINK_LIBS ${PYTHON3_LINK_LIBRARIES})
+	else()
+		list(APPEND SMUVIEW_LINK_LIBS ${PYTHON3_LIBRARIES})
+	endif()
 endif()
 
 if(WIN32)
