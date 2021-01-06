@@ -1,4 +1,4 @@
-.TH SMUVIEW 1 "Januray 20, 2020"
+.TH SMUVIEW 1 "Januray 6, 2021"
 .SH "NAME"
 SmuView \- Qt-based source measure unit GUI for sigrok
 .SH "SYNOPSIS"
@@ -14,7 +14,7 @@ electronic loads, multimeters and more.
 has very few command line options, as most configuration elements are
 available from the GUI itself.
 .TP
-.B "\-l, \-\-loglevel"
+.BR "\-l, \-\-loglevel " <level>
 Set the libsigrok loglevel. The higher the number, the more debug output will
 be printed. Valid loglevels are:
 .sp
@@ -42,8 +42,12 @@ Specify the capture device to connect to.
 .BR "\-D, \-\-dont\-scan "
 Usually SmuView automatically scans all drivers to find suitable
 devices during program startup. This option disables the auto-scan.
-Users can either specify the
+.TP
+.B "\-c, \-\-clean"
+Don't restore previous settings (like views, position and size) on startup.
+.TP
 .B \-\-driver
+Users can either specify the
 option to pick a device at startup, or interactively scan for devices
 after SmuView has finished starting up.
 .TP
