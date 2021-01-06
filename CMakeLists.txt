@@ -3,7 +3,7 @@
 ##
 ## Copyright (C) 2012 Joel Holdsworth <joel@airwebreathe.org.uk>
 ## Copyright (C) 2012-2013 Alexandru Gagniuc <mr.nuke.me@gmail.com>
-## Copyright (C) 2017-2020 Frank Stettner <frank-stettner@gmx.net>
+## Copyright (C) 2017-2021 Frank Stettner <frank-stettner@gmx.net>
 ##
 ## This program is free software: you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
