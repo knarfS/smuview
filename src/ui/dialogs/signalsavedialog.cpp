@@ -70,6 +70,9 @@ SignalSaveDialog::SignalSaveDialog(const Session &session,
 			settings.childGroups().contains("SignalSaveDialog")) {
 		restore_settings(settings);
 	}
+	else {
+		file_dialog_path_ = QDir::homePath();
+	}
 }
 
 void SignalSaveDialog::setup_ui()
@@ -429,6 +432,7 @@ void SignalSaveDialog::save_settings(QSettings &settings) const
 		timestamps_combined_timeframe_->value());
 	settings.setValue("time_absolut", time_absolut_->isChecked());
 	settings.setValue("csv_separator", separator_edit_->text());
+	settings.setValue("file_dialog_path", file_dialog_path_);
 
 	settings.endGroup();
 }
@@ -451,6 +455,10 @@ void SignalSaveDialog::restore_settings(QSettings &settings)
 	if (settings.contains("csv_separator")) {
 		separator_edit_->setText(settings.value("csv_separator").toString());
 	}
+	if (settings.contains("file_dialog_path")) {
+		file_dialog_path_ =
+			settings.value("file_dialog_path", QDir::homePath()).toString();
+	}
 
 	settings.endGroup();
 }
@@ -459,9 +467,11 @@ void SignalSaveDialog::accept()
 {
 	// Get file name
 	QString file_name = QFileDialog::getSaveFileName(this,
-		tr("Save CSV-File"), QDir::homePath(), tr("CSV Files (*.csv)"));
+		tr("Save CSV-File"), file_dialog_path_, tr("CSV Files (*.csv)"));
 	if (file_name.isEmpty())
 		return;
+
+	file_dialog_path_ = QDir().absoluteFilePath(file_name);
 
 	if (timestamps_combined_->isChecked()) {
 		if (!validate_combined_timeframe())

@@ -79,6 +79,7 @@ private:
 	QCheckBox *time_absolut_;
 	QLineEdit *separator_edit_;
 	QDialogButtonBox *button_box_;
+	QString file_dialog_path_;
 
 public Q_SLOTS:
 	void accept() override;
