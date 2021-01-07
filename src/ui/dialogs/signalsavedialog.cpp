@@ -179,7 +179,8 @@ void SignalSaveDialog::save(const QString &file_name)
 				chg_names += "\"\"";
 			else
 				chg_names += chg_name;
-			chg_sep = ", ";
+			// TODO: Ugly workaround. Implement escaping or quotation characters?
+			chg_sep = sep == "," ? "; " : ", ";
 		}
 
 		device_header_line += start_sep;
@@ -291,7 +292,8 @@ void SignalSaveDialog::save_combined(const QString &file_name)
 				chg_names += "\"\"";
 			else
 				chg_names += chg_name;
-			chg_sep = ", ";
+			// TODO: Ugly workaround. Implement escaping or quotation characters?
+			chg_sep = sep == "," ? "; " : ", ";
 		}
 
 		device_header_line += sep;
