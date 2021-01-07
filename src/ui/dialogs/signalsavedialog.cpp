@@ -95,7 +95,7 @@ void SignalSaveDialog::setup_ui()
 
 	QFormLayout *form_layout = new QFormLayout();
 
-	timestamps_combined_ = new QCheckBox(tr("Combine all time stamps"));
+	timestamps_combined_ = new QCheckBox(tr("Combine all timestamps"));
 	form_layout->addRow("", timestamps_combined_);
 
 	timestamps_combined_timeframe_ = new QSpinBox();
@@ -230,7 +230,7 @@ void SignalSaveDialog::save(const QString &file_name)
 				auto sample = analog_signal->get_sample(i, relative_time);
 				value = QString("%1").arg(sample.second);
 				if (relative_time)
-					time = QString("%1").arg(sample.first);
+					time = QString("%1").arg(sample.first, 0, 'f', 4);
 				else
 					time = util::format_time_date(sample.first);
 			}
