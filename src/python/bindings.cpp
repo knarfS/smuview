@@ -58,7 +58,7 @@ PYBIND11_EMBEDDED_MODULE(smuview, m) {
 	options.enable_function_signatures();
 	options.disable_enum_members_docstring();
 
-	m.doc() = "The SmuView 0.0.4 Python bindings.\n\n" // TODO: Use SV_VERSION_STRING?
+	m.doc() = "The SmuView " SV_VERSION_STRING " Python bindings.\n\n"
 		"The Python bindings are a scripting extension for SmuView to automate, "
 		"setup and control complex or repetitive measurements, to process the "
 		"incoming data and to create a standardized user interface for those "
