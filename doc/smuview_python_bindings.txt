@@ -1,20 +1,20 @@
 Help on built-in module smuview:
 
 NAME
-    smuview - The SmuView 0.0.4 Python bindings.
+    smuview - The SmuView 0.0.5 Python bindings.
 
 DESCRIPTION
     The Python bindings are a scripting extension for SmuView to automate, setup and control complex or repetitive measurements, to process the incoming data and to create a standardized user interface for those measurements.
-    
+
     The smuview module offers two default object instances: `Session` and `UiProxy`.
     The `Session` object gives access to already connected devices or connects new devices. The returned device object can then be used to read data from the device or control the device.
     The `UiProxy` object instance is used to modify the user interface, for example adding tabs or views.
-    
+
     Here is a short example that connects the HP 3378A DMM via GPIB, reads a sample and creates the default tab for the device:
     ```
     import smuview
     import time
-    
+
     # Connect device.
     dmm_dev = Session.connect_device("hp-3478a:conn=libgpib/hp3478a")[0]
     # Sleep 1s to give the devices the chance to create signals.
@@ -22,11 +22,11 @@ DESCRIPTION
     # Get last sample from channel P1.
     sample = dmm_dev.channels()["P1"].actual_signal().get_last_sample(True)
     print(sample)
-    
+
     # Add default tab for the DMM device.
     UiProxy.add_device_tab(dmm_dev)
     ```
-    
+
     For more example scripts, please have a look into the `smuscript` folder.
 
 CLASSES
@@ -50,41 +50,41 @@ CLASSES
         Session
         UiProxy
         Unit
-    
+
     class AnalogSampleSignal(BaseSignal)
      |  A signal with key-value pairs.
-     |  
+     |
      |  Method resolution order:
      |      AnalogSampleSignal
      |      BaseSignal
      |      pybind11_builtins.pybind11_object
      |      builtins.object
-     |  
+     |
      |  Methods defined here:
-     |  
+     |
      |  __init__(self, /, *args, **kwargs)
      |      Initialize self.  See help(type(self)) for accurate signature.
-     |  
+     |
      |  get_sample(...)
      |      get_sample(self: smuview.AnalogSampleSignal, pos: int) -> Tuple[int, float]
-     |      
+     |
      |      Return the sample for the given position.
-     |      
+     |
      |      Parameters
      |      ----------
      |      pos : int
      |          The position/number of the sample.
-     |      
+     |
      |      Returns
      |      -------
      |      Tuple[int, float]
      |          The sample with 1. the key and 2. the sample value.
-     |  
+     |
      |  push_sample(...)
      |      push_sample(self: smuview.AnalogSampleSignal, sample: capsule, pos: int, unit_size: int, digits: int, decimal_places: int) -> None
-     |      
+     |
      |      Push a new sample to the signal.
-     |      
+     |
      |      Parameters
      |      ----------
      |      sample : float or double
@@ -97,97 +97,97 @@ CLASSES
      |          The total number of digits.
      |      decimal_places : int
      |          The number of decimal places.
-     |  
+     |
      |  ----------------------------------------------------------------------
      |  Methods inherited from BaseSignal:
-     |  
+     |
      |  name(...)
      |      name(self: smuview.BaseSignal) -> str
-     |      
+     |
      |      Return the name of the signal.
-     |      
+     |
      |      Returns
      |      -------
      |      str
      |          The name of the signal.
-     |  
+     |
      |  sample_count(...)
      |      sample_count(self: smuview.BaseSignal) -> int
-     |      
+     |
      |      Return the number of samples of the signal.
-     |      
+     |
      |      Returns
      |      -------
      |      int
      |          The number of samples.
-     |  
+     |
      |  set_name(...)
      |      set_name(self: smuview.BaseSignal, arg0: str) -> None
-     |      
+     |
      |      Set a custom name for the signal.
-     |      
+     |
      |      Parameters
      |      ----------
      |      custom_name : str
      |          A custom name for the signal. If empty, the signal name will be automatically generated.
-     |  
+     |
      |  ----------------------------------------------------------------------
      |  Static methods inherited from pybind11_builtins.pybind11_object:
-     |  
+     |
      |  __new__(*args, **kwargs) from pybind11_builtins.pybind11_type
      |      Create and return a new object.  See help(type) for accurate signature.
-    
+
     class AnalogTimeSignal(BaseSignal)
      |  A signal with time-value pairs.
-     |  
+     |
      |  Method resolution order:
      |      AnalogTimeSignal
      |      BaseSignal
      |      pybind11_builtins.pybind11_object
      |      builtins.object
-     |  
+     |
      |  Methods defined here:
-     |  
+     |
      |  __init__(self, /, *args, **kwargs)
      |      Initialize self.  See help(type(self)) for accurate signature.
-     |  
+     |
      |  get_last_sample(...)
      |      get_last_sample(self: smuview.AnalogTimeSignal, relative_time: bool) -> Tuple[float, float]
-     |      
+     |
      |      Return the last sample of the signal.
-     |      
+     |
      |      Parameters
      |      ----------
      |      relative_time : bool
      |          When `True`, the returned timestamp is relative to the start of the SmuView session.
-     |      
+     |
      |      Returns
      |      -------
      |      Tuple[float, float]
      |          The sample with 1. timestamp in milliseconds and 2. the sample value.
-     |  
+     |
      |  get_sample(...)
      |      get_sample(self: smuview.AnalogTimeSignal, pos: int, relative_time: bool) -> Tuple[float, float]
-     |      
+     |
      |      Return the sample at the given position.
-     |      
+     |
      |      Parameters
      |      ----------
      |      pos : int
      |          The position/number of the sample.
      |      relative_time : bool
      |          When `True`, the returned timestamp is relative to the start of the SmuView session.
-     |      
+     |
      |      Returns
      |      -------
      |      Tuple[float, float]
      |          The sample with 1. timestamp in milliseconds and 2. the sample value.
-     |  
+     |
      |  push_sample(...)
      |      push_sample(self: smuview.AnalogTimeSignal, sample: capsule, timestamp: float, unit_size: int, digits: int, decimal_places: int) -> None
-     |      
+     |
      |      Push a new sample to the signal.
-     |      
+     |
      |      Parameters
      |      ----------
      |      sample : float or double
@@ -200,74 +200,74 @@ CLASSES
      |          The total number of digits.
      |      decimal_places : int
      |          The number of decimal places.
-     |  
+     |
      |  ----------------------------------------------------------------------
      |  Methods inherited from BaseSignal:
-     |  
+     |
      |  name(...)
      |      name(self: smuview.BaseSignal) -> str
-     |      
+     |
      |      Return the name of the signal.
-     |      
+     |
      |      Returns
      |      -------
      |      str
      |          The name of the signal.
-     |  
+     |
      |  sample_count(...)
      |      sample_count(self: smuview.BaseSignal) -> int
-     |      
+     |
      |      Return the number of samples of the signal.
-     |      
+     |
      |      Returns
      |      -------
      |      int
      |          The number of samples.
-     |  
+     |
      |  set_name(...)
      |      set_name(self: smuview.BaseSignal, arg0: str) -> None
-     |      
+     |
      |      Set a custom name for the signal.
-     |      
+     |
      |      Parameters
      |      ----------
      |      custom_name : str
      |          A custom name for the signal. If empty, the signal name will be automatically generated.
-     |  
+     |
      |  ----------------------------------------------------------------------
      |  Static methods inherited from pybind11_builtins.pybind11_object:
-     |  
+     |
      |  __new__(*args, **kwargs) from pybind11_builtins.pybind11_type
      |      Create and return a new object.  See help(type) for accurate signature.
-    
+
     class BaseChannel(pybind11_builtins.pybind11_object)
      |  The base class for all channel types.
-     |  
+     |
      |  Method resolution order:
      |      BaseChannel
      |      pybind11_builtins.pybind11_object
      |      builtins.object
-     |  
+     |
      |  Methods defined here:
-     |  
+     |
      |  __init__(self, /, *args, **kwargs)
      |      Initialize self.  See help(type(self)) for accurate signature.
-     |  
+     |
      |  actual_signal(...)
      |      actual_signal(self: smuview.BaseChannel) -> smuview.BaseSignal
-     |      
+     |
      |      Return the actual signal of the channel.
-     |      
+     |
      |      Returns
      |      -------
      |      BaseSignal
      |          The actual signal object.
-     |  
+     |
      |  add_signal(...)
      |      add_signal(self: smuview.BaseChannel, quantity: smuview.Quantity, quantity_flags: Set[smuview.QuantityFlag], unit: smuview.Unit, custom_name: str = '') -> smuview.BaseSignal
-     |      
+     |
      |      Add a new signal to the channel.
-     |      
+     |
      |      Parameters
      |      ----------
      |      quantity : Quantity
@@ -278,748 +278,763 @@ CLASSES
      |          The `Unit` of the new signal.
      |      custom_name: str
      |          A custom name for the new signal. If empty (default), the signal name will be automatically generated.
-     |      
+     |
      |      Returns
      |      -------
      |      BaseSignal
      |          The new signal object.
-     |  
+     |
      |  name(...)
      |      name(self: smuview.BaseChannel) -> str
-     |      
+     |
      |      Return the name of the channel.
-     |      
+     |
      |      Returns
      |      -------
      |      str
      |          The name of the channel.
-     |  
+     |
      |  signals(...)
      |      signals(self: smuview.BaseChannel) -> List[smuview.BaseSignal]
-     |      
+     |
      |      Return all signals of the channel.
-     |      
+     |
      |      Returns
      |      -------
      |      List[BaseSignal]
      |          All signals of the channel.
-     |  
+     |
      |  ----------------------------------------------------------------------
      |  Static methods inherited from pybind11_builtins.pybind11_object:
-     |  
+     |
      |  __new__(*args, **kwargs) from pybind11_builtins.pybind11_type
      |      Create and return a new object.  See help(type) for accurate signature.
-    
+
     class BaseDevice(pybind11_builtins.pybind11_object)
      |  The base class for all device types.
-     |  
+     |
      |  Method resolution order:
      |      BaseDevice
      |      pybind11_builtins.pybind11_object
      |      builtins.object
-     |  
+     |
      |  Methods defined here:
-     |  
+     |
      |  __init__(self, /, *args, **kwargs)
      |      Initialize self.  See help(type(self)) for accurate signature.
-     |  
+     |
      |  add_user_channel(...)
      |      add_user_channel(self: smuview.BaseDevice, channel_name: str, channel_group_name: str) -> smuview.UserChannel
-     |      
+     |
      |      Add a new user channel to the device.
-     |      
+     |
      |      Parameters
      |      ----------
      |      channel_name : str
      |          The name of the new user channel.
      |      channel_group_name : str
      |          The name of the channel group where to create the user channel. Can be empty.
-     |      
+     |
      |      Returns
      |      -------
      |      UserChannel
      |          The new user channel object.
-     |  
+     |
      |  channels(...)
      |      channels(self: smuview.BaseDevice) -> Dict[str, smuview.BaseChannel]
-     |      
+     |
      |      Return all channels of the device.
-     |      
+     |
      |      Returns
      |      -------
      |      Dict[str, BaseChannel]
      |          A Dict where the key is the id of the channel and the value is the channel object.
-     |  
+     |
      |  configurables(...)
      |      configurables(self: smuview.BaseDevice) -> Dict[str, smuview.Configurable]
-     |      
+     |
      |      Return all configurables of the device.
-     |      
+     |
      |      Returns
      |      -------
      |      Dict[str, Configurable]
      |          A Dict where the key is the id of the `Configurable` and the value is the `Configurable` object.
-     |  
+     |
      |  id(...)
      |      id(self: smuview.BaseDevice) -> str
-     |      
+     |
      |      Return the unique id of the device.
-     |      
+     |
      |      Returns
      |      -------
      |      str
      |          The id of the device.
-     |  
+     |
      |  name(...)
      |      name(self: smuview.BaseDevice) -> str
-     |      
+     |
      |      Return the name of the device.
-     |      
+     |
      |      Returns
      |      -------
      |      str
      |          The name of the device.
-     |  
+     |
      |  ----------------------------------------------------------------------
      |  Static methods inherited from pybind11_builtins.pybind11_object:
-     |  
+     |
      |  __new__(*args, **kwargs) from pybind11_builtins.pybind11_type
      |      Create and return a new object.  See help(type) for accurate signature.
-    
+
     class BaseSignal(pybind11_builtins.pybind11_object)
      |  The base class for all signal types.
-     |  
+     |
      |  Method resolution order:
      |      BaseSignal
      |      pybind11_builtins.pybind11_object
      |      builtins.object
-     |  
+     |
      |  Methods defined here:
-     |  
+     |
      |  __init__(self, /, *args, **kwargs)
      |      Initialize self.  See help(type(self)) for accurate signature.
-     |  
+     |
      |  name(...)
      |      name(self: smuview.BaseSignal) -> str
-     |      
+     |
      |      Return the name of the signal.
-     |      
+     |
      |      Returns
      |      -------
      |      str
      |          The name of the signal.
-     |  
+     |
      |  sample_count(...)
      |      sample_count(self: smuview.BaseSignal) -> int
-     |      
+     |
      |      Return the number of samples of the signal.
-     |      
+     |
      |      Returns
      |      -------
      |      int
      |          The number of samples.
-     |  
+     |
      |  set_name(...)
      |      set_name(self: smuview.BaseSignal, arg0: str) -> None
-     |      
+     |
      |      Set a custom name for the signal.
-     |      
+     |
      |      Parameters
      |      ----------
      |      custom_name : str
      |          A custom name for the signal. If empty, the signal name will be automatically generated.
-     |  
+     |
      |  ----------------------------------------------------------------------
      |  Static methods inherited from pybind11_builtins.pybind11_object:
-     |  
+     |
      |  __new__(*args, **kwargs) from pybind11_builtins.pybind11_type
      |      Create and return a new object.  See help(type) for accurate signature.
-    
+
     class ConfigKey(pybind11_builtins.pybind11_object)
      |  Enum of all available config keys for controlling a device.
-     |  
+     |
      |  Method resolution order:
      |      ConfigKey
      |      pybind11_builtins.pybind11_object
      |      builtins.object
-     |  
+     |
      |  Methods defined here:
-     |  
-     |  __eq__ = (...)
-     |      (self: object, arg0: object) -> bool
-     |  
-     |  __getstate__ = (...)
-     |      (self: object) -> int_
-     |  
-     |  __hash__ = (...)
-     |      (self: object) -> int_
-     |  
+     |
+     |  __eq__(...)
+     |      __eq__(self: object, other: object) -> bool
+     |
+     |  __getstate__(...)
+     |      __getstate__(self: object) -> int
+     |
+     |  __hash__(...)
+     |      __hash__(self: object) -> int
+     |
      |  __index__(...)
      |      __index__(self: smuview.ConfigKey) -> int
-     |  
+     |
      |  __init__(...)
-     |      __init__(self: smuview.ConfigKey, arg0: int) -> None
-     |  
+     |      __init__(self: smuview.ConfigKey, value: int) -> None
+     |
      |  __int__(...)
      |      __int__(self: smuview.ConfigKey) -> int
-     |  
-     |  __ne__ = (...)
-     |      (self: object, arg0: object) -> bool
-     |  
-     |  __repr__ = (...)
-     |      (self: handle) -> str
-     |  
-     |  __setstate__ = (...)
-     |      (self: smuview.ConfigKey, arg0: int) -> None
-     |  
+     |
+     |  __ne__(...)
+     |      __ne__(self: object, other: object) -> bool
+     |
+     |  __repr__(...)
+     |      __repr__(self: object) -> str
+     |
+     |  __setstate__(...)
+     |      __setstate__(self: smuview.ConfigKey, state: int) -> None
+     |
+     |  __str__ = name(...)
+     |      name(self: handle) -> str
+     |
      |  ----------------------------------------------------------------------
      |  Static methods defined here:
-     |  
+     |
      |  get_data_type(...) from builtins.PyCapsule
      |      get_data_type(config_key: smuview.ConfigKey) -> smuview.DataType
-     |      
+     |
      |      Helper function to get the data type for a config key.
-     |      
+     |
      |      Parameters
      |      ----------
      |      config_key : ConfigKey
      |          The config key.
-     |      
+     |
      |      Returns
      |      -------
      |      DataType
      |          The data type of the config key.
-     |  
+     |
      |  ----------------------------------------------------------------------
      |  Readonly properties defined here:
-     |  
+     |
      |  __members__
-     |  
+     |
      |  name
-     |      (self: handle) -> str
-     |  
+     |      name(self: handle) -> str
+     |
+     |  value
+     |
      |  ----------------------------------------------------------------------
      |  Data and other attributes defined here:
-     |  
-     |  ADCPowerlineCycles = ConfigKey.ADCPowerlineCycles
-     |  
-     |  Amplitude = ConfigKey.Amplitude
-     |  
-     |  Averaging = ConfigKey.Averaging
-     |  
-     |  AvgSamples = ConfigKey.AvgSamples
-     |  
-     |  BufferSize = ConfigKey.BufferSize
-     |  
-     |  CaptureFile = ConfigKey.CaptureFile
-     |  
-     |  CaptureRatio = ConfigKey.CaptureRatio
-     |  
-     |  CaptureUnitSize = ConfigKey.CaptureUnitSize
-     |  
-     |  CenterFrequency = ConfigKey.CenterFrequency
-     |  
-     |  ChannelConfig = ConfigKey.ChannelConfig
-     |  
-     |  ClockEdge = ConfigKey.ClockEdge
-     |  
-     |  Coupling = ConfigKey.Coupling
-     |  
-     |  Current = ConfigKey.Current
-     |  
-     |  CurrentLimit = ConfigKey.CurrentLimit
-     |  
-     |  DataLog = ConfigKey.DataLog
-     |  
-     |  DataSource = ConfigKey.DataSource
-     |  
-     |  DeviceMode = ConfigKey.DeviceMode
-     |  
-     |  Digits = ConfigKey.Digits
-     |  
-     |  Enabled = ConfigKey.Enabled
-     |  
-     |  EquivCircuitModel = ConfigKey.EquivCircuitModel
-     |  
-     |  ExternalClock = ConfigKey.ExternalClock
-     |  
-     |  ExternalClockSource = ConfigKey.ExternalClockSource
-     |  
-     |  Filter = ConfigKey.Filter
-     |  
-     |  HighResolution = ConfigKey.HighResolution
-     |  
-     |  HoldMax = ConfigKey.HoldMax
-     |  
-     |  HoldMin = ConfigKey.HoldMin
-     |  
-     |  HorizTriggerPos = ConfigKey.HorizTriggerPos
-     |  
-     |  LogicThreshold = ConfigKey.LogicThreshold
-     |  
-     |  LogicThresholdCustom = ConfigKey.LogicThresholdCustom
-     |  
-     |  MeasuredQuantity = ConfigKey.MeasuredQuantity
-     |  
-     |  NumAnalogChannels = ConfigKey.NumAnalogChannels
-     |  
-     |  NumHDiv = ConfigKey.NumHDiv
-     |  
-     |  NumLogicChannels = ConfigKey.NumLogicChannels
-     |  
-     |  NumVDiv = ConfigKey.NumVDiv
-     |  
-     |  Offset = ConfigKey.Offset
-     |  
-     |  OutputFrequency = ConfigKey.OutputFrequency
-     |  
-     |  OutputFrequencyTarget = ConfigKey.OutputFrequencyTarget
-     |  
-     |  OverCurrentProtectionActive = ConfigKey.OverCurrentProtectionActive
-     |  
-     |  OverCurrentProtectionEnabled = ConfigKey.OverCurrentProtectionEnabled
-     |  
-     |  OverCurrentProtectionThreshold = ConfigKey.OverCurrentProtectionThresh...
-     |  
-     |  OverTemperatureProtectionActive = ConfigKey.OverTemperatureProtectionA...
-     |  
-     |  OverTemperatureProtectionEnabled = ConfigKey.OverTemperatureProtection...
-     |  
-     |  OverVoltageProtectionActive = ConfigKey.OverVoltageProtectionActive
-     |  
-     |  OverVoltageProtectionEnabled = ConfigKey.OverVoltageProtectionEnabled
-     |  
-     |  OverVoltageProtectionThreshold = ConfigKey.OverVoltageProtectionThresh...
-     |  
-     |  PatternMode = ConfigKey.PatternMode
-     |  
-     |  PeakDetection = ConfigKey.PeakDetection
-     |  
-     |  PowerOff = ConfigKey.PowerOff
-     |  
-     |  ProbeFactor = ConfigKey.ProbeFactor
-     |  
-     |  RLE = ConfigKey.RLE
-     |  
-     |  Range = ConfigKey.Range
-     |  
-     |  Regulation = ConfigKey.Regulation
-     |  
-     |  SampleInterval = ConfigKey.SampleInterval
-     |  
-     |  Samplerate = ConfigKey.Samplerate
-     |  
-     |  SessionFile = ConfigKey.SessionFile
-     |  
-     |  SplMeasurementRange = ConfigKey.SplMeasurementRange
-     |  
-     |  SplWeightFreq = ConfigKey.SplWeightFreq
-     |  
-     |  SplWeightTime = ConfigKey.SplWeightTime
-     |  
-     |  Swap = ConfigKey.Swap
-     |  
-     |  TestMode = ConfigKey.TestMode
-     |  
-     |  TimeBase = ConfigKey.TimeBase
-     |  
-     |  TriggerLevel = ConfigKey.TriggerLevel
-     |  
-     |  TriggerMatch = ConfigKey.TriggerMatch
-     |  
-     |  TriggerPattern = ConfigKey.TriggerPattern
-     |  
-     |  TriggerSlope = ConfigKey.TriggerSlope
-     |  
-     |  TriggerSource = ConfigKey.TriggerSource
-     |  
-     |  UnderVoltageConditionActive = ConfigKey.UnderVoltageConditionActive
-     |  
-     |  UnderVoltageConditionEnabled = ConfigKey.UnderVoltageConditionEnabled
-     |  
-     |  UnderVoltageConditionThreshold = ConfigKey.UnderVoltageConditionThresh...
-     |  
-     |  Unknown = ConfigKey.Unknown
-     |  
-     |  VDiv = ConfigKey.VDiv
-     |  
-     |  Voltage = ConfigKey.Voltage
-     |  
-     |  VoltageTarget = ConfigKey.VoltageTarget
-     |  
-     |  VoltageThreshold = ConfigKey.VoltageThreshold
-     |  
+     |
+     |  ADCPowerlineCycles = <ConfigKey.ADCPowerlineCycles: 69>
+     |
+     |  Amplitude = <ConfigKey.Amplitude: 47>
+     |
+     |  Averaging = <ConfigKey.Averaging: 5>
+     |
+     |  AvgSamples = <ConfigKey.AvgSamples: 6>
+     |
+     |  BufferSize = <ConfigKey.BufferSize: 9>
+     |
+     |  CaptureFile = <ConfigKey.CaptureFile: 64>
+     |
+     |  CaptureRatio = <ConfigKey.CaptureRatio: 1>
+     |
+     |  CaptureUnitSize = <ConfigKey.CaptureUnitSize: 65>
+     |
+     |  CenterFrequency = <ConfigKey.CenterFrequency: 26>
+     |
+     |  ChannelConfig = <ConfigKey.ChannelConfig: 34>
+     |
+     |  ClockEdge = <ConfigKey.ClockEdge: 46>
+     |
+     |  Coupling = <ConfigKey.Coupling: 13>
+     |
+     |  Current = <ConfigKey.Current: 31>
+     |
+     |  CurrentLimit = <ConfigKey.CurrentLimit: 32>
+     |
+     |  DataLog = <ConfigKey.DataLog: 70>
+     |
+     |  DataSource = <ConfigKey.DataSource: 67>
+     |
+     |  DeviceMode = <ConfigKey.DeviceMode: 71>
+     |
+     |  Digits = <ConfigKey.Digits: 62>
+     |
+     |  Enabled = <ConfigKey.Enabled: 33>
+     |
+     |  EquivCircuitModel = <ConfigKey.EquivCircuitModel: 52>
+     |
+     |  ExternalClock = <ConfigKey.ExternalClock: 24>
+     |
+     |  ExternalClockSource = <ConfigKey.ExternalClockSource: 54>
+     |
+     |  Filter = <ConfigKey.Filter: 11>
+     |
+     |  HighResolution = <ConfigKey.HighResolution: 57>
+     |
+     |  HoldMax = <ConfigKey.HoldMax: 21>
+     |
+     |  HoldMin = <ConfigKey.HoldMin: 22>
+     |
+     |  HorizTriggerPos = <ConfigKey.HorizTriggerPos: 8>
+     |
+     |  LogicThreshold = <ConfigKey.LogicThreshold: 59>
+     |
+     |  LogicThresholdCustom = <ConfigKey.LogicThresholdCustom: 60>
+     |
+     |  MeasuredQuantity = <ConfigKey.MeasuredQuantity: 51>
+     |
+     |  NumAnalogChannels = <ConfigKey.NumAnalogChannels: 28>
+     |
+     |  NumHDiv = <ConfigKey.NumHDiv: 16>
+     |
+     |  NumLogicChannels = <ConfigKey.NumLogicChannels: 27>
+     |
+     |  NumVDiv = <ConfigKey.NumVDiv: 17>
+     |
+     |  Offset = <ConfigKey.Offset: 55>
+     |
+     |  OutputFrequency = <ConfigKey.OutputFrequency: 49>
+     |
+     |  OutputFrequencyTarget = <ConfigKey.OutputFrequencyTarget: 50>
+     |
+     |  OverCurrentProtectionActive = <ConfigKey.OverCurrentProtectionActive: ...
+     |
+     |  OverCurrentProtectionEnabled = <ConfigKey.OverCurrentProtectionEnabled...
+     |
+     |  OverCurrentProtectionThreshold = <ConfigKey.OverCurrentProtectionThres...
+     |
+     |  OverTemperatureProtectionActive = <ConfigKey.OverTemperatureProtection...
+     |
+     |  OverTemperatureProtectionEnabled = <ConfigKey.OverTemperatureProtectio...
+     |
+     |  OverVoltageProtectionActive = <ConfigKey.OverVoltageProtectionActive: ...
+     |
+     |  OverVoltageProtectionEnabled = <ConfigKey.OverVoltageProtectionEnabled...
+     |
+     |  OverVoltageProtectionThreshold = <ConfigKey.OverVoltageProtectionThres...
+     |
+     |  PatternMode = <ConfigKey.PatternMode: 2>
+     |
+     |  PeakDetection = <ConfigKey.PeakDetection: 58>
+     |
+     |  PowerOff = <ConfigKey.PowerOff: 66>
+     |
+     |  ProbeFactor = <ConfigKey.ProbeFactor: 68>
+     |
+     |  RLE = <ConfigKey.RLE: 3>
+     |
+     |  Range = <ConfigKey.Range: 61>
+     |
+     |  Regulation = <ConfigKey.Regulation: 48>
+     |
+     |  SampleInterval = <ConfigKey.SampleInterval: 15>
+     |
+     |  Samplerate = <ConfigKey.Samplerate: 0>
+     |
+     |  SessionFile = <ConfigKey.SessionFile: 63>
+     |
+     |  SplMeasurementRange = <ConfigKey.SplMeasurementRange: 20>
+     |
+     |  SplWeightFreq = <ConfigKey.SplWeightFreq: 18>
+     |
+     |  SplWeightTime = <ConfigKey.SplWeightTime: 19>
+     |
+     |  Swap = <ConfigKey.Swap: 25>
+     |
+     |  TestMode = <ConfigKey.TestMode: 72>
+     |
+     |  TimeBase = <ConfigKey.TimeBase: 10>
+     |
+     |  TriggerLevel = <ConfigKey.TriggerLevel: 53>
+     |
+     |  TriggerMatch = <ConfigKey.TriggerMatch: 14>
+     |
+     |  TriggerPattern = <ConfigKey.TriggerPattern: 56>
+     |
+     |  TriggerSlope = <ConfigKey.TriggerSlope: 4>
+     |
+     |  TriggerSource = <ConfigKey.TriggerSource: 7>
+     |
+     |  UnderVoltageConditionActive = <ConfigKey.UnderVoltageConditionActive: ...
+     |
+     |  UnderVoltageConditionEnabled = <ConfigKey.UnderVoltageConditionEnabled...
+     |
+     |  UnderVoltageConditionThreshold = <ConfigKey.UnderVoltageConditionThres...
+     |
+     |  Unknown = <ConfigKey.Unknown: 73>
+     |
+     |  VDiv = <ConfigKey.VDiv: 12>
+     |
+     |  Voltage = <ConfigKey.Voltage: 29>
+     |
+     |  VoltageTarget = <ConfigKey.VoltageTarget: 30>
+     |
+     |  VoltageThreshold = <ConfigKey.VoltageThreshold: 23>
+     |
      |  ----------------------------------------------------------------------
      |  Static methods inherited from pybind11_builtins.pybind11_object:
-     |  
+     |
      |  __new__(*args, **kwargs) from pybind11_builtins.pybind11_type
      |      Create and return a new object.  See help(type) for accurate signature.
-    
+
     class Configurable(pybind11_builtins.pybind11_object)
      |  A configurable for controlling a device with config keys.
-     |  
+     |
      |  Method resolution order:
      |      Configurable
      |      pybind11_builtins.pybind11_object
      |      builtins.object
-     |  
+     |
      |  Methods defined here:
-     |  
+     |
      |  __init__(self, /, *args, **kwargs)
      |      Initialize self.  See help(type(self)) for accurate signature.
-     |  
+     |
      |  get_bool_config(...)
      |      get_bool_config(self: smuview.Configurable, config_key: smuview.ConfigKey) -> bool
-     |      
+     |
      |      Return a boolean value from the given config key.
-     |      
+     |
      |      Parameters
      |      ----------
      |      config_key : ConfigKey
      |          The `ConfigKey` to get.
-     |      
+     |
      |      Returns
      |      -------
      |      bool
      |          The bool value of the config key.
-     |  
+     |
      |  get_double_config(...)
      |      get_double_config(self: smuview.Configurable, config_key: smuview.ConfigKey) -> float
-     |      
+     |
      |      Return a double value from the given config key.
-     |      
+     |
      |      Parameters
      |      ----------
      |      config_key : ConfigKey
      |          The `ConfigKey` to get.
-     |      
+     |
      |      Returns
      |      -------
      |      float
      |          The float value of the config key.
-     |  
+     |
      |  get_int_config(...)
      |      get_int_config(self: smuview.Configurable, config_key: smuview.ConfigKey) -> int
-     |      
+     |
      |      Return an integer value from the given config key.
-     |      
+     |
      |      Parameters
      |      ----------
      |      config_key : ConfigKey
      |          The `ConfigKey` to get.
-     |      
+     |
      |      Returns
      |      -------
      |      int
      |          The int value of the config key.
-     |  
+     |
      |  get_string_config(...)
      |      get_string_config(self: smuview.Configurable, config_key: smuview.ConfigKey) -> str
-     |      
+     |
      |      Return a string value from the given config key.
-     |      
+     |
      |      Parameters
      |      ----------
      |      config_key : ConfigKey
      |          The `ConfigKey` to get.
-     |      
+     |
      |      Returns
      |      -------
      |      str
      |          The string value of the config key.
-     |  
+     |
      |  get_uint_config(...)
      |      get_uint_config(self: smuview.Configurable, config_key: smuview.ConfigKey) -> int
-     |      
+     |
      |      Return an unsigned integer value from the given config key.
-     |      
+     |
      |      Parameters
      |      ----------
      |      config_key : ConfigKey
      |          The `ConfigKey` to get.
-     |      
+     |
      |      Returns
      |      -------
      |      int
      |          The (unsigned) int value of the config key.
-     |  
+     |
      |  getable_configs(...)
      |      getable_configs(self: smuview.Configurable) -> Set[smuview.ConfigKey]
-     |      
+     |
      |      Return all getable config keys.
-     |      
+     |
      |      Returns
      |      -------
      |      List[ConfigKey]
      |          All getable config keys.
-     |  
+     |
      |  listable_configs(...)
      |      listable_configs(self: smuview.Configurable) -> Set[smuview.ConfigKey]
-     |      
+     |
      |      Return all listable config keys.
-     |      
+     |
      |      Returns
      |      -------
      |      List[ConfigKey]
      |          All listable config keys.
-     |  
+     |
      |  name(...)
      |      name(self: smuview.Configurable) -> str
-     |      
+     |
      |      Return the name of the configurable.
-     |      
+     |
      |      Returns
      |      -------
      |      str
      |          The name of the configurable.
-     |  
+     |
      |  set_config(...)
      |      set_config(*args, **kwargs)
      |      Overloaded function.
-     |      
+     |
      |      1. set_config(self: smuview.Configurable, config_key: smuview.ConfigKey, value: bool) -> None
-     |      
+     |
      |      Set a boolean value to the given config key.
-     |      
+     |
      |      Parameters
      |      ----------
      |      config_key : ConfigKey
      |          The `ConfigKey` to set.
      |      value : bool
      |          The bool value to set.
-     |      
+     |
      |      2. set_config(self: smuview.Configurable, config_key: smuview.ConfigKey, value: int) -> None
-     |      
+     |
      |      Set an integer value to the given config key.
-     |      
+     |
      |      Parameters
      |      ----------
      |      config_key : ConfigKey
      |          The `ConfigKey` to set.
      |      value : int
      |          The int value to set.
-     |      
+     |
      |      3. set_config(self: smuview.Configurable, config_key: smuview.ConfigKey, value: int) -> None
-     |      
+     |
      |      Set an unsigned integer value to the given config key.
-     |      
+     |
      |      Parameters
      |      ----------
      |      config_key : ConfigKey
      |          The `ConfigKey` to set.
      |      value : int
      |          The (unsigned) int value to set.
-     |      
+     |
      |      4. set_config(self: smuview.Configurable, config_key: smuview.ConfigKey, value: float) -> None
-     |      
+     |
      |      Set a double value to the given config key.
-     |      
+     |
      |      Parameters
      |      ----------
      |      config_key : ConfigKey
      |          The `ConfigKey` to set.
      |      value : float
      |          The float value to set.
-     |      
+     |
      |      5. set_config(self: smuview.Configurable, config_key: smuview.ConfigKey, value: str) -> None
-     |      
+     |
      |      Set a string value to the given config key.
-     |      
+     |
      |      Parameters
      |      ----------
      |      config_key : ConfigKey
      |          The `ConfigKey` to set.
      |      value : str
      |          The string value to set.
-     |  
+     |
      |  setable_configs(...)
      |      setable_configs(self: smuview.Configurable) -> Set[smuview.ConfigKey]
-     |      
+     |
      |      Return all setable config keys.
-     |      
+     |
      |      Returns
      |      -------
      |      List[ConfigKey]
      |          All setable config keys.
-     |  
+     |
      |  ----------------------------------------------------------------------
      |  Static methods inherited from pybind11_builtins.pybind11_object:
-     |  
+     |
      |  __new__(*args, **kwargs) from pybind11_builtins.pybind11_type
      |      Create and return a new object.  See help(type) for accurate signature.
-    
+
     class DataType(pybind11_builtins.pybind11_object)
      |  Enum of all available data types.
-     |  
+     |
      |  Method resolution order:
      |      DataType
      |      pybind11_builtins.pybind11_object
      |      builtins.object
-     |  
+     |
      |  Methods defined here:
-     |  
-     |  __eq__ = (...)
-     |      (self: object, arg0: object) -> bool
-     |  
-     |  __getstate__ = (...)
-     |      (self: object) -> int_
-     |  
-     |  __hash__ = (...)
-     |      (self: object) -> int_
-     |  
+     |
+     |  __eq__(...)
+     |      __eq__(self: object, other: object) -> bool
+     |
+     |  __getstate__(...)
+     |      __getstate__(self: object) -> int
+     |
+     |  __hash__(...)
+     |      __hash__(self: object) -> int
+     |
      |  __index__(...)
      |      __index__(self: smuview.DataType) -> int
-     |  
+     |
      |  __init__(...)
-     |      __init__(self: smuview.DataType, arg0: int) -> None
-     |  
+     |      __init__(self: smuview.DataType, value: int) -> None
+     |
      |  __int__(...)
      |      __int__(self: smuview.DataType) -> int
-     |  
-     |  __ne__ = (...)
-     |      (self: object, arg0: object) -> bool
-     |  
-     |  __repr__ = (...)
-     |      (self: handle) -> str
-     |  
-     |  __setstate__ = (...)
-     |      (self: smuview.DataType, arg0: int) -> None
-     |  
+     |
+     |  __ne__(...)
+     |      __ne__(self: object, other: object) -> bool
+     |
+     |  __repr__(...)
+     |      __repr__(self: object) -> str
+     |
+     |  __setstate__(...)
+     |      __setstate__(self: smuview.DataType, state: int) -> None
+     |
+     |  __str__ = name(...)
+     |      name(self: handle) -> str
+     |
      |  ----------------------------------------------------------------------
      |  Readonly properties defined here:
-     |  
+     |
      |  __members__
-     |  
+     |
      |  name
-     |      (self: handle) -> str
-     |  
+     |      name(self: handle) -> str
+     |
+     |  value
+     |
      |  ----------------------------------------------------------------------
      |  Data and other attributes defined here:
-     |  
-     |  Bool = DataType.Bool
-     |  
-     |  Double = DataType.Double
-     |  
-     |  DoubleRange = DataType.DoubleRange
-     |  
-     |  Int32 = DataType.Int32
-     |  
-     |  KeyValue = DataType.KeyValue
-     |  
-     |  MQ = DataType.MQ
-     |  
-     |  RationalPeriod = DataType.RationalPeriod
-     |  
-     |  RationalVolt = DataType.RationalVolt
-     |  
-     |  String = DataType.String
-     |  
-     |  UInt64 = DataType.UInt64
-     |  
-     |  UInt64Range = DataType.UInt64Range
-     |  
-     |  Unknown = DataType.Unknown
-     |  
+     |
+     |  Bool = <DataType.Bool: 2>
+     |
+     |  Double = <DataType.Double: 3>
+     |
+     |  DoubleRange = <DataType.DoubleRange: 8>
+     |
+     |  Int32 = <DataType.Int32: 9>
+     |
+     |  KeyValue = <DataType.KeyValue: 6>
+     |
+     |  MQ = <DataType.MQ: 10>
+     |
+     |  RationalPeriod = <DataType.RationalPeriod: 4>
+     |
+     |  RationalVolt = <DataType.RationalVolt: 5>
+     |
+     |  String = <DataType.String: 1>
+     |
+     |  UInt64 = <DataType.UInt64: 0>
+     |
+     |  UInt64Range = <DataType.UInt64Range: 7>
+     |
+     |  Unknown = <DataType.Unknown: 11>
+     |
      |  ----------------------------------------------------------------------
      |  Static methods inherited from pybind11_builtins.pybind11_object:
-     |  
+     |
      |  __new__(*args, **kwargs) from pybind11_builtins.pybind11_type
      |      Create and return a new object.  See help(type) for accurate signature.
-    
+
     class DockArea(pybind11_builtins.pybind11_object)
      |  Enum of all possible docking locations for a view.
-     |  
+     |
      |  Method resolution order:
      |      DockArea
      |      pybind11_builtins.pybind11_object
      |      builtins.object
-     |  
+     |
      |  Methods defined here:
-     |  
-     |  __eq__ = (...)
-     |      (self: object, arg0: object) -> bool
-     |  
-     |  __getstate__ = (...)
-     |      (self: object) -> int_
-     |  
-     |  __hash__ = (...)
-     |      (self: object) -> int_
-     |  
+     |
+     |  __eq__(...)
+     |      __eq__(self: object, other: object) -> bool
+     |
+     |  __getstate__(...)
+     |      __getstate__(self: object) -> int
+     |
+     |  __hash__(...)
+     |      __hash__(self: object) -> int
+     |
      |  __index__(...)
      |      __index__(self: smuview.DockArea) -> int
-     |  
+     |
      |  __init__(...)
-     |      __init__(self: smuview.DockArea, arg0: int) -> None
-     |  
+     |      __init__(self: smuview.DockArea, value: int) -> None
+     |
      |  __int__(...)
      |      __int__(self: smuview.DockArea) -> int
-     |  
-     |  __ne__ = (...)
-     |      (self: object, arg0: object) -> bool
-     |  
-     |  __repr__ = (...)
-     |      (self: handle) -> str
-     |  
-     |  __setstate__ = (...)
-     |      (self: smuview.DockArea, arg0: int) -> None
-     |  
+     |
+     |  __ne__(...)
+     |      __ne__(self: object, other: object) -> bool
+     |
+     |  __repr__(...)
+     |      __repr__(self: object) -> str
+     |
+     |  __setstate__(...)
+     |      __setstate__(self: smuview.DockArea, state: int) -> None
+     |
+     |  __str__ = name(...)
+     |      name(self: handle) -> str
+     |
      |  ----------------------------------------------------------------------
      |  Readonly properties defined here:
-     |  
+     |
      |  __members__
-     |  
+     |
      |  name
-     |      (self: handle) -> str
-     |  
+     |      name(self: handle) -> str
+     |
+     |  value
+     |
      |  ----------------------------------------------------------------------
      |  Data and other attributes defined here:
-     |  
-     |  BottomDockArea = DockArea.BottomDockArea
-     |  
-     |  LeftDocktArea = DockArea.LeftDocktArea
-     |  
-     |  RightDockArea = DockArea.RightDockArea
-     |  
-     |  TopDockArea = DockArea.TopDockArea
-     |  
+     |
+     |  BottomDockArea = <DockArea.BottomDockArea: 8>
+     |
+     |  LeftDocktArea = <DockArea.LeftDocktArea: 1>
+     |
+     |  RightDockArea = <DockArea.RightDockArea: 2>
+     |
+     |  TopDockArea = <DockArea.TopDockArea: 4>
+     |
      |  ----------------------------------------------------------------------
      |  Static methods inherited from pybind11_builtins.pybind11_object:
-     |  
+     |
      |  __new__(*args, **kwargs) from pybind11_builtins.pybind11_type
      |      Create and return a new object.  See help(type) for accurate signature.
-    
+
     class HardwareChannel(BaseChannel)
      |  An actual hardware channel
-     |  
+     |
      |  Method resolution order:
      |      HardwareChannel
      |      BaseChannel
      |      pybind11_builtins.pybind11_object
      |      builtins.object
-     |  
+     |
      |  Methods defined here:
-     |  
+     |
      |  __init__(self, /, *args, **kwargs)
      |      Initialize self.  See help(type(self)) for accurate signature.
-     |  
+     |
      |  ----------------------------------------------------------------------
      |  Methods inherited from BaseChannel:
-     |  
+     |
      |  actual_signal(...)
      |      actual_signal(self: smuview.BaseChannel) -> smuview.BaseSignal
-     |      
+     |
      |      Return the actual signal of the channel.
-     |      
+     |
      |      Returns
      |      -------
      |      BaseSignal
      |          The actual signal object.
-     |  
+     |
      |  add_signal(...)
      |      add_signal(self: smuview.BaseChannel, quantity: smuview.Quantity, quantity_flags: Set[smuview.QuantityFlag], unit: smuview.Unit, custom_name: str = '') -> smuview.BaseSignal
-     |      
+     |
      |      Add a new signal to the channel.
-     |      
+     |
      |      Parameters
      |      ----------
      |      quantity : Quantity
@@ -1030,536 +1045,546 @@ CLASSES
      |          The `Unit` of the new signal.
      |      custom_name: str
      |          A custom name for the new signal. If empty (default), the signal name will be automatically generated.
-     |      
+     |
      |      Returns
      |      -------
      |      BaseSignal
      |          The new signal object.
-     |  
+     |
      |  name(...)
      |      name(self: smuview.BaseChannel) -> str
-     |      
+     |
      |      Return the name of the channel.
-     |      
+     |
      |      Returns
      |      -------
      |      str
      |          The name of the channel.
-     |  
+     |
      |  signals(...)
      |      signals(self: smuview.BaseChannel) -> List[smuview.BaseSignal]
-     |      
+     |
      |      Return all signals of the channel.
-     |      
+     |
      |      Returns
      |      -------
      |      List[BaseSignal]
      |          All signals of the channel.
-     |  
+     |
      |  ----------------------------------------------------------------------
      |  Static methods inherited from pybind11_builtins.pybind11_object:
-     |  
+     |
      |  __new__(*args, **kwargs) from pybind11_builtins.pybind11_type
      |      Create and return a new object.  See help(type) for accurate signature.
-    
+
     class HardwareDevice(BaseDevice)
      |  An actual hardware device.
-     |  
+     |
      |  Method resolution order:
      |      HardwareDevice
      |      BaseDevice
      |      pybind11_builtins.pybind11_object
      |      builtins.object
-     |  
+     |
      |  Methods defined here:
-     |  
+     |
      |  __init__(self, /, *args, **kwargs)
      |      Initialize self.  See help(type(self)) for accurate signature.
-     |  
+     |
      |  ----------------------------------------------------------------------
      |  Methods inherited from BaseDevice:
-     |  
+     |
      |  add_user_channel(...)
      |      add_user_channel(self: smuview.BaseDevice, channel_name: str, channel_group_name: str) -> smuview.UserChannel
-     |      
+     |
      |      Add a new user channel to the device.
-     |      
+     |
      |      Parameters
      |      ----------
      |      channel_name : str
      |          The name of the new user channel.
      |      channel_group_name : str
      |          The name of the channel group where to create the user channel. Can be empty.
-     |      
+     |
      |      Returns
      |      -------
      |      UserChannel
      |          The new user channel object.
-     |  
+     |
      |  channels(...)
      |      channels(self: smuview.BaseDevice) -> Dict[str, smuview.BaseChannel]
-     |      
+     |
      |      Return all channels of the device.
-     |      
+     |
      |      Returns
      |      -------
      |      Dict[str, BaseChannel]
      |          A Dict where the key is the id of the channel and the value is the channel object.
-     |  
+     |
      |  configurables(...)
      |      configurables(self: smuview.BaseDevice) -> Dict[str, smuview.Configurable]
-     |      
+     |
      |      Return all configurables of the device.
-     |      
+     |
      |      Returns
      |      -------
      |      Dict[str, Configurable]
      |          A Dict where the key is the id of the `Configurable` and the value is the `Configurable` object.
-     |  
+     |
      |  id(...)
      |      id(self: smuview.BaseDevice) -> str
-     |      
+     |
      |      Return the unique id of the device.
-     |      
+     |
      |      Returns
      |      -------
      |      str
      |          The id of the device.
-     |  
+     |
      |  name(...)
      |      name(self: smuview.BaseDevice) -> str
-     |      
+     |
      |      Return the name of the device.
-     |      
+     |
      |      Returns
      |      -------
      |      str
      |          The name of the device.
-     |  
+     |
      |  ----------------------------------------------------------------------
      |  Static methods inherited from pybind11_builtins.pybind11_object:
-     |  
+     |
      |  __new__(*args, **kwargs) from pybind11_builtins.pybind11_type
      |      Create and return a new object.  See help(type) for accurate signature.
-    
+
     class PyStreamBuf(pybind11_builtins.pybind11_object)
      |  Redirect all Python output to a SmuView console. This class is for internal SmuView use only!
-     |  
+     |
      |  Method resolution order:
      |      PyStreamBuf
      |      pybind11_builtins.pybind11_object
      |      builtins.object
-     |  
+     |
      |  Methods defined here:
-     |  
+     |
      |  __del__(...)
      |      __del__(self: smuview.PyStreamBuf) -> None
-     |      
+     |
      |      Prepare for object destruction.
-     |  
+     |
      |  __init__(...)
      |      __init__(self: smuview.PyStreamBuf, arg0: str, arg1: str) -> None
-     |  
+     |
      |  close(...)
      |      close(self: smuview.PyStreamBuf) -> None
-     |      
+     |
      |      Flush and close this stream.
-     |  
+     |
      |  fileno(...)
      |      fileno(self: smuview.PyStreamBuf) -> int
-     |      
+     |
      |      Raises an `OSError`, because `PyStreamBuf` doesn't use a file descriptor.
-     |  
+     |
      |  flush(...)
      |      flush(self: smuview.PyStreamBuf) -> None
-     |      
+     |
      |      Flush the write buffers of the stream.
-     |  
+     |
      |  isatty(...)
      |      isatty(self: smuview.PyStreamBuf) -> bool
-     |      
+     |
      |      Always returns `False`.
-     |  
+     |
      |  read(...)
      |      read(self: smuview.PyStreamBuf, size: int) -> str
-     |      
+     |
      |      Raises an `OSError`, because `PyStreamBuf` is write only.
-     |  
+     |
      |  readable(...)
      |      readable(self: smuview.PyStreamBuf) -> bool
-     |      
+     |
      |      Always returns `False`.
-     |  
+     |
      |  readline(...)
      |      readline(self: smuview.PyStreamBuf, size: int) -> str
-     |      
+     |
      |      Raises an `OSError`, because `PyStreamBuf` is write only.
-     |  
+     |
      |  readlines(...)
      |      readlines(self: smuview.PyStreamBuf, hint: int) -> List[str]
-     |      
+     |
      |      Raises an `OSError`, because `PyStreamBuf` is write only.
-     |  
+     |
      |  seek(...)
      |      seek(self: smuview.PyStreamBuf, offset: int, whence: int) -> int
-     |      
+     |
      |      Raises an `OSError`, because `PyStreamBuf` is not seekable.
-     |  
+     |
      |  seekable(...)
      |      seekable(self: smuview.PyStreamBuf) -> bool
-     |      
+     |
      |      Always returns `False`. `PyStreamBuf` is not seekable atm.
-     |  
+     |
      |  tell(...)
      |      tell(self: smuview.PyStreamBuf) -> int
-     |      
+     |
      |      Raises an `OSError`, because `PyStreamBuf` is not seekable.
-     |  
+     |
      |  truncate(...)
      |      truncate(self: smuview.PyStreamBuf, size: int) -> int
-     |      
+     |
      |      Raises an `OSError`, because `PyStreamBuf` is not seekable.
-     |  
+     |
      |  writable(...)
      |      writable(self: smuview.PyStreamBuf) -> bool
-     |      
+     |
      |      Always return `True`.
-     |  
+     |
      |  write(...)
      |      write(self: smuview.PyStreamBuf, s: str) -> int
-     |      
+     |
      |      Write the string `s` to the stream and return the number of characters written.
-     |  
+     |
      |  writelines(...)
      |      writelines(self: smuview.PyStreamBuf, lines: List[str]) -> None
-     |      
+     |
      |      Write a list of lines to the stream.
-     |  
+     |
      |  ----------------------------------------------------------------------
      |  Readonly properties defined here:
-     |  
+     |
      |  closed
      |      `True` if the stream is closed.
-     |  
+     |
      |  encoding
      |      The name of the encoding that is used.
-     |  
+     |
      |  errors
      |      The error setting of the decoder or encoder.
-     |  
+     |
      |  ----------------------------------------------------------------------
      |  Static methods inherited from pybind11_builtins.pybind11_object:
-     |  
+     |
      |  __new__(*args, **kwargs) from pybind11_builtins.pybind11_type
      |      Create and return a new object.  See help(type) for accurate signature.
-    
+
     class Quantity(pybind11_builtins.pybind11_object)
      |  Enum of all available quantities.
-     |  
+     |
      |  Method resolution order:
      |      Quantity
      |      pybind11_builtins.pybind11_object
      |      builtins.object
-     |  
+     |
      |  Methods defined here:
-     |  
-     |  __eq__ = (...)
-     |      (self: object, arg0: object) -> bool
-     |  
-     |  __getstate__ = (...)
-     |      (self: object) -> int_
-     |  
-     |  __hash__ = (...)
-     |      (self: object) -> int_
-     |  
+     |
+     |  __eq__(...)
+     |      __eq__(self: object, other: object) -> bool
+     |
+     |  __getstate__(...)
+     |      __getstate__(self: object) -> int
+     |
+     |  __hash__(...)
+     |      __hash__(self: object) -> int
+     |
      |  __index__(...)
      |      __index__(self: smuview.Quantity) -> int
-     |  
+     |
      |  __init__(...)
-     |      __init__(self: smuview.Quantity, arg0: int) -> None
-     |  
+     |      __init__(self: smuview.Quantity, value: int) -> None
+     |
      |  __int__(...)
      |      __int__(self: smuview.Quantity) -> int
-     |  
-     |  __ne__ = (...)
-     |      (self: object, arg0: object) -> bool
-     |  
-     |  __repr__ = (...)
-     |      (self: handle) -> str
-     |  
-     |  __setstate__ = (...)
-     |      (self: smuview.Quantity, arg0: int) -> None
-     |  
+     |
+     |  __ne__(...)
+     |      __ne__(self: object, other: object) -> bool
+     |
+     |  __repr__(...)
+     |      __repr__(self: object) -> str
+     |
+     |  __setstate__(...)
+     |      __setstate__(self: smuview.Quantity, state: int) -> None
+     |
+     |  __str__ = name(...)
+     |      name(self: handle) -> str
+     |
      |  ----------------------------------------------------------------------
      |  Readonly properties defined here:
-     |  
+     |
      |  __members__
-     |  
+     |
      |  name
-     |      (self: handle) -> str
-     |  
+     |      name(self: handle) -> str
+     |
+     |  value
+     |
      |  ----------------------------------------------------------------------
      |  Data and other attributes defined here:
-     |  
-     |  ApparentPower = Quantity.ApparentPower
-     |  
-     |  Capacitance = Quantity.Capacitance
-     |  
-     |  CarbonMonoxide = Quantity.CarbonMonoxide
-     |  
-     |  Conductance = Quantity.Conductance
-     |  
-     |  Continuity = Quantity.Continuity
-     |  
-     |  Count = Quantity.Count
-     |  
-     |  Current = Quantity.Current
-     |  
-     |  Difference = Quantity.Difference
-     |  
-     |  DissipationFactor = Quantity.DissipationFactor
-     |  
-     |  DutyCyle = Quantity.DutyCyle
-     |  
-     |  ElectricCharge = Quantity.ElectricCharge
-     |  
-     |  Energy = Quantity.Energy
-     |  
-     |  Frequency = Quantity.Frequency
-     |  
-     |  Gain = Quantity.Gain
-     |  
-     |  HarmonicRatio = Quantity.HarmonicRatio
-     |  
-     |  Mass = Quantity.Mass
-     |  
-     |  ParallelCapacitance = Quantity.ParallelCapacitance
-     |  
-     |  ParallelInductance = Quantity.ParallelInductance
-     |  
-     |  ParallelResistance = Quantity.ParallelResistance
-     |  
-     |  PhaseAngle = Quantity.PhaseAngle
-     |  
-     |  Power = Quantity.Power
-     |  
-     |  PowerFactor = Quantity.PowerFactor
-     |  
-     |  Pressure = Quantity.Pressure
-     |  
-     |  PulseWidth = Quantity.PulseWidth
-     |  
-     |  QualityFactor = Quantity.QualityFactor
-     |  
-     |  RelativeHumidity = Quantity.RelativeHumidity
-     |  
-     |  Resistance = Quantity.Resistance
-     |  
-     |  SeriesCapacitance = Quantity.SeriesCapacitance
-     |  
-     |  SeriesInductance = Quantity.SeriesInductance
-     |  
-     |  SeriesResistance = Quantity.SeriesResistance
-     |  
-     |  SoundPressureLevel = Quantity.SoundPressureLevel
-     |  
-     |  Temperature = Quantity.Temperature
-     |  
-     |  Time = Quantity.Time
-     |  
-     |  Unknown = Quantity.Unknown
-     |  
-     |  Voltage = Quantity.Voltage
-     |  
-     |  WindSpeed = Quantity.WindSpeed
-     |  
+     |
+     |  ApparentPower = <Quantity.ApparentPower: 31>
+     |
+     |  Capacitance = <Quantity.Capacitance: 3>
+     |
+     |  CarbonMonoxide = <Quantity.CarbonMonoxide: 14>
+     |
+     |  Conductance = <Quantity.Conductance: 9>
+     |
+     |  Continuity = <Quantity.Continuity: 7>
+     |
+     |  Count = <Quantity.Count: 29>
+     |
+     |  Current = <Quantity.Current: 1>
+     |
+     |  Difference = <Quantity.Difference: 28>
+     |
+     |  DissipationFactor = <Quantity.DissipationFactor: 25>
+     |
+     |  DutyCyle = <Quantity.DutyCyle: 6>
+     |
+     |  ElectricCharge = <Quantity.ElectricCharge: 11>
+     |
+     |  Energy = <Quantity.Energy: 34>
+     |
+     |  Frequency = <Quantity.Frequency: 5>
+     |
+     |  Gain = <Quantity.Gain: 12>
+     |
+     |  HarmonicRatio = <Quantity.HarmonicRatio: 33>
+     |
+     |  Mass = <Quantity.Mass: 32>
+     |
+     |  ParallelCapacitance = <Quantity.ParallelCapacitance: 20>
+     |
+     |  ParallelInductance = <Quantity.ParallelInductance: 19>
+     |
+     |  ParallelResistance = <Quantity.ParallelResistance: 21>
+     |
+     |  PhaseAngle = <Quantity.PhaseAngle: 27>
+     |
+     |  Power = <Quantity.Power: 10>
+     |
+     |  PowerFactor = <Quantity.PowerFactor: 30>
+     |
+     |  Pressure = <Quantity.Pressure: 18>
+     |
+     |  PulseWidth = <Quantity.PulseWidth: 8>
+     |
+     |  QualityFactor = <Quantity.QualityFactor: 26>
+     |
+     |  RelativeHumidity = <Quantity.RelativeHumidity: 15>
+     |
+     |  Resistance = <Quantity.Resistance: 2>
+     |
+     |  SeriesCapacitance = <Quantity.SeriesCapacitance: 23>
+     |
+     |  SeriesInductance = <Quantity.SeriesInductance: 22>
+     |
+     |  SeriesResistance = <Quantity.SeriesResistance: 24>
+     |
+     |  SoundPressureLevel = <Quantity.SoundPressureLevel: 13>
+     |
+     |  Temperature = <Quantity.Temperature: 4>
+     |
+     |  Time = <Quantity.Time: 16>
+     |
+     |  Unknown = <Quantity.Unknown: 35>
+     |
+     |  Voltage = <Quantity.Voltage: 0>
+     |
+     |  WindSpeed = <Quantity.WindSpeed: 17>
+     |
      |  ----------------------------------------------------------------------
      |  Static methods inherited from pybind11_builtins.pybind11_object:
-     |  
+     |
      |  __new__(*args, **kwargs) from pybind11_builtins.pybind11_type
      |      Create and return a new object.  See help(type) for accurate signature.
-    
+
     class QuantityFlag(pybind11_builtins.pybind11_object)
      |  Enum of all available quantity flags.
-     |  
+     |
      |  Method resolution order:
      |      QuantityFlag
      |      pybind11_builtins.pybind11_object
      |      builtins.object
-     |  
+     |
      |  Methods defined here:
-     |  
-     |  __eq__ = (...)
-     |      (self: object, arg0: object) -> bool
-     |  
-     |  __getstate__ = (...)
-     |      (self: object) -> int_
-     |  
-     |  __hash__ = (...)
-     |      (self: object) -> int_
-     |  
+     |
+     |  __eq__(...)
+     |      __eq__(self: object, other: object) -> bool
+     |
+     |  __getstate__(...)
+     |      __getstate__(self: object) -> int
+     |
+     |  __hash__(...)
+     |      __hash__(self: object) -> int
+     |
      |  __index__(...)
      |      __index__(self: smuview.QuantityFlag) -> int
-     |  
+     |
      |  __init__(...)
-     |      __init__(self: smuview.QuantityFlag, arg0: int) -> None
-     |  
+     |      __init__(self: smuview.QuantityFlag, value: int) -> None
+     |
      |  __int__(...)
      |      __int__(self: smuview.QuantityFlag) -> int
-     |  
-     |  __ne__ = (...)
-     |      (self: object, arg0: object) -> bool
-     |  
-     |  __repr__ = (...)
-     |      (self: handle) -> str
-     |  
-     |  __setstate__ = (...)
-     |      (self: smuview.QuantityFlag, arg0: int) -> None
-     |  
+     |
+     |  __ne__(...)
+     |      __ne__(self: object, other: object) -> bool
+     |
+     |  __repr__(...)
+     |      __repr__(self: object) -> str
+     |
+     |  __setstate__(...)
+     |      __setstate__(self: smuview.QuantityFlag, state: int) -> None
+     |
+     |  __str__ = name(...)
+     |      name(self: handle) -> str
+     |
      |  ----------------------------------------------------------------------
      |  Readonly properties defined here:
-     |  
+     |
      |  __members__
-     |  
+     |
      |  name
-     |      (self: handle) -> str
-     |  
+     |      name(self: handle) -> str
+     |
+     |  value
+     |
      |  ----------------------------------------------------------------------
      |  Data and other attributes defined here:
-     |  
-     |  AC = QuantityFlag.AC
-     |  
-     |  Autorange = QuantityFlag.Autorange
-     |  
-     |  Avg = QuantityFlag.Avg
-     |  
-     |  DC = QuantityFlag.DC
-     |  
-     |  Diode = QuantityFlag.Diode
-     |  
-     |  Duration = QuantityFlag.Duration
-     |  
-     |  FourWire = QuantityFlag.FourWire
-     |  
-     |  Hold = QuantityFlag.Hold
-     |  
-     |  Max = QuantityFlag.Max
-     |  
-     |  Min = QuantityFlag.Min
-     |  
-     |  RMS = QuantityFlag.RMS
-     |  
-     |  Reference = QuantityFlag.Reference
-     |  
-     |  Relative = QuantityFlag.Relative
-     |  
-     |  SplFreqWeightA = QuantityFlag.SplFreqWeightA
-     |  
-     |  SplFreqWeightC = QuantityFlag.SplFreqWeightC
-     |  
-     |  SplFreqWeightFlat = QuantityFlag.SplFreqWeightFlat
-     |  
-     |  SplFreqWeightZ = QuantityFlag.SplFreqWeightZ
-     |  
-     |  SplLAT = QuantityFlag.SplLAT
-     |  
-     |  SplPctOverAlarm = QuantityFlag.SplPctOverAlarm
-     |  
-     |  SplTimeWeightF = QuantityFlag.SplTimeWeightF
-     |  
-     |  SplTimeWeightS = QuantityFlag.SplTimeWeightS
-     |  
-     |  Unknown = QuantityFlag.Unknown
-     |  
-     |  Unstable = QuantityFlag.Unstable
-     |  
+     |
+     |  AC = <QuantityFlag.AC: 0>
+     |
+     |  Autorange = <QuantityFlag.Autorange: 7>
+     |
+     |  Avg = <QuantityFlag.Avg: 18>
+     |
+     |  DC = <QuantityFlag.DC: 1>
+     |
+     |  Diode = <QuantityFlag.Diode: 3>
+     |
+     |  Duration = <QuantityFlag.Duration: 17>
+     |
+     |  FourWire = <QuantityFlag.FourWire: 21>
+     |
+     |  Hold = <QuantityFlag.Hold: 4>
+     |
+     |  Max = <QuantityFlag.Max: 5>
+     |
+     |  Min = <QuantityFlag.Min: 6>
+     |
+     |  RMS = <QuantityFlag.RMS: 2>
+     |
+     |  Reference = <QuantityFlag.Reference: 19>
+     |
+     |  Relative = <QuantityFlag.Relative: 8>
+     |
+     |  SplFreqWeightA = <QuantityFlag.SplFreqWeightA: 9>
+     |
+     |  SplFreqWeightC = <QuantityFlag.SplFreqWeightC: 10>
+     |
+     |  SplFreqWeightFlat = <QuantityFlag.SplFreqWeightFlat: 12>
+     |
+     |  SplFreqWeightZ = <QuantityFlag.SplFreqWeightZ: 11>
+     |
+     |  SplLAT = <QuantityFlag.SplLAT: 15>
+     |
+     |  SplPctOverAlarm = <QuantityFlag.SplPctOverAlarm: 16>
+     |
+     |  SplTimeWeightF = <QuantityFlag.SplTimeWeightF: 14>
+     |
+     |  SplTimeWeightS = <QuantityFlag.SplTimeWeightS: 13>
+     |
+     |  Unknown = <QuantityFlag.Unknown: 22>
+     |
+     |  Unstable = <QuantityFlag.Unstable: 20>
+     |
      |  ----------------------------------------------------------------------
      |  Static methods inherited from pybind11_builtins.pybind11_object:
-     |  
+     |
      |  __new__(*args, **kwargs) from pybind11_builtins.pybind11_type
      |      Create and return a new object.  See help(type) for accurate signature.
-    
+
     class Session(pybind11_builtins.pybind11_object)
      |  The SmuView `Session` class for accessing the actual state of the application.
-     |  
+     |
      |  Method resolution order:
      |      Session
      |      pybind11_builtins.pybind11_object
      |      builtins.object
-     |  
+     |
      |  Methods defined here:
-     |  
+     |
      |  __init__(self, /, *args, **kwargs)
      |      Initialize self.  See help(type(self)) for accurate signature.
-     |  
+     |
      |  add_user_device(...)
      |      add_user_device(self: smuview.Session) -> smuview.UserDevice
-     |      
+     |
      |      Create a new user device.
-     |      
+     |
      |      Returns
      |      -------
      |      UserDevice
      |          The created user device object.
-     |  
+     |
      |  connect_device(...)
      |      connect_device(self: smuview.Session, conn_str: str) -> List[smuview.HardwareDevice]
-     |      
+     |
      |      Connect a new device. For some devices (like DMMs) you may want to wait a fixed time, until the first sample has arrived and an `AnalogSignal` object has been created. Example:
      |      ```
      |      import smuview
      |      import time
-     |      
+     |
      |      # Connect device.
      |      dmm_dev = Session.connect_device("hp-3478a:conn=libgpib/hp3478a")[0]
      |      # Sleep 1s to give the devices the chance to create signals.
      |      time.sleep(1)
      |      ```
-     |      
+     |
      |      Parameters
      |      ----------
      |      conn_str : str
      |          The connection string. See https://sigrok.org/wiki/Connection_parameters
-     |      
+     |
      |      Returns
      |      -------
      |      List[HardwareDevice]
      |          A List with the newly connected device objects.
-     |  
+     |
      |  devices(...)
      |      devices(self: smuview.Session) -> Dict[str, smuview.BaseDevice]
-     |      
+     |
      |      Return all connected devices.
-     |      
+     |
      |      Returns
      |      -------
      |      Dict[str, BaseDevice]
      |          A Dict where the key is the device id and the value is the device object.
-     |  
+     |
      |  ----------------------------------------------------------------------
      |  Static methods inherited from pybind11_builtins.pybind11_object:
-     |  
+     |
      |  __new__(*args, **kwargs) from pybind11_builtins.pybind11_type
      |      Create and return a new object.  See help(type) for accurate signature.
-    
+
     class UiProxy(pybind11_builtins.pybind11_object)
      |  Helper class for accessing the UI.
-     |  
+     |
      |  Method resolution order:
      |      UiProxy
      |      pybind11_builtins.pybind11_object
      |      builtins.object
-     |  
+     |
      |  Methods defined here:
-     |  
+     |
      |  __init__(self, /, *args, **kwargs)
      |      Initialize self.  See help(type(self)) for accurate signature.
-     |  
+     |
      |  add_control_view(...)
      |      add_control_view(self: smuview.UiProxy, tab_id: str, area: smuview.DockArea, configurable: smuview.Configurable) -> str
-     |      
+     |
      |      Add a control view for a configurable to the given tab.
-     |      
+     |
      |      Parameters
      |      ----------
      |      tab_id : str
@@ -1568,17 +1593,17 @@ CLASSES
      |          Where to put the new view.
      |      configurable : Configurable
      |          The `Configurable` object.
-     |      
+     |
      |      Returns
      |      -------
      |      str
      |          The id of the new view or empty if the view couldn't be added.
-     |  
+     |
      |  add_curve_to_time_plot_view(...)
      |      add_curve_to_time_plot_view(self: smuview.UiProxy, tab_id: str, view_id: str, signal: smuview.AnalogTimeSignal) -> str
-     |      
+     |
      |      Add a signal to the given time plot view.
-     |      
+     |
      |      Parameters
      |      ----------
      |      tab_id : str
@@ -1587,17 +1612,17 @@ CLASSES
      |          The id of the time plot view.
      |      signal : AnalogTimeSignal
      |          The signal object.
-     |      
+     |
      |      Returns
      |      -------
      |      str
      |          The id of the new curve or empty if the curve couldn't be added.
-     |  
+     |
      |  add_curve_to_xy_plot_view(...)
      |      add_curve_to_xy_plot_view(self: smuview.UiProxy, tab_id: str, view_id: str, x_signal: smuview.AnalogTimeSignal, y_signal: smuview.AnalogTimeSignal) -> str
-     |      
+     |
      |      Add x/y signals to the given x/y plot view.
-     |      
+     |
      |      Parameters
      |      ----------
      |      tab_id : str
@@ -1608,17 +1633,17 @@ CLASSES
      |          The x signal object.
      |      y_signal : AnalogTimeSignal
      |          The y signal object.
-     |      
+     |
      |      Returns
      |      -------
      |      str
      |          The id of the new curve or empty if the curve couldn't be added.
-     |  
+     |
      |  add_data_view(...)
      |      add_data_view(self: smuview.UiProxy, tab_id: str, area: smuview.DockArea, signal: smuview.AnalogTimeSignal) -> str
-     |      
+     |
      |      Add a data view for a signal to the given tab.
-     |      
+     |
      |      Parameters
      |      ----------
      |      tab_id : str
@@ -1627,32 +1652,32 @@ CLASSES
      |          Where to put the new view.
      |      signal : AnalogTimeSignal
      |          The signal object.
-     |      
+     |
      |      Returns
      |      -------
      |      str
      |          The id of the new view or empty if the view couldn't be added.
-     |  
+     |
      |  add_device_tab(...)
      |      add_device_tab(self: smuview.UiProxy, device: smuview.BaseDevice) -> str
-     |      
+     |
      |      Add a device tab with standard view for a device to the UI.
-     |      
+     |
      |      Parameters
      |      ----------
      |      device : BaseDevice
      |          The device object.
-     |      
+     |
      |      Returns
      |      -------
      |      str
      |          The id of the new tab or empty if the tab couldn't be added.
-     |  
+     |
      |  add_power_panel_view(...)
      |      add_power_panel_view(self: smuview.UiProxy, tab_id: str, area: smuview.DockArea, voltage_signal: smuview.AnalogTimeSignal, current_signal: smuview.AnalogTimeSignal) -> str
-     |      
+     |
      |      Add a power panel view for a voltage and a current signal to the given tab.
-     |      
+     |
      |      Parameters
      |      ----------
      |      tab_id : str
@@ -1663,17 +1688,17 @@ CLASSES
      |          The voltage signal object.
      |      current_signal : AnalogTimeSignal
      |          The current signal object.
-     |      
+     |
      |      Returns
      |      -------
      |      str
      |          The id of the new view or empty if the view couldn't be added.
-     |  
+     |
      |  add_signal_to_data_view(...)
      |      add_signal_to_data_view(self: smuview.UiProxy, tab_id: str, view_id: str, signal: smuview.AnalogTimeSignal) -> None
-     |      
+     |
      |      Add a signal to the given data view.
-     |      
+     |
      |      Parameters
      |      ----------
      |      tab_id : str
@@ -1682,33 +1707,33 @@ CLASSES
      |          The id of the data view.
      |      signal : AnalogTimeSignal
      |          The signal object.
-     |  
+     |
      |  add_time_plot_view(...)
      |      add_time_plot_view(self: smuview.UiProxy, tab_id: str, area: smuview.DockArea) -> str
-     |      
+     |
      |      Add a time plot view to the given tab. Use [`UiProxy.set_channel_to_time_plot_view()`](UiProxy.set_channel_to_time_plot_view) to set a channel to the plot view or use [`UiProxy.add_curve_to_time_plot_view()`](UiProxy.add_curve_to_time_plot_view) to set a signal to the plot view.
      |      When you have set a channel to the plot, new curves will be automatically created, when the channel changes (e.g. for multimeters when switching functions).
-     |      
+     |
      |      Parameters
      |      ----------
      |      tab_id : str
      |          The id of the tab.
      |      area : DockArea
      |          Where to put the new view.
-     |      
+     |
      |      Returns
      |      -------
      |      str
      |          The id of the new view or empty if the view couldn't be added.
-     |  
+     |
      |  add_value_panel_view(...)
      |      add_value_panel_view(*args, **kwargs)
      |      Overloaded function.
-     |      
+     |
      |      1. add_value_panel_view(self: smuview.UiProxy, tab_id: str, area: smuview.DockArea, channel: smuview.BaseChannel) -> str
-     |      
+     |
      |      Add a value panel view for a channel to the given tab.
-     |      
+     |
      |      Parameters
      |      ----------
      |      tab_id : str
@@ -1717,16 +1742,16 @@ CLASSES
      |          Where to put the new view.
      |      channel : BaseChannel
      |          The channel object.
-     |      
+     |
      |      Returns
      |      -------
      |      str
      |          The id of the new view or empty if the view couldn't be added.
-     |      
+     |
      |      2. add_value_panel_view(self: smuview.UiProxy, tab_id: str, area: smuview.DockArea, signal: smuview.AnalogTimeSignal) -> str
-     |      
+     |
      |      Add a value panel view for a signal to the given tab.
-     |      
+     |
      |      Parameters
      |      ----------
      |      tab_id : str
@@ -1735,34 +1760,34 @@ CLASSES
      |          Where to put the new view.
      |      signal : AnalogTimeSignal
      |          The signal object.
-     |      
+     |
      |      Returns
      |      -------
      |      str
      |          The id of the new view or empty if the view couldn't be added.
-     |  
+     |
      |  add_xy_plot_view(...)
      |      add_xy_plot_view(self: smuview.UiProxy, tab_id: str, area: smuview.DockArea) -> str
-     |      
+     |
      |      Add a x/y plot view for two signals to the given tab. Use [`UiProxy.add_curve_to_xy_plot_view()`](UiProxy.add_curve_to_xy_plot_view) to add a new curve (a set of two signals) to the plot view.
-     |      
+     |
      |      Parameters
      |      ----------
      |      tab_id : str
      |          The id of the tab.
      |      area : DockArea
      |          Where to put the new view.
-     |      
+     |
      |      Returns
      |      -------
      |      str
      |          The id of the new view or empty if the view couldn't be added.
-     |  
+     |
      |  set_channel_to_time_plot_view(...)
      |      set_channel_to_time_plot_view(self: smuview.UiProxy, tab_id: str, view_id: str, channel: smuview.BaseChannel) -> None
-     |      
+     |
      |      Set a channel to the given time plot view. New curves will be automatically created, when the channel changes (e.g. for multimeters when switching functions).
-     |      
+     |
      |      Parameters
      |      ----------
      |      tab_id : str
@@ -1771,12 +1796,12 @@ CLASSES
      |          The id of the time plot view.
      |      channel : BaseChannel
      |          The channel object.
-     |  
+     |
      |  set_curve_color(...)
      |      set_curve_color(self: smuview.UiProxy, tab_id: str, view_id: str, curve_id: str, color: Tuple[int, int, int]) -> None
-     |      
+     |
      |      Set the color of the given curve.
-     |      
+     |
      |      Parameters
      |      ----------
      |      tab_id : str
@@ -1787,12 +1812,12 @@ CLASSES
      |          The id of the curve.
      |      color : Tuple[int, int, int]
      |          The color for the curve as a Tuple with the RGB values.
-     |  
+     |
      |  set_curve_name(...)
      |      set_curve_name(self: smuview.UiProxy, tab_id: str, view_id: str, curve_id: str, name: str) -> None
-     |      
+     |
      |      Set the name of the given curve.
-     |      
+     |
      |      Parameters
      |      ----------
      |      tab_id : str
@@ -1803,14 +1828,14 @@ CLASSES
      |          The id of the curve.
      |      name : str
      |          The name for the curve.
-     |  
+     |
      |  show_double_input_dialog(...)
      |      show_double_input_dialog(self: smuview.UiProxy, title: str, label: str, value: float = 0.0, decimals: int = 1, step: float = 0.1, min: float = 2.2250738585072014e-308, max: float = 1.7976931348623157e+308) -> object
-     |      
+     |
      |      Show a dialog window to get a float value from the user. It returns the entered float value or `None` if the Cancel button was pressed.
-     |      
+     |
      |      Only has effect if the used Qt version is equal or greater than 5.10!
-     |      
+     |
      |      Parameters
      |      ----------
      |      title : str
@@ -1828,17 +1853,17 @@ CLASSES
      |          The minimum value the user may choose.
      |      max : float
      |          The maximum value the user may choose.
-     |      
+     |
      |      Returns
      |      -------
      |      float or None
      |          The user entered float value or `None` when the Cancel button was pressed.
-     |  
+     |
      |  show_int_input_dialog(...)
      |      show_int_input_dialog(self: smuview.UiProxy, title: str, label: str, value: int = 0, step: int = 1, min: int = -2147483648, max: int = 2147483647) -> object
-     |      
+     |
      |      Show a dialog window to get an integer value from the user. It returns the entered float value or `None` if the Cancel button was pressed.
-     |      
+     |
      |      Parameters
      |      ----------
      |      title : str
@@ -1853,34 +1878,34 @@ CLASSES
      |          The minimum value the user may choose.
      |      max : int
      |          The maximum value the user may choose.
-     |      
+     |
      |      Returns
      |      -------
      |      int or None
      |          The user entered integer value or `None` when the Cancel button was pressed.
-     |  
+     |
      |  show_message_box(...)
      |      show_message_box(self: smuview.UiProxy, title: str, text: str) -> bool
-     |      
+     |
      |      Show a (info) message box with the given window title and text. Returns `True` when the Ok button was pressed.
-     |      
+     |
      |      Parameters
      |      ----------
      |      title : str
      |          The window title of the message box.
      |      text : str
      |          The text to display in the message box.
-     |      
+     |
      |      Returns
      |      -------
      |      bool
      |          `True` when the Ok button was pressed, else `False`.
-     |  
+     |
      |  show_string_input_dialog(...)
      |      show_string_input_dialog(self: smuview.UiProxy, title: str, label: str, value: str = '') -> object
-     |      
+     |
      |      Show a dialog window to get a string value from the user. It returns the entered string value or `None` if the Cancel button was pressed.
-     |      
+     |
      |      Parameters
      |      ----------
      |      title : str
@@ -1889,173 +1914,178 @@ CLASSES
      |          The label to display in the input dialog.
      |      value : str
      |          The default value of the string.
-     |      
+     |
      |      Returns
      |      -------
      |      str or None
      |          The user entered string value or `None` when the Cancel button was pressed.
-     |  
+     |
      |  ----------------------------------------------------------------------
      |  Static methods inherited from pybind11_builtins.pybind11_object:
-     |  
+     |
      |  __new__(*args, **kwargs) from pybind11_builtins.pybind11_type
      |      Create and return a new object.  See help(type) for accurate signature.
-    
+
     class Unit(pybind11_builtins.pybind11_object)
      |  Enum of all available units.
-     |  
+     |
      |  Method resolution order:
      |      Unit
      |      pybind11_builtins.pybind11_object
      |      builtins.object
-     |  
+     |
      |  Methods defined here:
-     |  
-     |  __eq__ = (...)
-     |      (self: object, arg0: object) -> bool
-     |  
-     |  __getstate__ = (...)
-     |      (self: object) -> int_
-     |  
-     |  __hash__ = (...)
-     |      (self: object) -> int_
-     |  
+     |
+     |  __eq__(...)
+     |      __eq__(self: object, other: object) -> bool
+     |
+     |  __getstate__(...)
+     |      __getstate__(self: object) -> int
+     |
+     |  __hash__(...)
+     |      __hash__(self: object) -> int
+     |
      |  __index__(...)
      |      __index__(self: smuview.Unit) -> int
-     |  
+     |
      |  __init__(...)
-     |      __init__(self: smuview.Unit, arg0: int) -> None
-     |  
+     |      __init__(self: smuview.Unit, value: int) -> None
+     |
      |  __int__(...)
      |      __int__(self: smuview.Unit) -> int
-     |  
-     |  __ne__ = (...)
-     |      (self: object, arg0: object) -> bool
-     |  
-     |  __repr__ = (...)
-     |      (self: handle) -> str
-     |  
-     |  __setstate__ = (...)
-     |      (self: smuview.Unit, arg0: int) -> None
-     |  
+     |
+     |  __ne__(...)
+     |      __ne__(self: object, other: object) -> bool
+     |
+     |  __repr__(...)
+     |      __repr__(self: object) -> str
+     |
+     |  __setstate__(...)
+     |      __setstate__(self: smuview.Unit, state: int) -> None
+     |
+     |  __str__ = name(...)
+     |      name(self: handle) -> str
+     |
      |  ----------------------------------------------------------------------
      |  Readonly properties defined here:
-     |  
+     |
      |  __members__
-     |  
+     |
      |  name
-     |      (self: handle) -> str
-     |  
+     |      name(self: handle) -> str
+     |
+     |  value
+     |
      |  ----------------------------------------------------------------------
      |  Data and other attributes defined here:
-     |  
-     |  Ampere = Unit.Ampere
-     |  
-     |  AmpereHour = Unit.AmpereHour
-     |  
-     |  Boolean = Unit.Boolean
-     |  
-     |  Carat = Unit.Carat
-     |  
-     |  Celsius = Unit.Celsius
-     |  
-     |  Concentration = Unit.Concentration
-     |  
-     |  Coulomb = Unit.Coulomb
-     |  
-     |  DecibelMW = Unit.DecibelMW
-     |  
-     |  DecibelSpl = Unit.DecibelSpl
-     |  
-     |  DecibelVolt = Unit.DecibelVolt
-     |  
-     |  Degree = Unit.Degree
-     |  
-     |  Fahrenheit = Unit.Fahrenheit
-     |  
-     |  Farad = Unit.Farad
-     |  
-     |  Grain = Unit.Grain
-     |  
-     |  Gram = Unit.Gram
-     |  
-     |  HectoPascal = Unit.HectoPascal
-     |  
-     |  Henry = Unit.Henry
-     |  
-     |  Hertz = Unit.Hertz
-     |  
-     |  Humidity293K = Unit.Humidity293K
-     |  
-     |  Joule = Unit.Joule
-     |  
-     |  Kelvin = Unit.Kelvin
-     |  
-     |  MeterPerSecond = Unit.MeterPerSecond
-     |  
-     |  Momme = Unit.Momme
-     |  
-     |  Ohm = Unit.Ohm
-     |  
-     |  Ounce = Unit.Ounce
-     |  
-     |  Pennyweight = Unit.Pennyweight
-     |  
-     |  Percentage = Unit.Percentage
-     |  
-     |  Piece = Unit.Piece
-     |  
-     |  Pound = Unit.Pound
-     |  
-     |  RevolutionsPerMinute = Unit.RevolutionsPerMinute
-     |  
-     |  Second = Unit.Second
-     |  
-     |  Siemens = Unit.Siemens
-     |  
-     |  Tael = Unit.Tael
-     |  
-     |  Tola = Unit.Tola
-     |  
-     |  TroyOunce = Unit.TroyOunce
-     |  
-     |  Unitless = Unit.Unitless
-     |  
-     |  Unknown = Unit.Unknown
-     |  
-     |  Volt = Unit.Volt
-     |  
-     |  VoltAmpere = Unit.VoltAmpere
-     |  
-     |  Watt = Unit.Watt
-     |  
-     |  WattHour = Unit.WattHour
-     |  
+     |
+     |  Ampere = <Unit.Ampere: 1>
+     |
+     |  AmpereHour = <Unit.AmpereHour: 22>
+     |
+     |  Boolean = <Unit.Boolean: 9>
+     |
+     |  Carat = <Unit.Carat: 30>
+     |
+     |  Celsius = <Unit.Celsius: 5>
+     |
+     |  Concentration = <Unit.Concentration: 16>
+     |
+     |  Coulomb = <Unit.Coulomb: 23>
+     |
+     |  DecibelMW = <Unit.DecibelMW: 12>
+     |
+     |  DecibelSpl = <Unit.DecibelSpl: 15>
+     |
+     |  DecibelVolt = <Unit.DecibelVolt: 13>
+     |
+     |  Degree = <Unit.Degree: 27>
+     |
+     |  Fahrenheit = <Unit.Fahrenheit: 6>
+     |
+     |  Farad = <Unit.Farad: 3>
+     |
+     |  Grain = <Unit.Grain: 35>
+     |
+     |  Gram = <Unit.Gram: 29>
+     |
+     |  HectoPascal = <Unit.HectoPascal: 25>
+     |
+     |  Henry = <Unit.Henry: 28>
+     |
+     |  Hertz = <Unit.Hertz: 7>
+     |
+     |  Humidity293K = <Unit.Humidity293K: 26>
+     |
+     |  Joule = <Unit.Joule: 21>
+     |
+     |  Kelvin = <Unit.Kelvin: 4>
+     |
+     |  MeterPerSecond = <Unit.MeterPerSecond: 24>
+     |
+     |  Momme = <Unit.Momme: 37>
+     |
+     |  Ohm = <Unit.Ohm: 2>
+     |
+     |  Ounce = <Unit.Ounce: 31>
+     |
+     |  Pennyweight = <Unit.Pennyweight: 34>
+     |
+     |  Percentage = <Unit.Percentage: 8>
+     |
+     |  Piece = <Unit.Piece: 39>
+     |
+     |  Pound = <Unit.Pound: 33>
+     |
+     |  RevolutionsPerMinute = <Unit.RevolutionsPerMinute: 17>
+     |
+     |  Second = <Unit.Second: 10>
+     |
+     |  Siemens = <Unit.Siemens: 11>
+     |
+     |  Tael = <Unit.Tael: 36>
+     |
+     |  Tola = <Unit.Tola: 38>
+     |
+     |  TroyOunce = <Unit.TroyOunce: 32>
+     |
+     |  Unitless = <Unit.Unitless: 14>
+     |
+     |  Unknown = <Unit.Unknown: 40>
+     |
+     |  Volt = <Unit.Volt: 0>
+     |
+     |  VoltAmpere = <Unit.VoltAmpere: 18>
+     |
+     |  Watt = <Unit.Watt: 19>
+     |
+     |  WattHour = <Unit.WattHour: 20>
+     |
      |  ----------------------------------------------------------------------
      |  Static methods inherited from pybind11_builtins.pybind11_object:
-     |  
+     |
      |  __new__(*args, **kwargs) from pybind11_builtins.pybind11_type
      |      Create and return a new object.  See help(type) for accurate signature.
-    
+
     class UserChannel(BaseChannel)
      |  An user generated channel for storing custom data.
-     |  
+     |
      |  Method resolution order:
      |      UserChannel
      |      BaseChannel
      |      pybind11_builtins.pybind11_object
      |      builtins.object
-     |  
+     |
      |  Methods defined here:
-     |  
+     |
      |  __init__(self, /, *args, **kwargs)
      |      Initialize self.  See help(type(self)) for accurate signature.
-     |  
+     |
      |  push_sample(...)
      |      push_sample(self: smuview.UserChannel, sample: float, timestamp: float, quantity: smuview.Quantity, quantity_flags: Set[smuview.QuantityFlag], unit: smuview.Unit, digits: int, decimal_places: int) -> None
-     |      
+     |
      |      Push a single sample to the channel.
-     |      
+     |
      |      Parameters
      |      ----------
      |      sample : float
@@ -2072,25 +2102,25 @@ CLASSES
      |          The total number of digits.
      |      decimal_places : int
      |          The number of decimal places.
-     |  
+     |
      |  ----------------------------------------------------------------------
      |  Methods inherited from BaseChannel:
-     |  
+     |
      |  actual_signal(...)
      |      actual_signal(self: smuview.BaseChannel) -> smuview.BaseSignal
-     |      
+     |
      |      Return the actual signal of the channel.
-     |      
+     |
      |      Returns
      |      -------
      |      BaseSignal
      |          The actual signal object.
-     |  
+     |
      |  add_signal(...)
      |      add_signal(self: smuview.BaseChannel, quantity: smuview.Quantity, quantity_flags: Set[smuview.QuantityFlag], unit: smuview.Unit, custom_name: str = '') -> smuview.BaseSignal
-     |      
+     |
      |      Add a new signal to the channel.
-     |      
+     |
      |      Parameters
      |      ----------
      |      quantity : Quantity
@@ -2101,115 +2131,115 @@ CLASSES
      |          The `Unit` of the new signal.
      |      custom_name: str
      |          A custom name for the new signal. If empty (default), the signal name will be automatically generated.
-     |      
+     |
      |      Returns
      |      -------
      |      BaseSignal
      |          The new signal object.
-     |  
+     |
      |  name(...)
      |      name(self: smuview.BaseChannel) -> str
-     |      
+     |
      |      Return the name of the channel.
-     |      
+     |
      |      Returns
      |      -------
      |      str
      |          The name of the channel.
-     |  
+     |
      |  signals(...)
      |      signals(self: smuview.BaseChannel) -> List[smuview.BaseSignal]
-     |      
+     |
      |      Return all signals of the channel.
-     |      
+     |
      |      Returns
      |      -------
      |      List[BaseSignal]
      |          All signals of the channel.
-     |  
+     |
      |  ----------------------------------------------------------------------
      |  Static methods inherited from pybind11_builtins.pybind11_object:
-     |  
+     |
      |  __new__(*args, **kwargs) from pybind11_builtins.pybind11_type
      |      Create and return a new object.  See help(type) for accurate signature.
-    
+
     class UserDevice(BaseDevice)
      |  An user generated (virtual) device for storing custom data and showing a custom tab.
-     |  
+     |
      |  Method resolution order:
      |      UserDevice
      |      BaseDevice
      |      pybind11_builtins.pybind11_object
      |      builtins.object
-     |  
+     |
      |  Methods defined here:
-     |  
+     |
      |  __init__(self, /, *args, **kwargs)
      |      Initialize self.  See help(type(self)) for accurate signature.
-     |  
+     |
      |  ----------------------------------------------------------------------
      |  Methods inherited from BaseDevice:
-     |  
+     |
      |  add_user_channel(...)
      |      add_user_channel(self: smuview.BaseDevice, channel_name: str, channel_group_name: str) -> smuview.UserChannel
-     |      
+     |
      |      Add a new user channel to the device.
-     |      
+     |
      |      Parameters
      |      ----------
      |      channel_name : str
      |          The name of the new user channel.
      |      channel_group_name : str
      |          The name of the channel group where to create the user channel. Can be empty.
-     |      
+     |
      |      Returns
      |      -------
      |      UserChannel
      |          The new user channel object.
-     |  
+     |
      |  channels(...)
      |      channels(self: smuview.BaseDevice) -> Dict[str, smuview.BaseChannel]
-     |      
+     |
      |      Return all channels of the device.
-     |      
+     |
      |      Returns
      |      -------
      |      Dict[str, BaseChannel]
      |          A Dict where the key is the id of the channel and the value is the channel object.
-     |  
+     |
      |  configurables(...)
      |      configurables(self: smuview.BaseDevice) -> Dict[str, smuview.Configurable]
-     |      
+     |
      |      Return all configurables of the device.
-     |      
+     |
      |      Returns
      |      -------
      |      Dict[str, Configurable]
      |          A Dict where the key is the id of the `Configurable` and the value is the `Configurable` object.
-     |  
+     |
      |  id(...)
      |      id(self: smuview.BaseDevice) -> str
-     |      
+     |
      |      Return the unique id of the device.
-     |      
+     |
      |      Returns
      |      -------
      |      str
      |          The id of the device.
-     |  
+     |
      |  name(...)
      |      name(self: smuview.BaseDevice) -> str
-     |      
+     |
      |      Return the name of the device.
-     |      
+     |
      |      Returns
      |      -------
      |      str
      |          The name of the device.
-     |  
+     |
      |  ----------------------------------------------------------------------
      |  Static methods inherited from pybind11_builtins.pybind11_object:
-     |  
+     |
      |  __new__(*args, **kwargs) from pybind11_builtins.pybind11_type
      |      Create and return a new object.  See help(type) for accurate signature.
 
