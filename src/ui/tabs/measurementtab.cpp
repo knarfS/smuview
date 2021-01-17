@@ -57,6 +57,7 @@ void MeasurementTab::setup_ui()
 
 	// Device controls
 	views::BaseView *first_conf_view = nullptr;
+	size_t conf_view_count = 0;
 	for (const auto &c_pair : hw_device->configurable_map()) {
 		// Ignore logic controls from the demo devive.
 		if (c_pair.first == "Logic")
@@ -66,9 +67,10 @@ void MeasurementTab::setup_ui()
 		if (!configurable->is_controllable())
 			continue;
 
-		auto configurable_view = views::viewhelper::get_view_for_configurable(
+		auto configurable_views = views::viewhelper::get_views_for_configurable(
 			session_, configurable);
-		if (configurable_view) {
+		for (const auto &configurable_view : configurable_views) {
+			conf_view_count++;
 			if (!first_conf_view) {
 				first_conf_view = configurable_view;
 				add_view(configurable_view, Qt::TopDockWidgetArea);
@@ -77,8 +79,7 @@ void MeasurementTab::setup_ui()
 				add_view_ontop(configurable_view, first_conf_view);
 		}
 	}
-	if (first_conf_view != nullptr &&
-			hw_device->configurable_map().size() > 1) {
+	if (first_conf_view != nullptr && conf_view_count > 1) {
 		first_conf_view->show();
 		first_conf_view->raise();
 	}

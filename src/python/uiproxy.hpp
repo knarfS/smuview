@@ -23,6 +23,7 @@
 #include <memory>
 #include <string>
 #include <tuple>
+#include <vector>
 #include <pybind11/pybind11.h>
 
 #include <QDockWidget>
@@ -35,6 +36,7 @@
 using std::shared_ptr;
 using std::string;
 using std::tuple;
+using std::vector;
 
 namespace py = pybind11;
 
@@ -74,7 +76,8 @@ public:
 
 	string ui_add_data_view(const string &tab_id, Qt::DockWidgetArea area,
 		shared_ptr<data::AnalogTimeSignal> signal);
-	string ui_add_control_view(const string &tab_id, Qt::DockWidgetArea area,
+	vector<string> ui_add_control_views(const string &tab_id,
+		Qt::DockWidgetArea area,
 		shared_ptr<devices::Configurable> configurable);
 	string ui_add_time_plot_view(const string &tab_id, Qt::DockWidgetArea area);
 	string ui_add_xy_plot_view(const string &tab_id, Qt::DockWidgetArea area);
@@ -119,6 +122,7 @@ public:
 private:
 	void init_wait_for_tab_added(string &id, int timeout = 1000);
 	void init_wait_for_view_added(string &id, int timeout = 1000);
+	void init_wait_for_views_added(vector<string> &ids, int timeout = 1000);
 	void init_wait_for_curve_added(string &id, int timeout = 1000);
 	void init_wait_for_message_box(bool &ok, int timeout = 0);
 	void init_wait_for_input_dialog(bool &ok, QVariant &qvar, int timeout = 0);
@@ -137,7 +141,7 @@ Q_SIGNALS:
 
 	void add_data_view(const std::string &tab_id, Qt::DockWidgetArea area,
 		shared_ptr<sv::data::AnalogTimeSignal> signal);
-	void add_control_view(const std::string &tab_id, Qt::DockWidgetArea area,
+	void add_control_views(const std::string &tab_id, Qt::DockWidgetArea area,
 		shared_ptr<sv::devices::Configurable> configurable);
 	void add_time_plot_view(const std::string &tab_id, Qt::DockWidgetArea area);
 	void add_xy_plot_view(const std::string &tab_id, Qt::DockWidgetArea area);

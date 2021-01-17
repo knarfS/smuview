@@ -243,11 +243,12 @@ void AddViewDialog::accept()
 		{
 			auto configurable =
 				configurable_configurable_form_->selected_configurable();
-			auto view = views::viewhelper::get_view_for_configurable(
+			auto views = views::viewhelper::get_views_for_configurable(
 				session_, configurable);
 
-			if (view != nullptr)
+			for (const auto &view : views) {
 				views_.push_back(view);
+			}
 		}
 		break;
 	case 1:

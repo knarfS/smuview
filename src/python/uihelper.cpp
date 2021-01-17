@@ -19,6 +19,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include <QColor>
 #include <QDebug>
@@ -53,6 +54,8 @@ namespace python {
 UiHelper::UiHelper(Session &session) :
 	session_(session)
 {
+	// For the views_added signal.
+	qRegisterMetaType<std::vector<std::string>>("std::vector<std::string>");
 }
 
 void UiHelper::add_device_tab(shared_ptr<sv::devices::BaseDevice> device)
@@ -82,24 +85,29 @@ void UiHelper::add_data_view(const std::string &tab_id,
 	Q_EMIT view_added(view->id());
 }
 
-void UiHelper::add_control_view(const std::string &tab_id,
+void UiHelper::add_control_views(const std::string &tab_id,
 	Qt::DockWidgetArea area,
 	shared_ptr<sv::devices::Configurable> configurable)
 {
+	std::vector<std::string> view_ids;
+
 	auto tab = get_tab(tab_id);
 	if (!tab) {
-		Q_EMIT view_added("");
+		Q_EMIT views_added(view_ids);
 		return;
 	}
-	auto view = ui::views::viewhelper::get_view_for_configurable(
+	auto views = ui::views::viewhelper::get_views_for_configurable(
 		session_, configurable);
-	if (!view) {
-		Q_EMIT view_added("");
+	if (views.empty()) {
+		Q_EMIT views_added(view_ids);
 		return;
 	}
 
-	tab->add_view(view, area);
-	Q_EMIT view_added(view->id());
+	for (const auto &view : views) {
+		tab->add_view(view, area);
+		view_ids.push_back(view->id());
+	}
+	Q_EMIT views_added(view_ids);
 }
 
 void UiHelper::add_time_plot_view(const std::string &tab_id,

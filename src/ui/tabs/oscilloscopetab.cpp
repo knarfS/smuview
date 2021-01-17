@@ -33,6 +33,7 @@
 #include "src/devices/configurable.hpp"
 #include "src/devices/hardwaredevice.hpp"
 #include "src/ui/tabs/devicetab.hpp"
+#include "src/ui/views/scopetriggercontrolview.hpp"
 #include "src/ui/views/viewhelper.hpp"
 
 namespace sv {
@@ -61,49 +62,41 @@ void OscilloscopeTab::setup_ui()
 		if (!configurable->is_controllable())
 			continue;
 
-		/* TODO
-		auto view = views::viewhelper::get_view_for_configurable(
+		auto configurable_views = views::viewhelper::get_views_for_configurable(
 			session_, configurable);
-		if (view != NULL)
-			add_view(view, Qt::TopDockWidgetArea);
-		*/
-	}
-
-	/*
-	for (const auto &chg_pair : device_->channel_group_map()) {
-		ui::views::PlotView *plot_view = NULL;
-		shared_ptr<data::AnalogScopeSignal> signal;
-		for (const auto &channel : chg_pair.second) {
-			if (channel->fixed_signal()) {
-				auto signal = static_pointer_cast<data::AnalogTimeSignal>(
-					channel->actual_signal());
-
-				// Only plot voltage and current
-				if (signal->quantity() == data::Quantity::Voltage) {
-					voltage_signal = signal;
-					// Voltage plot(s)
-					if (!plot_view) {
-						plot_view = new ui::views::PlotView(session_, voltage_signal);
-						add_view(plot_view, Qt::BottomDockWidgetArea);
-					}
-					else
-						plot_view->add_time_curve(voltage_signal);
-
-				}
-				if (signal->quantity() == data::Quantity::Current) {
-					current_signal = signal;
-					// Current plot(s)
-					if (!plot_view) {
-						plot_view = new ui::views::PlotView(session_, current_signal);
-						add_view(plot_view, Qt::BottomDockWidgetArea);
-					}
-					else
-						plot_view->add_time_curve(current_signal);
-				}
-			}
+		for (const auto &configurable_view : configurable_views) {
+			add_view(configurable_view, Qt::BottomDockWidgetArea);
 		}
 	}
-	*/
+
+	size_t added_channels = 0;
+	//ui::views::TimePlotView *plot_view = NULL;
+	for (const auto &chg_pair : device_->channel_group_map()) {
+		/* TODO: for now, only the first two channles are displayed. */
+		if (added_channels >= 2)
+			break;
+
+		/* TODO: We assume, that every channel group has just one channel. */
+		// Only get the first channel, and ignore the others
+		auto channel = chg_pair.second.at(0);
+		if (!channel)
+			continue;
+
+		//shared_ptr<data::AnalogScopeSignal> signal; // TODO
+		auto signal = static_pointer_cast<data::AnalogTimeSignal>(
+			channel->actual_signal());
+		++added_channels;
+
+		// TODO: Voltage plot
+		/*
+		if (!plot_view) {
+			plot_view = new ui::views::PlotView(session_, signal);
+			add_view(plot_view, Qt::TopDockWidgetArea);
+		}
+		else
+			plot_view->add_time_curve(signal);
+		*/
+	}
 }
 
 } // namespace tabs

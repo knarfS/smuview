@@ -61,8 +61,8 @@ UiProxy::UiProxy(Session &session, shared_ptr<UiHelper> ui_helper) :
 	connect(this, &UiProxy::add_data_view,
 		ui_helper_.get(), &UiHelper::add_data_view);
 
-	connect(this, &UiProxy::add_control_view,
-		ui_helper_.get(), &UiHelper::add_control_view);
+	connect(this, &UiProxy::add_control_views,
+		ui_helper_.get(), &UiHelper::add_control_views);
 
 	connect(this, &UiProxy::add_time_plot_view,
 		ui_helper_.get(), &UiHelper::add_time_plot_view);
@@ -125,17 +125,17 @@ string UiProxy::ui_add_data_view(const string &tab_id, Qt::DockWidgetArea area,
 	return id;
 }
 
-string UiProxy::ui_add_control_view(const string &tab_id,
+vector<string> UiProxy::ui_add_control_views(const string &tab_id,
 	Qt::DockWidgetArea area,
 	shared_ptr<devices::Configurable> configurable)
 {
-	string id;
-	init_wait_for_view_added(id);
-	Q_EMIT add_control_view(tab_id, area, configurable);
+	vector<string> ids;
+	init_wait_for_views_added(ids);
+	Q_EMIT add_control_views(tab_id, area, configurable);
 	event_loop_.exec();
 	finish_wait_for_signal();
 
-	return id;
+	return ids;
 }
 
 string UiProxy::ui_add_time_plot_view(const string &tab_id,
@@ -338,6 +338,23 @@ void UiProxy::init_wait_for_view_added(string &id, int timeout)
 		connect(ui_helper_.get(), &UiHelper::view_added, this,
 			[this, &id](const std::string &view_id) {
 				id = view_id;
+				event_loop_.quit();
+			});
+
+	if (timeout > 0) {
+		timer_.setSingleShot(true);
+		timer_conn_ = connect(&timer_, &QTimer::timeout,
+			&event_loop_, &QEventLoop::quit);
+		timer_.start(timeout);
+	}
+}
+
+void UiProxy::init_wait_for_views_added(vector<string> &ids, int timeout)
+{
+	event_loop_finished_conn_ =
+		connect(ui_helper_.get(), &UiHelper::views_added, this,
+			[this, &ids](vector<std::string> view_ids) {
+				ids = view_ids;
 				event_loop_.quit();
 			});
 

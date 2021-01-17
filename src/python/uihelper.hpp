@@ -23,6 +23,7 @@
 #include <memory>
 #include <string>
 #include <tuple>
+#include <vector>
 
 #include <QDockWidget>
 #include <QObject>
@@ -71,7 +72,7 @@ public Q_SLOTS:
 
 	void add_data_view(const std::string &tab_id, Qt::DockWidgetArea area,
 		shared_ptr<sv::data::AnalogTimeSignal> signal);
-	void add_control_view(const std::string &tab_id, Qt::DockWidgetArea area,
+	void add_control_views(const std::string &tab_id, Qt::DockWidgetArea area,
 		shared_ptr<sv::devices::Configurable> configurable);
 	void add_time_plot_view(const std::string &tab_id, Qt::DockWidgetArea area);
 	void add_xy_plot_view(const std::string &tab_id, Qt::DockWidgetArea area);
@@ -126,6 +127,7 @@ private:
 Q_SIGNALS:
 	void tab_added(const std::string &tab_id);
 	void view_added(const std::string &view_id);
+	void views_added(std::vector<std::string> view_ids);
 	void curve_added(const std::string &curve_id);
 	void message_box_finished();
 	void message_box_canceled();

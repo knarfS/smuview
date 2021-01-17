@@ -55,13 +55,13 @@ print("New data view = " + data_view)
 # Add a signal to the existing data view
 UiProxy.add_signal_to_data_view(user_dev_tab, data_view, demo_dev.channels()["A3"].actual_signal())
 
-# Add a generic control view to the device tab
-control_view_1 = UiProxy.add_control_view(user_dev_tab, smuview.DockArea.TopDockArea, demo_dev.configurables()[""])
-print("New control view (1) = " + control_view_1)
+# Add the (generic) control view to the device tab
+control_views_1 = UiProxy.add_control_views(user_dev_tab, smuview.DockArea.TopDockArea, demo_dev.configurables()[""])
+print("New control views (1) = {}".format(control_views_1))
 
-# Add a demo control view to the device tab
-control_view_2 = UiProxy.add_control_view(user_dev_tab, smuview.DockArea.TopDockArea, demo_dev.configurables()["A1"])
-print("New control view (2) = " + control_view_2)
+# Add the demo control view to the device tab
+control_views_2 = UiProxy.add_control_views(user_dev_tab, smuview.DockArea.TopDockArea, demo_dev.configurables()["A1"])
+print("New control views (2) = {}".format(control_views_2))
 
 # Add a time plot view (1) to the device tab
 time_plot_view_1 = UiProxy.add_time_plot_view(user_dev_tab, smuview.DockArea.BottomDockArea)

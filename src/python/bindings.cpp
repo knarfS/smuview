@@ -562,9 +562,9 @@ void init_UI(py::module &m)
 		"-------\n"
 		"str\n"
 		"    The id of the new view or empty if the view couldn't be added.");
-	py_ui_proxy.def("add_control_view", &sv::python::UiProxy::ui_add_control_view,
+	py_ui_proxy.def("add_control_views", &sv::python::UiProxy::ui_add_control_views,
 		py::arg("tab_id"), py::arg("area"), py::arg("configurable"),
-		"Add a control view for a configurable to the given tab.\n\n"
+		"Add one or more control views for a configurable to the given tab.\n\n"
 		"Parameters\n"
 		"----------\n"
 		"tab_id : str\n"
@@ -575,8 +575,8 @@ void init_UI(py::module &m)
 		"    The `Configurable` object.\n\n"
 		"Returns\n"
 		"-------\n"
-		"str\n"
-		"    The id of the new view or empty if the view couldn't be added.");
+		"List[str]\n"
+		"    A List with the ids of the new views or an empty list if no control views were added.");
 	py_ui_proxy.def("add_time_plot_view",  &sv::python::UiProxy::ui_add_time_plot_view,
 		py::arg("tab_id"), py::arg("area"),
 		"Add a time plot view to the given tab. Use "

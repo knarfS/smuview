@@ -45,6 +45,9 @@
 #include "src/ui/views/genericcontrolview.hpp"
 #include "src/ui/views/measurementcontrolview.hpp"
 #include "src/ui/views/powerpanelview.hpp"
+#include "src/ui/views/scopehorizontalcontrolview.hpp"
+#include "src/ui/views/scopetriggercontrolview.hpp"
+#include "src/ui/views/scopeverticalcontrolview.hpp"
 #include "src/ui/views/sequenceoutputview.hpp"
 #include "src/ui/views/smuscriptoutputview.hpp"
 #include "src/ui/views/smuscriptview.hpp"
@@ -54,6 +57,7 @@
 #include "src/ui/views/xyplotview.hpp"
 
 using std::shared_ptr;
+using std::vector;
 
 using sv::devices::ConfigKey;
 using sv::devices::DeviceType;
@@ -63,11 +67,13 @@ namespace ui {
 namespace views {
 namespace viewhelper {
 
-BaseView *get_view_for_configurable(Session &session,
+vector<BaseView *> get_views_for_configurable(Session &session,
 	shared_ptr<sv::devices::Configurable> configurable)
 {
+	vector<BaseView *> views;
+
 	if (!configurable)
-		return nullptr;
+		return views;
 
 	// Power supplies or electronic loads control view
 	if ((configurable->device_type() == DeviceType::PowerSupply ||
@@ -93,7 +99,41 @@ BaseView *get_view_for_configurable(Session &session,
 		configurable->has_get_config(ConfigKey::UnderVoltageConditionThreshold) ||
 		configurable->has_set_config(ConfigKey::UnderVoltageConditionThreshold))) {
 
-		return new SourceSinkControlView(session, configurable);
+		views.push_back(new SourceSinkControlView(session, configurable));
+	}
+
+	// Vertical control for scopes
+	if (configurable->device_type() == DeviceType::Oscilloscope &&
+		(configurable->has_get_config(ConfigKey::Enabled) ||
+		configurable->has_set_config(ConfigKey::Enabled) ||
+		configurable->has_get_config(ConfigKey::VDiv) ||
+		configurable->has_set_config(ConfigKey::VDiv) ||
+		configurable->has_get_config(ConfigKey::Coupling) ||
+		configurable->has_set_config(ConfigKey::Coupling) ||
+		configurable->has_get_config(ConfigKey::Filter) ||
+		configurable->has_set_config(ConfigKey::Filter))) {
+
+		views.push_back(new ScopeVerticalControlView(session, configurable));
+	}
+
+	// Trigger control for scopes
+	if (configurable->device_type() == DeviceType::Oscilloscope &&
+		(configurable->has_get_config(ConfigKey::TriggerSource) ||
+		configurable->has_set_config(ConfigKey::TriggerSource) ||
+		configurable->has_get_config(ConfigKey::TriggerSlope) ||
+		configurable->has_set_config(ConfigKey::TriggerSlope) ||
+		configurable->has_get_config(ConfigKey::TriggerLevel) ||
+		configurable->has_set_config(ConfigKey::TriggerLevel))) {
+
+		views.push_back(new ScopeTriggerControlView(session, configurable));
+	}
+
+	// Horizontal control for scopes
+	if (configurable->device_type() == DeviceType::Oscilloscope &&
+		(configurable->has_get_config(ConfigKey::TimeBase) ||
+		configurable->has_set_config(ConfigKey::TimeBase))) {
+
+		views.push_back(new ScopeHorizontalControlView(session, configurable));
 	}
 
 	// View for Demo Device
@@ -105,7 +145,7 @@ BaseView *get_view_for_configurable(Session &session,
 		configurable->has_get_config(ConfigKey::Offset) ||
 		configurable->has_set_config(ConfigKey::Offset))) {
 
-		return new DemoControlView(session, configurable);
+		views.push_back(new DemoControlView(session, configurable));
 	}
 
 	// Measurement devices like DMMs, scales, LCR meters, etc.
@@ -124,19 +164,21 @@ BaseView *get_view_for_configurable(Session &session,
 		configurable->has_get_config(ConfigKey::Range) ||
 		configurable->has_set_config(ConfigKey::Range))) {
 
-		return new MeasurementControlView(session, configurable);
+		views.push_back(new MeasurementControlView(session, configurable));
 	}
 
 	// TODO: SignalGenerators need their own view (waveforms, etc.)
 
-	// Generic control view (signal generators for now)
-	if (!configurable->getable_configs().empty() ||
-		!configurable->setable_configs().empty()) {
+	// Fallback: Generic control view if nothing else fits (e.g. signal
+	// generators for now).
+	if (views.empty() &&
+		(!configurable->getable_configs().empty() ||
+		!configurable->setable_configs().empty())) {
 
-		return new GenericControlView(session, configurable);
+		views.push_back(new GenericControlView(session, configurable));
 	}
 
-	return nullptr;
+	return views;
 }
 
 BaseView *get_view_from_settings(Session &session, QSettings &settings,
@@ -182,6 +224,18 @@ BaseView *get_view_from_settings(Session &session, QSettings &settings,
 	}
 	else if (type == "measurementcontrol") {
 		view = MeasurementControlView::init_from_settings(
+			session, settings, uuid, origin_device);
+	}
+	else if (type == "scopehorizontalcontrol") {
+		view = ScopeHorizontalControlView::init_from_settings(
+			session, settings, uuid, origin_device);
+	}
+	else if (type == "scopetriggercontrol") {
+		view = ScopeTriggerControlView::init_from_settings(
+			session, settings, uuid, origin_device);
+	}
+	else if (type == "scopeverticalcontrol") {
+		view = ScopeVerticalControlView::init_from_settings(
 			session, settings, uuid, origin_device);
 	}
 	else if (type == "sourcesinkcontrol") {

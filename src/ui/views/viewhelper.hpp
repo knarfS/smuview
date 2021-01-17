@@ -22,11 +22,13 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include <QSettings>
 
 using std::shared_ptr;
 using std::string;
+using std::vector;
 
 namespace sv {
 
@@ -56,15 +58,15 @@ class BaseView;
 namespace viewhelper {
 
 /**
- * Returns the fitting control view for the given configurable, by checking for
+ * Returns the fitting control views for the given configurable, by checking for
  * get-/setable config keys and the device type.
  *
  * @param[in] session The reference to the actual SmuView session.
  * @param[in] configurable The Configurable.
  *
- * @return The control view for the configurable.
+ * @return The control views for the configurable.
  */
-BaseView *get_view_for_configurable(Session &session,
+vector<BaseView *> get_views_for_configurable(Session &session,
 	shared_ptr<sv::devices::Configurable> configurable);
 
 /**
