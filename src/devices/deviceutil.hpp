@@ -728,6 +728,15 @@ bool is_source_sink_driver(shared_ptr<sigrok::Driver> sr_driver);
  bool is_demo_driver(shared_ptr<sigrok::Driver> sr_driver);
 
 /**
+ * Check if the driver is an oscilloscope.
+ *
+ * @param sr_driver The sigrok Driver to check.
+ *
+ * @return true, if the driver is an oscilloscope.
+ */
+ bool is_oscilloscope_driver(shared_ptr<sigrok::Driver> sr_driver);
+
+/**
  * Return the corresponding DeviceType for a sigrok ConfigKey
  *
  * @param sr_config_key The sigrok ConfigKey

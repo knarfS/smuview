@@ -26,10 +26,12 @@
 #include "src/devices/basedevice.hpp"
 #include "src/devices/deviceutil.hpp"
 #include "src/devices/measurementdevice.hpp"
+#include "src/devices/oscilloscopedevice.hpp"
 #include "src/devices/sourcesinkdevice.hpp"
 #include "src/devices/userdevice.hpp"
 #include "src/ui/tabs/devicetab.hpp"
 #include "src/ui/tabs/measurementtab.hpp"
+#include "src/ui/tabs/oscilloscopetab.hpp"
 #include "src/ui/tabs/sourcesinktab.hpp"
 #include "src/ui/tabs/usertab.hpp"
 
@@ -48,12 +50,18 @@ DeviceTab *get_tab_for_device(Session &session,
 	if (!device)
 		return nullptr;
 
-	// Power supplies or electronic loads contro
+	// Power supplies or electronic loads
 	if (device->type() == DeviceType::PowerSupply ||
 		device->type() == DeviceType::ElectronicLoad) {
 
 		return new SourceSinkTab(session,
 			static_pointer_cast<devices::SourceSinkDevice>(device), parent);
+	}
+
+	// Oscilloscopes
+	if (device->type() == DeviceType::Oscilloscope) {
+		return new OscilloscopeTab(session,
+			static_pointer_cast<devices::OscilloscopeDevice>(device), parent);
 	}
 
 	// Measurement devices like DMMs, scales, LCR meters, etc., but also

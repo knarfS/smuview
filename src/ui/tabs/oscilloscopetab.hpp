@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2019-2021 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UI_TABS_MEASUREMENTTAB_HPP
-#define UI_TABS_MEASUREMENTTAB_HPP
+#ifndef UI_TABS_OSCILLOSCOPETAB_HPP
+#define UI_TABS_OSCILLOSCOPETAB_HPP
 
 #include <memory>
 
@@ -33,26 +33,23 @@ namespace sv {
 class Session;
 
 namespace devices {
-class MeasurementDevice;
+class HardwareDevice;
 }
 
 namespace ui {
 namespace tabs {
 
-class MeasurementTab : public DeviceTab
+class OscilloscopeTab : public DeviceTab
 {
 	Q_OBJECT
 
 public:
-	MeasurementTab(Session &session,
- 		shared_ptr<sv::devices::MeasurementDevice> device,
+	OscilloscopeTab(Session &session,
+		shared_ptr<sv::devices::HardwareDevice> device,
 		QWidget *parent = nullptr);
 
 private:
 	void setup_ui();
-
-	// TODO: remove, generic solution in hw_device
-	shared_ptr<sv::devices::MeasurementDevice> measurement_device_;
 
 };
 
@@ -60,4 +57,4 @@ private:
 } // namespace ui
 } // namespace sv
 
-#endif // UI_TABS_MEASUREMENTTAB_HPP
+#endif // UI_TABS_OSCILLOSCOPETAB_HPP

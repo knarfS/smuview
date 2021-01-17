@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2019-2021 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,47 +17,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UI_TABS_MEASUREMENTTAB_HPP
-#define UI_TABS_MEASUREMENTTAB_HPP
+#include <cassert>
 
-#include <memory>
+#include <QDebug>
 
-#include <QWidget>
+#include <libsigrokcxx/libsigrokcxx.hpp>
 
-#include "src/ui/tabs/devicetab.hpp"
+#include "oscilloscopedevice.hpp"
+#include "src/channels/basechannel.hpp"
+#include "src/channels/hardwarechannel.hpp"
+#include "src/data/analogtimesignal.hpp"
+#include "src/data/basesignal.hpp"
 
-using std::shared_ptr;
+using std::static_pointer_cast;
 
 namespace sv {
-
-class Session;
-
 namespace devices {
-class MeasurementDevice;
+
+OscilloscopeDevice::OscilloscopeDevice(
+		const shared_ptr<sigrok::Context> sr_context,
+		shared_ptr<sigrok::HardwareDevice> sr_device) :
+	HardwareDevice(sr_context, sr_device)
+{
 }
 
-namespace ui {
-namespace tabs {
-
-class MeasurementTab : public DeviceTab
+void OscilloscopeDevice::init_channels()
 {
-	Q_OBJECT
+	HardwareDevice::init_channels();
+}
 
-public:
-	MeasurementTab(Session &session,
- 		shared_ptr<sv::devices::MeasurementDevice> device,
-		QWidget *parent = nullptr);
-
-private:
-	void setup_ui();
-
-	// TODO: remove, generic solution in hw_device
-	shared_ptr<sv::devices::MeasurementDevice> measurement_device_;
-
-};
-
-} // namespace tabs
-} // namespace ui
+} // namespace devices
 } // namespace sv
-
-#endif // UI_TABS_MEASUREMENTTAB_HPP

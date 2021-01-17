@@ -262,6 +262,7 @@ set(smuview_SOURCES
 	src/devices/deviceutil.cpp
 	src/devices/hardwaredevice.cpp
 	src/devices/measurementdevice.cpp
+	src/devices/oscilloscopedevice.cpp
 	src/devices/sourcesinkdevice.cpp
 	src/devices/userdevice.cpp
 
@@ -326,6 +327,7 @@ set(smuview_SOURCES
 	src/ui/tabs/basetab.cpp
 	src/ui/tabs/devicetab.cpp
 	src/ui/tabs/measurementtab.cpp
+	src/ui/tabs/oscilloscopetab.cpp
 	src/ui/tabs/smuscripttab.cpp
 	src/ui/tabs/sourcesinktab.cpp
 	src/ui/tabs/tabdockwidget.cpp

@@ -40,6 +40,7 @@
 #include "src/devices/deviceutil.hpp"
 #include "src/devices/hardwaredevice.hpp"
 #include "src/devices/measurementdevice.hpp"
+#include "src/devices/oscilloscopedevice.hpp"
 #include "src/devices/sourcesinkdevice.hpp"
 
 using std::bind;
@@ -272,6 +273,10 @@ DeviceManager::driver_scan(
 		if (devices::deviceutil::is_source_sink_driver(sr_driver)) {
 			driver_devices.push_back(
 				devices::SourceSinkDevice::create(context_, sr_device));
+		}
+		else if (devices::deviceutil::is_oscilloscope_driver(sr_driver)) {
+			driver_devices.push_back(
+				devices::OscilloscopeDevice::create(context_, sr_device));
 		}
 		else if (devices::deviceutil::is_measurement_driver(sr_driver)) {
 			driver_devices.push_back(

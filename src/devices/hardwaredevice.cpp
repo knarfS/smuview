@@ -70,6 +70,7 @@ HardwareDevice::HardwareDevice(
 		DeviceType dt = deviceutil::get_device_type(sr_key);
 		if (dt == DeviceType::PowerSupply ||
 				dt == DeviceType::ElectronicLoad ||
+				dt == DeviceType::Oscilloscope ||
 				dt == DeviceType::DemoDev ||
 				dt == DeviceType::Multimeter ||
 				dt == DeviceType::SoundLevelMeter ||
