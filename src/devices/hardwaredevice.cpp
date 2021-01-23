@@ -137,11 +137,13 @@ void HardwareDevice::open()
 
 	// Special handling for device "demo": Set a initial moderate samplerate of
 	// 5 samples per second, to slow down the analog channels.
+	/*
 	if (sr_hardware_device()->driver()->name() == "demo") {
 		sr_device_->config_set(
 			sigrok::ConfigKey::SAMPLERATE,
 			Glib::Variant<uint64_t>::create(5));
 	}
+	*/
 }
 
 shared_ptr<sigrok::HardwareDevice> HardwareDevice::sr_hardware_device() const
