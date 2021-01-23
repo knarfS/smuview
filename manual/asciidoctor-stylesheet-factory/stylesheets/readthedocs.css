@@ -217,7 +217,7 @@ code { font-family: "Consolas", "Deja Vu Sans Mono", "Bitstream Vera Sans Mono",
 /* Lists */
 ul, ol, dl { font-size: 1em; line-height: 1.5; margin-bottom: 1.25em; list-style-position: outside; font-family: inherit; }
 
-ul, ol { margin-left: 0; }
+ul, ol { margin-left: 1.50em; }
 ul.no-bullet, ol.no-bullet { margin-left: 0; }
 
 /* Unordered Lists */
@@ -527,7 +527,7 @@ p.tableblock { font-size: 1em; }
 
 td > div.verse { white-space: pre; }
 
-ol { margin-left: 0.25em; }
+ol { margin-left: 1.50em; }
 
 ul li ol { margin-left: 0; }
 
