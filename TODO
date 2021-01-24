@@ -84,7 +84,9 @@ ToDo
 - SettingsManager: Method for getting the QSettings object and maybe load an user defined QSettings-file.
 - example_multiplexer.py: Checkboxes in control views don't change.
 - Keyboard shortcuts (Ctrl-Q -> Close App, Ctrl-W -> Close tab)
-
+- Do we need:
+	- BaseDevice::next_channel_index_ / USER_CHANNEL_START_INDEX
+	- BaseDevice::next_configurable_index_ / CONFIGURABLE_START_INDEX
 Done
 ----
 
