@@ -179,7 +179,7 @@ public:
 
 	bool is_controllable() const;
 
-	void feed_in_meta(shared_ptr<sigrok::Meta> sr_meta);
+	bool feed_in_meta(shared_ptr<sigrok::Meta> sr_meta);
 
 private:
 	const shared_ptr<sigrok::Configurable> sr_configurable_;
