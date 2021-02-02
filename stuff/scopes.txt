@@ -289,23 +289,6 @@ static const uint32_t devopts_cg_analog[] = {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ==================
 
 DEAD CODE
@@ -328,3 +311,55 @@ static const uint32_t devopts[] = {
 	SR_CONF_CAPTURE_RATIO | SR_CONF_SET,
 	SR_CONF_RLE | SR_CONF_SET,
 };
+
+
+
+
+===================================
+Analog Packet Suff For Slow Devices
+===================================
+
+Meta packets with SR_CONF_SAMPLE_INTERVAL / SR_CONF_SAMPLERATE are send without that config key existing
+
+Multiple samples per analog packet:
+
+cem-dt-885x (SR_CONF_SOUNDLEVELMETER, SR_CONF_SAMPLE_INTERVAL (META)) (YES, Log-Data?)
+kecheng-kc-330b (SR_CONF_SOUNDLEVELMETER, SR_CONF_SAMPLE_INTERVAL (META)) (only 1?, but maybe smth is wrong in LOG_DATA_WAIT)
+lascar-el-usb (SR_CONF_THERMOMETER, SR_CONF_HYGROMETER, SR_CONF_SAMPLE_INTERVAL (META)) (YES, but maybe 2nd channel is broken?)
+mooshimeter-dmm (SR_CONF_MULTIMETER, SR_CONF_SAMPLERATE) (YES, Buffer-Data, but channel handling WTF??)
+
+
+Multiple channels per analog packet:
+
+appa-55ii (SR_CONF_THERMOMETER)
+atten-pps3xxx (SR_CONF_POWER_SUPPLY)
+baylibre-acme (??)
+cem-dt-885x (only 1?)
+colead-slm (only 1?)
+fluke-dmm (only 1?)
+gmc-mh-1x-2x (only 1?)
+kecheng-kc-330b (only 1?)
+kern-scale (only 1?)
+manson-hcs-3xxx (smth is not right here -> only 1 ch, but v&a)
+motech-lps-30x (YES, but smth is not right here -> only 1 ch per cg, but v&a)
+norma-dmm (only 1?)
+tondaj-sl-814 (only 1?)
+uni-t-dmm (only 1?)
+
+
+Have SR_CONF_SAMPLERATE / SR_CONF_SAMPLE_INTERVALs:
+
+dmm/bm52x (META SR_CONF_SAMPLERATE + SR_CONF_SAMPLE_INTERVAL)
+agilent-dmm (get/set/list SR_CONF_SAMPLERATE)
+baylibre-acme (get/set/list SR_CONF_SAMPLERATE)
+itech-it8500 (get/set/list SR_CONF_SAMPLERATE)
+mooshimeter-dmm (get/set/list SR_CONF_SAMPLERATE)
+uni-t-ut181a (META SR_CONF_SAMPLE_INTERVAL)
+
+
+
+
+TODO
+====
+
+- Move init_analog_channels() (and add_sr_channel() ?) from baseDevice up to mesuremnetDevice/sourceSinkDevice??
