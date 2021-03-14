@@ -77,6 +77,7 @@ MainWindow::MainWindow(DeviceManager &device_manager,
 {
 	qRegisterMetaType<util::Timestamp>("util::Timestamp");
 	qRegisterMetaType<uint64_t>("uint64_t");
+	qRegisterMetaType<uint32_t>("uint32_t");
 	qRegisterMetaType<std::string>("std::string");
 	qRegisterMetaType<Qt::DockWidgetArea>("Qt::DockWidgetArea");
 	qRegisterMetaType<shared_ptr<devices::BaseDevice>>("shared_ptr<sv::devices::BaseDevice>");

@@ -26,13 +26,12 @@
 #include "oscilloscopetab.hpp"
 #include "src/settingsmanager.hpp"
 #include "src/channels/basechannel.hpp"
-#include "src/data/analogtimesignal.hpp"
-#include "src/data/basesignal.hpp"
-#include "src/data/datautil.hpp"
+#include "src/channels/scopechannel.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/devices/configurable.hpp"
-#include "src/devices/hardwaredevice.hpp"
+#include "src/devices/oscilloscopedevice.hpp"
 #include "src/ui/tabs/devicetab.hpp"
+#include "src/ui/views/scopeplotview.hpp"
 #include "src/ui/views/scopetriggercontrolview.hpp"
 #include "src/ui/views/viewhelper.hpp"
 
@@ -48,16 +47,18 @@ OscilloscopeTab::OscilloscopeTab(Session &session,
 			SettingsManager::has_device_settings(device)) {
 		restore_settings();
 	}
-	else
+	else {
 		setup_ui();
+	}
 }
 
 void OscilloscopeTab::setup_ui()
 {
-	auto hw_device = static_pointer_cast<sv::devices::HardwareDevice>(device_);
+	auto scope_device =
+		static_pointer_cast<sv::devices::OscilloscopeDevice>(device_);
 
 	// Device control(s)
-	for (const auto &c_pair : hw_device->configurable_map()) {
+	for (const auto &c_pair : scope_device->configurable_map()) {
 		auto configurable = c_pair.second;
 		if (!configurable->is_controllable())
 			continue;
@@ -70,7 +71,7 @@ void OscilloscopeTab::setup_ui()
 	}
 
 	size_t added_channels = 0;
-	//ui::views::TimePlotView *plot_view = NULL;
+	ui::views::ScopePlotView *plot_view = nullptr;
 	for (const auto &chg_pair : device_->channel_group_map()) {
 		/* TODO: for now, only the first two channles are displayed. */
 		if (added_channels >= 2)
@@ -81,21 +82,18 @@ void OscilloscopeTab::setup_ui()
 		auto channel = chg_pair.second.at(0);
 		if (!channel)
 			continue;
+		auto scope_channel = static_pointer_cast<channels::ScopeChannel>(channel);
+		if (!scope_channel)
+			continue;
 
-		//shared_ptr<data::AnalogScopeSignal> signal; // TODO
-		auto signal = static_pointer_cast<data::AnalogTimeSignal>(
-			channel->actual_signal());
-		++added_channels;
-
-		// TODO: Voltage plot
-		/*
 		if (!plot_view) {
-			plot_view = new ui::views::PlotView(session_, signal);
+			plot_view = new ui::views::ScopePlotView(session_);
+			plot_view->set_scope_device(scope_device);
 			add_view(plot_view, Qt::TopDockWidgetArea);
 		}
-		else
-			plot_view->add_time_curve(signal);
-		*/
+		plot_view->add_channel(scope_channel);
+
+		++added_channels;
 	}
 }
 

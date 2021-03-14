@@ -145,6 +145,7 @@ int Curve::y_axis_id() const
 void Curve::set_painted_points(size_t painted_points)
 {
 	painted_points_ = painted_points;
+	qWarning() << "Curve::set_painted_points(): painted_points_ = " << painted_points_;
 }
 
 size_t Curve::painted_points() const

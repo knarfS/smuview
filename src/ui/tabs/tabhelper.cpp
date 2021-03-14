@@ -64,8 +64,7 @@ DeviceTab *get_tab_for_device(Session &session,
 			static_pointer_cast<devices::OscilloscopeDevice>(device), parent);
 	}
 
-	// Measurement devices like DMMs, scales, LCR meters, etc., but also
-	// the demo device(s)
+	// Measurement devices like DMMs, scales, LCR meters, etc.
 	if (device->type() == DeviceType::Multimeter ||
 		device->type() == DeviceType::SoundLevelMeter ||
 		device->type() == DeviceType::Thermometer ||
@@ -75,8 +74,7 @@ DeviceTab *get_tab_for_device(Session &session,
 		device->type() == DeviceType::Scale ||
 		device->type() == DeviceType::SignalGenerator ||
 		device->type() == DeviceType::Powermeter ||
-		device->type() == DeviceType::Multiplexer ||
-		device->type() == DeviceType::DemoDev) {
+		device->type() == DeviceType::Multiplexer) {
 
 		return new MeasurementTab(session,
 			static_pointer_cast<devices::MeasurementDevice>(device), parent);
