@@ -77,7 +77,7 @@ protected:
 	 */
 	void init_configurables() override;
 	/**
-	 * Init all channles of this user device.
+	 * Init all channels of this user device.
 	 */
 	void init_channels() override;
 	/**

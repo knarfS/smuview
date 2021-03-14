@@ -202,17 +202,15 @@ void AnalogTimeSignal::push_sample(void *sample, double timestamp,
 		Q_EMIT digits_changed(digits_, decimal_places_);
 }
 
-void AnalogTimeSignal::push_samples(void *data,
-	uint64_t samples, double timestamp, uint64_t samplerate, size_t unit_size,
+void AnalogTimeSignal::push_samples(void *data, uint64_t samples,
+	double timestamp, uint64_t samplerate, size_t unit_size,
 	int digits, int decimal_places)
 {
 	//lock_guard<recursive_mutex> lock(mutex_);
 
 	double dsample = 0.0;
 	uint64_t pos = 0;
-	double time_stride = 0.0;
-	if (samplerate > 0)
-		time_stride = 1 / (double)samplerate;
+	double time_stride = 1. / (double)samplerate;
 
 	/*
 	if (timestamp < last_timestamp_) {

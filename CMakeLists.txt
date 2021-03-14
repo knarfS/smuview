@@ -236,6 +236,7 @@ set(smuview_SOURCES
 	src/settingsmanager.cpp
 	src/util.cpp
 	src/channels/addscchannel.cpp
+	src/channels/analogchannel.cpp
 	src/channels/basechannel.cpp
 	src/channels/dividechannel.cpp
 	src/channels/hardwarechannel.cpp
@@ -244,9 +245,12 @@ set(smuview_SOURCES
 	src/channels/movingavgchannel.cpp
 	src/channels/multiplysfchannel.cpp
 	src/channels/multiplysschannel.cpp
+	src/channels/scopechannel.cpp
 	src/channels/userchannel.cpp
 	src/data/analogbasesignal.cpp
 	src/data/analogsamplesignal.cpp
+	src/data/analogscopesignal.cpp
+	src/data/analogsegment.cpp
 	src/data/analogtimesignal.cpp
 	src/data/basesignal.cpp
 	src/data/datautil.cpp

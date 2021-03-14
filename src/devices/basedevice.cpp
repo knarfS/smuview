@@ -37,9 +37,11 @@
 #include "src/session.hpp"
 #include "src/settingsmanager.hpp"
 #include "src/util.hpp"
+#include "src/channels/analogchannel.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/channels/hardwarechannel.hpp"
 #include "src/channels/mathchannel.hpp"
+#include "src/channels/scopechannel.hpp"
 #include "src/channels/userchannel.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/devices/configurable.hpp"
@@ -70,8 +72,7 @@ BaseDevice::BaseDevice(const shared_ptr<sigrok::Context> sr_context,
 	sr_device_(sr_device),
 	is_open_(false),
 	next_channel_index_(USER_CHANNEL_START_INDEX),
-	next_configurable_index_(CONFIGURABLE_START_INDEX),
-	frame_began_(false)
+	next_configurable_index_(CONFIGURABLE_START_INDEX)
 {
 	// Set up a sigrok session per smuvierw device
 	sr_session_ = sv::Session::sr_context->create_session();
@@ -361,7 +362,8 @@ void BaseDevice::add_channel(shared_ptr<channels::BaseChannel> channel,
 }
 
 shared_ptr<channels::BaseChannel> BaseDevice::add_sr_channel(
-	shared_ptr<sigrok::Channel> sr_channel, const string &channel_group_name)
+	shared_ptr<sigrok::Channel> sr_channel, const string &channel_group_name,
+	const channels::ChannelType channel_type)
 {
 	// Check if channel already exists.
 	// NOTE: Channel names are unique per device.
@@ -371,8 +373,14 @@ shared_ptr<channels::BaseChannel> BaseDevice::add_sr_channel(
 	}
 	else {
 		set<string> chg_names { channel_group_name };
-		channel = make_shared<channels::HardwareChannel>(sr_channel,
-			shared_from_this(), chg_names, aquisition_start_timestamp_);
+		if (channel_type == channels::ChannelType::AnalogChannel) {
+			channel = make_shared<channels::AnalogChannel>(sr_channel,
+				shared_from_this(), chg_names, aquisition_start_timestamp_);
+		}
+		else if (channel_type == channels::ChannelType::ScopeChannel) {
+			channel = make_shared<channels::ScopeChannel>(sr_channel,
+				shared_from_this(), chg_names, aquisition_start_timestamp_);
+		}
 
 		// map<shared_ptr<sigrok::Channel>, shared_ptr<channels::BaseChannel>> sr_channel_map_;
 		sr_channel_map_.insert(make_pair(sr_channel, channel));
@@ -441,12 +449,12 @@ void BaseDevice::data_feed_in(shared_ptr<sigrok::Device> sr_device,
 
 	switch (sr_packet->type()->id()) {
 	case SR_DF_HEADER:
-		//qWarning() << "data_feed_in(): SR_DF_HEADER";
+		qWarning() << "data_feed_in(): SR_DF_HEADER";
 		feed_in_header();
 		break;
 
 	case SR_DF_META:
-		//qWarning() << "data_feed_in(): SR_DF_META";
+		qWarning() << "data_feed_in(): SR_DF_META";
 		feed_in_meta(
 			dynamic_pointer_cast<sigrok::Meta>(sr_packet->payload()));
 		break;
@@ -464,36 +472,38 @@ void BaseDevice::data_feed_in(shared_ptr<sigrok::Device> sr_device,
 		try {
 			feed_in_logic(
 				dynamic_pointer_cast<sigrok::Logic>(sr_packet->payload()));
-		} catch (bad_alloc &) {
+		}
+		catch (bad_alloc &) {
 			//out_of_memory_ = true;
 		}
 		break;
 
 	case SR_DF_ANALOG:
-		//qWarning() << "data_feed_in(): SR_DF_ANALOG";
+		qWarning() << "data_feed_in(): SR_DF_ANALOG";
 		if (aquisition_state_ != AquisitionState::Running)
 			return;
 
 		try {
 			feed_in_analog(
 				dynamic_pointer_cast<sigrok::Analog>(sr_packet->payload()));
-		} catch (bad_alloc &) {
+		}
+		catch (bad_alloc &) {
 			//out_of_memory_ = true;
 		}
 		break;
 
 	case SR_DF_FRAME_BEGIN:
-		//qWarning() << "data_feed_in(): SR_DF_FRAME_BEGIN";
+		qWarning() << "data_feed_in(): SR_DF_FRAME_BEGIN";
 		feed_in_frame_begin();
 		break;
 
 	case SR_DF_FRAME_END:
-		//qWarning() << "data_feed_in(): SR_DF_FRAME_END";
+		qWarning() << "data_feed_in(): SR_DF_FRAME_END";
 		feed_in_frame_end();
 		break;
 
 	case SR_DF_END:
-		//qWarning() << "data_feed_in(): SR_DF_END";
+		qWarning() << "data_feed_in(): SR_DF_END";
 		// Strictly speaking, this is performed when a frame end marker was
 		// received, so there's no point doing this again. However, not all
 		// devices use frames, and for those devices, we need to do it here.
@@ -530,7 +540,7 @@ void BaseDevice::aquisition_thread_proc()
 
 	qWarning()
 		<< "Start aquisition for " << short_name()
-		<< ",  aquisition_start_timestamp_ = "
+		<< ", aquisition_start_timestamp_ = "
 		<< util::format_time_date(aquisition_start_timestamp_);
 
 	try {

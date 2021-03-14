@@ -59,15 +59,20 @@ namespace channels {
 
 enum class ChannelType {
 	/**
-	 * Channels with analog data (Power supplies, loads, DMMs)
+	 * Hardware channel for (slow) analog data like power supplies, electronic
+	 * loads and DMMs.
 	 */
 	AnalogChannel,
 	/**
-	 * Virtual channel for calculated data
+	 * Virtual channel for calculated data.
 	 */
 	MathChannel,
 	/**
-	 * Virtual channel for user generated data (e.g. scripts)
+	 * Hardware channel for (fast) analog data like oscilloscopes.
+	 */
+	ScopeChannel,
+	/**
+	 * Virtual channel for user generated data, f.e. from scripts.
 	 */
 	UserChannel
 };
@@ -160,6 +165,7 @@ public:
 	/**
 	 * Add a signal to the channel. For now only AnalogTimeSignals
 	 * are supported.
+	 * TODO: Generalize for analog + scope signals
 	 */
 	void add_signal(shared_ptr<data::AnalogTimeSignal> signal);
 
@@ -173,7 +179,7 @@ public:
 		string custom_name = "");
 
 	/**
-	 * Get the actual signal
+	 * Get the actual signal.
 	 */
 	shared_ptr<data::BaseSignal> actual_signal();
 
@@ -199,6 +205,7 @@ public:
 	virtual void restore_settings(QSettings &settings);
 
 protected:
+	static const size_t size_of_float_ = sizeof(float);
 	static const size_t size_of_double_ = sizeof(double);
 
 	/** The corresponding sigrok channel object. */

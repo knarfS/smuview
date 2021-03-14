@@ -132,62 +132,6 @@ bool AnalogSignal::get_value_at_timestamp(
 }
 */
 
-/*
-void AnalogSignal::push_sample(void *sample, double timestamp,
-	size_t unit_size, int digits, int decimal_places)
-{
-	double dsample = 0.;
-	if (unit_size == size_of_float_)
-		dsample = (double) *(float *)sample;
-	else if (unit_size == size_of_double_)
-		dsample = *(double *)sample;
-
-	/ *
-	qWarning() << "AnalogSignal::push_sample(): " << name_
-		<< ": sample = " << dsample << " @ " <<  timestamp;
-	qWarning() << "AnalogSignal::push_sample(): " << name_
-		<< ": sample_count_ = " << sample_count_+1;
-	* /
-
-	// TODO: Mutex?
-	last_timestamp_ = timestamp;
-	last_value_ = dsample;
-	if (min_value_ > dsample)
-		min_value_ = dsample;
-	if (max_value_ < dsample)
-		max_value_ = dsample;
-
-	/ *
-	qWarning() << "AnalogSignal::push_sample(): " << name_
-		<< ":last_timestamp_ = " << last_timestamp_;
-	qWarning() << "AnalogSignal::push_sample(): " << name_
-		<< ":last_value_ = " << last_value_;
-	qWarning() << "AnalogSignal::push_sample(): " << name_
-		<< ":min_value_ = " << min_value_;
-	qWarning() << "AnalogSignal::push_sample(): " << name_
-		<< ":max_value_ = " << max_value_;
-	* /
-
-	// TODO: Mutex?
-	time_->push_back(timestamp);
-	data_->push_back(dsample);
-	sample_count_++;
-	Q_EMIT sample_appended();
-
-	bool digits_chngd = false;
-	if (digits != digits_) {
-		digits_ = digits;
-		digits_chngd = true;
-	}
-	if (decimal_places != decimal_places_) {
-		decimal_places_ = decimal_places;
-		digits_chngd = true;
-	}
-	if (digits_chngd)
-		Q_EMIT digits_changed(digits_, decimal_places_);
-}
-*/
-
 int AnalogBaseSignal::digits() const
 {
 	return digits_;

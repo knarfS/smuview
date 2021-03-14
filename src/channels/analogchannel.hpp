@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2021 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,46 +17,67 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cassert>
+#ifndef CHANNELS_ANALOGCHANNEL_HPP
+#define CHANNELS_ANALOGCHANNEL_HPP
+
 #include <memory>
 #include <set>
 #include <string>
-#include <utility>
 
-#include <QDebug>
+#include <QObject>
 
-#include <libsigrokcxx/libsigrokcxx.hpp>
+#include "src/channels/hardwarechannel.hpp"
 
-#include "hardwarechannel.hpp"
-#include "src/session.hpp"
-#include "src/util.hpp"
-#include "src/channels/basechannel.hpp"
-#include "src/data/analogtimesignal.hpp"
-#include "src/data/datautil.hpp"
-#include "src/devices/basedevice.hpp"
-
-using std::make_pair;
 using std::set;
-using std::static_pointer_cast;
+using std::shared_ptr;
 using std::string;
-using std::unique_ptr;
-using sv::data::measured_quantity_t;
+
+namespace sigrok {
+class Analog;
+class Channel;
+}
 
 namespace sv {
+
+namespace devices {
+class BaseDevice;
+}
+
 namespace channels {
 
-HardwareChannel::HardwareChannel(
+class AnalogChannel : public HardwareChannel
+{
+	Q_OBJECT
+
+public:
+	/**
+	 * A AnalogChannel does handle interleaved samples with timestamps from a
+	 * (slow) analog device.
+	 */
+	AnalogChannel(
 		shared_ptr<sigrok::Channel> sr_channel,
 		shared_ptr<devices::BaseDevice> parent_device,
 		const set<string> &channel_group_names,
-		double channel_start_timestamp) :
-	BaseChannel(sr_channel, parent_device, channel_group_names,
-		channel_start_timestamp)
-{
-	assert(sr_channel);
+		double channel_start_timestamp);
 
-	name_ = sr_channel_->name();
-}
+public:
+	/**
+	 * Close an open frame.
+	 */
+	void close_frame() override;
+
+	/**
+	 * Add one or more interleaved samples with timestamps to the channel
+	 */
+	void push_interleaved_samples(const float *data,
+		const size_t sample_count, const size_t channel_stride,
+		const double timestamp, const uint64_t samplerate,
+		const uint64_t sample_interval,
+		shared_ptr<sigrok::Analog> sr_analog) override;
+
+};
 
 } // namespace channels
 } // namespace sv
+
+#endif // CHANNELS_ANALOGCHANNEL_HPP

@@ -25,6 +25,7 @@
 #include <utility>
 #include <vector>
 
+#include <glibmm.h>
 #include <glib.h>
 
 #include <QDateTime>
@@ -44,6 +45,7 @@
 #include "src/devices/configurable.hpp"
 #include "src/devices/deviceutil.hpp"
 
+using std::dynamic_pointer_cast;
 using std::lock_guard;
 using std::make_pair;
 using std::map;
@@ -59,7 +61,11 @@ namespace devices {
 HardwareDevice::HardwareDevice(
 		const shared_ptr<sigrok::Context> sr_context,
 		shared_ptr<sigrok::HardwareDevice> sr_device) :
-	BaseDevice(sr_context, sr_device)
+	BaseDevice(sr_context, sr_device),
+	frame_began_(false),
+	frame_start_timestamp_(.0),
+	cur_samplerate_(0),
+	cur_sample_interval_(0)
 {
 	// Set options for different device types
 	// TODO: Multiple DeviceTypes per HardwareDevice
@@ -71,7 +77,7 @@ HardwareDevice::HardwareDevice(
 		if (dt == DeviceType::PowerSupply ||
 				dt == DeviceType::ElectronicLoad ||
 				dt == DeviceType::Oscilloscope ||
-				dt == DeviceType::DemoDev ||
+				//dt == DeviceType::DemoDev ||
 				dt == DeviceType::Multimeter ||
 				dt == DeviceType::SoundLevelMeter ||
 				dt == DeviceType::Thermometer ||
@@ -184,11 +190,29 @@ void HardwareDevice::init_configurables()
 		short_name().toStdString(), type_, settings_id());
 	configurable_map_.insert(make_pair("", d_c));
 
-	// Sample rate for interleaved samples
+	// Sample rate for multi value samples
+	// TODO: This is when rate/interval is changed in sv?? TEST!
 	if (d_c->has_get_config(ConfigKey::Samplerate)) {
-		samplerate_prop_ = static_pointer_cast<data::properties::UInt64Property>(
-			d_c->get_property(ConfigKey::Samplerate));
-		cur_samplerate_ = samplerate_prop_->uint64_value();
+		auto samplerate_prop =
+			static_pointer_cast<data::properties::UInt64Property>(
+				d_c->get_property(ConfigKey::Samplerate));
+		cur_samplerate_ = samplerate_prop->uint64_value();
+		connect(samplerate_prop.get(),
+			&data::properties::UInt64Property::change_value,
+			this, [this, &samplerate_prop]() {
+				cur_samplerate_ = samplerate_prop->uint64_value();
+			});
+	}
+	if (d_c->has_get_config(ConfigKey::SampleInterval)) {
+		auto sampleInterval_prop =
+			static_pointer_cast<data::properties::UInt64Property>(
+				d_c->get_property(ConfigKey::SampleInterval));
+		cur_sample_interval_ = sampleInterval_prop->uint64_value();
+		connect(sampleInterval_prop.get(),
+			&data::properties::UInt64Property::change_value,
+			this, [this, &sampleInterval_prop]() {
+				cur_samplerate_ = sampleInterval_prop->uint64_value();
+			});
 	}
 }
 
@@ -202,7 +226,8 @@ void HardwareDevice::init_channels()
 		for (const auto &sr_cg_pair : sr_channel_groups) {
 			shared_ptr<sigrok::ChannelGroup> sr_cg = sr_cg_pair.second;
 			for (const auto &sr_channel : sr_cg->channels()) {
-				add_sr_channel(sr_channel, sr_cg->name());
+				auto channel = add_sr_channel(sr_channel, sr_cg->name(),
+					channels::ChannelType::AnalogChannel);
 			}
 		}
 	}
@@ -212,7 +237,8 @@ void HardwareDevice::init_channels()
 	for (const auto &sr_channel : sr_channels) {
 		if (sr_channel_map_.count(sr_channel) > 0)
 			continue;
-		add_sr_channel(sr_channel, "");
+		auto channel = add_sr_channel(sr_channel, "",
+			channels::ChannelType::AnalogChannel);
 	}
 }
 
@@ -226,6 +252,28 @@ void HardwareDevice::feed_in_trigger()
 
 void HardwareDevice::feed_in_meta(shared_ptr<sigrok::Meta> sr_meta)
 {
+	/*
+	 * For some devices there are no config keys (get/set/list) for Samplerate
+	 * and SampleInterval, but only meta packets. Handel them here and set a
+	 * current rate/interval directly to the device. This will be needed for
+	 * analog packets mit multiple samples per packet to calculate the time
+	 * stride. But also forward them to the configurable.
+	 */
+	for (const auto &entry : sr_meta->config()) {
+		// TODO: !configurable_map_[""]->has_get_config(ConfigKey::Samplerate)
+		if (entry.first == sigrok::ConfigKey::SAMPLERATE) {
+			Glib::VariantBase gvar = entry.second;
+			cur_samplerate_ = g_variant_get_uint64(gvar.gobj());
+			cur_sample_interval_ = 0;
+		}
+		// TODO: !configurable_map_[""]->has_get_config(ConfigKey::SampleInterval)
+		else if (entry.first == sigrok::ConfigKey::SAMPLE_INTERVAL) {
+			Glib::VariantBase gvar = entry.second;
+			cur_sample_interval_ = g_variant_get_uint64(gvar.gobj());
+			cur_samplerate_ = 0;
+		}
+	}
+
 	/*
 	 * TODO: The meta packet is missing the information, to which
 	 * channel group / configurable the config key belongs to.
@@ -255,6 +303,16 @@ void HardwareDevice::feed_in_frame_begin()
 
 void HardwareDevice::feed_in_frame_end()
 {
+	if (!frame_began_)
+		return;
+
+	for (const auto &ch_name_pair : channel_map_) {
+		 auto channel = dynamic_pointer_cast<channels::HardwareChannel>(
+			 ch_name_pair.second);
+		 if (channel != nullptr)
+			 channel->close_frame();
+	}
+
 	frame_began_ = false;
 }
 
@@ -269,14 +327,16 @@ void HardwareDevice::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
 	if (num_samples == 0)
 		return;
 
+	// TODO: use std::chrono / std::time
+	double timestamp;
+	if (frame_began_)
+		timestamp = frame_start_timestamp_;
+	else
+		timestamp = QDateTime::currentMSecsSinceEpoch() / (double)1000;
+
 	lock_guard<recursive_mutex> lock(data_mutex_);
 
-	uint64_t samplerate = 0;
-	if (samplerate_prop_ != nullptr)
-		samplerate = samplerate_prop_->uint64_value();
-
-	const vector<shared_ptr<sigrok::Channel>> sr_channels = sr_analog->channels();
-
+	auto sr_channels = sr_analog->channels();
 	unique_ptr<float[]> data(new float[num_samples * sr_channels.size()]);
 	sr_analog->get_data_as_float(data.get());
 	float *channel_data = data.get();
@@ -295,16 +355,9 @@ void HardwareDevice::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
 		auto channel = static_pointer_cast<channels::HardwareChannel>(
 			sr_channel_map_[sr_channel]);
 
-		// TODO: use std::chrono / std::time
-		double timestamp;
-		if (frame_began_)
-			timestamp = frame_start_timestamp_;
-		else
-			timestamp = QDateTime::currentMSecsSinceEpoch() / (double)1000;
-
-		//channel->push_sample_sr_analog(channel_data++, timestamp, sr_analog);
-		channel->push_interleaved_samples(channel_data++, num_samples,
-			sr_channels.size(), timestamp, samplerate, sr_analog);
+		channel->push_interleaved_samples(
+			channel_data++, num_samples, sr_channels.size(),
+			timestamp, cur_samplerate_, cur_sample_interval_, sr_analog);
 	}
 }
 
