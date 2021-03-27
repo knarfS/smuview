@@ -60,6 +60,7 @@ public:
 	}
 
 protected:
+	void init_configurables() override;
 	void init_channels() override;
 
 };

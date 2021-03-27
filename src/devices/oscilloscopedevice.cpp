@@ -26,8 +26,10 @@
 #include "oscilloscopedevice.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/channels/hardwarechannel.hpp"
+#include "src/data/properties/baseproperty.hpp"
 #include "src/data/analogtimesignal.hpp"
 #include "src/data/basesignal.hpp"
+#include "src/devices/configurable.hpp"
 
 using std::static_pointer_cast;
 
@@ -39,6 +41,28 @@ OscilloscopeDevice::OscilloscopeDevice(
 		shared_ptr<sigrok::HardwareDevice> sr_device) :
 	HardwareDevice(sr_context, sr_device)
 {
+}
+
+void OscilloscopeDevice::init_configurables()
+{
+	HardwareDevice::init_configurables();
+
+	for (const auto &c_pair : configurable_map_) {
+		auto configurable = c_pair.second;
+
+		// Check if the device has the config key "VDiv". If so, each possible
+		// value of the config key "ProbeFactor" could have a different
+		// listing for "VDiv"!
+		if (configurable->property_map().count(ConfigKey::ProbeFactor) > 0 &&
+			configurable->property_map().count(ConfigKey::VDiv) > 0) {
+
+			auto pf_property = configurable->property_map()[ConfigKey::ProbeFactor];
+			auto vdiv_property = configurable->property_map()[ConfigKey::VDiv];
+			connect(
+				pf_property.get(), &data::properties::BaseProperty::value_changed,
+				vdiv_property.get(), &data::properties::BaseProperty::list_config);
+		}
+	}
 }
 
 void OscilloscopeDevice::init_channels()
