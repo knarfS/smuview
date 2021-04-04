@@ -28,10 +28,14 @@
 #include "src/session.hpp"
 #include "src/settingsmanager.hpp"
 #include "src/util.hpp"
+#include "src/data/properties/baseproperty.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/devices/configurable.hpp"
+#include "src/ui/datatypes/boolcheckbox.hpp"
 #include "src/ui/datatypes/rationalcombobox.hpp"
+#include "src/ui/datatypes/uint64combobox.hpp"
 #include "src/ui/datatypes/uint64label.hpp"
+#include "src/ui/datatypes/uint64spinbox.hpp"
 
 using sv::devices::ConfigKey;
 
@@ -68,6 +72,29 @@ void ScopeHorizontalControlView::setup_ui()
 	timebase_box_ = new ui::datatypes::RationalComboBox(
 		configurable_->get_property(ConfigKey::TimeBase), true, true);
 	layout->addRow(tr("Timebase"), timebase_box_);
+
+	// Buffer
+	buffer_size_box_ = new ui::datatypes::UInt64ComboBox(
+		configurable_->get_property(ConfigKey::BufferSize), true, true);
+	layout->addRow(tr("Buffer size"), buffer_size_box_);
+
+	// Average mode
+	average_check_ = new ui::datatypes::BoolCheckBox(
+		configurable_->get_property(ConfigKey::Averaging), true, true);
+	layout->addRow(tr("Averaging"), average_check_);
+
+	// Average count
+	auto avg_samples_prop = configurable_->get_property(ConfigKey::AvgSamples);
+	if (avg_samples_prop->is_listable()) {
+		average_count_box_ = new ui::datatypes::UInt64ComboBox(
+			avg_samples_prop, true, true);
+		layout->addRow(tr("Average count"), average_count_box_);
+	}
+	else {
+		average_count_spin_ = new ui::datatypes::UInt64SpinBox(
+			avg_samples_prop, true, true);
+		layout->addRow(tr("Average count"), average_count_spin_);
+	}
 
 	this->central_widget_->setLayout(layout);
 }

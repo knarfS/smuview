@@ -41,8 +41,11 @@ class Configurable;
 namespace ui {
 
 namespace datatypes {
+class BoolCheckBox;
 class RationalComboBox;
+class UInt64ComboBox;
 class UInt64Label;
+class UInt64SpinBox;
 }
 
 namespace views {
@@ -72,6 +75,10 @@ private:
 
 	ui::datatypes::UInt64Label *samplerate_label_;
 	ui::datatypes::RationalComboBox *timebase_box_;
+	ui::datatypes::UInt64ComboBox *buffer_size_box_;
+	ui::datatypes::BoolCheckBox *average_check_;
+	ui::datatypes::UInt64ComboBox *average_count_box_;
+	ui::datatypes::UInt64SpinBox *average_count_spin_;
 
 	void setup_ui();
 
