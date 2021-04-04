@@ -73,6 +73,7 @@ private:
 	ui::datatypes::StringComboBox *source_box_;
 	ui::datatypes::StringComboBox *slope_box_;
 	ui::datatypes::DoubleSpinBox *level_spin_;
+	ui::datatypes::DoubleSpinBox *hpos_spin_;
 
 	void setup_ui();
 

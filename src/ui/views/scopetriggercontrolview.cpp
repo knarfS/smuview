@@ -74,6 +74,11 @@ void ScopeTriggerControlView::setup_ui()
 		configurable_->get_property(ConfigKey::TriggerLevel), true, true);
 	layout->addRow(tr("Level"), level_spin_);
 
+	// HPos
+	hpos_spin_ = new ui::datatypes::DoubleSpinBox(
+		configurable_->get_property(ConfigKey::HorizTriggerPos), true, true);
+	layout->addRow(tr("Horiz. Pos"), hpos_spin_);
+
 	this->central_widget_->setLayout(layout);
 }
 
