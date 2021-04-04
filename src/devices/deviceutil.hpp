@@ -600,8 +600,8 @@ map<ConfigKey, data::Unit> config_key_unit_map = {
 	{ ConfigKey::Averaging, data::Unit::Boolean },
 	{ ConfigKey::AvgSamples, data::Unit::Unitless },
 	{ ConfigKey::TriggerSource, data::Unit::Unitless },
-	{ ConfigKey::HorizTriggerPos, data::Unit::Unknown },
-	{ ConfigKey::BufferSize, data::Unit::Unknown },
+	{ ConfigKey::HorizTriggerPos, data::Unit::Second },
+	{ ConfigKey::BufferSize, data::Unit::Unitless }, // TODO Byte, Samples or Points!
 	{ ConfigKey::TimeBase, data::Unit::Second },
 	{ ConfigKey::Filter, data::Unit::Boolean },
 	{ ConfigKey::VDiv, data::Unit::Volt },
