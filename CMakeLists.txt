@@ -97,7 +97,11 @@ endif()
 pkg_check_modules(PKGDEPS REQUIRED ${PKGDEPS})
 
 include(CheckSigrokFeatures)
-check_libsigrok_features("${PKGDEPS_INCLUDE_DIRS}" "${PKGDEPS_LIBRARIES}")
+if(STATIC_PKGDEPS_LIBS)
+	check_libsigrok_features("${PKGDEPS_STATIC_INCLUDE_DIRS}" "-L${PKGDEPS_STATIC_LIBRARY_DIRS};${PKGDEPS_STATIC_LDFLAGS}")
+else()
+	check_libsigrok_features("${PKGDEPS_INCLUDE_DIRS}" "-L${PKGDEPS_LIBRARY_DIRS};${PKGDEPS_LIBRARIES}")
+endif()
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
