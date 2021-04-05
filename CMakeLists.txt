@@ -96,6 +96,9 @@ if(NOT LIBSRCXX_FOUND OR NOT LIBSRCXX_VERSION)
 endif()
 pkg_check_modules(PKGDEPS REQUIRED ${PKGDEPS})
 
+include(CheckSigrokFeatures)
+check_libsigrok_features("${PKGDEPS_INCLUDE_DIRS}" "${PKGDEPS_LIBRARIES}")
+
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 
