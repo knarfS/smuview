@@ -75,6 +75,7 @@ bool is_measurement_driver(shared_ptr<sigrok::Driver> sr_driver)
 		|| keys.count(sigrok::ConfigKey::LCRMETER) > 0
 		|| keys.count(sigrok::ConfigKey::SCALE) > 0
 		|| keys.count(sigrok::ConfigKey::POWERMETER) > 0
+		|| keys.count(sigrok::ConfigKey::MULTIPLEXER) > 0
 		|| keys.count(sigrok::ConfigKey::DEMO_DEV) > 0;
 }
 

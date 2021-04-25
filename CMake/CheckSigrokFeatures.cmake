@@ -28,15 +28,15 @@ function(check_libsigrok_features additional_header additional_lib)
   set(CMAKE_REQUIRED_QUIET 1)
   CHECK_CXX_SOURCE_COMPILES("
 #include <libsigrokcxx/libsigrokcxx.hpp>
-const sigrok::Unit *unit;
+const sigrok::ConfigKey *config_key;
 int main() {
-	unit = sigrok::Unit::AMPERE_HOUR;
+	config_key = sigrok::ConfigKey::MULTIPLEXER;
 	return 0;
 }
 " HAS_FEATURES)
   cmake_pop_check_state()
 
   if (NOT HAS_FEATURES)
-    message(FATAL_ERROR "libsigrok is too old, minimum required version is 0.6.0-git-fe8c5aef")
+    message(FATAL_ERROR "libsigrok is too old, minimum required version is 0.6.0-git-522381a3")
   endif()
 endfunction(check_libsigrok_features)

@@ -76,6 +76,8 @@ enum class DeviceType
 	SignalGenerator,
 	/** The device can measure power. */
 	Powermeter,
+	/** A Multiplexer / Relay Actuator device. */
+	Multiplexer,
 	/** User device */
 	UserDevice,
 	/** Unknown device. */
@@ -282,6 +284,7 @@ device_type_name_map_t device_type_name_map = {
 	{ DeviceType::Scale, QString("Scale") },
 	{ DeviceType::SignalGenerator, QString("Signal Generator") },
 	{ DeviceType::Powermeter, QString("Power Meter") },
+	{ DeviceType::Multiplexer, QString("Multiplexer") },
 	{ DeviceType::UserDevice, QString("Virtual User Device") },
 	{ DeviceType::Unknown, QString("Unknown") },
 };
@@ -390,6 +393,7 @@ map<const sigrok::ConfigKey *, DeviceType> sr_config_key_device_type_map = {
 	{ sigrok::ConfigKey::SCALE, DeviceType::Scale },
 	{ sigrok::ConfigKey::SIGNAL_GENERATOR, DeviceType::SignalGenerator },
 	{ sigrok::ConfigKey::POWERMETER, DeviceType::Powermeter },
+	{ sigrok::ConfigKey::MULTIPLEXER, DeviceType::Multiplexer },
 };
 
 map<DeviceType, const sigrok::ConfigKey *> device_type_sr_config_key_map = {
@@ -408,6 +412,7 @@ map<DeviceType, const sigrok::ConfigKey *> device_type_sr_config_key_map = {
 	{ DeviceType::Scale, sigrok::ConfigKey::SCALE },
 	{ DeviceType::SignalGenerator, sigrok::ConfigKey::SIGNAL_GENERATOR },
 	{ DeviceType::Powermeter, sigrok::ConfigKey::POWERMETER },
+	{ DeviceType::Multiplexer, sigrok::ConfigKey::MULTIPLEXER },
 };
 
 map<const sigrok::ConfigKey *, ConnectionKey> sr_config_key_connection_key_map = {

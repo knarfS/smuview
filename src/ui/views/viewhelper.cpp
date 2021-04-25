@@ -116,7 +116,8 @@ BaseView *get_view_for_configurable(Session &session,
 		configurable->device_type() == DeviceType::Energymeter ||
 		configurable->device_type() == DeviceType::LcrMeter ||
 		configurable->device_type() == DeviceType::Scale ||
-		configurable->device_type() == DeviceType::Powermeter) &&
+		configurable->device_type() == DeviceType::Powermeter ||
+		configurable->device_type() == DeviceType::Multiplexer) &&
 		(configurable->has_get_config(ConfigKey::MeasuredQuantity) ||
 		configurable->has_set_config(ConfigKey::MeasuredQuantity) ||
 		configurable->has_get_config(ConfigKey::Range) ||
