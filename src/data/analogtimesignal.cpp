@@ -323,11 +323,13 @@ void AnalogTimeSignal::combine_signals(
 		double signal1_ts = signal1->get_sample(signal1_pos, false).first;
 		double signal2_ts = signal2->get_sample(signal2_pos, false).first;
 		if (signal1_ts < signal2_ts) {
-			while (signal1_ts < signal2_ts)
+			while (signal1_ts < signal2_ts &&
+					signal1->sample_count() > signal1_pos+1)
 				signal1_ts = signal1->get_sample(++signal1_pos, false).first;
 		}
 		else if (signal1_ts > signal2_ts) {
-			while (signal1_ts > signal2_ts)
+			while (signal1_ts > signal2_ts &&
+					signal2->sample_count() > signal2_pos+1)
 				signal2_ts = signal2->get_sample(++signal2_pos, false).first;
 		}
 	}
