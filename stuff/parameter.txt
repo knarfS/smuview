@@ -7,6 +7,7 @@
 --driver scpi-pps:conn=libgpib/hp6632b -l 5
 --driver hp-59306a:conn=libgpib/hp59306a -l 5
 --driver hantek-5xxxb -l 5
+--driver hp-59306a:conn=libgpib/hp59306 -l 5
 
 --driver conrad-digi-35-cpu:conn=/dev/ttyUSB2 --driver arachnid-labs-re-load-pro:conn=/dev/ttyUSB0 -l 5
 --driver conrad-digi-35-cpu:conn=/dev/ttyUSB2 --driver peaktech-4390a:conn=/dev/ttyUSB1 -l 5

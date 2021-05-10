@@ -48,9 +48,10 @@ namespace ui {
 namespace widgets {
 namespace plot {
 
-enum class CurveType {
-	TimeCurve,
-	XYCurve
+enum class CurveDataType {
+	TimeDataCurve,
+	XYDataCurve,
+	ScopeCurveData,
 };
 
 class BaseCurveData : public QObject, public QwtSeriesData<QPointF>
@@ -58,10 +59,10 @@ class BaseCurveData : public QObject, public QwtSeriesData<QPointF>
 	Q_OBJECT
 
 public:
-	explicit BaseCurveData(CurveType curve_type);
+	explicit BaseCurveData(CurveDataType curve_data_type);
 	virtual ~BaseCurveData() = default;
 
-	CurveType type() const;
+	CurveDataType type() const;
 	virtual QString name() const = 0;
 	virtual string id_prefix() const = 0;
 	void set_relative_time(bool is_relative_time);
@@ -89,8 +90,12 @@ public:
 		shared_ptr<sv::devices::BaseDevice> origin_device) const = 0;
 
 protected:
-	const CurveType type_;
+	const CurveDataType type_;
 	bool relative_time_;
+
+Q_SIGNALS:
+	void update_curve();
+	void reset_curve();
 
 };
 

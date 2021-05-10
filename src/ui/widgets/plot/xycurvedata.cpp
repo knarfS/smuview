@@ -51,7 +51,7 @@ namespace plot {
 
 XYCurveData::XYCurveData(shared_ptr<sv::data::AnalogTimeSignal> x_t_signal,
 		shared_ptr<sv::data::AnalogTimeSignal> y_t_signal) :
-	BaseCurveData(CurveType::XYCurve),
+	BaseCurveData(CurveDataType::XYDataCurve),
 	x_t_signal_(x_t_signal),
 	y_t_signal_(y_t_signal),
 	x_t_signal_pos_(0),

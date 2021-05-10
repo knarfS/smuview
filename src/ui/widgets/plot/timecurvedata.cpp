@@ -43,7 +43,7 @@ namespace widgets {
 namespace plot {
 
 TimeCurveData::TimeCurveData(shared_ptr<sv::data::AnalogTimeSignal> signal) :
-	BaseCurveData(CurveType::TimeCurve),
+	BaseCurveData(CurveDataType::TimeDataCurve),
 	signal_(signal)
 {
 }

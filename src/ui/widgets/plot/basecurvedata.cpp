@@ -34,14 +34,14 @@ namespace ui {
 namespace widgets {
 namespace plot {
 
-BaseCurveData::BaseCurveData(CurveType curve_type) :
+BaseCurveData::BaseCurveData(CurveDataType curve_data_type) :
 	QwtSeriesData<QPointF>(),
-	type_(curve_type),
+	type_(curve_data_type),
 	relative_time_(true)
 {
 }
 
-CurveType BaseCurveData::type() const
+CurveDataType BaseCurveData::type() const
 {
 	return type_;
 }
