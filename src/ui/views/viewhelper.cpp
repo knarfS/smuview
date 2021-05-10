@@ -117,6 +117,7 @@ BaseView *get_view_for_configurable(Session &session,
 		configurable->device_type() == DeviceType::LcrMeter ||
 		configurable->device_type() == DeviceType::Scale ||
 		configurable->device_type() == DeviceType::Powermeter ||
+		// TODO: Multiplexers doesn't really fit here
 		configurable->device_type() == DeviceType::Multiplexer) &&
 		(configurable->has_get_config(ConfigKey::MeasuredQuantity) ||
 		configurable->has_set_config(ConfigKey::MeasuredQuantity) ||
@@ -126,7 +127,9 @@ BaseView *get_view_for_configurable(Session &session,
 		return new MeasurementControlView(session, configurable);
 	}
 
-	// Generic control view
+	// TODO: SignalGenerators need their own view (waveforms, etc.)
+
+	// Generic control view (signal generators for now)
 	if (!configurable->getable_configs().empty() ||
 		!configurable->setable_configs().empty()) {
 

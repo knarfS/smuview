@@ -65,6 +65,7 @@ DeviceTab *get_tab_for_device(Session &session,
 		device->type() == DeviceType::Energymeter ||
 		device->type() == DeviceType::LcrMeter ||
 		device->type() == DeviceType::Scale ||
+		device->type() == DeviceType::SignalGenerator ||
 		device->type() == DeviceType::Powermeter ||
 		device->type() == DeviceType::Multiplexer ||
 		device->type() == DeviceType::DemoDev) {

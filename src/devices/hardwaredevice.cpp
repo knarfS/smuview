@@ -77,6 +77,7 @@ HardwareDevice::HardwareDevice(
 				dt == DeviceType::Energymeter ||
 				dt == DeviceType::LcrMeter ||
 				dt == DeviceType::Scale ||
+				dt == DeviceType::SignalGenerator ||
 				dt == DeviceType::Powermeter ||
 				dt == DeviceType::Multiplexer) {
 			type_ = dt;
