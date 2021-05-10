@@ -79,7 +79,6 @@ Curve::Curve(BaseCurveData *curve_data, int x_axis_id, int y_axis_id,
 	plot_curve_->setRenderHint(QwtPlotItem::RenderAntialiased, true);
 	plot_curve_->setPaintAttribute(QwtPlotCurve::ClipPolygons, false);
 	plot_curve_->setData(curve_data_);
-	//plot_curve_->setRawSamples(); // TODO: is this an option?
 	// Curves have the lowest z order, everything else will be painted ontop.
 	plot_curve_->setZ(1);
 
