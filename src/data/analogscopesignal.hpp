@@ -91,6 +91,11 @@ public:
 	 */
 	void complete_actual_segment();
 
+	/**
+	 * Return the actual time stride.
+	 */
+	double actual_time_stride() const;
+
 	double signal_start_timestamp() const;
 	double first_timestamp() const;
 	double last_timestamp() const;

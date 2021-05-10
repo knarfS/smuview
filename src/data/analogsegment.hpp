@@ -89,6 +89,7 @@ public:
 		uint64_t start;
 		unsigned int scale;
 		uint64_t length;
+		double time_stride;
 		EnvelopeSample *samples;
 	};
 
@@ -97,6 +98,7 @@ private:
 	{
 		uint64_t length;
 		uint64_t data_length;
+		double time_stride;
 		EnvelopeSample *samples;
 	};
 
@@ -139,7 +141,8 @@ public:
 	float get_sample(int64_t sample_num) const;
 	void get_samples(int64_t start_sample, int64_t end_sample, float* dest) const;
 
-	const pair<float, float> get_min_max() const;
+	float min_value() const;
+	float max_value() const;
 
 	float* get_iterator_value_ptr(SegmentDataIterator* it);
 
@@ -186,7 +189,8 @@ private:
 
 	struct Envelope envelope_levels_[ScaleStepCount];
 
-	float min_value_, max_value_;
+	float min_value_;
+	float max_value_;
 
 Q_SIGNALS:
 	void samples_added(uint32_t segment_id);

@@ -180,6 +180,11 @@ void AnalogScopeSignal::push_samples(void *data,
 		Q_EMIT segment_added(actual_segment_->id());
 	}
 
+	if (samplerate > 0) { // TODO: else throw ex
+		time_stride_ = 1 / (double)samplerate;
+		//qWarning() << "AnalogScopeSignal::push_samples(): time_stride_ = " << time_stride_;
+	}
+
 	actual_segment_->append_interleaved_samples((float *)data, samples, 1);
 }
 
@@ -203,6 +208,11 @@ void AnalogScopeSignal::complete_actual_segment()
 
 	actual_segment_->set_complete();
 	actual_segment_ = nullptr;
+}
+
+double AnalogScopeSignal::actual_time_stride() const
+{
+	return time_stride_;
 }
 
 double AnalogScopeSignal::signal_start_timestamp() const
