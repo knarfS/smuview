@@ -74,7 +74,8 @@ void OscilloscopeTab::setup_ui()
 	ui::views::ScopePlotView *plot_view = nullptr;
 	for (const auto &chg_pair : device_->channel_group_map()) {
 		/* TODO: for now, only the first two channles are displayed. */
-		if (added_channels >= 2)
+		//if (added_channels >= 2)
+		if (added_channels >= 1)
 			break;
 
 		/* TODO: We assume, that every channel group has just one channel. */
