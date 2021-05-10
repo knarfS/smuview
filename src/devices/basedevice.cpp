@@ -449,12 +449,12 @@ void BaseDevice::data_feed_in(shared_ptr<sigrok::Device> sr_device,
 
 	switch (sr_packet->type()->id()) {
 	case SR_DF_HEADER:
-		qWarning() << "data_feed_in(): SR_DF_HEADER";
+		//qWarning() << "data_feed_in(): SR_DF_HEADER";
 		feed_in_header();
 		break;
 
 	case SR_DF_META:
-		qWarning() << "data_feed_in(): SR_DF_META";
+		//qWarning() << "data_feed_in(): SR_DF_META";
 		feed_in_meta(
 			dynamic_pointer_cast<sigrok::Meta>(sr_packet->payload()));
 		break;
@@ -479,7 +479,7 @@ void BaseDevice::data_feed_in(shared_ptr<sigrok::Device> sr_device,
 		break;
 
 	case SR_DF_ANALOG:
-		qWarning() << "data_feed_in(): SR_DF_ANALOG";
+		//qWarning() << "data_feed_in(): SR_DF_ANALOG";
 		if (aquisition_state_ != AquisitionState::Running)
 			return;
 
@@ -493,17 +493,17 @@ void BaseDevice::data_feed_in(shared_ptr<sigrok::Device> sr_device,
 		break;
 
 	case SR_DF_FRAME_BEGIN:
-		qWarning() << "data_feed_in(): SR_DF_FRAME_BEGIN";
+		//qWarning() << "data_feed_in(): SR_DF_FRAME_BEGIN";
 		feed_in_frame_begin();
 		break;
 
 	case SR_DF_FRAME_END:
-		qWarning() << "data_feed_in(): SR_DF_FRAME_END";
+		//qWarning() << "data_feed_in(): SR_DF_FRAME_END";
 		feed_in_frame_end();
 		break;
 
 	case SR_DF_END:
-		qWarning() << "data_feed_in(): SR_DF_END";
+		//qWarning() << "data_feed_in(): SR_DF_END";
 		// Strictly speaking, this is performed when a frame end marker was
 		// received, so there's no point doing this again. However, not all
 		// devices use frames, and for those devices, we need to do it here.
