@@ -20,11 +20,16 @@
 #include <cassert>
 #include <string>
 
+#include <QAction>
+#include <QDir>
+#include <QFileDialog>
+#include <QImageWriter>
 #include <QMainWindow>
 #include <QMenu>
 #include <QMessageBox>
 #include <QToolButton>
 #include <QVBoxLayout>
+#include <qwt_plot_renderer.h>
 
 #include "scopeplotview.hpp"
 #include "src/session.hpp"
@@ -43,7 +48,7 @@
 #include "src/ui/dialogs/plotconfigdialog.hpp"
 #include "src/ui/dialogs/plotdiffmarkerdialog.hpp"
 #include "src/ui/dialogs/selectsignaldialog.hpp"
-#include "src/ui/widgets/plot/curve.hpp"
+#include "src/ui/widgets/plot/scopecurve.hpp"
 #include "src/ui/widgets/plot/scopeplot.hpp"
 #include "src/ui/widgets/plot/basecurvedata.hpp"
 #include "src/ui/widgets/plot/scopecurvedata.hpp"
@@ -60,7 +65,13 @@ namespace ui {
 namespace views {
 
 ScopePlotView::ScopePlotView(Session &session, QUuid uuid, QWidget *parent) :
-	BaseView(session, uuid, parent)
+	BaseView(session, uuid, parent),
+	action_add_marker_(new QAction(this)),
+	action_add_diff_marker_(new QAction(this)),
+	action_zoom_best_fit_(new QAction(this)),
+	action_add_curve_(new QAction(this)),
+	action_save_(new QAction(this)),
+	action_config_plot_(new QAction(this))
 {
 	setup_ui();
 	setup_toolbar();
@@ -140,50 +151,27 @@ void ScopePlotView::set_scope_device(
 string ScopePlotView::add_channel(shared_ptr<channels::ScopeChannel> channel)
 {
 	assert(channel);
-	string id;
+	string id; // TODO
 
 	// TODO: Use vector
 	if (channel_1_ != nullptr && channel_2_ != nullptr)
 		return "";
+
+	connect(channel.get(), &channels::ScopeChannel::signal_added,
+		this, &ScopePlotView::add_signal);
 
 	auto signal = static_pointer_cast<data::AnalogScopeSignal>(
 		channel->actual_signal());
 	if (signal == nullptr)
 		return "";
 
-	// Check if the new channel is already added to this plot
-	for (const auto &curve : plot_->curve_map()) {
-		auto curve_data = qobject_cast<widgets::plot::ScopeCurveData *>(
-			curve.second->curve_data());
-		if (!curve_data)
-			continue;
-		if (curve_data->signal() == signal)
-			return id;
-	}
+	// TODO: Maybe add already existing signals?
 
-	auto curve = new widgets::plot::ScopeCurveData(signal);
-	id = plot_->add_curve(curve);
-	if (!id.empty()) {
-		// TODO: We assume, that a scope channel can only contain one signal!
-		/*
-		connect(channel.get(), SIGNAL(signal_added(shared_ptr<sv::data::BaseSignal>)),
-			this, SLOT(on_signal_added()));
-		*/
-
-		// TODO
-		if (channel_1_ == nullptr)
-			channel_1_ = channel;
-		else if (channel_2_ == nullptr)
-			channel_2_ = channel;
-
-		update_add_marker_menu();
-		Q_EMIT title_changed();
-	}
-	else {
-		QMessageBox::warning(this,
-			tr("Cannot add signal"), tr("Cannot add scope signal to plot!"),
-			QMessageBox::Ok);
-	}
+	// TODO
+	if (channel_1_ == nullptr)
+		channel_1_ = channel;
+	else if (channel_2_ == nullptr)
+		channel_2_ = channel;
 
 	return id;
 }
@@ -201,7 +189,6 @@ void ScopePlotView::setup_ui()
 
 void ScopePlotView::setup_toolbar()
 {
-	/*
 	add_marker_menu_ = new QMenu();
 	update_add_marker_menu();
 
@@ -227,12 +214,14 @@ void ScopePlotView::setup_toolbar()
 	connect(action_zoom_best_fit_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_zoom_best_fit_triggered()));
 
+	/*
 	action_add_signal_->setText(tr("Add Signal"));
 	action_add_signal_->setIcon(
 		QIcon::fromTheme("office-chart-line",
 		QIcon(":/icons/office-chart-line.png")));
 	connect(action_add_signal_, SIGNAL(triggered(bool)),
 		this, SLOT(on_action_add_signal_triggered()));
+	*/
 
 	action_config_plot_->setText(tr("Configure Plot"));
 	action_config_plot_->setIcon(
@@ -247,11 +236,10 @@ void ScopePlotView::setup_toolbar()
 	toolbar_->addSeparator();
 	toolbar_->addAction(action_zoom_best_fit_);
 	toolbar_->addSeparator();
-	toolbar_->addAction(action_add_signal_);
+	//toolbar_->addAction(action_add_signal_);
 	toolbar_->addSeparator();
 	toolbar_->addAction(action_config_plot_);
 	this->addToolBar(Qt::TopToolBarArea, toolbar_);
-	*/
 }
 
 void ScopePlotView::update_add_marker_menu()
@@ -315,25 +303,95 @@ void ScopePlotView::restore_settings(QSettings &settings,
 	*/
 }
 
-/*
-void ScopePlotView::on_signal_added()
+void ScopePlotView::add_signal(std::shared_ptr<sv::data::BaseSignal> signal)
 {
-	// TODO
-	if (!channel_1_)
+	// TODO: Use (Analog)BaseSignal
+	auto as_signal = static_pointer_cast<data::AnalogScopeSignal>(signal);
+
+	// Check if the new channel is already added to this plot
+	/* TODO
+	for (const auto &curve : plot_->curve_map()) {
+		auto curve_data = qobject_cast<widgets::plot::ScopeCurveData *>(
+			curve.second->curve_data());
+		if (!curve_data)
+			continue;
+		if (curve_data->signal() == as_signal)
+			return;
+	}
+	*/
+
+	auto curve = new widgets::plot::ScopeCurve(as_signal);
+	plot_->add_curve(curve);
+
+	/* TODO
+	string id = plot_->add_curve(curve);
+	if (!id.empty()) {
+		update_add_marker_menu();
+		Q_EMIT title_changed();
+	}
+	else {
+		QMessageBox::warning(this,
+			tr("Cannot add signal"), tr("Cannot add scope signal to plot!"),
+			QMessageBox::Ok);
+	}
+	*/
+}
+
+void ScopePlotView::on_action_add_marker_triggered()
+{
+	/*
+	QAction *action = qobject_cast<QAction *>(sender());
+	if (action)
+		plot_->add_marker(action->data().value<widgets::plot::Curve *>());
+
+	if (plot_->marker_curve_map().size() >= 2)
+		action_add_diff_marker_->setDisabled(false);
+	else
+		action_add_diff_marker_->setDisabled(true);
+	*/
+}
+
+void ScopePlotView::on_action_add_diff_marker_triggered()
+{
+	/*
+	ui::dialogs::PlotDiffMarkerDialog dlg(plot_);
+	dlg.exec();
+	*/
+}
+
+void ScopePlotView::on_action_zoom_best_fit_triggered()
+{
+	plot_->set_all_axis_locked(false);
+}
+
+void ScopePlotView::on_action_save_triggered()
+{
+	QString filter("SVG Image (*.svg);;PDF File (*.pdf)");
+	const auto supported_formats = QImageWriter::supportedImageFormats();
+	for (const auto &supported : supported_formats) {
+		filter += ";;" + supported.toUpper() + " Image (*." + supported + ")";
+	}
+	QString *selected_filter = new QString("SVG Image (*.svg)");
+	QString file_name = QFileDialog::getSaveFileName(this,
+		tr("Save Plot"), QDir::homePath(), filter, selected_filter);
+	delete selected_filter;
+	if (file_name.length() <= 0)
 		return;
 
-	shared_ptr<sv::data::AnalogScopeSignal> signal;
-	if (channel_1_->actual_signal())
-		signal = dynamic_pointer_cast<sv::data::AnalogScopeSignal>(
-			channel_1_->actual_signal()); // More channels
-	if (signal) {
-		plot_->show_curve(channel_1_->display_name(),
-			new widgets::plot::ScopeCurveData(signal));
-		connect(signal.get(), SIGNAL(sample_appended()),
-			plot_, SLOT(update_curves()));
-	}
+	// TODO
+	QSizeF size(300, 300);
+	int resolution = 90;
+	QwtPlotRenderer renderer;
+	renderer.renderDocument(plot_, file_name, size, resolution);
 }
-*/
+
+void ScopePlotView::on_action_config_plot_triggered()
+{
+	/*
+	ui::dialogs::PlotConfigDialog dlg(plot_, plot_type_);
+	dlg.exec();
+	*/
+}
 
 } // namespace views
 } // namespace ui

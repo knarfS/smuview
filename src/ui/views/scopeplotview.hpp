@@ -43,6 +43,9 @@ class Session;
 namespace channels {
 class ScopeChannel;
 }
+namespace data {
+class BaseSignal;
+}
 namespace devices {
 class OscilloscopeDevice;
 }
@@ -91,9 +94,27 @@ private:
 	void setup_ui();
 	void setup_toolbar();
 
+	QMenu *add_marker_menu_;
+	QToolButton *add_marker_button_;
+	QAction *const action_add_marker_;
+	QAction *const action_add_diff_marker_;
+	QAction *const action_zoom_best_fit_;
+	QAction *const action_add_curve_;
+	QAction *const action_save_;
+	QAction *const action_config_plot_;
+	QToolBar *toolbar_;
+
 protected Q_SLOTS:
 	//void on_action_add_curve_triggered();
 	void update_add_marker_menu();
+	void add_signal(std::shared_ptr<sv::data::BaseSignal> signal);
+
+private Q_SLOTS:
+	void on_action_add_marker_triggered();
+	void on_action_add_diff_marker_triggered();
+	void on_action_zoom_best_fit_triggered();
+	void on_action_save_triggered();
+	void on_action_config_plot_triggered();
 
 };
 

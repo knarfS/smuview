@@ -1,0 +1,13 @@
+- QwtCurveFitter
+- QwtSeriesData<T>::setRectOfInterest(const QRectF &)
+	https://www.qtcentre.org/threads/44022-QwtPlotCurve-draw-it-s-full-contents-without-using-current-zoom-information
+
+- MinMax in QwtPlotItem (with faster comparisons: only 3N/2 instead of 2N)
+	http://voidknot.blogspot.com/2014/10/extending-qwtplotitem-class-to-plot.html
+	https://github.com/Satark/qwtarrayplotitemexample
+
+- QwtPlotCurve::setPaintAttribute(QwtPlotCurve::ClipPolygons, true);
+- QwtPlotCurve::setPaintAttribute(QwtPlotCurve::FilterPoints, true);
+- YourPlotCurve::updateScaleDiv() implement and adjust the step size according to the intervals of the current scales
+	https://qwt-interest.narkive.com/jc0jXwPv/realtime-plot-speed-issue
+

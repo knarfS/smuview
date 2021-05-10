@@ -17,6 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <cmath>
+#include <limits>
 #include <memory>
 #include <set>
 
@@ -36,6 +38,7 @@
 #include "src/ui/widgets/plot/basecurvedata.hpp"
 
 using std::dynamic_pointer_cast;
+using std::numeric_limits;
 using std::set;
 using std::shared_ptr;
 
@@ -44,15 +47,15 @@ namespace ui {
 namespace widgets {
 namespace plot {
 
-ScopeCurveData::ScopeCurveData(shared_ptr<sv::data::AnalogScopeSignal> signal) :
-	BaseCurveData(CurveType::TimeCurve),
-	signal_(signal),
-	actual_segment_id_(0)
+const float ScopeCurveData::EnvelopeThreshold = 64.0f;
+
+ScopeCurveData::ScopeCurveData(shared_ptr<sv::data::AnalogSegment> segment) :
+	BaseCurveData(CurveDataType::ScopeCurveData), // TODO: Do we need the type here? Move to (Scope)Curve?
+	segment_(segment),
+	actual_segment_id_(0),
+	start_sample_(.0),
+	end_sample_(.0)
 {
-	connect(signal.get(), &sv::data::AnalogScopeSignal::segment_added,
-		this, &ScopeCurveData::on_segment_added);
-	connect(signal.get(), &sv::data::AnalogScopeSignal::samples_added,
-		this, &ScopeCurveData::on_samples_added);
 }
 
 bool ScopeCurveData::is_equal(const BaseCurveData *other) const
@@ -61,28 +64,129 @@ bool ScopeCurveData::is_equal(const BaseCurveData *other) const
 	if (scd == nullptr)
 		return false;
 
-	return signal_ == scd->signal();
+	return segment_ == scd->segment();
+}
+
+void ScopeCurveData::setRectOfInterest(const QRectF &rect)
+{
+	/*
+	 * NOTE: Good for zooming in, but NFG for level of detail when having a huge
+	 * number of sample points, b/c there is no painting rect
+	 */
+	if (rect_of_interest_ == rect)
+		return;
+
+	qWarning() << "ScopeCurveData::setRectOfInterest(): rect = " << rect;
+	rect_of_interest_ = rect;
+
+	if (rect_of_interest_.left() <= .0) {
+		start_sample_ = .0;
+	}
+	else
+		start_sample_ = std::floor(rect_of_interest_.left() / segment_->time_stride());
+
+	if (rect_of_interest_.right() <= .0)
+		end_sample_ = .0;
+	else
+		end_sample_ = std::ceil(rect_of_interest_.right() / segment_->time_stride());
+
+	qWarning() << "ScopeCurveData::setRectOfInterest(): start_sample_ = " << start_sample_;
+	qWarning() << "ScopeCurveData::setRectOfInterest(): end_sample_ = " << end_sample_;
+
+	const size_t total_sample_cnt = end_sample_ - start_sample_;
+	const size_t sample_cnt = segment_->sample_count();
+	const size_t pixels_cnt = x_scale_map_.pDist();
+	const size_t end_sample = end_sample_ <= sample_cnt ? end_sample_ : sample_cnt;
+	const size_t start_sample = start_sample_ <= end_sample ? start_sample_ : end_sample;
+	const double samples_per_pixel = total_sample_cnt / (double)pixels_cnt;
+	//const double samples_per_pixel = segment->samplerate() * pp.scale();
+
+	qWarning() << "ScopeCurveData::setRectOfInterest(): total_sample_cnt = " << total_sample_cnt;
+	qWarning() << "ScopeCurveData::setRectOfInterest(): sample_cnt = " << sample_cnt;
+	qWarning() << "ScopeCurveData::setRectOfInterest(): start_sample = " << start_sample;
+	qWarning() << "ScopeCurveData::setRectOfInterest(): end_sample = " << end_sample;
+	qWarning() << "ScopeCurveData::setRectOfInterest(): samples_per_pixel = " << samples_per_pixel;
+
+	segment_->get_envelope_section(envelope_section_, start_sample, end_sample, samples_per_pixel);
+
+	qWarning() << "ScopeCurveData::setRectOfInterest(): envelope_section_.scale = " << envelope_section_.scale;
+	qWarning() << "ScopeCurveData::setRectOfInterest(): envelope_section_.start = " << envelope_section_.start;
+	qWarning() << "ScopeCurveData::setRectOfInterest(): envelope_section_.length = " << envelope_section_.length;
+	qWarning() << "ScopeCurveData::setRectOfInterest(): envelope_section_.time_stride = " << envelope_section_.time_stride;
+
+
+	// Set invalide bounding rect
+	//bounding_rect_ = QRectF(0.0, 0.0, -1.0, -1.0);
 }
 
 QPointF ScopeCurveData::sample(size_t i) const
 {
-	//signal_data_->lock();
+	/*
+	if (resampled_data_.empty()) {
+		//qWarning() << "ScopeCurveData::sample(): sample_from_signal(" << i << ")";
+		return sample_from_signal(i);
+	}
+	else {
+		//qWarning() << "ScopeCurveData::sample(): resampled_data_.at(" << i << ")";
+		if (i < resampled_data_.size())
+			return resampled_data_.at(i);
+		else {
+			qWarning() << "ScopeCurveData::sample(): resampled_data_.at(" << i << ")";
+			return QPointF(1, 1);
+		}
+	}
+	*/
 
-	auto segment = signal_->get_segment(actual_segment_id_);
-	QPointF sample_point(segment->time_stride() * i, segment->get_sample(i));
+	// TODO: Move outside, so this doesn't need to be calculated every time.
+	const size_t sample_cnt = end_sample_ - start_sample_;
+	const size_t pixels_cnt = x_scale_map_.pDist();
+	const double samples_per_pixel = sample_cnt / (double)pixels_cnt;
+	QPointF sample;
 
-	//qWarning() << "ScopeCurveData::sample(): " << i << " = " << sample_point
-	//	<< " (time_stride = " << QString("%1").arg(segment->time_stride(), 10, 'f', -1, '0') << ")";
+	if (samples_per_pixel < EnvelopeThreshold)
+		sample = sample_from_signal(i);
+	else {
+		if (i % 2 == 0) {
+			size_t index = i / 2;
+			sample = QPointF(envelope_section_.time_stride * index, (envelope_section_.samples+index)->max);
+		}
+		else {
+			size_t index = (i - 1) / 2;
+			sample = QPointF(envelope_section_.time_stride * index, (envelope_section_.samples+index)->min);
+		}
+	}
 
-	//signal_data_->.unlock();
+	//qWarning() << "ScopeCurveData::sample(): " << i << " -> "  << sample;
 
-	return sample_point;
+	return sample;
 }
 
 size_t ScopeCurveData::size() const
 {
-	// TODO: Synchronize x/y sample data
-	return signal_->get_segment(actual_segment_id_)->sample_count();
+	/*
+	if (resampled_data_.empty()) {
+		size_t size = size_from_signal();
+		qWarning() << "ScopeCurveData::size(): size_from_signal = " << size;
+		//return size_from_signal();
+		return size;
+	}
+	else {
+		size_t size = resampled_data_.size();
+		qWarning() << "ScopeCurveData::size(): resampled_data_.size() = " << size;
+		//return resampled_data_.size();
+		return size;
+	}
+	*/
+
+	// TODO: Move outside, so this doesn't need to be calculated every time.
+	const size_t sample_cnt = end_sample_ - start_sample_;
+	const size_t pixels_cnt = x_scale_map_.pDist();
+	const double samples_per_pixel = sample_cnt / (double)pixels_cnt;
+
+	if (samples_per_pixel < EnvelopeThreshold)
+		return size_from_signal();
+	else
+		return envelope_section_.length * 2;
 }
 
 QRectF ScopeCurveData::boundingRect() const
@@ -98,17 +202,94 @@ QRectF ScopeCurveData::boundingRect() const
 		<< signal_->max_value();
 	*/
 
-	auto segment = signal_->get_segment(actual_segment_id_);
-	if (segment == nullptr) {
-		qWarning() << "ScopeCurveData::boundingRect(): No last_segment found!";
-		return QRectF(0, 0, 0, 0);
+	/* ORG */
+	const size_t total_sample_cnt = end_sample_ - start_sample_;
+	//const size_t sample_count = segment_->sample_count();
+
+	// NOTE: Mapping from 0 to start_index is done in sample_from_signal()
+	double start_sample = sample_from_signal(0).x();
+	// TODO: get right end_sample: end_sample_ is recalculated in sample_from_signal()
+	//double end_sample = sample_from_signal(end_sample_ <= sample_count ? end_sample_ : sample_count).x();
+	// TODO: min/max for specific span
+	// TODO: Is this the right bounding rect?
+	QRectF br = QRectF(
+		QPointF(start_sample, segment_->max_value()),
+		//QPointF(end_sample, segment_->min_value()));
+		QPointF(start_sample + (segment_->time_stride() * total_sample_cnt), segment_->min_value()));
+	qWarning() << "ScopeCurveData::boundingRect(): br = " << br;
+
+	return br;
+
+	/* FAST min/max
+	// Check for a valid rect
+	//qWarning() << "ScopeCurveData::boundingRect(): bounding_rect_.isValid() = " << bounding_rect_.isValid();
+	//if (bounding_rect_.isValid())
+	//	return bounding_rect_;
+	// Not enough sample to create a rect
+	if (size() <= 1)
+		return QRectF(1.0, 1.0, -2.0, -2.0);
+
+	// Calculate bounding rect
+
+	double min = .0;
+	double max = .0;
+
+	if (sample(0).y() < sample(1).y()) {
+		min = sample(0).y();
+		max = sample(1).y();
+	}
+	else {
+		min = sample(1).y();
+		max = sample(0).y();
 	}
 
-	// top left, bottom right
-	return QRectF(
-		QPointF(.0, segment->get_min_max().second),
-		QPointF(segment->time_stride() * segment->sample_count(),
-				segment->get_min_max().first));
+	//compare pairs
+	size_t size = this->size();
+	for (size_t i=2; i<size-2; i+=2) {
+		if (sample(i).y() > sample(i+1).y()) {
+			if (sample(i).y() > max)
+				max = sample(i).y();
+			if (sample(i+1).y() < min)
+				min = sample(i+1).y();
+		}
+		else {
+			if (sample(i+1).y() > max)
+				max = sample(i+1).y();
+			if (sample(i).y() < min)
+				min = sample(i).y();
+		}
+	}
+
+	bounding_rect_ = QRectF(0.0, min, size * dt(), max - min);
+	qWarning() << "ScopeCurveData::boundingRect(): bounding_rect_ = " << bounding_rect_;
+	return bounding_rect_;
+	*/
+
+
+
+	/* LAST, WORKING
+	// Not enough sample to create a rect
+	if (size_from_signal() <= 1)
+		return QRectF(0.0, 0.0, -1.0, -1.0);
+
+	size_t end_sample = start_sample_ + size_from_signal();
+	//qWarning() << "ScopeCurveData::boundingRect(): end_sample = " << end_sample;
+	double min = sample_from_signal(start_sample_).y();
+	double max = sample_from_signal(start_sample_).y();
+	for (size_t i=start_sample_; i<end_sample; i++) {
+		if (sample_from_signal(i).y() > max)
+			max = sample_from_signal(i).y();
+		if (sample_from_signal(i).y() < min)
+			min = sample_from_signal(i).y();
+	}
+
+	bounding_rect_ = QRectF(
+		QPointF(sample_from_signal(start_sample_).x(), max),
+		QPointF(sample_from_signal(end_sample).x(), min));
+
+	//qWarning() << "ScopeCurveData::boundingRect(): bounding_rect_ = " << bounding_rect_;
+	return bounding_rect_;
+	*/
 }
 
 QPointF ScopeCurveData::closest_point(const QPointF &pos, double *dist) const
@@ -146,111 +327,286 @@ QPointF ScopeCurveData::closest_point(const QPointF &pos, double *dist) const
 
 QString ScopeCurveData::name() const
 {
-	return signal_->display_name();
+	// TODO: Remove
+	return "";
 }
 
 string ScopeCurveData::id_prefix() const
 {
-	return "scopecurve";
+	// TODO: Remove
+	return "";
 }
+
+void ScopeCurveData::set_x_scale_map(const QwtScaleMap &x_scale_map)
+{
+	x_scale_map_ = x_scale_map;
+}
+
+void ScopeCurveData::set_y_scale_map(const QwtScaleMap &y_scale_map)
+{
+	y_scale_map_ = y_scale_map;
+}
+
+void ScopeCurveData::set_scale_maps(const QwtScaleMap &x_scale_map,
+	const QwtScaleMap &y_scale_map)
+{
+	x_scale_map_ = x_scale_map;
+	y_scale_map_ = y_scale_map;
+	//qWarning() << "ScopeCurveData::set_scale_maps(): x_scale_map = " << x_scale_map_.p1() << ", " << x_scale_map_.p2();
+	//qWarning() << "ScopeCurveData::set_scale_maps(): x_scale_map = " << x_scale_map_.s1() << ", " << x_scale_map_.s2();
+	//qWarning() << "ScopeCurveData::set_scale_maps(): x_scale_map = " << x_scale_map_.pDist() << ", " << x_scale_map_.sDist();
+	//qWarning() << "ScopeCurveData::set_scale_maps(): y_scale_map = " << y_scale_map_.p1() << ", " << y_scale_map_.p2();
+	//qWarning() << "ScopeCurveData::set_scale_maps(): y_scale_map = " << y_scale_map_.s1() << ", " << y_scale_map_.s2();
+	//qWarning() << "ScopeCurveData::set_scale_maps(): y_scale_map = " << y_scale_map.pDist() << ", " << y_scale_map.sDist();
+
+	//resample();
+
+
+	const size_t total_sample_cnt = end_sample_ - start_sample_;
+	const size_t sample_cnt = segment_->sample_count();
+	const size_t pixels_cnt = x_scale_map_.pDist();
+	const size_t end_sample = end_sample_ <= sample_cnt ? end_sample_ : sample_cnt;
+	const size_t start_sample = start_sample_ <= end_sample ? start_sample_ : end_sample;
+	const double samples_per_pixel = total_sample_cnt / (double)pixels_cnt;
+	//const double samples_per_pixel = segment_->samplerate() * pp.scale();
+
+	qWarning() << "ScopeCurveData::set_scale_maps(): start_sample_ = " << start_sample_;
+	qWarning() << "ScopeCurveData::set_scale_maps(): end_sample_ = " << end_sample_;
+	qWarning() << "ScopeCurveData::set_scale_maps(): total_sample_cnt = " << total_sample_cnt;
+	qWarning() << "ScopeCurveData::set_scale_maps(): sample_cnt = " << sample_cnt;
+	qWarning() << "ScopeCurveData::set_scale_maps(): start_sample = " << start_sample;
+	qWarning() << "ScopeCurveData::set_scale_maps(): end_sample = " << end_sample;
+	qWarning() << "ScopeCurveData::set_scale_maps(): samples_per_pixel = " << samples_per_pixel;
+
+	if (end_sample > 0)
+		segment_->get_envelope_section(envelope_section_, start_sample, end_sample, samples_per_pixel);
+
+	qWarning() << "ScopeCurveData::set_scale_maps(): envelope_section_.scale = " << envelope_section_.scale;
+	qWarning() << "ScopeCurveData::set_scale_maps(): envelope_section_.start = " << envelope_section_.start;
+	qWarning() << "ScopeCurveData::set_scale_maps(): envelope_section_.length = " << envelope_section_.length;
+	qWarning() << "ScopeCurveData::set_scale_maps(): envelope_section_.time_stride = " << envelope_section_.time_stride;
+}
+
+QPointF ScopeCurveData::sample_from_signal(size_t i) const
+{
+	//signal_data_->lock();
+
+	size_t index = start_sample_ + i;
+
+	//qWarning() << "ScopeCurveData::sample_from_signal(): i = " << i;
+	//qWarning() << "ScopeCurveData::sample_from_signal(): index = " << index;
+
+	QPointF sample_point(segment_->time_stride() * index, segment_->get_sample(index));
+
+	//qWarning() << "ScopeCurveData::sample_from_signal(): " << i << " = " << sample_point
+	//	<< " (time_stride = " << QString("%1").arg(segment_->time_stride(), 10, 'f', -1, '0') << ")";
+
+	//signal_data_->.unlock();
+
+	return sample_point;
+}
+
+size_t ScopeCurveData::size_from_signal() const
+{
+	//qWarning() << "ScopeCurveData::size_from_signal(): sample_count = " << signal_->get_segment(actual_segment_id_)->sample_count();
+	//qWarning() << "ScopeCurveData::size_from_signal(): rect_of_interest_ = " << rect_of_interest_;
+	//qWarning() << "ScopeCurveData::size_from_signal(): start_sample_ = " << start_sample_;
+	//qWarning() << "ScopeCurveData::size_from_signal(): end_sample_ = " << end_sample_;
+
+	// TODO: Synchronize x/y sample data
+	// TODO: MinMax-Resample
+
+	size_t sample_count = segment_->sample_count();
+
+	size_t size = 0;
+	if (sample_count < start_sample_)
+		size = 0;
+	else if (sample_count > end_sample_)
+		size = end_sample_ - start_sample_;
+	else
+		size = sample_count - start_sample_;
+
+	//qWarning() << "ScopeCurveData::size_from_signal(): size = " << size;
+	return size;
+}
+
+/*
+void ScopeCurveData::resample()
+{
+	unsigned int prevIndex = 0;
+	unsigned int currIndex = 0;
+	unsigned int xIndex = 0;
+	//unsigned int sIndex = 0;
+	float min, max;
+
+	//qWarning() << "ScopeCurveData::resample(): points.size() = " << size();
+
+	// Get a pointer to the raw point data.
+	//const QPointF *p = points.data();
+
+	// Determine the number of plot pixels. We do this by looking to see what
+	// the last x coordinate is in the points vector. As this has been
+	// transformed from sample coordinates to screen coordinates this is also
+	// the number of plot pixels, though there may be a better way to do this.
+	//size_t numPixels = (size_t)((sample_from_signal(size() - 1).x() - sample_from_signal(0).x()) + 0.5F);
+	//qWarning() << "ScopeCurveData::resample(): p[size() - 1].x() = " << sample_from_signal(size() - 1).x();
+	//qWarning() << "ScopeCurveData::resample(): p[0].x() = " << sample_from_signal(0).x();
+	//qWarning() << "ScopeCurveData::resample(): numPixels = " << numPixels;
+	size_t sample_cnt = size_from_signal();
+	size_t pixels_cnt = x_scale_map_.pDist();
+
+	// Calculate the number of samples per pixel. This assumes equidistant
+	// data points along the x-axis.
+	double samples_per_pixel = sample_cnt / (double)pixels_cnt;
+	//qWarning() << "ScopeCurveData::resample(): samples_per_pixel = " << samples_per_pixel;
+
+	// Set the previous transformed sample index.
+	prevIndex = 0;
+
+	double samples_per_pixel_threshold = 2;
+
+	// Only weed out points when we exceed the points per pixel threshold.
+	if (samples_per_pixel > samples_per_pixel_threshold) {
+		// Construct a vector to hold the stripped point values. As we only plot
+		// one vertical line per plot pixel we only need twice the number of pixels.
+		//QPolygonF stripped(pixels_cnt * 2);
+		resampled_data_.clear();
+		//resampled_data_.resize(pixels_cnt * 2);
+
+		// Loop over each plot pixel and create the polygon to plot for that
+		// pixel.
+		for (xIndex = 1; xIndex <= pixels_cnt; xIndex++) {
+			// Calculate the current sample index for the plot pixel.
+			currIndex = (unsigned int) (((double) xIndex * samples_per_pixel) + 0.5);
+			if (currIndex > (unsigned int) (sample_cnt - 1))
+				currIndex = sample_cnt - 1;
+
+			// Initialise the min and max values.
+			min = numeric_limits<float>::max();
+			max = numeric_limits<float>::min();
+
+			// Loop over the range of samples represented by one plot pixel and
+			// calculate the min/max y value.
+			//qWarning() << "ScopeCurveData::resample(): Loop Range: prevIndex < currIndex = " << prevIndex << " < " << currIndex ;
+			for (unsigned int x = prevIndex; x < currIndex; x++) {
+				QPointF sample = sample_from_signal(x);
+				//qWarning() << "ScopeCurveData::resample():     x < currIndex = " << x << " < " << currIndex;
+				//qWarning() << "ScopeCurveData::resample():     sample(x).y() = " << sample(x).y();
+				min = ((min > sample.y()) ? sample.y() : min);
+				max = ((max < sample.y()) ? sample.y() : max);
+			}
+
+			// Draw the vertical line for the min/max value at this plot pixel.
+			QPointF prev_sample = sample_from_signal(prevIndex);
+			//qWarning() << "ScopeCurveData::resample(): MIN " << min << " @sIndex " << sIndex << ", @x " << prev_sample.x();
+			resampled_data_.push_back(QPointF(prev_sample.x(), min));
+			//qWarning() << "ScopeCurveData::resample(): MAX " << max << " @sIndex " << sIndex << ", @x " << prev_sample.x();
+			resampled_data_.push_back(QPointF(prev_sample.x(), max));
+
+			// Move the range we min/max over for next time.
+			prevIndex = currIndex;
+		}
+
+		// Adjust the stripped vector to the correct size if its not already.
+		//stripped.resize(sIndex);
+
+		//qWarning() << "ScopeCurveData::resample(): resampled_data_.size() = " << resampled_data_.size();
+
+		// Return the stripped points.
+		//return stripped;
+	}
+	else {
+		resampled_data_.clear();
+		resampled_data_.resize(0);
+	}
+
+	// No stripping to be done, return original points.
+	//return points;
+}
+*/
 
 sv::data::Quantity ScopeCurveData::x_quantity() const
 {
-	return sv::data::Quantity::Time;
+	// TODO: remove
+	return sv::data::Quantity::Unknown;
 }
 
 set<sv::data::QuantityFlag> ScopeCurveData::x_quantity_flags() const
 {
+	// TODO: remove
 	return set<data::QuantityFlag>();
 }
 
 sv::data::Unit ScopeCurveData::x_unit() const
 {
-	return sv::data::Unit::Second;
+	// TODO: remove
+	return sv::data::Unit::Unknown;
 }
 
 QString ScopeCurveData::x_unit_str() const
 {
-	return data::datautil::format_unit(x_unit());
+	// TODO: remove
+	return "";
 }
 
 QString ScopeCurveData::x_title() const
 {
-	return QString("%1 [%2]").
-		arg(data::datautil::format_quantity(x_quantity()), x_unit_str());
+	// TODO: remove
+	return "";
 }
 
 sv::data::Quantity ScopeCurveData::y_quantity() const
 {
-	return signal_->quantity();
+	// TODO: remove
+	return sv::data::Quantity::Unknown;
 }
 
 set<sv::data::QuantityFlag> ScopeCurveData::y_quantity_flags() const
 {
-	return signal_->quantity_flags();
+	// TODO: remove
+	return set<data::QuantityFlag>();
 }
 
 sv::data::Unit ScopeCurveData::y_unit() const
 {
-	return signal_->unit();
+	// TODO: remove
+	return sv::data::Unit::Unknown;
 }
 
 QString ScopeCurveData::y_unit_str() const
 {
-	return data::datautil::format_unit(y_unit(), y_quantity_flags());
+	// TODO: remove
+	return "";
 }
 
 QString ScopeCurveData::y_title() const
 {
-	// Don't use only the unit, so we can add AC/DC to axis label.
-	return QString("%1 [%2]").
-		arg(data::datautil::format_quantity(y_quantity()), y_unit_str());
+	// TODO: remove
+	return "";
 }
 
-shared_ptr<sv::data::AnalogScopeSignal> ScopeCurveData::signal() const
+shared_ptr<sv::data::AnalogSegment> ScopeCurveData::segment() const
 {
-	return signal_;
-}
-
-void ScopeCurveData::on_samples_added(uint32_t segment_id)
-{
-	(void)segment_id;
-	Q_EMIT update_curve();
-}
-
-void ScopeCurveData::on_segment_added(uint32_t segment_id)
-{
-	actual_segment_id_ = segment_id;
-	Q_EMIT reset_curve();
+	return segment_;
 }
 
 void ScopeCurveData::save_settings(QSettings &settings,
 	shared_ptr<sv::devices::BaseDevice> origin_device) const
 {
+	// TODO: remove
 	(void)settings;
 	(void)origin_device;
-	/*
-	SettingsManager::save_signal(signal_, settings, origin_device);
-	*/
 }
 
 ScopeCurveData *ScopeCurveData::init_from_settings(
 	Session &session, QSettings &settings,
 	shared_ptr<sv::devices::BaseDevice> origin_device)
 {
+	// TODO: remove
 	(void)session;
 	(void)settings;
 	(void)origin_device;
 	return nullptr;
-	/*
-	auto signal = SettingsManager::restore_signal(
-		session, settings, origin_device);
-	if (!signal)
-		return nullptr;
-
-	return new ScopeCurveData(
-		dynamic_pointer_cast<sv::data::AnalogScopeSignal>(signal));
-	*/
 }
 
 } // namespace plot

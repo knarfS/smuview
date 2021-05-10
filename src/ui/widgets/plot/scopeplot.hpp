@@ -56,6 +56,9 @@ namespace sv {
 
 class Session;
 
+namespace data {
+class AnalogScopeSignal;
+}
 namespace devices {
 class BaseDevice;
 }
@@ -64,10 +67,8 @@ namespace ui {
 namespace widgets {
 namespace plot {
 
-class BaseCurveData;
-class Curve;
 class PlotMagnifier;
-class ScopeCurveData;
+class ScopeCurve;
 
 class ScopePlot : public QwtPlot
 {
@@ -83,12 +84,14 @@ public:
 	 * Return the id of the new curve. Empty string when curve couldn't be
 	 * added.
 	 */
-	string add_curve(ScopeCurveData *curve_data);
-	bool add_curve(Curve *curve);
-	void remove_curve(Curve *curve);
+	//string add_curve(ScopeCurveData *curve_data);
+	bool add_curve(ScopeCurve *curve);
+	void remove_curve(ScopeCurve *curve);
 	void remove_all_curves();
 	/** Return a map of all curves. */
-	map<string, Curve *> curve_map() const { return curve_map_; }
+	map<string, ScopeCurve *> curve_map() const { return curve_map_; }
+	int get_free_x_axis(const QString &unit_str) const;
+	int get_free_y_axis(const QString &unit_str) const;
 	bool is_axis_locked(int axis_id, AxisBoundary axis_boundary) { return axis_lock_map_[axis_id][axis_boundary]; }
 	void set_axis_locked(int axis_id, AxisBoundary axis_boundary, bool locked);
 	void set_all_axis_locked(bool locked);
@@ -98,7 +101,7 @@ public:
 	double time_span() const { return time_span_; }
 	void set_add_time(double add_time) { add_time_ = add_time; }
 	double add_time() const { return add_time_; }
-	map<QwtPlotMarker *, Curve *> marker_curve_map() const { return marker_curve_map_; }
+	map<QwtPlotMarker *, ScopeCurve *> marker_curve_map() const { return marker_curve_map_; }
 	void set_markers_label_alignment(int alignment);
 	int markers_label_alignment() const { return markers_label_alignment_; }
 
@@ -111,7 +114,7 @@ public Q_SLOTS:
 	void add_axis_icons(const int axis_id);
 	void lock_all_axis();
 	void on_axis_lock_clicked();
-	void add_marker(sv::ui::widgets::plot::Curve *curve);
+	void add_marker(sv::ui::widgets::plot::ScopeCurve *curve);
 	void add_diff_marker(QwtPlotMarker *marker1, QwtPlotMarker *marker2);
 	void remove_marker(QwtPlotMarker *marker);
 	void on_marker_selected(const QPointF mouse_pos);
@@ -123,26 +126,27 @@ public Q_SLOTS:
 	void update_trigger_source(const QVariant trigger_source);
 	void update_trigger_level(const QVariant trigger_level);
 	void update_curves();
-	void update_curve(/*string curve_id*/);
+
+private Q_SLOTS:
+	void update_x_intervals();
 
 protected:
 	virtual void showEvent(QShowEvent *event) override;
 	virtual void resizeEvent(QResizeEvent *event) override;
 
 private:
-	int init_x_axis(BaseCurveData *curve_data, int x_axis_id = -1);
-	int init_y_axis(BaseCurveData *curve_data, int y_axis_id = -1);
+	int init_x_axis(const ScopeCurve *curve, int x_axis_id = -1);
+	int init_y_axis(const ScopeCurve *curve, int y_axis_id = -1);
 	void init_axis(int axis_id, double min, double max, const QString &title,
-		bool auto_scale);
+			bool auto_scale);
 	void update_intervals();
-	void update_x_intervals();
-	bool update_x_interval(Curve *curve);
-	bool update_y_interval(const Curve *curve);
+	bool update_x_interval(ScopeCurve *curve);
+	bool update_y_interval(const ScopeCurve *curve);
 	void update_markers_label();
-	Curve *get_curve_from_plot_curve(const QwtPlotCurve *plot_curve) const;
+	ScopeCurve *get_curve_from_plot_curve(const QwtPlotCurve *plot_curve) const;
 
 	Session &session_;
-	map<string, Curve *> curve_map_;
+	map<string, ScopeCurve *> curve_map_;
 	map<int, map<AxisBoundary, bool>> axis_lock_map_; // map<axis_id, map<AxisBoundary, locked>>
 	uint64_t samplerate_;
 	int num_hdiv_;
@@ -156,7 +160,7 @@ private:
 	QwtPlotPanner *plot_panner_;
 	PlotMagnifier *plot_magnifier_;
 
-	map<QwtPlotMarker *, Curve *> marker_curve_map_;
+	map<QwtPlotMarker *, ScopeCurve *> marker_curve_map_;
 	vector<pair<QwtPlotMarker *, QwtPlotMarker *>> diff_markers_;
 	QwtPlotMarker *active_marker_;
 	QwtPlotTextLabel *markers_label_;
