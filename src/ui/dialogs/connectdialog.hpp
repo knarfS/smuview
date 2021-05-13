@@ -67,7 +67,8 @@ class ConnectDialog : public QDialog
 	Q_OBJECT
 
 public:
-	explicit ConnectDialog(sv::DeviceManager &device_manager, QWidget *parent = nullptr);
+	explicit ConnectDialog(sv::DeviceManager &device_manager,
+		QWidget *parent = nullptr);
 	~ConnectDialog();
 
 	shared_ptr<sv::devices::HardwareDevice> get_selected_device() const;
@@ -80,12 +81,12 @@ private:
 	void unset_connection();
 
 private Q_SLOTS:
-	void on_driver_selected(int index);
-	void on_serial_toggled(bool checked);
-	void on_tcp_toggled(bool checked);
-	void on_gpib_toggled(bool checked);
-	void on_scan_pressed();
-	void on_populate_serials_done(
+	void driver_selected(int index);
+	void serial_toggled(bool checked);
+	void tcp_toggled(bool checked);
+	void gpib_toggled(bool checked);
+	void scan_pressed();
+	void populate_serials_finish(
 		const std::map<std::string, std::string> &serials);
 
 private:
@@ -107,7 +108,9 @@ private:
 
 	std::thread populate_serials_thread_;
 	std::mutex populate_serials_mtx_;
+	QWidget *serial_config_;
 	QComboBox serial_devices_;
+	QComboBox serial_baudrate_;
 
 	QWidget *tcp_config_;
 	QLineEdit *tcp_host_;

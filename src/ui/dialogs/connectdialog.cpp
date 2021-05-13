@@ -63,7 +63,6 @@ ConnectDialog::ConnectDialog(sv::DeviceManager &device_manager,
 	form_(this),
 	form_layout_(&form_),
 	drivers_(&form_),
-	serial_devices_(&form_),
 	scan_button_(tr("&Scan for devices using driver above"), this),
 	device_list_(this),
 	button_box_(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
@@ -77,11 +76,11 @@ ConnectDialog::ConnectDialog(sv::DeviceManager &device_manager,
 	connect(&button_box_, SIGNAL(rejected()), this, SLOT(reject()));
 
 	connect(this, &ConnectDialog::populate_serials_done,
-		this, &ConnectDialog::on_populate_serials_done);
+		this, &ConnectDialog::populate_serials_finish);
 
 	populate_drivers();
 	connect(&drivers_, SIGNAL(activated(int)),
-		this, SLOT(on_driver_selected(int)));
+		this, SLOT(driver_selected(int)));
 
 	form_.setLayout(&form_layout_);
 
@@ -97,8 +96,21 @@ ConnectDialog::ConnectDialog(sv::DeviceManager &device_manager,
 
 	radiobtn_usb_->setChecked(true);
 
+	serial_config_ = new QWidget();
+	QHBoxLayout *serial_config_layout = new QHBoxLayout(serial_config_);
 	serial_devices_.setEditable(true);
-	serial_devices_.setEnabled(false);
+	serial_devices_.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
+	serial_config_layout->addWidget(&serial_devices_);
+	serial_baudrate_.setEditable(true);
+	serial_baudrate_.addItem("");
+	serial_baudrate_.addItem("921600");
+	serial_baudrate_.addItem("115200");
+	serial_baudrate_.addItem("57600");
+	serial_baudrate_.addItem("19200");
+	serial_baudrate_.addItem("9600");
+	serial_config_layout->addWidget(&serial_baudrate_);
+	serial_config_layout->addWidget(new QLabel("baud"));
+	serial_config_->setEnabled(false);
 
 	tcp_config_ = new QWidget();
 	QHBoxLayout *tcp_config_layout = new QHBoxLayout(tcp_config_);
@@ -125,7 +137,7 @@ ConnectDialog::ConnectDialog(sv::DeviceManager &device_manager,
 	QVBoxLayout *vbox_if = new QVBoxLayout;
 	vbox_if->addWidget(radiobtn_usb_);
 	vbox_if->addWidget(radiobtn_serial_);
-	vbox_if->addWidget(&serial_devices_);
+	vbox_if->addWidget(serial_config_);
 	vbox_if->addWidget(radiobtn_tcp_);
 	vbox_if->addWidget(tcp_config_);
 
@@ -150,23 +162,26 @@ ConnectDialog::ConnectDialog(sv::DeviceManager &device_manager,
 	unset_connection();
 
 	connect(radiobtn_serial_, SIGNAL(toggled(bool)),
-		this, SLOT(on_serial_toggled(bool)));
+		this, SLOT(serial_toggled(bool)));
 	connect(radiobtn_tcp_, SIGNAL(toggled(bool)),
-		this, SLOT(on_tcp_toggled(bool)));
+		this, SLOT(tcp_toggled(bool)));
 	connect(&scan_button_, SIGNAL(pressed()),
-		this, SLOT(on_scan_pressed()));
+		this, SLOT(scan_pressed()));
 
 	if (gpib_avialable_) {
 		radiobtn_gpib_ = new QRadioButton(tr("&GPIB"), this);
-		// TODO: Replace with QComboBox and prefill with available gpib
-		// connection strings (like the serial box). Must be implemented in libsigrok.
+		/*
+		 * TODO: Replace with QComboBox and prefill with available GPIB
+		 * connection strings (like the serial box).
+		 * Must be implemented in libsigrok.
+		 */
 		gpib_libgpib_name_ = new QLineEdit;
 		gpib_libgpib_name_->setEnabled(false);
 		vbox_if->addWidget(radiobtn_gpib_);
 		vbox_if->addWidget(gpib_libgpib_name_);
 
 		connect(radiobtn_gpib_, SIGNAL(toggled(bool)),
-			this, SLOT(on_gpib_toggled(bool)));
+			this, SLOT(gpib_toggled(bool)));
 	}
 
 	setLayout(&layout_);
@@ -175,14 +190,16 @@ ConnectDialog::ConnectDialog(sv::DeviceManager &device_manager,
 	layout_.addWidget(&button_box_);
 
 	// Initially populate serials for current selected device
-	on_driver_selected(drivers_.currentIndex());
+	driver_selected(drivers_.currentIndex());
 }
 
-ConnectDialog::~ConnectDialog(){
-	// NOTE: Wait until a potentially running populate_serials_thread_ thread
-	//       has finished, otherwise sv will crash.
-	//       Waiting for the lock/mutex isn't strictly needed (empty d'tor is
-	//       sufficient), but better safe than sorry. :)
+ConnectDialog::~ConnectDialog() {
+	/*
+	 * NOTE: Wait until a potentially running populate_serials_thread_ thread
+	 *       has finished, otherwise sv will crash.
+	 *       Waiting for the lock/mutex isn't strictly needed (empty d'tor is
+	 *       sufficient), but better safe than sorry. :)
+	 */
 	std::lock_guard<std::mutex> lock(populate_serials_mtx_);
 }
 
@@ -233,14 +250,14 @@ void ConnectDialog::populate_serials_start(shared_ptr<Driver> driver)
 {
 	serial_devices_.clear();
 	serial_devices_.addItem(tr("Loading..."));
-	serial_devices_.setDisabled(true);
+	serial_config_->setDisabled(true);
 
 	populate_serials_thread_ =
 		std::thread(&ConnectDialog::populate_serials_thread_proc, this, driver);
 	populate_serials_thread_.detach();
 }
 
-void ConnectDialog::on_populate_serials_done(
+void ConnectDialog::populate_serials_finish(
 	const std::map<std::string, std::string> &serials)
 {
 	std::lock_guard<std::mutex> lock(populate_serials_mtx_);
@@ -252,7 +269,7 @@ void ConnectDialog::on_populate_serials_done(
 			QString::fromStdString(serial.first));
 	}
 	if (radiobtn_serial_->isChecked())
-		serial_devices_.setDisabled(false);
+		serial_config_->setDisabled(false);
 }
 
 void ConnectDialog::populate_serials_thread_proc(shared_ptr<Driver> driver)
@@ -270,24 +287,24 @@ void ConnectDialog::unset_connection()
 	button_box_.button(QDialogButtonBox::Ok)->setDisabled(true);
 }
 
-void ConnectDialog::on_serial_toggled(bool checked)
+void ConnectDialog::serial_toggled(bool checked)
 {
 	std::unique_lock<std::mutex> lock(populate_serials_mtx_, std::try_to_lock);
 	if (lock.owns_lock())
-		serial_devices_.setEnabled(checked);
+		serial_config_->setEnabled(checked);
 }
 
-void ConnectDialog::on_tcp_toggled(bool checked)
+void ConnectDialog::tcp_toggled(bool checked)
 {
 	tcp_config_->setEnabled(checked);
 }
 
-void ConnectDialog::on_gpib_toggled(bool checked)
+void ConnectDialog::gpib_toggled(bool checked)
 {
 	gpib_libgpib_name_->setEnabled(checked);
 }
 
-void ConnectDialog::on_scan_pressed()
+void ConnectDialog::scan_pressed()
 {
 	device_list_.clear();
 
@@ -302,16 +319,21 @@ void ConnectDialog::on_scan_pressed()
 
 	map<const ConfigKey *, VariantBase> drvopts;
 
-	if (serial_devices_.isEnabled()) {
+	if (serial_config_->isEnabled()) {
 		QString serial;
 		const int s_index = serial_devices_.currentIndex();
 		if (s_index >= 0 && s_index < serial_devices_.count() &&
-			serial_devices_.currentText() == serial_devices_.itemText(s_index))
+				serial_devices_.currentText() == serial_devices_.itemText(s_index))
 			serial = serial_devices_.itemData(s_index).value<QString>();
 		else
 			serial = serial_devices_.currentText();
 		drvopts[ConfigKey::CONN] = Variant<ustring>::create(
 			serial.toUtf8().constData());
+
+		// Set baud rate if specified
+		if (serial_baudrate_.currentText().length() > 0)
+			drvopts[ConfigKey::SERIALCOMM] = Variant<ustring>::create(
+				QString("%1/8n1").arg(serial_baudrate_.currentText()).toUtf8().constData());
 	}
 
 	if (tcp_config_->isEnabled()) {
@@ -355,7 +377,7 @@ void ConnectDialog::on_scan_pressed()
 	button_box_.button(QDialogButtonBox::Ok)->setDisabled(device_list_.count() == 0);
 }
 
-void ConnectDialog::on_driver_selected(int index)
+void ConnectDialog::driver_selected(int index)
 {
 	shared_ptr<Driver> driver =
 		drivers_.itemData(index).value<shared_ptr<Driver>>();
