@@ -56,39 +56,10 @@ QVariant MeasuredQuantityProperty::value() const
 	return QVariant::fromValue(measured_quantity_value());
 }
 
-/**
- * TODO: When glibmm >= 2.52 is more supported and tuple bug is fixed,
- *       use the template function and return tuple<uint32_t, uint64_t>:
- *
- *       return get_config<std::tuple<uint32_t, uint64_t>>(sigrok::ConfigKey);
- */
 data::measured_quantity_t
 MeasuredQuantityProperty::measured_quantity_value() const
 {
-	Glib::VariantContainerBase gvar =
-		configurable_->get_container_config(config_key_);
-
-	size_t child_cnt = gvar.get_n_children();
-	if (child_cnt != 2) {
-		throw std::runtime_error(QString(
-			"MeasuredQuantityProperty::measured_quantity_value(): ").append(
-			"container (mq) should have 2 child, but has %1").arg(child_cnt).
-			toStdString());
-	}
-
-	Glib::VariantIter iter(gvar);
-	iter.next_value(gvar);
-	uint32_t sr_q =
-		Glib::VariantBase::cast_dynamic<Glib::Variant<uint32_t>>(gvar).get();
-	data::Quantity quantity = data::datautil::get_quantity(sr_q);
-
-	iter.next_value(gvar);
-	uint64_t sr_qflags =
-		Glib::VariantBase::cast_dynamic<Glib::Variant<uint64_t>>(gvar).get();
-	set<data::QuantityFlag> quantity_flags =
-		data::datautil::get_quantity_flags(sr_qflags);
-
-	return make_pair(quantity, quantity_flags);
+	return configurable_->get_measured_quantity_config(config_key_);
 }
 
 QString MeasuredQuantityProperty::to_string(
@@ -138,26 +109,10 @@ bool MeasuredQuantityProperty::list_config()
 	return true;
 }
 
-/**
- * TODO: When glibmm >= 2.52 is more supported and tuple bug is fixed,
- *       use the template function with tuple<uint32_t, uint64_t>:
- *
- *       set_config(config_key_, std::tuple<uint32_t, uint64_t>);
- */
 void MeasuredQuantityProperty::change_value(const QVariant &qvar)
 {
 	data::measured_quantity_t mq = qvar.value<data::measured_quantity_t>();
-
-	uint32_t sr_q_id = data::datautil::get_sr_quantity_id(mq.first);
-	Glib::VariantBase gvar_q = Glib::Variant<uint32_t>::create(sr_q_id);
-	uint64_t sr_qfs_id = data::datautil::get_sr_quantity_flags_id(mq.second);
-	Glib::VariantBase gvar_qfs = Glib::Variant<uint64_t>::create(sr_qfs_id);
-
-	vector<Glib::VariantBase> gcontainer;
-	gcontainer.push_back(gvar_q);
-	gcontainer.push_back(gvar_qfs);
-
-	configurable_->set_container_config(config_key_, gcontainer);
+	configurable_->set_measured_quantity_config(config_key_, mq);
 	Q_EMIT value_changed(qvar);
 }
 

@@ -80,6 +80,7 @@ ToDo
 - UiHelper/UiProxy: Remove tab_id?
 - SettingsManager: Method for getting the QSettings object and maybe load an user defined QSettings-file.
 - example_multiplexer.py: Checkboxes in control views don't change.
+- HP-3478A: R4W -> R2W not working
 
 
 Done

@@ -18,13 +18,15 @@
  */
 
 #include <cassert>
-#include <tuple>
 #include <type_traits>
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
 #include <utility>
+#include <vector>
 
+#include <glib.h>
 #include <glibmm.h>
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
@@ -48,7 +50,10 @@
 using std::dynamic_pointer_cast;
 using std::make_pair;
 using std::make_shared;
+using std::pair;
+using std::set;
 using std::string;
+using std::vector;
 using sv::devices::ConfigKey;
 
 namespace sv {
@@ -234,6 +239,34 @@ Glib::VariantContainerBase Configurable::get_container_config(
 	*/
 }
 
+data::measured_quantity_t Configurable::get_measured_quantity_config(
+	devices::ConfigKey config_key) const
+{
+	Glib::VariantContainerBase gvar = this->get_container_config(config_key);
+
+	size_t child_cnt = gvar.get_n_children();
+	if (child_cnt != 2) {
+		throw std::runtime_error(QString(
+			"Configurable::get_measured_quantity_config(): ").append(
+			"container (mq) should have 2 child, but has %1").arg(child_cnt).
+			toStdString());
+	}
+
+	Glib::VariantIter iter(gvar);
+	iter.next_value(gvar);
+	uint32_t sr_q =
+		Glib::VariantBase::cast_dynamic<Glib::Variant<uint32_t>>(gvar).get();
+	data::Quantity quantity = data::datautil::get_quantity(sr_q);
+
+	iter.next_value(gvar);
+	uint64_t sr_qflags =
+		Glib::VariantBase::cast_dynamic<Glib::Variant<uint64_t>>(gvar).get();
+	set<data::QuantityFlag> quantity_flags =
+		data::datautil::get_quantity_flags(sr_qflags);
+
+	return make_pair(quantity, quantity_flags);
+}
+
 bool Configurable::has_set_config(devices::ConfigKey config_key) const
 {
 	return setable_configs_.count(config_key) > 0;
@@ -285,6 +318,10 @@ void Configurable::set_container_config(
 	}
 
 	try {
+		qWarning() <<
+			"Configurable::set_container_config(): Set config key " <<
+			devices::deviceutil::format_config_key(config_key) << " to " <<
+			childs;
 		sr_configurable_->config_set(
 			sr_key, Glib::VariantContainerBase::create_tuple(childs));
 	}
@@ -294,6 +331,31 @@ void Configurable::set_container_config(
 			devices::deviceutil::format_config_key(config_key) << ". " <<
 			error.what();
 	}
+}
+
+void Configurable::set_measured_quantity_config(devices::ConfigKey config_key,
+	const data::measured_quantity_t mq)
+{
+	qWarning() <<
+		"Configurable::set_measured_quantity_config(): Set config key " <<
+		devices::deviceutil::format_config_key(config_key) << " to " <<
+		data::datautil::format_measured_quantity(mq);
+
+	uint32_t sr_q_id = data::datautil::get_sr_quantity_id(mq.first);
+	Glib::VariantBase gvar_q = Glib::Variant<uint32_t>::create(sr_q_id);
+	uint64_t sr_qfs_id = data::datautil::get_sr_quantity_flags_id(mq.second);
+	Glib::VariantBase gvar_qfs = Glib::Variant<uint64_t>::create(sr_qfs_id);
+
+	qWarning() <<
+		"Configurable::set_measured_quantity_config(): Set config key " <<
+		devices::deviceutil::format_config_key(config_key) << " to " <<
+		sr_q_id << ", " << sr_qfs_id;
+
+	vector<Glib::VariantBase> gcontainer;
+	gcontainer.push_back(gvar_q);
+	gcontainer.push_back(gvar_qfs);
+
+	this->set_container_config(config_key, gcontainer);
 }
 
 bool Configurable::has_list_config(devices::ConfigKey config_key) const
