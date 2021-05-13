@@ -31,7 +31,8 @@ dmm_conf = dmm_device.configurables()[""]
 
 # Init device settings
 load_conf.set_config(smuview.ConfigKey.CurrentLimit, .0)
-dmm_conf.set_config(smuview.ConfigKey.MeasuredQuantity, smuview.Quantity.Voltage)
+# TODO: Setting of MeasuredQuantities is not working yet!
+#dmm_conf.set_config(smuview.ConfigKey.MeasuredQuantity, smuview.Quantity.Voltage)
 
 # Give the devices the chance to create signals
 time.sleep(1)
@@ -57,7 +58,7 @@ value = 100
 while value > 0.5:
     # Take a reading every 2s and write it to the user channel
     time_stamp = time.time()
-    value = dmm_device.channels()["P1"].actual_signal().get_last_sample(True)[1]
+    value = dmm_device.channels()["P1"].actual_signal().get_last_sample(True)[1]))
     result_ch.push_sample(value, time_stamp, smuview.Quantity.Voltage, set(), smuview.Unit.Volt, 6, 5)
     time.sleep(2)
 

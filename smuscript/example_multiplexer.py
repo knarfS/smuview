@@ -26,9 +26,6 @@ import time
 # Connect device
 mux_device = Session.connect_device("hp-59306a:conn=libgpib/hp59306a")[0]
 
-# Give the devices the chance to create signals
-time.sleep(1)
-
 # Show device tabs and add plot to user device
 UiProxy.add_device_tab(mux_device)
 
