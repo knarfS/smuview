@@ -108,12 +108,14 @@ void SmuScriptRunner::script_thread_proc()
 	// Redirect python stdout + stderr
 	PyStreamRedirect py_stream_redirect{ shared_from_this() };
 
-	// NOTE: Setting Session and UiProxy as locals does not work!
-	// When executing a script, the globals() inside a function are missing the
-	// additional stuff like imported modules, function pointer and also
-	// everyhthing provided by the locals dict. Setting Session and UiProxy in
-	// addition to py::globals() as globals did the trick. See:
-	// https://medium.com/just-me-me-programming-life/python-c-and-symbols-4628fb71a257
+	/*
+	 * NOTE: Setting Session and UiProxy as locals does not work!
+	 * When executing a script, the globals() inside a function are missing the
+	 * additional stuff like imported modules, function pointer and also
+	 * everyhthing provided by the locals dict. Setting Session and UiProxy in
+	 * addition to py::globals() as globals did the trick. See:
+	 * https://medium.com/just-me-me-programming-life/python-c-and-symbols-4628fb71a257
+	 */
 	UiProxy *ui_proxy = new UiProxy(session_, ui_helper_);
 	auto globals = py::dict(
 		**py::globals(),
