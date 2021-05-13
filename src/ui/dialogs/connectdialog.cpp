@@ -72,15 +72,17 @@ ConnectDialog::ConnectDialog(sv::DeviceManager &device_manager,
 
 	setWindowTitle(tr("Connect to Device"));
 
-	connect(&button_box_, SIGNAL(accepted()), this, SLOT(accept()));
-	connect(&button_box_, SIGNAL(rejected()), this, SLOT(reject()));
+	connect(&button_box_, &QDialogButtonBox::accepted,
+		this, &ConnectDialog::accept);
+	connect(&button_box_, &QDialogButtonBox::rejected,
+		this, &ConnectDialog::reject);
 
 	connect(this, &ConnectDialog::populate_serials_done,
 		this, &ConnectDialog::populate_serials_finish);
 
 	populate_drivers();
-	connect(&drivers_, SIGNAL(activated(int)),
-		this, SLOT(driver_selected(int)));
+	connect(&drivers_, QOverload<int>::of(&QComboBox::activated),
+		this, &ConnectDialog::driver_selected);
 
 	form_.setLayout(&form_layout_);
 
@@ -161,12 +163,12 @@ ConnectDialog::ConnectDialog(sv::DeviceManager &device_manager,
 
 	unset_connection();
 
-	connect(radiobtn_serial_, SIGNAL(toggled(bool)),
-		this, SLOT(serial_toggled(bool)));
-	connect(radiobtn_tcp_, SIGNAL(toggled(bool)),
-		this, SLOT(tcp_toggled(bool)));
-	connect(&scan_button_, SIGNAL(pressed()),
-		this, SLOT(scan_pressed()));
+	connect(radiobtn_serial_, &QRadioButton::toggled,
+		this, &ConnectDialog::serial_toggled);
+	connect(radiobtn_tcp_, &QRadioButton::toggled,
+		this, &ConnectDialog::tcp_toggled);
+	connect(&scan_button_, &QPushButton::pressed,
+		this, &ConnectDialog::scan_pressed);
 
 	if (gpib_avialable_) {
 		radiobtn_gpib_ = new QRadioButton(tr("&GPIB"), this);
@@ -180,8 +182,8 @@ ConnectDialog::ConnectDialog(sv::DeviceManager &device_manager,
 		vbox_if->addWidget(radiobtn_gpib_);
 		vbox_if->addWidget(gpib_libgpib_name_);
 
-		connect(radiobtn_gpib_, SIGNAL(toggled(bool)),
-			this, SLOT(gpib_toggled(bool)));
+		connect(radiobtn_gpib_, &QRadioButton::toggled,
+			this, &ConnectDialog::gpib_toggled);
 	}
 
 	setLayout(&layout_);
