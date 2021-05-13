@@ -104,6 +104,24 @@ public:
 	double first_timestamp(bool relative_time) const;
 	double last_timestamp(bool relative_time) const;
 
+	/**
+	 * Combine two signals with each other.
+	 *
+	 * E.g.:
+	 * Time | S1 | S2 | combined S1 | combined S1 |
+	 * --------------------------------------------
+	 *    1 |  1 |    |             |             |
+	 *    3 |  2 |    |             |             |
+	 *    5 |  3 |    |             |             |
+	 *    6 |    | 10 |         3.5 |          10 |
+	 *    7 |  4 |    |           4 |         9.5 |
+	 *    8 |    |  9 |         4.5 |           9 |
+	 *    9 |  5 |    |           5 |         8.5 |
+	 *   10 |    |  8 |             |             |
+	 *   12 |    |  7 |             |             |
+	 *
+	 * TODO: Use std::deque<double>& instead of shared_ptr<vector<double>>?
+	 */
 	static void combine_signals(
 		shared_ptr<AnalogTimeSignal> signal1, size_t &signal1_pos,
 		shared_ptr<AnalogTimeSignal> signal2, size_t &signal2_pos,

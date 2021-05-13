@@ -313,11 +313,15 @@ void AnalogTimeSignal::combine_signals(
 	shared_ptr<vector<double>> data1_vector,
 	shared_ptr<vector<double>> data2_vector)
 {
+	if (signal1 == nullptr || signal1->sample_count() == 0)
+		return;
+	if (signal2 == nullptr || signal2->sample_count() == 0)
+		return;
+
 	// Ignore the first sample(s)
-	// TODO: Use last of the ignored samples?
-	if (signal1_pos == 0 && signal2_pos == 0) {
+	if (signal1_pos == 0 || signal2_pos == 0) {
 		if (signal1->sample_count() <= signal1_pos ||
-			signal2->sample_count() <= signal2_pos)
+				signal2->sample_count() <= signal2_pos)
 			return;
 
 		double signal1_ts = signal1->get_sample(signal1_pos, false).first;
@@ -336,42 +340,38 @@ void AnalogTimeSignal::combine_signals(
 
 	while (true) {
 		if (signal1->sample_count() <= signal1_pos ||
-			signal2->sample_count() <= signal2_pos)
+				signal2->sample_count() <= signal2_pos)
 			break;
-
-		/*
-		qWarning() << "AnalogSignal::merge_signals(): signal1_size = "
-				<< signal1->sample_count() << ", signal1_pos = " << signal1_pos;
-		qWarning() << "AnalogSignal::merge_signals(): signal2_size = "
-				<< signal2->sample_count() << ", signal2_pos = " << signal2_pos;
-		*/
 
 		double time;
 		double value1;
 		double value2;
 
 		auto signal1_sample = signal1->get_sample(signal1_pos, false);
+		auto signal1_ts = signal1_sample.first;
 		auto signal2_sample = signal2->get_sample(signal2_pos, false);
-		if (signal1_sample.first == signal2_sample.first) {
-			time = signal1_sample.first;
+		auto signal2_ts = signal2_sample.first;
+
+		if (signal1_ts == signal2_ts) {
+			time = signal1_ts;
 			value1 = signal1_sample.second;
 			value2 = signal2_sample.second;
 			++signal1_pos;
 			++signal2_pos;
 		}
-		else if (signal1_sample.first < signal2_sample.first &&
-			signal2->sample_count() > signal2_pos+1) {
+		else if (signal1_ts < signal2_ts &&
+			signal2->sample_count() > signal2_pos) {
 
-			time = signal1_sample.first;
-			value1 = signal1_sample.second;
+			time = signal1_ts;
 			if (!signal2->get_value_at_timestamp(time, value2, false))
 				return;
+			value1 = signal1_sample.second;
 			++signal1_pos;
 		}
-		else if (signal1_sample.first > signal2_sample.first &&
-			signal1->sample_count() > signal1_pos+1) {
+		else if (signal1_ts > signal2_ts &&
+			signal1->sample_count() > signal1_pos) {
 
-			time = signal2_sample.first;
+			time = signal2_ts;
 			if (!signal1->get_value_at_timestamp(time, value1, false))
 				return;
 			value2 = signal2_sample.second;
