@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.9.3.dev7+g49b7773" />
 <title>smuview API documentation</title>
-<meta name="description" content="The SmuView 0.0.5 Python bindings …" />
+<meta name="description" content="The SmuView 0.0.5-git-64e7b9d Python bindings …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,7 +22,7 @@
 <h1 class="title">Module <code>smuview</code></h1>
 </header>
 <section id="section-intro">
-<p>The SmuView 0.0.5 Python bindings.</p>
+<p>The SmuView 0.0.5-git-64e7b9d Python bindings.</p>
 <p>The Python bindings are a scripting extension for SmuView to automate, setup and control complex or repetitive measurements, to process the incoming data and to create a standardized user interface for those measurements.</p>
 <p>The smuview module offers two default object instances: <code><a title="smuview.Session" href="#smuview.Session">Session</a></code> and <code><a title="smuview.UiProxy" href="#smuview.UiProxy">UiProxy</a></code>.
 The <code><a title="smuview.Session" href="#smuview.Session">Session</a></code> object gives access to already connected devices or connects new devices. The returned device object can then be used to read data from the device or control the device.
@@ -800,6 +800,22 @@ over current protection (OCP) feature.</p></div>
 <dd>The int value of the config key.</dd>
 </dl></div>
 </dd>
+<dt id="smuview.Configurable.get_measured_quantity_config"><code class="name flex">
+<span>def <span class="ident">get_measured_quantity_config</span></span>(<span>self: <a title="smuview.Configurable" href="#smuview.Configurable">Configurable</a>, config_key: <a title="smuview.ConfigKey" href="#smuview.ConfigKey">ConfigKey</a>) ‑> Tuple[<a title="smuview.Quantity" href="#smuview.Quantity">Quantity</a>, Set[<a title="smuview.QuantityFlag" href="#smuview.QuantityFlag">QuantityFlag</a>]]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return a measured quantity value from the given config key.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>config_key</code></strong> :&ensp;<code><a title="smuview.ConfigKey" href="#smuview.ConfigKey">ConfigKey</a></code></dt>
+<dd>The <code><a title="smuview.ConfigKey" href="#smuview.ConfigKey">ConfigKey</a></code> to get.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Tuple[<a title="smuview.Quantity" href="#smuview.Quantity">Quantity</a>, Set[<a title="smuview.QuantityFlag" href="#smuview.QuantityFlag">QuantityFlag</a>]]</code></dt>
+<dd>The measured quantity value of the config key.</dd>
+</dl></div>
+</dd>
 <dt id="smuview.Configurable.get_string_config"><code class="name flex">
 <span>def <span class="ident">get_string_config</span></span>(<span>self: <a title="smuview.Configurable" href="#smuview.Configurable">Configurable</a>, config_key: <a title="smuview.ConfigKey" href="#smuview.ConfigKey">ConfigKey</a>) ‑> str</span>
 </code></dt>
@@ -924,6 +940,17 @@ over current protection (OCP) feature.</p></div>
 <dd>The <code><a title="smuview.ConfigKey" href="#smuview.ConfigKey">ConfigKey</a></code> to set.</dd>
 <dt><strong><code>value</code></strong> :&ensp;<code>str</code></dt>
 <dd>The string value to set.</dd>
+</dl>
+<ol>
+<li>set_config(self: smuview.Configurable, config_key: smuview.ConfigKey, value: Tuple[smuview.Quantity, Set[smuview.QuantityFlag]]) -&gt; None</li>
+</ol>
+<p>Set a measured quantity value to the given config key.</p>
+<h2 id="parameters_5">Parameters</h2>
+<dl>
+<dt><strong><code>config_key</code></strong> :&ensp;<code><a title="smuview.ConfigKey" href="#smuview.ConfigKey">ConfigKey</a></code></dt>
+<dd>The <code><a title="smuview.ConfigKey" href="#smuview.ConfigKey">ConfigKey</a></code> to set.</dd>
+<dt><strong><code>value</code></strong> :&ensp;<code>Tuple[<a title="smuview.Quantity" href="#smuview.Quantity">Quantity</a>, Set[<a title="smuview.QuantityFlag" href="#smuview.QuantityFlag">QuantityFlag</a>]]</code></dt>
+<dd>The measured quantity value to set.</dd>
 </dl></div>
 </dd>
 <dt id="smuview.Configurable.setable_configs"><code class="name flex">
@@ -2341,10 +2368,11 @@ Only has effect for Qt versions &gt;= 5.10!</dd>
 </li>
 <li>
 <h4><code><a title="smuview.Configurable" href="#smuview.Configurable">Configurable</a></code></h4>
-<ul class="two-column">
+<ul class="">
 <li><code><a title="smuview.Configurable.get_bool_config" href="#smuview.Configurable.get_bool_config">get_bool_config</a></code></li>
 <li><code><a title="smuview.Configurable.get_double_config" href="#smuview.Configurable.get_double_config">get_double_config</a></code></li>
 <li><code><a title="smuview.Configurable.get_int_config" href="#smuview.Configurable.get_int_config">get_int_config</a></code></li>
+<li><code><a title="smuview.Configurable.get_measured_quantity_config" href="#smuview.Configurable.get_measured_quantity_config">get_measured_quantity_config</a></code></li>
 <li><code><a title="smuview.Configurable.get_string_config" href="#smuview.Configurable.get_string_config">get_string_config</a></code></li>
 <li><code><a title="smuview.Configurable.get_uint_config" href="#smuview.Configurable.get_uint_config">get_uint_config</a></code></li>
 <li><code><a title="smuview.Configurable.getable_configs" href="#smuview.Configurable.getable_configs">getable_configs</a></code></li>

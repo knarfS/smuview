@@ -31,8 +31,7 @@ dmm_conf = dmm_device.configurables()[""]
 
 # Init device settings
 load_conf.set_config(smuview.ConfigKey.CurrentLimit, .0)
-# TODO: Setting of MeasuredQuantities is not working yet!
-#dmm_conf.set_config(smuview.ConfigKey.MeasuredQuantity, smuview.Quantity.Voltage)
+dmm_conf.set_config(smuview.ConfigKey.MeasuredQuantity, (smuview.Quantity.Voltage, {smuview.QuantityFlag.DC}))
 
 # Give the devices the chance to create signals
 time.sleep(1)

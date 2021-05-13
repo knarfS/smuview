@@ -425,6 +425,15 @@ void init_Configurable(py::module &m)
 		"    The `ConfigKey` to set.\n"
 		"value : str\n"
 		"    The string value to set.");
+	py_configurable.def("set_config", &sv::devices::Configurable::set_measured_quantity_config,
+		py::arg("config_key"), py::arg("value"),
+		"Set a measured quantity value to the given config key.\n\n"
+		"Parameters\n"
+		"----------\n"
+		"config_key : ConfigKey\n"
+		"    The `ConfigKey` to set.\n"
+		"value : Tuple[Quantity, Set[QuantityFlag]]\n"
+		"    The measured quantity value to set.");
 	py_configurable.def("get_bool_config", &sv::devices::Configurable::get_config<bool>,
 		py::arg("config_key"),
 		"Return a boolean value from the given config key.\n\n"
@@ -480,6 +489,17 @@ void init_Configurable(py::module &m)
 		"-------\n"
 		"str\n"
 		"    The string value of the config key.");
+	py_configurable.def("get_measured_quantity_config", &sv::devices::Configurable::get_measured_quantity_config,
+		py::arg("config_key"),
+		"Return a measured quantity value from the given config key.\n\n"
+		"Parameters\n"
+		"----------\n"
+		"config_key : ConfigKey\n"
+		"    The `ConfigKey` to get.\n\n"
+		"Returns\n"
+		"-------\n"
+		"Tuple[Quantity, Set[QuantityFlag]]\n"
+		"    The measured quantity value of the config key.");
 	py_configurable.def("getable_configs", &sv::devices::Configurable::getable_configs,
 		"Return all getable config keys.\n\n"
 		"Returns\n"

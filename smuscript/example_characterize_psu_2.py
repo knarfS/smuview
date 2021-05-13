@@ -44,8 +44,7 @@ load_conf.set_config(smuview.ConfigKey.CurrentLimit, .0)
 psu_conf.set_config(smuview.ConfigKey.VoltageTarget, .0)
 psu_conf.set_config(smuview.ConfigKey.CurrentLimit, max_current)
 psu_conf.set_config(smuview.ConfigKey.Enabled, True)
-# TODO: Setting of MeasuredQuantities is not working yet!
-#dmm_conf.set_config(smuview.ConfigKey.MeasuredQuantity, smuview.Quantity.Current)
+dmm_conf.set_config(smuview.ConfigKey.MeasuredQuantity, (smuview.Quantity.Current, {smuview.QuantityFlag.DC}))
 
 # Sleep 1s to give the devices the chance to create signals
 time.sleep(1)
