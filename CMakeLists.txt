@@ -401,6 +401,10 @@ if(MINGW)
 	add_compile_options(-D_hypot=hypot)
 endif()
 
+if(MINGW AND ${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+	# Fix error "too many sections (37653)" and "file too big" for mingw/MXE when building for Debug
+	add_definitions(-Wa,-mbig-obj)
+endif()
 
 #===============================================================================
 #= Global Include Directories
