@@ -1,0 +1,38 @@
+name: SmuView MXE Build
+
+on:
+  push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/knarfs/sigrok-mxe:latest
+
+    steps:
+      - name: Checkout sigrok-utils
+        uses: actions/checkout@v2
+        with:
+          repository: knarfS/sigrok-util
+          path: sigrok-util
+          ref: github
+
+      - name: Build dependencies
+        shell: bash
+        run: |
+          cd sigrok-util/cross-compile/github-actions
+          ./sigrok-mxe-build-dependencies
+
+      - name: Checkout smuview
+        uses: actions/checkout@v2
+        with:
+          path: smuview
+
+      - name: Build smuview
+        shell: bash
+        run: |
+          cd smuview
+          mkdir build
+          cd build
+          cmake ..
+          make -j$(nproc)
