@@ -17,6 +17,9 @@ jobs:
           path: sigrok-util
           ref: github
 
+      - name: Install sudo package
+        run: apt update && apt install sudo
+
       - name: Build dependencies
         shell: bash
         run: |
