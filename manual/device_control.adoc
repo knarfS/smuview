@@ -33,4 +33,4 @@ or more times. You can generate sine, triangle, sawtooth and square wave
 sequences, load a sequence from a CSV file or enter the sequence manually.
 
 There is no tool bar button in the device tab to show a sequence output view
-yet, but it is accesible over the _Add View_ dialog in the device tab.
+yet, but it is accesible via the _Add View_ dialog in the device tab.

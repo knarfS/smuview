@@ -28,7 +28,7 @@ Please be aware that SmuView does not support devices that either work as
 https://sigrok.org/wiki/Supported_hardware#Oscilloscopes[oscilloscopes],
 https://sigrok.org/wiki/Supported_hardware#Logic_analyzers[logic analyzers] or
 https://sigrok.org/wiki/Supported_hardware#Mixed-signal_devices[mixed-signal devices].
-This device types are currently only usable with either
+These device types are currently only usable with either
 https://sigrok.org/wiki/Sigrok-cli[sigrok-cli] or
 https://sigrok.org/wiki/PulseView[PulseView].
 

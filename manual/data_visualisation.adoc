@@ -12,7 +12,7 @@ You can close views and create new ones via the tool bar of the device tab.
 
 image::ValuePanelView.png[Value panel,402,185]
 
-The value panel view displays the actual value (image:numbers/1.png[1,22,22])
+The value panel view displays the current value (image:numbers/1.png[1,22,22])
 of a signal or channel. Also the minimum (image:numbers/2.png[2,22,22]) and
 maximum (image:numbers/3.png[3,22,22]) values since the last reset are shown.
 
@@ -35,7 +35,7 @@ The minimum, maximum, Wh and Ah values can be reset with the tool bar buttion
 image:numbers/1.png[1,22,22].
 
 There is no tool bar button in the device tab to show a power panel view, but it
-is accesible over the _Add View_ dialog in the device tab.
+is accessible via the _Add View_ dialog in the device tab.
 
 [[data_table_view]]
 === Data Table View
@@ -62,7 +62,7 @@ specific axis by using the mouse wheel over the axis.
 When double clicking an axis, you can manually set the axis boundaries, lock the
 boundaries and set an axis scale (linear or logarithmic). With the lock symbols
 (image:numbers/1.png[1,22,22] and image:numbers/2.png[2,22,22]) at the axis, you
-can also lock a axis boundary. When clicking on a signal label
+can also lock an axis boundary. When clicking on a signal label
 (image:numbers/3.png[3,22,22]), you can change the curve name, the visibility,
 color, line type and symbol type of the corresponding signal.
 

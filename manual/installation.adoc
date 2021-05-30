@@ -76,7 +76,7 @@ Simply download them from the
 https://github.com/knarfS/smuview/releases[SmuView download page] and run them
 as any other Windows installer.
 
-Please be aware, however, that the Windows installers are development builts, so
+Please be aware, however, that the Windows installers are development builds, so
 they always contain the latest development changes. While we do try to keep the
 code base in a working state, it is sometimes unavoidable to introduce bugs that
 show up in the development builds. If you encounter something that is odd to
@@ -102,7 +102,7 @@ We offer DMG installers for SmuvView that contain everything you need to get
 started. Simply download them from the
 https://github.com/knarfS/smuview/releases[SmuView download page] and run them.
 
-Please be aware, however, that the DMG installers are are development builts, so
+Please be aware, however, that the DMG installers are development builds, so
 they always contain the latest development changes. While we do try to keep the
 code base in a working state, it is sometimes unavoidable to introduce bugs that
 show up in the DMG builds. If you encounter something that is odd to you, please

@@ -1,11 +1,11 @@
 [[smuscript,SmuScript]]
 == SmuScript
 
-SmuView has a python scripting extension to automate, setup and control complex
+SmuView has a Python scripting extension to automate, setup and control complex
 or repetitive measurements, to process the incoming data and to create a
 standardized user interface for those measurements.
 
-The `smuview` python module offers two default object instances: `Session` and
+The `smuview` Python module offers two default object instances: `Session` and
 `UiProxy`.
 The `Session` object gives access to already connected devices or connects new
 devices. The returned device object can then be used to read data from the
@@ -20,7 +20,7 @@ You can find an API documentation https://knarfs.github.io/doc/smuview/0.0.5/pyt
 and example scripts in the `smuscript` folder.
 
 SmuView provides a basic editor to edit and run scripts. Here you can use the
-keyboard shortcuts kbd:[Ctrl+S] to save the actual file and kbd:[Ctrl+F] to open
+keyboard shortcuts kbd:[Ctrl+S] to save the current file and kbd:[Ctrl+F] to open
 the search and replace dialog.
 
 image::SmuScript.png[]
@@ -46,7 +46,7 @@ smuview -s /path/to/script.py
 
 === Examples
 
-The following short example connects the HP 3378A DMM via GPIB, reads a sample
+The following short example connects the HP 3478A DMM via GPIB, reads a sample
 and creates the default tab for the device:
 
 [source,python]

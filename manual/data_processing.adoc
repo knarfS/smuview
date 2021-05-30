@@ -17,7 +17,7 @@ drop over a shunt resistor with a DMM. With the multiplication of a constant
 factor and the voltage signal of the DMM you can generate a current channel with
 the correct values in the correct unit (Ampere).
 
-This types of math channels are currently implemented:
+These types of math channels are currently implemented:
 
 . Multiplication of two signals.
 . Multiplication of a signal and a constant factor.

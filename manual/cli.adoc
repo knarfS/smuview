@@ -46,6 +46,9 @@ for SmuView:
 [listing, subs="normal"]
 smuview -c -D
 
-
-
+The `-D` option can be used in combination with `-d`. This eliminates the
+automatic scan for devices, but will connect to those devices specified by
+the `-d` option. Which can speedup the program start, and can be useful
+for scripts or shortcuts on desktops when a specific device or set of
+devices is often used in combination.
 

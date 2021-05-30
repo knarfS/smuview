@@ -41,7 +41,7 @@ A device can have no, one or more controllables. Up to one controllable can
 belong to a channel group or to the device itself.
 +
 A power supplies channel group controllable can probably control the output
-voltage and current, enable OVP and OCP and enable the output  .
+voltage and current, enable OVP and OCP and enable the output.
 
 [[config_key]]
 Config Key image:icons/configure.png[width=18,Height=18]::
@@ -77,7 +77,7 @@ image:numbers/2.png[2,22,22]). Please be aware that USB is only usable for
 devices that directly communicate over USB. Devices that use USB to emulate a
 serial port (like many multimeters) will have their serial port listed in the
 serial port drop-down. The GPIB interface option is only available, if you have
-build `libsigrok` with `linux-gbip` support under Linux.
+built `libsigrok` with `linux-gbip` support under Linux.
 
 In case your device connects via Ethernet, you must supply the IP address and
 port. You are also given the option to choose between raw TCP access and using
@@ -110,11 +110,11 @@ https://sigrok.org/wiki/Connection_parameters[sigrok wiki].
 Connecting a device for the first time, some default views are shown, like
 <<control_view,control views>> and <<data_visualisation,visualisation views>>,
 depending on the device type and the features that device supports. You are free
-to customize what views are displayed and the position and size of that views.
+to customize which views are displayed and the position and size of these views.
 
 When reconnecting that device (identified by its name and serial id or
 connection string) again, your previous view settings will be restored. To
-connect a already known device without its stored settings but with its default
+connect an already known device without its stored settings but with its default
 settings, you have to start SmuView with the command line parameter `-c`.
 
 === Default Functions
@@ -138,8 +138,8 @@ image:numbers/8.png[8,22,22] Open the about dialog.
 All acquired data (<<signal,signals>>) can be saved to a CSV file by clicking
 the save button (image:icons/document-save.png[save,22,22]) in the device tab.
 
-There a several options to affect the resulting CSV file. Of course you are able
-to choose which signals should be save. The signals from the actual device are
+There are several options to affect the resulting CSV file. Of course you are able
+to choose which signals should be saved. The signals from the current device are
 selected by default (image:numbers/1.png[1,22,22]).
 
 Next you can determine how the data of the signals should be arranged. When the
@@ -185,7 +185,7 @@ include::data_tables/combine_30ms.csv[]
 By enabling the option _Absolute time_ (image:numbers/4.png[4,22,22]), the time
 column(s) will contain an absolute timestamp in the format
 `yyyy.MM.dd hh:mm:ss.zzz`, otherwise the timestamp will be relative to the start
-of the SmuView application is seconds (see <<csv_absolut,table 4>>).
+of the SmuView application in seconds (see <<csv_absolut,table 4>>).
 
 .Formated CSV with the combined and the absolute option selected
 [[csv_absolut]]
@@ -203,7 +203,7 @@ image::SaveSignalsDialog.png[width=450,height=429]
 
 ==== Measurement Device
 
-A measurement device can be everything from a multimeter over a thermometer to
+A measurement device can be everything from a multimeter to a thermometer to
 a scale.
 
 Most of the measurement devices are not controllable and have no channel groups.
@@ -241,6 +241,6 @@ trigger settings and so on.
 [[user_device]]
 ==== User Device
 
-A user devices has no hardware device attached to it and is basically a virtual
+A user device has no hardware device attached to it and is basically a virtual
 device. It may contain math channels or visualisation and control views from
 other devices to build a custom GUI.
