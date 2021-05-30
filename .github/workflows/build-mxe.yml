@@ -1,13 +1,22 @@
 name: SmuView MXE Build
 
 on:
-  push
+  push:
+  pull_request:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/knarfs/sigrok-mxe:latest
+
+    strategy:
+      matrix:
+        target: ["i686", "x86_64"]
+
+    env:
+      TARGET: ${{ matrix.target }}
+      DEBUG: 0
 
     steps:
       - name: Checkout sigrok-utils
@@ -17,6 +26,7 @@ jobs:
           path: sigrok-util
           ref: github
 
+      # Workaround
       - name: Install sudo package
         run: apt update && apt install sudo
 
@@ -25,7 +35,8 @@ jobs:
         run: |
           sudo apt-get install -y doxygen
           cd sigrok-util/cross-compile/github-actions
-          ./sigrok-mxe-build-dependencies
+          source sigrok-mxe-init-toolchain.sh
+          ./sigrok-mxe-build-dependencies.sh
 
       - name: Checkout smuview
         uses: actions/checkout@v2
@@ -35,8 +46,14 @@ jobs:
       - name: Build smuview
         shell: bash
         run: |
+          source sigrok-util/cross-compile/github-actions/sigrok-mxe-init-toolchain.sh
           cd smuview
           mkdir build
           cd build
-          cmake ..
-          make -j$(nproc)
+          $CMAKE \
+            -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX \
+            -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+            -DDISABLE_WERROR=y \
+            -DENABLE_TESTS=y \
+            ..
+          make $PARALLEL $V
