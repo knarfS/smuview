@@ -1,0 +1,90 @@
+name: SmuView Linux Build
+
+on:
+  push:
+  pull_request:
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  # The path where the compiled packages will be installed.
+  INSTALL_DIR: "${{ github.workspace }}/sr"
+  # Git URL for the sigrok dependencies
+  SIGROK_REPO_BASE: "https://github.com/sigrokproject"
+  # Build type for SmuView (Debug, Release, RelWithDebInfo, MinSizeRel)
+  BUILD_TYPE: "Release"
+  # Misc commands
+  WGET: "wget -c --quiet"
+  GIT_CLONE: "git clone --depth=1"
+
+jobs:
+  build:
+    name: Linux build (${{ matrix.target }}, ${{ matrix.compiler.compiler }},  Qt ${{ matrix.qt_version }})
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        # i686 build is disabled for now!
+        target: ["x86_64"]
+        compiler:
+          - { compiler: GCC, cc: "gcc", cxx: "g++" }
+          - { compiler: LLVM, cc: "clang", cxx: "clang++" }
+        # Qt 5.12 is the oldest version we can build agains, because of Qwt:
+        # /usr/bin/ld: /usr/lib/libqwt-qt5.so: undefined reference to `qt_version_tag@Qt_5.12'
+        qt_version: [5.12.11, 5.13.2, 5.14.2, 5.15.2]
+    env:
+      BUILD_TYPE: "Release"
+      CC: ${{ matrix.compiler.cc }}
+      CXX: ${{ matrix.compiler.cxx }}
+
+    steps:
+      - name: Set up Qt environment
+        uses: jurplel/install-qt-action@v2
+        with:
+          version: ${{ matrix.qt_version }}
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            git-core gcc make autoconf automake libtool \
+            g++ autoconf-archive pkg-config libglib2.0-dev libglibmm-2.4-dev \
+            libzip-dev libusb-1.0-0-dev libftdi1-dev libieee1284-3-dev \
+            libvisa-dev nettle-dev libavahi-client-dev libhidapi-dev check \
+            doxygen swig \
+            cmake libboost-dev libqwt-qt5-dev \
+            python3-dev python-gi-dev python-setuptools
+
+      - name: Checkout sigrok-utils
+        uses: actions/checkout@v2
+        with:
+          repository: knarfS/sigrok-util
+          path: sigrok-util
+          ref: github
+
+      - name: Build dependencies
+        run: |
+          cd sigrok-util/cross-compile/github-actions
+          source sigrok-linux-init-toolchain.sh
+          ./sigrok-linux-build-dependencies.sh
+
+      - name: Checkout smuview
+        uses: actions/checkout@v2
+        with:
+          path: smuview
+
+      - name: Build smuview
+        run: |
+          source sigrok-util/cross-compile/github-actions/sigrok-linux-init-toolchain.sh
+          mkdir -p smuview/build
+          cd smuview/build
+          PKG_CONFIG_PATH=$P cmake \
+            -DCMAKE_INSTALL_PREFIX:PATH=$INSTALL_DIR \
+            -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+            -DDISABLE_WERROR=y \
+            -DENABLE_TESTS=y \
+            ..
+          make $PARALLEL $V
