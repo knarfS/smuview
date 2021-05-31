@@ -1,0 +1,69 @@
+name: SmuView MacOS Build
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    name: MacOS build (${{ matrix.compiler.compiler }})
+
+    runs-on: macos-latest # macos-10.15
+
+    strategy:
+      matrix:
+        compiler:
+          - { compiler: GCC, cc: "gcc", cxx: "g++" }
+          - { compiler: LLVM, cc: "llvm-gcc", cxx: "llvm-g++" }
+
+    env:
+      CC: ${{ matrix.compiler.cc }}
+      CXX: ${{ matrix.compiler.cxx }}
+
+    steps:
+      - name: Install dependencies
+        run: |
+          brew install autoconf automake autoconf-archive pkg-config \
+            libtool libzip libusb libftdi hidapi nettle check doxygen swig \
+            glib glibmm@2.66 cmake python3 boost qt@5 qwt
+
+          # TODO:
+          brew link --force autoconf
+          brew link --force automake
+          brew link --force libtool
+          brew link --force libffi
+          brew link --force glib
+          brew link --force glibmm@2.66
+
+      - name: Checkout sigrok-utils
+        uses: actions/checkout@v2
+        with:
+          repository: knarfS/sigrok-util
+          path: sigrok-util
+          ref: github
+
+      - name: Build dependencies
+        shell: bash
+        run: |
+          cd sigrok-util/cross-compile/github-actions
+          source sigrok-macosx-init-toolchain.sh
+          ./sigrok-macosx-build-dependencies.sh
+
+      - name: Checkout smuview
+        uses: actions/checkout@v2
+        with:
+          path: smuview
+
+      - name: Build smuview
+        shell: bash
+        run: |
+          source sigrok-util/cross-compile/github-actions/sigrok-macosx-init-toolchain.sh
+
+          cd smuview
+          mkdir build
+          cd build
+          PKG_CONFIG_PATH=$P cmake \
+            -DCMAKE_INSTALL_PREFIX:PATH=$PREFIXBASE \
+            -DDISABLE_WERROR=y \
+            ..
+          make $PARALLEL $V
