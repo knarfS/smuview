@@ -94,13 +94,13 @@ pkg_check_modules(LIBSRCXX ${LIBSR_CXX_BINDING} IMPORTED_TARGET)
 if(NOT LIBSRCXX_FOUND OR NOT LIBSRCXX_VERSION)
 	message(FATAL_ERROR "libsigrok C++ bindings missing, check libsigrok's 'configure' output (missing dependencies?)")
 endif()
-pkg_check_modules(PKGDEPS REQUIRED ${PKGDEPS})
+pkg_check_modules(PKGDEPS REQUIRED IMPORTED_TARGET ${PKGDEPS})
 
 include(CheckSigrokFeatures)
 if(STATIC_PKGDEPS_LIBS)
-	check_libsigrok_features("${PKGDEPS_STATIC_INCLUDE_DIRS}" "-L${PKGDEPS_STATIC_LIBRARY_DIRS};${PKGDEPS_STATIC_LDFLAGS}")
+	check_libsigrok_features("${LIBSRCXX_STATIC_INCLUDE_DIRS}" PkgConfig::PKGDEPS)
 else()
-	check_libsigrok_features("${PKGDEPS_INCLUDE_DIRS}" "-L${PKGDEPS_LIBRARY_DIRS};${PKGDEPS_LIBRARIES}")
+	check_libsigrok_features("${LIBSRCXX_INCLUDE_DIRS}" PkgConfig::PKGDEPS)
 endif()
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -135,6 +135,7 @@ if(MINGW)
 	# python functionality in pybind11
 	set(PYBIND11_NOPYTHON ON)
 
+	# This is not needed atm, but might come in handy in the future:
 	# Python 3.8 no longer links to libpython, but it provides a python3-embed.pc
 	# now, so let's try using that first and only fall back on the normal case if
 	# that fails.
@@ -440,20 +441,12 @@ set(SMUVIEW_LINK_LIBS
 	${QT_LIBRARIES}
 	${QWT_LIBRARY}
 	${CMAKE_THREAD_LIBS_INIT}
-#	${LIBATOMIC_LIBRARY}
-	PkgConfig::LIBSRCXX
+	#${LIBATOMIC_LIBRARY}
+	PkgConfig::PKGDEPS
 	pybind11::embed
 	QCodeEditor
 	QtFindReplaceDialog
 )
-
-if(STATIC_PKGDEPS_LIBS)
-	link_directories(${PKGDEPS_STATIC_LIBRARY_DIRS})
-	list(APPEND SMUVIEW_LINK_LIBS ${PKGDEPS_STATIC_LDFLAGS})
-else()
-	link_directories(${PKGDEPS_LIBRARY_DIRS})
-	list(APPEND SMUVIEW_LINK_LIBS ${PKGDEPS_LIBRARIES})
-endif()
 
 if(MINGW)
 	# MXE workaround: Use PkgConfig to find Python

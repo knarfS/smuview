@@ -26,7 +26,7 @@ function(check_libsigrok_features additional_header additional_lib)
   set(CMAKE_REQUIRED_INCLUDES "${additional_header}")
   set(CMAKE_REQUIRED_LIBRARIES "${additional_lib}")
   set(CMAKE_REQUIRED_QUIET 1)
-  CHECK_CXX_SOURCE_COMPILES("
+  check_cxx_source_compiles("
 #include <libsigrokcxx/libsigrokcxx.hpp>
 const sigrok::ConfigKey *config_key;
 int main() {
