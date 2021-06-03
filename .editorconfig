@@ -34,6 +34,11 @@ indent_size = 2
 indent_style = space
 indent_size = 2
 
+# SmuView yml files
+[**.yml]
+indent_style = space
+indent_size = 2
+
 
 # external: QCodeEditor C++ files
 [external/QCodeEditor/**.{cpp,hpp}]
