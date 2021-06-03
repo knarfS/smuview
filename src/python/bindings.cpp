@@ -70,7 +70,7 @@ PYBIND11_EMBEDDED_MODULE(smuview, m) {
 		"from the device or control the device.\n"
 		"The `UiProxy` object instance is used to modify the user interface, for "
 		"example adding tabs or views.\n\n"
-		"Here is a short example that connects the HP 3378A DMM via GPIB, reads "
+		"Here is a short example that connects the HP 3478A DMM via GPIB, reads "
 		"a sample and creates the default tab for the device:\n"
 		"```\n"
 		"import smuview\n"
