@@ -1,0 +1,88 @@
+name: SmuView AppImage Build
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  # The path where the compiled packages will be installed.
+  INSTALL_DIR: "${{ github.workspace }}/sr"
+  # Git URL for the sigrok dependencies
+  SIGROK_REPO_BASE: "https://github.com/knarfS"
+  # Build type for SmuView (Debug, Release, RelWithDebInfo, MinSizeRel)
+  BUILD_TYPE: "Release"
+  # Misc commands
+  WGET: "wget -c --quiet"
+  GIT_CLONE: "git clone --depth=1"
+
+jobs:
+  build:
+    name: AppImage build (${{ matrix.target.target }})
+
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/knarfs/sigrok-appimage-${{ matrix.target.container }}:latest
+
+    strategy:
+      matrix:
+        target:
+          - target: "i386"
+            container: "x86_64-i386"
+            c: "--host=i686-linux-gnu --build=i686-linux-gnu" # TODO: remove?
+            cc: "gcc -m32"
+            cxx: "g++ -m32"
+            cflags: "-O2 -march=i686"
+            cxxflags: "-O2 -march=i686"
+            ld: "ld -melf_i386"
+            ldflags: "-m32"
+          - target: "x86_64"
+            container: "x86_64"
+            c: ""
+            cc: "gcc"
+            cxx: "g++"
+            cflags: ""
+            cxxflags: ""
+            ld: "ld"
+            ldflags: ""
+
+    env:
+      C: ${{ matrix.target.c }}
+      CC: ${{ matrix.target.cc }}
+      CXX: ${{ matrix.target.cxx }}
+      CFLAGS: ${{ matrix.target.cflags }}
+      CXXFLAGS: ${{ matrix.target.cxxflags }}
+      LD:  ${{ matrix.target.ld }}
+      LDFLAGS: ${{ matrix.target.ldflags }}
+
+    steps:
+      - name: Update dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get upgrade -y
+
+      - name: Checkout smuview
+        uses: actions/checkout@v2
+        with:
+          path: smuview
+
+      - name: Build AppImage
+        run: |
+          wget https://github.com/knarfS/appimagecraft/releases/download/continuous/appimagecraft-${{ matrix.target.target }}.AppImage
+          #wget https://github.com/TheAssassin/appimagecraft/releases/download/continuous/appimagecraft-${{ matrix.target.target }}.AppImage
+          chmod ug+x appimagecraft-${{ matrix.target.target }}.AppImage
+
+          export PKG_CONFIG_PATH="/usr/lib/i386-linux-gnu/pkgconfig:$PKG_CONFIG_PATH"
+
+          cd smuview
+          ../appimagecraft-${{ matrix.target.target }}.AppImage build -d build/
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: SmuView ${{ matrix.target.target }} AppImage
+          path: smuview/SmuView*.AppImage*

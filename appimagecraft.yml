@@ -2,7 +2,7 @@ version: 1
 
 project:
   name: com.github.knarfs.smuview
-  version_command: git describe --tags
+  #version_command: git describe --tags
 
 build:
   cmake:
@@ -10,12 +10,17 @@ build:
       # Taken from some other script
       - DISABLE_WERROR=y
       - CMAKE_EXPORT_COMPILE_COMMANDS=y
+      - PYBIND11_FINDPYTHON=ON
     raw_environment:
       # We have to pre-build some dependencies, and also want to ship our own custom Python environment
       # the CMake build system has been instructed to load the dependencies via pkg-config
-      - PKG_CONFIG_PATH="$BUILD_DIR"/deps/lib/pkgconfig:"$BUILD_DIR"/AppDir/usr/conda/lib/pkgconfig
+      - PKG_CONFIG_PATH="$BUILD_DIR"/deps/lib/pkgconfig:"$BUILD_DIR"/AppDir/usr/conda/lib/pkgconfig:"$PKG_CONFIG_PATH"
       # Also we want to use a newer CMake version
       - PATH="$BUILD_DIR"/deps/bin:"$PATH"
+    script:
+      - |2
+        . AppDir/usr/conda/bin/activate
+        echo "PKG_CONFIG_PATH (cmake): $PKG_CONFIG_PATH"
 
 scripts:
   pre_build:
@@ -35,11 +40,12 @@ scripts:
     - |2
       # Build libserialport and libsigrok
       for i in libserialport libsigrok; do
-          git clone git://sigrok.org/"$i"
+          git clone --depth=1 https://github.com/sigrokproject/"$i"
           pushd "$i"
           ./autogen.sh
           # Once libserialport is built, libsigrok can be linked against it
-          export PKG_CONFIG_PATH="$BUILD_DIR"/deps/lib/pkgconfig
+          export PKG_CONFIG_PATH="$BUILD_DIR"/deps/lib/pkgconfig:"$PKG_CONFIG_PATH"
+          echo "PKG_CONFIG_PATH (pre_build): $PKG_CONFIG_PATH"
           ./configure --prefix="$BUILD_DIR"/deps
           make -j$(nprocs)
           make install
@@ -50,8 +56,10 @@ scripts:
     - |2
       # Cleanup conda
       export CONDA_SKIP_INSTALL=1
+      export CONDA_SKIP_ADJUST_PATHS=0
       ./linuxdeploy-plugin-conda.sh --appdir AppDir
     - |2
+      # Generate AppRun.sh scrip
       cat > "$BUILD_DIR"/AppRun.sh <<\EOF
       #! /bin/bash
 
@@ -63,6 +71,10 @@ scripts:
       exec "$APPDIR"/usr/bin/smuview "$@"
       EOF
     - chmod +x "$BUILD_DIR"/AppRun.sh
+    - |2
+      # Set VERSION from CMake generated shell script
+      source cmake-build/contrib/config_version.sh
+      export VERSION=${SV_VERSION_STRING}
 
 appimage:
   linuxdeploy:
