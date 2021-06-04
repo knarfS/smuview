@@ -57,7 +57,7 @@ value = 100
 while value > 0.5:
     # Take a reading every 2s and write it to the user channel
     time_stamp = time.time()
-    value = dmm_device.channels()["P1"].actual_signal().get_last_sample(True)[1]))
+    value = dmm_device.channels()["P1"].actual_signal().get_last_sample(True)[1]
     result_ch.push_sample(value, time_stamp, smuview.Quantity.Voltage, set(), smuview.Unit.Volt, 6, 5)
     time.sleep(2)
 
