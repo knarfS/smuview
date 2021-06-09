@@ -37,7 +37,15 @@ void some_function() {
 CMake
 =====
 
+Output file in Docker:
+----------------------
+
+file(READ /home/runner/work/smuview/smuview/build/cmake-build/CMakeFiles/CMakeOutput.log OUT_LOG)
+message(WARNING "CMakeOutput.log: ${OUT_LOG}")
+
+
 See https://stackoverflow.com/questions/9298278/cmake-print-out-all-accessible-variables-in-a-script
+----------------------------------------------------------------------------------------------------
 
 Using the get_cmake_property function, the following loop will print out all CMake variables defined and their values:
 
@@ -67,11 +75,13 @@ endfunction()
 
 
 To print environment variables, use CMake's command mode:
+---------------------------------------------------------
 
 execute_process(COMMAND "${CMAKE_COMMAND}" "-E" "environment")
 
 
 To print all defined properties of a target:
+--------------------------------------------
 
 # Get all propreties that cmake supports
 execute_process(COMMAND cmake --help-property-list OUTPUT_VARIABLE CMAKE_PROPERTY_LIST)`
@@ -118,3 +128,29 @@ function(print_target_properties tgt)
         endif()
     endforeach(prop)
 endfunction(print_target_properties)
+
+
+32bit build on 64bit:
+---------------------
+
+export C="--host=i686-linux-gnu --build=i686-linux-gnu"
+export CC="gcc -m32"
+export CXX="g++ -m32"
+export CFLAGS="-O2 -march=i686"
+export CXXFLAGS="-O2 -march=i686"
+export LD="ld -melf_i386"
+export LDFLAGS="-m32"
+
+
+Qt for Ubuntu
+=============
+
+https://launchpad.net/~beineri/
+
+Instead for sourcing the env file:
+
+export QTDIR=/opt/qt512
+export PATH=/opt/qt512/bin:$PATH
+export LD_LIBRARY_PATH=/opt/qt512/lib/i386-linux-gnu:/opt/qt512/lib:$LD_LIBRARY_PATH
+export PKG_CONFIG_PATH=/opt/qt512/lib/pkgconfig:$PKG_CONFIG_PATH
+sudo ldconfig
