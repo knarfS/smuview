@@ -12,6 +12,29 @@ ToDo clang-tidy
 - bugprone-narrowing-conversions: Maybe use boost convert_to<>() -> see util.cpp, format_time_minutes()
 
 
+ToDo Release
+------------
+
+- Python binding for save CSV
+- Segfault when closing/disconnet devices wia UI:
+	Thread 1 "smuview" received signal SIGSEGV, Segmentation fault.
+	0x00007ffff7028ab0 in QWidget::close() () from /lib/x86_64-linux-gnu/libQt5Widgets.so.5
+	(gdb) bt
+	#0  0x00007ffff7028ab0 in QWidget::close() () at /lib/x86_64-linux-gnu/libQt5Widgets.so.5
+	#1  0x0000555555a702c3 in sv::MainWindow::remove_tab(int) (this=0x7fffffffde50, tab_index=<optimized out>)
+		at /home/frank/Projekte/elektronik/sigrok/smuview/src/mainwindow.cpp:163
+	#2  0x0000555555c4092b in sv::ui::views::DevicesView::on_action_disconnect_device_triggered() (this=0x5555567ea670)
+		at /home/frank/Projekte/elektronik/sigrok/smuview/src/ui/views/devicesview.cpp:173
+	#3  0x00007ffff6562580 in  () at /lib/x86_64-linux-gnu/libQt5Core.so.5
+	#4  0x00007ffff6fe6b62 in QAction::triggered(bool) () at /lib/x86_64-linux-gnu/libQt5Widgets.so.5
+	#5  0x00007ffff6fe93a1 in QAction::activate(QAction::ActionEvent) () at /lib/x86_64-linux-gnu/libQt5Widgets.so.5
+	#6  0x00007ffff70dc1a2 in  () at /lib/x86_64-linux-gnu/libQt5Widgets.so.5
+	#7  0x00007ffff70dc2c1 in QAbstractButton::mouseReleaseEvent(QMouseEvent*) () at /lib/x86_64-linux-gnu/libQt5Widgets.so.5
+	#8  0x00007ffff71cb9ba in QToolButton::mouseReleaseEvent(QMouseEvent*) () at /lib/x86_64-linux-gnu/libQt5Widgets.so.5
+	#9  0x00007ffff702cf9e in QWidget::event(QEvent*) () at /lib/x86_64-linux-gnu/libQt5Widgets.so.5
+	[...]
+
+
 ToDo Scope
 ----------
 
@@ -80,7 +103,7 @@ ToDo
 - UiHelper/UiProxy: Remove tab_id?
 - SettingsManager: Method for getting the QSettings object and maybe load an user defined QSettings-file.
 - example_multiplexer.py: Checkboxes in control views don't change.
-- HP-3478A: R4W -> R2W not working
+- Keyboard shortcuts (Ctrl-Q -> Close App, Ctrl-W -> Close tab)
 
 
 Done
@@ -176,6 +199,7 @@ WIP
 ---
 
 - Change key naming (see load + psu wiki pages)
+- HP-3478A: R4W -> R2W not working
 
 Done
 ----
