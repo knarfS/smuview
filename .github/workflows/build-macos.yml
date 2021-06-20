@@ -3,6 +3,22 @@ name: SmuView MacOS Build
 on:
   push:
   pull_request:
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  # The path where the compiled packages will be installed.
+  INSTALL_DIR: "${{ github.workspace }}/sr"
+  # Git URL for the sigrok dependencies
+  SIGROK_REPO_BASE: "https://github.com/knarfS"
+  # Build type for SmuView (Debug, Release, RelWithDebInfo, MinSizeRel)
+  BUILD_TYPE: "Release"
+  # Misc commands
+  WGET: "wget -c --quiet"
+  GIT_CLONE: "git clone --depth=1"
 
 jobs:
   build:
@@ -27,14 +43,6 @@ jobs:
             libtool libzip libusb libftdi hidapi nettle check doxygen swig \
             glib glibmm@2.66 cmake python3 boost qt@5 qwt
 
-          # TODO:
-          brew link --force autoconf
-          brew link --force automake
-          brew link --force libtool
-          brew link --force libffi
-          brew link --force glib
-          brew link --force glibmm@2.66
-
       - name: Checkout sigrok-utils
         uses: actions/checkout@v2
         with:
@@ -43,11 +51,10 @@ jobs:
           ref: github
 
       - name: Build dependencies
-        shell: bash
         run: |
           cd sigrok-util/cross-compile/github-actions
-          source sigrok-macosx-init-toolchain.sh
-          ./sigrok-macosx-build-dependencies.sh
+          source sigrok-macos-init-toolchain.sh
+          ./sigrok-macos-build-dependencies.sh
 
       - name: Checkout smuview
         uses: actions/checkout@v2
@@ -55,15 +62,31 @@ jobs:
           path: smuview
 
       - name: Build smuview
-        shell: bash
         run: |
-          source sigrok-util/cross-compile/github-actions/sigrok-macosx-init-toolchain.sh
-
-          cd smuview
-          mkdir build
-          cd build
+          source sigrok-util/cross-compile/github-actions/sigrok-macos-init-toolchain.sh
+          mkdir -p smuview/build
+          cd smuview/build
           PKG_CONFIG_PATH=$P cmake \
-            -DCMAKE_INSTALL_PREFIX:PATH=$PREFIXBASE \
+            -DCMAKE_INSTALL_PREFIX:PATH=$INSTALL_DIR \
+            -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
             -DDISABLE_WERROR=y \
+            -DENABLE_TESTS=y \
             ..
           make $PARALLEL $V
+          make install $V
+
+      - name: Build DMG
+        run: |
+          # Source SmuView versions and names
+          source smuview/build/contrib/config_version.sh
+          cd sigrok-util/cross-compile/github-actions
+          source sigrok-macos-init-toolchain.sh
+          ./sigrok-macos-create-dmg.sh
+
+      - name: Upload artifact
+        # Only upload artifact for the LLVM build!
+        if: startsWith(matrix.compiler.compiler, 'LLVM')
+        uses: actions/upload-artifact@v2
+        with:
+          name: SmuView DMG
+          path: sigrok-util/cross-compile/github-actions/SmuView*.dmg
