@@ -179,8 +179,8 @@ if(NOT SV_TAG_VERSION_STRING)
 		set(SV_VERSION_STRING "${SV_VERSION_STRING}-git-${SV_SHORTHASH}")
 	endif()
 
-	# Non-tagged releases use the unstable manual
-	set(SV_MANUAL_VERSION "unstable")
+	# Non-tagged releases use the continuous manual
+	set(SV_MANUAL_VERSION "continuous")
 else()
 	# Tagged releases use a fixed manual version
 	set(SV_MANUAL_VERSION ${SV_VERSION_STRING})

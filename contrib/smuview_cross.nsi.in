@@ -38,7 +38,12 @@
 Name "SmuView"
 
 # Filename of the installer executable.
-OutFile "SmuView-@SV_VERSION_STRING@-installer.exe"
+!if "$%TARGET%" != ""
+    !define TARGET "-$%TARGET%"
+!else
+    !define TARGET ""
+!endif
+OutFile "SmuView-@SV_VERSION_STRING@${TARGET}-installer.exe"
 
 # Where to install the application.
 InstallDir "$PROGRAMFILES\sigrok\SmuView"
@@ -183,11 +188,9 @@ Section "SmuView (required)" Section1
 		SW_SHOWNORMAL "" "Zadig (SmuView, Win XP)"
 
 	# Create shortcuts to the HTML and PDF manuals, respectively.
-	#!InsertMacro "CreateURL" "SmuView HTML manual" "https://sigrok.org/doc/smuview/@SV_MANUAL_VERSION@/manual.html" "SmuView HTML manual"
-	#!InsertMacro "CreateURL" "SmuView PDF manual" "https://sigrok.org/doc/smuview/@SV_MANUAL_VERSION@/manual.pdf" "SmuView PDF manual"
-	!InsertMacro "CreateURL" "SmuView HTML manual" "https://knarfs.github.io/doc/smuview/@SV_VERSION_STRING@/manual.html" "SmuView HTML manual"
-	!InsertMacro "CreateURL" "SmuView PDF manual" "https://knarfs.github.io/doc/smuview/@SV_VERSION_STRING@/manual.pdf" "SmuView PDF manual"
-	!InsertMacro "CreateURL" "SmuView Python Bindings API" "https://knarfs.github.io/doc/smuview/@SV_VERSION_STRING@/python_bindings_api.html" "SmuView Python Bindings API"
+	!InsertMacro "CreateURL" "SmuView HTML manual" "https://knarfs.github.io/doc/smuview/@SV_MANUAL_VERSION@/manual.html" "SmuView HTML manual"
+	!InsertMacro "CreateURL" "SmuView PDF manual" "https://knarfs.github.io/doc/smuview/@SV_MANUAL_VERSION@/manual.pdf" "SmuView PDF manual"
+	!InsertMacro "CreateURL" "SmuView Python Bindings API" "https://knarfs.github.io/doc/smuview/@SV_MANUAL_VERSION@/python_bindings_api.html" "SmuView Python Bindings API"
 
 	# Create registry keys for "Add/remove programs" in the control panel.
 	WriteRegStr HKLM "${REGSTR}" "DisplayName" "SmuView"

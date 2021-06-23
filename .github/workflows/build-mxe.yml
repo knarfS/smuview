@@ -3,19 +3,39 @@ name: SmuView MXE Build
 on:
   push:
   pull_request:
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  # The path where the compiled packages will be installed.
+  INSTALL_DIR: "${{ github.workspace }}/sr"
+  # Git URL for the sigrok dependencies
+  SIGROK_REPO_BASE: "https://github.com/sigrokproject"
+  # Build type for SmuView (Debug, Release, RelWithDebInfo, MinSizeRel)
+  BUILD_TYPE: "Release"
+  # Misc commands
+  WGET: "wget -c --quiet --no-check-certificate"
+  GIT_CLONE: "git clone --depth=1"
 
 jobs:
   build:
+    name: MXE build (${{ matrix.target.target }})
+
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/knarfs/sigrok-mxe:latest
 
     strategy:
       matrix:
-        target: ["i686", "x86_64"]
+        target:
+          - { target: "i686", nsis_param: "" }
+          - { target: "x86_64", nsis_param: "-DPE64=1" }
 
     env:
-      TARGET: ${{ matrix.target }}
+      TARGET: ${{ matrix.target.target }}
       DEBUG: 0
 
     steps:
@@ -26,14 +46,8 @@ jobs:
           path: sigrok-util
           ref: github
 
-      # Workaround
-      - name: Install sudo package
-        run: apt update && apt install sudo
-
       - name: Build dependencies
-        shell: bash
         run: |
-          sudo apt-get install -y doxygen
           cd sigrok-util/cross-compile/github-actions
           source sigrok-mxe-init-toolchain.sh
           ./sigrok-mxe-build-dependencies.sh
@@ -44,16 +58,32 @@ jobs:
           path: smuview
 
       - name: Build smuview
-        shell: bash
         run: |
           source sigrok-util/cross-compile/github-actions/sigrok-mxe-init-toolchain.sh
-          cd smuview
-          mkdir build
-          cd build
+          mkdir -p smuview/build
+          cd smuview/build
           $CMAKE \
-            -DCMAKE_INSTALL_PREFIX:PATH=$PREFIX \
+            -DCMAKE_INSTALL_PREFIX:PATH=$INSTALL_DIR \
             -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
             -DDISABLE_WERROR=y \
             -DENABLE_TESTS=y \
             ..
           make $PARALLEL $V
+          make install/strip $V
+
+      - name: Build NSIS installer
+        run: |
+          source sigrok-util/cross-compile/github-actions/sigrok-mxe-init-toolchain.sh
+
+          # Zadig (we ship this with frontends for easy driver switching).
+          $WGET https://github.com/pbatard/libwdi/releases/download/b721/zadig-2.4.exe -O $INSTALL_DIR/zadig.exe
+          $WGET https://github.com/pbatard/libwdi/releases/download/v1.2.5/zadig_xp-2.2.exe -O $INSTALL_DIR/zadig_xp.exe
+
+          cp sigrok-util/cross-compile/github-actions/contrib-mxe/FileAssociation.nsh smuview/build/contrib
+          makensis ${{ matrix.target.nsis_param }} smuview/build/contrib/smuview_cross.nsi
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: SmuView NSIS ${{ matrix.target.target }} installer
+          path: SmuView*installer.exe
