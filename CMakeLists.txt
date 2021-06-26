@@ -209,6 +209,10 @@ configure_file (
 	${PROJECT_SOURCE_DIR}/config.h.in
 	${PROJECT_BINARY_DIR}/config.h
 )
+configure_file (
+	${PROJECT_SOURCE_DIR}/contrib/config_version.sh.in
+	${PROJECT_BINARY_DIR}/contrib/config_version.sh
+)
 
 
 #===============================================================================
