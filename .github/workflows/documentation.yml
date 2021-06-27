@@ -1,0 +1,202 @@
+name: SmuView Documentation
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - "manual/**"
+      - "src/python/bindings.cpp"
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  # The path where the compiled packages will be installed.
+  INSTALL_DIR: "${{ github.workspace }}/sr"
+  # Git URL for the sigrok dependencies
+  SIGROK_REPO_BASE: "https://github.com/sigrokproject"
+  # Build type for SmuView (Debug, Release, RelWithDebInfo, MinSizeRel)
+  BUILD_TYPE: "Release"
+  # Misc commands
+  WGET: "wget -c --quiet"
+  GIT_CLONE: "git clone --depth=1"
+
+
+jobs:
+
+  build_manual:
+    name: SmuView Manual
+
+    runs-on: ubuntu-latest
+
+    env:
+      BUILD_TYPE: "Release"
+
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            git-core gcc make autoconf automake libtool \
+            g++ autoconf-archive pkg-config libglib2.0-dev libglibmm-2.4-dev \
+            libzip-dev check doxygen swig \
+            cmake libboost-dev libqt5svg5-dev qtbase5-dev libqwt-qt5-dev \
+            python3-dev python-gi-dev python-setuptools \
+            asciidoctor ruby-asciidoctor-pdf coderay
+
+      - name: Checkout sigrok-utils
+        uses: actions/checkout@v2
+        with:
+          repository: knarfS/sigrok-util
+          path: sigrok-util
+          ref: github
+
+      - name: Build dependencies
+        run: |
+          cd sigrok-util/cross-compile/github-actions
+          source sigrok-linux-init-toolchain.sh
+          ./sigrok-linux-build-dependencies.sh
+
+      - name: Checkout smuview
+        uses: actions/checkout@v2
+        with:
+          path: smuview
+
+      - name: Build manual
+        run: |
+          source sigrok-util/cross-compile/github-actions/sigrok-linux-init-toolchain.sh
+          mkdir -p smuview/build
+          cd smuview/build
+          PKG_CONFIG_PATH=$P cmake \
+            -DCMAKE_INSTALL_PREFIX:PATH=$INSTALL_DIR \
+            -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+            -DDISABLE_WERROR=y \
+            ..
+          make manual $V
+          make manual-publish $V
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: SmuView_manual
+          path: smuview/build/manual_publish/
+
+
+  build_python_doc:
+    name: SmuView Python API
+
+    runs-on: ubuntu-latest
+
+    env:
+      BUILD_TYPE: "Release"
+
+    steps:
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            git-core gcc make autoconf automake libtool \
+            g++ autoconf-archive pkg-config libglib2.0-dev libglibmm-2.4-dev \
+            libzip-dev check doxygen swig \
+            cmake libboost-dev libqt5svg5-dev qtbase5-dev libqwt-qt5-dev \
+            python3-dev python-gi-dev python-setuptools coreutils
+
+      - name: Checkout sigrok-utils
+        uses: actions/checkout@v2
+        with:
+          repository: knarfS/sigrok-util
+          path: sigrok-util
+          ref: github
+
+      - name: Build dependencies
+        run: |
+          cd sigrok-util/cross-compile/github-actions
+          source sigrok-linux-init-toolchain.sh
+          ./sigrok-linux-build-dependencies.sh
+
+      - name: Checkout smuview
+        uses: actions/checkout@v2
+        with:
+          path: smuview
+
+      - name: Build smuview
+        run: |
+          source sigrok-util/cross-compile/github-actions/sigrok-linux-init-toolchain.sh
+          mkdir -p smuview/build
+          cd smuview/build
+          PKG_CONFIG_PATH=$P cmake \
+            -DCMAKE_INSTALL_PREFIX:PATH=$INSTALL_DIR \
+            -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+            -DDISABLE_WERROR=y \
+            ..
+          make $PARALLEL $V
+          make install $V
+
+      - name: Build API doc
+        run: |
+          pip3 install pdoc3
+          export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"$INSTALL_DIR/lib"
+          # Source versions  and create destination folders
+          source smuview/build/contrib/config_version.sh
+          mkdir -p api_doc/"$SV_MANUAL_VERSION"
+          # Create script for generating the API doc
+          cat > gen_api.py << EOF
+          import smuview
+          import pdoc
+          html_str = pdoc.html("smuview", show_type_annotations=True)
+          f = open('./api_doc/$SV_MANUAL_VERSION/smuview_python_bindings.html', 'w')
+          print(html_str, file=f)
+          f.close()
+          EOF
+          # Generating the API doc
+          timeout --preserve-status 60 $INSTALL_DIR/bin/smuview -s gen_api.py -platform offscreen
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: SmuView_Python_API
+          path: api_doc/
+
+
+  publish:
+    name: SmuView documentation publish
+
+    runs-on: ubuntu-latest
+
+    needs:
+      - build_manual
+      - build_python_doc
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+
+      - name: Inspect directory after downloading artifacts
+        run: ls -alFR
+
+      - name: Checkout knarfS.github.io
+        uses: actions/checkout@v2
+        with:
+          repository: knarfS/knarfS.github.io
+          path: knarfS.github.io
+          persist-credentials: false
+
+      - name: Copy documentation
+        run: |
+          cp -r SmuView_manual/* knarfS.github.io/doc/smuview
+          cp -r SmuView_Python_API/* knarfS.github.io/doc/smuview
+
+      - name: Publish documentation
+        uses: cpina/github-action-push-to-another-repository@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.API_TOKEN_GITHUB }}
+        with:
+          source-directory: "knarfS.github.io"
+          destination-github-username: "knarfS"
+          destination-repository-name: "knarfS.github.io"
+          user-email: "frank-stettner@gmx.net"
+          target-branch: "master"
+          commit-message: "Automated update for ORIGIN_COMMIT"
