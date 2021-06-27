@@ -16,7 +16,7 @@ adding tabs or views.
 [WARNING]
 Only one script can be executed at a time!
 
-You can find an API documentation https://knarfs.github.io/doc/smuview/0.0.5/python_bindings_api.html[here]
+You can find an API documentation https://knarfs.github.io/doc/smuview/{sv_manual_version}/python_bindings_api.html[here]
 and example scripts in the `smuscript` folder.
 
 SmuView provides a basic editor to edit and run scripts. Here you can use the

@@ -16,8 +16,8 @@ which contains all required files and needs no installation:
 +
 --
 [listing, subs="normal"]
-chmod u+x SmuView-0.0.5-x86_64.AppImage
-./SmuView-0.0.5-x86_64.AppImage
+chmod u+x SmuView-{sv_version}-x86_64.AppImage
+./SmuView{sv_version}-x86_64.AppImage
 
 Please be aware, however, that the AppImages are development releases at the
 moment, so they always contain the latest development changes. While we do try

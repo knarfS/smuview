@@ -73,13 +73,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 
 #===============================================================================
-#= Documentation
-#-------------------------------------------------------------------------------
-
-add_subdirectory(manual)
-
-
-#===============================================================================
 #= Dependencies
 #-------------------------------------------------------------------------------
 
@@ -523,6 +516,13 @@ install(DIRECTORY smuscript/ DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/smuscript)
 
 # Generate Windows installer script.
 configure_file(contrib/smuview_cross.nsi.in ${CMAKE_CURRENT_BINARY_DIR}/contrib/smuview_cross.nsi @ONLY)
+
+
+#===============================================================================
+#= Documentation
+#-------------------------------------------------------------------------------
+
+add_subdirectory(manual)
 
 
 #===============================================================================

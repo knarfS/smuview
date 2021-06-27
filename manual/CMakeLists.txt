@@ -41,6 +41,8 @@ add_custom_target(manual-html
 		-a stylesheet=${STYLE_SHEET}
 		-a stylesdir=${CMAKE_CURRENT_SOURCE_DIR}/${STYLES_DIR}
 		-a toc=left
+		-a sv_version=${SV_VERSION_STRING}
+		-a sv_manual_version=${SV_MANUAL_VERSION}
 		--destination-dir=${CMAKE_CURRENT_BINARY_DIR}
 		${MANUAL_SRC}
 	BYPRODUCTS ${MANUAL_OUT_HTML}
@@ -53,6 +55,8 @@ if (ASCIIDOCTOR_PDF_EXECUTABLE)
 		COMMAND ${ASCIIDOCTOR_PDF_EXECUTABLE}
 			-a stylesheet=${STYLE_SHEET}
 			-a stylesdir=${CMAKE_CURRENT_SOURCE_DIR}/${STYLES_DIR}
+			-a sv_version=${SV_VERSION_STRING}
+			-a sv_manual_version=${SV_MANUAL_VERSION}
 			--destination-dir=${CMAKE_CURRENT_BINARY_DIR}
 			${MANUAL_SRC}
 		BYPRODUCTS ${MANUAL_OUT_PDF}
