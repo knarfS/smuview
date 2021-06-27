@@ -1,0 +1,337 @@
+name: SmuView Build
+
+on:
+  push:
+    paths-ignore:
+      - "doxy/**"
+      - "manual/**"
+      - "stuff/**"
+  pull_request:
+    paths-ignore:
+      - "doxy/**"
+      - "manual/**"
+      - "stuff/**"
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+
+env:
+  # The path where the compiled packages will be installed.
+  INSTALL_DIR: "${{ github.workspace }}/sr"
+  # Git URL for the sigrok dependencies
+  SIGROK_REPO_BASE: "https://github.com/sigrokproject"
+  # Build type for SmuView (Debug, Release, RelWithDebInfo, MinSizeRel)
+  BUILD_TYPE: "Release"
+  # Misc commands
+  WGET: "wget -c --quiet"
+  GIT_CLONE: "git clone --depth=1"
+
+
+jobs:
+
+  build_linux:
+    name: SmuView Linux build (${{ matrix.target }}, ${{ matrix.compiler.compiler }},  Qt ${{ matrix.qt_version }})
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        # i686 build is disabled for now!
+        target: ["x86_64"]
+        compiler:
+          - { compiler: GCC, cc: "gcc", cxx: "g++" }
+          - { compiler: LLVM, cc: "clang", cxx: "clang++" }
+        # Qt 5.12 is the oldest version we can build agains, because of Qwt:
+        # /usr/bin/ld: /usr/lib/libqwt-qt5.so: undefined reference to `qt_version_tag@Qt_5.12'
+        qt_version: [5.12.11, 5.13.2, 5.14.2, 5.15.2]
+    env:
+      BUILD_TYPE: "Release"
+      CC: ${{ matrix.compiler.cc }}
+      CXX: ${{ matrix.compiler.cxx }}
+
+    steps:
+      - name: Set up Qt environment
+        uses: jurplel/install-qt-action@v2
+        with:
+          version: ${{ matrix.qt_version }}
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            git-core gcc make autoconf automake libtool \
+            g++ autoconf-archive pkg-config libglib2.0-dev libglibmm-2.4-dev \
+            libzip-dev libusb-1.0-0-dev libftdi1-dev libieee1284-3-dev \
+            libvisa-dev nettle-dev libavahi-client-dev libhidapi-dev check \
+            doxygen swig \
+            cmake libboost-dev libqwt-qt5-dev \
+            python3-dev python-gi-dev python-setuptools
+
+      - name: Checkout sigrok-utils
+        uses: actions/checkout@v2
+        with:
+          repository: knarfS/sigrok-util
+          path: sigrok-util
+          ref: github
+
+      - name: Build dependencies
+        run: |
+          cd sigrok-util/cross-compile/github-actions
+          source sigrok-linux-init-toolchain.sh
+          ./sigrok-linux-build-dependencies.sh
+
+      - name: Checkout smuview
+        uses: actions/checkout@v2
+        with:
+          path: smuview
+
+      - name: Build smuview
+        run: |
+          source sigrok-util/cross-compile/github-actions/sigrok-linux-init-toolchain.sh
+          mkdir -p smuview/build
+          cd smuview/build
+          PKG_CONFIG_PATH=$P cmake \
+            -DCMAKE_INSTALL_PREFIX:PATH=$INSTALL_DIR \
+            -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+            -DDISABLE_WERROR=y \
+            -DENABLE_TESTS=y \
+            ..
+          make $PARALLEL $V
+
+
+  build_appimage:
+    name: SmuView AppImage build (${{ matrix.target.target }})
+
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/knarfs/sigrok-appimage-${{ matrix.target.container }}:latest
+
+    strategy:
+      matrix:
+        target:
+          - target: "i386"
+            container: "x86_64-i386"
+            c: "--host=i686-linux-gnu --build=i686-linux-gnu" # TODO: remove?
+            cc: "gcc -m32"
+            cxx: "g++ -m32"
+            cflags: "-O2 -march=i686"
+            cxxflags: "-O2 -march=i686"
+            ld: "ld -melf_i386"
+            ldflags: "-m32"
+          - target: "x86_64"
+            container: "x86_64"
+            c: ""
+            cc: "gcc"
+            cxx: "g++"
+            cflags: ""
+            cxxflags: ""
+            ld: "ld"
+            ldflags: ""
+
+    env:
+      C: ${{ matrix.target.c }}
+      CC: ${{ matrix.target.cc }}
+      CXX: ${{ matrix.target.cxx }}
+      CFLAGS: ${{ matrix.target.cflags }}
+      CXXFLAGS: ${{ matrix.target.cxxflags }}
+      LD:  ${{ matrix.target.ld }}
+      LDFLAGS: ${{ matrix.target.ldflags }}
+
+    steps:
+      - name: Update dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get upgrade -y
+
+      - name: Checkout smuview
+        uses: actions/checkout@v2
+        with:
+          path: smuview
+
+      - name: Build AppImage
+        run: |
+          wget https://github.com/knarfS/appimagecraft/releases/download/continuous/appimagecraft-${{ matrix.target.target }}.AppImage
+          #wget https://github.com/TheAssassin/appimagecraft/releases/download/continuous/appimagecraft-${{ matrix.target.target }}.AppImage
+          chmod ug+x appimagecraft-${{ matrix.target.target }}.AppImage
+
+          export PKG_CONFIG_PATH="/usr/lib/i386-linux-gnu/pkgconfig:$PKG_CONFIG_PATH"
+
+          cd smuview
+          ../appimagecraft-${{ matrix.target.target }}.AppImage build -d build/
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: SmuView ${{ matrix.target.target }} AppImage
+          path: smuview/SmuView*.AppImage*
+
+
+  build_mxe:
+    name: SmuView MXE build (${{ matrix.target.target }})
+
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/knarfs/sigrok-mxe:latest
+
+    strategy:
+      matrix:
+        target:
+          - { target: "i686", nsis_param: "" }
+          - { target: "x86_64", nsis_param: "-DPE64=1" }
+
+    env:
+      TARGET: ${{ matrix.target.target }}
+      DEBUG: 0
+      # Download python from sigrok.org and smth is wrong with the cert
+      WGET: "wget -c --quiet --no-check-certificate"
+
+    steps:
+      - name: Checkout sigrok-utils
+        uses: actions/checkout@v2
+        with:
+          repository: knarfS/sigrok-util
+          path: sigrok-util
+          ref: github
+
+      - name: Build dependencies
+        run: |
+          cd sigrok-util/cross-compile/github-actions
+          source sigrok-mxe-init-toolchain.sh
+          ./sigrok-mxe-build-dependencies.sh
+
+      - name: Checkout smuview
+        uses: actions/checkout@v2
+        with:
+          path: smuview
+
+      - name: Build smuview
+        run: |
+          source sigrok-util/cross-compile/github-actions/sigrok-mxe-init-toolchain.sh
+          mkdir -p smuview/build
+          cd smuview/build
+          $CMAKE \
+            -DCMAKE_INSTALL_PREFIX:PATH=$INSTALL_DIR \
+            -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+            -DDISABLE_WERROR=y \
+            -DENABLE_TESTS=y \
+            ..
+          make $PARALLEL $V
+          make install/strip $V
+
+      - name: Build NSIS installer
+        run: |
+          source sigrok-util/cross-compile/github-actions/sigrok-mxe-init-toolchain.sh
+
+          # Zadig (we ship this with frontends for easy driver switching).
+          $WGET https://github.com/pbatard/libwdi/releases/download/b721/zadig-2.4.exe -O $INSTALL_DIR/zadig.exe
+          $WGET https://github.com/pbatard/libwdi/releases/download/v1.2.5/zadig_xp-2.2.exe -O $INSTALL_DIR/zadig_xp.exe
+
+          cp sigrok-util/cross-compile/github-actions/contrib-mxe/FileAssociation.nsh smuview/build/contrib
+          makensis ${{ matrix.target.nsis_param }} smuview/build/contrib/smuview_cross.nsi
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: SmuView NSIS ${{ matrix.target.target }} installer
+          path: smuview/build/contrib/SmuView*installer.exe
+
+
+  build_macos:
+    name: SmuView MacOS build (${{ matrix.compiler.compiler }})
+
+    runs-on: macos-latest # macos-10.15
+
+    strategy:
+      matrix:
+        compiler:
+          - { compiler: GCC, cc: "gcc", cxx: "g++" }
+          - { compiler: LLVM, cc: "llvm-gcc", cxx: "llvm-g++" }
+
+    env:
+      CC: ${{ matrix.compiler.cc }}
+      CXX: ${{ matrix.compiler.cxx }}
+
+    steps:
+      - name: Install dependencies
+        run: |
+          brew install autoconf automake autoconf-archive pkg-config \
+            libtool libzip libusb libftdi hidapi nettle check doxygen swig \
+            glib glibmm@2.66 cmake python3 boost qt@5 qwt
+
+      - name: Checkout sigrok-utils
+        uses: actions/checkout@v2
+        with:
+          repository: knarfS/sigrok-util
+          path: sigrok-util
+          ref: github
+
+      - name: Build dependencies
+        run: |
+          cd sigrok-util/cross-compile/github-actions
+          source sigrok-macos-init-toolchain.sh
+          ./sigrok-macos-build-dependencies.sh
+
+      - name: Checkout smuview
+        uses: actions/checkout@v2
+        with:
+          path: smuview
+
+      - name: Build smuview
+        run: |
+          source sigrok-util/cross-compile/github-actions/sigrok-macos-init-toolchain.sh
+          mkdir -p smuview/build
+          cd smuview/build
+          PKG_CONFIG_PATH=$P cmake \
+            -DCMAKE_INSTALL_PREFIX:PATH=$INSTALL_DIR \
+            -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+            -DDISABLE_WERROR=y \
+            -DENABLE_TESTS=y \
+            ..
+          make $PARALLEL $V
+          make install $V
+
+      - name: Build DMG
+        run: |
+          # Source SmuView versions and names
+          source smuview/build/contrib/config_version.sh
+          cd sigrok-util/cross-compile/github-actions
+          source sigrok-macos-init-toolchain.sh
+          ./sigrok-macos-create-dmg.sh
+
+      - name: Upload artifact
+        # Only upload artifact for the LLVM build!
+        if: startsWith(matrix.compiler.compiler, 'LLVM')
+        uses: actions/upload-artifact@v2
+        with:
+          name: SmuView DMG
+          path: sigrok-util/cross-compile/github-actions/SmuView*.dmg
+
+
+  publish:
+    name: SmuView publish
+
+    runs-on: ubuntu-latest
+
+    if: |
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/master'
+    needs:
+      - build_linux
+      - build_appimage
+      - build_mxe
+      - build_macos
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+      - name: Inspect directory after downloading artifacts
+        run: ls -alFR
+      - name: Upload artifacts and create (continuous) release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+            wget -q https://github.com/TheAssassin/pyuploadtool/releases/download/continuous/pyuploadtool-x86_64.AppImage
+            chmod +x pyuploadtool-x86_64.AppImage
+            ./pyuploadtool-x86_64.AppImage **/SmuView-*.*
