@@ -75,6 +75,11 @@ endif ()
 add_custom_target(manual)
 add_dependencies(manual manual-html manual-pdf)
 
+
+#===============================================================================
+#= Installation
+#-------------------------------------------------------------------------------
+
 set(MANUAL_INST_SUBDIR "share/doc/smuview")
 install(
 	FILES ${MANUAL_OUT_HTML} ${MANUAL_OUT_PDF}
@@ -90,3 +95,21 @@ if (ASCIIDOCTOR_EXECUTABLE)
 		PATTERN "*.xcf" EXCLUDE
 	)
 endif ()
+
+
+#===============================================================================
+#= Publish
+#-------------------------------------------------------------------------------
+
+set(MANUAL_PUP_DIR "${CMAKE_BINARY_DIR}/manual_publish/${SV_MANUAL_VERSION}")
+add_custom_target(manual-publish)
+add_custom_command(TARGET manual-publish PRE_BUILD
+	COMMAND ${CMAKE_COMMAND} -E make_directory ${MANUAL_PUP_DIR}
+	COMMAND ${CMAKE_COMMAND} -E copy ${MANUAL_OUT_HTML} ${MANUAL_PUP_DIR}
+	COMMAND ${CMAKE_COMMAND} -E copy ${MANUAL_OUT_PDF} ${MANUAL_PUP_DIR}
+	COMMAND ${CMAKE_COMMAND} -E make_directory ${MANUAL_PUP_DIR}/images
+	COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/images/*.png ${MANUAL_PUP_DIR}/images
+	COMMAND ${CMAKE_COMMAND} -E make_directory ${MANUAL_PUP_DIR}/images/icons
+	COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/images/icons/*.png ${MANUAL_PUP_DIR}/images/icons
+	COMMAND ${CMAKE_COMMAND} -E make_directory ${MANUAL_PUP_DIR}/images/numbers
+	COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/images/numbers/*.png ${MANUAL_PUP_DIR}/images/numbers)
