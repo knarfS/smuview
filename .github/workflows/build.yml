@@ -27,7 +27,7 @@ env:
   # Misc commands
   WGET: "wget -c --quiet"
   GIT_CLONE: "git clone --depth=1"
-
+  # AppImage related properties are set as container ENVs if needed.
 
 jobs:
 
@@ -113,29 +113,20 @@ jobs:
         target:
           - target: "i386"
             container: "x86_64-i386"
-            c: "--host=i686-linux-gnu --build=i686-linux-gnu" # TODO: remove?
             cc: "gcc -m32"
             cxx: "g++ -m32"
-            cflags: "-O2 -march=i686"
-            cxxflags: "-O2 -march=i686"
             ld: "ld -melf_i386"
             ldflags: "-m32"
           - target: "x86_64"
             container: "x86_64"
-            c: ""
             cc: "gcc"
             cxx: "g++"
-            cflags: ""
-            cxxflags: ""
             ld: "ld"
             ldflags: ""
 
     env:
-      C: ${{ matrix.target.c }}
       CC: ${{ matrix.target.cc }}
       CXX: ${{ matrix.target.cxx }}
-      CFLAGS: ${{ matrix.target.cflags }}
-      CXXFLAGS: ${{ matrix.target.cxxflags }}
       LD:  ${{ matrix.target.ld }}
       LDFLAGS: ${{ matrix.target.ldflags }}
 
