@@ -147,7 +147,7 @@ jobs:
           import smuview
           import pdoc
           html_str = pdoc.html("smuview", show_type_annotations=True)
-          f = open('./api_doc/$SV_MANUAL_VERSION/smuview_python_bindings.html', 'w')
+          f = open('./api_doc/$SV_MANUAL_VERSION/python_bindings_api.html', 'w')
           print(html_str, file=f)
           f.close()
           EOF
