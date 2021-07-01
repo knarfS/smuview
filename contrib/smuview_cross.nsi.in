@@ -46,7 +46,11 @@ Name "SmuView"
 OutFile "SmuView-@SV_VERSION_STRING@${TARGET}-installer.exe"
 
 # Where to install the application.
-InstallDir "$PROGRAMFILES\sigrok\SmuView"
+!ifdef PE64
+	InstallDir "$PROGRAMFILES64\sigrok\SmuView"
+!else
+	InstallDir "$PROGRAMFILES\sigrok\SmuView"
+!endif
 
 # Request admin privileges for Windows Vista and Windows 7.
 # http://nsis.sourceforge.net/Docs/Chapter4.html
