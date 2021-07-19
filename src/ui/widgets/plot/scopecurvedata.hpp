@@ -93,7 +93,6 @@ public:
 	 */
 	QRectF boundingRect() const override;
 
-	size_t size_from_signal() const;
 	QPointF closest_point(const QPointF &pos, double *dist) const override;
 	/* TODO: Remove and move to (Scope)Curve! */
 	QString name() const override;
@@ -133,14 +132,18 @@ private:
 	shared_ptr<sv::data::AnalogSegment> segment_;
 	uint32_t actual_segment_id_;
 	QRectF rect_of_interest_;
+	/** Position of the first visible sample. */
 	size_t start_sample_;
+	/** Position of the last visible sample. */
 	size_t end_sample_;
-	mutable QRectF bounding_rect_; // Needs to be butable, b/c of "boundingRect() const"
+	mutable QRectF bounding_rect_; // Needs to be mutable, b/c of "boundingRect() const"
+	double samples_per_pixel_;
 	QwtScaleMap x_scale_map_;
 	QwtScaleMap y_scale_map_;
 	sv::data::AnalogSegment::EnvelopeSection envelope_section_;
 
 	QPointF sample_from_signal(size_t i) const;
+	size_t size_from_signal() const;
 
 };
 

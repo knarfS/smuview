@@ -346,7 +346,7 @@ void ScopeCurve::update()
 	const size_t num_points = curve_data_->size();
 	qWarning() << "ScopeCurve::update(): painted_points = " << painted_points_;
 	qWarning() << "ScopeCurve::update(): num_points = " << num_points;
-	qWarning() << "ScopeCurve::update(): num_samples = " << curve_data_->size_from_signal();
+	qWarning() << "ScopeCurve::update(): num_samples = " << curve_data_->size();
 	if (num_points > painted_points_) {
 		// TODO: move to somewhere else? -> We have a plot()->replot() and also a replot() here.... painted_points_ = 0....
 		// TODO: What if we have multiple curves, that need a replot at different times?
@@ -377,10 +377,21 @@ void ScopeCurve::update()
 			plot_direct_painter_->setClipRegion(
 				QwtScaleMap::transform(x_map, y_map, br).toRect());
 		}
+
 		qWarning() << "ScopeCurve::update(): Update " << QString::fromStdString(id());
-		qWarning() << "ScopeCurve::update(): drawSeries(" << plot_curve_ << ", " << (int)painted_points_ - 1 << ", " << (int)num_points - 1 << ")";
+		qWarning() << "ScopeCurve::update(): drawSeries(" << plot_curve_ << ", "
+			<< (int)painted_points_ - 1 << ", " << (int)num_points - 1 << ")";
+
+		qWarning() << "ScopeCurve::update(): drawSeries(" << plot_curve_ << "): first ts = "
+			<< curve_data_->sample(0);
+		qWarning() << "ScopeCurve::update(): drawSeries(" << plot_curve_ << "): start ts = "
+			<< curve_data_->sample((int)painted_points_ - 1);
+		qWarning() << "ScopeCurve::update(): drawSeries(" << plot_curve_ << "): last ts = "
+			<< curve_data_->sample((int)num_points - 1);
+
 		plot_direct_painter_->drawSeries(
 			plot_curve_, (int)painted_points_ - 1, (int)num_points - 1);
+
 		painted_points_ = num_points;
 		Q_EMIT new_points(); // TODO: rename to update_scale, move to boundary? not a good solution to update scale (changes)
 	}
@@ -414,8 +425,8 @@ void ScopeCurve::new_segment(uint32_t segment_id)
 	// TODO: move to somewhere else? -> We have a plot()->replot() and also a replot() here.... painted_points_ = 0....
 	// TODO: What if we have multiple curves, that need a replot at different times?
 	// TODO: If only a part of the curve is shown, do a replot not here  but just before the shown part (like pv)
-	//if (plot_curve_->plot() != nullptr)
-	//	plot_curve_->plot()->replot();
+	if (plot_curve_->plot() != nullptr)
+		plot_curve_->plot()->replot();
 
 	// TODO: BaseCurveData::reset_curve is not used?
 	/*
@@ -541,11 +552,11 @@ QColor ScopeCurve::default_color(const string &channel_name)
 	// Predefined colors for eight channels, channel 0 is a special case for
 	// the demo device
 	if (channel_number == "0")
-		return Qt::cyan;
+		return Qt::gray;
 	if (channel_number == "1")
 		return Qt::yellow;
 	if (channel_number == "2")
-		return Qt::blue;
+		return Qt::cyan;
 	if (channel_number == "3")
 		return Qt::red;
 	if (channel_number == "4")
@@ -596,3 +607,4 @@ void ScopeCurve::on_reset()
 } // namespace widgets
 } // namespace ui
 } // namespace sv
+

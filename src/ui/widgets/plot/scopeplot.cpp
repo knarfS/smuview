@@ -278,7 +278,7 @@ bool ScopePlot::add_curve(ScopeCurve *curve)
 		this, &ScopePlot::update_intervals);
 
 	QwtPlot::replot();
-	Q_EMIT curve_added();
+	Q_EMIT curve_added(); // TODO: What is this for? Used for bindings? Add id as param?
 
 	return true;
 }
@@ -370,24 +370,36 @@ int ScopePlot::init_x_axis(const ScopeCurve *curve, int x_axis_id)
 			if (c.second->x_axis_id() == x_axis_id &&
 					c.second->x_unit_str() == curve->x_unit_str())
 				return x_axis_id;
-			else if (c.second->x_axis_id() == x_axis_id) // NOLINT
+			if (c.second->x_axis_id() == x_axis_id)
 				return -1;
 		}
 	}
 
+	// TODO: The same thing is also done in update_x_interval(). Move min/max-
+	// initialization to update_x_interval()
 	double min;
 	double max;
-	if ((curve->type() == CurveType::TimeCurve || curve->type() == CurveType::ScopeCurve) && // TODO
-			curve->is_relative_time()) {
+	if (curve->type() == CurveType::TimeCurve && curve->is_relative_time()) {
 		min = 0.;
 		max = add_time_;
 		// TODO: To display the tick labels with prefixes (ps, ns, µs, ...)
 		//this->setAxisScaleDraw(QwtPlot::xBottom, new TimeScaleDraw(time));
 	}
-	else if ((curve->type() == CurveType::TimeCurve || curve->type() == CurveType::ScopeCurve) && // TODO
-			!curve->is_relative_time()) {
+	else if (curve->type() == CurveType::TimeCurve && !curve->is_relative_time()) {
 		min = Session::session_start_timestamp;
 		max = min + add_time_;
+	}
+	else if (curve->type() == CurveType::ScopeCurve) {
+		qWarning() << "######### SCOPECURVE ############";
+		min = 0.;
+		if (num_hdiv_ > 0 && timebase_.first > 0) {
+			max = num_hdiv_ * (timebase_.first / (double)timebase_.second);
+			qWarning() << "######### num_hdiv_ AND timebase_ ############ " << max;
+		}
+		else {
+			qWarning() << "######### ZERO ############";
+			max = 1.; // TODO
+		}
 	}
 	else if (curve->type() == CurveType::XYCurve) {
 		// Values +/- 10%
@@ -401,7 +413,7 @@ int ScopePlot::init_x_axis(const ScopeCurve *curve, int x_axis_id)
 			"Plot::init_x_axis(): Curve type not implemented!");
 	}
 
-	this->init_axis(x_axis_id, min, max, curve->x_title(), true);
+	this->init_axis(x_axis_id, min, max, curve->x_title(), false);
 
 	if (curve->type() == CurveType::TimeCurve &&
 			!curve->is_relative_time())
@@ -958,6 +970,7 @@ bool ScopePlot::update_x_interval(ScopeCurve *curve)
 	if (num_hdiv_ > 0 && timebase_.first > 0) {
 		double timespan = num_hdiv_ * (timebase_.first / (double)timebase_.second);
 		this->setAxisScale(QwtPlot::xBottom, 0, timespan); // TODO: axis ID
+		qWarning() << "ScopePlot::update_x_interval(): 0 - " << timespan;
 	}
 	else {
 		int num_hdiv = num_hdiv_;
