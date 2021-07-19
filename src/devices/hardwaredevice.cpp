@@ -198,7 +198,7 @@ void HardwareDevice::init_configurables()
 				d_c->get_property(ConfigKey::Samplerate));
 		cur_samplerate_ = samplerate_prop->uint64_value();
 		connect(samplerate_prop.get(),
-			&data::properties::UInt64Property::change_value,
+			&data::properties::UInt64Property::value_changed,
 			this, [this, &samplerate_prop]() {
 				cur_samplerate_ = samplerate_prop->uint64_value();
 			});
@@ -209,7 +209,7 @@ void HardwareDevice::init_configurables()
 				d_c->get_property(ConfigKey::SampleInterval));
 		cur_sample_interval_ = sampleInterval_prop->uint64_value();
 		connect(sampleInterval_prop.get(),
-			&data::properties::UInt64Property::change_value,
+			&data::properties::UInt64Property::value_changed,
 			this, [this, &sampleInterval_prop]() {
 				cur_samplerate_ = sampleInterval_prop->uint64_value();
 			});
