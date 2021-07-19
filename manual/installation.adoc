@@ -98,8 +98,8 @@ assigned for the device.
 
 === Mac OS X
 
-We offer DMG installers for SmuvView that contain everything you need to get
-started. Simply download them from the
+We offer a Apple Disk Image (DMG) for SmuvView that contains everything you need
+to get started. Simply download them from the
 https://github.com/knarfS/smuview/releases[SmuView download page] and run them.
 
 Please be aware, however, that the DMG installers are development builds, so
