@@ -292,7 +292,7 @@ jobs:
           ./sigrok-macos-create-dmg.sh
 
       - name: Upload artifact
-        # Only upload artifact for the LLVM build!
+        # Only upload artifact from the LLVM build!
         if: startsWith(matrix.compiler.compiler, 'LLVM')
         uses: actions/upload-artifact@v2
         with:
