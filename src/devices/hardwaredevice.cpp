@@ -30,6 +30,7 @@
 #include <QDateTime>
 #include <QDebug>
 #include <QString>
+#include <QStringList>
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
@@ -106,43 +107,27 @@ QString HardwareDevice::display_name(
 				dev->sr_device_ != sr_device_;
 		});
 
-	QString sep("");
-	QString name("");
+	QStringList parts;
 
-	if (sr_device_->vendor().length() > 0) {
-		name.append(QString::fromStdString(sr_device_->vendor()));
-		sep = QString(" ");
-	}
+	if (!sr_device_->vendor().empty())
+		parts << QString::fromStdString(sr_device_->vendor());
 
-	if (sr_device_->model().length() > 0) {
-		name.append(sep);
-		name.append(QString::fromStdString(sr_device_->model()));
-		sep = QString(" ");
-	}
+	if (!sr_device_->model().empty())
+		parts << QString::fromStdString(sr_device_->model());
 
 	if (multiple_dev) {
-		if (sr_device_->model().length() > 0) {
-			name.append(sep);
-			name.append(QString::fromStdString(sr_device_->version()));
-			sep = QString(" ");
-		}
+		if (!sr_device_->version().empty())
+			parts << QString::fromStdString(sr_device_->version());
 
-		if (sr_device_->model().length() > 0) {
-			name.append(sep);
-			name.append(QString::fromStdString(sr_device_->serial_number()));
-			sep = QString(" ");
-		}
-
-		if ((sr_device_->serial_number().length() == 0) &&
-				(sr_device_->connection_id().length() > 0)) {
-			name.append(sep);
-			name.append("(");
-			name.append(QString::fromStdString(sr_device_->connection_id()));
-			name.append(")");
-		}
+		if (!sr_device_->serial_number().empty())
+			parts << "[S/N: " +
+				QString::fromStdString(sr_device_->serial_number()) + "]";
+		else if (!sr_device_->connection_id().empty())
+			parts << "(" +
+				QString::fromStdString(sr_device_->connection_id()) + ")";
 	}
 
-	return name;
+	return parts.join(" ");
 }
 
 void HardwareDevice::open()

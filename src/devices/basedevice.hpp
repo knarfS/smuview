@@ -122,6 +122,7 @@ public:
 
 	/**
 	 * Builds the display name. It only contains fields as required.
+	 *
 	 * @param device_manager a reference to the device manager is needed
 	 * so that other similarly titled devices can be detected.
 	 */
