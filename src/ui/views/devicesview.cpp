@@ -41,6 +41,7 @@
 #include "src/ui/devices/devicetree/devicetreeview.hpp"
 #include "src/ui/devices/devicetree/treeitem.hpp"
 #include "src/ui/dialogs/connectdialog.hpp"
+#include "src/ui/tabs/devicetab.hpp"
 #include "src/ui/views/baseview.hpp"
 #include "src/ui/views/baseview.hpp"
 
@@ -170,7 +171,8 @@ void DevicesView::on_action_disconnect_device_triggered()
 			QMessageBox::Yes | QMessageBox::Cancel);
 
 		if (reply == QMessageBox::Yes) {
-			session().main_window()->remove_tab(device->id());
+			session().main_window()->remove_tab(
+				ui::tabs::DeviceTab::TAB_ID_PREFIX + device->id());
 			session().remove_device(device);
 		}
 	}

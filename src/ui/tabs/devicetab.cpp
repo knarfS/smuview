@@ -18,6 +18,7 @@
  */
 
 #include <memory>
+#include <string>
 
 #include <QCloseEvent>
 #include <QDebug>
@@ -42,10 +43,13 @@
 #include "src/ui/views/viewhelper.hpp"
 
 using std::shared_ptr;
+using std::string;
 
 namespace sv {
 namespace ui {
 namespace tabs {
+
+const std::string DeviceTab::TAB_ID_PREFIX = "devicetab:";
 
 DeviceTab::DeviceTab(Session &session,
 		shared_ptr<sv::devices::BaseDevice> device, QWidget *parent) :
@@ -60,8 +64,8 @@ DeviceTab::DeviceTab(Session &session,
 	action_add_math_channel_(new QAction(this)),
 	action_about_(new QAction(this))
 {
-	id_ = "devicetab:" + device_->id();
-	settings_id_ = "devicetab:" + device_->settings_id();
+	id_ = TAB_ID_PREFIX + device_->id();
+	settings_id_ = QString::fromStdString(TAB_ID_PREFIX) + device_->settings_id();
 
 	setup_toolbar();
 }

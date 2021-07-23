@@ -21,6 +21,7 @@
 #define UI_TABS_DEVICETAB_HPP
 
 #include <memory>
+#include <string>
 
 #include <QAction>
 #include <QCloseEvent>
@@ -32,6 +33,7 @@
 #include "src/ui/tabs/basetab.hpp"
 
 using std::shared_ptr;
+using std::string;
 
 namespace sv {
 
@@ -49,6 +51,8 @@ private:
 public:
 	DeviceTab(Session &session,
 		shared_ptr<sv::devices::BaseDevice> device, QWidget *parent = nullptr);
+
+	static const string TAB_ID_PREFIX;
 
 	QString title() override;
 	bool request_close() override;
