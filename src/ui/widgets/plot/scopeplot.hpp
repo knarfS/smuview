@@ -125,6 +125,7 @@ public Q_SLOTS:
 	void update_timebase(const QVariant timebase);
 	void update_trigger_source(const QVariant trigger_source);
 	void update_trigger_level(const QVariant trigger_level);
+	void update_horiz_trigger_pos(const QVariant horiz_trigger_pos);
 	void update_curves();
 
 private Q_SLOTS:
@@ -142,6 +143,7 @@ private:
 	void update_intervals();
 	bool update_x_interval(ScopeCurve *curve);
 	bool update_y_interval(const ScopeCurve *curve);
+	void update_trigger_marker();
 	void update_markers_label();
 	ScopeCurve *get_curve_from_plot_curve(const QwtPlotCurve *plot_curve) const;
 
@@ -153,12 +155,16 @@ private:
 	sv::data::rational_t timebase_;
 	QString trigger_source_;
 	double trigger_level_;
+	double horiz_trigger_pos_;
 	PlotUpdateMode update_mode_;
 	double time_span_;
 	double add_time_;
 
 	QwtPlotPanner *plot_panner_;
 	PlotMagnifier *plot_magnifier_;
+
+	QwtPlotMarker *trigger_level_marker_;
+	QwtPlotMarker *trigger_hpos_marker_;
 
 	map<QwtPlotMarker *, ScopeCurve *> marker_curve_map_;
 	vector<pair<QwtPlotMarker *, QwtPlotMarker *>> diff_markers_;

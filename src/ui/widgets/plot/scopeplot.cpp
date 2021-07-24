@@ -148,6 +148,8 @@ ScopePlot::ScopePlot(Session &session, QWidget *parent) : QwtPlot(parent),
 	session_(session),
 	time_span_(120.),
 	add_time_(30.),
+	trigger_level_marker_(nullptr),
+	trigger_hpos_marker_(nullptr),
 	active_marker_(nullptr),
 	markers_label_(nullptr),
 	markers_label_alignment_(Qt::AlignBottom | Qt::AlignHCenter),
@@ -600,13 +602,19 @@ void ScopePlot::update_timebase(const QVariant timebase)
 void ScopePlot::update_trigger_source(const QVariant trigger_source)
 {
 	trigger_source_ = trigger_source.toString();
-	//update_trigger_marker();
+	update_trigger_marker();
 }
 
 void ScopePlot::update_trigger_level(const QVariant trigger_level)
 {
 	trigger_level_ = trigger_level.toDouble();
-	//update_trigger_marker();
+	update_trigger_marker();
+}
+
+void ScopePlot::update_horiz_trigger_pos(const QVariant horiz_trigger_pos)
+{
+	horiz_trigger_pos_ = horiz_trigger_pos.toDouble();
+	update_trigger_marker();
 }
 
 void ScopePlot::add_marker(sv::ui::widgets::plot::ScopeCurve *curve)
@@ -1065,6 +1073,49 @@ bool ScopePlot::update_y_interval(const ScopeCurve *curve)
 		setAxisScale(y_axis_id, min, max);
 	}
 	return interval_changed;
+}
+
+void ScopePlot::update_trigger_marker()
+{
+	// TODO: trigger source
+
+	if (!trigger_level_marker_) {
+		QwtSymbol *marker_sym = new QwtSymbol(QwtSymbol::RTriangle,
+			QBrush(Qt::yellow), QPen(Qt::yellow), QSize(20, 20));
+
+		trigger_level_marker_ = new QwtPlotMarker();
+		trigger_level_marker_->setSymbol(marker_sym);
+		trigger_level_marker_->setLineStyle(QwtPlotMarker::HLine);
+		trigger_level_marker_->setLinePen(Qt::yellow, 1, Qt::DashDotLine);
+		trigger_level_marker_->setLabelOrientation(Qt::Horizontal);
+		trigger_level_marker_->setLabelAlignment(Qt::AlignTop | Qt::AlignLeft);
+		trigger_level_marker_->setXAxis(QwtPlot::xBottom);
+		trigger_level_marker_->setYAxis(QwtPlot::yLeft);
+		trigger_level_marker_->attach(this);
+	}
+	//trigger_level_marker_->setLabel(QwtText(trigger_source_));
+	trigger_level_marker_->setValue(0., trigger_level_);
+
+	/*
+	if (!trigger_hpos_marker_) {
+		QwtSymbol *marker_sym = new QwtSymbol(QwtSymbol::RTriangle,
+			QBrush(Qt::yellow), QPen(Qt::yellow), QSize(20, 20));
+
+		trigger_hpos_marker_ = new QwtPlotMarker();
+		trigger_hpos_marker_->setSymbol(marker_sym);
+		trigger_hpos_marker_->setLineStyle(QwtPlotMarker::VLine);
+		trigger_hpos_marker_->setLinePen(Qt::yellow, 1, Qt::DashDotLine);
+		trigger_hpos_marker_->setLabelOrientation(Qt::Horizontal);
+		trigger_hpos_marker_->setLabelAlignment(Qt::AlignTop | Qt::AlignRight);
+		trigger_hpos_marker_->setXAxis(QwtPlot::xTop);
+		trigger_hpos_marker_->setYAxis(QwtPlot::yLeft);
+		trigger_hpos_marker_->attach(this);
+	}
+	trigger_hpos_marker_->setLabel(QString("%1").arg(horiz_trigger_pos_));
+	trigger_hpos_marker_->setValue(horiz_trigger_pos_, 0.);
+	*/
+
+	replot();
 }
 
 void ScopePlot::set_markers_label_alignment(int alignment)

@@ -146,6 +146,16 @@ void ScopePlotView::set_scope_device(
 			&data::properties::BaseProperty::value_changed,
 			plot_, &widgets::plot::ScopePlot::update_trigger_level);
 	}
+
+	if (dev_configurable->has_get_config(ConfigKey::HorizTriggerPos)) {
+		auto horiz_trigger_pos =
+			static_pointer_cast<data::properties::DoubleProperty>(
+				dev_configurable->get_property(ConfigKey::HorizTriggerPos));
+		plot_->update_horiz_trigger_pos(horiz_trigger_pos->value());
+		connect(horiz_trigger_pos.get(),
+			&data::properties::BaseProperty::value_changed,
+			plot_, &widgets::plot::ScopePlot::update_horiz_trigger_pos);
+	}
 }
 
 string ScopePlotView::add_channel(shared_ptr<channels::ScopeChannel> channel)
