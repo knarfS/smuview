@@ -23,6 +23,7 @@
 
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -48,6 +49,7 @@
 
 using std::map;
 using std::pair;
+using std::set;
 using std::shared_ptr;
 using std::string;
 using std::vector;
@@ -90,8 +92,12 @@ public:
 	void remove_all_curves();
 	/** Return a map of all curves. */
 	map<string, ScopeCurve *> curve_map() const { return curve_map_; }
-	int get_free_x_axis(const QString &unit_str) const;
-	int get_free_y_axis(const QString &unit_str) const;
+	/** Get all x-axes that are valid for the unit and qunatity flags. */
+	set<QwtPlot::Axis> get_free_x_axes(sv::data::Unit unit,
+		set<sv::data::QuantityFlag> quantity_flags, bool reuse_axis) const;
+	/** Get all y-axes that are valid for the unit and qunatity flags. */
+	set<QwtPlot::Axis> get_free_y_axes(sv::data::Unit unit,
+		set<sv::data::QuantityFlag> quantity_flags, bool reuse_axis) const;
 	bool is_axis_locked(int axis_id, AxisBoundary axis_boundary) { return axis_lock_map_[axis_id][axis_boundary]; }
 	void set_axis_locked(int axis_id, AxisBoundary axis_boundary, bool locked);
 	void set_all_axis_locked(bool locked);

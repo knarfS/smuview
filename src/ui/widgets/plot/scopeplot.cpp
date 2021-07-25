@@ -312,38 +312,48 @@ void ScopePlot::remove_all_curves()
 	}
 }
 
-int ScopePlot::get_free_x_axis(const QString &unit_str) const
+set<QwtPlot::Axis> ScopePlot::get_free_x_axes(sv::data::Unit unit,
+	set<sv::data::QuantityFlag> quantity_flags, bool reuse_axis) const
 {
+	set<QwtPlot::Axis> axes;
+
 	// Check if there already is an axis with the same unit. This is done
 	// via the strings to get potential AC/DC flags.
+	auto unit_str = data::datautil::format_unit(unit, quantity_flags);
 	for (const auto &c : curve_map_) {
-		if (unit_str == c.second->x_unit_str())
-			return c.second->x_axis_id();
+		if (unit_str == c.second->x_unit_str() && reuse_axis)
+			axes.insert(c.second->x_axis_id());
 	}
-	// No existing axis was found, try to use the bottom or top axis.
-	if (!this->axisEnabled(QwtPlot::xBottom))
-		return QwtPlot::xBottom;
-	else if (!this->axisEnabled(QwtPlot::xTop))
-		return QwtPlot::xTop;
 
-	return -1;
+	// Check for empty axes.
+	if (!this->axisEnabled(QwtPlot::xBottom))
+		axes.insert(QwtPlot::xBottom);
+	if (!this->axisEnabled(QwtPlot::xTop))
+		axes.insert(QwtPlot::xTop);
+
+	return axes;
 }
 
-int ScopePlot::get_free_y_axis(const QString &unit_str) const
+set<QwtPlot::Axis> ScopePlot::get_free_y_axes(sv::data::Unit unit,
+	set<sv::data::QuantityFlag> quantity_flags, bool reuse_axis) const
 {
+	set<QwtPlot::Axis> axes;
+
 	// Check if there already is an axis with the same unit. This is done
 	// via the strings to get potential AC/DC flags.
+	auto unit_str = data::datautil::format_unit(unit, quantity_flags);
 	for (const auto &c : curve_map_) {
-		if (unit_str == c.second->y_unit_str())
-			return c.second->y_axis_id();
+		if (unit_str == c.second->y_unit_str() && reuse_axis)
+			axes.insert(c.second->y_axis_id());
 	}
-	// No existing axis was found, try to use the left or right axis.
-	if (!this->axisEnabled(QwtPlot::yLeft))
-		return QwtPlot::yLeft;
-	else if (!this->axisEnabled(QwtPlot::yRight))
-		return QwtPlot::yRight;
 
-	return -1;
+	// Check for empty axes.
+	if (!this->axisEnabled(QwtPlot::yLeft))
+		axes.insert(QwtPlot::yLeft);
+	if (!this->axisEnabled(QwtPlot::yRight))
+		axes.insert(QwtPlot::yRight);
+
+	return axes;
 }
 
 int ScopePlot::init_x_axis(const ScopeCurve *curve, int x_axis_id)

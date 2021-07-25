@@ -45,6 +45,7 @@
 #include "src/devices/configurable.hpp"
 #include "src/devices/deviceutil.hpp"
 #include "src/devices/oscilloscopedevice.hpp"
+#include "src/ui/dialogs/addplotcurvedialog.hpp"
 #include "src/ui/dialogs/plotconfigdialog.hpp"
 #include "src/ui/dialogs/plotdiffmarkerdialog.hpp"
 #include "src/ui/dialogs/selectsignaldialog.hpp"
@@ -91,7 +92,9 @@ QString ScopePlotView::title() const
 void ScopePlotView::set_scope_device(
 	shared_ptr<sv::devices::OscilloscopeDevice> device)
 {
-	auto dev_configurable = device->configurable_map()[""];
+	device_ = device;
+
+	auto dev_configurable = device_->configurable_map()[""];
 	if (dev_configurable == nullptr)
 		return;
 
@@ -214,31 +217,29 @@ void ScopePlotView::setup_toolbar()
 	action_add_diff_marker_->setIcon(
 		QIcon::fromTheme("snap-guideline",
 		QIcon(":/icons/snap-guideline.png")));
-	connect(action_add_diff_marker_, SIGNAL(triggered(bool)),
-		this, SLOT(on_action_add_diff_marker_triggered()));
+	connect(action_add_diff_marker_, &QAction::triggered,
+		this, &ScopePlotView::on_action_add_diff_marker_triggered);
 
 	action_zoom_best_fit_->setText(tr("Best fit"));
 	action_zoom_best_fit_->setIcon(
 		QIcon::fromTheme("zoom-fit-best",
 		QIcon(":/icons/zoom-fit-best.png")));
-	connect(action_zoom_best_fit_, SIGNAL(triggered(bool)),
-		this, SLOT(on_action_zoom_best_fit_triggered()));
+	connect(action_zoom_best_fit_, &QAction::triggered,
+		this, &ScopePlotView::on_action_zoom_best_fit_triggered);
 
-	/*
-	action_add_signal_->setText(tr("Add Signal"));
-	action_add_signal_->setIcon(
+	action_add_curve_->setText(tr("Add Curve"));
+	action_add_curve_->setIcon(
 		QIcon::fromTheme("office-chart-line",
 		QIcon(":/icons/office-chart-line.png")));
-	connect(action_add_signal_, SIGNAL(triggered(bool)),
-		this, SLOT(on_action_add_signal_triggered()));
-	*/
+	connect(action_add_curve_, &QAction::triggered,
+		this, &ScopePlotView::on_action_add_curve_triggered);
 
 	action_config_plot_->setText(tr("Configure Plot"));
 	action_config_plot_->setIcon(
 		QIcon::fromTheme("configure",
 		QIcon(":/icons/configure.png")));
-	connect(action_config_plot_, SIGNAL(triggered(bool)),
-		this, SLOT(on_action_config_plot_triggered()));
+	connect(action_config_plot_, &QAction::triggered,
+		this, &ScopePlotView::on_action_config_plot_triggered);
 
 	toolbar_ = new QToolBar("Plot Toolbar");
 	toolbar_->addWidget(add_marker_button_);
@@ -246,7 +247,7 @@ void ScopePlotView::setup_toolbar()
 	toolbar_->addSeparator();
 	toolbar_->addAction(action_zoom_best_fit_);
 	toolbar_->addSeparator();
-	//toolbar_->addAction(action_add_signal_);
+	toolbar_->addAction(action_add_curve_);
 	toolbar_->addSeparator();
 	toolbar_->addAction(action_config_plot_);
 	this->addToolBar(Qt::TopToolBarArea, toolbar_);
@@ -345,6 +346,22 @@ void ScopePlotView::add_signal(std::shared_ptr<sv::data::BaseSignal> signal)
 			QMessageBox::Ok);
 	}
 	*/
+}
+
+void ScopePlotView::on_action_add_curve_triggered()
+{
+	ui::dialogs::AddPlotCurveDialog dlg(session_, plot_, device_);
+	if (!dlg.exec())
+		return;
+
+	// TODO: Use (Analog)BaseSignal
+	auto as_signal = static_pointer_cast<data::AnalogScopeSignal>(dlg.signal());
+	if (as_signal == nullptr)
+		return;
+
+	auto curve = new widgets::plot::ScopeCurve(
+		as_signal, dlg.x_axis_id(), dlg.y_axis_id());
+	plot_->add_curve(curve);
 }
 
 void ScopePlotView::on_action_add_marker_triggered()

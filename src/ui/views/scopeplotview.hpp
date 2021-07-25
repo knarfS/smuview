@@ -86,6 +86,7 @@ public:
 	string add_channel(shared_ptr<channels::ScopeChannel> channel);
 
 private:
+	shared_ptr<sv::devices::OscilloscopeDevice> device_;
 	shared_ptr<channels::ScopeChannel> channel_1_; // TODO
 	shared_ptr<channels::ScopeChannel> channel_2_; // TODO
 	//vector<widgets::plot::BaseCurveData *> curves_;
@@ -105,7 +106,7 @@ private:
 	QToolBar *toolbar_;
 
 protected Q_SLOTS:
-	//void on_action_add_curve_triggered();
+	void on_action_add_curve_triggered();
 	void update_add_marker_menu();
 	void add_signal(std::shared_ptr<sv::data::BaseSignal> signal);
 

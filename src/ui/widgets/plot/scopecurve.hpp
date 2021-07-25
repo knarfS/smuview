@@ -91,9 +91,9 @@ public:
 	bool is_relative_time() const;
 
 	void set_x_axis_id(int x_axis_id);
-	int x_axis_id() const;
+	QwtPlot::Axis x_axis_id() const;
 	void set_y_axis_id(int y_axis_id);
-	int y_axis_id() const;
+	QwtPlot::Axis y_axis_id() const;
 
 	sv::data::Quantity x_quantity() const; // TODO: override
 	set<sv::data::QuantityFlag> x_quantity_flags() const; // TODO: override

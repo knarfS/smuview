@@ -179,9 +179,9 @@ void ScopeCurve::update_x_scale()
 		plot_curve_->plot()->canvasMap(plot_curve_->xAxis()));
 }
 
-int ScopeCurve::x_axis_id() const
+QwtPlot::Axis ScopeCurve::x_axis_id() const
 {
-	return plot_curve_->xAxis();
+	return static_cast<QwtPlot::Axis>(plot_curve_->xAxis());
 }
 
 void ScopeCurve::set_y_axis_id(int y_axis_id)
@@ -205,9 +205,9 @@ void ScopeCurve::update_y_scale()
 		plot_curve_->plot()->canvasMap(plot_curve_->yAxis()));
 }
 
-int ScopeCurve::y_axis_id() const
+QwtPlot::Axis ScopeCurve::y_axis_id() const
 {
-	return plot_curve_->yAxis();
+	return static_cast<QwtPlot::Axis>(plot_curve_->yAxis());
 }
 
 sv::data::Quantity ScopeCurve::x_quantity() const
