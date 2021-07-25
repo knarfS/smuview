@@ -70,8 +70,10 @@ void SelectConfigurableForm::setup_ui()
 
 void SelectConfigurableForm::connect_signals()
 {
-	connect(device_box_, SIGNAL(currentIndexChanged(int)),
-		this, SLOT(on_device_changed()));
+	connect(device_box_, &DeviceComboBox::device_changed,
+		this, &SelectConfigurableForm::on_device_changed);
+	connect(configurable_box_, &ConfigurableComboBox::configurable_changed,
+		this, &SelectConfigurableForm::configurable_changed);
 }
 
 void SelectConfigurableForm::on_device_changed()

@@ -53,6 +53,9 @@ private:
 
 	const Session &session_;
 
+Q_SIGNALS:
+	void device_changed();
+
 };
 
 } // namespace devices

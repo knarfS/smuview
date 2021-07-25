@@ -58,6 +58,9 @@ private:
 public Q_SLOTS:
 	void change_device(shared_ptr<sv::devices::BaseDevice> device);
 
+Q_SIGNALS:
+	void configurable_changed();
+
 };
 
 } // namespace devices

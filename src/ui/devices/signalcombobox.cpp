@@ -80,6 +80,10 @@ void SignalComboBox::setup_ui()
 
 void SignalComboBox::fill_signals()
 {
+	disconnect(
+		this, QOverload<int>::of(&SignalComboBox::currentIndexChanged),
+		this, &SignalComboBox::signal_changed);
+
 	this->clear();
 
 	if (channel_ == nullptr)
@@ -92,6 +96,11 @@ void SignalComboBox::fill_signals()
 			this->addItem(signal->display_name(), QVariant::fromValue(signal));
 		}
 	}
+
+	connect(
+		this, QOverload<int>::of(&SignalComboBox::currentIndexChanged),
+		this, &SignalComboBox::signal_changed);
+	Q_EMIT signal_changed();
 }
 
 void SignalComboBox::change_channel(

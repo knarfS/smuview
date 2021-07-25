@@ -76,6 +76,9 @@ private Q_SLOTS:
 	void on_channel_group_changed();
 	void on_channel_changed();
 
+Q_SIGNALS:
+	void signal_changed();
+
 };
 
 } // namespace devices

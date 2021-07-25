@@ -66,6 +66,9 @@ void DeviceComboBox::setup_ui()
 			device_pair.second->full_name(),
 			QVariant::fromValue(device_pair.second));
 	}
+
+	connect(this, QOverload<int>::of(&DeviceComboBox::currentIndexChanged),
+		this, &DeviceComboBox::device_changed);
 }
 
 } // namespace devices

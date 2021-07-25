@@ -95,12 +95,14 @@ void SelectSignalWidget::setup_ui()
 
 void SelectSignalWidget::connect_signals()
 {
-	connect(device_box_, SIGNAL(currentIndexChanged(int)),
-		this, SLOT(on_device_changed()));
-	connect(channel_group_box_, SIGNAL(currentIndexChanged(int)),
-		this, SLOT(on_channel_group_changed()));
-	connect(channel_box_, SIGNAL(currentIndexChanged(int)),
-		this, SLOT(on_channel_changed()));
+	connect(device_box_, &DeviceComboBox::device_changed,
+		this, &SelectSignalWidget::on_device_changed);
+	connect(channel_group_box_, &ChannelGroupComboBox::channel_group_changed,
+		this, &SelectSignalWidget::on_channel_group_changed);
+	connect(channel_box_, &ChannelComboBox::channel_changed,
+		this, &SelectSignalWidget::on_channel_changed);
+	connect(signal_box_, &SignalComboBox::signal_changed,
+		this, &SelectSignalWidget::signal_changed);
 }
 
 void SelectSignalWidget::on_device_changed()

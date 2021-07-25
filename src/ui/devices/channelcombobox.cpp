@@ -87,6 +87,10 @@ void ChannelComboBox::setup_ui()
 
 void ChannelComboBox::fill_channels()
 {
+	disconnect(
+		this, QOverload<int>::of(&ChannelComboBox::currentIndexChanged),
+		this, &ChannelComboBox::channel_changed);
+
 	this->clear();
 
 	if (device_ == nullptr)
@@ -118,6 +122,11 @@ void ChannelComboBox::fill_channels()
 			QString::fromStdString(ch->name()),
 			QVariant::fromValue(ch));
 	}
+
+	connect(
+		this, QOverload<int>::of(&ChannelComboBox::currentIndexChanged),
+		this, &ChannelComboBox::channel_changed);
+	Q_EMIT channel_changed();
 }
 
 void ChannelComboBox::change_device_channel_group(

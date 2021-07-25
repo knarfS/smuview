@@ -66,6 +66,9 @@ private:
 public Q_SLOTS:
 	void change_channel(shared_ptr<sv::channels::BaseChannel> channel);
 
+Q_SIGNALS:
+	void signal_changed();
+
 };
 
 } // namespace devices

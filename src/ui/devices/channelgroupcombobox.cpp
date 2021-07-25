@@ -67,6 +67,10 @@ void ChannelGroupComboBox::setup_ui()
 
 void ChannelGroupComboBox::fill_channel_groups()
 {
+	disconnect(
+		this, QOverload<int>::of(&ChannelGroupComboBox::currentIndexChanged),
+		this, &ChannelGroupComboBox::channel_group_changed);
+
 	this->clear();
 
 	if (device_ == nullptr)
@@ -75,6 +79,11 @@ void ChannelGroupComboBox::fill_channel_groups()
 	for (const auto &chg_pair : device_->channel_group_map()) {
 		this->addItem(QString::fromStdString(chg_pair.first));
 	}
+
+	connect(
+		this, QOverload<int>::of(&ChannelGroupComboBox::currentIndexChanged),
+		this, &ChannelGroupComboBox::channel_group_changed);
+	Q_EMIT channel_group_changed();
 }
 
 void ChannelGroupComboBox::change_device(

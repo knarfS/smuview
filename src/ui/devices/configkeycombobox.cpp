@@ -79,6 +79,10 @@ void ConfigKeyComboBox::setup_ui()
 
 void ConfigKeyComboBox::fill_config_keys()
 {
+	disconnect(
+		this, QOverload<int>::of(&ConfigKeyComboBox::currentIndexChanged),
+		this, &ConfigKeyComboBox::config_key_changed);
+
 	this->clear();
 
 	if (configurable_ == nullptr)
@@ -94,6 +98,11 @@ void ConfigKeyComboBox::fill_config_keys()
 				QVariant::fromValue(config_key));
 		}
 	}
+
+	connect(
+		this, QOverload<int>::of(&ConfigKeyComboBox::currentIndexChanged),
+		this, &ConfigKeyComboBox::config_key_changed);
+	Q_EMIT config_key_changed();
 }
 
 void ConfigKeyComboBox::change_configurable(

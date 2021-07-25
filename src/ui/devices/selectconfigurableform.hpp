@@ -64,6 +64,9 @@ private:
 private Q_SLOTS:
 	void on_device_changed();
 
+Q_SIGNALS:
+	void configurable_changed();
+
 };
 
 } // namespace devices

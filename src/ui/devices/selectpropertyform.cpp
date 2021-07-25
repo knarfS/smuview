@@ -112,10 +112,12 @@ void SelectPropertyForm::setup_ui()
 
 void SelectPropertyForm::connect_signals()
 {
-	connect(device_box_, SIGNAL(currentIndexChanged(int)),
-		this, SLOT(on_device_changed()));
-	connect(configurable_box_, SIGNAL(currentIndexChanged(int)),
-		this, SLOT(on_configurable_changed()));
+	connect(device_box_, &DeviceComboBox::device_changed,
+		this, &SelectPropertyForm::on_device_changed);
+	connect(configurable_box_, &ConfigurableComboBox::configurable_changed,
+		this, &SelectPropertyForm::on_configurable_changed);
+	connect(config_key_box_, &ConfigKeyComboBox::config_key_changed,
+		this, &SelectPropertyForm::config_key_changed);
 }
 
 void SelectPropertyForm::on_device_changed()

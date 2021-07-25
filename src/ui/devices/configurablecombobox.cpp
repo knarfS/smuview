@@ -73,6 +73,10 @@ void ConfigurableComboBox::setup_ui()
 
 void ConfigurableComboBox::fill_configurables()
 {
+	disconnect(
+		this, QOverload<int>::of(&ConfigurableComboBox::currentIndexChanged),
+		this, &ConfigurableComboBox::configurable_changed);
+
 	this->clear();
 
 	if (device_ == nullptr)
@@ -88,6 +92,11 @@ void ConfigurableComboBox::fill_configurables()
 			configurable->display_name(),
 			QVariant::fromValue(configurable));
 	}
+
+	connect(
+		this, QOverload<int>::of(&ConfigurableComboBox::currentIndexChanged),
+		this, &ConfigurableComboBox::configurable_changed);
+	Q_EMIT configurable_changed();
 }
 
 void ConfigurableComboBox::change_device(

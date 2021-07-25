@@ -69,6 +69,9 @@ public Q_SLOTS:
 		shared_ptr<sv::devices::BaseDevice> device,
 		const QString &channel_group);
 
+Q_SIGNALS:
+	void channel_changed();
+
 };
 
 } // namespace devices

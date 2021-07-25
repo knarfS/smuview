@@ -64,6 +64,8 @@ public Q_SLOTS:
 	void change_configurable(
 		shared_ptr<sv::devices::Configurable> configurable);
 
+Q_SIGNALS:
+	void config_key_changed();
 };
 
 } // namespace devices
