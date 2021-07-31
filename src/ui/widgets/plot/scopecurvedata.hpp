@@ -62,19 +62,20 @@ class ScopeCurveData : public BaseCurveData
 public:
 	explicit ScopeCurveData(shared_ptr<sv::data::AnalogSegment> segment);
 
-	bool is_equal(const BaseCurveData *other) const override;
-
 	void setRectOfInterest(const QRectF &rect) override;
+
+	void update_scale_maps(const QwtScaleMap &x_scale_map,
+		const QwtScaleMap &y_scale_map);
 
 	/**
 	 * @brief Return a sample (x and y) of the curve.
 	 * The index starts at the visible part of the curve with 0 and ends at the
 	 * visible part with ScopeCurveData::size().
 	 *
-	 * @param[in] i The position of the sample to return.
+	 * @param[in] scale_pos The position of the sample to return.
 	 * @return The sample at position i.
 	 */
-	QPointF sample(size_t i) const override;
+	QPointF sample(size_t scale_pos) const override;
 
 	/**
 	 * @brief Return the size of the curve.
@@ -94,16 +95,12 @@ public:
 	QRectF boundingRect() const override;
 
 	QPointF closest_point(const QPointF &pos, double *dist) const override;
+
+	shared_ptr<sv::data::AnalogSegment> segment() const;
+
 	/* TODO: Remove and move to (Scope)Curve! */
 	QString name() const override;
 	string id_prefix() const override;
-	/* TODO end */
-	void set_x_scale_map(const QwtScaleMap &x_scale_map);
-	void set_y_scale_map(const QwtScaleMap &y_scale_map);
-	void set_scale_maps(const QwtScaleMap &x_scale_map,
-		const QwtScaleMap &y_scale_map);
-
-	/* TODO: Remove and move to (Scope)Curve! */
 	sv::data::Quantity x_quantity() const override;
 	set<sv::data::QuantityFlag> x_quantity_flags() const override;
 	sv::data::Unit x_unit() const override;
@@ -116,9 +113,8 @@ public:
 	QString y_title() const override;
 	/* TODO end */
 
-	shared_ptr<sv::data::AnalogSegment> segment() const;
-
 	/* TODO: Remove and move to (Scope)Curve! */
+	bool is_equal(const BaseCurveData *other) const override;
 	void save_settings(QSettings &settings,
 		shared_ptr<sv::devices::BaseDevice> origin_device) const override;
 	static ScopeCurveData *init_from_settings(
@@ -132,17 +128,23 @@ private:
 	shared_ptr<sv::data::AnalogSegment> segment_;
 	uint32_t actual_segment_id_;
 	QRectF rect_of_interest_;
-	/** Position of the first visible sample. */
-	size_t start_sample_;
-	/** Position of the last visible sample. */
-	size_t end_sample_;
+	/**
+	 * Position of the first sample on the visible scale. Must be greater
+	 * than 0.
+	 */
+	size_t scale_start_sample_;
+	/**
+	 * Position of the last sample on the visible scale.  Must be greater
+	 * than 0.
+	 */
+	size_t scale_end_sample_;
 	mutable QRectF bounding_rect_; // Needs to be mutable, b/c of "boundingRect() const"
 	double samples_per_pixel_;
 	QwtScaleMap x_scale_map_;
 	QwtScaleMap y_scale_map_;
-	sv::data::AnalogSegment::EnvelopeSection envelope_section_;
+	sv::data::AnalogSegment::Envelope envelope_;
 
-	QPointF sample_from_signal(size_t i) const;
+	QPointF sample_from_signal(size_t scale_pos) const;
 	size_t size_from_signal() const;
 
 };

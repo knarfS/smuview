@@ -74,7 +74,7 @@ class ScopeCurve : public QObject // TODO: Inherit from Curve
 
 public:
 	ScopeCurve(shared_ptr<sv::data::AnalogScopeSignal> signal,
-		int x_axis_id = -1, int y_axis_id = -1);
+		QwtPlot::Axis x_axis_id, QwtPlot::Axis y_axis_id);
 	~ScopeCurve();
 
 	static QString get_unit_str(shared_ptr<sv::data::BaseSignal> signal);
@@ -90,9 +90,7 @@ public:
 	void set_relative_time(bool is_relative_time);
 	bool is_relative_time() const;
 
-	void set_x_axis_id(int x_axis_id);
 	QwtPlot::Axis x_axis_id() const;
-	void set_y_axis_id(int y_axis_id);
 	QwtPlot::Axis y_axis_id() const;
 
 	sv::data::Quantity x_quantity() const; // TODO: override
@@ -148,8 +146,7 @@ private:
 private Q_SLOTS:
 	void on_reset();
 	void new_segment(uint32_t segment_id); // TODO: rename?
-	void update_x_scale();
-	void update_y_scale();
+	void scale_maps_updated();
 
 Q_SIGNALS:
 	void new_points();

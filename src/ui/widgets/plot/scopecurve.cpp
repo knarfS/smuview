@@ -33,6 +33,7 @@
 #include <QUuid>
 #include <QVariant>
 #include <qwt_curve_fitter.h>
+#include <qwt_plot.h>
 #include <qwt_plot_curve.h>
 #include <qwt_plot_directpainter.h>
 #include <qwt_plot_marker.h>
@@ -49,6 +50,7 @@
 #include "src/data/datautil.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/ui/widgets/plot/basecurvedata.hpp"
+#include "src/ui/widgets/plot/plotcanvas.hpp"
 #include "src/ui/widgets/plot/scopecurvedata.hpp"
 #include "src/ui/widgets/plot/timecurvedata.hpp"
 #include "src/ui/widgets/plot/xycurvedata.hpp"
@@ -56,6 +58,7 @@
 using std::dynamic_pointer_cast;
 using std::shared_ptr;
 
+Q_DECLARE_METATYPE(QwtPlot::Axis)
 Q_DECLARE_METATYPE(QwtSymbol::Style)
 
 namespace sv {
@@ -64,16 +67,13 @@ namespace widgets {
 namespace plot {
 
 ScopeCurve::ScopeCurve(shared_ptr<sv::data::AnalogScopeSignal> signal,
-		int x_axis_id, int y_axis_id) :
+		QwtPlot::Axis x_axis_id, QwtPlot::Axis y_axis_id) :
 	signal_(signal),
 	plot_direct_painter_(new QwtPlotDirectPainter()),
 	type_(CurveType::ScopeCurve),
 	relative_time_(true),
 	painted_points_(0)
 {
-	(void)x_axis_id;
-	(void)y_axis_id;
-
 	id_ = "scopecurve:" + util::format_uuid(QUuid::createUuid());
 
 	QPen pen;
@@ -92,6 +92,9 @@ ScopeCurve::ScopeCurve(shared_ptr<sv::data::AnalogScopeSignal> signal,
 	plot_curve_->setPaintAttribute(QwtPlotCurve::FilterPoints, true);
 	// Curves have the lowest z order, everything else will be painted ontop.
 	plot_curve_->setZ(1);
+	// Set axes
+	plot_curve_->setXAxis(x_axis_id);
+	plot_curve_->setYAxis(y_axis_id);
 
 	/* TODO: Add/Get all existing segments? */
 	if (signal_->get_last_segment() != nullptr)
@@ -158,51 +161,9 @@ bool ScopeCurve::is_relative_time() const
 	return relative_time_;
 }
 
-void ScopeCurve::set_x_axis_id(int x_axis_id)
-{
-	assert(plot_curve_->plot());
-
-	qWarning() << "ScopeCurve::set_x_axis_id(): x_axis_id = " << x_axis_id;
-	plot_curve_->setXAxis(x_axis_id);
-	/*
-	curve_data_->set_x_scale_map(plot_curve_->plot()->canvasMap(x_axis_id));
-	connect(
-		plot_curve_->plot()->axisWidget(x_axis_id), &QwtScaleWidget::scaleDivChanged,
-		this, &ScopeCurve::update_x_scale);
-	*/
-}
-
-void ScopeCurve::update_x_scale()
-{
-	qWarning() << "ScopeCurve::update_x_scale()";
-	curve_data_->set_x_scale_map(
-		plot_curve_->plot()->canvasMap(plot_curve_->xAxis()));
-}
-
 QwtPlot::Axis ScopeCurve::x_axis_id() const
 {
 	return static_cast<QwtPlot::Axis>(plot_curve_->xAxis());
-}
-
-void ScopeCurve::set_y_axis_id(int y_axis_id)
-{
-	assert(plot_curve_->plot());
-
-	qWarning() << "ScopeCurve::set_y_axis_id(): y_axis_id = " << y_axis_id;
-	plot_curve_->setYAxis(y_axis_id);
-	/*
-	curve_data_->set_x_scale_map(plot_curve_->plot()->canvasMap(y_axis_id));
-	connect(
-		plot_curve_->plot()->axisWidget(y_axis_id), &QwtScaleWidget::scaleDivChanged,
-		this, &ScopeCurve::update_y_scale);
-	*/
-}
-
-void ScopeCurve::update_y_scale()
-{
-	qWarning() << "ScopeCurve::update_y_scale()";
-	curve_data_->set_y_scale_map(
-		plot_curve_->plot()->canvasMap(plot_curve_->yAxis()));
 }
 
 QwtPlot::Axis ScopeCurve::y_axis_id() const
@@ -325,12 +286,12 @@ void ScopeCurve::attach(QwtPlot *plot)
 {
 	plot_curve_->attach(plot);
 
-	const QwtScaleDiv x_div = plot_curve_->plot()->axisScaleDiv(x_axis_id());
-	const QwtScaleDiv y_div = plot_curve_->plot()->axisScaleDiv(y_axis_id());
-	const QRectF roi = QRectF(
-        x_div.lowerBound(), y_div.lowerBound(),
-        x_div.range(), y_div.range() );
-    curve_data_->setRectOfInterest(roi);
+	const QwtScaleMap x_map = plot->canvasMap(x_axis_id());
+	const QwtScaleMap y_map = plot->canvasMap(y_axis_id());
+	curve_data_->update_scale_maps(x_map, y_map);
+
+	connect(qobject_cast<PlotCanvas *>(plot->canvas()), &PlotCanvas::size_changed,
+		this, &ScopeCurve::scale_maps_updated);
 }
 
 void ScopeCurve::detach()
@@ -342,11 +303,12 @@ void ScopeCurve::update()
 {
 	const QwtScaleMap x_map = plot_curve_->plot()->canvasMap(x_axis_id());
 	const QwtScaleMap y_map = plot_curve_->plot()->canvasMap(y_axis_id());
-	curve_data_->set_scale_maps(x_map, y_map);
+	//curve_data_->update_scale_maps(x_map, y_map);
+
 	const size_t num_points = curve_data_->size();
-	qWarning() << "ScopeCurve::update(): painted_points = " << painted_points_;
-	qWarning() << "ScopeCurve::update(): num_points = " << num_points;
-	qWarning() << "ScopeCurve::update(): num_samples = " << curve_data_->size();
+// 	qWarning() << "ScopeCurve::update(): painted_points = " << painted_points_;
+// 	qWarning() << "ScopeCurve::update(): num_points = " << num_points;
+// 	qWarning() << "ScopeCurve::update(): num_samples = " << curve_data_->size();
 	if (num_points > painted_points_) {
 		// TODO: move to somewhere else? -> We have a plot()->replot() and also a replot() here.... painted_points_ = 0....
 		// TODO: What if we have multiple curves, that need a replot at different times?
@@ -357,7 +319,7 @@ void ScopeCurve::update()
 		//qWarning() << QString("ScopeCurve::update(): num_points = %1, painted_points = %2").
 		//	arg(num_points).arg(painted_points_);
 		const bool clip = !plot_curve_->plot()->canvas()->testAttribute(Qt::WA_PaintOnScreen);
-		qWarning() << "ScopeCurve::update(): clip = " << clip;
+// 		qWarning() << "ScopeCurve::update(): clip = " << clip;
 		if (clip) {
 			// TODO: POI/ROI is now in CurveData. Is this needed any longer?
 			/*
@@ -372,7 +334,7 @@ void ScopeCurve::update()
 			//const QwtScaleMap y_map = plot_curve_->plot()->canvasMap(y_axis_id());
 			// TODO: Use bounding rect from CurveData?
 			QRectF br = qwtBoundingRect(*plot_curve_->data(),
-				(int)painted_points_ - 1, (int)num_points - 1);
+				(int)painted_points_ , (int)num_points - 1);
 
 			plot_direct_painter_->setClipRegion(
 				QwtScaleMap::transform(x_map, y_map, br).toRect());
@@ -380,19 +342,19 @@ void ScopeCurve::update()
 
 		qWarning() << "ScopeCurve::update(): Update " << QString::fromStdString(id());
 		qWarning() << "ScopeCurve::update(): drawSeries(" << plot_curve_ << ", "
-			<< (int)painted_points_ - 1 << ", " << (int)num_points - 1 << ")";
+			<< (int)painted_points_ << ", " << (int)num_points - 1 << ")";
 
 		qWarning() << "ScopeCurve::update(): drawSeries(" << plot_curve_ << "): first ts = "
 			<< curve_data_->sample(0);
 		qWarning() << "ScopeCurve::update(): drawSeries(" << plot_curve_ << "): start ts = "
-			<< curve_data_->sample((int)painted_points_ - 1);
+			<< curve_data_->sample((int)painted_points_);
 		qWarning() << "ScopeCurve::update(): drawSeries(" << plot_curve_ << "): last ts = "
 			<< curve_data_->sample((int)num_points - 1);
 
 		plot_direct_painter_->drawSeries(
-			plot_curve_, (int)painted_points_ - 1, (int)num_points - 1);
+			plot_curve_, (int)painted_points_, (int)num_points - 1);
 
-		painted_points_ = num_points;
+		painted_points_ = num_points - 1;
 		Q_EMIT new_points(); // TODO: rename to update_scale, move to boundary? not a good solution to update scale (changes)
 	}
 
@@ -404,6 +366,7 @@ void ScopeCurve::replot()
 	qWarning() << "ScopeCurve::replot(): ==== Replot ====";
 	// TODO
 	//painted_points_ = 0;
+	scale_maps_updated();
 }
 
 void ScopeCurve::reset()
@@ -433,6 +396,13 @@ void ScopeCurve::new_segment(uint32_t segment_id)
 	connect(curve_data_, &BaseCurveData::reset_curve,
 		this, &ScopeCurve::on_reset);
 	*/
+}
+
+void ScopeCurve::scale_maps_updated()
+{
+	curve_data_->update_scale_maps(
+		plot_curve_->plot()->canvasMap(x_axis_id()),
+		plot_curve_->plot()->canvasMap(y_axis_id()));
 }
 
 QwtPlotMarker *ScopeCurve::add_marker(const QString &name_postfix)
@@ -472,8 +442,8 @@ void ScopeCurve::save_settings(QSettings &settings,
 	settings.beginGroup(QString::fromStdString(id_));
 
 	SettingsManager::save_signal(signal_, settings, origin_device);
-	settings.setValue("x_axis_id", x_axis_id());
-	settings.setValue("y_axis_id", y_axis_id());
+	settings.setValue("x_axis_id", QVariant::fromValue(x_axis_id()));
+	settings.setValue("y_axis_id", QVariant::fromValue(y_axis_id()));
 	if (has_custom_name_)
 		settings.setValue("custom_name", name_);
 	if (has_custom_color_)
@@ -502,9 +472,9 @@ ScopeCurve *ScopeCurve::init_from_settings(
 	if (!as_signal)
 		return nullptr;
 
-	ScopeCurve *curve = new ScopeCurve(as_signal);
-	curve->set_x_axis_id(settings.value("x_axis_id").toInt());
-	curve->set_y_axis_id(settings.value("y_axis_id").toInt());
+	ScopeCurve *curve = new ScopeCurve(as_signal,
+		settings.value("x_axis_id").value<QwtPlot::Axis>(),
+		settings.value("y_axis_id").value<QwtPlot::Axis>());
 	if (settings.contains("custom_name"))
 		curve->set_name(settings.value("custom_name").toString());
 	if (settings.contains("custom_color"))

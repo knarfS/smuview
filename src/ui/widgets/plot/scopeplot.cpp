@@ -35,6 +35,7 @@
 #include <QPointF>
 #include <QPushButton>
 #include <QRectF>
+#include <QResizeEvent>
 #include <QSize>
 #include <QUuid>
 #include <QVariant>
@@ -71,6 +72,7 @@
 #include "src/ui/widgets/plot/axislocklabel.hpp"
 #include "src/ui/widgets/plot/basecurvedata.hpp"
 #include "src/ui/widgets/plot/plot.hpp"
+#include "src/ui/widgets/plot/plotcanvas.hpp"
 #include "src/ui/widgets/plot/plotmagnifier.hpp"
 #include "src/ui/widgets/plot/scopecurve.hpp"
 #include "src/ui/widgets/plot/scopecurvedata.hpp"
@@ -86,64 +88,6 @@ namespace ui {
 namespace widgets {
 namespace plot {
 
-class Canvas : public QwtPlotCanvas
-{
-public:
-	explicit Canvas(QwtPlot *plot = nullptr) : QwtPlotCanvas(plot)
-	{
-		/*
-		 * NOTE:
-		 * The backing store is important, when working with widget overlays
-		 * (f.e rubberbands for zooming). Here we don't have them and the
-		 * internal backing store of QWidget is good enough.
-		 */
-		setPaintAttribute(QwtPlotCanvas::BackingStore, false);
-		/*
-		 * NOTE:
-		 * ImmediatePaint is necessary so "old" curves will be deleted.
-		 * QwtPlot::repaint() in replot() will also work
-		 */
-		setPaintAttribute(QwtPlotCanvas::ImmediatePaint, true);
-		setBorderRadius(10);
-
-		if (QwtPainter::isX11GraphicsSystem()) {
-			/*
-			 * NOTE:
-			 * Disabling the backing store of Qt improves the performance for
-			 * the direct painter even more, but the canvas becomes a native
-			 * window of the window system, receiving paint events for resize
-			 * and expose operations. Those might be expensive when there are
-			 * many points and the backing store of the canvas is disabled. So
-			 * in this application we better don't disable both backing stores.
-			 */
-			if (testPaintAttribute(QwtPlotCanvas::BackingStore)) {
-				setAttribute(Qt::WA_PaintOnScreen, true);
-				setAttribute(Qt::WA_NoSystemBackground, true);
-			}
-		}
-
-		setupPalette();
-	}
-
-private:
-	void setupPalette()
-	{
-		QPalette pal = palette();
-
-		QLinearGradient gradient;
-		gradient.setCoordinateMode(QGradient::StretchToDeviceMode);
-		gradient.setColorAt(0.0, QColor(0, 49, 110));
-		gradient.setColorAt(1.0, QColor(0, 87, 174));
-
-		pal.setBrush(QPalette::Window, QBrush(gradient));
-
-		// QPalette::WindowText is used for the curve color
-		pal.setColor(QPalette::WindowText, Qt::green);
-
-		setPalette(pal);
-	}
-};
-
 ScopePlot::ScopePlot(Session &session, QWidget *parent) : QwtPlot(parent),
 	session_(session),
 	time_span_(120.),
@@ -157,7 +101,7 @@ ScopePlot::ScopePlot(Session &session, QWidget *parent) : QwtPlot(parent),
 	marker_move_picker_(nullptr)
 {
 	this->setAutoReplot(false);
-	this->setCanvas(new Canvas());
+	this->setCanvas(new PlotCanvas());
 
 	// This must be done, because when the QwtPlot widget is directly or
 	// indirectly in a (Main)Window, therefor the minimum size is way to big.
@@ -271,11 +215,10 @@ bool ScopePlot::add_curve(ScopeCurve *curve)
 		return false;
 
 	curve->attach(this);
-	curve->set_y_axis_id(y_axis_id);
-	curve->set_x_axis_id(x_axis_id);
 
 	curve_map_.insert(make_pair(curve->id(), curve));
 
+	// TODO: This is updating way to often
 	connect(curve, &ScopeCurve::new_points,
 		this, &ScopePlot::update_intervals);
 
@@ -360,6 +303,7 @@ int ScopePlot::init_x_axis(const ScopeCurve *curve, int x_axis_id)
 {
 	assert(curve);
 
+	// TODO
 	if (x_axis_id < 0) {
 		// Check if there already is an axis with the same unit. This is done
 		// via the strings to get potential AC/DC flags.
@@ -438,6 +382,7 @@ int ScopePlot::init_y_axis(const ScopeCurve *curve, int y_axis_id)
 {
 	assert(curve);
 
+	// TODO
 	if (y_axis_id < 0) {
 		// Check if there already is an axis with the same unit. This is done
 		// via the strings to get potential AC/DC flags.
@@ -1041,7 +986,7 @@ bool ScopePlot::update_x_interval(ScopeCurve *curve)
 
 bool ScopePlot::update_y_interval(const ScopeCurve *curve)
 {
-	qWarning() << "ScopePlot::update_y_interval(): curve = " << curve->name();
+	//qWarning() << "ScopePlot::update_y_interval(): curve = " << curve->name();
 
 	int y_axis_id = curve->y_axis_id();
 	if (axis_lock_map_[y_axis_id][AxisBoundary::LowerBoundary] &&
@@ -1054,32 +999,32 @@ bool ScopePlot::update_y_interval(const ScopeCurve *curve)
 	double max = y_interval.maxValue();
 	bool interval_changed = false;
 
-	qWarning() << "ScopePlot::update_y_interval(): boundaries.bottom() = "
-		<< boundaries.bottom();
-	qWarning() << "ScopePlot::update_y_interval(): y_interval.minValue() = "
-		<< y_interval.minValue();
+	//qWarning() << "ScopePlot::update_y_interval(): boundaries.bottom() = "
+	//	<< boundaries.bottom();
+	//qWarning() << "ScopePlot::update_y_interval(): y_interval.minValue() = "
+	//	<< y_interval.minValue();
 	if (!axis_lock_map_[y_axis_id][AxisBoundary::LowerBoundary] &&
 			boundaries.bottom() < min) {
 		// New value - 10%
 		min = boundaries.bottom() - (std::fabs(boundaries.bottom()) * 0.1);
-		qWarning() << "ScopePlot::update_y_interval(): New min = " << min;
+		//qWarning() << "ScopePlot::update_y_interval(): New min = " << min;
 		interval_changed = true;
 	}
-	qWarning() << "ScopePlot::update_y_interval(): boundaries.top() = "
-		<< boundaries.top();
-	qWarning() << "ScopePlot::update_y_interval(): y_interval.maxValue() = "
-		<< y_interval.maxValue();
+	//qWarning() << "ScopePlot::update_y_interval(): boundaries.top() = "
+	//	<< boundaries.top();
+	//qWarning() << "ScopePlot::update_y_interval(): y_interval.maxValue() = "
+	//	<< y_interval.maxValue();
 	if (!axis_lock_map_[y_axis_id][AxisBoundary::UpperBoundary] &&
 			boundaries.top() > max) {
 		// New value + 10%
 		max = boundaries.top() + (std::fabs(boundaries.top()) * 0.1);
-		qWarning() << "ScopePlot::update_y_interval(): New max = " << max;
+		//qWarning() << "ScopePlot::update_y_interval(): New max = " << max;
 		interval_changed = true;
 	}
 
 	if (interval_changed ) {
-		qWarning() << "ScopePlot::update_y_interval(): interval_changed! "
-			<< y_axis_id;
+		//qWarning() << "ScopePlot::update_y_interval(): interval_changed! "
+		//	<< y_axis_id;
 		setAxisScale(y_axis_id, min, max);
 	}
 	return interval_changed;

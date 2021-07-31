@@ -373,6 +373,7 @@ set(smuview_SOURCES
 	src/ui/widgets/plot/basecurvedata.cpp
 	src/ui/widgets/plot/curve.cpp
 	src/ui/widgets/plot/plot.cpp
+	src/ui/widgets/plot/plotcanvas.cpp
 	src/ui/widgets/plot/plothelper.cpp
 	src/ui/widgets/plot/plotmagnifier.cpp
 	src/ui/widgets/plot/plotscalepicker.cpp

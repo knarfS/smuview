@@ -84,6 +84,7 @@ public:
 		float max;
 	};
 
+	/*
 	struct EnvelopeSection
 	{
 		uint64_t start;
@@ -92,15 +93,19 @@ public:
 		double time_stride;
 		EnvelopeSample *samples;
 	};
+	*/
 
-private:
 	struct Envelope
 	{
+		unsigned int scale_power;
+		unsigned int scale;
 		uint64_t length;
 		uint64_t data_length;
 		double time_stride;
 		EnvelopeSample *samples;
 	};
+
+private:
 
 private:
 	static const uint64_t MaxChunkSize;
@@ -146,8 +151,11 @@ public:
 
 	float* get_iterator_value_ptr(SegmentDataIterator* it);
 
+	/*
 	void get_envelope_section(EnvelopeSection &s,
 		uint64_t start, uint64_t end, float min_length) const;
+	*/
+	void get_envelope(Envelope &e, float min_length) const;
 
 private:
 	void append_single_sample(void *data);
