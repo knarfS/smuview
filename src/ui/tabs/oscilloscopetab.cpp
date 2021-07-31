@@ -73,13 +73,11 @@ void OscilloscopeTab::setup_ui()
 	size_t added_channels = 0;
 	ui::views::ScopePlotView *plot_view = nullptr;
 	for (const auto &chg_pair : device_->channel_group_map()) {
-		/* TODO: for now, only the first two channles are displayed. */
+		/* TODO: Remove, just for testing! */
 		if (added_channels >= 2)
-		//if (added_channels >= 1)
 			break;
 
-		/* TODO: We assume, that every channel group has just one channel. */
-		// Only get the first channel, and ignore the others
+		/* NOTE: We assume, that every scope channel group has just one channel. */
 		auto channel = chg_pair.second.at(0);
 		if (!channel)
 			continue;
@@ -92,7 +90,11 @@ void OscilloscopeTab::setup_ui()
 			plot_view->set_scope_device(scope_device);
 			add_view(plot_view, Qt::TopDockWidgetArea);
 		}
-		plot_view->add_channel(scope_channel);
+		/* NOTE: Left axis for channels 1+3+..., right axis for channels 2+4+... */
+		// TODO: check for units?
+		QwtPlot::Axis y_axis_id =
+			channel->index() % 2 == 0 ? QwtPlot::yRight : QwtPlot::yLeft;
+		plot_view->add_channel(scope_channel, y_axis_id);
 
 		++added_channels;
 	}

@@ -28,6 +28,7 @@
 #include <QMenu>
 #include <QToolBar>
 #include <QToolButton>
+#include <qwt_plot.h>
 
 //#include "src/ui/views/baseplotview.hpp"
 #include "src/ui/views/baseview.hpp"
@@ -81,15 +82,14 @@ public:
 	 */
 	void set_scope_device(shared_ptr<sv::devices::OscilloscopeDevice> device);
 	/**
-	 * Add a new channel to the scope plot.
+	 * Add a new channel to the scope plot with the given y-axis.
 	 */
-	string add_channel(shared_ptr<channels::ScopeChannel> channel);
+	string add_channel(shared_ptr<channels::ScopeChannel> channel,
+		QwtPlot::Axis y_axis_id);
 
 private:
 	shared_ptr<sv::devices::OscilloscopeDevice> device_;
-	shared_ptr<channels::ScopeChannel> channel_1_; // TODO
-	shared_ptr<channels::ScopeChannel> channel_2_; // TODO
-	//vector<widgets::plot::BaseCurveData *> curves_;
+	QString channel_names_;
 	widgets::plot::ScopePlot *plot_;
 
 	void setup_ui();

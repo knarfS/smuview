@@ -80,13 +80,7 @@ ScopePlotView::ScopePlotView(Session &session, QUuid uuid, QWidget *parent) :
 
 QString ScopePlotView::title() const
 {
-	QString title = tr("Channel");
-	if (channel_1_ != nullptr)
-		title = title.append(" ").append(channel_1_->display_name());
-	if (channel_2_ != nullptr)
-		title = title.append(", ").append(channel_2_->display_name());
-
-	return title;
+	return tr("Channel(s)").append(" ").append(channel_names_);
 }
 
 void ScopePlotView::set_scope_device(
@@ -161,32 +155,37 @@ void ScopePlotView::set_scope_device(
 	}
 }
 
-string ScopePlotView::add_channel(shared_ptr<channels::ScopeChannel> channel)
+string ScopePlotView::add_channel(
+	shared_ptr<channels::ScopeChannel> channel, QwtPlot::Axis y_axis_id)
 {
 	assert(channel);
-	string id; // TODO
 
-	// TODO: Use vector
-	if (channel_1_ != nullptr && channel_2_ != nullptr)
-		return "";
+	(void)y_axis_id; // TODO: How to handle teh axis id for the add_signal slot?
 
 	connect(channel.get(), &channels::ScopeChannel::signal_added,
 		this, &ScopePlotView::add_signal);
 
-	auto signal = static_pointer_cast<data::AnalogScopeSignal>(
+	// TODO: When adding channles at startup, there is probaly yet no signal.
+	//       Lock, so the same signal didn't get add two times.
+	/*
+	// TODO: Use (Analog)BaseSignal
+	auto as_signal = static_pointer_cast<data::AnalogScopeSignal>(
 		channel->actual_signal());
-	if (signal == nullptr)
+	if (as_signal == nullptr)
 		return "";
 
-	// TODO: Maybe add already existing signals?
+	auto curve = new widgets::plot::ScopeCurve(
+		as_signal, y_axis_id, QwtPlot::xBottom);
+	plot_->add_curve(curve);
 
-	// TODO
-	if (channel_1_ == nullptr)
-		channel_1_ = channel;
-	else if (channel_2_ == nullptr)
-		channel_2_ = channel;
+	if (!channel_names_.isEmpty())
+		channel_names_.append(", ");
+	channel_names_.append(channel->display_name());
+	Q_EMIT title_changed();
 
-	return id;
+	return curve->id();
+	*/
+	return "";
 }
 
 void ScopePlotView::setup_ui()
@@ -331,7 +330,9 @@ void ScopePlotView::add_signal(std::shared_ptr<sv::data::BaseSignal> signal)
 	}
 	*/
 
-	auto curve = new widgets::plot::ScopeCurve(as_signal);
+	// TODO: axes
+	auto curve = new widgets::plot::ScopeCurve(
+		as_signal, QwtPlot::xBottom, QwtPlot::yLeft);
 	plot_->add_curve(curve);
 
 	/* TODO
@@ -362,6 +363,8 @@ void ScopePlotView::on_action_add_curve_triggered()
 	auto curve = new widgets::plot::ScopeCurve(
 		as_signal, dlg.x_axis_id(), dlg.y_axis_id());
 	plot_->add_curve(curve);
+
+	Q_EMIT title_changed();
 }
 
 void ScopePlotView::on_action_add_marker_triggered()
