@@ -32,6 +32,7 @@
 #include <QDebug>
 #include <QString>
 #include <QStringList>
+#include <QVariant>
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
@@ -191,7 +192,11 @@ void HardwareDevice::init_configurables()
 	configurable_map_.insert(make_pair("", d_c));
 
 	// Sample rate for multi value samples
-	// TODO: This is when rate/interval is changed in sv?? TEST!
+	// TODO: Combine cur_samplerate_ and cur_sample_interval_ into one double?
+	// TODO: Maybe connecting Samplerate and SampleInterval is not needed?
+	//       They are already handled in HardwareDevice::feed_in_meta(), because
+	//       for some devices, there are no config keys (get/set/list) for
+	//       Samplerate and SampleInterval, but only meta packets.
 	if (d_c->has_get_config(ConfigKey::Samplerate)) {
 		auto samplerate_prop =
 			static_pointer_cast<data::properties::UInt64Property>(
@@ -199,19 +204,19 @@ void HardwareDevice::init_configurables()
 		cur_samplerate_ = samplerate_prop->uint64_value();
 		connect(samplerate_prop.get(),
 			&data::properties::UInt64Property::value_changed,
-			this, [this, &samplerate_prop]() {
-				cur_samplerate_ = samplerate_prop->uint64_value();
+			this, [this](const QVariant& qvar) {
+				cur_samplerate_ = (uint64_t)qvar.toULongLong();
 			});
 	}
 	if (d_c->has_get_config(ConfigKey::SampleInterval)) {
-		auto sampleInterval_prop =
+		auto sample_interval_prop =
 			static_pointer_cast<data::properties::UInt64Property>(
 				d_c->get_property(ConfigKey::SampleInterval));
-		cur_sample_interval_ = sampleInterval_prop->uint64_value();
-		connect(sampleInterval_prop.get(),
+		cur_sample_interval_ = sample_interval_prop->uint64_value();
+		connect(sample_interval_prop.get(),
 			&data::properties::UInt64Property::value_changed,
-			this, [this, &sampleInterval_prop]() {
-				cur_samplerate_ = sampleInterval_prop->uint64_value();
+			this, [this](const QVariant& qvar) {
+				cur_sample_interval_ = (uint64_t)qvar.toULongLong();
 			});
 	}
 }
@@ -254,10 +259,11 @@ void HardwareDevice::feed_in_meta(shared_ptr<sigrok::Meta> sr_meta)
 {
 	/*
 	 * For some devices there are no config keys (get/set/list) for Samplerate
-	 * and SampleInterval, but only meta packets. Handel them here and set a
-	 * current rate/interval directly to the device. This will be needed for
-	 * analog packets mit multiple samples per packet to calculate the time
-	 * stride. But also forward them to the configurable.
+	 * and SampleInterval, but only meta packets. So just connecting the signals
+	 * data::properties::UInt64Property::value_changed() won't work for those.
+	 * Handel them here and set a current rate/interval directly to the device.
+	 * This will be needed for analog packets mit multiple samples per packet to
+	 * calculate the time stride. But also forward them to the configurable.
 	 */
 	for (const auto &entry : sr_meta->config()) {
 		// TODO: !configurable_map_[""]->has_get_config(ConfigKey::Samplerate)
@@ -347,7 +353,7 @@ void HardwareDevice::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
 			QString::fromStdString(sr_device_->model()) <<
 			", Channel.Id = " <<
 			QString::fromStdString(sr_channel->name()) <<
-			" channel_data = " << *channel_data;
+			" with cur_samplerate_ = " << cur_samplerate_;
 		*/
 
 		if (sr_channel_map_.count(sr_channel) == 0)

@@ -64,11 +64,6 @@ namespace sv {
 namespace channels {
 class BaseChannel;
 }
-namespace data {
-namespace properties {
-class UInt64Property;
-}
-}
 
 namespace devices {
 
