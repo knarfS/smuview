@@ -140,6 +140,14 @@ void init_Session(py::module &m)
 		"-------\n"
 		"UserDevice\n"
 		"    The created user device object.");
+	py_session.def("remove_device", &sv::Session::remove_device,
+		py::arg("device"),
+		"Close a device and remove it from the session. This will also delete all aquired data!\n\n"
+		"Parameters\n"
+		"-------\n"
+		"device : BaseDevice\n"
+		"    The device to remove.");
+
 }
 
 void init_Device(py::module &m)
