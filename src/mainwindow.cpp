@@ -143,6 +143,9 @@ ui::tabs::SmuScriptTab *MainWindow::add_smuscript_tab(const string &file_name)
 
 void MainWindow::remove_tab(const string &tab_id)
 {
+	if (tab_window_map_.count(tab_id)  == 0)
+		return;
+
 	remove_tab(tab_widget_->indexOf(tab_window_map_[tab_id]));
 }
 
