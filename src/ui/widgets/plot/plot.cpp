@@ -24,6 +24,7 @@
 #include <string>
 #include <utility>
 
+#include <QtMath>
 #include <QBoxLayout>
 #include <QDateTime>
 #include <QDebug>
