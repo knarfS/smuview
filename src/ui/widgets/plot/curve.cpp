@@ -33,6 +33,7 @@
 #include <qwt_plot_directpainter.h>
 #include <qwt_plot_marker.h>
 #include <qwt_symbol.h>
+#include <qwt_text.h>
 
 #include "curve.hpp"
 #include "src/session.hpp"

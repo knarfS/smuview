@@ -42,6 +42,7 @@
 #include <qwt_curve_fitter.h>
 #include <qwt_date_scale_engine.h>
 #include <qwt_legend.h>
+#include <qwt_math.h>
 #include <qwt_painter.h>
 #include <qwt_picker_machine.h>
 #include <qwt_plot_canvas.h>
@@ -57,6 +58,7 @@
 #include <qwt_plot_panner.h>
 #include <qwt_plot_picker.h>
 #include <qwt_scale_draw.h>
+#include <qwt_scale_map.h>
 #include <qwt_scale_widget.h>
 #include <qwt_symbol.h>
 
