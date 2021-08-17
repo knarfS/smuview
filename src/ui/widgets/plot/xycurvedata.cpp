@@ -22,10 +22,12 @@
 #include <set>
 #include <vector>
 
+#include <QtMath>
 #include <QPointF>
 #include <QRectF>
 #include <QSettings>
 #include <QString>
+#include <qwt_math.h>
 
 #include "xycurvedata.hpp"
 #include "src/session.hpp"
