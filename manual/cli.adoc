@@ -29,7 +29,7 @@ smuview -s /path/to/example_script.py
 The remaining parameters are mostly for debug purposes:
 [listing, subs="normal"]
 -V / --version		Shows the release version
--l / --loglevel		Sets the libsigrok/libsigrokdecode log level (max is 5)
+-l / --loglevel		Sets the libsigrok log level (0-5, default: 2)
 -D / --dont-scan	Do not auto-scan for devices and use -d spec only
 -c / --clean		Do not restore previous settings on startup
 

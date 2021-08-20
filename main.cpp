@@ -63,7 +63,7 @@ void usage()
 		"\n"
 		"Application Options:\n"
 		"  -V, --version              Show release version\n"
-		"  -l, --loglevel             Set libsigrok loglevel\n"
+		"  -l, --loglevel             Set libsigrok loglevel (0-5, default: 2)\n"
 		"  -d, --driver               Specify the device driver(s) to use\n"
 		"  -D, --dont-scan            Don't auto-scan for devices, use -d spec only\n"
 		"  -s, --script               Specify the SmuScript to load and execute\n"
@@ -88,6 +88,7 @@ int main(int argc, char *argv[])
 {
 	int ret = 0;
 	shared_ptr<sigrok::Context> context;
+	int loglevel = -1;
 	vector<string> drivers;
 	//string open_file;
 	//string open_file_format;
@@ -137,9 +138,7 @@ int main(int argc, char *argv[])
 
 		case 'l':
 		{
-			const int loglevel = atoi(optarg);
-			context->set_log_level(sigrok::LogLevel::get(loglevel));
-
+			loglevel = atoi(optarg);
 			if (loglevel >= 5) {
 				const QSettings settings;
 				qDebug() << "Settings:" << settings.fileName()
@@ -192,6 +191,9 @@ int main(int argc, char *argv[])
 
 	do {
 		try {
+			if (loglevel >= 0)
+				context->set_log_level(sigrok::LogLevel::get(loglevel));
+
 			sv::SettingsManager::set_restore_settings(restore_settings);
 
 			// Initialize global start timestamp
