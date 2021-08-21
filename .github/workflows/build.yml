@@ -95,8 +95,8 @@ jobs:
           PKG_CONFIG_PATH=$P cmake \
             -DCMAKE_INSTALL_PREFIX:PATH=$INSTALL_DIR \
             -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
-            -DDISABLE_WERROR=y \
-            -DENABLE_TESTS=y \
+            -DDISABLE_WERROR=FALSE \
+            -DENABLE_TESTS=TRUE \
             ..
           make $PARALLEL $V
 
@@ -205,8 +205,8 @@ jobs:
           $CMAKE \
             -DCMAKE_INSTALL_PREFIX:PATH=$INSTALL_DIR \
             -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
-            -DDISABLE_WERROR=y \
-            -DENABLE_TESTS=y \
+            -DDISABLE_WERROR=FALSE \
+            -DENABLE_TESTS=TRUE \
             ..
           make $PARALLEL $V
           make install/strip $V
@@ -277,8 +277,8 @@ jobs:
           PKG_CONFIG_PATH=$P cmake \
             -DCMAKE_INSTALL_PREFIX:PATH=$INSTALL_DIR \
             -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
-            -DDISABLE_WERROR=y \
-            -DENABLE_TESTS=y \
+            -DDISABLE_WERROR=FALSE \
+            -DENABLE_TESTS=TRUE \
             ..
           make $PARALLEL $V
           make install $V
