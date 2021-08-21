@@ -108,7 +108,11 @@ void init_Session(py::module &m)
 	py::class_<sv::Session> py_session(m, "Session");
 	py_session.doc() = "The SmuView `Session` class for accessing the actual state of the application.";
 	py_session.def("devices", &sv::Session::device_map,
-		"Return all connected devices.\n\n"
+		"Return all connected devices.\n"
+		"The device id is an (in almost all cases) unique string containing the "
+		"manufacturer, the device model name and a more or less unique idenifier "
+		"like the devices' serial number or the connection port (e.g. `COM5`, "
+		"`/dev/ttyUSB2`).\n\n"
 		"Returns\n"
 		"-------\n"
 		"Dict[str, BaseDevice]\n"
