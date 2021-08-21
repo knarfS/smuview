@@ -71,6 +71,10 @@ endif()
 # Generate compile_commands.json in build/ for analyzers like clang-tidy.
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+message(STATUS "DISABLE_WERROR: ${DISABLE_WERROR}")
+message(STATUS "ENABLE_SIGNALS: ${ENABLE_SIGNALS}")
+message(STATUS "ENABLE_TESTS: ${ENABLE_TESTS}")
+message(STATUS "STATIC_PKGDEPS_LIBS: ${STATIC_PKGDEPS_LIBS}")
 
 #===============================================================================
 #= Dependencies
@@ -383,7 +387,8 @@ add_definitions(-std=c++11)
 add_definitions(-DBOOST_MATH_DISABLE_FLOAT128=1)
 
 if(NOT DISABLE_WERROR)
-	add_definitions(-Werror)
+	#add_definitions(-Werror -pedantic-errors)
+	add_definitions(-Werror=pedantic -pedantic-errors)
 endif()
 
 if(ENABLE_SIGNALS)
