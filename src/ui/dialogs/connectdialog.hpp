@@ -48,8 +48,8 @@ namespace sigrok {
 class Driver;
 }
 
-Q_DECLARE_METATYPE(shared_ptr<sigrok::Driver>);
-Q_DECLARE_METATYPE(shared_ptr<sv::devices::HardwareDevice>);
+Q_DECLARE_METATYPE(shared_ptr<sigrok::Driver>)
+Q_DECLARE_METATYPE(shared_ptr<sv::devices::HardwareDevice>)
 
 namespace sv {
 
