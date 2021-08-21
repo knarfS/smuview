@@ -73,7 +73,8 @@ jobs:
           PKG_CONFIG_PATH=$P cmake \
             -DCMAKE_INSTALL_PREFIX:PATH=$INSTALL_DIR \
             -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
-            -DDISABLE_WERROR=y \
+            -DDISABLE_WERROR=TRUE \
+            -DENABLE_TESTS=FALSE \
             ..
           make manual $V
           make manual-publish $V
