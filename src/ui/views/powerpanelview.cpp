@@ -342,8 +342,10 @@ void PowerPanelView::save_settings(QSettings &settings,
 {
 	BaseView::save_settings(settings, origin_device);
 
-	SettingsManager::save_signal(voltage_signal_, settings, origin_device, "v_");
-	SettingsManager::save_signal(current_signal_, settings, origin_device, "i_");
+	if (voltage_signal_)
+		SettingsManager::save_signal(voltage_signal_, settings, origin_device, "v_");
+	if (current_signal_)
+		SettingsManager::save_signal(current_signal_, settings, origin_device, "i_");
 }
 
 void PowerPanelView::restore_settings(QSettings &settings,
@@ -417,8 +419,8 @@ void PowerPanelView::stop_timer()
 
 void PowerPanelView::on_update()
 {
-	if (voltage_signal_->sample_count() == 0 ||
-			current_signal_->sample_count() == 0)
+	if (!voltage_signal_ || voltage_signal_->sample_count() == 0 ||
+			!current_signal_ || current_signal_->sample_count() == 0)
 		return;
 
 	qint64 now = QDateTime::currentMSecsSinceEpoch();
