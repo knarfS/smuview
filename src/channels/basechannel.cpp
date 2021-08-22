@@ -151,9 +151,18 @@ void BaseChannel::add_channel_group_name(const string &channel_group_name)
 void BaseChannel::add_signal(shared_ptr<data::AnalogTimeSignal> signal)
 {
 	if (!signal_map_.empty() && fixed_signal_) {
-		qWarning() << "Warning: Adding new signal " << signal->display_name() <<
-			"to fixed channel " << display_name();
-		return;
+		/*
+		 * NOTE: Previous versions didn't create a new signal but just exited
+		 *       here, which led to a subsequent segfault.
+		 *       Just print a message and create the new signals anyways.
+		 */
+		qCritical() << "WARNING: Adding the unexpected signal "
+			<< signal->display_name() << " to the fixed channel "
+			<< display_name() << " with an already existing signal "
+			<< actual_signal_->display_name();
+		qCritical() << "WARNING: The sigrok device driver is propably sending "
+			<< "a wrong measured qunatity or wrong mq_flags.";
+		qCritical() << "WARNING: Please fix this in the libsigrok driver!";
 	}
 
 	connect(this, SIGNAL(channel_start_timestamp_changed(double)),

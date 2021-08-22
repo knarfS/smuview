@@ -84,6 +84,17 @@ void SourceSinkDevice::init_configurables()
 	}
 }
 
+/*
+ * TODO: Preinit the fixed channels with e.g. channel.meaning.mq and
+ *       quantity_flags (AC/DC)! Must be implemented in sigrok!
+ *
+ * TODO: Handle AC power supplies / loads! Right now AC devices are initialized
+ *       as DC, which results in two signals per Voltage and Amp channel.
+ *
+ * NOTE: The check when adding signals with other mq/mq_flags than specified in
+ *       here to a fixed channel was defused in BaseChannel::add_signal() to
+ *       prevent a subsequent segfault.
+ */
 void SourceSinkDevice::init_channels()
 {
 	HardwareDevice::init_channels();
@@ -95,8 +106,6 @@ void SourceSinkDevice::init_channels()
 			if (channel->type() != channels::ChannelType::AnalogChannel)
 				continue;
 
-			// TODO: Preinit the fixed channels with channel.meaning.mq,
-			//       quantity_flags (AC/DC), ...! Must be implemented in sigrok!
 			bool init = false;
 			data::Quantity quantity;
 			set<data::QuantityFlag> quantity_flags;
