@@ -20,6 +20,7 @@
 #include <algorithm>
 #include <cassert>
 #include <string>
+#include <vector>
 
 #include <QDebug>
 
@@ -40,6 +41,7 @@
 
 using std::static_pointer_cast;
 using std::string;
+using std::vector;
 
 namespace sv {
 namespace devices {
@@ -102,6 +104,7 @@ void SourceSinkDevice::init_channels()
 	// Preinitialize known fixed channels with a signal
 	for (const auto &chg_name_channels_pair : channel_group_map_) {
 		string ch_suffix;
+		bool ch_suffix_initialized = false;
 		for (const auto &channel : chg_name_channels_pair.second) {
 			if (channel->type() != channels::ChannelType::AnalogChannel)
 				continue;
@@ -116,7 +119,8 @@ void SourceSinkDevice::init_channels()
 				quantity_flags.insert(data::QuantityFlag::DC);
 				unit = data::Unit::Volt;
 				init = true;
-				handle_channel_name_suffix(channel->name(), 1, ch_suffix);
+				ch_suffix_initialized = get_channel_name_suffix(ch_suffix,
+					channel->name(), { "V" }, ch_suffix_initialized);
 			}
 			else if (util::starts_with(channel->name(), "I")) {
 				quantity = data::Quantity::Current;
@@ -124,38 +128,44 @@ void SourceSinkDevice::init_channels()
 				quantity_flags.insert(data::QuantityFlag::DC);
 				unit = data::Unit::Ampere;
 				init = true;
-				handle_channel_name_suffix(channel->name(), 1, ch_suffix);
+				ch_suffix_initialized = get_channel_name_suffix(ch_suffix,
+					channel->name(), { "I" }, ch_suffix_initialized);
 			}
 			else if (util::starts_with(channel->name(), "P")) {
 				quantity = data::Quantity::Power;
 				unit = data::Unit::Watt;
 				init = true;
-				handle_channel_name_suffix(channel->name(), 1, ch_suffix);
+				ch_suffix_initialized = get_channel_name_suffix(ch_suffix,
+					channel->name(), { "P" }, ch_suffix_initialized);
 			}
 			else if (util::starts_with(channel->name(), "R")) {
 				quantity = data::Quantity::Resistance;
 				unit = data::Unit::Ohm;
 				init = true;
-				handle_channel_name_suffix(channel->name(), 1, ch_suffix);
+				ch_suffix_initialized = get_channel_name_suffix(ch_suffix,
+					channel->name(), { "R" }, ch_suffix_initialized);
 			}
 			else if (util::starts_with(channel->name(), "F")) {
 				quantity = data::Quantity::Frequency;
 				unit = data::Unit::Hertz;
 				init = true;
-				handle_channel_name_suffix(channel->name(), 1, ch_suffix);
+				ch_suffix_initialized = get_channel_name_suffix(ch_suffix,
+					channel->name(), { "F" }, ch_suffix_initialized);
 			}
 			else if (util::starts_with(channel->name(), "Wh") ||
 					util::starts_with(channel->name(), "E")) {
 				quantity = data::Quantity::Energy;
 				unit = data::Unit::WattHour;
 				init = true;
-				handle_channel_name_suffix(channel->name(), 2, ch_suffix);
+				ch_suffix_initialized = get_channel_name_suffix(ch_suffix,
+					channel->name(), { "Wh", "E" }, ch_suffix_initialized);
 			}
 			else if (util::starts_with(channel->name(), "Ah")) {
 				quantity = data::Quantity::ElectricCharge;
 				unit = data::Unit::AmpereHour;
 				init = true;
-				handle_channel_name_suffix(channel->name(), 2, ch_suffix);
+				ch_suffix_initialized = get_channel_name_suffix(ch_suffix,
+					channel->name(), { "Ah" }, ch_suffix_initialized);
 			}
 
 			if (init) {
@@ -265,22 +275,33 @@ void SourceSinkDevice::init_channels()
 	}
 }
 
-void SourceSinkDevice::handle_channel_name_suffix(const string &channel_name,
-	size_t start_pos, string &channel_suffix)
+bool SourceSinkDevice::get_channel_name_suffix(string &channel_suffix,
+	const string &channel_name, const vector<string> prefixes,
+	bool is_initialized)
 {
-	string tmp_ch_suffix = channel_name.substr(
-		start_pos, channel_name.length());
+	string tmp_ch_suffix;
 
-	if (channel_suffix.length() == 0 && tmp_ch_suffix.length() > 0)
-		channel_suffix = tmp_ch_suffix;
-	else if (channel_suffix != tmp_ch_suffix) {
-		qWarning() << "SourceSinkDevice::init_channels(): " <<
-			"Channel suffix for channel " <<
-			QString::fromStdString(channel_name) <<
-			" differs from previous suffix " <<
-			QString::fromStdString(channel_suffix);
+	for (const auto &prefix : prefixes) {
+		if (!util::starts_with(channel_name, prefix))
+			continue;
+
+		tmp_ch_suffix = channel_name.substr(
+			 prefix.length(), channel_name.length());
+		if (is_initialized && channel_suffix == tmp_ch_suffix)
+			return true;
+		if (!is_initialized) {
+			channel_suffix = tmp_ch_suffix;
+			return true;
+		}
 	}
 
+	qCritical() << "WARNING: Channel suffix for channel "
+		<< QString::fromStdString(channel_name)
+		<< "(" << QString::fromStdString(tmp_ch_suffix) << ")"
+		<< " differs from previous suffix "
+		<< QString::fromStdString(channel_suffix);
+	qCritical() << "WARNING: Please fix this in the libsigrok driver!";
+	return false;
 }
 
 } // namespace devices

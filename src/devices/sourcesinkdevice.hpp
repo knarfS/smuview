@@ -23,12 +23,14 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "src/devices/hardwaredevice.hpp"
 
 using std::forward;
 using std::shared_ptr;
 using std::string;
+using std::vector;
 
 namespace sigrok {
 class Context;
@@ -46,8 +48,9 @@ private:
 	explicit SourceSinkDevice(const shared_ptr<sigrok::Context> &sr_context,
 		shared_ptr<sigrok::HardwareDevice> sr_device);
 
-	void handle_channel_name_suffix(const string &channel_name,
-		size_t start_pos, string &channel_suffix);
+	bool get_channel_name_suffix(string &channel_suffix,
+		const string &channel_name, const vector<string> prefixes,
+		bool is_initialized);
 
 public:
 	template<typename ...Arg>
