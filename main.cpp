@@ -234,7 +234,7 @@ int main(int argc, char *argv[])
 			ret = Application::exec();
 		}
 		catch (exception &e) {
-			 qCritical() << "main() failed: " << e.what();
+			qCritical() << "main() failed: " << e.what();
 		}
 
 	}
