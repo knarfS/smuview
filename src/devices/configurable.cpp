@@ -96,8 +96,8 @@ void Configurable::init()
 		if (config_key == ConfigKey::Unknown)
 			continue;
 
-		qWarning() << "Configurable::init(): Init " << display_name() <<
-			" - key " << deviceutil::format_config_key(config_key);
+		qWarning() << "Configurable::init(): Init " << display_name()
+			<< " - key " << deviceutil::format_config_key(config_key);
 
 		const auto sr_capabilities =
 			sr_configurable_->config_capabilities(sr_config_key);
@@ -165,12 +165,13 @@ bool Configurable::has_get_config(devices::ConfigKey config_key)  const
 	return getable_configs_.count(config_key) > 0;
 }
 
-template bool Configurable::get_config(devices::ConfigKey) const;
-template int32_t Configurable::get_config(devices::ConfigKey) const;
-template uint64_t Configurable::get_config(devices::ConfigKey) const;
-template double Configurable::get_config(devices::ConfigKey) const;
-template std::string Configurable::get_config(devices::ConfigKey) const;
-template<typename T> T Configurable::get_config(devices::ConfigKey config_key) const
+template bool Configurable::get_config(devices::ConfigKey, bool &value) const;
+template bool Configurable::get_config(devices::ConfigKey, int32_t &value) const;
+template bool Configurable::get_config(devices::ConfigKey, uint64_t &value) const;
+template bool Configurable::get_config(devices::ConfigKey, double &value) const;
+template bool Configurable::get_config(devices::ConfigKey, std::string &value) const;
+template<typename T> bool Configurable::get_config(
+	devices::ConfigKey config_key, T &value) const
 {
 	assert(sr_configurable_);
 
@@ -178,31 +179,27 @@ template<typename T> T Configurable::get_config(devices::ConfigKey config_key) c
 		devices::deviceutil::get_sr_config_key(config_key);
 
 	if (!sr_configurable_->config_check(sr_key, sigrok::Capability::GET)) {
-		qWarning() << "Configurable::get_config(): No getable config key " <<
-			devices::deviceutil::format_config_key(config_key);
-		assert(false);
+		qWarning() << "Configurable::get_config(): No getable config key "
+			<< devices::deviceutil::format_config_key(config_key);
+		return false;
 	}
 
-	// TODO: implement like get_list
-	/*
 	try {
-	*/
-		return Glib::VariantBase::cast_dynamic<Glib::Variant<T>>(
+		value = Glib::VariantBase::cast_dynamic<Glib::Variant<T>>(
 			sr_configurable_->config_get(sr_key)).get();
-	/*
 	}
 	catch (sigrok::Error &error) {
-		qWarning() << "Configurable::list_config(): Failed to get key " <<
-			devices::deviceutil::format_config_key(key) << ". " << error.what();
-		assert(false);
+		qWarning() << "Configurable::get_config(): Failed to get key "
+			<< devices::deviceutil::format_config_key(config_key) << ". "
+			<< error.what();
+		return false;
 	}
 
-	return ;
-	*/
+	return true;
 }
 
-Glib::VariantContainerBase Configurable::get_container_config(
-	devices::ConfigKey config_key) const
+bool Configurable::get_container_config(
+	devices::ConfigKey config_key, Glib::VariantContainerBase &value) const
 {
 	assert(sr_configurable_);
 
@@ -210,46 +207,45 @@ Glib::VariantContainerBase Configurable::get_container_config(
 		devices::deviceutil::get_sr_config_key(config_key);
 
 	if (!sr_configurable_->config_check(sr_key, sigrok::Capability::GET)) {
-		qWarning() <<
-			"Configurable::get_container_config(): No getable config key " <<
-			devices::deviceutil::format_config_key(config_key);
-		assert(false);
+		qWarning()
+			<< "Configurable::get_container_config(): No getable config key "
+			<< devices::deviceutil::format_config_key(config_key);
+		return false;
 	}
 
-	// TODO: implement like get_list
-	/*
 	try {
-	*/
-	Glib::VariantBase gvar = sr_configurable_->config_get(sr_key);
-	if (gvar.is_container()) {
-		Glib::VariantContainerBase gcontainer =
-			Glib::VariantBase::cast_dynamic<Glib::VariantContainerBase>(gvar);
-		return gcontainer;
-	}
-	return Glib::VariantContainerBase();
-	/*
+		Glib::VariantBase gvar = sr_configurable_->config_get(sr_key);
+		if (gvar.is_container()) {
+			value =
+				Glib::VariantBase::cast_dynamic<Glib::VariantContainerBase>(gvar);
+		}
+		else {
+			value = Glib::VariantContainerBase();
+		}
 	}
 	catch (sigrok::Error &error) {
-		qWarning() << "Configurable::list_config(): Failed to get key " <<
-			devices::deviceutil::format_config_key(key) << ". " << error.what();
-		assert(false);
+		qWarning() << "Configurable::get_container_config(): Failed to get key "
+			<< devices::deviceutil::format_config_key(config_key) << ". "
+			<< error.what();
+		return false;
 	}
 
-	return ;
-	*/
+	return true;
 }
 
-data::measured_quantity_t Configurable::get_measured_quantity_config(
-	devices::ConfigKey config_key) const
+bool Configurable::get_measured_quantity_config(
+	devices::ConfigKey config_key, data::measured_quantity_t &value) const
 {
-	Glib::VariantContainerBase gvar = this->get_container_config(config_key);
+	Glib::VariantContainerBase gvar;
+	bool ret = this->get_container_config(config_key, gvar);
+	if (!ret)
+		return false;
 
 	size_t child_cnt = gvar.get_n_children();
 	if (child_cnt != 2) {
-		throw std::runtime_error(QString(
-			"Configurable::get_measured_quantity_config(): ").append(
-			"container (mq) should have 2 child, but has %1").arg(child_cnt).
-			toStdString());
+		qWarning() << "Configurable::get_measured_quantity_config(): "
+			<< "Container (mq) should have 2 child, but has " << child_cnt;
+		return false;
 	}
 
 	Glib::VariantIter iter(gvar);
@@ -264,7 +260,9 @@ data::measured_quantity_t Configurable::get_measured_quantity_config(
 	set<data::QuantityFlag> quantity_flags =
 		data::datautil::get_quantity_flags(sr_qflags);
 
-	return make_pair(quantity, quantity_flags);
+	value = make_pair(quantity, quantity_flags);
+
+	return true;
 }
 
 bool Configurable::has_set_config(devices::ConfigKey config_key) const
@@ -287,8 +285,8 @@ template<typename T> void Configurable::set_config(
 		devices::deviceutil::get_sr_config_key(config_key);
 
 	if (!sr_configurable_->config_check(sr_key, sigrok::Capability::SET)) {
-		qWarning() << "Configurable::set_config(): No setable config key " <<
-			devices::deviceutil::format_config_key(config_key);
+		qWarning() << "Configurable::set_config(): No setable config key "
+			<< devices::deviceutil::format_config_key(config_key);
 		assert(false);
 	}
 
@@ -296,9 +294,9 @@ template<typename T> void Configurable::set_config(
 		sr_configurable_->config_set(sr_key, Glib::Variant<T>::create(value));
 	}
 	catch (sigrok::Error &error) {
-		qWarning() << "Configurable::set_config(): Failed to set config key " <<
-			devices::deviceutil::format_config_key(config_key) << ". " <<
-			error.what();
+		qWarning() << "Configurable::set_config(): Failed to set config key "
+			<< devices::deviceutil::format_config_key(config_key) << ". "
+			<< error.what();
 	}
 }
 
@@ -311,45 +309,45 @@ void Configurable::set_container_config(
 		devices::deviceutil::get_sr_config_key(config_key);
 
 	if (!sr_configurable_->config_check(sr_key, sigrok::Capability::SET)) {
-		qWarning() <<
-			"Configurable::set_container_config(): No setable config key " <<
-			devices::deviceutil::format_config_key(config_key);
+		qWarning()
+			<< "Configurable::set_container_config(): No setable config key "
+			<< devices::deviceutil::format_config_key(config_key);
 		assert(false);
 	}
 
 	try {
-		qWarning() <<
-			"Configurable::set_container_config(): Set config key " <<
-			devices::deviceutil::format_config_key(config_key) << " to " <<
-			childs;
+		qWarning()
+			<< "Configurable::set_container_config(): Set config key "
+			<< devices::deviceutil::format_config_key(config_key) << " to "
+			<< childs;
 		sr_configurable_->config_set(
 			sr_key, Glib::VariantContainerBase::create_tuple(childs));
 	}
 	catch (sigrok::Error &error) {
-		qWarning() <<
-			"Configurable::set_container_config(): Failed to set config key " <<
-			devices::deviceutil::format_config_key(config_key) << ". " <<
-			error.what();
+		qWarning()
+			<< "Configurable::set_container_config(): Failed to set config key "
+			<< devices::deviceutil::format_config_key(config_key) << ". "
+			<< error.what();
 	}
 }
 
 void Configurable::set_measured_quantity_config(devices::ConfigKey config_key,
 	const data::measured_quantity_t mq)
 {
-	qWarning() <<
-		"Configurable::set_measured_quantity_config(): Set config key " <<
-		devices::deviceutil::format_config_key(config_key) << " to " <<
-		data::datautil::format_measured_quantity(mq);
+	qWarning()
+		<< "Configurable::set_measured_quantity_config(): Set config key "
+		<< devices::deviceutil::format_config_key(config_key) << " to "
+		<< data::datautil::format_measured_quantity(mq);
 
 	uint32_t sr_q_id = data::datautil::get_sr_quantity_id(mq.first);
 	Glib::VariantBase gvar_q = Glib::Variant<uint32_t>::create(sr_q_id);
 	uint64_t sr_qfs_id = data::datautil::get_sr_quantity_flags_id(mq.second);
 	Glib::VariantBase gvar_qfs = Glib::Variant<uint64_t>::create(sr_qfs_id);
 
-	qWarning() <<
-		"Configurable::set_measured_quantity_config(): Set config key " <<
-		devices::deviceutil::format_config_key(config_key) << " to " <<
-		sr_q_id << ", " << sr_qfs_id;
+	qWarning()
+		<< "Configurable::set_measured_quantity_config(): Set config key "
+		<< devices::deviceutil::format_config_key(config_key) << " to "
+		<< sr_q_id << ", " << sr_qfs_id;
 
 	vector<Glib::VariantBase> gcontainer;
 	gcontainer.push_back(gvar_q);
@@ -372,9 +370,9 @@ bool Configurable::list_config(devices::ConfigKey config_key,
 		devices::deviceutil::get_sr_config_key(config_key);
 
 	if (!sr_configurable_->config_check(sr_key, sigrok::Capability::LIST)) {
-		qWarning() <<
-			"Configurable::list_config(): No config key / no listable config key " <<
-			devices::deviceutil::format_config_key(config_key);
+		qWarning()
+			<< "Configurable::list_config(): No config key / no listable config key "
+			<< devices::deviceutil::format_config_key(config_key);
 		return false;
 	}
 
@@ -382,8 +380,9 @@ bool Configurable::list_config(devices::ConfigKey config_key,
 		gvar = sr_configurable_->config_list(sr_key);
 	}
 	catch (sigrok::Error &error) {
-		qWarning() << "Configurable::list_config(): Failed to list config key " <<
-			devices::deviceutil::format_config_key(config_key) << ". " << error.what();
+		qWarning() << "Configurable::list_config(): Failed to list config key "
+			<< devices::deviceutil::format_config_key(config_key) << ". "
+			<< error.what();
 		return false;
 	}
 
@@ -471,9 +470,9 @@ bool Configurable::feed_in_meta(shared_ptr<sigrok::Meta> sr_meta)
 			devices::deviceutil::get_config_key(entry.first);
 
 		if (property_map_.count(config_key) == 0) {
-			qWarning() << "Configurable::feed_in_meta(): Unknown config key " <<
-				QString::fromStdString(entry.first->name()) <<
-				" for configurable " << display_name() << " received";
+			qWarning() << "Configurable::feed_in_meta(): Unknown config key "
+				<< QString::fromStdString(entry.first->name())
+				<< " for configurable " << display_name() << " received";
 			return false;
 		}
 

@@ -448,7 +448,12 @@ void init_Configurable(py::module &m)
 		"    The `ConfigKey` to set.\n"
 		"value : Tuple[Quantity, Set[QuantityFlag]]\n"
 		"    The measured quantity value to set.");
-	py_configurable.def("get_bool_config", &sv::devices::Configurable::get_config<bool>,
+	py_configurable.def("get_bool_config",
+		[](const sv::devices::Configurable &self, sv::devices::ConfigKey config_key) {
+			bool value;
+			self.get_config(config_key, value);
+			return value;
+		},
 		py::arg("config_key"),
 		"Return a boolean value from the given config key.\n\n"
 		"Parameters\n"
@@ -459,7 +464,12 @@ void init_Configurable(py::module &m)
 		"-------\n"
 		"bool\n"
 		"    The bool value of the config key.");
-	py_configurable.def("get_int_config", &sv::devices::Configurable::get_config<int32_t>,
+	py_configurable.def("get_int_config",
+		[](const sv::devices::Configurable &self, sv::devices::ConfigKey config_key) {
+			int32_t value;
+			self.get_config(config_key, value);
+			return value;
+		},
 		py::arg("config_key"),
 		"Return an integer value from the given config key.\n\n"
 		"Parameters\n"
@@ -470,7 +480,12 @@ void init_Configurable(py::module &m)
 		"-------\n"
 		"int\n"
 		"    The int value of the config key.");
-	py_configurable.def("get_uint_config", &sv::devices::Configurable::get_config<uint64_t>,
+	py_configurable.def("get_uint_config",
+		[](const sv::devices::Configurable &self, sv::devices::ConfigKey config_key) {
+			uint64_t value;
+			self.get_config(config_key, value);
+			return value;
+		},
 		py::arg("config_key"),
 		"Return an unsigned integer value from the given config key.\n\n"
 		"Parameters\n"
@@ -481,7 +496,12 @@ void init_Configurable(py::module &m)
 		"-------\n"
 		"int\n"
 		"    The (unsigned) int value of the config key.");
-	py_configurable.def("get_double_config", &sv::devices::Configurable::get_config<double>,
+	py_configurable.def("get_double_config",
+		[](const sv::devices::Configurable &self, sv::devices::ConfigKey config_key) {
+			double value;
+			self.get_config(config_key, value);
+			return value;
+		},
 		py::arg("config_key"),
 		"Return a double value from the given config key.\n\n"
 		"Parameters\n"
@@ -492,7 +512,12 @@ void init_Configurable(py::module &m)
 		"-------\n"
 		"float\n"
 		"    The float value of the config key.");
-	py_configurable.def("get_string_config", &sv::devices::Configurable::get_config<std::string>,
+	py_configurable.def("get_string_config",
+		[](const sv::devices::Configurable &self, sv::devices::ConfigKey config_key) {
+			std::string value;
+			self.get_config(config_key, value);
+			return value;
+		},
 		py::arg("config_key"),
 		"Return a string value from the given config key.\n\n"
 		"Parameters\n"
@@ -503,7 +528,12 @@ void init_Configurable(py::module &m)
 		"-------\n"
 		"str\n"
 		"    The string value of the config key.");
-	py_configurable.def("get_measured_quantity_config", &sv::devices::Configurable::get_measured_quantity_config,
+	py_configurable.def("get_measured_quantity_config",
+		[](const sv::devices::Configurable &self, sv::devices::ConfigKey config_key) {
+			sv::data::measured_quantity_t value;
+			self.get_measured_quantity_config(config_key, value);
+			return value;
+		},
 		py::arg("config_key"),
 		"Return a measured quantity value from the given config key.\n\n"
 		"Parameters\n"

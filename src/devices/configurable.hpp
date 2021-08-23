@@ -102,7 +102,8 @@ public:
 	void init();
 
 	bool has_get_config(devices::ConfigKey config_key) const;
-	template<typename T> T get_config(devices::ConfigKey config_key) const;
+	template<typename T> bool get_config(
+		devices::ConfigKey config_key, T &value) const;
 	/**
 	 * Special handling for Container Variants (especially std::tuple, used for
 	 * measured quantity, ranges and rationales).
@@ -112,14 +113,15 @@ public:
 	 *
 	 * TODO: Remove when glibmm >= 2.52
 	 */
-	Glib::VariantContainerBase get_container_config(devices::ConfigKey config_key) const;
+	bool get_container_config(
+		devices::ConfigKey config_key, Glib::VariantContainerBase &value) const;
 	/**
 	 * Helper function to map to get_container_config().
 	 *
 	 * TODO: Remove when glibmm >= 2.52
 	 */
-	data::measured_quantity_t get_measured_quantity_config(
-		devices::ConfigKey config_key) const;
+	bool get_measured_quantity_config(
+		devices::ConfigKey config_key, data::measured_quantity_t &value) const;
 
 	bool has_set_config(devices::ConfigKey config_key) const;
 	template<typename T> void set_config(devices::ConfigKey config_key, const T value);

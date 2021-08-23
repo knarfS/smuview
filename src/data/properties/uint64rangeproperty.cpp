@@ -62,8 +62,8 @@ QVariant UInt64RangeProperty::value() const
  */
 data::uint64_range_t UInt64RangeProperty::uint64_range_value() const
 {
-	Glib::VariantContainerBase gvar =
-		configurable_->get_container_config(config_key_);
+	Glib::VariantContainerBase gvar;
+	configurable_->get_container_config(config_key_, gvar);
 
 	size_t child_cnt = gvar.get_n_children();
 	if (child_cnt != 2) {

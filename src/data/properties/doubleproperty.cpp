@@ -54,7 +54,9 @@ QVariant DoubleProperty::value() const
 
 double DoubleProperty::double_value() const
 {
-	return configurable_->get_config<double>(config_key_);
+	double value;
+	configurable_->get_config<double>(config_key_, value);
+	return value;
 }
 
 QString DoubleProperty::to_string(double value) const

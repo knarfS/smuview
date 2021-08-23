@@ -48,7 +48,9 @@ QVariant Int32Property::value() const
 
 int32_t Int32Property::int32_value() const
 {
-	return configurable_->get_config<int32_t>(config_key_);
+	int32_t value;
+	configurable_->get_config<int32_t>(config_key_, value);
+	return value;
 }
 
 QString Int32Property::to_string(int32_t value) const

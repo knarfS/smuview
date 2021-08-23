@@ -513,7 +513,9 @@ void BaseDevice::aquisition_thread_proc()
 		sr_session_->start();
 	}
 	catch (sigrok::Error &e) {
-		Q_EMIT device_error(name(), e.what());
+		string error_detail = string(e.what())
+			+ " when trying to start() the sigrok session";
+		Q_EMIT device_error(name(), error_detail);
 		return;
 	}
 
@@ -535,7 +537,9 @@ void BaseDevice::aquisition_thread_proc()
 		sr_session_->run();
 	}
 	catch (sigrok::Error &e) {
-		Q_EMIT device_error(name(), e.what());
+		string error_detail = string(e.what())
+			+ " when trying to run() the sigrok session";
+		Q_EMIT device_error(name(), error_detail);
 		aquisition_state_ = AquisitionState::Stopped;
 		return;
 	}
