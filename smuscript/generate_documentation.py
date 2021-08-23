@@ -29,13 +29,14 @@ import re
 #
 # pydoc
 #
+# pydoc is Pythons build in documentation generator and online help system
+#
 
 # Write to text file
 #file_name = './smuview_python_bindings_pydoc.txt'
-#f = open(file_name, 'w')
-#sys.stdout = f
-#pydoc.help(smuview)
-#f.close()
+#with open(file_name, mode='w') as f:
+#    sys.stdout = f
+#    pydoc.help(smuview)
 #sys.stdout = sys.__stdout__
 
 # Write html file to current directory
@@ -51,6 +52,24 @@ import re
 
 html_str = pdoc.html("smuview", show_type_annotations=True)
 file_name = './smuview_python_bindings_pdoc3.html'
-f = open(file_name, 'w')
-print(html_str, file=f)
-f.close()
+with open(file_name, mode='w') as f:
+    print(html_str, file=f)
+
+
+#
+# pdoc
+#
+# Install:
+#   $ pip3 install pdoc
+#
+
+#html_str = pdoc.pdoc("smuview")
+#file_name = './smuview_python_bindings_pdoc.html'
+#with open(file_name, mode='w') as f:
+#    print(html_str, file=f)
+
+# Test for setting a custom doxstring to enum values
+#doc = pdoc.doc.Module(smuview)
+#doc.get("ConfigKey.Samplerate").docstring = "I'm a docstring for ConfigKey.Samplerate"
+#with open("docs.html", "w") as f:
+#    f.write(pdoc.render.html_module(module=doc, all_modules=["smuview"]))

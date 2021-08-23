@@ -87,7 +87,9 @@ PYBIND11_EMBEDDED_MODULE(smuview, m) {
 		"```\n\n"
 		"For more example scripts, please have a look into the `smuscript` folder.";
 
-	// Pdoc dictionary for enum documentation.
+	// pdoc attribute to render numpy docstrings.
+	m.add_object("__docformat__", py::str("numpy"), false);
+	// pdoc3 dictionary for enum documentation.
 	m.add_object("__pdoc__", py::dict(), false);
 
 	// NOTE: The order of initialization is very important! Otherwise types
