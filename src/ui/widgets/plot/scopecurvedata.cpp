@@ -77,8 +77,8 @@ void ScopeCurveData::setRectOfInterest(const QRectF &rect)
 	if (rect_of_interest_ == rect)
 		return;
 
-	qWarning() << "ScopeCurveData::setRectOfInterest(): ================================================= ";
-	qWarning() << "ScopeCurveData::setRectOfInterest(): rect = " << rect;
+	//qWarning() << "ScopeCurveData::setRectOfInterest(): ================================================= ";
+	//qWarning() << "ScopeCurveData::setRectOfInterest(): rect = " << rect;
 	rect_of_interest_ = rect;
 
 	if (rect_of_interest_.left() <= .0)
@@ -91,9 +91,9 @@ void ScopeCurveData::setRectOfInterest(const QRectF &rect)
 	else
 		scale_end_sample_ = std::ceil(rect_of_interest_.right() / segment_->time_stride());
 
-	qWarning() << "ScopeCurveData::setRectOfInterest(): scale_start_sample_ = " << scale_start_sample_;
-	qWarning() << "ScopeCurveData::setRectOfInterest(): scale_end_sample_ = " << scale_end_sample_;
-	qWarning() << "ScopeCurveData::setRectOfInterest(): scale_end_sample_ (ts) = " << scale_end_sample_ * segment_->time_stride();
+	//qWarning() << "ScopeCurveData::setRectOfInterest(): scale_start_sample_ = " << scale_start_sample_;
+	//qWarning() << "ScopeCurveData::setRectOfInterest(): scale_end_sample_ = " << scale_end_sample_;
+	//qWarning() << "ScopeCurveData::setRectOfInterest(): scale_end_sample_ (ts) = " << scale_end_sample_ * segment_->time_stride();
 
 	//const size_t sample_cnt = segment_->sample_count();
 	scale_start_sample_ = scale_start_sample_ <= scale_end_sample_ ? scale_start_sample_ : scale_end_sample_;
@@ -142,14 +142,14 @@ void ScopeCurveData::update_scale_maps(const QwtScaleMap &x_scale_map,
 	else
 		scale_end_sample_ = std::ceil(x_scale_map_.s2() / segment_->time_stride());
 
-	qWarning() << "ScopeCurveData::update_scale_maps(): scale_start_sample_ = " << scale_start_sample_;
-	qWarning() << "ScopeCurveData::update_scale_maps(): scale_end_sample_ = " << scale_end_sample_;
+	//qWarning() << "ScopeCurveData::update_scale_maps(): scale_start_sample_ = " << scale_start_sample_;
+	//qWarning() << "ScopeCurveData::update_scale_maps(): scale_end_sample_ = " << scale_end_sample_;
 
-	const size_t sample_cnt = segment_->sample_count();
+	//const size_t sample_cnt = segment_->sample_count();
 	scale_start_sample_ = scale_start_sample_ <= scale_end_sample_ ? scale_start_sample_ : scale_end_sample_;
 
-	qWarning() << "ScopeCurveData::update_scale_maps(): sample_cnt = " << sample_cnt;
-	qWarning() << "ScopeCurveData::update_scale_maps(): scale_start_sample_ = " << scale_start_sample_;
+	//qWarning() << "ScopeCurveData::update_scale_maps(): sample_cnt = " << sample_cnt;
+	//qWarning() << "ScopeCurveData::update_scale_maps(): scale_start_sample_ = " << scale_start_sample_;
 
 	// Calculate the samples per pixel for the rect
 	// Number of possible samples for the visible time span of the rect
@@ -159,10 +159,10 @@ void ScopeCurveData::update_scale_maps(const QwtScaleMap &x_scale_map,
 	const size_t rect_pixel_cnt = x_scale_map_.pDist();
 	samples_per_pixel_ = rect_sample_cnt / (double)rect_pixel_cnt;
 
-	qWarning() << "ScopeCurveData::update_scale_maps(): rect_sample_cnt = " << rect_sample_cnt;
-	qWarning() << "ScopeCurveData::update_scale_maps(): rect_pixel_cnt = " << rect_pixel_cnt;
-	qWarning() << "ScopeCurveData::update_scale_maps(): samples_per_pixel_ = " << samples_per_pixel_;
-	qWarning() << "ScopeCurveData::update_scale_maps(): rect time span = " << rect_sample_cnt * segment_->time_stride();
+	//qWarning() << "ScopeCurveData::update_scale_maps(): rect_sample_cnt = " << rect_sample_cnt;
+	//qWarning() << "ScopeCurveData::update_scale_maps(): rect_pixel_cnt = " << rect_pixel_cnt;
+	//qWarning() << "ScopeCurveData::update_scale_maps(): samples_per_pixel_ = " << samples_per_pixel_;
+	//qWarning() << "ScopeCurveData::update_scale_maps(): rect time span = " << rect_sample_cnt * segment_->time_stride();
 
 	if (scale_end_sample_ > 0)
 		segment_->get_envelope(envelope_, samples_per_pixel_);

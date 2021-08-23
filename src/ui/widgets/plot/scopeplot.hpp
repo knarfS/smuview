@@ -132,7 +132,6 @@ public Q_SLOTS:
 	void update_trigger_source(const QVariant trigger_source);
 	void update_trigger_level(const QVariant trigger_level);
 	void update_horiz_trigger_pos(const QVariant horiz_trigger_pos);
-	void update_curves();
 
 private Q_SLOTS:
 	void update_x_intervals();

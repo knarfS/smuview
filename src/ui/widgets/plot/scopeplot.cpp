@@ -188,9 +188,6 @@ string ScopePlot::add_curve(ScopeCurveData *curve_data)
 	// TODO: works somehow, more or less without the reset....
 	connect(curve, &Curve::reset,
 		this, [this]() { replot(); });
-	// TODO
-	connect(curve_data, &ScopeCurveData::update_curve,
-		this, [this]() { update_intervals(); update_curves(); });
 
 	QwtPlot::replot();
 	Q_EMIT curve_added();
@@ -219,8 +216,8 @@ bool ScopePlot::add_curve(ScopeCurve *curve)
 	curve_map_.insert(make_pair(curve->id(), curve));
 
 	// TODO: This is updating way to often
-	connect(curve, &ScopeCurve::new_points,
-		this, &ScopePlot::update_intervals);
+	//connect(curve, &ScopeCurve::new_points,
+	//	this, &ScopePlot::update_intervals);
 
 	QwtPlot::replot();
 	Q_EMIT curve_added(); // TODO: What is this for? Used for bindings? Add id as param?
@@ -758,48 +755,6 @@ void ScopePlot::on_legend_clicked(const QVariant &item_info, int index)
 	//dlg.exec();
 }
 
-void ScopePlot::update_curves()
-{
-	qWarning() << "ScopePlot::update_curves()";
-
-	for (const auto &curve : curve_map_) {
-		curve.second->update();
-		/*
-		const size_t painted_points = curve.second->painted_points();
-		const size_t num_points = curve.second->curve_data()->size();
-		if (num_points > painted_points) {
-			//qWarning() << QString("Plot::updateCurve(): num_points = %1, painted_points = %2").
-			//	arg(num_points).arg(painted_points);
-			const bool clip = !canvas()->testAttribute(Qt::WA_PaintOnScreen);
-			if (clip) {
-				/ *
-				 * NOTE:
-				 * Depending on the platform setting a clip might be an
-				 * important performance issue. F.e. for Qt Embedded this
-				 * reduces the part of the backing store that has to be copied
-				 * out - maybe to an unaccelerated frame buffer device.
-				 * /
-
-				const QwtScaleMap x_map = canvasMap(curve.second->x_axis_id());
-				const QwtScaleMap y_map = canvasMap(curve.second->y_axis_id());
-				QRectF br = qwtBoundingRect(*curve.second->plot_curve()->data(),
-					(int)painted_points - 1, (int)num_points - 1);
-
-				curve.second->plot_direct_painter()->setClipRegion(
-					QwtScaleMap::transform(x_map, y_map, br).toRect());
-			}
-			qWarning() << "ScopePlot::update_curves(): Update " << QString::fromStdString(curve.first);
-			curve.second->plot_direct_painter()->drawSeries(
-				curve.second->plot_curve(), (int)painted_points - 1,
-				(int)num_points - 1);
-			curve.second->set_painted_points(num_points);
-		}
-
-		//replot();
-		*/
-	}
-}
-
 void ScopePlot::update_intervals()
 {
 	bool intervals_changed = false;
@@ -828,8 +783,10 @@ void ScopePlot::update_x_intervals()
 			intervals_changed = true;
 	}
 
-	if (intervals_changed)
+	if (intervals_changed) {
+		update_trigger_marker();
 		replot();
+	}
 }
 
 bool ScopePlot::update_x_interval(ScopeCurve *curve)
@@ -1034,9 +991,12 @@ void ScopePlot::update_trigger_marker()
 {
 	// TODO: trigger source
 
+	const int symbol_width = 20;
+
 	if (!trigger_level_marker_) {
-		QwtSymbol *marker_sym = new QwtSymbol(QwtSymbol::RTriangle,
-			QBrush(Qt::yellow), QPen(Qt::yellow), QSize(20, 20));
+		QwtSymbol *marker_sym = new QwtSymbol(
+			QwtSymbol::RTriangle, QBrush(Qt::yellow), QPen(Qt::yellow),
+			QSize(symbol_width, symbol_width));
 
 		trigger_level_marker_ = new QwtPlotMarker();
 		trigger_level_marker_->setSymbol(marker_sym);
@@ -1048,13 +1008,18 @@ void ScopePlot::update_trigger_marker()
 		trigger_level_marker_->setYAxis(QwtPlot::yLeft);
 		trigger_level_marker_->attach(this);
 	}
-	//trigger_level_marker_->setLabel(QwtText(trigger_source_));
+	trigger_level_marker_->setLabel(QwtText(trigger_source_));
+	double symbol_width_scaled = this->canvasMap(QwtPlot::xBottom).invTransform(0.000025);
+	//double symbol_width_scaled = this->invTransform(QwtPlot::xBottom, symbol_width);
+	qWarning() << "ScopePlot::update_trigger_marker(): " << symbol_width
+		<< " -> " << symbol_width_scaled;
 	trigger_level_marker_->setValue(0., trigger_level_);
 
 	/*
 	if (!trigger_hpos_marker_) {
-		QwtSymbol *marker_sym = new QwtSymbol(QwtSymbol::RTriangle,
-			QBrush(Qt::yellow), QPen(Qt::yellow), QSize(20, 20));
+		QwtSymbol *marker_sym = new QwtSymbol(
+			QwtSymbol::RTriangle, QBrush(Qt::yellow), QPen(Qt::yellow),
+			QSize(symbol_width, symbol_width));
 
 		trigger_hpos_marker_ = new QwtPlotMarker();
 		trigger_hpos_marker_->setSymbol(marker_sym);
@@ -1067,7 +1032,7 @@ void ScopePlot::update_trigger_marker()
 		trigger_hpos_marker_->attach(this);
 	}
 	trigger_hpos_marker_->setLabel(QString("%1").arg(horiz_trigger_pos_));
-	trigger_hpos_marker_->setValue(horiz_trigger_pos_, 0.);
+	trigger_hpos_marker_->setValue(horiz_trigger_pos_, symbol_width);
 	*/
 
 	replot();

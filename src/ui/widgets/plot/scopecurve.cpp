@@ -340,21 +340,21 @@ void ScopeCurve::update()
 				QwtScaleMap::transform(x_map, y_map, br).toRect());
 		}
 
-		qWarning() << "ScopeCurve::update(): Update " << QString::fromStdString(id());
-		qWarning() << "ScopeCurve::update(): drawSeries(" << plot_curve_ << ", "
-			<< (int)painted_points_ << ", " << (int)num_points - 1 << ")";
-
-		qWarning() << "ScopeCurve::update(): drawSeries(" << plot_curve_ << "): first ts = "
-			<< curve_data_->sample(0);
-		qWarning() << "ScopeCurve::update(): drawSeries(" << plot_curve_ << "): start ts = "
-			<< curve_data_->sample((int)painted_points_);
-		qWarning() << "ScopeCurve::update(): drawSeries(" << plot_curve_ << "): last ts = "
-			<< curve_data_->sample((int)num_points - 1);
+// 		qWarning() << "ScopeCurve::update(): Update " << QString::fromStdString(id());
+// 		qWarning() << "ScopeCurve::update(): drawSeries(" << plot_curve_ << ", "
+// 			<< (int)painted_points_ << ", " << (int)num_points - 1 << ")";
+//
+// 		qWarning() << "ScopeCurve::update(): drawSeries(" << plot_curve_ << "): first ts = "
+// 			<< curve_data_->sample(0);
+// 		qWarning() << "ScopeCurve::update(): drawSeries(" << plot_curve_ << "): start ts = "
+// 			<< curve_data_->sample((int)painted_points_);
+// 		qWarning() << "ScopeCurve::update(): drawSeries(" << plot_curve_ << "): last ts = "
+// 			<< curve_data_->sample((int)num_points - 1);
 
 		plot_direct_painter_->drawSeries(
 			plot_curve_, (int)painted_points_, (int)num_points - 1);
 
-		painted_points_ = num_points - 1;
+		painted_points_ = num_points - 1; // TODO: Remove -1?
 		Q_EMIT new_points(); // TODO: rename to update_scale, move to boundary? not a good solution to update scale (changes)
 	}
 

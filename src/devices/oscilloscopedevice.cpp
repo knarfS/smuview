@@ -62,6 +62,19 @@ void OscilloscopeDevice::init_configurables()
 				pf_property.get(), &data::properties::BaseProperty::value_changed,
 				vdiv_property.get(), &data::properties::BaseProperty::list_config);
 		}
+
+		// Check if the device has the config key "AvgSamples". If so, each
+		// possible value of the config key "BufferSize" could have a different
+		// listing for "AvgSamples"!
+		if (configurable->property_map().count(ConfigKey::BufferSize) > 0 &&
+			configurable->property_map().count(ConfigKey::AvgSamples) > 0) {
+
+			auto bs_property = configurable->property_map()[ConfigKey::BufferSize];
+			auto as_property = configurable->property_map()[ConfigKey::AvgSamples];
+			connect(
+				bs_property.get(), &data::properties::BaseProperty::value_changed,
+				as_property.get(), &data::properties::BaseProperty::list_config);
+		}
 	}
 }
 
