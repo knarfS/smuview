@@ -413,6 +413,13 @@ int ScopePlot::init_y_axis(const ScopeCurve *curve, int y_axis_id)
 	double max = curve->boundingRect().top() +
 		(std::fabs(curve->boundingRect().top()) * 0.1);
 
+	qWarning() << "ScopePlot::init_y_axis(): min = " << min;
+	qWarning() << "ScopePlot::init_y_axis(): curve->boundingRect().bottom() = "
+		<< curve->boundingRect().bottom();
+	qWarning() << "ScopePlot::init_y_axis(): max = " << max;
+	qWarning() << "ScopePlot::init_y_axis(): curve->boundingRect().top() = "
+		<< curve->boundingRect().top();
+
 	this->init_axis(y_axis_id, min, max, curve->y_title(), false);
 
 	return y_axis_id;
