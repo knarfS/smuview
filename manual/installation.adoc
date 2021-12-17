@@ -1,20 +1,47 @@
 [[installation,Installation]]
 == Installation
 
-SmuView can be run on Linux and Windows. Mac OS X is not tested yet. For Windows
-we provide installers and for Linux we provide AppImage containers that you can
-run without the need to install anything. Check the
-https://github.com/knarfS/smuview/releases[SmuView download page] to see which
-option is available for your platform.
+SmuView can be run on Linux, Windows and macOS. For Windows we provide
+installers, for Linux we provide AppImage containers and for macOS DMGs. Both
+the AppImage and the DMG can be run without the need to install anything.
+
+You can choose between stable releases (by the time of writing, the last stable
+version is 0.0.5) and continuous builds. We strongly recommend the use of the
+continuous builds as they include bugfixes, new features and also an up-to-date
+version of libsigrok with the latest available device drivers. Stable versions
+are released infrequently in rather big intervals.
+
+Check the https://github.com/knarfS/smuview/releases[SmuView download page] to
+see which option is available for your platform.
 
 === Linux
 
-You have two options to install SmuView:
+You have two options to install SmuView, eiher you can use a pre-build AppImage
+or you can build SmuView from source yourself.
 
-. https://github.com/knarfS/smuview/releases[Download] and use the AppImage
-which contains all required files and needs no installation:
-+
+[WARNING]
 --
+Whether you install SmuView using the AppImage or building from source, SmuView will
+not be able to access USB and serial port devices unless it's run as `root`.
+Since programs shouldn't be run as `root` unless absolutely necessary, we
+provide udev configuration files that allows SmuView access to those devices
+without being `root`.
+
+Here's how you install them:
+[listing, subs="normal"]
+sudo bash
+cd /etc/udev/rules.d/
+wget -O 60-libsigrok.rules "'https://sigrok.org/gitweb/?p=libsigrok.git;a=blob_plain;f=contrib/60-libsigrok.rules'"
+wget -O 61-libsigrok-plugdev.rules "'https://sigrok.org/gitweb/?p=libsigrok.git;a=blob_plain;f=contrib/61-libsigrok-plugdev.rules'"
+wget -O 61-libsigrok-uaccess.rules "'https://sigrok.org/gitweb/?p=libsigrok.git;a=blob_plain;f=contrib/61-libsigrok-uaccess.rules'"
+sudo udevadm control --reload-rules
+--
+
+==== AppImage
+
+https://github.com/knarfS/smuview/releases[Download] and use the AppImage
+which contains all required files and needs no installation:
+
 [listing, subs="normal"]
 chmod u+x SmuView-{sv_version}-x86_64.AppImage
 ./SmuView{sv_version}-x86_64.AppImage
@@ -30,14 +57,32 @@ https://github.com/knarfS/smuview/issues[file a bug].
 No system files are changed, so if you decide that you no longer want to use
 SmuView, simply delete the AppImage. If you also want to remove the stored
 settings, delete `~/.config/sigrok/SmuView.conf` as well.
+
+==== Build from source
+
+Uninstall any sigrok packages from your package manager and install all
+necessary dependencies for
+https://sigrok.org/wiki/Linux#Installing_the_requirements[libserialport],
+https://sigrok.org/wiki/Linux#Installing_the_requirements_2[libsigrok] and
+https://sigrok.org/wiki/Linux#Installing_the_requirements_6[SmuView].
+
+[WARNING]
+The linked build requirements are distro-specific and may or may not be out of
+date, depending on which distro you use. Please check the official
+https://sigrok.org/wiki/Building#Build_requirements[build requirements list] in
+the sigrok wiki for the full list of requirements.
+
+[WARNING]
+--
+Please make sure, that Python 3.x is your default Python interpreter. For Ubuntu
+and Debian you can do so by installing the package `python-is-python3`:
+[listing, subs="normal"]
+sudo apt install python-is-python3
 --
 
-. Uninstall any sigrok packages from your package manager and build SmuView from
-source:
-+
---
+Now you can build SmuView from source with the help of a build script:
+
 [listing, subs="normal"]
-_[install dependencies https://sigrok.org/wiki/Linux#Building[as listed on the wiki]]_
 mkdir ~/sr
 cd ~/sr
 git clone --branch smuview --single-branch "'https://github.com/knarfS/sigrok-util.git'"
@@ -49,25 +94,6 @@ export LD_LIBRARY_PATH=~/sr/lib
 No system files are changed, so if you decide that you no longer want to use
 SmuView, simply delete the `~/sr` directory. If you also want to remove the
 stored settings, delete `~/.config/sigrok/SmuView.conf` as well.
---
-
-[WARNING]
---
-If you install SmuView using the AppImage or building from source, SmuView will
-not be able to access USB and serial port devices unless it's run as `root`.
-Since programs shouldn't be run as `root` unless absolutely necessary, we
-provide udev configuration files that allows SmuView access to those devices
-without being `root`.
-
-Here's how you install them:
-[listing, subs="normal"]
-sudo bash
-cd /etc/udev/rules.d/
-wget -O 60-libsigrok.rules "'https://sigrok.org/gitweb/?p=libsigrok.git;a=blob_plain;f=contrib/60-libsigrok.rules'"
-wget -O 61-libsigrok-plugdev.rules "'https://sigrok.org/gitweb/?p=libsigrok.git;a=blob_plain;f=contrib/61-libsigrok-plugdev.rules'"
-wget -O 61-libsigrok-uaccess.rules "'https://sigrok.org/gitweb/?p=libsigrok.git;a=blob_plain;f=contrib/61-libsigrok-uaccess.rules'"
-sudo udevadm control --reload-rules
---
 
 === Windows
 
@@ -96,7 +122,7 @@ In case your device doesn't show up in SmuView and you can't find it with a scan
 either (see next chapter), check with Zadig whether the correct driver is
 assigned for the device.
 
-=== Mac OS X
+=== macOS
 
 We offer a Apple Disk Image (DMG) for SmuvView that contains everything you need
 to get started. Simply download them from the
