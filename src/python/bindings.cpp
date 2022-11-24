@@ -56,7 +56,6 @@ PYBIND11_EMBEDDED_MODULE(smuview, m) {
 	// Set options for proper docstring.
 	py::options options;
 	options.enable_function_signatures();
-	options.disable_enum_members_docstring();
 
 	m.doc() = "The SmuView " SV_VERSION_STRING " Python bindings.\n\n"
 		"The Python bindings are a scripting extension for SmuView to automate, "
