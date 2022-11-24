@@ -81,7 +81,7 @@ message(STATUS "STATIC_PKGDEPS_LIBS: ${STATIC_PKGDEPS_LIBS}")
 #-------------------------------------------------------------------------------
 
 list(APPEND PKGDEPS glib-2.0>=2.28.0)
-list(APPEND PKGDEPS glibmm-2.4>=2.28.0)
+list(APPEND PKGDEPS glibmm-2.68>=2.68.0)
 
 set(LIBSR_CXX_BINDING "libsigrokcxx>=0.5.2")
 list(APPEND PKGDEPS "${LIBSR_CXX_BINDING}")
@@ -193,7 +193,7 @@ endif()
 message(STATUS "${SV_TITLE} version: ${SV_VERSION_STRING}")
 
 # Library versions
-set(SV_GLIBMM_VERSION ${PKGDEPS_glibmm-2.4_VERSION})
+set(SV_GLIBMM_VERSION ${PKGDEPS_glibmm-2.68_VERSION})
 set(SV_PYBIND11_VERSION ${PYBIND11_VERSION_MAJOR}.${PYBIND11_VERSION_MINOR}.${PYBIND11_VERSION_PATCH})
 if(MINGW)
 	# MXE workaround: Use PkgConfig to find Python
