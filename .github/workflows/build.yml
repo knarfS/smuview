@@ -32,7 +32,7 @@ env:
 jobs:
 
   build_linux:
-    name: SmuView Linux build (${{ matrix.target }}, ${{ matrix.compiler.compiler }},  Qt ${{ matrix.qt_version }})
+    name: SmuView Linux build (${{ matrix.target }}, ${{ matrix.compiler.compiler }},  Qt ${{ matrix.qt.version }})
 
     runs-on: ubuntu-latest
 
