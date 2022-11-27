@@ -143,8 +143,8 @@ if(MINGW)
 	endif()
 endif()
 
-# SmuView has its own copy of pybind11 2.6.1 dev1
-add_subdirectory(external/pybind11)
+# SmuView has its own copy of pybind11 2.11 dev1
+add_subdirectory(external/pybind11_2.11_dev1)
 # SmuView has its own copy of QCodeEditor
 add_subdirectory(external/QCodeEditor)
 # SmuView has its own copy of QtFindReplaceDialog
