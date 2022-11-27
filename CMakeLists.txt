@@ -143,8 +143,16 @@ if(MINGW)
 	endif()
 endif()
 
-# SmuView has its own copy of pybind11 2.11 dev1
-add_subdirectory(external/pybind11_2.11_dev1)
+# SmuView has its own copy of pybind11
+if(MINGW)
+	# Use pybind11 2.9.2 vanilla for the MXE build. 2.9.2 is the last pybind11
+	# version that supports Python 3.4.4 which is used for static linking in the
+	# MXE cross build
+	add_subdirectory(external/pybind11_2.9.2)
+else()
+	# Use pybind11 2.11 dev1 with the emum_docstring patch for all other builds
+	add_subdirectory(external/pybind11_2.11_dev1)
+endif()
 # SmuView has its own copy of QCodeEditor
 add_subdirectory(external/QCodeEditor)
 # SmuView has its own copy of QtFindReplaceDialog
