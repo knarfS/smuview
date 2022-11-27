@@ -56,6 +56,11 @@ using std::string;
 using std::vector;
 using sv::devices::ConfigKey;
 
+QDebug operator << (QDebug dbg, Glib::VariantBase const &v)
+{
+	return dbg << v.print().c_str();
+}
+
 namespace sv {
 namespace devices {
 

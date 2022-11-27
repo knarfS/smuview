@@ -47,8 +47,8 @@ if(POLICY CMP0054)
 	cmake_policy(SET CMP0054 NEW)
 endif()
 
-# SmuView, QCodeEditor and pybind11 only need C++11
-set(CMAKE_CXX_STANDARD 11)
+# SmuView, QCodeEditor and pybind11 only need C++17
+set(CMAKE_CXX_STANDARD 17)
 
 if(WIN32)
 	# On Windows/MinGW we need to statically link to libraries.
@@ -81,7 +81,7 @@ message(STATUS "STATIC_PKGDEPS_LIBS: ${STATIC_PKGDEPS_LIBS}")
 #-------------------------------------------------------------------------------
 
 list(APPEND PKGDEPS glib-2.0>=2.28.0)
-list(APPEND PKGDEPS glibmm-2.4>=2.28.0)
+list(APPEND PKGDEPS glibmm-2.68>=2.68.0)
 
 set(LIBSR_CXX_BINDING "libsigrokcxx>=0.5.2")
 list(APPEND PKGDEPS "${LIBSR_CXX_BINDING}")
@@ -122,7 +122,7 @@ find_package(Qwt 6.1.2 REQUIRED)
 # specify any boost libraries
 find_package(Boost 1.54 REQUIRED)
 
-# Find the platform's thread library (needed for C++11 threads).
+# Find the platform's thread library (needed for C++17 threads).
 # This will set ${CMAKE_THREAD_LIBS_INIT} to the correct, OS-specific value.
 find_package(Threads REQUIRED)
 
@@ -201,7 +201,7 @@ endif()
 message(STATUS "${SV_TITLE} version: ${SV_VERSION_STRING}")
 
 # Library versions
-set(SV_GLIBMM_VERSION ${PKGDEPS_glibmm-2.4_VERSION})
+set(SV_GLIBMM_VERSION ${PKGDEPS_glibmm-2.68_VERSION})
 set(SV_PYBIND11_VERSION ${PYBIND11_VERSION_MAJOR}.${PYBIND11_VERSION_MINOR}.${PYBIND11_VERSION_PATCH})
 if(MINGW)
 	# MXE workaround: Use PkgConfig to find Python
@@ -391,7 +391,7 @@ qt5_add_resources(smuview_RESOURCES_RCC ${smuview_RESOURCES})
 add_definitions(-DQT_NO_KEYWORDS)
 add_definitions(-D__STDC_LIMIT_MACROS)
 add_definitions(-Wall -Wextra -Woverloaded-virtual -Wdeprecated-declarations) # -Weffc++ -Wconversion -Wsign-conversion)
-add_definitions(-std=c++11)
+add_definitions(-std=c++17)
 add_definitions(-DBOOST_MATH_DISABLE_FLOAT128=1)
 
 if(NOT DISABLE_WERROR)
