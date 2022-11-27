@@ -43,9 +43,12 @@ jobs:
         compiler:
           - { compiler: GCC, cc: "gcc", cxx: "g++" }
           - { compiler: LLVM, cc: "clang", cxx: "clang++" }
-        # Qt 5.12 is the oldest version we can build agains, because of Qwt:
-        # /usr/bin/ld: /usr/lib/libqwt-qt5.so: undefined reference to `qt_version_tag@Qt_5.12'
-        qt_version: [5.12.11, 5.13.2, 5.14.2, 5.15.2]
+        qt:
+          - { version: 5.12.11, system_qwt: false }
+          - { version: 5.13.2, system_qwt: false }
+          - { version: 5.14.2, system_qwt: false }
+          - { version: 5.15.2, system_qwt: true }
+
     env:
       BUILD_TYPE: "Release"
       CC: ${{ matrix.compiler.cc }}
@@ -55,7 +58,7 @@ jobs:
       - name: Set up Qt environment
         uses: jurplel/install-qt-action@v2
         with:
-          version: ${{ matrix.qt_version }}
+          version: ${{ matrix.qt.version }}
 
       - name: Install dependencies
         run: |
@@ -66,7 +69,7 @@ jobs:
             libzip-dev libusb-1.0-0-dev libftdi1-dev libieee1284-3-dev \
             libvisa-dev nettle-dev libavahi-client-dev libhidapi-dev check \
             doxygen swig \
-            cmake libboost-dev libqwt-qt5-dev \
+            cmake libboost-dev \
             python3-dev python-gi-dev python-setuptools
 
       - name: Checkout sigrok-utils
@@ -75,6 +78,19 @@ jobs:
           repository: knarfS/sigrok-util
           path: sigrok-util
           ref: github
+
+      - name: Install system Qwt
+        if: ${{ matrix.qt.system_qwt }}
+        run: |
+          sudo apt-get install -y libqwt-qt5-dev
+
+      - name: Build custom Qwt
+        if: ${{ !matrix.qt.system_qwt }}
+        run: |
+          sudo apt-get install -y mesa-common-dev libgl1-mesa-dev
+          cd sigrok-util/cross-compile/github-actions
+          source sigrok-linux-init-toolchain.sh
+          ./sigrok-linux-build-qwt.sh
 
       - name: Build dependencies
         run: |
