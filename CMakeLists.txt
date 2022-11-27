@@ -47,8 +47,13 @@ if(POLICY CMP0054)
 	cmake_policy(SET CMP0054 NEW)
 endif()
 
-# SmuView, QCodeEditor and pybind11 only need C++11
-set(CMAKE_CXX_STANDARD 11)
+# SmuView, QCodeEditor and pybind11 only need C++11, but the macOS build
+# needs C++17 for Qt
+if(APPLE)
+	set(CMAKE_CXX_STANDARD 17)
+else()
+	set(CMAKE_CXX_STANDARD 11)
+endif()
 
 if(WIN32)
 	# On Windows/MinGW we need to statically link to libraries.
@@ -391,8 +396,13 @@ qt5_add_resources(smuview_RESOURCES_RCC ${smuview_RESOURCES})
 add_definitions(-DQT_NO_KEYWORDS)
 add_definitions(-D__STDC_LIMIT_MACROS)
 add_definitions(-Wall -Wextra -Woverloaded-virtual -Wdeprecated-declarations) # -Weffc++ -Wconversion -Wsign-conversion)
-add_definitions(-std=c++11)
 add_definitions(-DBOOST_MATH_DISABLE_FLOAT128=1)
+
+if(APPLE)
+	add_definitions(-std=c++17)
+else()
+	add_definitions(-std=c++11)
+endif()
 
 if(NOT DISABLE_WERROR)
 	#add_definitions(-Werror -pedantic-errors)
