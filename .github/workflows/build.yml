@@ -335,6 +335,11 @@ jobs:
       - build_macos
 
     steps:
+      - name: Install dependencies
+        run: |
+          # AppImage needs libfuse2 to start
+          sudo apt-get update
+          sudo apt-get install -y libfuse2
       - name: Download artifacts
         uses: actions/download-artifact@v2
       - name: Inspect directory after downloading artifacts
