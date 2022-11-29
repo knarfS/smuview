@@ -56,7 +56,7 @@ jobs:
 
     steps:
       - name: Set up Qt environment
-        uses: jurplel/install-qt-action@v2
+        uses: jurplel/install-qt-action@v3
         with:
           version: ${{ matrix.qt.version }}
 
@@ -73,7 +73,7 @@ jobs:
             python3-dev python-gi-dev python-setuptools
 
       - name: Checkout sigrok-utils
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: knarfS/sigrok-util
           path: sigrok-util
@@ -99,7 +99,7 @@ jobs:
           ./sigrok-linux-build-dependencies.sh
 
       - name: Checkout smuview
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           path: smuview
 
@@ -153,7 +153,7 @@ jobs:
           sudo apt-get upgrade -y
 
       - name: Checkout smuview
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           path: smuview
 
@@ -169,7 +169,7 @@ jobs:
           ../appimagecraft-${{ matrix.target.target }}.AppImage build -d build/
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: SmuView ${{ matrix.target.target }} AppImage
           path: smuview/SmuView*.AppImage*
@@ -196,7 +196,7 @@ jobs:
 
     steps:
       - name: Checkout sigrok-utils
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: knarfS/sigrok-util
           path: sigrok-util
@@ -209,7 +209,7 @@ jobs:
           ./sigrok-mxe-build-dependencies.sh
 
       - name: Checkout smuview
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           path: smuview
 
@@ -239,7 +239,7 @@ jobs:
           makensis ${{ matrix.target.nsis_param }} smuview/build/contrib/smuview_cross.nsi
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: SmuView NSIS ${{ matrix.target.target }} installer
           path: smuview/build/contrib/SmuView*installer.exe
@@ -272,7 +272,7 @@ jobs:
             glib glibmm@2.66 cmake "$HB_PYVER" boost "$HB_QTVER" qwt-qt5
 
       - name: Checkout sigrok-utils
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: knarfS/sigrok-util
           path: sigrok-util
@@ -285,7 +285,7 @@ jobs:
           ./sigrok-macos-build-dependencies.sh
 
       - name: Checkout smuview
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           path: smuview
 
@@ -314,7 +314,7 @@ jobs:
       - name: Upload artifact
         # Only upload artifact from the LLVM build!
         if: startsWith(matrix.compiler.compiler, 'LLVM')
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: SmuView DMG
           path: sigrok-util/cross-compile/github-actions/SmuView*.dmg

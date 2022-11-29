@@ -48,7 +48,7 @@ jobs:
             asciidoctor ruby-asciidoctor-pdf coderay
 
       - name: Checkout sigrok-utils
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: knarfS/sigrok-util
           path: sigrok-util
@@ -61,7 +61,7 @@ jobs:
           ./sigrok-linux-build-dependencies.sh
 
       - name: Checkout smuview
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           path: smuview
 
@@ -80,7 +80,7 @@ jobs:
           make manual-publish $V
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: SmuView_manual
           path: smuview/build/manual_publish/
@@ -106,7 +106,7 @@ jobs:
             python3-dev python-gi-dev python-setuptools coreutils
 
       - name: Checkout sigrok-utils
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: knarfS/sigrok-util
           path: sigrok-util
@@ -119,7 +119,7 @@ jobs:
           ./sigrok-linux-build-dependencies.sh
 
       - name: Checkout smuview
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           path: smuview
 
@@ -156,7 +156,7 @@ jobs:
           timeout --preserve-status 60 $INSTALL_DIR/bin/smuview -s gen_api.py -platform offscreen
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: SmuView_Python_API
           path: api_doc/
@@ -179,7 +179,7 @@ jobs:
         run: ls -alFR
 
       - name: Checkout knarfS.github.io
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: knarfS/knarfS.github.io
           path: knarfS.github.io
