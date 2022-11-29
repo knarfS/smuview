@@ -248,7 +248,7 @@ jobs:
   build_macos:
     name: SmuView MacOS build (${{ matrix.compiler.compiler }})
 
-    runs-on: macos-latest # macos-10.15
+    runs-on: macos-11
 
     strategy:
       matrix:
