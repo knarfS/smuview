@@ -427,23 +427,17 @@ void PowerPanelView::on_update()
 	double elapsed_time = (double)(now - last_time_) / (double)3600000; // / 1h
 	last_time_ = now;
 
-	double voltage = 0.;
-	if (voltage_signal_) {
-		voltage = voltage_signal_->last_value();
-		if (voltage_min_ > voltage)
-			voltage_min_ = voltage;
-		if (voltage_max_ < voltage)
-			voltage_max_ = voltage;
-	}
+	double voltage = voltage_signal_->last_value();
+	if (voltage_min_ > voltage)
+		voltage_min_ = voltage;
+	if (voltage_max_ < voltage)
+		voltage_max_ = voltage;
 
-	double current = 0.;
-	if (current_signal_) {
-		current = current_signal_->last_value();
-		if (current_min_ > current)
-			current_min_ = current;
-		if (current_max_ < current)
-			current_max_ = current;
-	}
+	double current = current_signal_->last_value();
+	if (current_min_ > current)
+		current_min_ = current;
+	if (current_max_ < current)
+		current_max_ = current;
 
 	double resistance = current == 0. ?
 		std::numeric_limits<double>::max() : voltage / current;

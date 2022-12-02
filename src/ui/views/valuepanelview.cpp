@@ -325,14 +325,11 @@ void ValuePanelView::on_update()
 	if (!signal_ || signal_->sample_count() == 0)
 		return;
 
-	double value = 0;
-	if (signal_) {
-		value = signal_->last_value();
-		if (value_min_ > value)
-			value_min_ = value;
-		if (value_max_ < value)
-			value_max_ = value;
-	}
+	double value = signal_->last_value();
+	if (value_min_ > value)
+		value_min_ = value;
+	if (value_max_ < value)
+		value_max_ = value;
 
 	value_display_->set_value(value);
 	value_min_display_->set_value(value_min_);
