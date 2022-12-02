@@ -2,7 +2,7 @@
  * This file is part of the SmuView project.
  *
  * Copyright (C) 2017 Soeren Apel <soeren@apelpie.net>
- * Copyright (C) 2017-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2022 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@
 #include <QSize>
 #include <QTextBrowser>
 #include <QTextDocument>
+#include <qwt_global.h>
 
 #include "aboutdialog.hpp"
 #include "config.h"
@@ -145,6 +146,8 @@ QWidget *AboutDialog::get_about_page(QWidget *parent) const
 
 	s.append(QString("<tr><td><i>%1</i></td><td>%2</td></tr>")
 		.arg(QString("Qt"), qVersion()));
+	s.append(QString("<tr><td><i>%1</i></td><td>%2</td></tr>")
+		.arg(QString("Qwt"), QWT_VERSION_STR));
 	s.append(QString("<tr><td><i>%1</i></td><td>%2</td></tr>")
 		.arg(QString("glibmm"), SV_GLIBMM_VERSION));
 	s.append(QString("<tr><td><i>%1</i></td><td>%2</td></tr>")

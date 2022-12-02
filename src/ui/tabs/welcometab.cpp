@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2022 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,7 +60,7 @@ void WelcomeTab::setup_ui()
 		append("<big>Welcome to <b>SmuView</b></big><br>").
 		append("Multimeters, Power Supplies and Loads<br><br>").
 		append("Version ").append(SV_VERSION_STRING).append("<br><br>").
-		append("Copyright 2017-2021, Frank Stettner<br>").
+		append("Copyright 2017-2022, Frank Stettner<br>").
 		append("Lizenz: <a href=\"https://www.gnu.org/licenses/gpl.html\">GNU General Public License Version 3</a><br><br>").
 		append("<a href=\"https://github.com/knarfS/smuview\">github.com/knarfS/smuview</a><br>").
 		append("</center>");

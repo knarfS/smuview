@@ -3,7 +3,7 @@
 ##
 ## Copyright (C) 2012 Joel Holdsworth <joel@airwebreathe.org.uk>
 ## Copyright (C) 2012-2013 Alexandru Gagniuc <mr.nuke.me@gmail.com>
-## Copyright (C) 2017-2021 Frank Stettner <frank-stettner@gmx.net>
+## Copyright (C) 2017-2022 Frank Stettner <frank-stettner@gmx.net>
 ##
 ## This program is free software: you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -146,14 +146,15 @@ endif()
 
 # SmuView has its own copy of pybind11
 if(MINGW)
-	# Use pybind11 2.9.2 vanilla for the MXE build. 2.9.2 is the last pybind11
-	# version that supports Python 3.4.4 which is used for static linking in the
-	# MXE cross build
-	add_subdirectory(external/pybind11_2.9.2)
+	# Use pybind11 2.9.2 with the emum_docstring patch for the MXE build. 2.9.2
+	# is the last pybind11 version that supports Python 3.4.4 which is needed for
+	# static linking in the MXE cross build
+	set(PYBIND11_SUBDIRECTORY external/pybind11_2.9.2)
 else()
 	# Use pybind11 2.11 dev1 with the emum_docstring patch for all other builds
-	add_subdirectory(external/pybind11_2.11_dev1)
+	set(PYBIND11_SUBDIRECTORY external/pybind11_2.11_dev1)
 endif()
+add_subdirectory(${PYBIND11_SUBDIRECTORY})
 # SmuView has its own copy of QCodeEditor
 add_subdirectory(external/QCodeEditor)
 # SmuView has its own copy of QtFindReplaceDialog
@@ -202,7 +203,9 @@ message(STATUS "${SV_TITLE} version: ${SV_VERSION_STRING}")
 
 # Library versions
 set(SV_GLIBMM_VERSION ${PKGDEPS_glibmm-2.4_VERSION})
-set(SV_PYBIND11_VERSION ${PYBIND11_VERSION_MAJOR}.${PYBIND11_VERSION_MINOR}.${PYBIND11_VERSION_PATCH})
+get_directory_property(pybind11_VERSION DIRECTORY ${PYBIND11_SUBDIRECTORY} DEFINITION pybind11_VERSION)
+get_directory_property(pybind11_VERSION_TYPE DIRECTORY ${PYBIND11_SUBDIRECTORY} DEFINITION pybind11_VERSION_TYPE)
+set(SV_PYBIND11_VERSION "${pybind11_VERSION} ${pybind11_VERSION_TYPE}")
 if(MINGW)
 	# MXE workaround: Use PkgConfig to find Python
 	set(SV_PYTHON_VERSION ${PYTHON3_VERSION})
