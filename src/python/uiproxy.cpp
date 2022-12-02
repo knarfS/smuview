@@ -353,7 +353,7 @@ void UiProxy::init_wait_for_views_added(vector<string> &ids, int timeout)
 {
 	event_loop_finished_conn_ =
 		connect(ui_helper_.get(), &UiHelper::views_added, this,
-			[this, &ids](vector<std::string> view_ids) {
+			[this, &ids](const vector<std::string> &view_ids) {
 				ids = view_ids;
 				event_loop_.quit();
 			});

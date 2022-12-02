@@ -276,7 +276,7 @@ void SourceSinkDevice::init_channels()
 }
 
 bool SourceSinkDevice::get_channel_name_suffix(string &channel_suffix,
-	const string &channel_name, const vector<string> prefixes,
+	const string &channel_name, const vector<string> &prefixes,
 	bool is_initialized)
 {
 	string tmp_ch_suffix;

@@ -49,7 +49,7 @@ private:
 		shared_ptr<sigrok::HardwareDevice> sr_device);
 
 	bool get_channel_name_suffix(string &channel_suffix,
-		const string &channel_name, const vector<string> prefixes,
+		const string &channel_name, const vector<string> &prefixes,
 		bool is_initialized);
 
 public:
