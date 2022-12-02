@@ -403,11 +403,11 @@ string Configurable::name() const
 
 QString Configurable::display_name() const
 {
-	QString name = QString::fromStdString(this->name());
-	if (name.isEmpty())
-		name = QString::fromStdString(device_name_);
+	QString display_name = QString::fromStdString(this->name());
+	if (display_name.isEmpty())
+		display_name = QString::fromStdString(device_name_);
 
-	return name;
+	return display_name;
 }
 
 unsigned int Configurable::index() const

@@ -52,9 +52,9 @@ QVariant StringProperty::value() const
 
 QString StringProperty::string_value() const
 {
-	string value;
-	configurable_->get_config<string>(config_key_, value);
-	return QString::fromStdString(value);
+	string string_value;
+	configurable_->get_config<string>(config_key_, string_value);
+	return QString::fromStdString(string_value);
 }
 
 QString StringProperty::to_string(const QVariant &qvar) const

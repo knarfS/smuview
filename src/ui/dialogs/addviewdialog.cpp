@@ -243,10 +243,10 @@ void AddViewDialog::accept()
 		{
 			auto configurable =
 				configurable_configurable_form_->selected_configurable();
-			auto views = views::viewhelper::get_views_for_configurable(
+			auto conf_views = views::viewhelper::get_views_for_configurable(
 				session_, configurable);
 
-			for (const auto &view : views) {
+			for (const auto &view : conf_views) {
 				views_.push_back(view);
 			}
 		}
@@ -255,31 +255,31 @@ void AddViewDialog::accept()
 		// Add sequence view for property
 		{
 			auto property = sequence_property_form_->selected_property();
-			auto view = new ui::views::SequenceOutputView(session_);
-			view->set_property(
+			auto conf_views = new ui::views::SequenceOutputView(session_);
+			conf_views->set_property(
 				static_pointer_cast<sv::data::properties::DoubleProperty>(property));
-			views_.push_back(view);
+			views_.push_back(conf_views);
 		}
 		break;
 	case 2:
 		// Add value panel view
 		for (const auto &channel : panel_channel_tree_->checked_channels()) {
-			auto view = new ui::views::ValuePanelView(session_);
-			view->set_channel(channel);
-			views_.push_back(view);
+			auto conf_views = new ui::views::ValuePanelView(session_);
+			conf_views->set_channel(channel);
+			views_.push_back(conf_views);
 		}
 		break;
 	case 3:
 		// Add time plot view
 		for (const auto &channel : time_plot_channel_tree_->checked_channels()) {
-			auto view = new ui::views::TimePlotView(session_);
-			view->set_channel(channel);
-			views_.push_back(view);
+			auto conf_views = new ui::views::TimePlotView(session_);
+			conf_views->set_channel(channel);
+			views_.push_back(conf_views);
 		}
 		for (const auto &signal : time_plot_channel_tree_->checked_signals()) {
-			auto view = new ui::views::TimePlotView(session_);
-			view->add_signal(static_pointer_cast<data::AnalogTimeSignal>(signal));
-			views_.push_back(view);
+			auto conf_views = new ui::views::TimePlotView(session_);
+			conf_views->add_signal(static_pointer_cast<data::AnalogTimeSignal>(signal));
+			views_.push_back(conf_views);
 		}
 		break;
 	case 4:

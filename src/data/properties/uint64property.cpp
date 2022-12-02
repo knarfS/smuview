@@ -55,9 +55,9 @@ QVariant UInt64Property::value() const
 
 uint64_t UInt64Property::uint64_value() const
 {
-	uint64_t value;
-	configurable_->get_config<uint64_t>(config_key_, value);
-	return value;
+	uint64_t uint64_value;
+	configurable_->get_config<uint64_t>(config_key_, uint64_value);
+	return uint64_value;
 }
 
 QString UInt64Property::to_string(uint64_t value) const

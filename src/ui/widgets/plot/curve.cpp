@@ -188,14 +188,14 @@ Qt::PenStyle Curve::style() const
 
 void Curve::set_symbol(const QwtSymbol::Style style)
 {
-	QwtSymbol *symbol = new QwtSymbol(style);
-	symbol->setBrush(QBrush(color_));
-	symbol->setPen(color_, 2);
+	QwtSymbol *curve_symbol = new QwtSymbol(style);
+	curve_symbol->setBrush(QBrush(color_));
+	curve_symbol->setPen(color_, 2);
 	if (style == QwtSymbol::XCross)
-		symbol->setSize(QSize(8, 8));
+		curve_symbol->setSize(QSize(8, 8));
 	else
-		symbol->setSize(QSize(4, 4));
-	plot_curve_->setSymbol(symbol);
+		curve_symbol->setSize(QSize(4, 4));
+	plot_curve_->setSymbol(curve_symbol);
 }
 
 QwtSymbol::Style Curve::symbol() const
@@ -205,12 +205,12 @@ QwtSymbol::Style Curve::symbol() const
 
 QwtPlotMarker *Curve::add_marker(const QString &name_postfix)
 {
-	QwtSymbol *symbol = new QwtSymbol(
+	QwtSymbol *marker_symbol = new QwtSymbol(
 		QwtSymbol::Diamond, QBrush(color_), QPen(color_), QSize(9, 9));
-	QString name = QString("M%1").arg(name_postfix);
+	QString marker_name = QString("M%1").arg(name_postfix);
 
-	QwtPlotMarker *marker = new QwtPlotMarker(name);
-	marker->setSymbol(symbol);
+	QwtPlotMarker *marker = new QwtPlotMarker(marker_name);
+	marker->setSymbol(marker_symbol);
 	marker->setLineStyle(QwtPlotMarker::Cross);
 	marker->setLinePen(Qt::white, 1.0, Qt::DashLine);
 	marker->setXAxis(x_axis_id());
@@ -219,7 +219,7 @@ QwtPlotMarker *Curve::add_marker(const QString &name_postfix)
 	marker->setZ(2);
 
 	// Label
-	QwtText marker_label = QwtText(name);
+	QwtText marker_label = QwtText(marker_name);
 	marker_label.setColor(Qt::black);
 	marker_label.setPaintAttribute(QwtText::PaintBackground, true);
 	QColor c(Qt::gray);
@@ -301,7 +301,7 @@ QColor Curve::default_color(sv::data::Quantity quantity,
 	const set<sv::data::QuantityFlag> &quantity_flags)
 {
 	// First, try to get color from QSettings
-	QColor color = QColor();
+	QColor curve_color = QColor();
 	QSettings settings;
 	if (SettingsManager::restore_settings() &&
 			settings.childGroups().contains("DefaultCurveColors")) {
@@ -310,11 +310,11 @@ QColor Curve::default_color(sv::data::Quantity quantity,
 			arg(data::datautil::get_sr_quantity_id(quantity)).
 			arg(data::datautil::get_sr_quantity_flags_id(quantity_flags));
 		if (settings.childKeys().contains(key))
-			color = settings.value(key).value<QColor>();
+			curve_color = settings.value(key).value<QColor>();
 		settings.endGroup();
 	}
-	if (color.isValid())
-		return color;
+	if (curve_color.isValid())
+		return curve_color;
 
 	// Predefined colors
 	if (quantity == sv::data::Quantity::Voltage &&

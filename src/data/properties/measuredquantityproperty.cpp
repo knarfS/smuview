@@ -59,9 +59,9 @@ QVariant MeasuredQuantityProperty::value() const
 data::measured_quantity_t
 MeasuredQuantityProperty::measured_quantity_value() const
 {
-	data::measured_quantity_t value;
-	configurable_->get_measured_quantity_config(config_key_, value);
-	return value;
+	data::measured_quantity_t mq_value;
+	configurable_->get_measured_quantity_config(config_key_, mq_value);
+	return mq_value;
 }
 
 QString MeasuredQuantityProperty::to_string(

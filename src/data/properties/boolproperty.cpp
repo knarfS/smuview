@@ -41,9 +41,9 @@ QVariant BoolProperty::value() const
 
 bool BoolProperty::bool_value() const
 {
-	bool value;
-	configurable_->get_config<bool>(config_key_, value);
-	return value;
+	bool bool_value;
+	configurable_->get_config<bool>(config_key_, bool_value);
+	return bool_value;
 }
 
 QString BoolProperty::to_string(bool value) const

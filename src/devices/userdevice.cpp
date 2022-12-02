@@ -55,44 +55,44 @@ string UserDevice::name() const
 QString UserDevice::full_name() const
 {
 	QString sep("");
-	QString name("");
+	QString full_name("");
 
 	if (sr_device_->vendor().length() > 0) {
-		name.append(QString::fromStdString(sr_device_->vendor()));
+		full_name.append(QString::fromStdString(sr_device_->vendor()));
 		sep = QString(" ");
 	}
 
 	if (sr_device_->model().length() > 0) {
-		name.append(sep);
-		name.append(QString::fromStdString(sr_device_->model()));
+		full_name.append(sep);
+		full_name.append(QString::fromStdString(sr_device_->model()));
 		sep = QString(" ");
 	}
 
 	if (sr_device_->version().length() > 0) {
-		name.append(sep);
-		name.append(QString::fromStdString(sr_device_->version()));
+		full_name.append(sep);
+		full_name.append(QString::fromStdString(sr_device_->version()));
 		sep = QString(" ");
 	}
 
-	return name;
+	return full_name;
 }
 
 QString UserDevice::short_name() const
 {
 	QString sep("");
-	QString name("");
+	QString short_name("");
 
 	if (sr_device_->vendor().length() > 0) {
-		name.append(QString::fromStdString(sr_device_->vendor()));
+		short_name.append(QString::fromStdString(sr_device_->vendor()));
 		sep = QString(" ");
 	}
 
 	if (sr_device_->model().length() > 0) {
-		name.append(sep);
-		name.append(QString::fromStdString(sr_device_->model()));
+		short_name.append(sep);
+		short_name.append(QString::fromStdString(sr_device_->model()));
 	}
 
-	return name;
+	return short_name;
 }
 
 QString UserDevice::display_name(

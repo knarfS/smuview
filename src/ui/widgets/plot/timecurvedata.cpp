@@ -205,13 +205,13 @@ TimeCurveData *TimeCurveData::init_from_settings(
 	Session &session, QSettings &settings,
 	shared_ptr<sv::devices::BaseDevice> origin_device)
 {
-	auto signal = SettingsManager::restore_signal(
+	auto data_signal = SettingsManager::restore_signal(
 		session, settings, origin_device);
-	if (!signal)
+	if (!data_signal)
 		return nullptr;
 
 	return new TimeCurveData(
-		dynamic_pointer_cast<sv::data::AnalogTimeSignal>(signal));
+		dynamic_pointer_cast<sv::data::AnalogTimeSignal>(data_signal));
 }
 
 } // namespace plot

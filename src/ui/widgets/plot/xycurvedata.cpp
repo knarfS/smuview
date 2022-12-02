@@ -210,16 +210,16 @@ XYCurveData *XYCurveData::init_from_settings(
 	Session &session, QSettings &settings,
 	shared_ptr<sv::devices::BaseDevice> origin_device)
 {
-	auto x_t_signal = SettingsManager::restore_signal(
+	auto x_t_data_signal = SettingsManager::restore_signal(
 		session, settings, origin_device, "x_");
-	auto y_t_signal = SettingsManager::restore_signal(
+	auto y_t_data_signal = SettingsManager::restore_signal(
 		session, settings, origin_device, "y_");
-	if (!x_t_signal || !y_t_signal)
+	if (!x_t_data_signal || !y_t_data_signal)
 		return nullptr;
 
 	return new XYCurveData(
-		dynamic_pointer_cast<sv::data::AnalogTimeSignal>(x_t_signal),
-		dynamic_pointer_cast<sv::data::AnalogTimeSignal>(y_t_signal));
+		dynamic_pointer_cast<sv::data::AnalogTimeSignal>(x_t_data_signal),
+		dynamic_pointer_cast<sv::data::AnalogTimeSignal>(y_t_data_signal));
 }
 
 void XYCurveData::on_sample_appended()
