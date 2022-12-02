@@ -74,7 +74,7 @@ void HardwareChannel::push_interleaved_samples(const float *data,
 	try {
 		quantity = data::datautil::get_quantity(sr_analog->mq());
 	}
-	catch(sigrok::Error &e) {
+	catch (const sigrok::Error &e) {
 		quantity = data::Quantity::Unknown;
 	}
 	set<data::QuantityFlag> quantity_flags =

@@ -205,9 +205,9 @@ Plot::Plot(Session &session, QWidget *parent) : QwtPlot(parent),
 Plot::~Plot()
 {
 	this->stop();
-	for (auto &marker_pair : marker_curve_map_)
+	for (const auto &marker_pair : marker_curve_map_)
 		delete marker_pair.first;
-	for (auto &curve_pair : curve_map_)
+	for (const auto &curve_pair : curve_map_)
 		delete curve_pair.second;
 }
 

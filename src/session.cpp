@@ -99,7 +99,7 @@ list<shared_ptr<devices::HardwareDevice>>
 	list<shared_ptr<devices::HardwareDevice>> devices =
 		device_manager_.driver_scan(driver_name, driver_opts);
 
-	for (auto &device : devices)
+	for (const auto &device : devices)
 		add_device(device);
 
 	return devices;
