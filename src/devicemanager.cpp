@@ -318,11 +318,10 @@ shared_ptr<devices::HardwareDevice> DeviceManager::find_device_from_info(
 	const map<string, string> &search_info)
 {
 	shared_ptr<devices::HardwareDevice> last_resort_dev;
-	map<string, string> dev_info;
 
 	for (const auto &dev : devices_) {
 		assert(dev);
-		dev_info = get_device_info(dev);
+		auto dev_info = get_device_info(dev);
 
 		// If present, vendor and model always have to match.
 		if (dev_info.count("vendor") > 0 && search_info.count("vendor") > 0) {
