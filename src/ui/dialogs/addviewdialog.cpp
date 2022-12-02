@@ -94,8 +94,10 @@ void AddViewDialog::setup_ui()
 	button_box_ = new QDialogButtonBox(
 		QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
 	main_layout->addWidget(button_box_);
-	connect(button_box_, SIGNAL(accepted()), this, SLOT(accept()));
-	connect(button_box_, SIGNAL(rejected()), this, SLOT(reject()));
+	connect(button_box_, &QDialogButtonBox::accepted,
+		this, &AddViewDialog::accept);
+	connect(button_box_, &QDialogButtonBox::rejected,
+		this, &AddViewDialog::reject);
 
 	this->setLayout(main_layout);
 }

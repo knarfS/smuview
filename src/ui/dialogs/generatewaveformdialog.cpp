@@ -238,8 +238,10 @@ void GenerateWaveformDialog::setup_ui()
 	button_box_ = new QDialogButtonBox(
 		QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
 	layout->addRow(button_box_);
-	connect(button_box_, SIGNAL(accepted()), this, SLOT(accept()));
-	connect(button_box_, SIGNAL(rejected()), this, SLOT(reject()));
+	connect(button_box_, &QDialogButtonBox::accepted,
+		this, &GenerateWaveformDialog::accept);
+	connect(button_box_, &QDialogButtonBox::rejected,
+		this, &GenerateWaveformDialog::reject);
 
 	// Set values
 	min_value_box_->setValue(min_value_);

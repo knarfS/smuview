@@ -123,8 +123,10 @@ void SignalSaveDialog::setup_ui()
 
 	connect(timestamps_combined_, SIGNAL(stateChanged(int)),
 		this, SLOT(toggle_combined()));
-	connect(button_box_, SIGNAL(accepted()), this, SLOT(accept()));
-	connect(button_box_, SIGNAL(rejected()), this, SLOT(reject()));
+	connect(button_box_, &QDialogButtonBox::accepted,
+		this, &SignalSaveDialog::accept);
+	connect(button_box_, &QDialogButtonBox::rejected,
+		this, &SignalSaveDialog::reject);
 
 	this->setLayout(main_layout);
 }
