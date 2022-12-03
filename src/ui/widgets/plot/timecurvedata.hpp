@@ -60,7 +60,7 @@ public:
 
 	bool is_equal(const BaseCurveData *other) const override;
 
-	QPointF sample(size_t i) const override;
+	QPointF sample(size_t index) const override;
 	size_t size() const override;
 	QRectF boundingRect() const override;
 

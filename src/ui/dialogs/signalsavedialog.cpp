@@ -212,10 +212,10 @@ void SignalSaveDialog::save(const QString &file_name)
 
 	// Data
 	// TODO: we asume here, that the vector size is the same for all vectors....
-	for (size_t i = 0; i < max_sample_count; i++) {
+	for (size_t index = 0; index < max_sample_count; index++) {
 		start_sep = "";
 		QString line("");
-		int j = 0;
+		int sample_count_index = 0;
 		for (const auto &signal : signals) {
 			// Only handle AnalogSignals
 			auto analog_signal =
@@ -226,10 +226,10 @@ void SignalSaveDialog::save(const QString &file_name)
 			QString time("");
 			QString value("");
 
-			size_t sample_count = sample_counts[j];
-			if (i < sample_count-1) {
+			size_t sample_count = sample_counts[sample_count_index];
+			if (index < sample_count-1) {
 				// More samples for this signal
-				auto sample = analog_signal->get_sample(i, relative_time);
+				auto sample = analog_signal->get_sample(index, relative_time);
 				value = QString("%1").arg(sample.second);
 				if (relative_time)
 					time = QString("%1").arg(sample.first, 0, 'f', 4);
@@ -242,7 +242,7 @@ void SignalSaveDialog::save(const QString &file_name)
 				QString::fromStdString(sep), value));
 			start_sep = sep;
 
-			++j;
+			++sample_count_index;
 		}
 		output_file << line.toStdString() << std::endl;
 	}
@@ -315,7 +315,7 @@ void SignalSaveDialog::save_combined(const QString &file_name)
 	// Data
 	while (true) {
 		double next_timestamp = -1;
-		int i = 0;
+		int index = 0;
 		for (const auto &signal : signals) {
 			// Only handle AnalogSignals
 			auto analog_signal =
@@ -323,15 +323,15 @@ void SignalSaveDialog::save_combined(const QString &file_name)
 			if (!analog_signal)
 				continue;
 
-			if (sample_pos[i] >= sample_counts[i]-1)
+			if (sample_pos[index] >= sample_counts[index]-1)
 				continue;
 
 			double timestamp =
-				analog_signal->get_sample(sample_pos[i], relative_time).first;
+				analog_signal->get_sample(sample_pos[index], relative_time).first;
 			if (next_timestamp < 0 || timestamp < next_timestamp)
 				next_timestamp = timestamp;
 
-			++i;
+			++index;
 		}
 
 		if (next_timestamp < 0)
@@ -345,7 +345,7 @@ void SignalSaveDialog::save_combined(const QString &file_name)
 			line = util::format_time_date(next_timestamp);
 
 		// Values
-		i = 0;
+		index = 0;
 		for (const auto &signal : signals) {
 			// Only handle AnalogSignals
 			auto analog_signal =
@@ -356,14 +356,14 @@ void SignalSaveDialog::save_combined(const QString &file_name)
 			line.append(QString::fromStdString(sep));
 
 			auto sample =
-				analog_signal->get_sample(sample_pos[i], relative_time);
+				analog_signal->get_sample(sample_pos[index], relative_time);
 			double timestamp = sample.first;
 			if (timestamp + combined_timeframe >= next_timestamp) {
 				line.append(QString("%1").arg(sample.second, 0, 'g', -1));
-				++sample_pos[i];
+				++sample_pos[index];
 			}
 
-			++i;
+			++index;
 		}
 		output_file << line.toStdString() << std::endl;
 	}
@@ -489,12 +489,12 @@ void SignalSaveDialog::accept()
 	QDialog::accept();
 }
 
-void SignalSaveDialog::done(int r)
+void SignalSaveDialog::done(int result)
 {
 	QSettings settings;
 	save_settings(settings);
 
-	QDialog::done(r);
+	QDialog::done(result);
 }
 
 void SignalSaveDialog::toggle_combined()

@@ -134,72 +134,72 @@ QWidget *AboutDialog::get_about_page(QWidget *parent) const
 
 	shared_ptr<sigrok::Context> context = device_manager_.context();
 
-	QString s;
+	QString html;
 
-	s.append("<style type=\"text/css\"> tr .id { white-space: pre; padding-right: 5px; } </style>");
+	html.append("<style type=\"text/css\"> tr .id { white-space: pre; padding-right: 5px; } </style>");
 
-	s.append("<table>");
+	html.append("<table>");
 
 	/* Library info */
-	s.append("<tr><td colspan=\"2\"><b>" +
+	html.append("<tr><td colspan=\"2\"><b>" +
 		tr("Libraries and features:") + "</b></td></tr>");
 
-	s.append(QString("<tr><td><i>%1</i></td><td>%2</td></tr>")
+	html.append(QString("<tr><td><i>%1</i></td><td>%2</td></tr>")
 		.arg(QString("Qt"), qVersion()));
-	s.append(QString("<tr><td><i>%1</i></td><td>%2</td></tr>")
+	html.append(QString("<tr><td><i>%1</i></td><td>%2</td></tr>")
 		.arg(QString("Qwt"), QWT_VERSION_STR));
-	s.append(QString("<tr><td><i>%1</i></td><td>%2</td></tr>")
+	html.append(QString("<tr><td><i>%1</i></td><td>%2</td></tr>")
 		.arg(QString("glibmm"), SV_GLIBMM_VERSION));
-	s.append(QString("<tr><td><i>%1</i></td><td>%2</td></tr>")
+	html.append(QString("<tr><td><i>%1</i></td><td>%2</td></tr>")
 		.arg(QString("Boost"), BOOST_LIB_VERSION));
-	s.append(QString("<tr><td><i>%1</i></td><td>%2</td></tr>")
+	html.append(QString("<tr><td><i>%1</i></td><td>%2</td></tr>")
 		.arg(QString("pybind11"), SV_PYBIND11_VERSION));
-	s.append(QString("<tr><td><i>%1</i></td><td>%2</td></tr>")
+	html.append(QString("<tr><td><i>%1</i></td><td>%2</td></tr>")
 		.arg(QString("Python"), SV_PYTHON_VERSION));
 
-	s.append(QString("<tr><td><i>%1</i></td><td>%2/%3 (rt: %4/%5)</td></tr>")
+	html.append(QString("<tr><td><i>%1</i></td><td>%2/%3 (rt: %4/%5)</td></tr>")
 		.arg(QString("libsigrok"), SR_PACKAGE_VERSION_STRING,
 		SR_LIB_VERSION_STRING, sr_package_version_string_get(),
 		sr_lib_version_string_get()));
 
-	GSList *l_orig = sr_buildinfo_libs_get();
-	for (GSList *l = l_orig; l; l = l->next) {
-		GSList *m = (GSList *)l->data;
-		const char *lib = (const char *)m->data;
-		const char *version = (const char *)m->next->data;
-		s.append(QString("<tr><td><i>- %1</i></td><td>%2</td></tr>")
-			.arg(QString(lib), QString(version)));
-		g_slist_free_full(m, g_free);
+	GSList *libs_orig = sr_buildinfo_libs_get();
+	for (GSList *lib = libs_orig; lib; lib = lib->next) {
+		GSList *lib_data = (GSList *)lib->data;
+		const char *name = (const char *)lib_data->data;
+		const char *version = (const char *)lib_data->next->data;
+		html.append(QString("<tr><td><i>- %1</i></td><td>%2</td></tr>")
+			.arg(QString(name), QString(version)));
+		g_slist_free_full(lib_data, g_free);
 	}
-	g_slist_free(l_orig);
+	g_slist_free(libs_orig);
 
 	char *host = sr_buildinfo_host_get();
-	s.append(QString("<tr><td><i>- Host</i></td><td>%1</td></tr>")
+	html.append(QString("<tr><td><i>- Host</i></td><td>%1</td></tr>")
 		.arg(QString(host)));
 	g_free(host);
 
 	char *scpi_backends = sr_buildinfo_scpi_backends_get();
-	s.append(QString("<tr><td><i>- SCPI backends</i></td><td>%1</td></tr>")
+	html.append(QString("<tr><td><i>- SCPI backends</i></td><td>%1</td></tr>")
 		.arg(QString(scpi_backends)));
 	g_free(scpi_backends);
 
 	/* Set up the supported field */
-	s.append("<tr><td colspan=\"2\"></td></tr>");
-	s.append("<tr><td colspan=\"2\"><b>" +
+	html.append("<tr><td colspan=\"2\"></td></tr>");
+	html.append("<tr><td colspan=\"2\"><b>" +
 		tr("Supported hardware drivers:") + "</b></td></tr>");
 	for (const auto &entry : context->drivers()) {
-		s.append(QString("<tr><td class=\"id\"><i>%1</i></td><td>%2</td></tr>")
+		html.append(QString("<tr><td class=\"id\"><i>%1</i></td><td>%2</td></tr>")
 			.arg(QString::fromUtf8(entry.first.c_str()),
 				QString::fromUtf8(entry.second->long_name().c_str())));
 	}
 
 	// No need for input formats
 	/*
-	s.append("<tr><td colspan=\"2\"></td></tr>");
-	s.append("<tr><td colspan=\"2\"><b>" +
+	html.append("<tr><td colspan=\"2\"></td></tr>");
+	html.append("<tr><td colspan=\"2\"><b>" +
 		tr("Supported input formats:") + "</b></td></tr>");
 	for (const auto &entry : context->input_formats()) {
-		s.append(QString("<tr><td class=\"id\"><i>%1</i></td><td>%2</td></tr>")
+		html.append(QString("<tr><td class=\"id\"><i>%1</i></td><td>%2</td></tr>")
 			.arg(QString::fromUtf8(entry.first.c_str()),
 				QString::fromUtf8(entry.second->description().c_str())));
 	}
@@ -207,20 +207,20 @@ QWidget *AboutDialog::get_about_page(QWidget *parent) const
 
 	// No need for output formats
 	/*
-	s.append("<tr><td colspan=\"2\"></td></tr>");
-	s.append("<tr><td colspan=\"2\"><b>" +
+	html.append("<tr><td colspan=\"2\"></td></tr>");
+	html.append("<tr><td colspan=\"2\"><b>" +
 		tr("Supported output formats:") + "</b></td></tr>");
 	for (const auto &entry : context->output_formats()) {
-		s.append(QString("<tr><td class=\"id\"><i>%1</i></td><td>%2</td></tr>")
+		html.append(QString("<tr><td class=\"id\"><i>%1</i></td><td>%2</td></tr>")
 			.arg(QString::fromUtf8(entry.first.c_str()),
 				QString::fromUtf8(entry.second->description().c_str())));
 	}
 	*/
 
-	s.append("</table>");
+	html.append("</table>");
 
 	QTextDocument *supported_doc = new QTextDocument();
-	supported_doc->setHtml(s);
+	supported_doc->setHtml(html);
 
 	QTextBrowser *support_list = new QTextBrowser();
 	support_list->setDocument(supported_doc);
@@ -282,75 +282,75 @@ QWidget *AboutDialog::get_device_page(QWidget *parent) const
 	QLabel *device_info = new QLabel();
 	device_info->setText(device_info_text);
 
-	QString s;
-	s.append("<style type=\"text/css\"> tr .id { white-space: pre; padding-right: 5px; } </style>");
-	s.append("<table width=\"100%\" border=\"0\">");
+	QString html;
+	html.append("<style type=\"text/css\"> tr .id { white-space: pre; padding-right: 5px; } </style>");
+	html.append("<table width=\"100%\" border=\"0\">");
 
 	/* Device functions */
-	s.append("<tr><td colspan=\"7\"><b>" +
+	html.append("<tr><td colspan=\"7\"><b>" +
 		tr("Sigrok device functions:") + "</b></td></tr>");
-	s.append(QString("<tr><td>&nbsp;</td><td colspan=\"6\">"));
+	html.append(QString("<tr><td>&nbsp;</td><td colspan=\"6\">"));
 	if (sr_hw_device) {
 		const auto sr_keys = sr_hw_device->driver()->config_keys();
 		QString sep("");
 		for (const auto &sr_key : sr_keys) {
-				s.append(sep).append(
+				html.append(sep).append(
 					QString::fromStdString(sr_key->description()));
 				sep = QString(", ");
 		}
 	}
-	s.append(QString("</td></tr>"));
-	s.append("<tr><td colspan=\"7\"><b>" +
+	html.append(QString("</td></tr>"));
+	html.append("<tr><td colspan=\"7\"><b>" +
 		tr("SmuView device functions:") + "</b></td></tr>");
-	s.append(QString("<tr><td>&nbsp;</td><td colspan=\"6\">%1</td></tr>").arg(
-		devices::deviceutil::format_device_type(device_->type())));
-	s.append("<tr><td colspan=\"7\">&nbsp;</td></tr>");
+	html.append(QString("<tr><td>&nbsp;</td><td colspan=\"6\">%1</td></tr>")
+		.arg(devices::deviceutil::format_device_type(device_->type())));
+	html.append("<tr><td colspan=\"7\">&nbsp;</td></tr>");
 
 	/* SmuView device configurables and config keys */
 	if (hw_device) {
-		s.append("<tr><td colspan=\"7\"><b>" +
+		html.append("<tr><td colspan=\"7\"><b>" +
 			tr("SmuView device configurables and properties:") +
 			"</b></td></tr>");
 		for (const auto &c_pair : hw_device->configurable_map()) {
 			auto configurable = c_pair.second;
-			s.append(QString("<tr><td>&nbsp;</td><td>%1</td><b>").
-				arg(configurable->display_name()));
-			s.append(QString("</b><td>GET</td><td>Value</td><td>SET</td>"));
-			s.append(QString("<td>LIST</td><td>Values</td></tr>"));
+			html.append(QString("<tr><td>&nbsp;</td><td>%1</td><b>")
+				.arg(configurable->display_name()));
+			html.append(QString("</b><td>GET</td><td>Value</td><td>SET</td>"));
+			html.append(QString("<td>LIST</td><td>Values</td></tr>"));
 			auto props = configurable->property_map();
 			for (const auto &prop : props) {
-				s.append(QString("<tr><td>&nbsp;</td>"));
-				s.append(QString("<td><i>%1</i></td>").arg(
-					devices::deviceutil::format_config_key(prop.first)));
+				html.append(QString("<tr><td>&nbsp;</td>"));
+				html.append(QString("<td><i>%1</i></td>")
+					.arg(devices::deviceutil::format_config_key(prop.first)));
 				if (prop.second->is_getable()) {
-					s.append(QString("<td>X</td>"));
+					html.append(QString("<td>X</td>"));
 					//if (prop.second->value().canConvert<QString>())
-					//	s.append(QString("<td>%1</td>").arg(
+					//	html.append(QString("<td>%1</td>").arg(
 					//		prop.second->value().toString()));
 					//else
-						s.append(QString("<td>?</td>"));
+						html.append(QString("<td>?</td>"));
 				}
 				else
-					s.append(QString("<td>&nbsp;</td><td>&nbsp;</td>"));
+					html.append(QString("<td>&nbsp;</td><td>&nbsp;</td>"));
 				if (prop.second->is_setable())
-					s.append(QString("<td>X</td>"));
+					html.append(QString("<td>X</td>"));
 				else
-					s.append(QString("<td>&nbsp;</td>"));
+					html.append(QString("<td>&nbsp;</td>"));
 				if (prop.second->is_listable())
-					s.append(QString("<td>X</td><td>&nbsp;</td>"));
+					html.append(QString("<td>X</td><td>&nbsp;</td>"));
 				else
-					s.append(QString("<td>&nbsp;</td><td>&nbsp;</td>"));
+					html.append(QString("<td>&nbsp;</td><td>&nbsp;</td>"));
 
-				s.append(QString("</tr>"));
+				html.append(QString("</tr>"));
 			}
 		}
-		s.append("<tr><td colspan=\"7\">&nbsp;</td></tr>");
+		html.append("<tr><td colspan=\"7\">&nbsp;</td></tr>");
 	}
 
-	s.append("</table>");
+	html.append("</table>");
 
 	QTextDocument *device_doc = new QTextDocument();
-	device_doc->setHtml(s);
+	device_doc->setHtml(html);
 
 	QTextBrowser *device_list = new QTextBrowser();
 	device_list->setDocument(device_doc);

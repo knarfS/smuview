@@ -95,7 +95,7 @@ void format_value_si(
  * formatting time values, but a different value can be given if the function
  * is reused to format a value of another quantity.
  *
- * @param t The value to format.
+ * @param timestamp The value to format.
  * @param prefix The SI prefix to use.
  * @param precision The number of digits after the decimal separator.
  * @param unit The unit of quantity.
@@ -105,7 +105,7 @@ void format_value_si(
  *
  * TODO: move to data
  */
-QString format_time_si(const Timestamp& v,
+QString format_time_si(const Timestamp& timestamp,
 	SIPrefix prefix = SIPrefix::unspecified, unsigned precision = 0,
 	const QString &unit = "s", bool sign = true);
 
@@ -115,7 +115,7 @@ QString format_time_si(const Timestamp& v,
  * without a SI prefix (using 'SIPrefix::none') and adjusts the precision to
  * match the given 'prefix'
  *
- * @param t The value to format.
+ * @param timestamp The value to format.
  * @param prefix The SI prefix to use.
  * @param precision The number of digits after the decimal separator if the
  *        'prefix' would be 'SIPrefix::none', see above for more information.
@@ -126,7 +126,7 @@ QString format_time_si(const Timestamp& v,
  *
  * TODO: move to data
  */
-QString format_time_si_adjusted(const Timestamp& t, SIPrefix prefix,
+QString format_time_si_adjusted(const Timestamp& timestamp, SIPrefix prefix,
 	unsigned precision = 0, const QString &unit = "s", bool sign = true);
 
 /**
@@ -136,7 +136,7 @@ QString format_time_si_adjusted(const Timestamp& t, SIPrefix prefix,
  * "HH" is also always generated. The "MM:SS" part is always produced, the
  * number of subsecond digits can be influenced using the 'precision' parameter.
  *
- * @param t The value to format.
+ * @param timestamp The value to format.
  * @param precision The number of digits after the decimal separator.
  * @param sign Whether or not to add a sign also for positive numbers.
  *
@@ -144,7 +144,7 @@ QString format_time_si_adjusted(const Timestamp& t, SIPrefix prefix,
  *
  * TODO: move to data
  */
-QString format_time_minutes(const Timestamp& t, signed precision = 0,
+QString format_time_minutes(const Timestamp& timestamp, signed precision = 0,
 	bool sign = true);
 
 /**
@@ -154,14 +154,14 @@ QString format_time_minutes(const Timestamp& t, signed precision = 0,
  * The number of subsecond digits can be influenced using the
  * 'precision' parameter.
  *
- * @param t The value to format.
+ * @param timestamp The value to format.
  * @param precision The number of digits after the decimal separator.
  *
- * @return The formatted value.
+ * @return The formatted date.
  *
  * TODO: move to data
  */
-QString format_time_date(double t);
+QString format_time_date(double timestamp);
 
 /**
  * Format the given UUID as a string without braches.
@@ -204,21 +204,21 @@ uint count_int_digits(int number);
 /**
  * Get the number of digits for the given double.
  *
- * @param[in] max Max value of the double.
+ * @param[in] value The value of the double.
  * @param[in] step Step size of the double.
  *
  * @return Number of decimal places
  */
-uint count_double_digits(double max, double step);
+uint count_double_digits(double value, double step);
 
 /**
  * Get the number of decimal places (number of digits after the decimal point)
  *
- * @param[in] double Decimal places to count
+ * @param[in] value The value from which to count the decimal places
  *
  * @return Number of decimal places
  */
-uint get_decimal_places(double dp);
+uint get_decimal_places(double value);
 
 /**
  * Parse a single CSV line.

@@ -118,9 +118,9 @@ void DataView::save_settings(QSettings &settings,
 {
 	BaseView::save_settings(settings, origin_device);
 
-	size_t i = 0;
+	size_t index = 0;
 	for (const auto &signal : signals_) {
-		settings.beginGroup(QString("signal%1").arg(i++));
+		settings.beginGroup(QString("signal%1").arg(index++));
 		SettingsManager::save_signal(signal, settings, origin_device);
 		settings.endGroup();
 	}

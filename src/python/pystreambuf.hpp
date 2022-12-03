@@ -78,10 +78,10 @@ public:
 	/** Raises an OSError, because PyStreamBuf is not seekable. */
 	int py_tell();
 	/**
-	 * Write the string s to the stream and return the number of
+	 * Write the string `str` to the stream and return the number of
 	 * characters written.
 	 */
-	int py_write(const std::string &s);
+	int py_write(const std::string &str);
 
 private:
 	std::string string_;

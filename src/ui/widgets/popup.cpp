@@ -157,38 +157,38 @@ QPolygon Popup::arrow_polygon() const
 {
 	QPolygon poly;
 
-	const QPoint p = mapFromGlobal(point_);
-	const int l = ArrowLength + ArrowOverlap;
+	const QPoint widget_point = mapFromGlobal(point_);
+	const int total_len = ArrowLength + ArrowOverlap;
 
 	switch (pos_) {
 	case PopupPosition::Right:
-		poly << QPoint(p.x() + l, p.y() - l);
+		poly << QPoint(widget_point.x() + total_len, widget_point.y() - total_len);
 		break;
 
 	case PopupPosition::Bottom:
-		poly << QPoint(p.x() - l, p.y() + l);
+		poly << QPoint(widget_point.x() - total_len, widget_point.y() + total_len);
 		break;
 
 	case PopupPosition::Left:
 	case PopupPosition::Top:
-		poly << QPoint(p.x() - l, p.y() - l);
+		poly << QPoint(widget_point.x() - total_len, widget_point.y() - total_len);
 		break;
 	}
 
-	poly << p;
+	poly << widget_point;
 
 	switch (pos_) {
 	case PopupPosition::Right:
 	case PopupPosition::Bottom:
-		poly << QPoint(p.x() + l, p.y() + l);
+		poly << QPoint(widget_point.x() + total_len, widget_point.y() + total_len);
 		break;
 
 	case PopupPosition::Left:
-		poly << QPoint(p.x() - l, p.y() + l);
+		poly << QPoint(widget_point.x() - total_len, widget_point.y() + total_len);
 		break;
 
 	case PopupPosition::Top:
-		poly << QPoint(p.x() + l, p.y() - l);
+		poly << QPoint(widget_point.x() + total_len, widget_point.y() - total_len);
 		break;
 	}
 
@@ -218,18 +218,18 @@ QRegion Popup::bubble_region() const
 {
 	const QRect rect(bubble_rect());
 
-	const int r = MarginWidth;
-	const int d = 2 * r;
-	return QRegion(rect.adjusted(r, 0, -r, 0)).united(
-		QRegion(rect.adjusted(0, r, 0, -r))).united(
-		QRegion(rect.left(), rect.top(), d, d,
-			QRegion::Ellipse)).united(
-		QRegion(rect.right() - d, rect.top(), d, d,
-			QRegion::Ellipse)).united(
-		QRegion(rect.left(), rect.bottom() - d, d, d,
-			QRegion::Ellipse)).united(
-		QRegion(rect.right() - d, rect.bottom() - d, d, d,
-			QRegion::Ellipse));
+	const int radius = MarginWidth;
+	const int diameter = 2 * radius;
+	return QRegion(rect.adjusted(radius, 0, -radius, 0))
+		.united(QRegion(rect.adjusted(0, radius, 0, -radius)))
+		.united(QRegion(rect.left(), rect.top(), diameter, diameter,
+			QRegion::Ellipse))
+		.united(QRegion(rect.right() - diameter, rect.top(), diameter, diameter,
+			QRegion::Ellipse))
+		.united(QRegion(rect.left(), rect.bottom() - diameter, diameter, diameter,
+			QRegion::Ellipse))
+		.united(QRegion(rect.right() - diameter, rect.bottom() - diameter,
+			diameter, diameter, QRegion::Ellipse));
 }
 
 QRegion Popup::popup_region() const
@@ -242,7 +242,7 @@ QRegion Popup::popup_region() const
 
 void Popup::reposition_widget()
 {
-	QPoint o;
+	QPoint new_pos;
 #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
 	QScreen *screen = QGuiApplication::screenAt(point_);
 	if(!screen)
@@ -254,18 +254,18 @@ void Popup::reposition_widget()
 #endif
 
 	if (pos_ == PopupPosition::Right || pos_ == PopupPosition::Left)
-		o.ry() = -height() / 2;
+		new_pos.ry() = -height() / 2;
 	else
-		o.rx() = -width() / 2;
+		new_pos.rx() = -width() / 2;
 
 	if (pos_ == PopupPosition::Left)
-		o.rx() = -width();
+		new_pos.rx() = -width();
 	else if (pos_ == PopupPosition::Top)
-		o.ry() = -height();
+		new_pos.ry() = -height();
 
-	o += point_;
-	move(max(min(o.x(), screen_rect.right() - width()), screen_rect.left()),
-		max(min(o.y(), screen_rect.bottom() - height()), screen_rect.top()));
+	new_pos += point_;
+	move(max(min(new_pos.x(), screen_rect.right() - width()), screen_rect.left()),
+		max(min(new_pos.y(), screen_rect.bottom() - height()), screen_rect.top()));
 }
 
 void Popup::closeEvent(QCloseEvent *event)
@@ -285,10 +285,10 @@ void Popup::paintEvent(QPaintEvent *event)
 		QPalette::Dark));
 
 	// Draw the bubble
-	const QRegion b = bubble_region();
+	const QRegion bubble = bubble_region();
 	const QRegion bubble_outline = QRegion(rect()).subtracted(
-		b.translated(1, 0).intersected(b.translated(0, 1).intersected(
-		b.translated(-1, 0).intersected(b.translated(0, -1)))));
+		bubble.translated(1, 0).intersected(bubble.translated(0, 1).intersected(
+		bubble.translated(-1, 0).intersected(bubble.translated(0, -1)))));
 
 	painter.setPen(Qt::NoPen);
 	painter.setBrush(QApplication::palette().brush(QPalette::Window));
@@ -301,11 +301,11 @@ void Popup::paintEvent(QPaintEvent *event)
 	const QPoint ArrowOffsets[] = {
 		QPoint(1, 0), QPoint(0, -1), QPoint(-1, 0), QPoint(0, 1)};
 
-	const QRegion a(arrow_region());
-	const QRegion arrow_outline = a.subtracted(
-		a.translated(ArrowOffsets[static_cast<int>(pos_)]));
+	const QRegion arrow(arrow_region());
+	const QRegion arrow_outline = arrow.subtracted(
+		arrow.translated(ArrowOffsets[static_cast<int>(pos_)]));
 
-	painter.setClipRegion(bubble_outline.subtracted(a).united(arrow_outline));
+	painter.setClipRegion(bubble_outline.subtracted(arrow).united(arrow_outline));
 	painter.setBrush(outline_color);
 	painter.drawRect(rect());
 }

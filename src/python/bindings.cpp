@@ -52,13 +52,14 @@ namespace py = pybind11;
  * NOTE: The documentation for the smuview module is optimized for pdoc3!
  */
 
-PYBIND11_EMBEDDED_MODULE(smuview, m) {
+
+PYBIND11_EMBEDDED_MODULE(smuview, module) {
 	// Set options for proper docstring.
 	py::options options;
 	options.enable_function_signatures();
 	options.disable_enum_members_docstring();
 
-	m.doc() = "The SmuView " SV_VERSION_STRING " Python bindings.\n\n"
+	module.doc() = "The SmuView " SV_VERSION_STRING " Python bindings.\n\n"
 		"The Python bindings are a scripting extension for SmuView to automate, "
 		"setup and control complex or repetitive measurements, to process the "
 		"incoming data and to create a standardized user interface for those "
@@ -88,26 +89,26 @@ PYBIND11_EMBEDDED_MODULE(smuview, m) {
 		"For more example scripts, please have a look into the `smuscript` folder.";
 
 	// pdoc attribute to render numpy docstrings.
-	m.add_object("__docformat__", py::str("numpy"), false);
+	module.add_object("__docformat__", py::str("numpy"), false);
 	// pdoc3 dictionary for enum documentation.
-	m.add_object("__pdoc__", py::dict(), false);
+	module.add_object("__pdoc__", py::dict(), false);
 
 	// NOTE: The order of initialization is very important! Otherwise types
 	//       could be unknown when pybind11 is generating the function
 	//       signatures.
-	init_Enums(m);
-	init_Signal(m);
-	init_Channel(m);
-	init_Configurable(m);
-	init_Device(m);
-	init_Session(m);
-	init_UI(m);
-	init_StreamBuf(m);
+	init_Enums(module);
+	init_Signal(module);
+	init_Channel(module);
+	init_Configurable(module);
+	init_Device(module);
+	init_Session(module);
+	init_UI(module);
+	init_StreamBuf(module);
 }
 
-void init_Session(py::module &m)
+void init_Session(py::module &module)
 {
-	py::class_<sv::Session> py_session(m, "Session");
+	py::class_<sv::Session> py_session(module, "Session");
 	py_session.doc() = "The SmuView `Session` class for accessing the actual state of the application.";
 	py_session.def("devices", &sv::Session::device_map,
 		"Return all connected devices.\n"
@@ -156,9 +157,9 @@ void init_Session(py::module &m)
 
 }
 
-void init_Device(py::module &m)
+void init_Device(py::module &module)
 {
-	py::class_<sv::devices::BaseDevice, std::shared_ptr<sv::devices::BaseDevice>> py_base_device(m, "BaseDevice");
+	py::class_<sv::devices::BaseDevice, std::shared_ptr<sv::devices::BaseDevice>> py_base_device(module, "BaseDevice");
 	py_base_device.doc() = "The base class for all device types.";
 	py_base_device.def("name", &sv::devices::BaseDevice::name,
 		"Return the name of the device.\n\n"
@@ -198,16 +199,16 @@ void init_Device(py::module &m)
 		"UserChannel\n"
 		"    The new user channel object.");
 
-	py::class_<sv::devices::HardwareDevice, std::shared_ptr<sv::devices::HardwareDevice>> py_hardware_device(m, "HardwareDevice", py_base_device);
+	py::class_<sv::devices::HardwareDevice, std::shared_ptr<sv::devices::HardwareDevice>> py_hardware_device(module, "HardwareDevice", py_base_device);
 	py_hardware_device.doc() = "An actual hardware device.";
 
-	py::class_<sv::devices::UserDevice, std::shared_ptr<sv::devices::UserDevice>> py_user_device(m, "UserDevice", py_base_device);
+	py::class_<sv::devices::UserDevice, std::shared_ptr<sv::devices::UserDevice>> py_user_device(module, "UserDevice", py_base_device);
 	py_user_device.doc() = "An user generated (virtual) device for storing custom data and showing a custom tab.";
 }
 
-void init_Channel(py::module &m)
+void init_Channel(py::module &module)
 {
-	py::class_<sv::channels::BaseChannel, std::shared_ptr<sv::channels::BaseChannel>> py_base_channel(m, "BaseChannel");
+	py::class_<sv::channels::BaseChannel, std::shared_ptr<sv::channels::BaseChannel>> py_base_channel(module, "BaseChannel");
 	py_base_channel.doc() = "The base class for all channel types.";
 	py_base_channel.def("name", &sv::channels::BaseChannel::name,
 		"Return the name of the channel.\n\n"
@@ -249,10 +250,10 @@ void init_Channel(py::module &m)
 		"List[BaseSignal]\n"
 		"    All signals of the channel.");
 
-	py::class_<sv::channels::HardwareChannel, std::shared_ptr<sv::channels::HardwareChannel>> py_hardware_channel(m, "HardwareChannel", py_base_channel);
+	py::class_<sv::channels::HardwareChannel, std::shared_ptr<sv::channels::HardwareChannel>> py_hardware_channel(module, "HardwareChannel", py_base_channel);
 	py_hardware_channel.doc() = "An actual hardware channel";
 
-	py::class_<sv::channels::UserChannel, std::shared_ptr<sv::channels::UserChannel>> py_user_channel(m, "UserChannel", py_base_channel);
+	py::class_<sv::channels::UserChannel, std::shared_ptr<sv::channels::UserChannel>> py_user_channel(module, "UserChannel", py_base_channel);
 	py_user_channel.doc() = "An user generated channel for storing custom data.";
 	py_user_channel.def("push_sample", &sv::channels::UserChannel::push_sample,
 		py::arg("sample"), py::arg("timestamp"), py::arg("quantity"),
@@ -277,14 +278,14 @@ void init_Channel(py::module &m)
 		"    The number of decimal places.");
 }
 
-void init_Signal(py::module &m)
+void init_Signal(py::module &module)
 {
 	/*
 	 * TODO:
 	 *  - get_value_at_timestamp(): reference parameter &value
 	 */
 
-	py::class_<sv::data::BaseSignal, std::shared_ptr<sv::data::BaseSignal>> py_base_signal(m, "BaseSignal");
+	py::class_<sv::data::BaseSignal, std::shared_ptr<sv::data::BaseSignal>> py_base_signal(module, "BaseSignal");
 	py_base_signal.doc() = "The base class for all signal types.";
 	py_base_signal.def("name", &sv::data::BaseSignal::name,
 		"Return the name of the signal.\n\n"
@@ -305,7 +306,7 @@ void init_Signal(py::module &m)
 		"int\n"
 		"    The number of samples.");
 
-	py::class_<sv::data::AnalogTimeSignal, std::shared_ptr<sv::data::AnalogTimeSignal>> py_analog_time_signal(m, "AnalogTimeSignal", py_base_signal);
+	py::class_<sv::data::AnalogTimeSignal, std::shared_ptr<sv::data::AnalogTimeSignal>> py_analog_time_signal(module, "AnalogTimeSignal", py_base_signal);
 	py_analog_time_signal.doc() = "A signal with time-value pairs.";
 	py_analog_time_signal.def("get_sample", &sv::data::AnalogTimeSignal::get_sample,
 		py::arg("pos"), py::arg("relative_time"),
@@ -348,7 +349,7 @@ void init_Signal(py::module &m)
 		"decimal_places : int\n"
 		"    The number of decimal places.");
 
-	py::class_<sv::data::AnalogSampleSignal, std::shared_ptr<sv::data::AnalogSampleSignal>> py_analog_sample_signal(m, "AnalogSampleSignal", py_base_signal);
+	py::class_<sv::data::AnalogSampleSignal, std::shared_ptr<sv::data::AnalogSampleSignal>> py_analog_sample_signal(module, "AnalogSampleSignal", py_base_signal);
 	py_analog_sample_signal.doc() = "A signal with key-value pairs.";
 	py_analog_sample_signal.def("get_sample", &sv::data::AnalogSampleSignal::get_sample,
 		py::arg("pos"),
@@ -379,14 +380,14 @@ void init_Signal(py::module &m)
 		"    The number of decimal places.");
 }
 
-void init_Configurable(py::module &m)
+void init_Configurable(py::module &module)
 {
 	/*
 	 * TODO:
 	 *  - list
 	 */
 
-	py::class_<sv::devices::Configurable, std::shared_ptr<sv::devices::Configurable>> py_configurable(m, "Configurable");
+	py::class_<sv::devices::Configurable, std::shared_ptr<sv::devices::Configurable>> py_configurable(module, "Configurable");
 	py_configurable.doc() = "A configurable for controlling a device with config keys.";
 	py_configurable.def("name", &sv::devices::Configurable::name,
 		"Return the name of the configurable.\n\n"
@@ -564,9 +565,9 @@ void init_Configurable(py::module &m)
 		"    All listable config keys.");
 }
 
-void init_UI(py::module &m)
+void init_UI(py::module &module)
 {
-	py::class_<sv::python::UiProxy> py_ui_proxy(m, "UiProxy");
+	py::class_<sv::python::UiProxy> py_ui_proxy(module, "UiProxy");
 	py_ui_proxy.doc() = "Helper class for accessing the UI.";
 	py_ui_proxy.def("add_device_tab", &sv::python::UiProxy::ui_add_device_tab,
 		py::arg("device"),
@@ -869,9 +870,9 @@ void init_UI(py::module &m)
 		"    The user entered integer value or `None` when the Cancel button was pressed.");
 }
 
-void init_StreamBuf(py::module &m)
+void init_StreamBuf(py::module &module)
 {
-	py::class_<sv::python::PyStreamBuf> py_stream_buf(m, "PyStreamBuf");
+	py::class_<sv::python::PyStreamBuf> py_stream_buf(module, "PyStreamBuf");
 	py_stream_buf.doc() = "Redirect all Python output to a SmuView console. This class is for internal SmuView use only!";
 	py_stream_buf.def(py::init<const std::string &, const std::string &>());
 	py_stream_buf.def("close", &sv::python::PyStreamBuf::py_close,
@@ -921,192 +922,192 @@ void init_StreamBuf(py::module &m)
 		"The error setting of the decoder or encoder.");
 }
 
-void init_Enums(py::module &m)
+void init_Enums(py::module &module)
 {
-	py::enum_<sv::data::DataType> py_data_type(m, "DataType",
+	py::enum_<sv::data::DataType> py_data_type(module, "DataType",
 		"Enum of all available data types.");
 	py_data_type.value("UInt64", sv::data::DataType::UInt64);
-	m.attr("__pdoc__")["DataType.UInt64"] = "UInt64";
+	module.attr("__pdoc__")["DataType.UInt64"] = "UInt64";
 	py_data_type.value("String", sv::data::DataType::String);
-	m.attr("__pdoc__")["DataType.String"] = "String";
+	module.attr("__pdoc__")["DataType.String"] = "String";
 	py_data_type.value("Bool", sv::data::DataType::Bool);
-	m.attr("__pdoc__")["DataType.Bool"] = "Bool";
+	module.attr("__pdoc__")["DataType.Bool"] = "Bool";
 	py_data_type.value("Double", sv::data::DataType::Double);
-	m.attr("__pdoc__")["DataType.Double"] = "Double";
+	module.attr("__pdoc__")["DataType.Double"] = "Double";
 	py_data_type.value("RationalPeriod", sv::data::DataType::RationalPeriod);
-	m.attr("__pdoc__")["DataType.RationalPeriod"] = "RationalPeriod";
+	module.attr("__pdoc__")["DataType.RationalPeriod"] = "RationalPeriod";
 	py_data_type.value("RationalVolt", sv::data::DataType::RationalVolt);
-	m.attr("__pdoc__")["DataType.RationalVolt"] = "RationalVolt";
+	module.attr("__pdoc__")["DataType.RationalVolt"] = "RationalVolt";
 	py_data_type.value("KeyValue", sv::data::DataType::KeyValue);
-	m.attr("__pdoc__")["DataType.KeyValue"] = "KeyValue";
+	module.attr("__pdoc__")["DataType.KeyValue"] = "KeyValue";
 	py_data_type.value("UInt64Range", sv::data::DataType::UInt64Range);
-	m.attr("__pdoc__")["DataType.UInt64Range"] = "UInt64Range";
+	module.attr("__pdoc__")["DataType.UInt64Range"] = "UInt64Range";
 	py_data_type.value("DoubleRange", sv::data::DataType::DoubleRange);
-	m.attr("__pdoc__")["DataType.DoubleRange"] = "DoubleRange";
+	module.attr("__pdoc__")["DataType.DoubleRange"] = "DoubleRange";
 	py_data_type.value("Int32", sv::data::DataType::Int32);
-	m.attr("__pdoc__")["DataType.Int32"] = "Int32";
+	module.attr("__pdoc__")["DataType.Int32"] = "Int32";
 	py_data_type.value("MQ", sv::data::DataType::MQ);
-	m.attr("__pdoc__")["DataType.MQ"] = "MQ";
+	module.attr("__pdoc__")["DataType.MQ"] = "MQ";
 	py_data_type.value("Unknown", sv::data::DataType::Unknown);
-	m.attr("__pdoc__")["DataType.Unknown"] = "Unknown";
+	module.attr("__pdoc__")["DataType.Unknown"] = "Unknown";
 
-	py::enum_<sv::devices::ConfigKey> py_config_key(m, "ConfigKey",
+	py::enum_<sv::devices::ConfigKey> py_config_key(module, "ConfigKey",
 		"Enum of all available config keys for controlling a device.");
 	py_config_key.value("Samplerate", sv::devices::ConfigKey::Samplerate);
-	m.attr("__pdoc__")["ConfigKey.Samplerate"] = "The samplerate, in Hz.";
+	module.attr("__pdoc__")["ConfigKey.Samplerate"] = "The samplerate, in Hz.";
 	py_config_key.value("CaptureRatio", sv::devices::ConfigKey::CaptureRatio);
-	m.attr("__pdoc__")["ConfigKey.CaptureRatio"] = "The pre/post-trigger capture ratio.";
+	module.attr("__pdoc__")["ConfigKey.CaptureRatio"] = "The pre/post-trigger capture ratio.";
 	py_config_key.value("PatternMode", sv::devices::ConfigKey::PatternMode);
-	m.attr("__pdoc__")["ConfigKey.PatternMode"] = "A pattern (pattern generator mode).";
+	module.attr("__pdoc__")["ConfigKey.PatternMode"] = "A pattern (pattern generator mode).";
 	py_config_key.value("RLE", sv::devices::ConfigKey::RLE);
-	m.attr("__pdoc__")["ConfigKey.RLE"] = "Run-length encoding (RLE).";
+	module.attr("__pdoc__")["ConfigKey.RLE"] = "Run-length encoding (RLE).";
 	py_config_key.value("TriggerSlope", sv::devices::ConfigKey::TriggerSlope);
-	m.attr("__pdoc__")["ConfigKey.TriggerSlope"] = "The trigger slope.";
+	module.attr("__pdoc__")["ConfigKey.TriggerSlope"] = "The trigger slope.";
 	py_config_key.value("Averaging", sv::devices::ConfigKey::Averaging);
-	m.attr("__pdoc__")["ConfigKey.Averaging"] = "Averaging.";
+	module.attr("__pdoc__")["ConfigKey.Averaging"] = "Averaging.";
 	py_config_key.value("AvgSamples", sv::devices::ConfigKey::AvgSamples);
-	m.attr("__pdoc__")["ConfigKey.AvgSamples"] = "The number of samples to be averaged over.";
+	module.attr("__pdoc__")["ConfigKey.AvgSamples"] = "The number of samples to be averaged over.";
 	py_config_key.value("TriggerSource", sv::devices::ConfigKey::TriggerSource);
-	m.attr("__pdoc__")["ConfigKey.TriggerSource"] = "Trigger source.";
+	module.attr("__pdoc__")["ConfigKey.TriggerSource"] = "Trigger source.";
 	py_config_key.value("HorizTriggerPos", sv::devices::ConfigKey::HorizTriggerPos);
-	m.attr("__pdoc__")["ConfigKey.HorizTriggerPos"] = "Horizontal trigger position.";
+	module.attr("__pdoc__")["ConfigKey.HorizTriggerPos"] = "Horizontal trigger position.";
 	py_config_key.value("BufferSize", sv::devices::ConfigKey::BufferSize);
-	m.attr("__pdoc__")["ConfigKey.BufferSize"] = "Buffer size.";
+	module.attr("__pdoc__")["ConfigKey.BufferSize"] = "Buffer size.";
 	py_config_key.value("TimeBase", sv::devices::ConfigKey::TimeBase);
-	m.attr("__pdoc__")["ConfigKey.TimeBase"] = "Time base.";
+	module.attr("__pdoc__")["ConfigKey.TimeBase"] = "Time base.";
 	py_config_key.value("Filter", sv::devices::ConfigKey::Filter);
-	m.attr("__pdoc__")["ConfigKey.Filter"] = "Filter.";
+	module.attr("__pdoc__")["ConfigKey.Filter"] = "Filter.";
 	py_config_key.value("VDiv", sv::devices::ConfigKey::VDiv);
-	m.attr("__pdoc__")["ConfigKey.VDiv"] = "Volts/div.";
+	module.attr("__pdoc__")["ConfigKey.VDiv"] = "Volts/div.";
 	py_config_key.value("Coupling", sv::devices::ConfigKey::Coupling);
-	m.attr("__pdoc__")["ConfigKey.Coupling"] = "Coupling.";
+	module.attr("__pdoc__")["ConfigKey.Coupling"] = "Coupling.";
 	py_config_key.value("TriggerMatch", sv::devices::ConfigKey::TriggerMatch);
-	m.attr("__pdoc__")["ConfigKey.TriggerMatch"] = "Trigger matches.";
+	module.attr("__pdoc__")["ConfigKey.TriggerMatch"] = "Trigger matches.";
 	py_config_key.value("SampleInterval", sv::devices::ConfigKey::SampleInterval);
-	m.attr("__pdoc__")["ConfigKey.SampleInterval"] = "The sample interval, in ms.";
+	module.attr("__pdoc__")["ConfigKey.SampleInterval"] = "The sample interval, in ms.";
 	py_config_key.value("NumHDiv", sv::devices::ConfigKey::NumHDiv);
-	m.attr("__pdoc__")["ConfigKey.NumHDiv"] = "Number of horizontal divisions, as related to `ConfigKey.TimeBase`.";
+	module.attr("__pdoc__")["ConfigKey.NumHDiv"] = "Number of horizontal divisions, as related to `ConfigKey.TimeBase`.";
 	py_config_key.value("NumVDiv", sv::devices::ConfigKey::NumVDiv);
-	m.attr("__pdoc__")["ConfigKey.NumVDiv"] = "Number of vertical divisions, as related to `ConfigKey.VDiv`.";
+	module.attr("__pdoc__")["ConfigKey.NumVDiv"] = "Number of vertical divisions, as related to `ConfigKey.VDiv`.";
 	py_config_key.value("SplWeightFreq", sv::devices::ConfigKey::SplWeightFreq);
-	m.attr("__pdoc__")["ConfigKey.SplWeightFreq"] = "Sound pressure level frequency weighting.";
+	module.attr("__pdoc__")["ConfigKey.SplWeightFreq"] = "Sound pressure level frequency weighting.";
 	py_config_key.value("SplWeightTime", sv::devices::ConfigKey::SplWeightTime);
-	m.attr("__pdoc__")["ConfigKey.SplWeightTime"] = "Sound pressure level time weighting.";
+	module.attr("__pdoc__")["ConfigKey.SplWeightTime"] = "Sound pressure level time weighting.";
 	py_config_key.value("SplMeasurementRange", sv::devices::ConfigKey::SplMeasurementRange);
-	m.attr("__pdoc__")["ConfigKey.SplMeasurementRange"] = "Sound pressure level measurement range.";
+	module.attr("__pdoc__")["ConfigKey.SplMeasurementRange"] = "Sound pressure level measurement range.";
 	py_config_key.value("HoldMax", sv::devices::ConfigKey::HoldMax);
-	m.attr("__pdoc__")["ConfigKey.HoldMax"] = "Max hold mode.";
+	module.attr("__pdoc__")["ConfigKey.HoldMax"] = "Max hold mode.";
 	py_config_key.value("HoldMin", sv::devices::ConfigKey::HoldMin);
-	m.attr("__pdoc__")["ConfigKey.HoldMin"] = "Min hold mode.";
+	module.attr("__pdoc__")["ConfigKey.HoldMin"] = "Min hold mode.";
 	py_config_key.value("VoltageThreshold", sv::devices::ConfigKey::VoltageThreshold);
-	m.attr("__pdoc__")["ConfigKey.VoltageThreshold"] = "Logic low-high threshold range.";
+	module.attr("__pdoc__")["ConfigKey.VoltageThreshold"] = "Logic low-high threshold range.";
 	py_config_key.value("ExternalClock", sv::devices::ConfigKey::ExternalClock);
-	m.attr("__pdoc__")["ConfigKey.ExternalClock"] = "Using an external clock.";
+	module.attr("__pdoc__")["ConfigKey.ExternalClock"] = "Using an external clock.";
 	py_config_key.value("Swap", sv::devices::ConfigKey::Swap);
-	m.attr("__pdoc__")["ConfigKey.Swap"] = "Swapping channels.";
+	module.attr("__pdoc__")["ConfigKey.Swap"] = "Swapping channels.";
 	py_config_key.value("CenterFrequency", sv::devices::ConfigKey::CenterFrequency);
-	m.attr("__pdoc__")["ConfigKey.CenterFrequency"] = "Center frequency.";
+	module.attr("__pdoc__")["ConfigKey.CenterFrequency"] = "Center frequency.";
 	py_config_key.value("NumLogicChannels", sv::devices::ConfigKey::NumLogicChannels);
-	m.attr("__pdoc__")["ConfigKey.NumLogicChannels"] = "The number of logic channels.";
+	module.attr("__pdoc__")["ConfigKey.NumLogicChannels"] = "The number of logic channels.";
 	py_config_key.value("NumAnalogChannels", sv::devices::ConfigKey::NumAnalogChannels);
-	m.attr("__pdoc__")["ConfigKey.NumAnalogChannels"] = "The number of analog channels.";
+	module.attr("__pdoc__")["ConfigKey.NumAnalogChannels"] = "The number of analog channels.";
 	py_config_key.value("Voltage", sv::devices::ConfigKey::Voltage);
-	m.attr("__pdoc__")["ConfigKey.Voltage"] = "Current voltage.";
+	module.attr("__pdoc__")["ConfigKey.Voltage"] = "Current voltage.";
 	py_config_key.value("VoltageTarget", sv::devices::ConfigKey::VoltageTarget);
-	m.attr("__pdoc__")["ConfigKey.VoltageTarget"] = "Maximum target voltage.";
+	module.attr("__pdoc__")["ConfigKey.VoltageTarget"] = "Maximum target voltage.";
 	py_config_key.value("Current", sv::devices::ConfigKey::Current);
-	m.attr("__pdoc__")["ConfigKey.Current"] = "Current current.";
+	module.attr("__pdoc__")["ConfigKey.Current"] = "Current current.";
 	py_config_key.value("CurrentLimit", sv::devices::ConfigKey::CurrentLimit);
-	m.attr("__pdoc__")["ConfigKey.CurrentLimit"] = "Current limit.";
+	module.attr("__pdoc__")["ConfigKey.CurrentLimit"] = "Current limit.";
 	py_config_key.value("Enabled", sv::devices::ConfigKey::Enabled);
-	m.attr("__pdoc__")["ConfigKey.Enabled"] = "Enabling/disabling a channel (group).";
+	module.attr("__pdoc__")["ConfigKey.Enabled"] = "Enabling/disabling a channel (group).";
 	py_config_key.value("ChannelConfig", sv::devices::ConfigKey::ChannelConfig);
-	m.attr("__pdoc__")["ConfigKey.ChannelConfig"] = "Channel configuration.";
+	module.attr("__pdoc__")["ConfigKey.ChannelConfig"] = "Channel configuration.";
 	py_config_key.value("OverVoltageProtectionEnabled", sv::devices::ConfigKey::OverVoltageProtectionEnabled);
-	m.attr("__pdoc__")["ConfigKey.OverVoltageProtectionEnabled"] = "Enabling/disable over voltage protection (OVP) feature.";
+	module.attr("__pdoc__")["ConfigKey.OverVoltageProtectionEnabled"] = "Enabling/disable over voltage protection (OVP) feature.";
 	py_config_key.value("OverVoltageProtectionActive", sv::devices::ConfigKey::OverVoltageProtectionActive);
-	m.attr("__pdoc__")["ConfigKey.OverVoltageProtectionActive"] = "Status of over voltage protection (OVP).";
+	module.attr("__pdoc__")["ConfigKey.OverVoltageProtectionActive"] = "Status of over voltage protection (OVP).";
 	py_config_key.value("OverVoltageProtectionThreshold", sv::devices::ConfigKey::OverVoltageProtectionThreshold);
-	m.attr("__pdoc__")["ConfigKey.OverVoltageProtectionThreshold"] = "Over voltage protection (OVP) threshold.";
+	module.attr("__pdoc__")["ConfigKey.OverVoltageProtectionThreshold"] = "Over voltage protection (OVP) threshold.";
 	py_config_key.value("OverCurrentProtectionEnabled", sv::devices::ConfigKey::OverCurrentProtectionEnabled);
-	m.attr("__pdoc__")["ConfigKey.OverCurrentProtectionEnabled"] = "Enabling/disable  over current protection (OCP) feature.";
+	module.attr("__pdoc__")["ConfigKey.OverCurrentProtectionEnabled"] = "Enabling/disable  over current protection (OCP) feature.";
 	py_config_key.value("OverCurrentProtectionActive", sv::devices::ConfigKey::OverCurrentProtectionActive);
-	m.attr("__pdoc__")["ConfigKey.OverCurrentProtectionActive"] = "Status of over current protection (OCP).";
+	module.attr("__pdoc__")["ConfigKey.OverCurrentProtectionActive"] = "Status of over current protection (OCP).";
 	py_config_key.value("OverCurrentProtectionThreshold", sv::devices::ConfigKey::OverCurrentProtectionThreshold);
-	m.attr("__pdoc__")["ConfigKey.OverCurrentProtectionThreshold"] = "Over current protection (OCP) threshold.";
+	module.attr("__pdoc__")["ConfigKey.OverCurrentProtectionThreshold"] = "Over current protection (OCP) threshold.";
 	py_config_key.value("OverTemperatureProtectionEnabled", sv::devices::ConfigKey::OverTemperatureProtectionEnabled);
-	m.attr("__pdoc__")["ConfigKey.OverTemperatureProtectionEnabled"] = "Enabling/disable over temperature protection (OTP) feature.";
+	module.attr("__pdoc__")["ConfigKey.OverTemperatureProtectionEnabled"] = "Enabling/disable over temperature protection (OTP) feature.";
 	py_config_key.value("OverTemperatureProtectionActive", sv::devices::ConfigKey::OverTemperatureProtectionActive);
-	m.attr("__pdoc__")["ConfigKey.OverTemperatureProtectionActive"] = "Status of over temperature protection (OTP).";
+	module.attr("__pdoc__")["ConfigKey.OverTemperatureProtectionActive"] = "Status of over temperature protection (OTP).";
 	py_config_key.value("UnderVoltageConditionEnabled", sv::devices::ConfigKey::UnderVoltageConditionEnabled);
-	m.attr("__pdoc__")["ConfigKey.UnderVoltageConditionEnabled"] = "Enabling/disable under voltage condition (UVC) feature.";
+	module.attr("__pdoc__")["ConfigKey.UnderVoltageConditionEnabled"] = "Enabling/disable under voltage condition (UVC) feature.";
 	py_config_key.value("UnderVoltageConditionActive", sv::devices::ConfigKey::UnderVoltageConditionActive);
-	m.attr("__pdoc__")["ConfigKey.UnderVoltageConditionActive"] = "Status of under voltage condition (UVC).";
+	module.attr("__pdoc__")["ConfigKey.UnderVoltageConditionActive"] = "Status of under voltage condition (UVC).";
 	py_config_key.value("UnderVoltageConditionThreshold", sv::devices::ConfigKey::UnderVoltageConditionThreshold);
-	m.attr("__pdoc__")["ConfigKey.UnderVoltageConditionThreshold"] = "Under voltage condition threshold (UVC).";
+	module.attr("__pdoc__")["ConfigKey.UnderVoltageConditionThreshold"] = "Under voltage condition threshold (UVC).";
 	py_config_key.value("ClockEdge", sv::devices::ConfigKey::ClockEdge);
-	m.attr("__pdoc__")["ConfigKey.ClockEdge"] = "Choice of clock edge for external clock (``r`` or ``f``).";
+	module.attr("__pdoc__")["ConfigKey.ClockEdge"] = "Choice of clock edge for external clock (``r`` or ``f``).";
 	py_config_key.value("Amplitude", sv::devices::ConfigKey::Amplitude);
-	m.attr("__pdoc__")["ConfigKey.Amplitude"] = "Amplitude of a source without strictly-defined `ConfigKey.MeasuredQuantity`.";
+	module.attr("__pdoc__")["ConfigKey.Amplitude"] = "Amplitude of a source without strictly-defined `ConfigKey.MeasuredQuantity`.";
 	py_config_key.value("Regulation", sv::devices::ConfigKey::Regulation);
-	m.attr("__pdoc__")["ConfigKey.Regulation"] =
+	module.attr("__pdoc__")["ConfigKey.Regulation"] =
 		"Channel regulation. ``CV``, ``CC`` or ``UR``, denoting constant voltage, constant current or "
 		"unregulated. ``CC-`` denotes a power supply in current sink mode (e.g. HP 66xxB). An empty "
 		"string is used when there is no regulation, e.g. the output is disabled.";
 	py_config_key.value("OutputFrequency", sv::devices::ConfigKey::OutputFrequency);
-	m.attr("__pdoc__")["ConfigKey.OutputFrequency"] = "Output frequency in Hz.";
+	module.attr("__pdoc__")["ConfigKey.OutputFrequency"] = "Output frequency in Hz.";
 	py_config_key.value("OutputFrequencyTarget", sv::devices::ConfigKey::OutputFrequencyTarget);
-	m.attr("__pdoc__")["ConfigKey.OutputFrequencyTarget"] = "Output frequency target in Hz.";
+	module.attr("__pdoc__")["ConfigKey.OutputFrequencyTarget"] = "Output frequency target in Hz.";
 	py_config_key.value("MeasuredQuantity", sv::devices::ConfigKey::MeasuredQuantity);
-	m.attr("__pdoc__")["ConfigKey.MeasuredQuantity"] = "Measured quantity.";
+	module.attr("__pdoc__")["ConfigKey.MeasuredQuantity"] = "Measured quantity.";
 	py_config_key.value("EquivCircuitModel", sv::devices::ConfigKey::EquivCircuitModel);
-	m.attr("__pdoc__")["ConfigKey.EquivCircuitModel"] = "Equivalent circuit model.";
+	module.attr("__pdoc__")["ConfigKey.EquivCircuitModel"] = "Equivalent circuit model.";
 	py_config_key.value("TriggerLevel", sv::devices::ConfigKey::TriggerLevel);
-	m.attr("__pdoc__")["ConfigKey.TriggerLevel"] = "Trigger level.";
+	module.attr("__pdoc__")["ConfigKey.TriggerLevel"] = "Trigger level.";
 	py_config_key.value("ExternalClockSource", sv::devices::ConfigKey::ExternalClockSource);
-	m.attr("__pdoc__")["ConfigKey.ExternalClockSource"] =
+	module.attr("__pdoc__")["ConfigKey.ExternalClockSource"] =
 		"Which external clock source to use if the device supports multiple external clock channels.";
 	py_config_key.value("Offset", sv::devices::ConfigKey::Offset);
-	m.attr("__pdoc__")["ConfigKey.Offset"] =
+	module.attr("__pdoc__")["ConfigKey.Offset"] =
 		"Offset of a source without strictly-defined `ConfigKey.MeasuredQuantity`.";
 	py_config_key.value("TriggerPattern", sv::devices::ConfigKey::TriggerPattern);
-	m.attr("__pdoc__")["ConfigKey.TriggerPattern"] = "The pattern for the logic trigger.";
+	module.attr("__pdoc__")["ConfigKey.TriggerPattern"] = "The pattern for the logic trigger.";
 	py_config_key.value("HighResolution", sv::devices::ConfigKey::HighResolution);
-	m.attr("__pdoc__")["ConfigKey.HighResolution"] = "High resolution mode.";
+	module.attr("__pdoc__")["ConfigKey.HighResolution"] = "High resolution mode.";
 	py_config_key.value("PeakDetection", sv::devices::ConfigKey::PeakDetection);
-	m.attr("__pdoc__")["ConfigKey.PeakDetection"] = "Peak detection.";
+	module.attr("__pdoc__")["ConfigKey.PeakDetection"] = "Peak detection.";
 	py_config_key.value("LogicThreshold", sv::devices::ConfigKey::LogicThreshold);
-	m.attr("__pdoc__")["ConfigKey.LogicThreshold"] =
+	module.attr("__pdoc__")["ConfigKey.LogicThreshold"] =
 		"Logic threshold: predefined levels (``TTL``, ``ECL``, ``CMOS``, etc).";
 	py_config_key.value("LogicThresholdCustom", sv::devices::ConfigKey::LogicThresholdCustom);
-	m.attr("__pdoc__")["ConfigKey.LogicThresholdCustom"] = "Logic threshold: custom numerical value.";
+	module.attr("__pdoc__")["ConfigKey.LogicThresholdCustom"] = "Logic threshold: custom numerical value.";
 	py_config_key.value("Range", sv::devices::ConfigKey::Range);
-	m.attr("__pdoc__")["ConfigKey.Range"] =
+	module.attr("__pdoc__")["ConfigKey.Range"] =
 		"The measurement range of a DMM or the output range of a power supply.";
 	py_config_key.value("Digits", sv::devices::ConfigKey::Digits);
-	m.attr("__pdoc__")["ConfigKey.Digits"] = "The number of digits (e.g. for a DMM).";
+	module.attr("__pdoc__")["ConfigKey.Digits"] = "The number of digits (e.g. for a DMM).";
 	py_config_key.value("SessionFile", sv::devices::ConfigKey::SessionFile);
-	m.attr("__pdoc__")["ConfigKey.SessionFile"] = "Session filename.";
+	module.attr("__pdoc__")["ConfigKey.SessionFile"] = "Session filename.";
 	py_config_key.value("CaptureFile", sv::devices::ConfigKey::CaptureFile);
-	m.attr("__pdoc__")["ConfigKey.CaptureFile"] = "The capturefile to inject.";
+	module.attr("__pdoc__")["ConfigKey.CaptureFile"] = "The capturefile to inject.";
 	py_config_key.value("CaptureUnitSize", sv::devices::ConfigKey::CaptureUnitSize);
-	m.attr("__pdoc__")["ConfigKey.CaptureUnitSize"] = "The capturefile unit size.";
+	module.attr("__pdoc__")["ConfigKey.CaptureUnitSize"] = "The capturefile unit size.";
 	py_config_key.value("PowerOff", sv::devices::ConfigKey::PowerOff);
-	m.attr("__pdoc__")["ConfigKey.PowerOff"] = "Power off the device.";
+	module.attr("__pdoc__")["ConfigKey.PowerOff"] = "Power off the device.";
 	py_config_key.value("DataSource", sv::devices::ConfigKey::DataSource);
-	m.attr("__pdoc__")["ConfigKey.DataSource"] = "Data source for acquisition.";
+	module.attr("__pdoc__")["ConfigKey.DataSource"] = "Data source for acquisition.";
 	py_config_key.value("ProbeFactor", sv::devices::ConfigKey::ProbeFactor);
-	m.attr("__pdoc__")["ConfigKey.ProbeFactor"] = "The probe factor.";
+	module.attr("__pdoc__")["ConfigKey.ProbeFactor"] = "The probe factor.";
 	py_config_key.value("ADCPowerlineCycles", sv::devices::ConfigKey::ADCPowerlineCycles);
-	m.attr("__pdoc__")["ConfigKey.ADCPowerlineCycles"] = "Number of powerline cycles for ADC integration time.";
+	module.attr("__pdoc__")["ConfigKey.ADCPowerlineCycles"] = "Number of powerline cycles for ADC integration time.";
 	py_config_key.value("DataLog", sv::devices::ConfigKey::DataLog);
-	m.attr("__pdoc__")["ConfigKey.DataLog"] = "The device has internal storage, into which data is logged.";
+	module.attr("__pdoc__")["ConfigKey.DataLog"] = "The device has internal storage, into which data is logged.";
 	py_config_key.value("DeviceMode", sv::devices::ConfigKey::DeviceMode);
-	m.attr("__pdoc__")["ConfigKey.DeviceMode"] = "Device mode for multi-function devices.";
+	module.attr("__pdoc__")["ConfigKey.DeviceMode"] = "Device mode for multi-function devices.";
 	py_config_key.value("TestMode", sv::devices::ConfigKey::TestMode);
-	m.attr("__pdoc__")["ConfigKey.TestMode"] = "Self test mode.";
+	module.attr("__pdoc__")["ConfigKey.TestMode"] = "Self test mode.";
 	py_config_key.value("Unknown", sv::devices::ConfigKey::Unknown);
-	m.attr("__pdoc__")["ConfigKey.Unknown"] = "Unknown config key.";
+	module.attr("__pdoc__")["ConfigKey.Unknown"] = "Unknown config key.";
 	py_config_key.def_static("get_data_type", &sv::devices::deviceutil::get_data_type_for_config_key,
 		py::arg("config_key"),
 		"Helper function to get the data type for a config key.\n\n"
@@ -1119,237 +1120,237 @@ void init_Enums(py::module &m)
 		"DataType\n"
 		"    The data type of the config key.");
 
-	py::enum_<sv::data::Quantity> py_quantity(m, "Quantity",
+	py::enum_<sv::data::Quantity> py_quantity(module, "Quantity",
 		"Enum of all available quantities.");
 	py_quantity.value("Voltage", sv::data::Quantity::Voltage);
-	m.attr("__pdoc__")["Quantity.Voltage"] = "Voltage";
+	module.attr("__pdoc__")["Quantity.Voltage"] = "Voltage";
 	py_quantity.value("Current", sv::data::Quantity::Current);
-	m.attr("__pdoc__")["Quantity.Current"] = "Current";
+	module.attr("__pdoc__")["Quantity.Current"] = "Current";
 	py_quantity.value("Resistance", sv::data::Quantity::Resistance);
-	m.attr("__pdoc__")["Quantity.Resistance"] = "Resistance";
+	module.attr("__pdoc__")["Quantity.Resistance"] = "Resistance";
 	py_quantity.value("Capacitance", sv::data::Quantity::Capacitance);
-	m.attr("__pdoc__")["Quantity.Capacitance"] = "Capacitance";
+	module.attr("__pdoc__")["Quantity.Capacitance"] = "Capacitance";
 	py_quantity.value("Temperature", sv::data::Quantity::Temperature);
-	m.attr("__pdoc__")["Quantity.Temperature"] = "Temperature";
+	module.attr("__pdoc__")["Quantity.Temperature"] = "Temperature";
 	py_quantity.value("Frequency", sv::data::Quantity::Frequency);
-	m.attr("__pdoc__")["Quantity.Frequency"] = "Frequency";
+	module.attr("__pdoc__")["Quantity.Frequency"] = "Frequency";
 	py_quantity.value("DutyCyle", sv::data::Quantity::DutyCyle);
-	m.attr("__pdoc__")["Quantity.DutyCyle"] = "DutyCyle";
+	module.attr("__pdoc__")["Quantity.DutyCyle"] = "DutyCyle";
 	py_quantity.value("Continuity", sv::data::Quantity::Continuity);
-	m.attr("__pdoc__")["Quantity.Continuity"] = "Continuity";
+	module.attr("__pdoc__")["Quantity.Continuity"] = "Continuity";
 	py_quantity.value("PulseWidth", sv::data::Quantity::PulseWidth);
-	m.attr("__pdoc__")["Quantity.PulseWidth"] = "PulseWidth";
+	module.attr("__pdoc__")["Quantity.PulseWidth"] = "PulseWidth";
 	py_quantity.value("Conductance", sv::data::Quantity::Conductance);
-	m.attr("__pdoc__")["Quantity.Conductance"] = "Conductance";
+	module.attr("__pdoc__")["Quantity.Conductance"] = "Conductance";
 	py_quantity.value("Power", sv::data::Quantity::Power);
-	m.attr("__pdoc__")["Quantity.Power"] = "Electrical power, usually in W, or dBm.";
+	module.attr("__pdoc__")["Quantity.Power"] = "Electrical power, usually in W, or dBm.";
 	py_quantity.value("ElectricCharge", sv::data::Quantity::ElectricCharge);
-	m.attr("__pdoc__")["Quantity.ElectricCharge"] = "Electric charge";
+	module.attr("__pdoc__")["Quantity.ElectricCharge"] = "Electric charge";
 	py_quantity.value("Gain", sv::data::Quantity::Gain);
-	m.attr("__pdoc__")["Quantity.Gain"] = "Gain (a transistor's gain, or hFE, for example).";
+	module.attr("__pdoc__")["Quantity.Gain"] = "Gain (a transistor's gain, or hFE, for example).";
 	py_quantity.value("SoundPressureLevel", sv::data::Quantity::SoundPressureLevel);
-	m.attr("__pdoc__")["Quantity.SoundPressureLevel"] =
+	module.attr("__pdoc__")["Quantity.SoundPressureLevel"] =
 		"Logarithmic representation of sound pressure relative to a reference value.";
 	py_quantity.value("CarbonMonoxide", sv::data::Quantity::CarbonMonoxide);
-	m.attr("__pdoc__")["Quantity.CarbonMonoxide"] = "Carbon monoxide";
+	module.attr("__pdoc__")["Quantity.CarbonMonoxide"] = "Carbon monoxide";
 	py_quantity.value("RelativeHumidity", sv::data::Quantity::RelativeHumidity);
-	m.attr("__pdoc__")["Quantity.RelativeHumidity"] = "Relative humidity";
+	module.attr("__pdoc__")["Quantity.RelativeHumidity"] = "Relative humidity";
 	py_quantity.value("Time", sv::data::Quantity::Time);
-	m.attr("__pdoc__")["Quantity.Time"] = "Time";
+	module.attr("__pdoc__")["Quantity.Time"] = "Time";
 	py_quantity.value("WindSpeed", sv::data::Quantity::WindSpeed);
-	m.attr("__pdoc__")["Quantity.WindSpeed"] = "Wind speed";
+	module.attr("__pdoc__")["Quantity.WindSpeed"] = "Wind speed";
 	py_quantity.value("Pressure", sv::data::Quantity::Pressure);
-	m.attr("__pdoc__")["Quantity.Pressure"] = "Pressure";
+	module.attr("__pdoc__")["Quantity.Pressure"] = "Pressure";
 	py_quantity.value("ParallelInductance", sv::data::Quantity::ParallelInductance);
-	m.attr("__pdoc__")["Quantity.ParallelInductance"] = "Parallel inductance";
+	module.attr("__pdoc__")["Quantity.ParallelInductance"] = "Parallel inductance";
 	py_quantity.value("ParallelCapacitance", sv::data::Quantity::ParallelCapacitance);
-	m.attr("__pdoc__")["Quantity.ParallelCapacitance"] = "Parallel capacitance";
+	module.attr("__pdoc__")["Quantity.ParallelCapacitance"] = "Parallel capacitance";
 	py_quantity.value("ParallelResistance", sv::data::Quantity::ParallelResistance);
-	m.attr("__pdoc__")["Quantity.ParallelResistance"] = "Parallel resistance";
+	module.attr("__pdoc__")["Quantity.ParallelResistance"] = "Parallel resistance";
 	py_quantity.value("SeriesInductance", sv::data::Quantity::SeriesInductance);
-	m.attr("__pdoc__")["Quantity.SeriesInductance"] = "Series inductance";
+	module.attr("__pdoc__")["Quantity.SeriesInductance"] = "Series inductance";
 	py_quantity.value("SeriesCapacitance", sv::data::Quantity::SeriesCapacitance);
-	m.attr("__pdoc__")["Quantity.SeriesCapacitance"] = "Series capacitance";
+	module.attr("__pdoc__")["Quantity.SeriesCapacitance"] = "Series capacitance";
 	py_quantity.value("SeriesResistance", sv::data::Quantity::SeriesResistance);
-	m.attr("__pdoc__")["Quantity.SeriesResistance"] = "Series resistance";
+	module.attr("__pdoc__")["Quantity.SeriesResistance"] = "Series resistance";
 	py_quantity.value("DissipationFactor", sv::data::Quantity::DissipationFactor);
-	m.attr("__pdoc__")["Quantity.DissipationFactor"] = "Dissipation factor";
+	module.attr("__pdoc__")["Quantity.DissipationFactor"] = "Dissipation factor";
 	py_quantity.value("QualityFactor", sv::data::Quantity::QualityFactor);
-	m.attr("__pdoc__")["Quantity.QualityFactor"] = "Quality factor";
+	module.attr("__pdoc__")["Quantity.QualityFactor"] = "Quality factor";
 	py_quantity.value("PhaseAngle", sv::data::Quantity::PhaseAngle);
-	m.attr("__pdoc__")["Quantity.PhaseAngle"] = "Phase angle";
+	module.attr("__pdoc__")["Quantity.PhaseAngle"] = "Phase angle";
 	py_quantity.value("Difference", sv::data::Quantity::Difference);
-	m.attr("__pdoc__")["Quantity.Difference"] = "Difference from reference value.";
+	module.attr("__pdoc__")["Quantity.Difference"] = "Difference from reference value.";
 	py_quantity.value("Count", sv::data::Quantity::Count);
-	m.attr("__pdoc__")["Quantity.Count"] = "Count";
+	module.attr("__pdoc__")["Quantity.Count"] = "Count";
 	py_quantity.value("PowerFactor", sv::data::Quantity::PowerFactor);
-	m.attr("__pdoc__")["Quantity.PowerFactor"] = "Power factor";
+	module.attr("__pdoc__")["Quantity.PowerFactor"] = "Power factor";
 	py_quantity.value("ApparentPower", sv::data::Quantity::ApparentPower);
-	m.attr("__pdoc__")["Quantity.ApparentPower"] = "Apparent power";
+	module.attr("__pdoc__")["Quantity.ApparentPower"] = "Apparent power";
 	py_quantity.value("Mass", sv::data::Quantity::Mass);
-	m.attr("__pdoc__")["Quantity.Mass"] = "Mass";
+	module.attr("__pdoc__")["Quantity.Mass"] = "Mass";
 	py_quantity.value("HarmonicRatio", sv::data::Quantity::HarmonicRatio);
-	m.attr("__pdoc__")["Quantity.HarmonicRatio"] = "Harmonic ratio";
+	module.attr("__pdoc__")["Quantity.HarmonicRatio"] = "Harmonic ratio";
 	py_quantity.value("Energy", sv::data::Quantity::Energy);
-	m.attr("__pdoc__")["Quantity.Energy"] = "Energy (also Work)";
+	module.attr("__pdoc__")["Quantity.Energy"] = "Energy (also Work)";
 	py_quantity.value("Unknown", sv::data::Quantity::Unknown);
-	m.attr("__pdoc__")["Quantity.Unknown"] = "Unknown";
+	module.attr("__pdoc__")["Quantity.Unknown"] = "Unknown";
 
-	py::enum_<sv::data::QuantityFlag> py_quantity_flag(m, "QuantityFlag",
+	py::enum_<sv::data::QuantityFlag> py_quantity_flag(module, "QuantityFlag",
 		"Enum of all available quantity flags.");
 	py_quantity_flag.value("AC", sv::data::QuantityFlag::AC);
-	m.attr("__pdoc__")["QuantityFlag.AC"] = "Alternating current.";
+	module.attr("__pdoc__")["QuantityFlag.AC"] = "Alternating current.";
 	py_quantity_flag.value("DC", sv::data::QuantityFlag::DC);
-	m.attr("__pdoc__")["QuantityFlag.DC"] = "Direct current.";
+	module.attr("__pdoc__")["QuantityFlag.DC"] = "Direct current.";
 	py_quantity_flag.value("RMS", sv::data::QuantityFlag::RMS);
-	m.attr("__pdoc__")["QuantityFlag.RMS"] = "Root mean square (RMS).";
+	module.attr("__pdoc__")["QuantityFlag.RMS"] = "Root mean square (RMS).";
 	py_quantity_flag.value("Diode", sv::data::QuantityFlag::Diode);
-	m.attr("__pdoc__")["QuantityFlag.Diode"] = "Value is voltage drop across a diode, or NAN.";
+	module.attr("__pdoc__")["QuantityFlag.Diode"] = "Value is voltage drop across a diode, or NAN.";
 	py_quantity_flag.value("Hold", sv::data::QuantityFlag::Hold);
-	m.attr("__pdoc__")["QuantityFlag.Hold"] = "Device is in hold mode (repeating the last measurement).";
+	module.attr("__pdoc__")["QuantityFlag.Hold"] = "Device is in hold mode (repeating the last measurement).";
 	py_quantity_flag.value("Max", sv::data::QuantityFlag::Max);
-	m.attr("__pdoc__")["QuantityFlag.Max"] = "Device is in max mode, only updating upon a new max value.";
+	module.attr("__pdoc__")["QuantityFlag.Max"] = "Device is in max mode, only updating upon a new max value.";
 	py_quantity_flag.value("Min", sv::data::QuantityFlag::Min);
-	m.attr("__pdoc__")["QuantityFlag.Min"] = "Device is in min mode, only updating upon a new min value.";
+	module.attr("__pdoc__")["QuantityFlag.Min"] = "Device is in min mode, only updating upon a new min value.";
 	py_quantity_flag.value("Autorange", sv::data::QuantityFlag::Autorange);
-	m.attr("__pdoc__")["QuantityFlag.Autorange"] = "Device is in autoranging mode.";
+	module.attr("__pdoc__")["QuantityFlag.Autorange"] = "Device is in autoranging mode.";
 	py_quantity_flag.value("Relative", sv::data::QuantityFlag::Relative);
-	m.attr("__pdoc__")["QuantityFlag.Relative"] = "Device is in relative mode.";
+	module.attr("__pdoc__")["QuantityFlag.Relative"] = "Device is in relative mode.";
 	py_quantity_flag.value("SplFreqWeightA", sv::data::QuantityFlag::SplFreqWeightA);
-	m.attr("__pdoc__")["QuantityFlag.SplFreqWeightA"] =
+	module.attr("__pdoc__")["QuantityFlag.SplFreqWeightA"] =
 		"Sound pressure level is A-weighted in the frequency domain, according to IEC 61672:2003.";
 	py_quantity_flag.value("SplFreqWeightC", sv::data::QuantityFlag::SplFreqWeightC);
-	m.attr("__pdoc__")["QuantityFlag.SplFreqWeightC"] =
+	module.attr("__pdoc__")["QuantityFlag.SplFreqWeightC"] =
 		"Sound pressure level is C-weighted in the frequency domain, according to IEC 61672:2003.";
 	py_quantity_flag.value("SplFreqWeightZ", sv::data::QuantityFlag::SplFreqWeightZ);
-	m.attr("__pdoc__")["QuantityFlag.SplFreqWeightZ"] = "Sound pressure level is Z-weighted.";
+	module.attr("__pdoc__")["QuantityFlag.SplFreqWeightZ"] = "Sound pressure level is Z-weighted.";
 	py_quantity_flag.value("SplFreqWeightFlat", sv::data::QuantityFlag::SplFreqWeightFlat);
-	m.attr("__pdoc__")["QuantityFlag.SplFreqWeightFlat"] =
+	module.attr("__pdoc__")["QuantityFlag.SplFreqWeightFlat"] =
 		"Sound pressure level is not weighted in the frequency domain, albeit "
 		"without standards-defined low and high frequency limits.";
 	py_quantity_flag.value("SplTimeWeightS", sv::data::QuantityFlag::SplTimeWeightS);
-	m.attr("__pdoc__")["QuantityFlag.SplTimeWeightS"] =
+	module.attr("__pdoc__")["QuantityFlag.SplTimeWeightS"] =
 		"Sound pressure level measurement is S-weighted (1s) in the time domain.";
 	py_quantity_flag.value("SplTimeWeightF", sv::data::QuantityFlag::SplTimeWeightF);
-	m.attr("__pdoc__")["QuantityFlag.SplTimeWeightF"] =
+	module.attr("__pdoc__")["QuantityFlag.SplTimeWeightF"] =
 		"Sound pressure level measurement is F-weighted (125ms) in the time domain.";
 	py_quantity_flag.value("SplLAT", sv::data::QuantityFlag::SplLAT);
-	m.attr("__pdoc__")["QuantityFlag.SplLAT"] =
+	module.attr("__pdoc__")["QuantityFlag.SplLAT"] =
 		"Sound pressure level is time-averaged (LAT), also known as Equivalent Continuous A-weighted Sound Level (LEQ).";
 	py_quantity_flag.value("SplPctOverAlarm", sv::data::QuantityFlag::SplPctOverAlarm);
-	m.attr("__pdoc__")["QuantityFlag.SplPctOverAlarm"] =
+	module.attr("__pdoc__")["QuantityFlag.SplPctOverAlarm"] =
 		"Sound pressure level represented as a percentage of measurements that were over a preset alarm level.";
 	py_quantity_flag.value("Duration", sv::data::QuantityFlag::Duration);
-	m.attr("__pdoc__")["QuantityFlag.Duration"] = "Time is duration (as opposed to epoch, ...).";
+	module.attr("__pdoc__")["QuantityFlag.Duration"] = "Time is duration (as opposed to epoch, ...).";
 	py_quantity_flag.value("Avg", sv::data::QuantityFlag::Avg);
-	m.attr("__pdoc__")["QuantityFlag.Avg"] = "Device is in average mode, averaging upon each new value.";
+	module.attr("__pdoc__")["QuantityFlag.Avg"] = "Device is in average mode, averaging upon each new value.";
 	py_quantity_flag.value("Reference", sv::data::QuantityFlag::Reference);
-	m.attr("__pdoc__")["QuantityFlag.Reference"] = "Reference value shown.";
+	module.attr("__pdoc__")["QuantityFlag.Reference"] = "Reference value shown.";
 	py_quantity_flag.value("Unstable", sv::data::QuantityFlag::Unstable);
-	m.attr("__pdoc__")["QuantityFlag.Unstable"] = "Unstable value (hasn't settled yet).";
+	module.attr("__pdoc__")["QuantityFlag.Unstable"] = "Unstable value (hasn't settled yet).";
 	py_quantity_flag.value("FourWire", sv::data::QuantityFlag::FourWire);
-	m.attr("__pdoc__")["QuantityFlag.FourWire"] = "Device is in 4-wire mode.";
+	module.attr("__pdoc__")["QuantityFlag.FourWire"] = "Device is in 4-wire mode.";
 	py_quantity_flag.value("Unknown", sv::data::QuantityFlag::Unknown);
-	m.attr("__pdoc__")["QuantityFlag.Unknown"] = "Unknown quantity flag.";
+	module.attr("__pdoc__")["QuantityFlag.Unknown"] = "Unknown quantity flag.";
 
-	py::enum_<sv::data::Unit> py_unit(m, "Unit", "Enum of all available units.");
+	py::enum_<sv::data::Unit> py_unit(module, "Unit", "Enum of all available units.");
 	py_unit.value("Volt", sv::data::Unit::Volt);
-	m.attr("__pdoc__")["Unit.Volt"] = "Volt";
+	module.attr("__pdoc__")["Unit.Volt"] = "Volt";
 	py_unit.value("Ampere", sv::data::Unit::Ampere);
-	m.attr("__pdoc__")["Unit.Ampere"] = "Ampere";
+	module.attr("__pdoc__")["Unit.Ampere"] = "Ampere";
 	py_unit.value("Ohm", sv::data::Unit::Ohm);
-	m.attr("__pdoc__")["Unit.Ohm"] = "Ohm";
+	module.attr("__pdoc__")["Unit.Ohm"] = "Ohm";
 	py_unit.value("Farad", sv::data::Unit::Farad);
-	m.attr("__pdoc__")["Unit.Farad"] = "Farad";
+	module.attr("__pdoc__")["Unit.Farad"] = "Farad";
 	py_unit.value("Kelvin", sv::data::Unit::Kelvin);
-	m.attr("__pdoc__")["Unit.Kelvin"] = "Kelvin";
+	module.attr("__pdoc__")["Unit.Kelvin"] = "Kelvin";
 	py_unit.value("Celsius", sv::data::Unit::Celsius);
-	m.attr("__pdoc__")["Unit.Celsius"] = "Celsius";
+	module.attr("__pdoc__")["Unit.Celsius"] = "Celsius";
 	py_unit.value("Fahrenheit", sv::data::Unit::Fahrenheit);
-	m.attr("__pdoc__")["Unit.Fahrenheit"] = "Fahrenheit";
+	module.attr("__pdoc__")["Unit.Fahrenheit"] = "Fahrenheit";
 	py_unit.value("Hertz", sv::data::Unit::Hertz);
-	m.attr("__pdoc__")["Unit.Hertz"] = "Hertz";
+	module.attr("__pdoc__")["Unit.Hertz"] = "Hertz";
 	py_unit.value("Percentage", sv::data::Unit::Percentage);
-	m.attr("__pdoc__")["Unit.Percentage"] = "Percentage";
+	module.attr("__pdoc__")["Unit.Percentage"] = "Percentage";
 	py_unit.value("Boolean", sv::data::Unit::Boolean);
-	m.attr("__pdoc__")["Unit.Boolean"] = "Boolean";
+	module.attr("__pdoc__")["Unit.Boolean"] = "Boolean";
 	py_unit.value("Second", sv::data::Unit::Second);
-	m.attr("__pdoc__")["Unit.Second"] = "Second";
+	module.attr("__pdoc__")["Unit.Second"] = "Second";
 	py_unit.value("Siemens", sv::data::Unit::Siemens);
-	m.attr("__pdoc__")["Unit.Siemens"] = "Siemens";
+	module.attr("__pdoc__")["Unit.Siemens"] = "Siemens";
 	py_unit.value("DecibelMW", sv::data::Unit::DecibelMW);
-	m.attr("__pdoc__")["Unit.DecibelMW"] = "Decibel milliWatt (dBm)";
+	module.attr("__pdoc__")["Unit.DecibelMW"] = "Decibel milliWatt (dBm)";
 	py_unit.value("DecibelVolt", sv::data::Unit::DecibelVolt);
-	m.attr("__pdoc__")["Unit.DecibelVolt"] = "Decibel Volt (dBV)";
+	module.attr("__pdoc__")["Unit.DecibelVolt"] = "Decibel Volt (dBV)";
 	py_unit.value("Unitless", sv::data::Unit::Unitless);
-	m.attr("__pdoc__")["Unit.Unitless"] = "Unitless";
+	module.attr("__pdoc__")["Unit.Unitless"] = "Unitless";
 	py_unit.value("DecibelSpl", sv::data::Unit::DecibelSpl);
-	m.attr("__pdoc__")["Unit.DecibelSpl"] = "Decibel sound pressure level";
+	module.attr("__pdoc__")["Unit.DecibelSpl"] = "Decibel sound pressure level";
 	py_unit.value("Concentration", sv::data::Unit::Concentration);
-	m.attr("__pdoc__")["Unit.Concentration"] = "Concentration";
+	module.attr("__pdoc__")["Unit.Concentration"] = "Concentration";
 	py_unit.value("RevolutionsPerMinute", sv::data::Unit::RevolutionsPerMinute);
-	m.attr("__pdoc__")["Unit.RevolutionsPerMinute"] = "Revolutions per minute (RPM)";
+	module.attr("__pdoc__")["Unit.RevolutionsPerMinute"] = "Revolutions per minute (RPM)";
 	py_unit.value("VoltAmpere", sv::data::Unit::VoltAmpere);
-	m.attr("__pdoc__")["Unit.VoltAmpere"] = "VoltAmpere (VA)";
+	module.attr("__pdoc__")["Unit.VoltAmpere"] = "VoltAmpere (VA)";
 	py_unit.value("Watt", sv::data::Unit::Watt);
-	m.attr("__pdoc__")["Unit.Watt"] = "Watt";
+	module.attr("__pdoc__")["Unit.Watt"] = "Watt";
 	py_unit.value("WattHour", sv::data::Unit::WattHour);
-	m.attr("__pdoc__")["Unit.WattHour"] = "WattHour (Wh)";
+	module.attr("__pdoc__")["Unit.WattHour"] = "WattHour (Wh)";
 	py_unit.value("MeterPerSecond", sv::data::Unit::MeterPerSecond);
-	m.attr("__pdoc__")["Unit.MeterPerSecond"] = "Meter per second (m/s)";
+	module.attr("__pdoc__")["Unit.MeterPerSecond"] = "Meter per second (m/s)";
 	py_unit.value("HectoPascal", sv::data::Unit::HectoPascal);
-	m.attr("__pdoc__")["Unit.HectoPascal"] = "HectoPascal (hPa)";
+	module.attr("__pdoc__")["Unit.HectoPascal"] = "HectoPascal (hPa)";
 	py_unit.value("Humidity293K", sv::data::Unit::Humidity293K);
-	m.attr("__pdoc__")["Unit.Humidity293K"] = "Humidity at 293K";
+	module.attr("__pdoc__")["Unit.Humidity293K"] = "Humidity at 293K";
 	py_unit.value("Degree", sv::data::Unit::Degree);
-	m.attr("__pdoc__")["Unit.Degree"] = "Degree";
+	module.attr("__pdoc__")["Unit.Degree"] = "Degree";
 	py_unit.value("Henry", sv::data::Unit::Henry);
-	m.attr("__pdoc__")["Unit.Henry"] = "Henry";
+	module.attr("__pdoc__")["Unit.Henry"] = "Henry";
 	py_unit.value("Gram", sv::data::Unit::Gram);
-	m.attr("__pdoc__")["Unit.Gram"] = "Weight in gram (g).";
+	module.attr("__pdoc__")["Unit.Gram"] = "Weight in gram (g).";
 	py_unit.value("Carat", sv::data::Unit::Carat);
-	m.attr("__pdoc__")["Unit.Carat"] = "Weight in carat.";
+	module.attr("__pdoc__")["Unit.Carat"] = "Weight in carat.";
 	py_unit.value("Ounce", sv::data::Unit::Ounce);
-	m.attr("__pdoc__")["Unit.Ounce"] = "Weight in avoirdupois ounce (oz).";
+	module.attr("__pdoc__")["Unit.Ounce"] = "Weight in avoirdupois ounce (oz).";
 	py_unit.value("TroyOunce", sv::data::Unit::TroyOunce);
-	m.attr("__pdoc__")["Unit.TroyOunce"] = "Weight in troy ounce (oz t).";
+	module.attr("__pdoc__")["Unit.TroyOunce"] = "Weight in troy ounce (oz t).";
 	py_unit.value("Pound", sv::data::Unit::Pound);
-	m.attr("__pdoc__")["Unit.Pound"] = "Weight in avoirdupois pound (lb).";
+	module.attr("__pdoc__")["Unit.Pound"] = "Weight in avoirdupois pound (lb).";
 	py_unit.value("Pennyweight", sv::data::Unit::Pennyweight);
-	m.attr("__pdoc__")["Unit.Pennyweight"] = "Weight in pennyweight.";
+	module.attr("__pdoc__")["Unit.Pennyweight"] = "Weight in pennyweight.";
 	py_unit.value("Grain", sv::data::Unit::Grain);
-	m.attr("__pdoc__")["Unit.Grain"] = "Weight in grain.";
+	module.attr("__pdoc__")["Unit.Grain"] = "Weight in grain.";
 	py_unit.value("Tael", sv::data::Unit::Tael);
-	m.attr("__pdoc__")["Unit.Tael"] = "Weight in tael.";
+	module.attr("__pdoc__")["Unit.Tael"] = "Weight in tael.";
 	py_unit.value("Momme", sv::data::Unit::Momme);
-	m.attr("__pdoc__")["Unit.Momme"] = "Weight in momme.";
+	module.attr("__pdoc__")["Unit.Momme"] = "Weight in momme.";
 	py_unit.value("Tola", sv::data::Unit::Tola);
-	m.attr("__pdoc__")["Unit.Tola"] = "Weight in tola.";
+	module.attr("__pdoc__")["Unit.Tola"] = "Weight in tola.";
 	py_unit.value("Piece", sv::data::Unit::Piece);
-	m.attr("__pdoc__")["Unit.Piece"] = "Piece";
+	module.attr("__pdoc__")["Unit.Piece"] = "Piece";
 	py_unit.value("Joule", sv::data::Unit::Joule);
-	m.attr("__pdoc__")["Unit.Joule"] = "Joule";
+	module.attr("__pdoc__")["Unit.Joule"] = "Joule";
 	py_unit.value("AmpereHour", sv::data::Unit::AmpereHour);
-	m.attr("__pdoc__")["Unit.AmpereHour"] = "AmpereHour (Ah)";
+	module.attr("__pdoc__")["Unit.AmpereHour"] = "AmpereHour (Ah)";
 	py_unit.value("Coulomb", sv::data::Unit::Coulomb);
-	m.attr("__pdoc__")["Unit.Coulomb"] = "Coulomb";
+	module.attr("__pdoc__")["Unit.Coulomb"] = "Coulomb";
 	// TODO: Implement in libsigrok
 	//py_unit.value("Decibel", sv::data::Unit::Decibel);
 	//m.attr("__pdoc__")["Unit.Decibel"] = "Decibel (dB)";
 	py_unit.value("Unknown", sv::data::Unit::Unknown);
-	m.attr("__pdoc__")["Unit.Unknown"] = "Unknown";
+	module.attr("__pdoc__")["Unit.Unknown"] = "Unknown";
 
 	// Qt enumerations
-	py::enum_<Qt::DockWidgetArea> py_dock_area(m, "DockArea",
+	py::enum_<Qt::DockWidgetArea> py_dock_area(module, "DockArea",
 		"Enum of all possible docking locations for a view.");
 	py_dock_area.value("LeftDocktArea", Qt::DockWidgetArea::LeftDockWidgetArea);
-	m.attr("__pdoc__")["DockArea.LeftDocktArea"] = "Dock to the left dock area.";
+	module.attr("__pdoc__")["DockArea.LeftDocktArea"] = "Dock to the left dock area.";
 	py_dock_area.value("RightDockArea", Qt::DockWidgetArea::RightDockWidgetArea);
-	m.attr("__pdoc__")["DockArea.RightDockArea"] = "Dock to the right dock area.";
+	module.attr("__pdoc__")["DockArea.RightDockArea"] = "Dock to the right dock area.";
 	py_dock_area.value("TopDockArea", Qt::DockWidgetArea::TopDockWidgetArea);
-	m.attr("__pdoc__")["DockArea.TopDockArea"] = "Dock to the top dock area.";
+	module.attr("__pdoc__")["DockArea.TopDockArea"] = "Dock to the top dock area.";
 	py_dock_area.value("BottomDockArea", Qt::DockWidgetArea::BottomDockWidgetArea);
-	m.attr("__pdoc__")["DockArea.BottomDockArea"] = "Dock to the bottom dock area.";
+	module.attr("__pdoc__")["DockArea.BottomDockArea"] = "Dock to the bottom dock area.";
 	//py_dock_area.value("AllDockAreas", Qt::DockWidgetArea::AllDockWidgetAreas);
 	//m.attr("__pdoc__")["DockArea.AllDockAreas"] = "Dock to all dock area.";
 	//py_dock_area.value("NoDockArea", Qt::DockWidgetArea::NoDockWidgetArea);

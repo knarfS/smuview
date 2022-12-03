@@ -108,8 +108,8 @@ void PyStreamBuf::py_writelines(const std::vector<std::string> &lines)
 	if (py_closed)
 		PyErr_SetString(PyExc_ValueError, "PyStreamBuf is already closed!");
 
-	for (const auto &s : lines) {
-		py_write(s);
+	for (const auto &line : lines) {
+		py_write(line);
 	}
 }
 
@@ -146,14 +146,14 @@ int PyStreamBuf::py_tell()
 	return 0;
 }
 
-int PyStreamBuf::py_write(const std::string &s)
+int PyStreamBuf::py_write(const std::string &str)
 {
 	if (py_closed)
 		PyErr_SetString(PyExc_ValueError, "PyStreamBuf is already closed!");
 
 	std::lock_guard<std::mutex> lock(mutex_);
 
-	string_.append(s);
+	string_.append(str);
 	size_t pos = 0;
 	while (pos != std::string::npos) {
 		pos = string_.find('\n');
@@ -164,7 +164,7 @@ int PyStreamBuf::py_write(const std::string &s)
 		}
 	}
 
-	return s.size();
+	return str.size();
 }
 
 } // namespace python

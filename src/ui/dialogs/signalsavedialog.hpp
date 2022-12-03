@@ -84,7 +84,7 @@ private:
 public Q_SLOTS:
 	void accept() override;
 	/** The done() slot is handling the saving of the settings */
-	void done(int r) override;
+	void done(int result) override;
 
 private Q_SLOTS:
 	void toggle_combined();

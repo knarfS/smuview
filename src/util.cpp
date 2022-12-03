@@ -84,7 +84,7 @@ static SIPrefix successor(SIPrefix prefix)
 
 // Insert the timestamp value into the stream in fixed-point notation
 // (and honor the precision)
-static QTextStream& operator<<(QTextStream& stream, const Timestamp& t)
+static QTextStream& operator<<(QTextStream& stream, const Timestamp& timestamp)
 {
 	// The multiprecision types already have a function and a stream insertion
 	// operator to convert them to a string, however these functions abuse a
@@ -103,9 +103,9 @@ static QTextStream& operator<<(QTextStream& stream, const Timestamp& t)
 		ss << showpos;
 
 	if (0 == precision)
-		ss << setprecision(1) << round(t);
+		ss << setprecision(1) << round(timestamp);
 	else
-		ss << setprecision(precision) << t;
+		ss << setprecision(precision) << timestamp;
 
 	string str(ss.str());
 	if (0 == precision) {
@@ -149,18 +149,18 @@ void format_value_si(
 	si_prefix_stream << si_prefix;
 }
 
-QString format_time_si(const Timestamp& v, SIPrefix prefix,
+QString format_time_si(const Timestamp& timestamp, SIPrefix prefix,
 	unsigned int precision, const QString &unit, bool sign)
 {
 	if (prefix == SIPrefix::unspecified) {
 		// No prefix given, calculate it
 
-		if (v.is_zero()) {
+		if (timestamp.is_zero()) {
 			prefix = SIPrefix::none;
 		} else {
 			int exp = exponent(SIPrefix::yotta);
 			prefix = SIPrefix::yocto;
-			while ((fabs(v) * pow(Timestamp(10), exp)) > 999 &&
+			while ((fabs(timestamp) * pow(Timestamp(10), exp)) > 999 &&
 					prefix < SIPrefix::yotta) {
 				prefix = successor(prefix);
 				exp -= 3;
@@ -173,17 +173,17 @@ QString format_time_si(const Timestamp& v, SIPrefix prefix,
 
 	const Timestamp multiplier = pow(Timestamp(10), -exponent(prefix));
 
-	QString s;
-	QTextStream ts(&s);
-	if (sign && !v.is_zero())
+	QString str;
+	QTextStream ts(&str);
+	if (sign && !timestamp.is_zero())
 		ts.setNumberFlags(ts.numberFlags() | QTextStream::ForceSign);
-	ts << qSetRealNumberPrecision((int)precision) << (v * multiplier) << ' '
-		<< prefix << unit;
+	ts << qSetRealNumberPrecision((int)precision) << (timestamp * multiplier)
+		<< ' ' << prefix << unit;
 
-	return s;
+	return str;
 }
 
-QString format_time_si_adjusted(const Timestamp& t, SIPrefix prefix,
+QString format_time_si_adjusted(const Timestamp& timestamp, SIPrefix prefix,
 	unsigned precision, const QString &unit, bool sign)
 {
 	// The precision is always given without taking the prefix into account
@@ -194,7 +194,7 @@ QString format_time_si_adjusted(const Timestamp& t, SIPrefix prefix,
 		(prefix >= SIPrefix::none) ? precision :
 		max((int)(precision - prefix_order), 0);
 
-	return format_time_si(t, prefix, relative_prec, unit, sign);
+	return format_time_si(timestamp, prefix, relative_prec, unit, sign);
 }
 
 // Helper for 'format_time_minutes()'.
@@ -203,18 +203,19 @@ static QString pad_number(unsigned int number, int length)
 	return QString("%1").arg(number, length, 10, QChar('0'));
 }
 
-QString format_time_minutes(const Timestamp& t, signed precision, bool sign)
+QString format_time_minutes(const Timestamp& timestamp, signed precision,
+	bool sign)
 {
-	const Timestamp whole_seconds = floor(abs(t));
+	const Timestamp whole_seconds = floor(abs(timestamp));
 	const Timestamp days = floor(whole_seconds / (60 * 60 * 24));
 	const unsigned int hours = fmod(whole_seconds / (60 * 60), 24).convert_to<uint>();
 	const unsigned int minutes = fmod(whole_seconds / 60, 60).convert_to<uint>();
 	const unsigned int seconds = fmod(whole_seconds, 60).convert_to<uint>();
 
-	QString s;
-	QTextStream ts(&s);
+	QString str;
+	QTextStream ts(&str);
 
-	if (t < 0)
+	if (timestamp < 0)
 		ts << "-";
 	else if (sign)
 		ts << "+";
@@ -244,7 +245,7 @@ QString format_time_minutes(const Timestamp& t, signed precision, bool sign)
 	if (precision) {
 		ts << ".";
 
-		const Timestamp fraction = fabs(t) - whole_seconds;
+		const Timestamp fraction = fabs(timestamp) - whole_seconds;
 
 		ostringstream ss;
 		ss << fixed << setprecision(precision) << setfill('0') << fraction;
@@ -260,15 +261,14 @@ QString format_time_minutes(const Timestamp& t, signed precision, bool sign)
 		}
 	}
 
-	return s;
+	return str;
 }
 
-QString format_time_date(double t)
+QString format_time_date(double timestamp)
 {
-	QDateTime timestamp;
-	timestamp.setMSecsSinceEpoch(t*1000);
-	QString date = timestamp.toString("yyyy.MM.dd hh:mm:ss.zzz");
-	return date;
+	QDateTime date;
+	date.setMSecsSinceEpoch(timestamp*1000);
+	return date.toString("yyyy.MM.dd hh:mm:ss.zzz");
 }
 
 string format_uuid(QUuid uuid)
@@ -301,27 +301,26 @@ bool starts_with(const string &str, const string &start_str) {
 
 uint count_int_digits(int number)
 {
-	int n = abs(number);
+	int abs_number = abs(number);
 	uint digits = 1;
-	while (n >= 10) {
-		n /= 10;
+	while (abs_number >= 10) {
+		abs_number /= 10;
 		digits++;
 	}
 
 	return digits;
 }
 
-uint count_double_digits(double max, double step)
+uint count_double_digits(double value, double step)
 {
-	int i = (int)floor(max);
-	return util::count_int_digits(i) + util::get_decimal_places(step);
+	int value_int = (int)floor(value);
+	return util::count_int_digits(value_int) + util::get_decimal_places(step);
 }
 
-uint get_decimal_places(double dp)
+uint get_decimal_places(double value)
 {
-	int d = (int)ceil(1/dp) - 1;
-	uint cnt = util::count_int_digits(d);
-	return cnt;
+	int decimal = (int)ceil(1/value) - 1;
+	return util::count_int_digits(decimal);
 }
 
 /*
@@ -332,43 +331,43 @@ vector<string> parse_csv_line(const string &line)
 	enum State { UnquotedField, QuotedField, QuotedQuote } state = UnquotedField;
 	std::vector<std::string> fields {""};
 
-	size_t i = 0; // index of the current field
-	for (char c : line) {
+	size_t index = 0; // index of the current field
+	for (char chr : line) {
 		switch (state) {
 		case State::UnquotedField:
-			switch (c) {
+			switch (chr) {
 			case ',':
 				// end of field
-				fields.push_back(""); i++;
+				fields.push_back(""); index++;
 				break;
 			case '"':
 				state = State::QuotedField;
 				break;
 			default:
-				fields[i].push_back(c);
+				fields[index].push_back(chr);
 				break;
 			}
 			break;
 		case State::QuotedField:
-			switch (c) {
+			switch (chr) {
 			case '"':
 				state = State::QuotedQuote;
 				break;
 			default:
-				fields[i].push_back(c);
+				fields[index].push_back(chr);
 				break;
 			}
 			break;
 		case State::QuotedQuote:
-			switch (c) {
+			switch (chr) {
 			case ',':
 				// , after closing quote
-				fields.push_back(""); i++;
+				fields.push_back(""); index++;
 				state = State::UnquotedField;
 				break;
 			case '"':
 				// "" -> "
-				fields[i].push_back('"');
+				fields[index].push_back('"');
 				state = State::QuotedField;
 				break;
 			default:

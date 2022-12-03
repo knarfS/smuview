@@ -79,9 +79,9 @@ bool XYCurveData::is_equal(const BaseCurveData *other) const
 		(y_t_signal_ == xycd->y_t_signal());
 }
 
-QPointF XYCurveData::sample(size_t i) const
+QPointF XYCurveData::sample(size_t index) const
 {
-	QPointF sample_point(x_data_->at(i), y_data_->at(i));
+	QPointF sample_point(x_data_->at(index), y_data_->at(index));
 	return sample_point;
 }
 
@@ -105,20 +105,20 @@ QPointF XYCurveData::closest_point(const QPointF &pos, double *dist) const
 		return QPointF(0, 0); // TODO
 
 	size_t index = -1;
-	double dmin = 1.0e10;
+	double d_min = 1.0e10;
 
 	for (size_t i=0; i < num_samples; i++) {
-		const QPointF s = sample(i);
-		const double cx = s.x() - pos.x();
-		const double cy = s.y() - pos.y();
-		const double d = qwtSqr(cx) + qwtSqr(cy);
-		if (d < dmin) {
+		const QPointF sample_point = sample(i);
+		const double d_x = sample_point.x() - pos.x();
+		const double d_y = sample_point.y() - pos.y();
+		const double d_actual = qwtSqr(d_x) + qwtSqr(d_y);
+		if (d_actual < d_min) {
 			index = i;
-			dmin = d;
+			d_min = d_actual;
 		}
 	}
 	if (dist)
-		*dist = qSqrt(dmin);
+		*dist = qSqrt(d_min);
 
 	return sample(index);
 }

@@ -286,11 +286,11 @@ void GenerateWaveformDialog::accept()
 	WaveformType w_type = waveform_box_->currentData().value<WaveformType>();
 	// NOTE: We must not rely on floating point types for loop termination.
 	//       Resolves clang-analyzer-security.FloatLoopCounter warnings.
-	double t = .0;
+	double time = .0;
 	size_t const count = std::floor(periode / interval);
 	for (size_t i = 0; i < count; ++i) {
-		double x = omega * t + phi;
-		t += interval;
+		double x = omega * time + phi; // NOLINT(readability-identifier-length)
+		time += interval;
 		double value;
 		if (w_type == WaveformType::Sine)
 			value = std::sin(x);

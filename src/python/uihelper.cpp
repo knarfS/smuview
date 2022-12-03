@@ -304,13 +304,13 @@ void UiHelper::show_string_input_dialog(const std::string &title,
 	}
 
 	bool ok;
-	QString s = QInputDialog::getText(session_.main_window(),
+	QString str = QInputDialog::getText(session_.main_window(),
 		QString::fromStdString(title), QString::fromStdString(label),
 		QLineEdit::Normal, QString::fromStdString(value), &ok,
 		Qt::WindowFlags(), Qt::ImhNone);
 
 	if (ok)
-		Q_EMIT input_dialog_finished(QVariant(s));
+		Q_EMIT input_dialog_finished(QVariant(str));
 	else
 		Q_EMIT input_dialog_canceled();
 
@@ -327,18 +327,18 @@ void UiHelper::show_double_input_dialog(const std::string &title,
 
 	bool ok;
 #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
-	double d = QInputDialog::getDouble(session_.main_window(),
+	double dec = QInputDialog::getDouble(session_.main_window(),
 		QString::fromStdString(title), QString::fromStdString(label),
 		value, min, max, decimals, &ok, Qt::WindowFlags(), step);
 #else
 	(void)step;
-	double d = QInputDialog::getDouble(session_.main_window(),
+	double dec = QInputDialog::getDouble(session_.main_window(),
 		QString::fromStdString(title), QString::fromStdString(label),
 		value, min, max, decimals, &ok, Qt::WindowFlags());
 #endif
 
 	if (ok)
-		Q_EMIT input_dialog_finished(QVariant(d));
+		Q_EMIT input_dialog_finished(QVariant(dec));
 	else
 		Q_EMIT input_dialog_canceled();
 }
@@ -352,12 +352,12 @@ void UiHelper::show_int_input_dialog(const std::string &title,
 	}
 
 	bool ok;
-	int i = QInputDialog::getInt(session_.main_window(),
+	int number = QInputDialog::getInt(session_.main_window(),
 		QString::fromStdString(title), QString::fromStdString(label),
 		value, min, max, step, &ok, Qt::WindowFlags());
 
 	if (ok)
-		Q_EMIT input_dialog_finished(QVariant(i));
+		Q_EMIT input_dialog_finished(QVariant(number));
 	else
 		Q_EMIT input_dialog_canceled();
 }

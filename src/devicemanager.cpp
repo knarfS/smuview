@@ -369,12 +369,13 @@ shared_ptr<devices::HardwareDevice> DeviceManager::find_device_from_info(
 	return last_resort_dev;
 }
 
-bool DeviceManager::compare_devices(shared_ptr<devices::BaseDevice> a,
-	shared_ptr<devices::BaseDevice> b)
+bool DeviceManager::compare_devices(shared_ptr<devices::BaseDevice> device_a,
+	shared_ptr<devices::BaseDevice> device_b)
 {
-	assert(a);
-	assert(b);
-	return a->display_name(*this).compare(b->display_name(*this)) < 0;
+	assert(device_a);
+	assert(device_b);
+	return device_a->display_name(*this)
+		.compare(device_b->display_name(*this)) < 0;
 }
 
 } // namespace sv

@@ -82,8 +82,8 @@ public:
 		const map<string, string> &search_info);
 
 private:
-	bool compare_devices(shared_ptr<devices::BaseDevice> a,
-		shared_ptr<devices::BaseDevice> b);
+	bool compare_devices(shared_ptr<devices::BaseDevice> device_a,
+		shared_ptr<devices::BaseDevice> device_b);
 
 	static map<const sigrok::ConfigKey *, Glib::VariantBase>
 	driver_scan_options(const vector<string> &user_spec,

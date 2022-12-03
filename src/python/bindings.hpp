@@ -24,13 +24,13 @@
 
 namespace py = pybind11;
 
-void init_Session(py::module &m);
-void init_Device(py::module &m);
-void init_Channel(py::module &m);
-void init_Signal(py::module &m);
-void init_Configurable(py::module &m);
-void init_UI(py::module &m);
-void init_StreamBuf(py::module &m);
-void init_Enums(py::module &m);
+void init_Session(py::module &module);
+void init_Device(py::module &module);
+void init_Channel(py::module &module);
+void init_Signal(py::module &module);
+void init_Configurable(py::module &module);
+void init_UI(py::module &module);
+void init_StreamBuf(py::module &module);
+void init_Enums(py::module &module);
 
 #endif // PYTHON_BINDINGS_HPP

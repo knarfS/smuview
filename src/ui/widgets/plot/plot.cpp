@@ -311,9 +311,9 @@ int Plot::init_x_axis(BaseCurveData *curve_data, int x_axis_id)
 	if (x_axis_id < 0) {
 		// Check if there already is an axis with the same unit. This is done
 		// via the strings to get potential AC/DC flags.
-		for (const auto &c : curve_map_) {
-			if (curve_data->x_unit_str() == c.second->curve_data()->x_unit_str())
-				return c.second->x_axis_id();
+		for (const auto &curve : curve_map_) {
+			if (curve_data->x_unit_str() == curve.second->curve_data()->x_unit_str())
+				return curve.second->x_axis_id();
 		}
 		// No existing axis was found, try to use the bottom or top axis.
 		if (!this->axisEnabled(QwtPlot::xBottom))
@@ -326,11 +326,11 @@ int Plot::init_x_axis(BaseCurveData *curve_data, int x_axis_id)
 	else {
 		// Check if the given axis id is already initialised with the proper
 		// unit.
-		for (const auto &c : curve_map_) {
-			if (c.second->x_axis_id() == x_axis_id &&
-					c.second->curve_data()->x_unit_str() == curve_data->x_unit_str())
+		for (const auto &curve : curve_map_) {
+			if (curve.second->x_axis_id() == x_axis_id &&
+					curve.second->curve_data()->x_unit_str() == curve_data->x_unit_str())
 				return x_axis_id;
-			else if (c.second->x_axis_id() == x_axis_id) // NOLINT
+			else if (curve.second->x_axis_id() == x_axis_id) // NOLINT
 				return -1;
 		}
 	}
@@ -375,9 +375,9 @@ int Plot::init_y_axis(BaseCurveData *curve_data, int y_axis_id)
 	if (y_axis_id < 0) {
 		// Check if there already is an axis with the same unit. This is done
 		// via the strings to get potential AC/DC flags.
-		for (const auto &c : curve_map_) {
-			if (curve_data->y_unit_str() == c.second->curve_data()->y_unit_str())
-				return c.second->y_axis_id();
+		for (const auto &curve : curve_map_) {
+			if (curve_data->y_unit_str() == curve.second->curve_data()->y_unit_str())
+				return curve.second->y_axis_id();
 		}
 		// No existing axis was found, try to use the left or right axis.
 		if (!this->axisEnabled(QwtPlot::yLeft))
@@ -390,11 +390,11 @@ int Plot::init_y_axis(BaseCurveData *curve_data, int y_axis_id)
 	else {
 		// Check if the given axis id is already initialised with the proper
 		// unit.
-		for (const auto &c : curve_map_) {
-			if (c.second->y_axis_id() == y_axis_id &&
-					c.second->curve_data()->y_unit_str() == curve_data->y_unit_str())
+		for (const auto &curve : curve_map_) {
+			if (curve.second->y_axis_id() == y_axis_id &&
+					curve.second->curve_data()->y_unit_str() == curve_data->y_unit_str())
 				return y_axis_id;
-			else if (c.second->y_axis_id() == y_axis_id) // NOLINT
+			else if (curve.second->y_axis_id() == y_axis_id) // NOLINT
 				return -1;
 		}
 	}
@@ -481,9 +481,9 @@ void Plot::set_axis_locked(int axis_id, AxisBoundary axis_boundary, bool locked)
 
 void Plot::set_all_axis_locked(bool locked)
 {
-	for (const auto &p : axis_lock_map_) {
-		set_axis_locked(p.first, AxisBoundary::LowerBoundary, locked);
-		set_axis_locked(p.first, AxisBoundary::UpperBoundary, locked);
+	for (const auto &axis_lock : axis_lock_map_) {
+		set_axis_locked(axis_lock.first, AxisBoundary::LowerBoundary, locked);
+		set_axis_locked(axis_lock.first, AxisBoundary::UpperBoundary, locked);
 	}
 }
 
@@ -648,9 +648,9 @@ void Plot::on_marker_selected(const QPointF &mouse_pos)
 
 		const double d_x = marker_canvas_x - mouse_canvas_x;
 		const double d_y = marker_canvas_y - mouse_canvas_y;
-		const double d = qSqrt(qwtSqr(d_x) + qwtSqr(d_y));
-		if (d <= d_min && d < d_lowest) {
-			d_lowest = d;
+		const double d_actual = qSqrt(qwtSqr(d_x) + qwtSqr(d_y));
+		if (d_actual <= d_min && d_actual < d_lowest) {
+			d_lowest = d_actual;
 			selected_marker = mc_pair.first;
 		}
 	}
@@ -952,9 +952,9 @@ void Plot::update_markers_label()
 
 	QwtText text = QwtText(table);
 	text.setPaintAttribute(QwtText::PaintBackground, true);
-	QColor c(Qt::gray);
-	c.setAlpha(200);
-	text.setBackgroundBrush(c);
+	QColor background(Qt::gray);
+	background.setAlpha(200);
+	text.setBackgroundBrush(background);
 	text.setBorderRadius(3);
 	QPen pen;
 	pen.setColor(Qt::black);

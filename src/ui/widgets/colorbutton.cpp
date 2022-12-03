@@ -62,13 +62,13 @@ void ColorButton::paintEvent(QPaintEvent *event)
 {
 	QPushButton::paintEvent(event);
 
-	const QRect r = rect().adjusted(
+	const QRect rect_adjusted = rect().adjusted(
 		SwatchMargin, SwatchMargin, -SwatchMargin, -SwatchMargin);
 
 	QPainter painter(this);
 	painter.setPen(QApplication::palette().color(QPalette::Dark));
 	painter.setBrush(QBrush(color_));
-	painter.drawRect(r);
+	painter.drawRect(rect_adjusted);
 }
 
 } // namespace widgets

@@ -210,12 +210,12 @@ void DeviceTab::save_settings() const
 	settings.beginGroup(device_->settings_id());
 	settings.remove("");  // Remove all keys in this group
 
-	size_t i = 0;
+	size_t index = 0;
 	for (const auto &view_dock_pair : view_docks_map_) {
-		settings.beginGroup(QString("view%1").arg(i));
+		settings.beginGroup(QString("view%1").arg(index));
 		view_dock_pair.first->save_settings(settings, device_);
 		settings.endGroup();
-		++i;
+		++index;
 	}
 
 	// Save state and geometry for all view widgets.
@@ -250,11 +250,11 @@ void DeviceTab::on_action_save_as_triggered()
 
 void DeviceTab::on_action_add_control_view_triggered()
 {
-	shared_ptr<sv::devices::BaseDevice> d = nullptr;
+	shared_ptr<sv::devices::BaseDevice> device = nullptr;
 	if (device_->type() != sv::devices::DeviceType::UserDevice)
-		d = device_;
+		device = device_;
 
-	ui::dialogs::AddViewDialog dlg(session(), d, 0);
+	ui::dialogs::AddViewDialog dlg(session(), device, 0);
 	if (!dlg.exec())
 		return;
 

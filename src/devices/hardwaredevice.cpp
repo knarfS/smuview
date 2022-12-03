@@ -232,8 +232,8 @@ void HardwareDevice::feed_in_meta(shared_ptr<sigrok::Meta> sr_meta)
 	 * then try the other configurables.
 	 */
 
-	const auto c = configurable_map_[""];
-	if (c && c->feed_in_meta(sr_meta))
+	const auto configurable = configurable_map_[""];
+	if (configurable && configurable->feed_in_meta(sr_meta))
 		return;
 
 	for (const auto &c_pair : configurable_map_) {

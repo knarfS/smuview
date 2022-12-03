@@ -238,7 +238,7 @@ QString format_quantity_flags(const set<QuantityFlag> &quantity_flags,
 
 QString format_measured_quantity(const measured_quantity_t &measured_quantity)
 {
-	Quantity q = measured_quantity.first;
+	Quantity q = measured_quantity.first; // NOLINT(readability-identifier-length)
 	set<QuantityFlag> qfs = measured_quantity.second;
 	QString q_qfs_str = format_quantity(q);
 	if (!qfs.empty())

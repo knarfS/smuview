@@ -222,9 +222,9 @@ QwtPlotMarker *Curve::add_marker(const QString &name_postfix)
 	QwtText marker_label = QwtText(marker_name);
 	marker_label.setColor(Qt::black);
 	marker_label.setPaintAttribute(QwtText::PaintBackground, true);
-	QColor c(Qt::gray);
-	c.setAlpha(200);
-	marker_label.setBackgroundBrush(c);
+	QColor background(Qt::gray);
+	background.setAlpha(200);
+	marker_label.setBackgroundBrush(background);
 	QPen pen(Qt::black, 1.0, Qt::SolidLine);
 	marker_label.setBorderPen(pen);
 	marker_label.setBorderRadius(3);

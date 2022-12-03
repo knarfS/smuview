@@ -232,19 +232,19 @@ void ConnectDialog::check_available_libs()
 	gpib_avialable_ = false;
 	QString libgpib("libgpib");
 
-	GSList *l_orig = sr_buildinfo_libs_get();
-	for (GSList *l = l_orig; l; l = l->next) {
-		GSList *m = (GSList *)l->data;
-		QString lib((const char *)m->data);
+	GSList *libs_orig = sr_buildinfo_libs_get();
+	for (GSList *lib = libs_orig; lib; lib = lib->next) {
+		GSList *lib_data = (GSList *)lib->data;
+		QString name((const char *)lib_data->data);
 
-		if (QString::compare(lib, libgpib, Qt::CaseInsensitive) == 0) {
+		if (QString::compare(name, libgpib, Qt::CaseInsensitive) == 0) {
 			gpib_avialable_ = true;
-			g_slist_free_full(m, g_free);
+			g_slist_free_full(lib_data, g_free);
 			break;
 		}
-		g_slist_free_full(m, g_free);
+		g_slist_free_full(lib_data, g_free);
 	}
-	g_slist_free(l_orig);
+	g_slist_free(libs_orig);
 }
 
 void ConnectDialog::populate_serials_start(shared_ptr<Driver> driver)

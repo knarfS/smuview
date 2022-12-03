@@ -76,9 +76,11 @@ data::rational_t RationalProperty::rational_value() const
 
 	Glib::VariantIter iter(gvar);
 	iter.next_value(gvar);
+	// NOLINTNEXTLINE(readability-identifier-length)
 	uint64_t p =
 		Glib::VariantBase::cast_dynamic<Glib::Variant<uint64_t>>(gvar).get();
 	iter.next_value(gvar);
+	// NOLINTNEXTLINE(readability-identifier-length)
 	uint64_t q =
 		Glib::VariantBase::cast_dynamic<Glib::Variant<uint64_t>>(gvar).get();
 
@@ -87,7 +89,7 @@ data::rational_t RationalProperty::rational_value() const
 
 QString RationalProperty::to_string(data::rational_t value) const
 {
-	double d_val = value.first / (double)value.second;
+	double d_val = (double)(value.first / (double)value.second);
 	QString str_prefix("");
 	QString str_val;
 	util::format_value_si(d_val, -1, 0, str_val, str_prefix);
@@ -122,8 +124,10 @@ bool RationalProperty::list_config()
 
 	Glib::VariantIter iter(gvar);
 	while (iter.next_value (gvar)) {
+		// NOLINTNEXTLINE(readability-identifier-length)
 		uint64_t p = Glib::VariantBase::cast_dynamic
 			<Glib::Variant<uint64_t>>(gvar.get_child(0)).get();
+		// NOLINTNEXTLINE(readability-identifier-length)
 		uint64_t q = Glib::VariantBase::cast_dynamic
 			<Glib::Variant<uint64_t>>(gvar.get_child(1)).get();
 
@@ -145,12 +149,14 @@ void RationalProperty::change_value(const QVariant &qvar)
 {
 	data::rational_t rational = qvar.value<data::rational_t>();
 
-	Glib::VariantBase gvar_p = Glib::Variant<uint64_t>::create(rational.first);
-	Glib::VariantBase gvar_q = Glib::Variant<uint64_t>::create(rational.second);
+	// NOLINTNEXTLINE(readability-identifier-length)
+	Glib::VariantBase p = Glib::Variant<uint64_t>::create(rational.first);
+	// NOLINTNEXTLINE(readability-identifier-length)
+	Glib::VariantBase q = Glib::Variant<uint64_t>::create(rational.second);
 
 	vector<Glib::VariantBase> gcontainer;
-	gcontainer.push_back(gvar_p);
-	gcontainer.push_back(gvar_q);
+	gcontainer.push_back(p);
+	gcontainer.push_back(q);
 
 	configurable_->set_container_config(config_key_, gcontainer);
 	Q_EMIT value_changed(qvar);
@@ -160,9 +166,11 @@ void RationalProperty::on_value_changed(Glib::VariantBase gvar)
 {
 	Glib::VariantIter iter(gvar);
 	iter.next_value(gvar);
+	// NOLINTNEXTLINE(readability-identifier-length)
 	uint64_t p =
 		Glib::VariantBase::cast_dynamic<Glib::Variant<uint64_t>>(gvar).get();
 	iter.next_value(gvar);
+	// NOLINTNEXTLINE(readability-identifier-length)
 	uint64_t q =
 		Glib::VariantBase::cast_dynamic<Glib::Variant<uint64_t>>(gvar).get();
 

@@ -57,11 +57,11 @@ bool TimeCurveData::is_equal(const BaseCurveData *other) const
 	return signal_ == tcd->signal();
 }
 
-QPointF TimeCurveData::sample(size_t i) const
+QPointF TimeCurveData::sample(size_t index) const
 {
 	//signal_data_->lock();
 
-	auto sample = signal_->get_sample(i, relative_time_);
+	auto sample = signal_->get_sample(index, relative_time_);
 	QPointF sample_point(sample.first, sample.second);
 
 	//signal_data_->.unlock();
@@ -109,18 +109,18 @@ QPointF TimeCurveData::closest_point(const QPointF &pos, double *dist) const
 		return sample(index_max);
 
 	size_t index_min = 0;
-	size_t n = index_max;
+	size_t index = index_max;
 
-	while (n > 0) {
-		const size_t half = n >> 1;
+	while (index > 0) {
+		const size_t half = index >> 1;
 		const size_t index_mid = index_min + half;
 
 		if (x_value < sample(index_mid).x()) {
-			n = half;
+			index = half;
 		}
 		else {
 			index_min = index_mid + 1;
-			n -= half + 1;
+			index -= half + 1;
 		}
 	}
 

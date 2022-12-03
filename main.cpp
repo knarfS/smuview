@@ -116,16 +116,16 @@ int main(int argc, char *argv[])
 		};
 
 		/* Disable cmd line options i and I
-		const int c = getopt_long(argc, argv,
+		const int arg_char = getopt_long(argc, argv,
 			"l:Vhc?d:i:I:", long_options, nullptr);
 		*/
-		const int c = getopt_long(argc, argv,
+		const int arg_char = getopt_long(argc, argv,
 			"h?VDl:d:s:c", long_options, nullptr);
 
-		if (c == -1)
+		if (arg_char == -1)
 			break;
 
-		switch (c) {
+		switch (arg_char) {
 		case 'h':
 		case '?':
 			usage();
@@ -208,22 +208,19 @@ int main(int argc, char *argv[])
 			auto session = make_shared<sv::Session>(device_manager);
 
 			// Initialise the main window.
-			sv::MainWindow w(device_manager, session);
-			w.show();
+			sv::MainWindow main_window(device_manager, session);
+			main_window.show();
 
 			if (!script_file.empty())
-				w.add_smuscript_tab(script_file)->run_script();
+				main_window.add_smuscript_tab(script_file)->run_script();
 
 #ifdef ENABLE_SIGNALS
 			if (SignalHandler::prepare_signals()) {
-				SignalHandler *const handler =
-					new SignalHandler(&w);
-				QObject::connect(handler,
-					SIGNAL(int_received()),
-					&w, SLOT(close()));
-				QObject::connect(handler,
-					SIGNAL(term_received()),
-					&w, SLOT(close()));
+				SignalHandler *const handler = new SignalHandler(&main_window);
+				QObject::connect(handler, SIGNAL(int_received()),
+					&main_window, SLOT(close()));
+				QObject::connect(handler, SIGNAL(term_received()),
+					&main_window, SLOT(close()));
 			}
 			else {
 				qWarning() << "Could not prepare signal handler.";
