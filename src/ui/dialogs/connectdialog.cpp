@@ -40,7 +40,6 @@ using std::list;
 using std::map;
 using std::shared_ptr;
 using std::string;
-using std::thread;
 
 using Glib::ustring;
 using Glib::Variant;

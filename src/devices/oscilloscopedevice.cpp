@@ -31,8 +31,6 @@
 #include "src/data/basesignal.hpp"
 #include "src/devices/configurable.hpp"
 
-using std::static_pointer_cast;
-
 namespace sv {
 namespace devices {
 

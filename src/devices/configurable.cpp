@@ -50,11 +50,9 @@
 using std::dynamic_pointer_cast;
 using std::make_pair;
 using std::make_shared;
-using std::pair;
 using std::set;
 using std::string;
 using std::vector;
-using sv::devices::ConfigKey;
 
 namespace sv {
 namespace devices {
