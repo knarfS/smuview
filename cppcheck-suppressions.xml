@@ -1,10 +1,31 @@
 <?xml version="1.0"?>
 <suppressions>
 
-	<!-- False positives because of forward declaration. -->
+	<!-- Exclude Paths -->
+	<suppress>
+		<id>*</id>
+		<fileName>*/build/*</fileName>
+	</suppress>
+	<suppress>
+		<id>*</id>
+		<fileName>*/external/pybind11_2.11_dev1/*</fileName>
+	</suppress>
+	<suppress>
+		<id>*</id>
+		<fileName>*/external/pybind11_2.9.2/*</fileName>
+	</suppress>
+	<suppress>
+		<id>*</id>
+		<fileName>*/external/QCodeEditor/*</fileName>
+	</suppress>
+	<suppress>
+		<id>*</id>
+		<fileName>*/external/QtFindReplaceDialog/*</fileName>
+	</suppress>
+
+	<!-- False positives, maybe because of forward declaration. -->
 	<suppress>
 		<id>unsafeClassCanLeak</id>
-		<fileName>*/ui/views/sourcesinkcontrolview.hpp</fileName>
 	</suppress>
 
 	<!-- False positive? -->
@@ -12,13 +33,6 @@
 		<id>nullPointer</id>
 		<fileName>*/devices/configurable.hpp</fileName>
 		<symbolName>configurable</symbolName>
-	</suppress>
-
-	<!-- This one is ok! -->
-	<suppress>
-		<id>unreadVariable</id>
-		<fileName>*/devices/configurable.cpp</fileName>
-		<symbolName>sr</symbolName>
 	</suppress>
 
 	<!-- There are many functions in SmuView that are not used yet. -->
