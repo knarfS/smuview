@@ -142,7 +142,7 @@ public:
 	 * TODO: Remove when glibmm >= 2.52
 	 */
 	void set_measured_quantity_config(devices::ConfigKey config_key,
-		const data::measured_quantity_t mq);
+		const data::measured_quantity_t &mq);
 
 	bool has_list_config(devices::ConfigKey config_key) const;
 	bool list_config(devices::ConfigKey config_key, Glib::VariantContainerBase &gvar);

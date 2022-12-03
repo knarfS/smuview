@@ -332,7 +332,7 @@ void Configurable::set_container_config(
 }
 
 void Configurable::set_measured_quantity_config(devices::ConfigKey config_key,
-	const data::measured_quantity_t mq)
+	const data::measured_quantity_t &mq)
 {
 	qWarning()
 		<< "Configurable::set_measured_quantity_config(): Set config key "
