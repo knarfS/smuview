@@ -85,8 +85,8 @@ void DoubleKnob::connect_signals()
 
 	// Property -> Widget
 	if (auto_update_ && property_ != nullptr) {
-		connect(property_.get(), SIGNAL(value_changed(const QVariant)),
-			this, SLOT(on_value_changed(const QVariant)));
+		connect(property_.get(), &data::properties::BaseProperty::value_changed,
+			this, &DoubleKnob::on_value_changed);
 		connect(property_.get(), &data::properties::BaseProperty::list_changed,
 			this, &DoubleKnob::on_list_changed);
 	}
@@ -95,8 +95,8 @@ void DoubleKnob::connect_signals()
 void DoubleKnob::connect_widget_2_prop_signals()
 {
 	if (auto_commit_ && property_ != nullptr && property_->is_setable()) {
-		connect(this, SIGNAL(valueChanged(double)),
-			this, SLOT(value_changed(const double)));
+		connect(this, &DoubleKnob::valueChanged,
+			this, &DoubleKnob::value_changed);
 	}
 }
 

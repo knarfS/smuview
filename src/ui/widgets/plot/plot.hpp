@@ -134,7 +134,7 @@ public Q_SLOTS:
 	void add_marker(sv::ui::widgets::plot::Curve *curve);
 	void add_diff_marker(QwtPlotMarker *marker1, QwtPlotMarker *marker2);
 	void remove_marker(QwtPlotMarker *marker);
-	void on_marker_selected(const QPointF mouse_pos);
+	void on_marker_selected(const QPointF &mouse_pos);
 	void on_marker_moved(const QPointF mouse_pos);
 	void on_legend_clicked(const QVariant &item_info, int index);
 

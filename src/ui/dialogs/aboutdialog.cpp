@@ -91,8 +91,8 @@ AboutDialog::AboutDialog(DeviceManager &device_manager,
 
 	connect(button_box, SIGNAL(accepted()), this, SLOT(accept()));
 	connect(button_box, SIGNAL(rejected()), this, SLOT(reject()));
-	connect(page_list, SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)),
-		this, SLOT(on_page_changed(QListWidgetItem*, QListWidgetItem*)));
+	connect(page_list, &QListWidget::currentItemChanged,
+		this, &AboutDialog::on_page_changed);
 }
 
 void AboutDialog::create_pages()

@@ -92,8 +92,8 @@ void BoolLed::connect_signals()
 {
 	// Property -> Widget (no ckeck for getable, comes via meta package!)
 	if (property_ != nullptr && auto_update_) {
-		connect(property_.get(), SIGNAL(value_changed(const QVariant)),
-			this, SLOT(on_value_changed(const QVariant)));
+		connect(property_.get(), &data::properties::BaseProperty::value_changed,
+			this, &BoolLed::on_value_changed);
 	}
 }
 

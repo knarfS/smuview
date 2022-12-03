@@ -85,8 +85,8 @@ void RationalComboBox::connect_signals()
 
 	// Property -> Widget
 	if (auto_update_ && property_ != nullptr) {
-		connect(property_.get(), SIGNAL(value_changed(const QVariant)),
-			this, SLOT(on_value_changed(const QVariant)));
+		connect(property_.get(), &data::properties::BaseProperty::value_changed,
+			this, &RationalComboBox::on_value_changed);
 		connect(property_.get(), &data::properties::BaseProperty::list_changed,
 			this, &RationalComboBox::on_list_changed);
 	}

@@ -170,8 +170,7 @@ Plot::Plot(Session &session, QWidget *parent) : QwtPlot(parent),
 	QwtLegend *legend = new QwtLegend;
 	legend->setDefaultItemMode(QwtLegendData::Clickable);
 	this->insertLegend(legend, QwtPlot::BottomLegend);
-	connect(legend, SIGNAL(clicked(const QVariant &, int)),
-		this, SLOT(on_legend_clicked(const QVariant &, int)));
+	connect(legend, &QwtLegend::clicked, this, &Plot::on_legend_clicked);
 
 	QwtPlotGrid *grid = new QwtPlotGrid();
 	grid->setPen(Qt::gray, 0.0, Qt::DotLine);
@@ -193,8 +192,7 @@ Plot::Plot(Session &session, QWidget *parent) : QwtPlot(parent),
 
 	// Panning via the canvas
 	plot_panner_ = new QwtPlotPanner(this->canvas());
-	connect(plot_panner_, SIGNAL(panned(int, int)),
-		this, SLOT(lock_all_axis()));
+	connect(plot_panner_, &QwtPlotPanner::panned, this, &Plot::lock_all_axis);
 
 	// Zooming via the canvas
 	plot_magnifier_ = new PlotMagnifier(this->canvas());
@@ -555,8 +553,8 @@ void Plot::add_marker(sv::ui::widgets::plot::Curve *curve)
 			QwtPlot::xBottom, QwtPlot::yLeft, QwtPlotPicker::NoRubberBand,
 			QwtPicker::AlwaysOff, this->canvas());
 		marker_select_picker_->setStateMachine(new QwtPickerClickPointMachine());
-		connect(marker_select_picker_, SIGNAL(selected(const QPointF &)),
-			this, SLOT(on_marker_selected(const QPointF)));
+		connect(marker_select_picker_, QOverload<const QPointF&>::of(&QwtPlotPicker::selected),
+			this, &Plot::on_marker_selected);
 	}
 	if (!marker_move_picker_) {
 		// Use QwtPlot::xBottom and QwtPlot::yLeft as axis. We calculate the
@@ -627,7 +625,7 @@ void Plot::remove_marker(QwtPlotMarker *marker)
 	Q_EMIT marker_removed();
 }
 
-void Plot::on_marker_selected(const QPointF mouse_pos)
+void Plot::on_marker_selected(const QPointF &mouse_pos)
 {
 	if (marker_curve_map_.empty())
 		return;

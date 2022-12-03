@@ -208,8 +208,8 @@ void DeviceTreeView::setup_ui()
 	else
 		this->collapseAll();
 
-	connect(tree_model_, SIGNAL(rowsInserted(const QModelIndex &, int, int)),
-		this, SLOT(on_rows_inserted(const QModelIndex &, int, int)));
+	connect(tree_model_, &DeviceTreeModel::rowsInserted,
+		this, &DeviceTreeView::on_rows_inserted);
 }
 
 void DeviceTreeView::expand_recursive(QStandardItem *item)
