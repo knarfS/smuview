@@ -527,7 +527,7 @@ void Plot::set_time_span(double time_span)
 
 void Plot::add_marker(sv::ui::widgets::plot::Curve *curve)
 {
-	auto marker = curve->add_marker(
+	auto *marker = curve->add_marker(
 		QString::number(marker_curve_map().size()+1));
 
 	// Initial marker position is in the middle of the plot screen or

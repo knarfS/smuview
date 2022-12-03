@@ -183,7 +183,7 @@ void DeviceTab::restore_settings()
 	const QStringList view_keys = settings.childGroups();
 	for (const auto &view_key : view_keys) {
 		settings.beginGroup(view_key);
-		auto view = views::viewhelper::get_view_from_settings(
+		auto *view = views::viewhelper::get_view_from_settings(
 			session_, settings, device_);
 		if (view)
 			add_view(view, Qt::DockWidgetArea::TopDockWidgetArea);

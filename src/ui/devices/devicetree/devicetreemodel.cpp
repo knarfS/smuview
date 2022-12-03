@@ -293,7 +293,7 @@ TreeItem *DeviceTreeModel::find_device(
 	shared_ptr<sv::devices::BaseDevice> device) const
 {
 	for (int i=0; i<invisibleRootItem()->rowCount(); ++i) {
-		auto child = invisibleRootItem()->child(i);
+		auto *child = invisibleRootItem()->child(i);
 		if (child->type() != (int)TreeItemType::DeviceItem)
 			continue;
 
@@ -308,7 +308,7 @@ TreeItem *DeviceTreeModel::find_channel_group(const string &channel_group_name,
 	TreeItem *parent_item) const
 {
 	for (int i=0; i<parent_item->rowCount(); ++i) {
-		auto child = parent_item->child(i);
+		auto *child = parent_item->child(i);
 		if (child->type() != (int)TreeItemType::ChannelGroupItem)
 			continue;
 
@@ -334,7 +334,7 @@ TreeItem *DeviceTreeModel::find_channel(
 			new_parent_item = parent_item;
 
 		for (int i=0; i<new_parent_item->rowCount(); ++i) {
-			auto child = new_parent_item->child(i);
+			auto *child = new_parent_item->child(i);
 			if (child->type() != (int)TreeItemType::ChannelItem)
 				continue;
 
@@ -350,7 +350,7 @@ TreeItem *DeviceTreeModel::find_signal (
 	shared_ptr<sv::data::BaseSignal> signal, TreeItem *parent_item) const
 {
 	for (int i=0; i<parent_item->rowCount(); ++i) {
-		auto child = parent_item->child(i);
+		auto *child = parent_item->child(i);
 		if (child->type() != (int)TreeItemType::SignalItem)
 			continue;
 
@@ -376,7 +376,7 @@ TreeItem *DeviceTreeModel::find_configurable(
 	}
 
 	for (int i=0; i<new_parent_item->rowCount(); ++i) {
-		auto child = new_parent_item->child(i);
+		auto *child = new_parent_item->child(i);
 		if (child->type() != (int)TreeItemType::ConfigurableItem)
 			continue;
 
@@ -392,7 +392,7 @@ TreeItem *DeviceTreeModel::find_property(
 	TreeItem *configurable_item) const
 {
 	for (int i=0; i<configurable_item->rowCount(); ++i) {
-		auto child = configurable_item->child(i);
+		auto *child = configurable_item->child(i);
 		if (child->type() != (int)TreeItemType::PropertyItem)
 			continue;
 

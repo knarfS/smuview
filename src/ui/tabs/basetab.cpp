@@ -124,7 +124,7 @@ void BaseTab::add_view_ontop(views::BaseView *view,
 
 void BaseTab::remove_view(const std::string &view_id)
 {
-	auto view = view_id_map_[view_id];
+	auto *view = view_id_map_[view_id];
 	view_docks_map_.erase(view);
 	view_id_map_.erase(view_id);
 }

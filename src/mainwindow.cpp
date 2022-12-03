@@ -117,7 +117,7 @@ void MainWindow::add_tab(ui::tabs::BaseTab *tab_window)
 ui::tabs::DeviceTab *MainWindow::add_device_tab(
 	shared_ptr<sv::devices::BaseDevice> device)
 {
-	auto tab = ui::tabs::tabhelper::get_tab_for_device(*session_, device);
+	auto *tab = ui::tabs::tabhelper::get_tab_for_device(*session_, device);
 	add_tab(tab);
 
 	// Connect device error handler to show a message box
@@ -129,14 +129,14 @@ ui::tabs::DeviceTab *MainWindow::add_device_tab(
 
 ui::tabs::WelcomeTab *MainWindow::add_welcome_tab()
 {
-	auto tab = new ui::tabs::WelcomeTab(*session_);
+	auto *tab = new ui::tabs::WelcomeTab(*session_);
 	add_tab(tab);
 	return tab;
 }
 
 ui::tabs::SmuScriptTab *MainWindow::add_smuscript_tab(const string &file_name)
 {
-	auto tab = new ui::tabs::SmuScriptTab(*session_, file_name);
+	auto *tab = new ui::tabs::SmuScriptTab(*session_, file_name);
 	add_tab(tab);
 	return tab;
 }
@@ -314,7 +314,7 @@ void MainWindow::error_handler(
 
 void MainWindow::on_tab_close_requested(int tab_index)
 {
-	auto tab_window = (ui::tabs::BaseTab *)tab_widget_->widget(tab_index);
+	auto *tab_window = (ui::tabs::BaseTab *)tab_widget_->widget(tab_index);
 	if (tab_window->request_close())
 		remove_tab(tab_index);
 }

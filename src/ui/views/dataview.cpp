@@ -190,7 +190,7 @@ void DataView::populate_table()
 			else {
 				// Find position of new sample
 				while (last_row+1 < row_count) {
-					auto item = data_table_->item(last_row+1, 0);
+					auto *item = data_table_->item(last_row+1, 0);
 					double timestamp = item->data(0).toDouble();
 					if (timestamp > sample.first) {
 						data_table_->insertRow(last_row+1);

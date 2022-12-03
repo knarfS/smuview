@@ -70,7 +70,7 @@ QString XYPlotView::title() const
 string XYPlotView::add_signals(shared_ptr<sv::data::AnalogTimeSignal> x_signal,
 	shared_ptr<sv::data::AnalogTimeSignal> y_signal)
 {
-	auto curve = new widgets::plot::XYCurveData(x_signal, y_signal);
+	auto *curve = new widgets::plot::XYCurveData(x_signal, y_signal);
 	string id = plot_->add_curve(curve);
 	if (id.empty()) {
 		QMessageBox::warning(this,

@@ -257,7 +257,7 @@ void AddViewDialog::accept()
 		// Add sequence view for property
 		{
 			auto property = sequence_property_form_->selected_property();
-			auto conf_views = new ui::views::SequenceOutputView(session_);
+			auto *conf_views = new ui::views::SequenceOutputView(session_);
 			conf_views->set_property(
 				static_pointer_cast<sv::data::properties::DoubleProperty>(property));
 			views_.push_back(conf_views);
@@ -266,7 +266,7 @@ void AddViewDialog::accept()
 	case 2:
 		// Add value panel view
 		for (const auto &channel : panel_channel_tree_->checked_channels()) {
-			auto conf_views = new ui::views::ValuePanelView(session_);
+			auto *conf_views = new ui::views::ValuePanelView(session_);
 			conf_views->set_channel(channel);
 			views_.push_back(conf_views);
 		}
@@ -274,12 +274,12 @@ void AddViewDialog::accept()
 	case 3:
 		// Add time plot view
 		for (const auto &channel : time_plot_channel_tree_->checked_channels()) {
-			auto conf_views = new ui::views::TimePlotView(session_);
+			auto *conf_views = new ui::views::TimePlotView(session_);
 			conf_views->set_channel(channel);
 			views_.push_back(conf_views);
 		}
 		for (const auto &signal : time_plot_channel_tree_->checked_signals()) {
-			auto conf_views = new ui::views::TimePlotView(session_);
+			auto *conf_views = new ui::views::TimePlotView(session_);
 			conf_views->add_signal(static_pointer_cast<data::AnalogTimeSignal>(signal));
 			views_.push_back(conf_views);
 		}
@@ -290,7 +290,7 @@ void AddViewDialog::accept()
 			auto x_signal = xy_plot_x_signal_widget_->selected_signal();
 			auto y_signal = xy_plot_y_signal_widget_->selected_signal();
 			if (x_signal != nullptr && y_signal != nullptr) {
-				auto view = new ui::views::XYPlotView(session_);
+				auto *view = new ui::views::XYPlotView(session_);
 				view->add_signals(
 					static_pointer_cast<data::AnalogTimeSignal>(x_signal),
 					static_pointer_cast<data::AnalogTimeSignal>(y_signal));
@@ -303,7 +303,7 @@ void AddViewDialog::accept()
 		{
 			auto signals = data_table_signal_tree_->checked_signals();
 			if (!signals.empty()) {
-				auto view = new ui::views::DataView(session_);
+				auto *view = new ui::views::DataView(session_);
 				for (const auto &signal : signals) {
 					view->add_signal(
 						static_pointer_cast<data::AnalogTimeSignal>(signal));
@@ -318,7 +318,7 @@ void AddViewDialog::accept()
 			auto v_signal = ppanel_voltage_signal_widget_->selected_signal();
 			auto c_signal = ppanel_current_signal_widget_->selected_signal();
 			if (v_signal != nullptr && c_signal != nullptr) {
-				auto view = new ui::views::PowerPanelView(session_);
+				auto *view = new ui::views::PowerPanelView(session_);
 				view->set_signals(
 					static_pointer_cast<data::AnalogTimeSignal>(v_signal),
 					static_pointer_cast<data::AnalogTimeSignal>(c_signal));

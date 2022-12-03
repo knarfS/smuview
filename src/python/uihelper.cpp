@@ -65,7 +65,7 @@ void UiHelper::add_device_tab(shared_ptr<sv::devices::BaseDevice> device)
 		return;
 	}
 
-	auto tab = session_.main_window()->add_device_tab(device);
+	auto *tab = session_.main_window()->add_device_tab(device);
 	Q_EMIT tab_added(tab->id());
 }
 
@@ -73,13 +73,13 @@ void UiHelper::add_data_view(const std::string &tab_id,
 	Qt::DockWidgetArea area,
 	shared_ptr<sv::data::AnalogTimeSignal> signal)
 {
-	auto tab = get_tab(tab_id);
+	auto *tab = get_tab(tab_id);
 	if (!tab) {
 		Q_EMIT view_added("");
 		return;
 	}
 
-	auto view = new ui::views::DataView(session_);
+	auto *view = new ui::views::DataView(session_);
 	view->add_signal(signal);
 	tab->add_view(view, area);
 	Q_EMIT view_added(view->id());
@@ -91,7 +91,7 @@ void UiHelper::add_control_views(const std::string &tab_id,
 {
 	std::vector<std::string> view_ids;
 
-	auto tab = get_tab(tab_id);
+	auto *tab = get_tab(tab_id);
 	if (!tab) {
 		Q_EMIT views_added(view_ids);
 		return;
@@ -113,13 +113,13 @@ void UiHelper::add_control_views(const std::string &tab_id,
 void UiHelper::add_time_plot_view(const std::string &tab_id,
 	Qt::DockWidgetArea area)
 {
-	auto tab = get_tab(tab_id);
+	auto *tab = get_tab(tab_id);
 	if (!tab) {
 		Q_EMIT view_added("");
 		return;
 	}
 
-	auto view = new ui::views::TimePlotView(session_);
+	auto *view = new ui::views::TimePlotView(session_);
 	tab->add_view(view, area);
 	Q_EMIT view_added(view->id());
 }
@@ -127,13 +127,13 @@ void UiHelper::add_time_plot_view(const std::string &tab_id,
 void UiHelper::add_xy_plot_view(const std::string &tab_id,
 	Qt::DockWidgetArea area)
 {
-	auto tab = get_tab(tab_id);
+	auto *tab = get_tab(tab_id);
 	if (!tab) {
 		Q_EMIT view_added("");
 		return;
 	}
 
-	auto view = new ui::views::XYPlotView(session_);
+	auto *view = new ui::views::XYPlotView(session_);
 	tab->add_view(view, area);
 	Q_EMIT view_added(view->id());
 }
@@ -143,13 +143,13 @@ void UiHelper::add_power_panel_view(const std::string &tab_id,
 	shared_ptr<sv::data::AnalogTimeSignal> voltage_signal,
 	shared_ptr<sv::data::AnalogTimeSignal> current_signal)
 {
-	auto tab = get_tab(tab_id);
+	auto *tab = get_tab(tab_id);
 	if (!tab) {
 		Q_EMIT view_added("");
 		return;
 	}
 
-	auto view = new ui::views::PowerPanelView(session_);
+	auto *view = new ui::views::PowerPanelView(session_);
 	view->set_signals(voltage_signal, current_signal);
 	tab->add_view(view, area);
 	Q_EMIT view_added(view->id());
@@ -159,13 +159,13 @@ void UiHelper::add_value_panel_view(const std::string &tab_id,
 	Qt::DockWidgetArea area,
 	shared_ptr<sv::channels::BaseChannel> channel)
 {
-	auto tab = get_tab(tab_id);
+	auto *tab = get_tab(tab_id);
 	if (!tab) {
 		Q_EMIT view_added("");
 		return;
 	}
 
-	auto view = new ui::views::ValuePanelView(session_);
+	auto *view = new ui::views::ValuePanelView(session_);
 	view->set_channel(channel);
 	tab->add_view(view, area);
 	Q_EMIT view_added(view->id());
@@ -175,13 +175,13 @@ void UiHelper::add_value_panel_view(const std::string &tab_id,
 	Qt::DockWidgetArea area,
 	shared_ptr<sv::data::AnalogTimeSignal> signal)
 {
-	auto tab = get_tab(tab_id);
+	auto *tab = get_tab(tab_id);
 	if (!tab) {
 		Q_EMIT view_added("");
 		return;
 	}
 
-	auto view = new ui::views::ValuePanelView(session_);
+	auto *view = new ui::views::ValuePanelView(session_);
 	view->set_signal(signal);
 	tab->add_view(view, area);
 	Q_EMIT view_added(view->id());
@@ -191,7 +191,7 @@ void UiHelper::add_signal_to_data_view(const std::string &tab_id,
 	const std::string &view_id,
 	shared_ptr<sv::data::AnalogTimeSignal> signal)
 {
-	auto view = get_view(tab_id, view_id);
+	auto *view = get_view(tab_id, view_id);
 	if (!view)
 		return;
 
@@ -202,7 +202,7 @@ void UiHelper::set_channel_to_time_plot_view(const std::string &tab_id,
 	const std::string &view_id,
 	shared_ptr<sv::channels::BaseChannel> channel)
 {
-	auto plot_view = get_time_plot_view(tab_id, view_id);
+	auto *plot_view = get_time_plot_view(tab_id, view_id);
 	if (!plot_view) {
 		Q_EMIT curve_added("");
 		return;
@@ -215,7 +215,7 @@ void UiHelper::add_curve_to_time_plot_view(const std::string &tab_id,
 	const std::string &view_id,
 	shared_ptr<sv::data::AnalogTimeSignal> signal)
 {
-	auto plot_view = get_time_plot_view(tab_id, view_id);
+	auto *plot_view = get_time_plot_view(tab_id, view_id);
 	if (!plot_view) {
 		Q_EMIT curve_added("");
 		return;
@@ -230,12 +230,12 @@ void UiHelper::add_curve_to_xy_plot_view(const std::string &tab_id,
 	shared_ptr<sv::data::AnalogTimeSignal> x_signal,
 	shared_ptr<sv::data::AnalogTimeSignal> y_signal)
 {
-	auto view = get_view(tab_id, view_id);
+	auto *view = get_view(tab_id, view_id);
 	if (!view) {
 		Q_EMIT curve_added("");
 		return;
 	}
-	auto plot_view = qobject_cast<ui::views::XYPlotView *>(view);
+	auto *plot_view = qobject_cast<ui::views::XYPlotView *>(view);
 	if (!plot_view) {
 		qWarning() << "UiHelper::add_curve_to_xy_plot_view(): View is not a "
 			"xy plot view: " << QString::fromStdString(view_id);
@@ -251,7 +251,7 @@ void UiHelper::set_curve_name(const std::string &tab_id,
 	const std::string &view_id, const std::string &curve_id,
 	const std::string &name)
 {
-	auto plot_view = get_base_plot_view(tab_id, view_id);
+	auto *plot_view = get_base_plot_view(tab_id, view_id);
 	if (!plot_view)
 		return;
 
@@ -266,7 +266,7 @@ void UiHelper::set_curve_color(const std::string &tab_id,
 	const std::string &view_id, const std::string &curve_id,
 	std::tuple<int, int, int> color)
 {
-	auto plot_view = get_base_plot_view(tab_id, view_id);
+	auto *plot_view = get_base_plot_view(tab_id, view_id);
 	if (!plot_view)
 		return;
 
@@ -368,7 +368,7 @@ ui::tabs::BaseTab *UiHelper::get_tab(const string &tab_id) const
 		qWarning() << "UiHelper::get_tab(): No MainWindow found!";
 		return nullptr;
 	}
-	auto tab = session_.main_window()->get_tab_from_tab_id(tab_id);
+	auto *tab = session_.main_window()->get_tab_from_tab_id(tab_id);
 	if (!tab) {
 		qWarning() << "UiHelper::get_tab(): Tab not found: " <<
 			QString::fromStdString(tab_id);
@@ -379,10 +379,10 @@ ui::tabs::BaseTab *UiHelper::get_tab(const string &tab_id) const
 ui::views::BaseView *UiHelper::get_view(const string &tab_id,
 	const string &view_id) const
 {
-	auto tab = get_tab(tab_id);
+	auto *tab = get_tab(tab_id);
 	if (!tab)
 		return nullptr;
-	auto view = tab->get_view_from_view_id(view_id);
+	auto *view = tab->get_view_from_view_id(view_id);
 	if (!view) {
 		qWarning() << "UiHelper::get_view(): View not found: " <<
 			QString::fromStdString(view_id);
@@ -393,10 +393,10 @@ ui::views::BaseView *UiHelper::get_view(const string &tab_id,
 ui::views::BasePlotView *UiHelper::get_base_plot_view(const string &tab_id,
 	const string &view_id) const
 {
-	auto view = get_view(tab_id, view_id);
+	auto *view = get_view(tab_id, view_id);
 	if (!view)
 		return nullptr;
-	auto plot_view = qobject_cast<ui::views::BasePlotView *>(view);
+	auto *plot_view = qobject_cast<ui::views::BasePlotView *>(view);
 	if (!plot_view) {
 		qWarning() << "UiHelper::get_base_plot_view(): View is not a plot "
 			"view: " << QString::fromStdString(view_id);
@@ -407,10 +407,10 @@ ui::views::BasePlotView *UiHelper::get_base_plot_view(const string &tab_id,
 ui::views::TimePlotView *UiHelper::get_time_plot_view(const string &tab_id,
 	const string &view_id) const
 {
-	auto view = get_view(tab_id, view_id);
+	auto *view = get_view(tab_id, view_id);
 	if (!view)
 		return nullptr;
-	auto plot_view = qobject_cast<ui::views::TimePlotView *>(view);
+	auto *plot_view = qobject_cast<ui::views::TimePlotView *>(view);
 	if (!plot_view) {
 		qWarning() << "UiHelper::get_time_plot_view(): View is not a time plot "
 			"view: " << QString::fromStdString(view_id);

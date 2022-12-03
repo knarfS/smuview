@@ -120,7 +120,7 @@ void SourceSinkTab::setup_ui()
 
 		if (voltage_signal && current_signal) {
 			// PowerPanel(s)
-			auto power_panel_view = new ui::views::PowerPanelView(session_);
+			auto *power_panel_view = new ui::views::PowerPanelView(session_);
 			power_panel_view->set_signals(voltage_signal, current_signal);
 			if (!first_pp_view) {
 				first_pp_view = power_panel_view;
