@@ -55,7 +55,6 @@ namespace views {
 
 SmuScriptView::SmuScriptView(Session &session, QUuid uuid, QWidget *parent) :
 	BaseView(session, uuid, parent),
-	script_file_name_(""),
 	action_open_(new QAction(this)),
 	action_save_(new QAction(this)),
 	action_save_as_(new QAction(this)),
