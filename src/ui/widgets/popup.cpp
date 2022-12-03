@@ -138,24 +138,16 @@ bool Popup::space_for_arrow() const
 	// Check if there is room for the arrow
 	switch (pos_) {
 	case PopupPosition::Right:
-		if (point_.x() > x())
-			return false;
-		return true;
+		return point_.x() <= x();
 
 	case PopupPosition::Bottom:
-		if (point_.y() > y())
-			return false;
-		return true;
+		return point_.y() <= y();
 
 	case PopupPosition::Left:
-		if (point_.x() < (x() + width()))
-			return false;
-		return true;
+		return point_.x() >= (x() + width());
 
 	case PopupPosition::Top:
-		if (point_.y() < (y() + height()))
-			return false;
-		return true;
+		return point_.y() >= (y() + height());
 	}
 
 	return true;
