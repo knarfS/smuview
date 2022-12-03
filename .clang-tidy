@@ -1,10 +1,17 @@
 # Disabled checks:
+# - bugprone-easily-swappable-parameters
+#     Not needed
+# - bugprone-suspicious-include
+#     Too many false positives in "build/smuview_autogen". Maybe activate again
+#     when HeaderFilterRegex is working correctly.
 # - misc-definitions-in-headers
 #     TODO: Used in deviceutil.hpp and datautil.hpp. Maybe to const static?
 # - misc-non-private-member-variables-in-classes
 #     protected member variables are used all over the place...
 # - misc-static-assert
 #     TODO: Replace all `assert("ex")` with `throw Ex()` and activate check!
+# - misc-no-recursion
+#     We do use recursions
 # - performance-unnecessary-value-param
 #     TODO: !
 # - readability-avoid-const-params-in-decls
@@ -14,13 +21,21 @@
 #     https://stackoverflow.com/questions/52916410/why-is-const-allowed-in-function-declarations
 # - readability-braces-around-statements
 #     Even with `ShortStatementLines` = 3 there are too many false positives.
-# -readability-convert-member-functions-to-static,
+# - readability-convert-member-functions-to-static,
 #     TODO: Could this be useful in some cases?
 # - readability-inconsistent-declaration-parameter-name
 #     This check shows to many false positives for Qt signal declarations. We can
 #     use CppChecks "funcArgNamesDifferent" instead.
 # - readability-magic-numbers
 #     Magic numbers are ok. Maybe replace with macros(?) in the future?
+# - readability-redundant-access-specifiers
+#     Used to often in header files, also not complatible with Qt access specifiers.
+#         public Q_SLOTS:
+#         public:
+# - readability-function-cognitive-complexity
+#     TODO: Enable!
+# - readability-use-anyofallof
+#     Foreach loops are ok for now
 #
 # TODO:
 # - google-*,
@@ -31,6 +46,8 @@
 #
 Checks: >-
   bugprone-*,
+  -bugprone-easily-swappable-parameters,
+  -bugprone-suspicious-include,
   clang-diagnostic-*,
   clang-analyzer-*,
   google-explicit-constructor,
@@ -38,6 +55,7 @@ Checks: >-
   -misc-definitions-in-headers,
   -misc-non-private-member-variables-in-classes,
   -misc-static-assert,
+  -misc-no-recursion,
   performance-*,
   -performance-unnecessary-value-param,
   readability-*,
@@ -46,9 +64,12 @@ Checks: >-
   -readability-convert-member-functions-to-static,
   -readability-inconsistent-declaration-parameter-name,
   -readability-magic-numbers,
+  -readability-redundant-access-specifiers,
+  -readability-function-cognitive-complexity,
+  -readability-use-anyofallof,
 
 WarningsAsErrors:      ''
-HeaderFilterRegex:     'src/.*'
+HeaderFilterRegex:     '^src/.*$'
 AnalyzeTemporaryDtors: false
 FormatStyle:           none
 User:                  frank
@@ -84,4 +105,14 @@ CheckOptions:
   - key:             readability-implicit-bool-conversion.AllowIntegerConditions
     value:           '1'
   - key:             readability-redundant-member-init.IgnoreBaseInCopyConstructors
+    value:           '1'
+  - key:             readability-identifier-length.MinimumVariableNameLength
+    value:           '2'
+  - key:             readability-identifier-length.MinimumParameterNameLength
+    value:           '2'
+  - key:             readability-identifier-length.MinimumLoopCounterNameLength
+    value:           '1'
+  - key:             readability-identifier-length.MinimumExceptionNameLength
+    value:           '1'
+  - key:             readability-qualified-auto.AddConstToQualified
     value:           '1'
