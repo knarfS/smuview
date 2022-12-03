@@ -57,8 +57,8 @@ SignalHandler::SignalHandler(QObject* parent) : QObject(parent),
 {
 	socket_notifier_ = new QSocketNotifier(sockets_[1],
 		QSocketNotifier::Read, this);
-	connect(socket_notifier_, SIGNAL(activated(int)),
-		SLOT(on_socket_notifier_activated()));
+	connect(socket_notifier_, &QSocketNotifier::activated,
+		this, &SignalHandler::on_socket_notifier_activated);
 }
 
 void SignalHandler::on_socket_notifier_activated()

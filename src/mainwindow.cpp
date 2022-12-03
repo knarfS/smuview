@@ -211,8 +211,8 @@ void MainWindow::setup_ui()
 	// Tab Widget
 	tab_widget_ = new QTabWidget();
 	tab_widget_->setTabsClosable(true);
-	connect(tab_widget_, SIGNAL(tabCloseRequested(int)),
-		this, SLOT(on_tab_close_requested(int)));
+	connect(tab_widget_, &QTabWidget::tabCloseRequested,
+		this, &MainWindow::on_tab_close_requested);
 	centralLayout->addWidget(tab_widget_);
 
 	this->setCentralWidget(central_widget_);

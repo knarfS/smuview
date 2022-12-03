@@ -72,10 +72,10 @@ DivideChannel::DivideChannel(
 	else
 		decimal_places_ = divisor_signal->decimal_places();
 
-	connect(dividend_signal_.get(), SIGNAL(sample_appended()),
-		this, SLOT(on_sample_appended()));
-	connect(divisor_signal_.get(), SIGNAL(sample_appended()),
-		this, SLOT(on_sample_appended()));
+	connect(dividend_signal_.get(), &data::AnalogTimeSignal::sample_appended,
+		this, &DivideChannel::on_sample_appended);
+	connect(divisor_signal_.get(), &data::AnalogTimeSignal::sample_appended,
+		this, &DivideChannel::on_sample_appended);
 }
 
 void DivideChannel::on_sample_appended()

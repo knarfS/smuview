@@ -93,16 +93,18 @@ void DoubleRangeComboBox::connect_signals()
 void DoubleRangeComboBox::connect_widget_2_prop_signals()
 {
 	if (auto_commit_ && property_ != nullptr && property_->is_setable()) {
-		connect(this, SIGNAL(currentIndexChanged(int)),
-			this, SLOT(value_changed(int)));
+		connect(
+			this, QOverload<int>::of(&DoubleRangeComboBox::currentIndexChanged),
+			this, &DoubleRangeComboBox::value_changed);
 	}
 }
 
 void DoubleRangeComboBox::disconnect_widget_2_prop_signals()
 {
 	if (auto_commit_ && property_ != nullptr && property_->is_setable()) {
-		disconnect(this, SIGNAL(currentIndexChanged(int)),
-			this, SLOT(value_changed(int)));
+		disconnect(
+			this, QOverload<int>::of(&DoubleRangeComboBox::currentIndexChanged),
+			this, &DoubleRangeComboBox::value_changed);
 	}
 }
 
@@ -111,10 +113,8 @@ QVariant DoubleRangeComboBox::variant_value() const
 	return this->currentData();
 }
 
-void DoubleRangeComboBox::value_changed(int index)
+void DoubleRangeComboBox::value_changed()
 {
-	(void)index;
-
 	if (property_ != nullptr) {
 		property_->change_value(this->currentData());
 	}

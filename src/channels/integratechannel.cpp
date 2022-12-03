@@ -59,10 +59,10 @@ IntegrateChannel::IntegrateChannel(
 	digits_ = int_signal_->digits();
 	decimal_places_ = int_signal_->decimal_places();
 
-	connect(this, SIGNAL(channel_start_timestamp_changed(double)),
-		this, SLOT(on_channel_start_timestamp_changed(double)));
-	connect(int_signal_.get(), SIGNAL(sample_appended()),
-		this, SLOT(on_sample_appended()));
+	connect(this, &IntegrateChannel::channel_start_timestamp_changed,
+		this, &IntegrateChannel::on_channel_start_timestamp_changed);
+	connect(int_signal_.get(), &data::AnalogTimeSignal::sample_appended,
+		this, &IntegrateChannel::on_sample_appended);
 }
 
 void IntegrateChannel::on_channel_start_timestamp_changed(double timestamp)

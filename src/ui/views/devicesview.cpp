@@ -91,22 +91,22 @@ void DevicesView::setup_toolbar()
 	action_add_device_->setIcon(
 		QIcon::fromTheme("document-new",
 		QIcon(":/icons/document-new.png")));
-	connect(action_add_device_, SIGNAL(triggered(bool)),
-		this, SLOT(on_action_add_device_triggered()));
+	connect(action_add_device_, &QAction::triggered,
+		this, &DevicesView::on_action_add_device_triggered);
 
 	action_add_userdevice_->setText(tr("Add virtual user device"));
 	action_add_userdevice_->setIcon(
 		QIcon::fromTheme("tab-new-background",
 		QIcon(":/icons/tab-new-background.png")));
-	connect(action_add_userdevice_, SIGNAL(triggered(bool)),
-		this, SLOT(on_action_add_userdevice_triggered()));
+	connect(action_add_userdevice_, &QAction::triggered,
+		this, &DevicesView::on_action_add_userdevice_triggered);
 
 	action_disconnect_device_->setText(tr("Disconnect device"));
 	action_disconnect_device_->setIcon(
 		QIcon::fromTheme("edit-delete",
 		QIcon(":/icons/edit-delete.png")));
-	connect(action_disconnect_device_, SIGNAL(triggered(bool)),
-		this, SLOT(on_action_disconnect_device_triggered()));
+	connect(action_disconnect_device_, &QAction::triggered,
+		this, &DevicesView::on_action_disconnect_device_triggered);
 
 	toolbar_ = new QToolBar("Device Tree Toolbar");
 	toolbar_->addAction(action_add_device_);

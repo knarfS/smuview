@@ -59,8 +59,8 @@ AddSCChannel::AddSCChannel(
 	digits_ = signal_->digits();
 	decimal_places_ = signal_->decimal_places();
 
-	connect(signal_.get(), SIGNAL(sample_appended()),
-		this, SLOT(on_sample_appended()));
+	connect(signal_.get(), &data::AnalogTimeSignal::sample_appended,
+		this, &AddSCChannel::on_sample_appended);
 }
 
 void AddSCChannel::on_sample_appended()

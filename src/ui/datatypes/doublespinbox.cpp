@@ -98,16 +98,16 @@ void DoubleSpinBox::connect_signals()
 void DoubleSpinBox::connect_widget_2_prop_signals()
 {
 	if (auto_commit_ && property_ != nullptr && property_->is_setable()) {
-		connect(this, SIGNAL(editingFinished()),
-			this, SLOT(value_changed()));
+		connect(this, &DoubleSpinBox::editingFinished,
+			this, &DoubleSpinBox::value_changed);
 	}
 }
 
 void DoubleSpinBox::disconnect_widget_2_prop_signals()
 {
 	if (auto_commit_ && property_ != nullptr && property_->is_setable()) {
-		disconnect(this, SIGNAL(editingFinished()),
-			this, SLOT(value_changed()));
+		disconnect(this, &DoubleSpinBox::editingFinished,
+			this, &DoubleSpinBox::value_changed);
 	}
 }
 

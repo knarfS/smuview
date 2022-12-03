@@ -99,8 +99,8 @@ void GenerateWaveformDialog::setup_ui()
 		QVariant::fromValue(WaveformType::Sawtooth));
 	waveform_box_->addItem(tr("Sawtooth inverted"),
 		QVariant::fromValue(WaveformType::SawtoothInv));
-	connect(waveform_box_, SIGNAL(currentIndexChanged(int)),
-			this, SLOT(on_waveform_changed()));
+	connect(waveform_box_, QOverload<int>::of(&QComboBox::currentIndexChanged),
+			this, &GenerateWaveformDialog::on_waveform_changed);
 	layout->addRow(tr("Waveform"), waveform_box_);
 
 	QGroupBox *amp_group = new QGroupBox(tr("Min/Max - Amplitude"));
@@ -114,8 +114,8 @@ void GenerateWaveformDialog::setup_ui()
 	min_value_box_->setSingleStep(step_);
 	min_value_box_->setDecimals(decimals_);
 	min_value_box_->setSuffix(unit_);
-	connect(min_value_box_, SIGNAL(valueChanged(double)),
-		this, SLOT(on_min_max_changed()));
+	connect(min_value_box_, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+		this, &GenerateWaveformDialog::on_min_max_changed);
 	ampmm_layout->addRow(tr("Min. value"), min_value_box_);
 
 	max_value_box_ = new QDoubleSpinBox();
@@ -124,8 +124,8 @@ void GenerateWaveformDialog::setup_ui()
 	max_value_box_->setSingleStep(step_);
 	max_value_box_->setDecimals(decimals_);
 	max_value_box_->setSuffix(unit_);
-	connect(max_value_box_, SIGNAL(valueChanged(double)),
-		this, SLOT(on_min_max_changed()));
+	connect(max_value_box_, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+		this, &GenerateWaveformDialog::on_min_max_changed);
 	ampmm_layout->addRow(tr("Max. value"), max_value_box_);
 	amp_layout->addLayout(ampmm_layout);
 
@@ -135,8 +135,8 @@ void GenerateWaveformDialog::setup_ui()
 	amplitude_box_->setSingleStep(step_);
 	amplitude_box_->setDecimals(decimals_);
 	amplitude_box_->setSuffix(unit_);
-	connect(amplitude_box_, SIGNAL(valueChanged(double)),
-		this, SLOT(on_amp_offs_changed()));
+	connect(amplitude_box_, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+		this, &GenerateWaveformDialog::on_amp_offs_changed);
 	ampf_layout->addRow(tr("Amplitude"), amplitude_box_);
 
 	offset_box_ = new QDoubleSpinBox();
@@ -145,8 +145,8 @@ void GenerateWaveformDialog::setup_ui()
 	offset_box_->setSingleStep(step_);
 	offset_box_->setDecimals(decimals_);
 	offset_box_->setSuffix(unit_);
-	connect(offset_box_, SIGNAL(valueChanged(double)),
-		this, SLOT(on_amp_offs_changed()));
+	connect(offset_box_, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+		this, &GenerateWaveformDialog::on_amp_offs_changed);
 	ampf_layout->addRow(tr("Offset"), offset_box_);
 	amp_layout->addLayout(ampf_layout);
 	amp_group->setLayout(amp_layout);
@@ -163,8 +163,8 @@ void GenerateWaveformDialog::setup_ui()
 	periode_box_->setSingleStep(0.1);
 	periode_box_->setDecimals(3);
 	periode_box_->setSuffix(" s");
-	connect(periode_box_, SIGNAL(valueChanged(double)),
-		this, SLOT(on_periode_changed()));
+	connect(periode_box_, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+		this, &GenerateWaveformDialog::on_periode_changed);
 	freqp_layout->addRow(tr("Periode"), periode_box_);
 	freq_layout->addLayout(freqp_layout);
 
@@ -174,8 +174,8 @@ void GenerateWaveformDialog::setup_ui()
 	frequency_box_->setSingleStep(0.001);
 	frequency_box_->setDecimals(4);
 	frequency_box_->setSuffix(" Hz");
-	connect(frequency_box_, SIGNAL(valueChanged(double)),
-		this, SLOT(on_frequency_changed()));
+	connect(frequency_box_, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+		this, &GenerateWaveformDialog::on_frequency_changed);
 	freqf_layout->addRow(tr("Frequency"), frequency_box_);
 	freq_layout->addLayout(freqf_layout);
 	freq_group->setLayout(freq_layout);
@@ -192,16 +192,16 @@ void GenerateWaveformDialog::setup_ui()
 	interval_box_->setSingleStep(0.1);
 	interval_box_->setDecimals(3);
 	interval_box_->setSuffix(" s");
-	connect(interval_box_, SIGNAL(valueChanged(double)),
-		this, SLOT(on_interval_changed()));
+	connect(interval_box_, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+		this, &GenerateWaveformDialog::on_interval_changed);
 	samplesi_layout->addRow(tr("Time between samples"), interval_box_);
 	samples_layout->addLayout(samplesi_layout);
 
 	sample_count_box_ = new QSpinBox();
 	sample_count_box_->setMinimum(0);
 	sample_count_box_->setMaximum(1000000);
-	connect(sample_count_box_, SIGNAL(valueChanged(int)),
-		this, SLOT(on_sample_cnt_changed()));
+	connect(sample_count_box_, QOverload<int>::of(&QSpinBox::valueChanged),
+		this, &GenerateWaveformDialog::on_sample_cnt_changed);
 	samplesc_layout->addRow(tr("Number of samples"), sample_count_box_);
 	samples_layout->addLayout(samplesc_layout);
 	samples_group->setLayout(samples_layout);
@@ -218,8 +218,8 @@ void GenerateWaveformDialog::setup_ui()
 	phi_deg_box_->setSingleStep(0.1);
 	phi_deg_box_->setDecimals(1);
 	phi_deg_box_->setSuffix(QString(" %1").arg(QChar(0x00B0)));
-	connect(phi_deg_box_, SIGNAL(valueChanged(double)),
-		this, SLOT(on_phi_deg_changed()));
+	connect(phi_deg_box_, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+		this, &GenerateWaveformDialog::on_phi_deg_changed);
 	phid_layout->addRow(tr("%1 (deg)").arg(QChar(0x03C6)), phi_deg_box_);
 	phi_layout->addLayout(phid_layout);
 
@@ -228,8 +228,8 @@ void GenerateWaveformDialog::setup_ui()
 	phi_rad_box_->setMaximum(2 * pi);
 	phi_rad_box_->setSingleStep(0.01);
 	phi_rad_box_->setDecimals(3);
-	connect(phi_rad_box_, SIGNAL(valueChanged(double)),
-		this, SLOT(on_phi_rad_changed()));
+	connect(phi_rad_box_, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+		this, &GenerateWaveformDialog::on_phi_rad_changed);
 	phir_layout->addRow(tr("%1 (rad)").arg(QChar(0x03C6)), phi_rad_box_);
 	phi_layout->addLayout(phir_layout);
 	phi_group->setLayout(phi_layout);
@@ -325,113 +325,113 @@ void GenerateWaveformDialog::on_waveform_changed()
 
 void GenerateWaveformDialog::on_min_max_changed()
 {
-	disconnect(amplitude_box_, SIGNAL(valueChanged(double)),
-		this, SLOT(on_amp_offs_changed()));
-	disconnect(offset_box_, SIGNAL(valueChanged(double)),
-		this, SLOT(on_amp_offs_changed()));
+	disconnect(amplitude_box_, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+		this, &GenerateWaveformDialog::on_amp_offs_changed);
+	disconnect(offset_box_, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+		this, &GenerateWaveformDialog::on_amp_offs_changed);
 
 	amplitude_box_->setValue((max_value_box_->value() - min_value_box_->value()) / 2);
 	offset_box_->setValue(amplitude_box_->value() +  min_value_box_->value());
 
-	connect(amplitude_box_, SIGNAL(valueChanged(double)),
-		this, SLOT(on_amp_offs_changed()));
-	connect(offset_box_, SIGNAL(valueChanged(double)),
-		this, SLOT(on_amp_offs_changed()));
+	connect(amplitude_box_, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+		this, &GenerateWaveformDialog::on_amp_offs_changed);
+	connect(offset_box_, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+		this, &GenerateWaveformDialog::on_amp_offs_changed);
 }
 
 void GenerateWaveformDialog::on_amp_offs_changed()
 {
-	disconnect(min_value_box_, SIGNAL(valueChanged(double)),
-		this, SLOT(on_min_max_changed()));
-	disconnect(max_value_box_, SIGNAL(valueChanged(double)),
-		this, SLOT(on_min_max_changed()));
+	disconnect(min_value_box_, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+		this, &GenerateWaveformDialog::on_min_max_changed);
+	disconnect(max_value_box_, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+		this, &GenerateWaveformDialog::on_min_max_changed);
 
 	min_value_box_->setValue(offset_box_->value() - amplitude_box_->value());
 	max_value_box_->setValue(offset_box_->value() + amplitude_box_->value());
 
-	connect(min_value_box_, SIGNAL(valueChanged(double)),
-		this, SLOT(on_min_max_changed()));
-	connect(max_value_box_, SIGNAL(valueChanged(double)),
-		this, SLOT(on_min_max_changed()));
+	connect(min_value_box_, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+		this, &GenerateWaveformDialog::on_min_max_changed);
+	connect(max_value_box_, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+		this, &GenerateWaveformDialog::on_min_max_changed);
 }
 
 void GenerateWaveformDialog::on_periode_changed()
 {
-	disconnect(frequency_box_, SIGNAL(valueChanged(double)),
-		this, SLOT(on_frequency_changed()));
-	disconnect(sample_count_box_, SIGNAL(valueChanged(int)),
-		this, SLOT(on_sample_cnt_changed()));
+	disconnect(frequency_box_, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+		this, &GenerateWaveformDialog::on_frequency_changed);
+	disconnect(sample_count_box_, QOverload<int>::of(&QSpinBox::valueChanged),
+		this, &GenerateWaveformDialog::on_sample_cnt_changed);
 
 	frequency_box_->setValue(1 / periode_box_->value());
 	sample_count_box_->setValue(
 		std::floor(periode_box_->value() / interval_box_->value()));
 
-	connect(frequency_box_, SIGNAL(valueChanged(double)),
-		this, SLOT(on_frequency_changed()));
-	connect(sample_count_box_, SIGNAL(valueChanged(int)),
-		this, SLOT(on_sample_cnt_changed()));
+	connect(frequency_box_, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+		this, &GenerateWaveformDialog::on_frequency_changed);
+	connect(sample_count_box_, QOverload<int>::of(&QSpinBox::valueChanged),
+		this, &GenerateWaveformDialog::on_sample_cnt_changed);
 }
 
 void GenerateWaveformDialog::on_frequency_changed()
 {
-	disconnect(periode_box_, SIGNAL(valueChanged(double)),
-		this, SLOT(on_periode_changed()));
-	disconnect(sample_count_box_, SIGNAL(valueChanged(int)),
-		this, SLOT(on_sample_cnt_changed()));
+	disconnect(periode_box_, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+		this, &GenerateWaveformDialog::on_periode_changed);
+	disconnect(sample_count_box_, QOverload<int>::of(&QSpinBox::valueChanged),
+		this, &GenerateWaveformDialog::on_sample_cnt_changed);
 
 	periode_box_->setValue(1 / frequency_box_->value());
 	sample_count_box_->setValue(
 		std::floor(periode_box_->value() / interval_box_->value()));
 
-	connect(periode_box_, SIGNAL(valueChanged(double)),
-		this, SLOT(on_periode_changed()));
-	connect(sample_count_box_, SIGNAL(valueChanged(int)),
-		this, SLOT(on_sample_cnt_changed()));
+	connect(periode_box_, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+		this, &GenerateWaveformDialog::on_periode_changed);
+	connect(sample_count_box_, QOverload<int>::of(&QSpinBox::valueChanged),
+		this, &GenerateWaveformDialog::on_sample_cnt_changed);
 }
 
 void GenerateWaveformDialog::on_interval_changed()
 {
-	disconnect(sample_count_box_, SIGNAL(valueChanged(int)),
-		this, SLOT(on_sample_cnt_changed()));
+	disconnect(sample_count_box_, QOverload<int>::of(&QSpinBox::valueChanged),
+		this, &GenerateWaveformDialog::on_sample_cnt_changed);
 
 	sample_count_box_->setValue(
 		std::floor(periode_box_->value() / interval_box_->value()));
 
-	connect(sample_count_box_, SIGNAL(valueChanged(int)),
-		this, SLOT(on_sample_cnt_changed()));
+	connect(sample_count_box_, QOverload<int>::of(&QSpinBox::valueChanged),
+		this, &GenerateWaveformDialog::on_sample_cnt_changed);
 }
 
 void GenerateWaveformDialog::on_sample_cnt_changed()
 {
-	disconnect(interval_box_, SIGNAL(valueChanged(double)),
-		this, SLOT(on_interval_changed()));
+	disconnect(interval_box_, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+		this, &GenerateWaveformDialog::on_interval_changed);
 
 	interval_box_->setValue(periode_box_->value() / sample_count_box_->value());
 
-	connect(interval_box_, SIGNAL(valueChanged(double)),
-		this, SLOT(on_interval_changed()));
+	connect(interval_box_, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+		this, &GenerateWaveformDialog::on_interval_changed);
 }
 
 void GenerateWaveformDialog::on_phi_deg_changed()
 {
-	disconnect(phi_rad_box_, SIGNAL(valueChanged(double)),
-		this, SLOT(on_phi_rad_changed()));
+	disconnect(phi_rad_box_, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+		this, &GenerateWaveformDialog::on_phi_rad_changed);
 
 	phi_rad_box_->setValue(phi_deg_box_->value() * (pi/180));
 
-	connect(phi_rad_box_, SIGNAL(valueChanged(double)),
-		this, SLOT(on_phi_rad_changed()));
+	connect(phi_rad_box_, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+		this, &GenerateWaveformDialog::on_phi_rad_changed);
 }
 
 void GenerateWaveformDialog::on_phi_rad_changed()
 {
-	disconnect(phi_deg_box_, SIGNAL(valueChanged(double)),
-		this, SLOT(on_phi_deg_changed()));
+	disconnect(phi_deg_box_, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+		this, &GenerateWaveformDialog::on_phi_deg_changed);
 
 	phi_deg_box_->setValue(phi_rad_box_->value() * (180/pi));
 
-	connect(phi_deg_box_, SIGNAL(valueChanged(double)),
-		this, SLOT(on_phi_deg_changed()));
+	connect(phi_deg_box_, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+		this, &GenerateWaveformDialog::on_phi_deg_changed);
 }
 
 } // namespace dialogs

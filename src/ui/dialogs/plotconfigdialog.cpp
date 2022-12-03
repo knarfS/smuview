@@ -179,8 +179,9 @@ void PlotConfigDialog::setup_ui_plot_mode_tab()
 			plot_update_mode_combobox_->setCurrentIndex(cb_index);
 		++cb_index;
 	}
-	connect(plot_update_mode_combobox_, SIGNAL(currentIndexChanged(int)),
-		this, SLOT(on_update_mode_changed()));
+	connect(
+		plot_update_mode_combobox_, QOverload<int>::of(&QComboBox::currentIndexChanged),
+		this, &PlotConfigDialog::on_update_mode_changed);
 	layout->addRow(tr("Plot mode"), plot_update_mode_combobox_);
 
 	time_span_edit_ = new QLineEdit();

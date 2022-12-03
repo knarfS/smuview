@@ -153,8 +153,8 @@ void SmuScriptView::setup_toolbar()
 		QIcon::fromTheme("document-open",
 		QIcon(":/icons/document-open.png")));
 	action_open_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_O));
-	connect(action_open_, SIGNAL(triggered(bool)),
-		this, SLOT(on_action_open_triggered()));
+	connect(action_open_, &QAction::triggered,
+		this, &SmuScriptView::on_action_open_triggered);
 
 	action_save_->setText(tr("&Save"));
 	action_save_->setIconText(tr("Save"));
@@ -162,16 +162,16 @@ void SmuScriptView::setup_toolbar()
 		QIcon::fromTheme("document-save",
 		QIcon(":/icons/document-save.png")));
 	action_save_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
-	connect(action_save_, SIGNAL(triggered(bool)),
-		this, SLOT(on_action_save_triggered()));
+	connect(action_save_, &QAction::triggered,
+		this, &SmuScriptView::on_action_save_triggered);
 
 	action_save_as_->setText(tr("Save &As"));
 	action_save_as_->setIconText(tr("Save As"));
 	action_save_as_->setIcon(
 		QIcon::fromTheme("document-save-as",
 		QIcon(":/icons/document-save-as.png")));
-	connect(action_save_as_, SIGNAL(triggered(bool)),
-		this, SLOT(on_action_save_as_triggered()));
+	connect(action_save_as_, &QAction::triggered,
+		this, &SmuScriptView::on_action_save_as_triggered);
 
 	action_run_->setText(tr("Run"));
 	action_run_->setIconText(tr("Run"));
@@ -180,8 +180,8 @@ void SmuScriptView::setup_toolbar()
 		QIcon(":/icons/media-playback-start.png")));
 	action_run_->setCheckable(true);
 	action_run_->setChecked(false);
-	connect(action_run_, SIGNAL(triggered(bool)),
-		this, SLOT(on_action_run_triggered()));
+	connect(action_run_, &QAction::triggered,
+		this, &SmuScriptView::on_action_run_triggered);
 	if (session_.smu_script_runner()->is_running())
 		action_run_->setDisabled(true);
 
@@ -191,8 +191,8 @@ void SmuScriptView::setup_toolbar()
 		QIcon::fromTheme("edit-find",
 		QIcon(":/icons/edit-find.png")));
 	action_find_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_F));
-	connect(action_find_, SIGNAL(triggered(bool)),
-		this, SLOT(on_action_find_triggered()));
+	connect(action_find_, &QAction::triggered,
+		this, &SmuScriptView::on_action_find_triggered);
 
 	toolbar_ = new QToolBar("SmuScript Toolbar");
 	toolbar_->addAction(action_open_);

@@ -60,7 +60,8 @@ void AxisPopup::setup_ui()
 		lower_label = tr("Left boundary");
 	else
 		lower_label = tr("Bottom boundary");
-	connect(axis_lower_edit_, SIGNAL(returnPressed()), this, SLOT(on_accept()));
+	connect(axis_lower_edit_, &QLineEdit::returnPressed,
+		this, &AxisPopup::on_accept);
 
 	axis_lower_locked_check_ = new QCheckBox(tr("Locked"));
 	axis_lower_locked_check_->setChecked(plot_->is_axis_locked(
@@ -83,7 +84,8 @@ void AxisPopup::setup_ui()
 		upper_label = tr("Right boundary");
 	else
 		upper_label = tr("Top boundary");
-	connect(axis_upper_edit_, SIGNAL(returnPressed()), this, SLOT(on_accept()));
+	connect(axis_upper_edit_, &QLineEdit::returnPressed,
+		this, &AxisPopup::on_accept);
 
 	axis_upper_locked_check_ = new QCheckBox(tr("Locked"));
 	axis_upper_locked_check_->setChecked(plot_->is_axis_locked(
@@ -116,8 +118,10 @@ void AxisPopup::setup_ui()
 	button_box_ = new QDialogButtonBox(
 		QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
 	form_layout->addWidget(button_box_);
-	connect(button_box_, SIGNAL(accepted()), this, SLOT(on_accept()));
-	connect(button_box_, SIGNAL(rejected()), this, SLOT(close()));
+	connect(button_box_, &QDialogButtonBox::accepted,
+		this, &AxisPopup::on_accept);
+	connect(button_box_, &QDialogButtonBox::rejected,
+		this, &AxisPopup::close);
 
 	this->setLayout(form_layout);
 }

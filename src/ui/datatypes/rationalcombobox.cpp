@@ -95,16 +95,18 @@ void RationalComboBox::connect_signals()
 void RationalComboBox::connect_widget_2_prop_signals()
 {
 	if (auto_commit_ && property_ != nullptr && property_->is_setable()) {
-		connect(this, SIGNAL(currentIndexChanged(int)),
-			this, SLOT(value_changed(int)));
+		connect(
+			this, QOverload<int>::of(&RationalComboBox::currentIndexChanged),
+			this, &RationalComboBox::value_changed);
 	}
 }
 
 void RationalComboBox::disconnect_widget_2_prop_signals()
 {
 	if (auto_commit_ && property_ != nullptr && property_->is_setable()) {
-		disconnect(this, SIGNAL(currentIndexChanged(int)),
-			this, SLOT(value_changed(int)));
+		disconnect(
+			this, QOverload<int>::of(&RationalComboBox::currentIndexChanged),
+			this, &RationalComboBox::value_changed);
 	}
 }
 
@@ -113,10 +115,8 @@ QVariant RationalComboBox::variant_value() const
 	return QVariant(this->currentData());
 }
 
-void RationalComboBox::value_changed(int index)
+void RationalComboBox::value_changed()
 {
-	(void)index;
-
 	if (property_ != nullptr) {
 		data::rational_t value =
 			this->currentData().value<data::rational_t>();

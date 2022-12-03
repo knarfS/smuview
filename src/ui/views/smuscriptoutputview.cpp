@@ -90,15 +90,15 @@ void SmuScriptOutputView::setup_toolbar()
 		QIcon(":/icons/go-bottom.png")));
 	action_auto_scroll_->setCheckable(true);
 	action_auto_scroll_->setChecked(auto_scroll_);
-	connect(action_auto_scroll_, SIGNAL(triggered(bool)),
-		this, SLOT(on_action_auto_scroll_triggered()));
+	connect(action_auto_scroll_, &QAction::triggered,
+		this, &SmuScriptOutputView::on_action_auto_scroll_triggered);
 
 	action_clear_output_->setText(tr("Clear output"));
 	action_clear_output_->setIcon(
 		QIcon::fromTheme("edit-delete",
 		QIcon(":/icons/edit-delete.png")));
-	connect(action_clear_output_, SIGNAL(triggered(bool)),
-		this, SLOT(on_action_clear_output_triggered()));
+	connect(action_clear_output_, &QAction::triggered,
+		this, &SmuScriptOutputView::on_action_clear_output_triggered);
 
 	toolbar_ = new QToolBar("SmuScript Output Toolbar");
 	toolbar_->addAction(action_auto_scroll_);

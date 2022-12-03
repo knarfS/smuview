@@ -16,6 +16,14 @@ ToDo Release
 
 - Python binding for save CSV
 
+ToDo clazy
+----------
+
+- Disabled due to false positives:
+	- connect-non-signal
+	- incorrect-emit
+
+
 ToDo Scope
 ----------
 

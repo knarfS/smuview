@@ -64,8 +64,8 @@ MovingAvgChannel::MovingAvgChannel(
 	for (size_t i=0; i<avg_sample_count_; ++i)
 		avg_samples_[i] = 0;
 
-	connect(signal_.get(), SIGNAL(sample_appended()),
-		this, SLOT(on_sample_appended()));
+	connect(signal_.get(), &data::AnalogTimeSignal::sample_appended,
+		this, &MovingAvgChannel::on_sample_appended);
 }
 
 void MovingAvgChannel::on_sample_appended()

@@ -75,16 +75,16 @@ void BoolCheckBox::connect_signals()
 void BoolCheckBox::connect_widget_2_prop_signals()
 {
 	if (auto_commit_ && property_ != nullptr && property_->is_setable()) {
-		connect(this, SIGNAL(stateChanged(int)),
-			this, SLOT(value_changed()));
+		connect(this, &BoolCheckBox::stateChanged,
+			this, &BoolCheckBox::value_changed);
 	}
 }
 
 void BoolCheckBox::disconnect_widget_2_prop_signals()
 {
 	if (auto_commit_ && property_ != nullptr && property_->is_setable()) {
-		disconnect(this, SIGNAL(stateChanged(int)),
-			this, SLOT(value_changed()));
+		disconnect(this, &BoolCheckBox::stateChanged,
+			this, &BoolCheckBox::value_changed);
 	}
 }
 

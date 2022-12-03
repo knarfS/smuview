@@ -165,8 +165,8 @@ void BaseChannel::add_signal(shared_ptr<data::AnalogTimeSignal> signal)
 		qCritical() << "WARNING: Please fix this in the libsigrok driver!";
 	}
 
-	connect(this, SIGNAL(channel_start_timestamp_changed(double)),
-			signal.get(), SLOT(on_channel_start_timestamp_changed(double)));
+	connect(this, &BaseChannel::channel_start_timestamp_changed,
+		signal.get(), &data::AnalogTimeSignal::on_channel_start_timestamp_changed);
 
 	measured_quantity_t mq = make_pair(
 		signal->quantity(), signal->quantity_flags());

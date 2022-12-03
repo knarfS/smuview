@@ -73,12 +73,10 @@ void DeviceTreeModel::setup_model()
 
 	setSortRole(DeviceTreeModel::SortRole);
 
-	connect(
-		&session_, SIGNAL(device_added(shared_ptr<sv::devices::BaseDevice>)),
-		this, SLOT(on_device_added(shared_ptr<sv::devices::BaseDevice>)));
-	connect(
-		&session_, SIGNAL(device_removed(shared_ptr<sv::devices::BaseDevice>)),
-		this, SLOT(on_device_removed(shared_ptr<sv::devices::BaseDevice>)));
+	connect(&session_, &Session::device_added,
+		this, &DeviceTreeModel::on_device_added);
+	connect(&session_, &Session::device_removed,
+		this, &DeviceTreeModel::on_device_removed);
 
 	for (const auto &device_pair : session_.device_map()) {
 		shared_ptr<sv::devices::BaseDevice> device = device_pair.second;
@@ -112,10 +110,8 @@ void DeviceTreeModel::add_device(shared_ptr<sv::devices::BaseDevice> device)
 
 		invisibleRootItem()->sortChildren(0);
 
-		connect(
-			device.get(),
-			SIGNAL(channel_added(shared_ptr<sv::channels::BaseChannel>)),
-			this, SLOT(on_channel_added(shared_ptr<sv::channels::BaseChannel>)));
+		connect(device.get(), &sv::devices::BaseDevice::channel_added,
+			this, &DeviceTreeModel::on_channel_added);
 	}
 
 	// Channels and ChannelGroups
@@ -168,10 +164,8 @@ void DeviceTreeModel::add_channel(shared_ptr<channels::BaseChannel> channel,
 	// Find existing channel in all channel groups
 	// NOLINTNEXTLINE(readability-implicit-bool-conversion)
 	if (!find_channel(channel, channel->channel_group_names(), parent_item)) {
-		connect(
-			channel.get(),
-			SIGNAL(signal_added(shared_ptr<sv::data::BaseSignal>)),
-			this, SLOT(on_signal_added(shared_ptr<sv::data::BaseSignal>)));
+		connect(channel.get(), &channels::BaseChannel::signal_added,
+			this, &DeviceTreeModel::on_signal_added);
 	}
 
 	for (const auto &chg_name : channel_group_names) {

@@ -339,8 +339,8 @@ void BaseDevice::add_channel(shared_ptr<channels::BaseChannel> channel,
 {
 	// Check if channel already exists. Channel names are unique per device.
 	if (channel_map_.count(channel->name()) == 0) {
-		connect(this, SIGNAL(aquisition_start_timestamp_changed(double)),
-			channel.get(), SLOT(on_aquisition_start_timestamp_changed(double)));
+		connect(this, &BaseDevice::aquisition_start_timestamp_changed,
+			channel.get(), &channels::BaseChannel::on_aquisition_start_timestamp_changed);
 
 		// map<QString, shared_ptr<channels::BaseChannel>> channel_name_map_;
 		channel_map_.insert(make_pair(channel->name(), channel));

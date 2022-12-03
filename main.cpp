@@ -217,10 +217,10 @@ int main(int argc, char *argv[])
 #ifdef ENABLE_SIGNALS
 			if (SignalHandler::prepare_signals()) {
 				SignalHandler *const handler = new SignalHandler(&main_window);
-				QObject::connect(handler, SIGNAL(int_received()),
-					&main_window, SLOT(close()));
-				QObject::connect(handler, SIGNAL(term_received()),
-					&main_window, SLOT(close()));
+				QObject::connect(handler, &SignalHandler::int_received,
+					&main_window, &sv::MainWindow::close);
+				QObject::connect(handler, &SignalHandler::term_received,
+					&main_window, &sv::MainWindow::close);
 			}
 			else {
 				qWarning() << "Could not prepare signal handler.";

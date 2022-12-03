@@ -121,8 +121,8 @@ void SignalSaveDialog::setup_ui()
 		QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
 	main_layout->addWidget(button_box_);
 
-	connect(timestamps_combined_, SIGNAL(stateChanged(int)),
-		this, SLOT(toggle_combined()));
+	connect(timestamps_combined_, &QCheckBox::stateChanged,
+		this, &SignalSaveDialog::toggle_combined);
 	connect(button_box_, &QDialogButtonBox::accepted,
 		this, &SignalSaveDialog::accept);
 	connect(button_box_, &QDialogButtonBox::rejected,

@@ -114,16 +114,16 @@ void SmuScriptTreeView::setup_toolbar()
 	action_new_script_->setIcon(
 		QIcon::fromTheme("document-new",
 		QIcon(":/icons/document-new.png")));
-	connect(action_new_script_, SIGNAL(triggered(bool)),
-		this, SLOT(on_action_new_script_triggered()));
+	connect(action_new_script_, &QAction::triggered,
+		this, &SmuScriptTreeView::on_action_new_script_triggered);
 
 	action_open_script_->setText(tr("Open script"));
 	action_open_script_->setIconText(tr("Open script"));
 	action_open_script_->setIcon(
 		QIcon::fromTheme("document-open",
 		QIcon(":/icons/document-open.png")));
-	connect(action_open_script_, SIGNAL(triggered(bool)),
-		this, SLOT(on_action_open_script_triggered()));
+	connect(action_open_script_, &QAction::triggered,
+		this, &SmuScriptTreeView::on_action_open_script_triggered);
 
 	action_run_script_->setText(tr("Run script"));
 	action_run_script_->setIconText(tr("Run script"));
@@ -131,8 +131,8 @@ void SmuScriptTreeView::setup_toolbar()
 		QIcon::fromTheme("media-playback-start",
 		QIcon(":/icons/media-playback-start.png")));
 	action_run_script_->setCheckable(true);
-	connect(action_run_script_, SIGNAL(triggered(bool)),
-		this, SLOT(on_action_run_script_triggered()));
+	connect(action_run_script_, &QAction::triggered,
+		this, &SmuScriptTreeView::on_action_run_script_triggered);
 	if (session_.smu_script_runner()->is_running())
 		action_run_script_->setChecked(true);
 	else

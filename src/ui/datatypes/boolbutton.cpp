@@ -92,8 +92,8 @@ void BoolButton::connect_widget_2_prop_signals()
 void BoolButton::disconnect_widget_2_prop_signals()
 {
 	if (auto_commit_ && property_ != nullptr && property_->is_setable()) {
-		disconnect(this, SIGNAL(toggled(bool)),
-			this, SLOT(value_changed(const bool)));
+		disconnect(this, &BoolButton::toggled,
+			this, &BoolButton::value_changed);
 	}
 }
 

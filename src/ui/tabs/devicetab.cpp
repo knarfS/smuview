@@ -97,8 +97,8 @@ void DeviceTab::setup_toolbar()
 	action_aquire_->setIcon(QIcon(":/icons/status-green.svg"));
 	action_aquire_->setCheckable(true);
 	action_aquire_->setChecked(true);
-	connect(action_aquire_, SIGNAL(triggered(bool)),
-		this, SLOT(on_action_aquire_triggered()));
+	connect(action_aquire_, &QAction::triggered,
+		this, &DeviceTab::on_action_aquire_triggered);
 
 	QToolButton *aquire_button_ = new QToolButton();
 	aquire_button_->setDefaultAction(action_aquire_);
@@ -110,50 +110,50 @@ void DeviceTab::setup_toolbar()
 		QIcon::fromTheme("document-save",
 		QIcon(":/icons/document-save.png")));
 	action_save_as_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
-	connect(action_save_as_, SIGNAL(triggered(bool)),
-		this, SLOT(on_action_save_as_triggered()));
+	connect(action_save_as_, &QAction::triggered,
+		this, &DeviceTab::on_action_save_as_triggered);
 
 	action_add_control_view_->setText(tr("Add Control"));
 	action_add_control_view_->setIcon(
 		QIcon::fromTheme("mixer-front",
 		QIcon(":/icons/mixer-front.png")));
-	connect(action_add_control_view_, SIGNAL(triggered(bool)),
-		this, SLOT(on_action_add_control_view_triggered()));
+	connect(action_add_control_view_, &QAction::triggered,
+		this, &DeviceTab::on_action_add_control_view_triggered);
 
 	action_add_panel_view_->setText(tr("Add Panel"));
 	action_add_panel_view_->setIcon(
 		QIcon::fromTheme("chronometer",
 		QIcon(":/icons/chronometer.png")));
-	connect(action_add_panel_view_, SIGNAL(triggered(bool)),
-		this, SLOT(on_action_add_panel_view_triggered()));
+	connect(action_add_panel_view_, &QAction::triggered,
+		this, &DeviceTab::on_action_add_panel_view_triggered);
 
 	action_add_plot_view_->setText(tr("Add Plot"));
 	action_add_plot_view_->setIcon(
 		QIcon::fromTheme("office-chart-line",
 		QIcon(":/icons/office-chart-line.png")));
-	connect(action_add_plot_view_, SIGNAL(triggered(bool)),
-		this, SLOT(on_action_add_plot_view_triggered()));
+	connect(action_add_plot_view_, &QAction::triggered,
+		this, &DeviceTab::on_action_add_plot_view_triggered);
 
 	action_add_table_view_->setText(tr("Add data table"));
 	action_add_table_view_->setIcon(
 		QIcon::fromTheme("view-form-table",
 		QIcon(":/icons/view-form-table.png")));
-	connect(action_add_table_view_, SIGNAL(triggered(bool)),
-		this, SLOT(on_action_add_table_view_triggered()));
+	connect(action_add_table_view_, &QAction::triggered,
+		this, &DeviceTab::on_action_add_table_view_triggered);
 
 	action_add_math_channel_->setText(tr("Add Math Channel"));
 	action_add_math_channel_->setIcon(
 		QIcon::fromTheme("office-chart-line-percentage",
 		QIcon(":/icons/office-chart-line-percentage.png")));
-	connect(action_add_math_channel_, SIGNAL(triggered(bool)),
-		this, SLOT(on_action_add_math_channel_triggered()));
+	connect(action_add_math_channel_, &QAction::triggered,
+		this, &DeviceTab::on_action_add_math_channel_triggered);
 
 	action_about_->setText(tr("About"));
 	action_about_->setIcon(
 		QIcon::fromTheme("help-about",
 		QIcon(":/icons/help-about.png")));
-	connect(action_about_, SIGNAL(triggered(bool)),
-		this, SLOT(on_action_about_triggered()));
+	connect(action_about_, &QAction::triggered,
+		this, &DeviceTab::on_action_about_triggered);
 
 	toolbar_ = new QToolBar("Device Toolbar");
 	// objectName is needed for QSettings

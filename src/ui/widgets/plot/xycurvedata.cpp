@@ -63,10 +63,10 @@ XYCurveData::XYCurveData(shared_ptr<sv::data::AnalogTimeSignal> x_t_signal,
 	// Prefill data vectors
 	this->on_sample_appended();
 
-	connect(x_t_signal_.get(), SIGNAL(sample_appended()),
-		this, SLOT(on_sample_appended()));
-	connect(y_t_signal_.get(), SIGNAL(sample_appended()),
-		this, SLOT(on_sample_appended()));
+	connect(x_t_signal_.get(), &sv::data::AnalogTimeSignal::sample_appended,
+		this, &XYCurveData::on_sample_appended);
+	connect(y_t_signal_.get(), &sv::data::AnalogTimeSignal::sample_appended,
+		this, &XYCurveData::on_sample_appended);
 }
 
 bool XYCurveData::is_equal(const BaseCurveData *other) const

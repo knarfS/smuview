@@ -130,8 +130,8 @@ void DemoControlView::connect_signals()
 	if (configurable_->has_get_config(ConfigKey::MeasuredQuantity) ||
 		configurable_->has_set_config(ConfigKey::MeasuredQuantity)) {
 
-		connect(set_button_, SIGNAL(clicked(bool)),
-			this, SLOT(on_quantity_set()));
+		connect(set_button_, &QPushButton::clicked,
+			this, &DemoControlView::on_quantity_set);
 	}
 
 	// Device -> control elements

@@ -196,8 +196,8 @@ Plot::Plot(Session &session, QWidget *parent) : QwtPlot(parent),
 
 	// Zooming via the canvas
 	plot_magnifier_ = new PlotMagnifier(this->canvas());
-	connect(plot_magnifier_, SIGNAL(magnified(double)),
-		this, SLOT(lock_all_axis()));
+	connect(plot_magnifier_, &PlotMagnifier::magnified,
+		this, &Plot::lock_all_axis);
 }
 
 Plot::~Plot()
@@ -553,7 +553,8 @@ void Plot::add_marker(sv::ui::widgets::plot::Curve *curve)
 			QwtPlot::xBottom, QwtPlot::yLeft, QwtPlotPicker::NoRubberBand,
 			QwtPicker::AlwaysOff, this->canvas());
 		marker_select_picker_->setStateMachine(new QwtPickerClickPointMachine());
-		connect(marker_select_picker_, QOverload<const QPointF&>::of(&QwtPlotPicker::selected),
+		connect(
+			marker_select_picker_, QOverload<const QPointF &>::of(&QwtPlotPicker::selected),
 			this, &Plot::on_marker_selected);
 	}
 	if (!marker_move_picker_) {
@@ -563,8 +564,8 @@ void Plot::add_marker(sv::ui::widgets::plot::Curve *curve)
 			QwtPlot::xBottom, QwtPlot::yLeft,
 			QwtPlotPicker::NoRubberBand, QwtPicker::AlwaysOff, this->canvas());
 		marker_move_picker_->setStateMachine(new QwtPickerDragPointMachine());
-		connect(marker_move_picker_, SIGNAL(moved(QPointF)),
-			this, SLOT(on_marker_moved(QPointF)));
+		connect(marker_move_picker_, &QwtPlotPicker::moved,
+			this, &Plot::on_marker_moved);
 	}
 	/*
 	 * TODO: Maybe we could use a QwtPickerTrackerMachine for mouse movement.
@@ -610,12 +611,13 @@ void Plot::remove_marker(QwtPlotMarker *marker)
 
 	if (marker_curve_map_.empty()) {
 		// No markers left.
-		disconnect(marker_select_picker_, SIGNAL(selected(const QPointF &)),
-			this, SLOT(on_marker_selected(const QPointF)));
+		disconnect(
+			marker_select_picker_, QOverload<const QPointF &>::of(&QwtPlotPicker::selected),
+			this, &Plot::on_marker_selected);
 		delete marker_select_picker_;
 		marker_select_picker_ = nullptr;
-		disconnect(marker_move_picker_, SIGNAL(moved(QPointF)),
-			this, SLOT(on_marker_moved(QPointF)));
+		disconnect(marker_move_picker_, &QwtPlotPicker::moved,
+			this, &Plot::on_marker_moved);
 		delete marker_move_picker_;
 		marker_move_picker_ = nullptr;
 	}
@@ -625,7 +627,7 @@ void Plot::remove_marker(QwtPlotMarker *marker)
 	Q_EMIT marker_removed();
 }
 
-void Plot::on_marker_selected(const QPointF &mouse_pos)
+void Plot::on_marker_selected(const QPointF mouse_pos)
 {
 	if (marker_curve_map_.empty())
 		return;

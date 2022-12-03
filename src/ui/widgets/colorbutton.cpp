@@ -38,7 +38,7 @@ const int ColorButton::SwatchMargin = 7;
 ColorButton::ColorButton(QWidget *parent) :
 	QPushButton(parent)
 {
-	connect(this, SIGNAL(clicked()), this, SLOT(change_color()));
+	connect(this, &ColorButton::clicked, this, &ColorButton::change_color);
 }
 
 void ColorButton::set_color(const QColor &color)

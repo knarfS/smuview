@@ -103,8 +103,8 @@ void DoubleSlider::connect_widget_2_prop_signals()
 void DoubleSlider::disconnect_widget_2_prop_signals()
 {
 	if (auto_commit_ && property_ != nullptr && property_->is_setable()) {
-		disconnect(this, SIGNAL(valueChanged(double)),
-			this, SLOT(value_changed(const double)));
+		disconnect(this, &DoubleSlider::valueChanged,
+			this, &DoubleSlider::value_changed);
 	}
 }
 

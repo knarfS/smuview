@@ -93,16 +93,18 @@ void UInt64RangeComboBox::connect_signals()
 void UInt64RangeComboBox::connect_widget_2_prop_signals()
 {
 	if (auto_commit_ && property_ != nullptr && property_->is_setable()) {
-		connect(this, SIGNAL(currentIndexChanged(int)),
-			this, SLOT(value_changed(int)));
+		connect(
+			this, QOverload<int>::of(&UInt64RangeComboBox::currentIndexChanged),
+			this, &UInt64RangeComboBox::value_changed);
 	}
 }
 
 void UInt64RangeComboBox::disconnect_widget_2_prop_signals()
 {
 	if (auto_commit_ && property_ != nullptr && property_->is_setable()) {
-		disconnect(this, SIGNAL(currentIndexChanged(int)),
-			this, SLOT(value_changed(int)));
+		disconnect(
+			this, QOverload<int>::of(&UInt64RangeComboBox::currentIndexChanged),
+			this, &UInt64RangeComboBox::value_changed);
 	}
 }
 
@@ -111,10 +113,8 @@ QVariant UInt64RangeComboBox::variant_value() const
 	return this->currentData();
 }
 
-void UInt64RangeComboBox::value_changed(int index)
+void UInt64RangeComboBox::value_changed()
 {
-	(void)index;
-
 	if (property_ != nullptr) {
 		property_->change_value(this->currentData());
 	}
