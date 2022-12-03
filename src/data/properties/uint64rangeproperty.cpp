@@ -86,7 +86,7 @@ data::uint64_range_t UInt64RangeProperty::uint64_range_value() const
 
 QString UInt64RangeProperty::to_string(data::uint64_range_t value) const
 {
-	QString str = QString("%1 - %2").arg(value.first, value.second);
+	QString str = QString("%1 - %2").arg(value.first).arg(value.second);
 	if (unit_ != data::Unit::Unknown && unit_ != data::Unit::Unitless)
 		str.append(" ").append(datautil::format_unit(unit_));
 

@@ -299,10 +299,10 @@ bool starts_with(const string &str, const string &start_str) {
 		std::equal(start_str.begin(), start_str.end(), str.begin());
 }
 
-uint count_int_digits(int number)
+int count_int_digits(int number)
 {
 	int abs_number = abs(number);
-	uint digits = 1;
+	int digits = 1;
 	while (abs_number >= 10) {
 		abs_number /= 10;
 		digits++;
@@ -311,13 +311,13 @@ uint count_int_digits(int number)
 	return digits;
 }
 
-uint count_double_digits(double value, double step)
+int count_double_digits(double value, double step)
 {
 	int value_int = (int)floor(value);
 	return util::count_int_digits(value_int) + util::get_decimal_places(step);
 }
 
-uint get_decimal_places(double value)
+int get_decimal_places(double value)
 {
 	int decimal = (int)ceil(1/value) - 1;
 	return util::count_int_digits(decimal);

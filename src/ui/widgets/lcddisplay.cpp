@@ -44,8 +44,8 @@ LcdDisplay::LcdDisplay(
 
 void LcdDisplay::setup_ui()
 {
-	uint font_size_unit;
-	uint font_size_extra;
+	int font_size_unit;
+	int font_size_extra;
 	if (!small_) {
 		height_ = 50;
 		width_scale_factor_ = 30;
@@ -114,7 +114,7 @@ void LcdDisplay::update_value_widget_dimensions()
 	// TODO: Are the number of digits displayed correctly?
 	// TODO: Maybe there is a better way to draw the width proportional to the
 	//       height? This is maybe even dpi dependent?
-	uint width = width_scale_factor_ * digits_;
+	int width = width_scale_factor_ * digits_;
 
 	value_lcd_->setDigitCount(digits_);
 	value_lcd_->setFixedSize(QSize(width, height_));

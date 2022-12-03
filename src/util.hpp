@@ -199,7 +199,7 @@ bool starts_with(const string &str, const string &start_str);
  *
  * @return Number of digits.
  */
-uint count_int_digits(int number);
+int count_int_digits(int number);
 
 /**
  * Get the number of digits for the given double.
@@ -209,7 +209,7 @@ uint count_int_digits(int number);
  *
  * @return Number of decimal places
  */
-uint count_double_digits(double value, double step);
+int count_double_digits(double value, double step);
 
 /**
  * Get the number of decimal places (number of digits after the decimal point)
@@ -218,7 +218,7 @@ uint count_double_digits(double value, double step);
  *
  * @return Number of decimal places
  */
-uint get_decimal_places(double value);
+int get_decimal_places(double value);
 
 /**
  * Parse a single CSV line.

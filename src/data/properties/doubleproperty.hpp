@@ -60,15 +60,15 @@ public:
 	double min() const;
 	double max() const;
 	double step() const;
-	uint digits() const;
-	uint decimal_places() const;
+	int digits() const;
+	int decimal_places() const;
 
 private:
 	double min_;
 	double max_;
 	double step_;
-	uint digits_;
-	uint decimal_places_;
+	int digits_;
+	int decimal_places_;
 
 public Q_SLOTS:
 	bool list_config() override;

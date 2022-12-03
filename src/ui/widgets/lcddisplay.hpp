@@ -41,7 +41,7 @@ public:
 		const QString &extra_text, const bool small, QWidget *parent = nullptr);
 
 private:
-	uint height_;
+	int height_;
 	uint width_scale_factor_;
 
 	QLCDNumber *value_lcd_;

@@ -47,7 +47,7 @@ PlotScalePicker::PlotScalePicker(Plot *plot) :
 	is_double_clicked(false),
 	wheel_factor_(0.9)
 {
-	for (uint i = 0; i < QwtPlot::axisCnt; i++) {
+	for (int i = 0; i < QwtPlot::axisCnt; i++) {
 		QwtScaleWidget *scale_widget = plot->axisWidget(i);
 		if (scale_widget)
 			scale_widget->installEventFilter(this);

@@ -93,12 +93,12 @@ double DoubleProperty::step() const
 	return step_;
 }
 
-uint DoubleProperty::digits() const
+int DoubleProperty::digits() const
 {
 	return digits_;
 }
 
-uint DoubleProperty::decimal_places() const
+int DoubleProperty::decimal_places() const
 {
 	return decimal_places_;
 }
