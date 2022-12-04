@@ -3,6 +3,9 @@
  * See COPYING file that comes with this distribution
  */
 
+#include <QCheckBox>
+#include <QLineEdit>
+#include <QPushButton>
 #include <QRegExp>
 #include <QSettings>
 #include <QShowEvent>
@@ -22,7 +25,10 @@
 
 #define DEBUG_FIND 0 // Set to '1' to enable debugging of 'find'
 
-FindReplaceForm::FindReplaceForm(QWidget *parent) : QWidget(parent), ui(new Ui::FindReplaceForm), textEdit(nullptr)
+FindReplaceForm::FindReplaceForm(QWidget *parent) :
+    QWidget(parent),
+    ui(new Ui::FindReplaceForm),
+    textEdit(nullptr)
 {
     ui->setupUi(this);
 
@@ -32,18 +38,26 @@ FindReplaceForm::FindReplaceForm(QWidget *parent) : QWidget(parent), ui(new Ui::
 
     ui->errorLabel->setText("");
 
-    connect(ui->textToFind, SIGNAL(textChanged(QString)), this, SLOT(textToFindChanged()));
-    connect(ui->textToFind, SIGNAL(textChanged(QString)), this, SLOT(validateRegExp(QString)));
+    connect(ui->textToFind, &QLineEdit::textChanged,
+        this, &FindReplaceForm::textToFindChanged);
+    connect(ui->textToFind, &QLineEdit::textChanged,
+        this, &FindReplaceForm::validateRegExp);
 
-    connect(ui->regexCheckBox, SIGNAL(toggled(bool)), this, SLOT(regexpSelected(bool)));
+    connect(ui->regexCheckBox, &QCheckBox::toggled,
+        this, &FindReplaceForm::regexpSelected);
 
-    connect(ui->findButton, SIGNAL(clicked()), this, SLOT(find()));
+    connect(ui->findButton, &QPushButton::clicked,
+        this, QOverload<>::of(&FindReplaceForm::find));
 
-    connect(ui->replaceButton, SIGNAL(clicked()), this, SLOT(replace()));
-    connect(ui->replaceAllButton, SIGNAL(clicked()), this, SLOT(replaceAll()));
+    connect(ui->replaceButton, &QPushButton::clicked,
+        this, &FindReplaceForm::replace);
+    connect(ui->replaceAllButton, &QPushButton::clicked,
+        this, &FindReplaceForm::replaceAll);
 
-    connect(ui->textToFind, SIGNAL(returnPressed()), ui->findButton, SLOT(click()));
-    connect(ui->textToReplace, SIGNAL(returnPressed()), ui->replaceButton, SLOT(click()));
+    connect(ui->textToFind, &QLineEdit::returnPressed,
+        ui->findButton, &QPushButton::click);
+    connect(ui->textToReplace, &QLineEdit::returnPressed,
+        ui->replaceButton, &QPushButton::click);
 }
 
 FindReplaceForm::~FindReplaceForm()
@@ -67,8 +81,11 @@ void FindReplaceForm::setTextEdit(QTextEdit *textEdit_)
         ui->replaceButton->setEnabled(false);
         textEdit = textEdit_;
         validateRegExp(ui->textToFind->text());
-        if (textEdit)
-            selectionChangeConnection = connect(textEdit, SIGNAL(selectionChanged()), this, SLOT(onSelectionChanged()));
+        if (textEdit) {
+            selectionChangeConnection =
+                connect(textEdit, &QTextEdit::selectionChanged,
+                    this, &FindReplaceForm::onSelectionChanged);
+        }
     }
 }
 
@@ -287,11 +304,13 @@ void FindReplaceForm::replaceAll()
 
     int cnt = 0;
     find();
+    textEdit->textCursor().beginEditBlock();
     while (ui->replaceButton->isEnabled())
     {
         replace();
         ++cnt;
-    };
+    }
+    textEdit->textCursor().endEditBlock();
 
     showMessage(tr("Replaced %1 occurrence(s)", "FindDialog").arg(cnt));
 }

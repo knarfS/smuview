@@ -88,10 +88,10 @@ class FINDREPLACESHARED_EXPORT FindReplaceForm : public QWidget
 
     /**
      * performs the find task
-     * @param down whether to find the next or the previous
+     * @param next whether to find the next or the previous
      * occurrence
      */
-    void find(bool down);
+    void find(bool next);
 
     /**
      * Finds the next occurrence
