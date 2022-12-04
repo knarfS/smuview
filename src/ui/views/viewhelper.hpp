@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2022 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,29 +21,16 @@
 #define UI_VIEWS_VIEWHELPER_HPP
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include <QSettings>
 
 using std::shared_ptr;
-using std::string;
 using std::vector;
 
 namespace sv {
 
 class Session;
-
-namespace channels {
-class BaseChannel;
-}
-
-namespace data {
-namespace properties {
-class BaseProperty;
-}
-class BaseSignal;
-}
 
 namespace devices {
 class Configurable;
