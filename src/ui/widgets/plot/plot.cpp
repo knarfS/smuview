@@ -39,7 +39,6 @@
 #include <QUuid>
 #include <QVariant>
 #include <QVBoxLayout>
-#include <qwt_scale_widget.h>
 #include <qwt_curve_fitter.h>
 #include <qwt_date_scale_engine.h>
 #include <qwt_legend.h>
