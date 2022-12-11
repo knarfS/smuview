@@ -54,6 +54,8 @@ for deviceId in devices:
                 print("      {} = {} ({})".format(config_key.name, configurable.get_string_config(config_key), data_type.name))
             elif data_type == smuview.DataType.Bool:
                 print("      {} = {} ({})".format(config_key.name, configurable.get_bool_config(config_key), data_type.name))
+            elif data_type == smuview.DataType.MQ:
+                print("      {} = {} ({})".format(config_key.name, configurable.get_measured_quantity_config(config_key), data_type.name))
             else:
                 print("      {} = ?? ({})".format(config_key.name, data_type.name))
 
