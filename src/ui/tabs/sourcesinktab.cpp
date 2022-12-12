@@ -126,8 +126,10 @@ void SourceSinkTab::setup_ui()
 				first_pp_view = power_panel_view;
 				add_view(power_panel_view, Qt::TopDockWidgetArea);
 			}
-			else
+			else {
+				// NOLINTNEXTLINE(readability-suspicious-call-argument)
 				add_view_ontop(power_panel_view, first_pp_view);
+			}
 		}
 	}
 	if (first_pp_view != nullptr && device_->channel_group_map().size() > 1) {
