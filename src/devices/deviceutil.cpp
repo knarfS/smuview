@@ -94,7 +94,7 @@ bool is_oscilloscope_driver(shared_ptr<sigrok::Driver> sr_driver)
 	assert(sr_driver);
 
 	const auto keys = sr_driver->config_keys();
-	return keys.count(sigrok::ConfigKey::OSCILLOSCOPE);
+	return keys.count(sigrok::ConfigKey::OSCILLOSCOPE) > 0;
 }
 
 DeviceType get_device_type(const sigrok::ConfigKey *sr_config_key)
