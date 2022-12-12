@@ -86,9 +86,9 @@ void AnalogSampleSignal::push_sample(void *sample, uint32_t pos,
 {
 	double dsample = 0.;
 	if (unit_size == size_of_float_)
-		dsample = (double) *(float *)sample;
+		dsample = static_cast<double>(*static_cast<float *>(sample));
 	else if (unit_size == size_of_double_)
-		dsample = *(double *)sample;
+		dsample = *static_cast<double *>(sample);
 
 	/*
 	qWarning() << "AnalogSampleSignal::push_sample(): " << name_

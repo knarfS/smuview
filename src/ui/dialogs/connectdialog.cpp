@@ -234,8 +234,8 @@ void ConnectDialog::check_available_libs()
 
 	GSList *libs_orig = sr_buildinfo_libs_get();
 	for (GSList *lib = libs_orig; lib; lib = lib->next) {
-		GSList *lib_data = (GSList *)lib->data;
-		QString name((const char *)lib_data->data);
+		GSList *lib_data = static_cast<GSList *>(lib->data);
+		QString name(static_cast<const char *>(lib_data->data));
 
 		if (QString::compare(name, libgpib, Qt::CaseInsensitive) == 0) {
 			gpib_avialable_ = true;

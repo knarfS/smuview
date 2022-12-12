@@ -166,9 +166,9 @@ QWidget *AboutDialog::get_about_page(QWidget *parent) const
 
 	GSList *libs_orig = sr_buildinfo_libs_get();
 	for (GSList *lib = libs_orig; lib; lib = lib->next) {
-		GSList *lib_data = (GSList *)lib->data;
-		const char *name = (const char *)lib_data->data;
-		const char *version = (const char *)lib_data->next->data;
+		GSList *lib_data = static_cast<GSList *>(lib->data);
+		const char *name = static_cast<const char *>(lib_data->data);
+		const char *version = static_cast<const char *>(lib_data->next->data);
 		html.append(QString("<tr><td><i>- %1</i></td><td>%2</td></tr>")
 			.arg(QString(name), QString(version)));
 		g_slist_free_full(lib_data, g_free);

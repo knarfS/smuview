@@ -117,8 +117,8 @@ bool UInt64Property::list_config()
 		gsize num_elements;
 		if ((gvar_list = g_variant_lookup_value(gvar.gobj(),
 				"samplerate-steps", G_VARIANT_TYPE("at")))) {
-			elements = (const uint64_t *)g_variant_get_fixed_array(
-				gvar_list, &num_elements, sizeof(uint64_t));
+			elements = static_cast<const uint64_t *>(g_variant_get_fixed_array(
+				gvar_list, &num_elements, sizeof(uint64_t)));
 			min_ = elements[0];
 			max_ = elements[1];
 			step_ = elements[2];
@@ -126,8 +126,8 @@ bool UInt64Property::list_config()
 		}
 		else if ((gvar_list = g_variant_lookup_value(gvar.gobj(),
 				"samplerates", G_VARIANT_TYPE("at")))) {
-			elements = (const uint64_t *)g_variant_get_fixed_array(
-				gvar_list, &num_elements, sizeof(uint64_t));
+			elements = static_cast<const uint64_t *>(g_variant_get_fixed_array(
+				gvar_list, &num_elements, sizeof(uint64_t)));
 			for (size_t i=0; i<num_elements; i++) {
 				values_list_.push_back(elements[i]);
 			}

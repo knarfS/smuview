@@ -692,7 +692,8 @@ void Plot::on_legend_clicked(const QVariant &item_info, int index)
 	QwtPlotItem *plot_item = infoToItem(item_info);
 	if (!plot_item)
 		return;
-	Curve *curve = get_curve_from_plot_curve((QwtPlotCurve *)plot_item);
+	Curve *curve = get_curve_from_plot_curve(
+		static_cast<QwtPlotCurve *>(plot_item));
 	if (!curve)
 		return;
 

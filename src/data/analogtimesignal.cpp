@@ -149,9 +149,9 @@ void AnalogTimeSignal::push_sample(void *sample, double timestamp,
 {
 	double dsample = 0.;
 	if (unit_size == size_of_float_)
-		dsample = (double) *(float *)sample;
+		dsample = static_cast<double>(*static_cast<float *>(sample));
 	else if (unit_size == size_of_double_)
-		dsample = *(double *)sample;
+		dsample = *static_cast<double *>(sample);
 
 	/*
 	qWarning() << "AnalogTimeSignal::push_sample(): " << display_name()
@@ -225,9 +225,9 @@ void AnalogTimeSignal::push_samples(void *data,
 
 	while (pos < samples) {
 		if (unit_size == size_of_float_)
-			dsample = (double) ((float *)data)[pos];
+			dsample = static_cast<double>(static_cast<float *>(data)[pos]);
 		else if (unit_size == size_of_double_)
-			dsample = ((double *)data)[pos];
+			dsample = static_cast<double *>(data)[pos];
 
 		/*
 		qWarning() << "AnalogSignal::push_samples(): " << name_
