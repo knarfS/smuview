@@ -158,13 +158,15 @@ int PyStreamBuf::py_write(const std::string &str)
 	while (pos != std::string::npos) {
 		pos = string_.find('\n');
 		if (pos != std::string::npos) {
-			std::string tmp(string_.begin(), string_.begin() + pos);
+			std::string tmp(string_.begin(),
+				string_.begin() + static_cast<long>(pos));
 			Q_EMIT send_string(tmp);
-			string_.erase(string_.begin(), string_.begin() + pos + 1);
+			string_.erase(string_.begin(),
+				string_.begin() + static_cast<long>(pos) + 1);
 		}
 	}
 
-	return str.size();
+	return static_cast<int>(str.size());
 }
 
 } // namespace python

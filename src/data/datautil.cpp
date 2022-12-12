@@ -57,7 +57,8 @@ Quantity get_quantity(const sigrok::Quantity *sr_quantity)
 
 Quantity get_quantity(uint32_t sr_quantity)
 {
-	const sigrok::Quantity *sr_q = sigrok::Quantity::get(sr_quantity);
+	const sigrok::Quantity *sr_q = sigrok::Quantity::get(
+		static_cast<int>(sr_quantity));
 	return get_quantity(sr_q);
 }
 
@@ -143,7 +144,8 @@ DataType get_data_type(const sigrok::DataType *sr_data_type)
 
 DataType get_data_type(uint32_t sr_data_type)
 {
-	const sigrok::DataType *sr_dt = sigrok::DataType::get(sr_data_type);
+	const sigrok::DataType *sr_dt = sigrok::DataType::get(
+		static_cast<int>(sr_data_type));
 	return get_data_type(sr_dt);
 }
 

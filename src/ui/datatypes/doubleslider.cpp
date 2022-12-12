@@ -67,8 +67,8 @@ void DoubleSlider::setup_ui()
 
 		this->setLowerBound(double_prop->min());
 		this->setUpperBound(double_prop->max());
-		this->setTotalSteps(
-			(double_prop->max() - double_prop->min()) / double_prop->step());
+		this->setTotalSteps(static_cast<uint>(
+			(double_prop->max() - double_prop->min()) / double_prop->step()));
 	}
 	if (property_ == nullptr || !property_->is_setable())
 		this->setDisabled(true);
@@ -139,8 +139,8 @@ void DoubleSlider::on_list_changed()
 			dynamic_pointer_cast<data::properties::DoubleProperty>(property_);
 		this->setLowerBound(double_prop->min());
 		this->setUpperBound(double_prop->max());
-		this->setTotalSteps(
-			(double_prop->max() - double_prop->min()) / double_prop->step());
+		this->setTotalSteps(static_cast<uint>(
+			(double_prop->max() - double_prop->min()) / double_prop->step()));
 
 		if (property_->is_getable())
 			this->setValue(double_prop->double_value());

@@ -537,7 +537,7 @@ void SequenceOutputView::on_action_generate_waveform_triggered()
 	vector<double> sequence_values = dlg.sequence_values();
 	vector<double> sequence_delays = dlg.sequence_delays();
 	for (size_t i=0; i<sequence_values.size(); ++i) {
-		insert_row(i, sequence_values[i], sequence_delays[i]);
+		insert_row(static_cast<int>(i), sequence_values[i], sequence_delays[i]);
 	}
 }
 

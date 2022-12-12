@@ -151,7 +151,7 @@ void DataView::add_signal(shared_ptr<sv::data::AnalogTimeSignal> signal)
 	signals_.push_back(signal);
 	next_signal_pos_.push_back(0);
 	last_timestamp_.push_back(nullptr);
-	size_t pos = signals_.size();
+	int pos = static_cast<int>(signals_.size());
 
 	QTableWidgetItem *value_header_item = new QTableWidgetItem(
 		signal->display_name());

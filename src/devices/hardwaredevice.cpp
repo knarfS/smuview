@@ -247,7 +247,8 @@ void HardwareDevice::feed_in_meta(shared_ptr<sigrok::Meta> sr_meta)
 void HardwareDevice::feed_in_frame_begin()
 {
 	// TODO: use std::chrono / std::time
-	frame_start_timestamp_ = QDateTime::currentMSecsSinceEpoch() / (double)1000;
+	frame_start_timestamp_ =
+		static_cast<double>(QDateTime::currentMSecsSinceEpoch()) / 1000;
 	frame_began_ = true;
 }
 
@@ -298,7 +299,8 @@ void HardwareDevice::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
 		if (frame_began_)
 			timestamp = frame_start_timestamp_;
 		else
-			timestamp = QDateTime::currentMSecsSinceEpoch() / (double)1000;
+			timestamp =
+				static_cast<double>(QDateTime::currentMSecsSinceEpoch()) / 1000;
 
 		//channel->push_sample_sr_analog(channel_data++, timestamp, sr_analog);
 		channel->push_interleaved_samples(channel_data++, num_samples,

@@ -61,8 +61,9 @@ void UInt64SpinBox::setup_ui()
 		shared_ptr<data::properties::UInt64Property> uint64_prop =
 			dynamic_pointer_cast<data::properties::UInt64Property>(property_);
 
-		this->setRange(uint64_prop->min(), uint64_prop->max());
-		this->setSingleStep(uint64_prop->step());
+		this->setRange(static_cast<int>(uint64_prop->min()),
+			static_cast<int>(uint64_prop->max()));
+		this->setSingleStep(static_cast<int>(uint64_prop->step()));
 	}
 	if (property_ != nullptr && property_->unit() != data::Unit::Unknown &&
 			property_->unit() != data::Unit::Unitless) {
@@ -125,7 +126,7 @@ void UInt64SpinBox::on_value_changed(const QVariant &qvar)
 	// Disconnect Widget -> Property signal to prevent echoing
 	disconnect_widget_2_prop_signals();
 
-	this->setValue(qvar.toULongLong());
+	this->setValue(static_cast<int>(qvar.toULongLong()));
 
 	connect_widget_2_prop_signals();
 }
@@ -138,11 +139,12 @@ void UInt64SpinBox::on_list_changed()
 	if (property_ != nullptr && property_->is_listable()) {
 		shared_ptr<data::properties::UInt64Property> uint64_prop =
 			dynamic_pointer_cast<data::properties::UInt64Property>(property_);
-		this->setRange(uint64_prop->min(), uint64_prop->max());
-		this->setSingleStep(uint64_prop->step());
+		this->setRange(static_cast<int>(uint64_prop->min()),
+			static_cast<int>(uint64_prop->max()));
+		this->setSingleStep(static_cast<int>(uint64_prop->step()));
 
 		if (property_->is_getable())
-			this->setValue(uint64_prop->uint64_value());
+			this->setValue(static_cast<int>(uint64_prop->uint64_value()));
 	}
 
 	connect_widget_2_prop_signals();

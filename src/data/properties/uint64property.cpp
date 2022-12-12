@@ -65,7 +65,7 @@ QString UInt64Property::to_string(uint64_t value) const
 	// TODO: calc digits+ decimal_places from min/max/step
 	QString str;
 	QString si_prefix;
-	util::format_value_si(value, -1, 1, str, si_prefix);
+	util::format_value_si(static_cast<double>(value), -1, 1, str, si_prefix);
 	if (!si_prefix.isEmpty() ||
 			(unit_ != data::Unit::Unknown && unit_ != data::Unit::Unitless))
 		str.append(" ").append(si_prefix).append(datautil::format_unit(unit_));

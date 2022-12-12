@@ -66,8 +66,8 @@ void DoubleKnob::setup_ui()
 		this->setLowerBound(double_prop->min());
 		this->setUpperBound(double_prop->max());
 		// setSingleSteps(uint), setPageSteps(uint)
-		this->setTotalSteps(
-			(double_prop->max() - double_prop->min()) / double_prop->step());
+		this->setTotalSteps(static_cast<uint>(
+			(double_prop->max() - double_prop->min()) / double_prop->step()));
 		//setScaleStepSize(double), setScaleMaxMajor(int), setScaleMaxMinor(int)
 	}
 	if (property_ == nullptr || !property_->is_setable())
@@ -136,8 +136,8 @@ void DoubleKnob::on_list_changed()
 			dynamic_pointer_cast<data::properties::DoubleProperty>(property_);
 		this->setLowerBound(double_prop->min());
 		this->setUpperBound(double_prop->max());
-		this->setTotalSteps(
-			(double_prop->max() - double_prop->min()) / double_prop->step());
+		this->setTotalSteps(static_cast<uint>(
+			(double_prop->max() - double_prop->min()) / double_prop->step()));
 
 		if (property_->is_getable())
 			this->setValue(double_prop->double_value());

@@ -267,7 +267,7 @@ QString format_time_minutes(const Timestamp& timestamp, signed precision,
 QString format_time_date(double timestamp)
 {
 	QDateTime date;
-	date.setMSecsSinceEpoch(timestamp*1000);
+	date.setMSecsSinceEpoch(static_cast<qint64>(timestamp * 1000));
 	return date.toString("yyyy.MM.dd hh:mm:ss.zzz");
 }
 

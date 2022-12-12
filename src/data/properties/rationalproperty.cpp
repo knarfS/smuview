@@ -89,9 +89,10 @@ data::rational_t RationalProperty::rational_value() const
 
 QString RationalProperty::to_string(data::rational_t value) const
 {
-	double d_val = (double)(value.first / (double)value.second);
-	QString str_prefix("");
 	QString str_val;
+	QString str_prefix("");
+	double d_val =
+		static_cast<double>(value.first) / static_cast<double>(value.second);
 	util::format_value_si(d_val, -1, 0, str_val, str_prefix);
 	str_val.append(" ").append(str_prefix).
 		append(data::datautil::format_unit(unit_));

@@ -170,7 +170,7 @@ void PlotConfigDialog::setup_ui_plot_mode_tab()
 	QFormLayout *layout = new QFormLayout();
 
 	plot_update_mode_combobox_ = new QComboBox();
-	size_t cb_index = 0;
+	int cb_index = 0;
 	for (const auto &update_mode_pair : widgets::plot::plot_update_mode_name_map) {
 		plot_update_mode_combobox_->addItem(
 			update_mode_pair.second,

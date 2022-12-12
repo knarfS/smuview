@@ -378,8 +378,8 @@ bool SignalSaveDialog::validate_combined_timeframe()
 		return true;
 	const double combined_timeframe = ((double)combined_timeframe_ms) / 1000;
 
-	size_t num_signals = device_tree_->checked_signals().size();
-	size_t act_signal = 0;
+	int num_signals = static_cast<int>(device_tree_->checked_signals().size());
+	int act_signal = 0;
 	QProgressDialog progress(tr("Validating combined timeframe ..."),
 		tr("Abort validation"), 0, num_signals, this);
 	progress.setMinimumDuration(500);

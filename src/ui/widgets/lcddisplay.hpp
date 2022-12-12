@@ -42,7 +42,7 @@ public:
 
 private:
 	int height_;
-	uint width_scale_factor_;
+	int width_scale_factor_;
 
 	QLCDNumber *value_lcd_;
 	QLabel *extra_label_;
