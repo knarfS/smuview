@@ -49,8 +49,8 @@ public:
 	~SmuScriptRunner();
 
 	void run(const std::string &file_name);
-	void stop();
-	bool is_running();
+	void stop() const;
+	bool is_running() const;
 
 private:
 	void script_thread_proc();

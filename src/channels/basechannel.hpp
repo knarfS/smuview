@@ -134,7 +134,7 @@ public:
 	/**
 	 * Does this channel have just one signal, thats quantity doesn't change?
 	 */
-	bool fixed_signal();
+	bool fixed_signal() const;
 
 	/**
 	 * Set if this channel has just one signal, thats quantity doesn't change

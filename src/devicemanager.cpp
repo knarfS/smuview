@@ -370,7 +370,7 @@ shared_ptr<devices::HardwareDevice> DeviceManager::find_device_from_info(
 }
 
 bool DeviceManager::compare_devices(shared_ptr<devices::BaseDevice> device_a,
-	shared_ptr<devices::BaseDevice> device_b)
+	shared_ptr<devices::BaseDevice> device_b) const
 {
 	assert(device_a);
 	assert(device_b);

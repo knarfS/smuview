@@ -123,7 +123,7 @@ void BaseChannel::set_enabled(bool enabled)
 	}
 }
 
-bool BaseChannel::fixed_signal()
+bool BaseChannel::fixed_signal() const
 {
 	return fixed_signal_;
 }

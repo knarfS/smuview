@@ -83,7 +83,7 @@ public:
 
 private:
 	bool compare_devices(shared_ptr<devices::BaseDevice> device_a,
-		shared_ptr<devices::BaseDevice> device_b);
+		shared_ptr<devices::BaseDevice> device_b) const;
 
 	static map<const sigrok::ConfigKey *, Glib::VariantBase>
 	driver_scan_options(const vector<string> &user_spec,

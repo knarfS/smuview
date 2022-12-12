@@ -80,13 +80,13 @@ void SmuScriptRunner::run(const string &file_name)
 	script_thread_.detach();
 }
 
-void SmuScriptRunner::stop()
+void SmuScriptRunner::stop() const
 {
 	if (is_running_)
 		PyErr_SetInterrupt();
 }
 
-bool SmuScriptRunner::is_running()
+bool SmuScriptRunner::is_running() const
 {
 	return is_running_;
 }
