@@ -48,8 +48,6 @@ using std::list;
 using std::map;
 using std::multimap;
 using std::pair;
-using std::placeholders::_1;
-using std::placeholders::_2;
 using std::shared_ptr;
 using std::string;
 using std::unique_ptr;
@@ -286,8 +284,10 @@ DeviceManager::driver_scan(
 
 	devices_.insert(devices_.end(), driver_devices.begin(),
 		driver_devices.end());
-	devices_.sort(bind(&DeviceManager::compare_devices, this, _1, _2));
-	driver_devices.sort(bind(&DeviceManager::compare_devices, this, _1, _2));
+	devices_.sort(bind(&DeviceManager::compare_devices, this,
+		std::placeholders::_1, std::placeholders::_2));
+	driver_devices.sort(bind(&DeviceManager::compare_devices, this,
+		std::placeholders::_1, std::placeholders::_2));
 
 	return driver_devices;
 }
