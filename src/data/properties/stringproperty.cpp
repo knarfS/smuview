@@ -36,8 +36,7 @@ namespace properties {
 
 StringProperty::StringProperty(shared_ptr<devices::Configurable> configurable,
 		devices::ConfigKey config_key) :
-	BaseProperty(configurable, config_key),
-	string_list_(QStringList())
+	BaseProperty(configurable, config_key)
 {
 	if (is_listable_) {
 		if (!StringProperty::list_config())

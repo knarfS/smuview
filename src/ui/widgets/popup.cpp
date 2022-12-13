@@ -55,7 +55,6 @@ const int Popup::MarginWidth = 6;
 
 Popup::Popup(QWidget *parent) :
 	QWidget(parent, Qt::Popup | Qt::FramelessWindowHint),
-	point_(),
 	pos_(PopupPosition::Left),
 	mouse_pressed_(false)
 {
