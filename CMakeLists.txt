@@ -362,10 +362,8 @@ set(smuview_SOURCES
 	src/ui/views/xyplotview.cpp
 	src/ui/widgets/clickablelabel.cpp
 	src/ui/widgets/colorbutton.cpp
-	src/ui/widgets/lcddisplay.cpp
 	src/ui/widgets/monofontdisplay.cpp
 	src/ui/widgets/popup.cpp
-	src/ui/widgets/valuedisplay.cpp
 	src/ui/widgets/plot/axislocklabel.cpp
 	src/ui/widgets/plot/axispopup.cpp
 	src/ui/widgets/plot/basecurvedata.cpp

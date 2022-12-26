@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2019-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2019-2022 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,18 +21,17 @@
 #define UI_WIDGETS_MONOFONTDISPLAY_HPP
 
 #include <QFont>
+#include <QFrame>
 #include <QGridLayout>
 #include <QLabel>
 #include <QSpacerItem>
 #include <QString>
 
-#include "src/ui/widgets/valuedisplay.hpp"
-
 namespace sv {
 namespace ui {
 namespace widgets {
 
-class MonoFontDisplay : public ValueDisplay
+class MonoFontDisplay : public QFrame
 {
 	Q_OBJECT
 
@@ -42,9 +41,22 @@ public:
 		const QString &unit, const QString &unit_suffix,
 		const QString &extra_text, const bool small, QWidget *parent = nullptr);
 
-private:
-	int ascent_diff_;
+	double value() const;
 
+private:
+	int digits_;
+	int decimal_places_;
+	bool digits_changed_;
+	const bool auto_range_;
+	QString extra_text_;
+	bool extra_text_changed_;
+	QString unit_;
+	QString unit_si_prefix_;
+	QString unit_suffix_;
+	bool unit_changed_;
+	const bool small_;
+	double value_;
+	int ascent_diff_;
 	QGridLayout *layout_;
 	QLabel *value_label_;
 	QFont extra_font_;
@@ -52,13 +64,22 @@ private:
 	QSpacerItem *extra_spacer_;
 	QLabel *unit_label_;
 
-	void setup_ui() override;
-	void update_value_widget_dimensions() override;
-	void update_extra_widget_dimensions() override;
-	void update_unit_widget_dimensions() override;
-	void show_value(const QString &value) override;
-	void show_extra_text(const QString &extra_text) override;
-	void show_unit(const QString &unit) override;
+	virtual void setup_ui();
+	void update_value_widget_dimensions();
+	void update_extra_widget_dimensions();
+	void update_unit_widget_dimensions();
+	void show_value(const QString &value);
+	void show_extra_text(const QString &extra_text);
+	void show_unit(const QString &unit);
+
+public Q_SLOTS:
+	void set_value(const double value);
+	void set_extra_text(const QString &extra_text);
+	void set_unit(const QString &unit);
+	void set_unit_suffix(const QString &unit_suffix);
+	void set_digits(const int digits, const int decimal_places);
+	void reset_value();
+	void update_display();
 
 };
 

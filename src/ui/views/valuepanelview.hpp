@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2022 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,7 +53,7 @@ class BaseDevice;
 namespace ui {
 
 namespace widgets {
-class ValueDisplay;
+class MonoFontDisplay;
 }
 
 namespace views {
@@ -89,9 +89,9 @@ private:
 
 	QAction *const action_reset_display_;
 	QToolBar *toolbar_;
-	widgets::ValueDisplay *value_display_;
-	widgets::ValueDisplay *value_min_display_;
-	widgets::ValueDisplay *value_max_display_;
+	widgets::MonoFontDisplay *value_display_;
+	widgets::MonoFontDisplay *value_min_display_;
+	widgets::MonoFontDisplay *value_max_display_;
 
 	void setup_ui();
 	void setup_toolbar();

@@ -46,7 +46,7 @@ class BaseDevice;
 namespace ui {
 
 namespace widgets {
-class ValueDisplay;
+class MonoFontDisplay;
 }
 
 namespace views {
@@ -91,20 +91,20 @@ private:
 
 	QAction *const action_reset_displays_;
 	QToolBar *toolbar_;
-	widgets::ValueDisplay *voltage_display_;
-	widgets::ValueDisplay *voltage_min_display_;
-	widgets::ValueDisplay *voltage_max_display_;
-	widgets::ValueDisplay *current_display_;
-	widgets::ValueDisplay *current_min_display_;
-	widgets::ValueDisplay *current_max_display_;
-	widgets::ValueDisplay *resistance_display_;
-	widgets::ValueDisplay *resistance_min_display_;
-	widgets::ValueDisplay *resistance_max_display_;
-	widgets::ValueDisplay *power_display_;
-	widgets::ValueDisplay *power_min_display_;
-	widgets::ValueDisplay *power_max_display_;
-	widgets::ValueDisplay *amp_hour_display_;
-	widgets::ValueDisplay *watt_hour_display_;
+	widgets::MonoFontDisplay *voltage_display_;
+	widgets::MonoFontDisplay *voltage_min_display_;
+	widgets::MonoFontDisplay *voltage_max_display_;
+	widgets::MonoFontDisplay *current_display_;
+	widgets::MonoFontDisplay *current_min_display_;
+	widgets::MonoFontDisplay *current_max_display_;
+	widgets::MonoFontDisplay *resistance_display_;
+	widgets::MonoFontDisplay *resistance_min_display_;
+	widgets::MonoFontDisplay *resistance_max_display_;
+	widgets::MonoFontDisplay *power_display_;
+	widgets::MonoFontDisplay *power_min_display_;
+	widgets::MonoFontDisplay *power_max_display_;
+	widgets::MonoFontDisplay *amp_hour_display_;
+	widgets::MonoFontDisplay *watt_hour_display_;
 
 	void setup_ui();
 	void setup_toolbar();

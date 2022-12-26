@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2022 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -241,11 +241,11 @@ void ValuePanelView::connect_signals_signal()
 	//connect(signal_.get(), SIGNAL(unit_changed(QString)),
 	//	value_display_, SLOT(set_unit(const String)));
 	connect(signal_.get(), &data::AnalogTimeSignal::digits_changed,
-		value_display_, &widgets::ValueDisplay::set_digits);
+		value_display_, &widgets::MonoFontDisplay::set_digits);
 	connect(signal_.get(), &data::AnalogTimeSignal::digits_changed,
-		value_min_display_, &widgets::ValueDisplay::set_digits);
+		value_min_display_, &widgets::MonoFontDisplay::set_digits);
 	connect(signal_.get(), &data::AnalogTimeSignal::digits_changed,
-		value_max_display_, &widgets::ValueDisplay::set_digits);
+		value_max_display_, &widgets::MonoFontDisplay::set_digits);
 }
 
 void ValuePanelView::disconnect_signals_signal()
@@ -256,11 +256,11 @@ void ValuePanelView::disconnect_signals_signal()
 	//disconnect(signal_.get(), SIGNAL(unit_changed(QString)),
 	//	value_display_, SLOT(set_unit(QString)));
 	disconnect(signal_.get(), &data::AnalogTimeSignal::digits_changed,
-		value_display_, &widgets::ValueDisplay::set_digits);
+		value_display_, &widgets::MonoFontDisplay::set_digits);
 	disconnect(signal_.get(), &data::AnalogTimeSignal::digits_changed,
-		value_min_display_, &widgets::ValueDisplay::set_digits);
+		value_min_display_, &widgets::MonoFontDisplay::set_digits);
 	disconnect(signal_.get(), &data::AnalogTimeSignal::digits_changed,
-		value_max_display_, &widgets::ValueDisplay::set_digits);
+		value_max_display_, &widgets::MonoFontDisplay::set_digits);
 }
 
 void ValuePanelView::save_settings(QSettings &settings,
