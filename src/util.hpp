@@ -2,7 +2,7 @@
  * This file is part of the SmuView project.
  *
  * Copyright (C) 2012 Joel Holdsworth <joel@airwebreathe.org.uk>
- * Copyright (C) 2017-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2022 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,19 +71,51 @@ typedef boost::multiprecision::number<
 	boost::multiprecision::et_off> Timestamp;
 
 /**
- * Formats a given double value with the specified SI prefix.
+ * Returns the SI prefix as `int` based on the `value` and the sigrok digits.
+ *
+ * @param value The value.
+ * @param sr_digits The digits from the sigrok analog payload. Something like
+ *                  exponent with reversed polarity.
+ *
+ * TODO: move to data
+ */
+int prefix_from_value(const double value, const int sr_digits);
+
+/**
+ * Returns the number of decimal places based on the `prefix` and the sigrok digits.
+ *
+ * @param prefix The SI prefix as an `int`.
+ * @param sr_digits The digits from the sigrok analog payload. Something like
+ *                  exponent with reversed polarity.
+ *
+ * TODO: move to data
+ */
+int decimal_places_from_prefix(const int prefix, const int sr_digits);
+
+/**
+ * Formats and rescales a given double value and stores the results in
+ * `value_str` and `si_prefix`.
  *
  * @param value The value to format.
- * @param digits The number of digits (incl. the decimal places) for value_str
- * @param decimal_places The number of decimal places for value_str
- * @param value_str A reference to a QString to stre the digits to.
- * @param si_prefix A reference to a QString to store the SI prefix to.
+ * @param total_digits The number of total digits (incl. the decimal places)
+ *                     for `value_str`. This is directly passed to
+ *                     `QString.arg()` as `fieldWidth`.
+ * @param sr_digits The digits from the sigrok analog payload. Something like
+ *                  exponent with reversed polarity.
+ * @param value_str A reference to a `QString` to stre the digits to.
+ * @param si_prefix A reference to a `QString` to store the SI prefix to.
+ * @param use_locale Format `value_str` by using the locale settings, otherwise
+ *                   the "C" locale will be used.
  *
  * TODO: move to data
  */
 void format_value_si(
-	const double value, const int digits, const int decimal_places,
-	QString &value_str, QString &si_prefix_str);
+	const double value, const int total_digits, const int sr_digits,
+	QString &value_str, QString &si_prefix_str, const bool use_locale = true);
+
+void format_value_si_autoscale(
+	const double value, const int total_digits, const int decimal_places,
+	QString &value_str, QString &si_prefix_str, const bool use_locale = true);
 
 /**
  * Formats a given timestamp with the specified SI prefix.
@@ -197,7 +229,7 @@ bool starts_with(const string &str, const string &start_str);
  *
  * @param[in] int The integers digits to count.
  *
- * @return Number of digits.
+ * @return Number of total digits.
  */
 int count_int_digits(int number);
 
@@ -207,18 +239,28 @@ int count_int_digits(int number);
  * @param[in] value The value of the double.
  * @param[in] step Step size of the double.
  *
- * @return Number of decimal places
+ * @return Number of total digits
  */
 int count_double_digits(double value, double step);
 
 /**
- * Get the number of decimal places (number of digits after the decimal point)
+ * Count the number of decimal places (number of digits after the decimal point)
  *
- * @param[in] value The value from which to count the decimal places
+ * @param[in] step The step size from which to calculate the decimal places
  *
  * @return Number of decimal places
  */
-int get_decimal_places(double value);
+int count_decimal_places(double step);
+
+
+/**
+ * Get the sr_digits as used in the analog payload from the step size.
+ *
+ * @param[in] step The step size from which to calculate the decimal places
+ *
+ * @return The sr_digits
+ */
+int get_sr_digits(double step);
 
 /**
  * Parse a single CSV line.

@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2022 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,8 +49,8 @@ MathChannel::MathChannel(
 		double channel_start_timestamp) :
 	BaseChannel(nullptr, parent_device, channel_group_names,
 			channel_start_timestamp),
-	digits_(7),
-	decimal_places_(-1),
+	total_digits_(data::DefaultTotalDigits),
+	sr_digits_(data::DefaultSRDigits),
 	quantity_(quantity),
 	quantity_flags_(quantity_flags),
 	unit_(unit)
@@ -94,8 +94,8 @@ data::Unit MathChannel::unit()
 void MathChannel::push_sample(double sample, double timestamp)
 {
 	auto signal = static_pointer_cast<data::AnalogTimeSignal>(actual_signal_);
-	signal->push_sample(&sample, timestamp,
-		size_of_double_, digits_, decimal_places_);
+	signal->push_sample(&sample, timestamp, size_of_double_,
+		total_digits_, sr_digits_);
 }
 
 } // namespace channels

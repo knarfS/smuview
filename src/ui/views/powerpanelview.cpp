@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2022 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -113,59 +113,56 @@ void PowerPanelView::set_signals(
 
 void PowerPanelView::setup_ui()
 {
-	int digits = 7;
-	int decimal_places = 3;
-
 	QVBoxLayout *layout = new QVBoxLayout();
 	QGridLayout *panel_layout = new QGridLayout();
 
 	voltage_display_ = new widgets::MonoFontDisplay(
-		digits, decimal_places, false, "", "", "", false);
+		widgets::MonoFontDisplayType::AutoRangeWithSRDigits, "", "", "", false);
 	voltage_min_display_ = new widgets::MonoFontDisplay(
-		digits, decimal_places, false, "", "",
+		widgets::MonoFontDisplayType::AutoRange, "", "",
 		data::datautil::format_quantity_flag(data::QuantityFlag::Min), true);
 	voltage_max_display_ = new widgets::MonoFontDisplay(
-		digits, decimal_places, false, "", "",
+		widgets::MonoFontDisplayType::AutoRange, "", "",
 		data::datautil::format_quantity_flag(data::QuantityFlag::Max), true);
 
 	current_display_ = new widgets::MonoFontDisplay(
-		digits, decimal_places, false, "", "", "", false);
+		widgets::MonoFontDisplayType::AutoRangeWithSRDigits, "", "", "", false);
 	current_min_display_ = new widgets::MonoFontDisplay(
-		digits, decimal_places, false, "", "",
+		widgets::MonoFontDisplayType::AutoRange, "", "",
 		data::datautil::format_quantity_flag(data::QuantityFlag::Min), true);
 	current_max_display_ = new widgets::MonoFontDisplay(
-		digits, decimal_places, false, "", "",
+		widgets::MonoFontDisplayType::AutoRange, "", "",
 		data::datautil::format_quantity_flag(data::QuantityFlag::Max), true);
 
 	resistance_display_ = new widgets::MonoFontDisplay(
-		digits, decimal_places, true,
+		widgets::MonoFontDisplayType::AutoRange,
 		data::datautil::format_unit(data::Unit::Ohm), "", "", false);
 	resistance_min_display_ = new widgets::MonoFontDisplay(
-		digits, decimal_places, true,
+		widgets::MonoFontDisplayType::AutoRange,
 		data::datautil::format_unit(data::Unit::Ohm), "",
 		data::datautil::format_quantity_flag(QuantityFlag::Min), true);
 	resistance_max_display_ = new widgets::MonoFontDisplay(
-		digits, decimal_places, true,
+		widgets::MonoFontDisplayType::AutoRange,
 		data::datautil::format_unit(data::Unit::Ohm), "",
 		data::datautil::format_quantity_flag(QuantityFlag::Max), true);
 
 	power_display_ = new widgets::MonoFontDisplay(
-		digits, decimal_places, true,
+		widgets::MonoFontDisplayType::AutoRange,
 		data::datautil::format_unit(data::Unit::Watt), "", "", false);
 	power_min_display_ = new widgets::MonoFontDisplay(
-		digits, decimal_places, true,
+		widgets::MonoFontDisplayType::AutoRange,
 		data::datautil::format_unit(data::Unit::Watt), "",
 		data::datautil::format_quantity_flag(QuantityFlag::Min), true);
 	power_max_display_ = new widgets::MonoFontDisplay(
-		digits, decimal_places, true,
+		widgets::MonoFontDisplayType::AutoRange,
 		data::datautil::format_unit(data::Unit::Watt), "",
 		data::datautil::format_quantity_flag(QuantityFlag::Max), true);
 
 	amp_hour_display_ = new widgets::MonoFontDisplay(
-		digits, decimal_places, true,
+		widgets::MonoFontDisplayType::AutoRange,
 		data::datautil::format_unit(data::Unit::AmpereHour), "", "", false);
 	watt_hour_display_ = new widgets::MonoFontDisplay(
-		digits, decimal_places, true,
+		widgets::MonoFontDisplayType::AutoRange,
 		data::datautil::format_unit(data::Unit::WattHour), "", "", false);
 
 	panel_layout->addWidget(voltage_display_, 0, 0, 1, 2, Qt::AlignHCenter);
@@ -232,22 +229,22 @@ void PowerPanelView::init_displays()
 	voltage_display_->set_unit_suffix(voltage_unit_suffix);
 	voltage_display_->set_extra_text(
 		sv::data::datautil::format_quantity_flags(voltage_qfs, "\n"));
-	voltage_display_->set_digits(
-		voltage_signal_->digits(), voltage_signal_->decimal_places());
+	voltage_display_->set_sr_digits(
+		voltage_signal_->total_digits(), voltage_signal_->sr_digits());
 
 	voltage_min_display_->set_unit(voltage_signal_->unit_name());
 	voltage_min_display_->set_unit_suffix(voltage_unit_suffix);
 	voltage_min_display_->set_extra_text(
 		sv::data::datautil::format_quantity_flags(voltage_qfs_min, "\n"));
-	voltage_min_display_->set_digits(
-		voltage_signal_->digits(), voltage_signal_->decimal_places());
+	voltage_min_display_->set_decimal_places(
+		sv::data::DefaultTotalDigits, sv::data::DefaultDecimalPlaces);
 
 	voltage_max_display_->set_unit(voltage_signal_->unit_name());
 	voltage_max_display_->set_unit_suffix(voltage_unit_suffix);
 	voltage_max_display_->set_extra_text(
 		sv::data::datautil::format_quantity_flags(voltage_qfs_max, "\n"));
-	voltage_max_display_->set_digits(
-		voltage_signal_->digits(), voltage_signal_->decimal_places());
+	voltage_max_display_->set_decimal_places(
+		sv::data::DefaultTotalDigits, sv::data::DefaultDecimalPlaces);
 
 	QString current_unit_suffix("");
 	set<QuantityFlag> current_qfs = current_signal_->quantity_flags();
@@ -270,46 +267,41 @@ void PowerPanelView::init_displays()
 	current_display_->set_unit_suffix(current_unit_suffix);
 	current_display_->set_extra_text(
 		sv::data::datautil::format_quantity_flags(current_qfs, "\n"));
-	current_display_->set_digits(
-		current_signal_->digits(), current_signal_->decimal_places());
+	current_display_->set_sr_digits(
+		current_signal_->total_digits(), current_signal_->sr_digits());
 
 	current_min_display_->set_unit(current_signal_->unit_name());
 	current_min_display_->set_unit_suffix(current_unit_suffix);
 	current_min_display_->set_extra_text(
 		sv::data::datautil::format_quantity_flags(current_qfs_min, "\n"));
-	current_min_display_->set_digits(
-		current_signal_->digits(), current_signal_->decimal_places());
+	current_min_display_->set_decimal_places(
+		sv::data::DefaultTotalDigits, sv::data::DefaultDecimalPlaces);
 
 	current_max_display_->set_unit(current_signal_->unit_name());
 	current_max_display_->set_unit_suffix(current_unit_suffix);
 	current_max_display_->set_extra_text(
 		sv::data::datautil::format_quantity_flags(current_qfs_max, "\n"));
-	current_max_display_->set_digits(
-		current_signal_->digits(), current_signal_->decimal_places());
+	current_max_display_->set_decimal_places(
+		sv::data::DefaultTotalDigits, sv::data::DefaultDecimalPlaces);
 
-	// Use the smaller digits count to save space.
-	int digits;
-	if (voltage_signal_->digits() > current_signal_->digits())
-		digits = current_signal_->digits();
-	else
-		digits = voltage_signal_->digits();
-	// Use the smaller decimal_places count to save space.
-	int decimal_places;
-	if (voltage_signal_->decimal_places() > current_signal_->decimal_places())
-		decimal_places = current_signal_->decimal_places();
-	else
-		decimal_places = voltage_signal_->decimal_places();
+	resistance_display_->set_decimal_places(
+		sv::data::DefaultTotalDigits, sv::data::DefaultDecimalPlaces);
+	resistance_min_display_->set_decimal_places(
+		sv::data::DefaultTotalDigits, sv::data::DefaultDecimalPlaces);
+	resistance_max_display_->set_decimal_places(
+		sv::data::DefaultTotalDigits, sv::data::DefaultDecimalPlaces);
 
-	resistance_display_->set_digits(digits, decimal_places);
-	resistance_min_display_->set_digits(digits, decimal_places);
-	resistance_max_display_->set_digits(digits, decimal_places);
+	power_display_->set_decimal_places(
+		sv::data::DefaultTotalDigits, sv::data::DefaultDecimalPlaces);
+	power_min_display_->set_decimal_places(
+		sv::data::DefaultTotalDigits, sv::data::DefaultDecimalPlaces);
+	power_max_display_->set_decimal_places(
+		sv::data::DefaultTotalDigits, sv::data::DefaultDecimalPlaces);
 
-	power_display_->set_digits(digits, decimal_places);
-	power_min_display_->set_digits(digits, decimal_places);
-	power_max_display_->set_digits(digits, decimal_places);
-
-	amp_hour_display_->set_digits(digits, decimal_places);
-	watt_hour_display_->set_digits(digits, decimal_places);
+	amp_hour_display_->set_decimal_places(
+		sv::data::DefaultTotalDigits, sv::data::DefaultDecimalPlaces);
+	watt_hour_display_->set_decimal_places(
+		sv::data::DefaultTotalDigits, sv::data::DefaultDecimalPlaces);
 }
 
 void PowerPanelView::connect_signals()
@@ -483,41 +475,10 @@ void PowerPanelView::on_action_reset_displays_triggered()
 
 void PowerPanelView::on_digits_changed()
 {
-	voltage_display_->set_digits(
-		voltage_signal_->digits(), voltage_signal_->decimal_places());
-	voltage_min_display_->set_digits(
-		voltage_signal_->digits(), voltage_signal_->decimal_places());
-	voltage_max_display_->set_digits(
-		voltage_signal_->digits(), voltage_signal_->decimal_places());
-
-	current_display_->set_digits(
-		current_signal_->digits(), current_signal_->decimal_places());
-	current_min_display_->set_digits(
-		current_signal_->digits(), current_signal_->decimal_places());
-	current_max_display_->set_digits(
-		current_signal_->digits(), current_signal_->decimal_places());
-
-	// Use the smaller digits count to save space.
-	int digits;
-	if (voltage_signal_->digits() > current_signal_->digits())
-		digits = current_signal_->digits();
-	else
-		digits = voltage_signal_->digits();
-	// Use the smaller decimal_places count to save space.
-	int decimal_places;
-	if (voltage_signal_->decimal_places() > current_signal_->decimal_places())
-		decimal_places = current_signal_->decimal_places();
-	else
-		decimal_places = voltage_signal_->decimal_places();
-
-	resistance_display_->set_digits(digits, decimal_places);
-	resistance_min_display_->set_digits(digits, decimal_places);
-	resistance_max_display_->set_digits(digits, decimal_places);
-	power_display_->set_digits(digits, decimal_places);
-	power_min_display_->set_digits(digits, decimal_places);
-	power_max_display_->set_digits(digits, decimal_places);
-	amp_hour_display_->set_digits(digits, decimal_places);
-	watt_hour_display_->set_digits(digits, decimal_places);
+	voltage_display_->set_sr_digits(
+		voltage_signal_->total_digits(), voltage_signal_->sr_digits());
+	current_display_->set_sr_digits(
+		current_signal_->total_digits(), current_signal_->sr_digits());
 }
 
 } // namespace views

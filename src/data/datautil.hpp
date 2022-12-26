@@ -46,6 +46,24 @@ class Unit;
 namespace sv {
 namespace data {
 
+/**
+ * The default value for the total digits used for incomming analog data
+ * and for formating values in views, etc.
+ */
+const int DefaultTotalDigits = 6;
+
+/**
+ * The default value for sr_digits for all cases it is not available, e.g. for
+ * the math channels
+ */
+const int DefaultSRDigits = 0;
+
+/**
+ * The default value for decimal places for all cases where the decimal places
+ * cannot be calculated, e.g. the min/max displays.
+ */
+const int DefaultDecimalPlaces = 2;
+
 enum class Quantity
 {
 	Voltage,

@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2019-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2019-2022 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,8 +56,8 @@ MovingAvgChannel::MovingAvgChannel(
 {
 	assert(signal_);
 
-	digits_ = signal_->digits();
-	decimal_places_ = signal_->decimal_places();
+	total_digits_ = signal_->total_digits();
+	sr_digits_ = signal_->sr_digits();
 
 	// Init (ring) buffer
 	avg_samples_.reserve(avg_sample_count_);

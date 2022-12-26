@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2022 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@
 
 #include "doubleproperty.hpp"
 #include "src/util.hpp"
+#include "src/data/datautil.hpp"
 #include "src/devices/configurable.hpp"
 
 namespace sv {
@@ -37,14 +38,11 @@ DoubleProperty::DoubleProperty(shared_ptr<devices::Configurable> configurable,
 	min_(std::numeric_limits<double>::lowest()),
 	max_(std::numeric_limits<double>::max()),
 	step_(0.001), //std::numeric_limits<double>::epsilon()
-	decimal_places_(3)
+	total_digits_(data::DefaultTotalDigits),
+	decimal_places_(data::DefaultDecimalPlaces)
 {
-	if (is_listable_) {
-		if (DoubleProperty::list_config()) {
-			digits_ = util::count_double_digits(max_, step_);
-			decimal_places_ = util::get_decimal_places(step_);
-		}
-	}
+	if (is_listable_)
+		DoubleProperty::list_config();
 }
 
 QVariant DoubleProperty::value() const
@@ -61,11 +59,15 @@ double DoubleProperty::double_value() const
 
 QString DoubleProperty::to_string(double value) const
 {
-	QString str = QString("%1").arg(value, digits_, 'f', decimal_places_);
-	if (unit_ != data::Unit::Unknown && unit_ != data::Unit::Unitless)
-		str.append(" ").append(datautil::format_unit(unit_));
+	QString str_val("");
+	QString si_prefix("");
+	util::format_value_si_autoscale(value, total_digits_, decimal_places_,
+		str_val, si_prefix);
+	QString unit_str = datautil::format_unit(unit_);
+	if (!si_prefix.isEmpty() || !unit_str.isEmpty())
+		str_val.append(" ").append(si_prefix).append(unit_str);
 
-	return str;
+	return str_val;
 }
 
 QString DoubleProperty::to_string(const QVariant &qvar) const
@@ -93,9 +95,9 @@ double DoubleProperty::step() const
 	return step_;
 }
 
-int DoubleProperty::digits() const
+int DoubleProperty::total_digits() const
 {
-	return digits_;
+	return total_digits_;
 }
 
 int DoubleProperty::decimal_places() const
@@ -116,6 +118,9 @@ bool DoubleProperty::list_config()
 	max_ = Glib::VariantBase::cast_dynamic<Glib::Variant<double>>(gvar).get();
 	iter.next_value(gvar);
 	step_ = Glib::VariantBase::cast_dynamic<Glib::Variant<double>>(gvar).get();
+
+	total_digits_ = util::count_double_digits(max_, step_);
+	decimal_places_ = util::count_decimal_places(step_);
 
 	Q_EMIT list_changed();
 

@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2022 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@ public:
 	 */
 	void push_sample(double sample, double timestamp,
 		data::Quantity quantity, set<data::QuantityFlag> quantity_flags,
-		data::Unit unit, int digits, int decimal_places);
+		data::Unit unit, int total_digits, int sr_digits);
 
 };
 

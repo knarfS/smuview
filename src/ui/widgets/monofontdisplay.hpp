@@ -31,23 +31,29 @@ namespace sv {
 namespace ui {
 namespace widgets {
 
+enum class MonoFontDisplayType {
+	AutoRange,
+	AutoRangeWithSRDigits,
+	FixedRange
+};
+
 class MonoFontDisplay : public QFrame
 {
 	Q_OBJECT
 
 public:
-	MonoFontDisplay(
-		int digits, int decimal_places, const bool auto_range,
+	MonoFontDisplay(const MonoFontDisplayType display_type,
 		const QString &unit, const QString &unit_suffix,
 		const QString &extra_text, const bool small, QWidget *parent = nullptr);
 
 	double value() const;
 
 private:
-	int digits_;
+	const MonoFontDisplayType display_type_;
+	int total_digits_;
+	bool total_digits_changed_;
+	int sr_digits_;
 	int decimal_places_;
-	bool digits_changed_;
-	const bool auto_range_;
 	QString extra_text_;
 	bool extra_text_changed_;
 	QString unit_;
@@ -77,7 +83,8 @@ public Q_SLOTS:
 	void set_extra_text(const QString &extra_text);
 	void set_unit(const QString &unit);
 	void set_unit_suffix(const QString &unit_suffix);
-	void set_digits(const int digits, const int decimal_places);
+	void set_sr_digits(const int total_digits, const int sr_digits);
+	void set_decimal_places(const int total_digits, const int decimal_places);
 	void reset_value();
 	void update_display();
 

@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2022 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,7 +62,7 @@ UserChannel::UserChannel(
 
 void UserChannel::push_sample(double sample, double timestamp,
 	data::Quantity quantity, set<data::QuantityFlag> quantity_flags,
-	data::Unit unit, int digits, int decimal_places)
+	data::Unit unit, int total_digits, int sr_digits)
 {
 	if (!actual_signal_ || actual_signal_->quantity() != quantity ||
 		actual_signal_->quantity_flags() != quantity_flags) {
@@ -84,7 +84,7 @@ void UserChannel::push_sample(double sample, double timestamp,
 	}
 
 	static_pointer_cast<data::AnalogTimeSignal>(actual_signal_)->push_sample(
-		&sample, timestamp, size_of_double_, digits, decimal_places);
+		&sample, timestamp, size_of_double_, total_digits, sr_digits);
 }
 
 } // namespace channels

@@ -36,15 +36,15 @@ namespace sv {
 namespace ui {
 namespace widgets {
 
-MonoFontDisplay::MonoFontDisplay(
-		int digits, int decimal_places, const bool auto_range,
+MonoFontDisplay::MonoFontDisplay(const MonoFontDisplayType display_type,
 		const QString &unit, const QString &unit_suffix,
 		const QString &extra_text, const bool small, QWidget *parent) :
 	QFrame(parent),
-	digits_(digits),
-	decimal_places_(decimal_places),
-	digits_changed_(true),
-	auto_range_(auto_range),
+	display_type_(display_type),
+	total_digits_(7),
+	total_digits_changed_(true),
+	sr_digits_(2),
+	decimal_places_(2),
 	extra_text_(extra_text),
 	extra_text_changed_(true),
 	unit_(unit),
@@ -143,7 +143,7 @@ void MonoFontDisplay::update_value_widget_dimensions()
 	//       the power panel for W/Ah/Wh for the 6632B. B/c of the decimal
 	//       point?
 	QString str("");
-	size_t str_len = digits_ + 2; // digits + decimal point + sign
+	size_t str_len = total_digits_ + 2; // digits + decimal point + sign
 	for (size_t i=0; i<str_len; ++i) {
 		str += "-";
 	}
@@ -165,7 +165,8 @@ void MonoFontDisplay::update_unit_widget_dimensions()
 	// Set the widget to a fixed width, so it doesn't jump around when the
 	// SI prefix is changing.
 	QString str;
-	if (auto_range_) {
+	if (display_type_ == MonoFontDisplayType::AutoRangeWithSRDigits
+			|| display_type_ == MonoFontDisplayType::AutoRange) {
 		// 'm' is the widest character for non monospace fonts
 		str.append("m");
 	}
@@ -253,18 +254,30 @@ void MonoFontDisplay::set_unit_suffix(const QString &unit_suffix)
 	update_display();
 }
 
-void MonoFontDisplay::set_digits(const int digits, const int decimal_places)
+void MonoFontDisplay::set_sr_digits(const int total_digits, const int sr_digits)
 {
-	digits_ = digits;
+	if (total_digits != total_digits_) {
+		total_digits_ = total_digits;
+		total_digits_changed_ = true;
+	}
+	sr_digits_ = sr_digits;
+	update_display();
+}
+
+void MonoFontDisplay::set_decimal_places(const int total_digits, const int decimal_places)
+{
+	if (total_digits != total_digits_) {
+		total_digits_ = total_digits;
+		total_digits_changed_ = true;
+	}
 	decimal_places_ = decimal_places;
-	digits_changed_ = true;
 	update_display();
 }
 
 void MonoFontDisplay::reset_value()
 {
 	QString init_value("");
-	for (int i=0; i<digits_; i++)
+	for (int i=0; i<total_digits_; i++)
 		init_value.append("-");
 	show_value(init_value);
 }
@@ -283,19 +296,23 @@ void MonoFontDisplay::update_display()
 		// TODO: Replace with "ul" or "underf", depending on the avail. digits.
 		value_str = QString("UL");
 	}
-	else if (!auto_range_) {
+	else if (display_type_ == MonoFontDisplayType::FixedRange) {
 		// Use actual locale (%L) for formating
 		value_str = QString("%L1").
-			arg(value_, digits_, 'f', decimal_places_, QChar(' '));
+			arg(value_, total_digits_, 'f', decimal_places_, QChar(' '));
 	}
-	else {
-		util::format_value_si(
-			value_, digits_, decimal_places_, value_str, si_prefix);
+	else if (display_type_ == MonoFontDisplayType::AutoRangeWithSRDigits) {
+		util::format_value_si(value_, total_digits_, sr_digits_, value_str,
+			si_prefix);
+	}
+	else if (display_type_ == MonoFontDisplayType::AutoRange) {
+		util::format_value_si_autoscale(value_, total_digits_, decimal_places_,
+			value_str, si_prefix);
 	}
 	show_value(value_str);
 
-	if (digits_changed_) {
-		digits_changed_ = false;
+	if (total_digits_changed_) {
+		total_digits_changed_ = false;
 		this->update_value_widget_dimensions();
 	}
 

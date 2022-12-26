@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2022 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -145,7 +145,7 @@ bool AnalogTimeSignal::get_value_at_timestamp(
 }
 
 void AnalogTimeSignal::push_sample(void *sample, double timestamp,
-	size_t unit_size, int digits, int decimal_places)
+	size_t unit_size, int total_digits, int sr_digits)
 {
 	double dsample = 0.;
 	if (unit_size == size_of_float_)
@@ -190,21 +190,21 @@ void AnalogTimeSignal::push_sample(void *sample, double timestamp,
 	Q_EMIT sample_appended();
 
 	bool digits_chngd = false;
-	if (digits != digits_) {
-		digits_ = digits;
+	if (total_digits != total_digits_) {
+		total_digits_ = total_digits;
 		digits_chngd = true;
 	}
-	if (decimal_places != decimal_places_) {
-		decimal_places_ = decimal_places;
+	if (sr_digits != sr_digits_) {
+		sr_digits_ = sr_digits;
 		digits_chngd = true;
 	}
 	if (digits_chngd)
-		Q_EMIT digits_changed(digits_, decimal_places_);
+		Q_EMIT digits_changed(total_digits_, sr_digits_);
 }
 
 void AnalogTimeSignal::push_samples(void *data,
 	uint64_t samples, double timestamp, uint64_t samplerate, size_t unit_size,
-	int digits, int decimal_places)
+	int total_digits, int sr_digits)
 {
 	//lock_guard<recursive_mutex> lock(mutex_);
 
@@ -261,16 +261,16 @@ void AnalogTimeSignal::push_samples(void *data,
 	Q_EMIT sample_appended();
 
 	bool digits_chngd = false;
-	if (digits != digits_) {
-		digits_ = digits;
+	if (total_digits != total_digits_) {
+		total_digits_ = total_digits;
 		digits_chngd = true;
 	}
-	if (decimal_places != decimal_places_) {
-		decimal_places_ = decimal_places;
+	if (sr_digits != sr_digits_) {
+		sr_digits_ = sr_digits;
 		digits_chngd = true;
 	}
 	if (digits_chngd)
-		Q_EMIT digits_changed(digits_, decimal_places_);
+		Q_EMIT digits_changed(total_digits_, sr_digits_);
 }
 
 double AnalogTimeSignal::signal_start_timestamp() const

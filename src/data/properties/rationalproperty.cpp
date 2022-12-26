@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2019-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2019-2022 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,9 +27,9 @@
 #include <QVariant>
 
 #include "rationalproperty.hpp"
-#include "src/util.hpp"
 #include "src/data/datautil.hpp"
 #include "src/devices/configurable.hpp"
+#include "src/util.hpp"
 
 using std::make_pair;
 using std::string;
@@ -68,10 +68,9 @@ data::rational_t RationalProperty::rational_value() const
 
 	size_t child_cnt = gvar.get_n_children();
 	if (child_cnt != 2) {
-		throw std::runtime_error(QString(
-			"RationalProperty::rational_value(): ").append(
-			"container should have 2 child, but has %1").arg(child_cnt).
-			toStdString());
+		throw std::runtime_error(QString("RationalProperty::rational_value(): ")
+			.append("container should have 2 child, but has %1")
+			.arg(child_cnt).toStdString());
 	}
 
 	Glib::VariantIter iter(gvar);
@@ -90,12 +89,13 @@ data::rational_t RationalProperty::rational_value() const
 QString RationalProperty::to_string(data::rational_t value) const
 {
 	QString str_val;
-	QString str_prefix("");
+	QString si_prefix("");
 	double d_val =
 		static_cast<double>(value.first) / static_cast<double>(value.second);
-	util::format_value_si(d_val, -1, 0, str_val, str_prefix);
-	str_val.append(" ").append(str_prefix).
-		append(data::datautil::format_unit(unit_));
+	util::format_value_si(d_val, 0, 2, str_val, si_prefix);
+	QString unit_str = datautil::format_unit(unit_);
+	if (!si_prefix.isEmpty() || !unit_str.isEmpty())
+		str_val.append(" ").append(si_prefix).append(datautil::format_unit(unit_));
 
 	return str_val;
 }
@@ -124,7 +124,7 @@ bool RationalProperty::list_config()
 		return false;
 
 	Glib::VariantIter iter(gvar);
-	while (iter.next_value (gvar)) {
+	while (iter.next_value(gvar)) {
 		// NOLINTNEXTLINE(readability-identifier-length)
 		uint64_t p = Glib::VariantBase::cast_dynamic
 			<Glib::Variant<uint64_t>>(gvar.get_child(0)).get();

@@ -74,270 +74,503 @@ BOOST_AUTO_TEST_CASE(format_value_si_test)
 
 	/* Common values for DMMs */
 
-	format_value_si(4635000000.           , -1, -6, value_str, si_prefix_str, true, false);
+	format_value_si(4635000000.           , -1, -6, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "4.635");
 	BOOST_CHECK_EQUAL(si_prefix_str, "G");
 
 	si_prefix_str = "";
-	format_value_si( 463500000.           , -1, -5, value_str, si_prefix_str, true, false);
+	format_value_si( 463500000.           , -1, -5, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "463.5");
 	BOOST_CHECK_EQUAL(si_prefix_str, "M");
 
 	si_prefix_str = "";
-	format_value_si(  46350000.           , -1, -4, value_str, si_prefix_str, true, false);
+	format_value_si(  46350000.           , -1, -4, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "46.35");
 	BOOST_CHECK_EQUAL(si_prefix_str, "M");
 
 	si_prefix_str = "";
-	format_value_si(   4635000.           , -1, -3, value_str, si_prefix_str, true, false);
+	format_value_si(   4635000.           , -1, -3, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "4.635");
 	BOOST_CHECK_EQUAL(si_prefix_str, "M");
 
 	si_prefix_str = "";
-	format_value_si(    463500.           , -1, -2, value_str, si_prefix_str, true, false);
+	format_value_si(    463500.           , -1, -2, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "463.5");
 	BOOST_CHECK_EQUAL(si_prefix_str, "k");
 
 	si_prefix_str = "";
-	format_value_si(     46350.           , -1, -1, value_str, si_prefix_str, true, false);
+	format_value_si(     46350.           , -1, -1, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "46.35");
 	BOOST_CHECK_EQUAL(si_prefix_str, "k");
 
 	si_prefix_str = "";
-	format_value_si(      4635.           , -1,  0, value_str, si_prefix_str, true, false);
+	format_value_si(      4635.           , -1,  0, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "4.635");
 	BOOST_CHECK_EQUAL(si_prefix_str, "k");
 
 	si_prefix_str = "";
-	format_value_si(       463.5           , -1,  1, value_str, si_prefix_str, true, false);
+	format_value_si(       463.5           , -1,  1, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "463.5");
 	BOOST_CHECK_EQUAL(si_prefix_str, "");
 
 	si_prefix_str = "";
-	format_value_si(        46.35          , -1,  2, value_str, si_prefix_str, true, false);
+	format_value_si(        46.35          , -1,  2, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "46.35");
 	BOOST_CHECK_EQUAL(si_prefix_str, "");
 
 	si_prefix_str = "";
-	format_value_si(         4.635         , -1,  3, value_str, si_prefix_str, true, false);
+	format_value_si(         4.635         , -1,  3, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "4.635");
 	BOOST_CHECK_EQUAL(si_prefix_str, "");
 
 	si_prefix_str = "";
-	format_value_si(          .4635        , -1,  4, value_str, si_prefix_str, true, false);
+	format_value_si(          .4635        , -1,  4, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "463.5");
 	BOOST_CHECK_EQUAL(si_prefix_str, "m");
 
 	si_prefix_str = "";
-	format_value_si(          .04635       , -1,  5, value_str, si_prefix_str, true, false);
+	format_value_si(          .04635       , -1,  5, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "46.35");
 	BOOST_CHECK_EQUAL(si_prefix_str, "m");
 
 	si_prefix_str = "";
-	format_value_si(          .004635      , -1,  6, value_str, si_prefix_str, true, false);
+	format_value_si(          .004635      , -1,  6, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "4.635");
 	BOOST_CHECK_EQUAL(si_prefix_str, "m");
 
 	si_prefix_str = "";
-	format_value_si(          .0004635     , -1,  7, value_str, si_prefix_str, true, false);
+	format_value_si(          .0004635     , -1,  7, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "463.5");
 	BOOST_CHECK_EQUAL(si_prefix_str, mu);
 
 	si_prefix_str = "";
-	format_value_si(          .00004635    , -1,  8, value_str, si_prefix_str, true, false);
+	format_value_si(          .00004635    , -1,  8, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "46.35");
 	BOOST_CHECK_EQUAL(si_prefix_str, mu);
 
 	si_prefix_str = "";
-	format_value_si(          .000004635   , -1,  9, value_str, si_prefix_str, true, false);
+	format_value_si(          .000004635   , -1,  9, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "4.635");
 	BOOST_CHECK_EQUAL(si_prefix_str, mu);
 
 	si_prefix_str = "";
-	format_value_si(          .0000004635  , -1, 10, value_str, si_prefix_str, true, false);
+	format_value_si(          .0000004635  , -1, 10, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "463.5");
 	BOOST_CHECK_EQUAL(si_prefix_str, "n");
 
 	si_prefix_str = "";
-	format_value_si(          .00000004635 , -1, 11, value_str, si_prefix_str, true, false);
+	format_value_si(          .00000004635 , -1, 11, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "46.35");
 	BOOST_CHECK_EQUAL(si_prefix_str, "n");
 
 	si_prefix_str = "";
-	format_value_si(          .000000004635, -1, 12, value_str, si_prefix_str, true, false);
+	format_value_si(          .000000004635, -1, 12, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "4.635");
 	BOOST_CHECK_EQUAL(si_prefix_str, "n");
 
 	/* Common values for power supplies */
 
 	si_prefix_str = "";
-	format_value_si(       123.456         , -1,  3, value_str, si_prefix_str, true, false);
+	format_value_si(       123.456         , -1,  3, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "123.456");
 	BOOST_CHECK_EQUAL(si_prefix_str, "");
 
 	si_prefix_str = "";
-	format_value_si(       123.4567        , -1,  4, value_str, si_prefix_str, true, false);
+	format_value_si(       123.4567        , -1,  4, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "123.4567");
 	BOOST_CHECK_EQUAL(si_prefix_str, "");
 
 	/* Edge cases */
 
 	si_prefix_str = "";
-	format_value_si(1234e25, -1,  -25, value_str, si_prefix_str, true, false);
+	format_value_si(1234e25, -1,  -25, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "12340");
 	BOOST_CHECK_EQUAL(si_prefix_str, "Y");
 
 	si_prefix_str = "";
-	format_value_si(1234e23, -1, -23, value_str, si_prefix_str, true, false);
+	format_value_si(1234e23, -1, -23, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "123.4");
 	BOOST_CHECK_EQUAL(si_prefix_str, "Y");
 
 	si_prefix_str = "";
-	format_value_si(.4635e-23, -1, 27, value_str, si_prefix_str, true, false);
+	format_value_si(.4635e-23, -1, 27, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "4.635");
 	BOOST_CHECK_EQUAL(si_prefix_str, "y");
 
 	si_prefix_str = "";
-	format_value_si(.4635e-26, -1, 30, value_str, si_prefix_str, true, false);
+	format_value_si(.4635e-26, -1, 30, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "0.004635");
 	BOOST_CHECK_EQUAL(si_prefix_str, "y");
 
 	si_prefix_str = "";
-	format_value_si(0, -1,  4, value_str, si_prefix_str, true, false);
+	format_value_si(0, -1,  4, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "0.0000");
 	BOOST_CHECK_EQUAL(si_prefix_str, "");
 
 	si_prefix_str = "";
-	format_value_si(0, -1,  1, value_str, si_prefix_str, true, false);
+	format_value_si(0, -1,  1, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "0.0");
 	BOOST_CHECK_EQUAL(si_prefix_str, "");
 
 	// si_prefix_str = "";
-	// format_value_si(NAN, -1,  4, value_str, si_prefix_str, true, false);
+	// format_value_si(NAN, -1,  4, value_str, si_prefix_str, false);
 	// BOOST_CHECK_EQUAL(value_str, "nan");
 	// BOOST_CHECK_EQUAL(si_prefix_str, "");
 
 	si_prefix_str = "";
-	format_value_si(std::numeric_limits<double>::infinity(), -1,  4, value_str, si_prefix_str, true, false);
+	format_value_si(std::numeric_limits<double>::infinity(), -1,  4, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "inf");
 	BOOST_CHECK_EQUAL(si_prefix_str, "");
 
 	si_prefix_str = "";
-	format_value_si(std::numeric_limits<double>::max(), -1,  4, value_str, si_prefix_str, true, false);
+	format_value_si(std::numeric_limits<double>::max(), -1,  4, value_str, si_prefix_str, false);
 	//BOOST_CHECK_EQUAL(value_str, "0.0000");
 	BOOST_CHECK_EQUAL(si_prefix_str, "");
 
 	si_prefix_str = "";
-	format_value_si(std::numeric_limits<double>::lowest(), -1,  4, value_str, si_prefix_str, true, false);
+	format_value_si(std::numeric_limits<double>::lowest(), -1,  4, value_str, si_prefix_str, false);
 	//BOOST_CHECK_EQUAL(value_str, "0.0000");
 	BOOST_CHECK_EQUAL(si_prefix_str, "");
 
 	/* Some more values from the libsigrok tests */
 
 	si_prefix_str = "";
-	format_value_si(        12.0           , -1,  1, value_str, si_prefix_str, true, false);
+	format_value_si(        12.0           , -1,  1, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "12.0");
 	BOOST_CHECK_EQUAL(si_prefix_str, "");
 
 	si_prefix_str = "";
-	format_value_si(        12.0           , -1, -1, value_str, si_prefix_str, true, false);
+	format_value_si(        12.0           , -1, -1, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "0.01");
 	BOOST_CHECK_EQUAL(si_prefix_str, "k");
 
 	si_prefix_str = "";
-	format_value_si(      1024.0           , -1,  0, value_str, si_prefix_str, true, false);
+	format_value_si(      1024.0           , -1,  0, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "1.024");
 	BOOST_CHECK_EQUAL(si_prefix_str, "k");
 
 	si_prefix_str = "";
-	format_value_si(      1024.0           , -1, -1, value_str, si_prefix_str, true, false);
+	format_value_si(      1024.0           , -1, -1, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "1.02");
 	BOOST_CHECK_EQUAL(si_prefix_str, "k");
 
 	si_prefix_str = "";
-	format_value_si(      1024.0           , -1, -3, value_str, si_prefix_str, true, false);
+	format_value_si(      1024.0           , -1, -3, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "1");
 	BOOST_CHECK_EQUAL(si_prefix_str, "k");
 
 	si_prefix_str = "";
-	format_value_si(        12.0e5         , -1, 0, value_str, si_prefix_str, true, false);
+	format_value_si(        12.0e5         , -1, 0, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "1.200000");
 	BOOST_CHECK_EQUAL(si_prefix_str, "M");
 
 	si_prefix_str = "";
-	format_value_si(         0.123456      , -1, 0, value_str, si_prefix_str, true, false);
+	format_value_si(         0.123456      , -1, 0, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "0");
 	BOOST_CHECK_EQUAL(si_prefix_str, "");
 
 	si_prefix_str = "";
-	format_value_si(         0.123456      , -1, 1, value_str, si_prefix_str, true, false);
+	format_value_si(         0.123456      , -1, 1, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "0.1");
 	BOOST_CHECK_EQUAL(si_prefix_str, "");
 
 	si_prefix_str = "";
-	format_value_si(         0.123456      , -1, 2, value_str, si_prefix_str, true, false);
+	format_value_si(         0.123456      , -1, 2, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "0.12");
 	BOOST_CHECK_EQUAL(si_prefix_str, "");
 
 	si_prefix_str = "";
-	format_value_si(         0.123456      , -1, 3, value_str, si_prefix_str, true, false);
+	format_value_si(         0.123456      , -1, 3, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "123");
 	BOOST_CHECK_EQUAL(si_prefix_str, "m");
 
 	si_prefix_str = "";
-	format_value_si(         0.123456      , -1, 4, value_str, si_prefix_str, true, false);
+	format_value_si(         0.123456      , -1, 4, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "123.4");
 	BOOST_CHECK_EQUAL(si_prefix_str, "m");
 
 	si_prefix_str = "";
-	format_value_si(         0.123456      , -1, 5, value_str, si_prefix_str, true, false);
+	format_value_si(         0.123456      , -1, 5, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "123.45");
 	BOOST_CHECK_EQUAL(si_prefix_str, "m");
 
 	si_prefix_str = "";
-	format_value_si(         0.123456      , -1, 6, value_str, si_prefix_str, true, false);
+	format_value_si(         0.123456      , -1, 6, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "123.456");
 	BOOST_CHECK_EQUAL(si_prefix_str, "m");
 
 	si_prefix_str = "";
-	format_value_si(         0.123456      , -1, 7, value_str, si_prefix_str, true, false);
+	format_value_si(         0.123456      , -1, 7, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "123.4560");
 	BOOST_CHECK_EQUAL(si_prefix_str, "m");
 
 	si_prefix_str = "";
-	format_value_si(         0.0123        , -1, 4, value_str, si_prefix_str, true, false);
+	format_value_si(         0.0123        , -1, 4, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "12.3");
 	BOOST_CHECK_EQUAL(si_prefix_str, "m");
 
 	si_prefix_str = "";
-	format_value_si(         0.00123       , -1, 5, value_str, si_prefix_str, true, false);
+	format_value_si(         0.00123       , -1, 5, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "1.23");
 	BOOST_CHECK_EQUAL(si_prefix_str, "m");
 
 	si_prefix_str = "";
-	format_value_si(         0.000123      , -1, 4, value_str, si_prefix_str, true, false);
+	format_value_si(         0.000123      , -1, 4, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "0.1");
 	BOOST_CHECK_EQUAL(si_prefix_str, "m");
 
 	si_prefix_str = "";
-	format_value_si(         0.000123      , -1, 5, value_str, si_prefix_str, true, false);
+	format_value_si(         0.000123      , -1, 5, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "0.12");
 	BOOST_CHECK_EQUAL(si_prefix_str, "m");
 
 	si_prefix_str = "";
-	format_value_si(         0.000123      , -1, 6, value_str, si_prefix_str, true, false);
+	format_value_si(         0.000123      , -1, 6, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "123");
 	BOOST_CHECK_EQUAL(si_prefix_str, mu);
 
 	si_prefix_str = "";
-	format_value_si(         0.000123      , -1, 7, value_str, si_prefix_str, true, false);
+	format_value_si(         0.000123      , -1, 7, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "123.0");
 	BOOST_CHECK_EQUAL(si_prefix_str, mu);
 
 	si_prefix_str = "";
-	format_value_si(         0.0001      , -1, 4, value_str, si_prefix_str, true, false);
+	format_value_si(         0.0001      , -1, 4, value_str, si_prefix_str, false);
 	BOOST_CHECK_EQUAL(value_str, "0.1");
 	BOOST_CHECK_EQUAL(si_prefix_str, "m");
+}
+
+BOOST_AUTO_TEST_CASE(format_value_si_autoscale_test)
+{
+	QString value_str("");
+	QString si_prefix_str("");
+
+	/* Common values for DMMs */
+
+	format_value_si_autoscale(4635000000.           , -1, 3, value_str, si_prefix_str, false);
+	BOOST_CHECK_EQUAL(value_str, "4.635");
+	BOOST_CHECK_EQUAL(si_prefix_str, "G");
+
+	si_prefix_str = "";
+	format_value_si_autoscale( 463500000.           , -1, 3, value_str, si_prefix_str, false);
+	BOOST_CHECK_EQUAL(value_str, "463.500");
+	BOOST_CHECK_EQUAL(si_prefix_str, "M");
+
+	si_prefix_str = "";
+	format_value_si_autoscale(  46350000.           , -1, 3, value_str, si_prefix_str, false);
+	BOOST_CHECK_EQUAL(value_str, "46.350");
+	BOOST_CHECK_EQUAL(si_prefix_str, "M");
+
+	si_prefix_str = "";
+	format_value_si_autoscale(   4635000.           , -1, 3, value_str, si_prefix_str, false);
+	BOOST_CHECK_EQUAL(value_str, "4.635");
+	BOOST_CHECK_EQUAL(si_prefix_str, "M");
+
+	si_prefix_str = "";
+	format_value_si_autoscale(    463500.           , -1, 3, value_str, si_prefix_str, false);
+	BOOST_CHECK_EQUAL(value_str, "463.500");
+	BOOST_CHECK_EQUAL(si_prefix_str, "k");
+
+	si_prefix_str = "";
+	format_value_si_autoscale(     46350.           , -1, 3, value_str, si_prefix_str, false);
+	BOOST_CHECK_EQUAL(value_str, "46.350");
+	BOOST_CHECK_EQUAL(si_prefix_str, "k");
+
+	si_prefix_str = "";
+	format_value_si_autoscale(      4635.           , -1,  3, value_str, si_prefix_str, false);
+	BOOST_CHECK_EQUAL(value_str, "4.635");
+	BOOST_CHECK_EQUAL(si_prefix_str, "k");
+
+	si_prefix_str = "";
+	format_value_si_autoscale(       463.5           , -1,  3, value_str, si_prefix_str, false);
+	BOOST_CHECK_EQUAL(value_str, "463.500");
+	BOOST_CHECK_EQUAL(si_prefix_str, "");
+
+	si_prefix_str = "";
+	format_value_si_autoscale(        46.35          , -1,  3, value_str, si_prefix_str, false);
+	BOOST_CHECK_EQUAL(value_str, "46.350");
+	BOOST_CHECK_EQUAL(si_prefix_str, "");
+
+	si_prefix_str = "";
+	format_value_si_autoscale(         4.635         , -1,  3, value_str, si_prefix_str, false);
+	BOOST_CHECK_EQUAL(value_str, "4.635");
+	BOOST_CHECK_EQUAL(si_prefix_str, "");
+
+	si_prefix_str = "";
+	format_value_si_autoscale(          .4635        , -1,  3, value_str, si_prefix_str, false);
+	BOOST_CHECK_EQUAL(value_str, "463.500");
+	BOOST_CHECK_EQUAL(si_prefix_str, "m");
+
+	si_prefix_str = "";
+	format_value_si_autoscale(          .04635       , -1,  3, value_str, si_prefix_str, false);
+	BOOST_CHECK_EQUAL(value_str, "46.350");
+	BOOST_CHECK_EQUAL(si_prefix_str, "m");
+
+	si_prefix_str = "";
+	format_value_si_autoscale(          .004635      , -1,  3, value_str, si_prefix_str, false);
+	BOOST_CHECK_EQUAL(value_str, "4.635");
+	BOOST_CHECK_EQUAL(si_prefix_str, "m");
+
+	si_prefix_str = "";
+	format_value_si_autoscale(          .0004635     , -1,  3, value_str, si_prefix_str, false);
+	BOOST_CHECK_EQUAL(value_str, "463.500");
+	BOOST_CHECK_EQUAL(si_prefix_str, mu);
+
+	si_prefix_str = "";
+	format_value_si_autoscale(          .00004635    , -1,  3, value_str, si_prefix_str, false);
+	BOOST_CHECK_EQUAL(value_str, "46.350");
+	BOOST_CHECK_EQUAL(si_prefix_str, mu);
+
+	si_prefix_str = "";
+	format_value_si_autoscale(          .000004635   , -1,  3, value_str, si_prefix_str, false);
+	BOOST_CHECK_EQUAL(value_str, "4.635");
+	BOOST_CHECK_EQUAL(si_prefix_str, mu);
+
+	si_prefix_str = "";
+	format_value_si_autoscale(          .0000004635  , -1, 3, value_str, si_prefix_str, false);
+	BOOST_CHECK_EQUAL(value_str, "463.500");
+	BOOST_CHECK_EQUAL(si_prefix_str, "n");
+
+	si_prefix_str = "";
+	format_value_si_autoscale(          .00000004635 , -1, 3, value_str, si_prefix_str, false);
+	BOOST_CHECK_EQUAL(value_str, "46.350");
+	BOOST_CHECK_EQUAL(si_prefix_str, "n");
+
+	si_prefix_str = "";
+	format_value_si_autoscale(          .000000004635, -1, 3, value_str, si_prefix_str, false);
+	BOOST_CHECK_EQUAL(value_str, "4.635");
+	BOOST_CHECK_EQUAL(si_prefix_str, "n");
+
+	/* Common values for power supplies */
+
+	si_prefix_str = "";
+	format_value_si_autoscale(       123.456         , -1,  3, value_str, si_prefix_str, false);
+	BOOST_CHECK_EQUAL(value_str, "123.456");
+	BOOST_CHECK_EQUAL(si_prefix_str, "");
+
+	si_prefix_str = "";
+	format_value_si_autoscale(       123.4567        , -1,  3, value_str, si_prefix_str, false);
+	BOOST_CHECK_EQUAL(value_str, "123.456");
+	BOOST_CHECK_EQUAL(si_prefix_str, "");
+
+	/* Edge cases */
+
+	si_prefix_str = "";
+	format_value_si_autoscale(1234e25, -1,  3, value_str, si_prefix_str, false);
+	BOOST_CHECK_EQUAL(value_str, "12340.000");
+	BOOST_CHECK_EQUAL(si_prefix_str, "Y");
+
+	si_prefix_str = "";
+	format_value_si_autoscale(1234e23, -1, 3, value_str, si_prefix_str, false);
+	BOOST_CHECK_EQUAL(value_str, "123.400");
+	BOOST_CHECK_EQUAL(si_prefix_str, "Y");
+
+	si_prefix_str = "";
+	format_value_si_autoscale(.4635e-23, -1, 3, value_str, si_prefix_str, false);
+	BOOST_CHECK_EQUAL(value_str, "4.635");
+	BOOST_CHECK_EQUAL(si_prefix_str, "y");
+
+	si_prefix_str = "";
+	format_value_si_autoscale(.4635e-26, -1, 6, value_str, si_prefix_str, false);
+	BOOST_CHECK_EQUAL(value_str, "0.004635");
+	BOOST_CHECK_EQUAL(si_prefix_str, "y");
+
+	si_prefix_str = "";
+	format_value_si_autoscale(0, -1,  2, value_str, si_prefix_str, false);
+	BOOST_CHECK_EQUAL(value_str, "0.00");
+	BOOST_CHECK_EQUAL(si_prefix_str, "");
+
+	si_prefix_str = "";
+	format_value_si_autoscale(0, -1,  3, value_str, si_prefix_str, false);
+	BOOST_CHECK_EQUAL(value_str, "0.000");
+	BOOST_CHECK_EQUAL(si_prefix_str, "");
+
+	// si_prefix_str = "";
+	// format_value_si(NAN, -1,  3, value_str, si_prefix_str, false);
+	// BOOST_CHECK_EQUAL(value_str, "nan");
+	// BOOST_CHECK_EQUAL(si_prefix_str, "");
+
+	si_prefix_str = "";
+	format_value_si_autoscale(std::numeric_limits<double>::infinity(), -1,  3, value_str, si_prefix_str, false);
+	BOOST_CHECK_EQUAL(value_str, "inf");
+	BOOST_CHECK_EQUAL(si_prefix_str, "");
+
+	/* Some more values from the libsigrok tests */
+
+	// si_prefix_str = "";
+	// format_value_si(        12.0           , -1,  1, value_str, si_prefix_str, false);
+	// BOOST_CHECK_EQUAL(value_str, "12.0");
+	// BOOST_CHECK_EQUAL(si_prefix_str, "");
+	//
+	// si_prefix_str = "";
+	// format_value_si(        12.0           , -1, -1, value_str, si_prefix_str, false);
+	// BOOST_CHECK_EQUAL(value_str, "0.01");
+	// BOOST_CHECK_EQUAL(si_prefix_str, "k");
+	//
+	// si_prefix_str = "";
+	// format_value_si(      1024.0           , -1,  0, value_str, si_prefix_str, false);
+	// BOOST_CHECK_EQUAL(value_str, "1.024");
+	// BOOST_CHECK_EQUAL(si_prefix_str, "k");
+	//
+	// si_prefix_str = "";
+	// format_value_si(      1024.0           , -1, -1, value_str, si_prefix_str, false);
+	// BOOST_CHECK_EQUAL(value_str, "1.02");
+	// BOOST_CHECK_EQUAL(si_prefix_str, "k");
+	//
+	// si_prefix_str = "";
+	// format_value_si(      1024.0           , -1, -3, value_str, si_prefix_str, false);
+	// BOOST_CHECK_EQUAL(value_str, "1");
+	// BOOST_CHECK_EQUAL(si_prefix_str, "k");
+	//
+	// si_prefix_str = "";
+	// format_value_si(        12.0e5         , -1, 0, value_str, si_prefix_str, false);
+	// BOOST_CHECK_EQUAL(value_str, "1.200000");
+	// BOOST_CHECK_EQUAL(si_prefix_str, "M");
+
+	si_prefix_str = "";
+	format_value_si_autoscale(         0.123456      , -1, 0, value_str, si_prefix_str, false);
+	BOOST_CHECK_EQUAL(value_str, "123");
+	BOOST_CHECK_EQUAL(si_prefix_str, "m");
+
+	si_prefix_str = "";
+	format_value_si_autoscale(         0.123456      , -1, 1, value_str, si_prefix_str, false);
+	BOOST_CHECK_EQUAL(value_str, "123.4");
+	BOOST_CHECK_EQUAL(si_prefix_str, "m");
+
+	si_prefix_str = "";
+	format_value_si_autoscale(         0.123456      , -1, 2, value_str, si_prefix_str, false);
+	BOOST_CHECK_EQUAL(value_str, "123.45");
+	BOOST_CHECK_EQUAL(si_prefix_str, "m");
+
+	si_prefix_str = "";
+	format_value_si_autoscale(         0.123456      , -1, 3, value_str, si_prefix_str, false);
+	BOOST_CHECK_EQUAL(value_str, "123.456");
+	BOOST_CHECK_EQUAL(si_prefix_str, "m");
+
+	si_prefix_str = "";
+	format_value_si_autoscale(         0.123456      , -1, 4, value_str, si_prefix_str, false);
+	BOOST_CHECK_EQUAL(value_str, "123.4560");
+	BOOST_CHECK_EQUAL(si_prefix_str, "m");
+
+	si_prefix_str = "";
+	format_value_si_autoscale(         0.0123        , -1, 2, value_str, si_prefix_str, false);
+	BOOST_CHECK_EQUAL(value_str, "12.30");
+	BOOST_CHECK_EQUAL(si_prefix_str, "m");
+
+	si_prefix_str = "";
+	format_value_si_autoscale(         0.00123       , -1, 2, value_str, si_prefix_str, false);
+	BOOST_CHECK_EQUAL(value_str, "1.23");
+	BOOST_CHECK_EQUAL(si_prefix_str, "m");
+
+	si_prefix_str = "";
+	format_value_si_autoscale(         0.000123      , -1, 2, value_str, si_prefix_str, false);
+	BOOST_CHECK_EQUAL(value_str, "123.00");
+	BOOST_CHECK_EQUAL(si_prefix_str, mu);
+
+	si_prefix_str = "";
+	format_value_si_autoscale(         0.0001      , -1, 2, value_str, si_prefix_str, false);
+	BOOST_CHECK_EQUAL(value_str, "100.00");
+	BOOST_CHECK_EQUAL(si_prefix_str, mu);
 }
 
 BOOST_AUTO_TEST_CASE(format_time_si_test)
@@ -511,6 +744,114 @@ BOOST_AUTO_TEST_CASE(format_time_minutes_test)
 	BOOST_CHECK_EQUAL(format_time_minutes(ts(   0), 0, false),  "0:00");
 	BOOST_CHECK_EQUAL(format_time_minutes(ts( 100), 0, false),  "1:40");
 	BOOST_CHECK_EQUAL(format_time_minutes(ts(-100), 0, false), "-1:40");
+}
+
+BOOST_AUTO_TEST_CASE(count_int_digits_test)
+{
+	BOOST_CHECK_EQUAL(count_int_digits( 101), 3);
+	BOOST_CHECK_EQUAL(count_int_digits( 100), 3);
+	BOOST_CHECK_EQUAL(count_int_digits(  99), 2);
+	BOOST_CHECK_EQUAL(count_int_digits(  11), 2);
+	BOOST_CHECK_EQUAL(count_int_digits(  10), 2);
+	BOOST_CHECK_EQUAL(count_int_digits(   9), 1);
+	BOOST_CHECK_EQUAL(count_int_digits(   1), 1);
+	BOOST_CHECK_EQUAL(count_int_digits(   0), 0);
+	BOOST_CHECK_EQUAL(count_int_digits(  -1), 1);
+	BOOST_CHECK_EQUAL(count_int_digits(  -9), 1);
+	BOOST_CHECK_EQUAL(count_int_digits( -10), 2);
+	BOOST_CHECK_EQUAL(count_int_digits( -11), 2);
+	BOOST_CHECK_EQUAL(count_int_digits( -99), 2);
+	BOOST_CHECK_EQUAL(count_int_digits(-100), 3);
+	BOOST_CHECK_EQUAL(count_int_digits(-101), 3);
+}
+
+BOOST_AUTO_TEST_CASE(count_double_digits_test)
+{
+	BOOST_CHECK_EQUAL(count_double_digits( 100.   , 1. ),  3);
+	BOOST_CHECK_EQUAL(count_double_digits(  10.   , 1. ),  2);
+	BOOST_CHECK_EQUAL(count_double_digits(   1.   , 1. ),  1);
+	BOOST_CHECK_EQUAL(count_double_digits(   0.   , 1.  ), 0);
+	BOOST_CHECK_EQUAL(count_double_digits( 100.   ,  .1),  4);
+	BOOST_CHECK_EQUAL(count_double_digits(  10.   ,  .1),  3);
+	BOOST_CHECK_EQUAL(count_double_digits(   1.   ,  .1),  2);
+	BOOST_CHECK_EQUAL(count_double_digits(   0.   ,  .1 ), 1);
+	BOOST_CHECK_EQUAL(count_double_digits( 100.   ,  .01), 5);
+	BOOST_CHECK_EQUAL(count_double_digits(  10.   ,  .01), 4);
+	BOOST_CHECK_EQUAL(count_double_digits(   1.   ,  .01), 3);
+	BOOST_CHECK_EQUAL(count_double_digits(   0.   ,  .01), 2);
+
+	BOOST_CHECK_EQUAL(count_double_digits(   1.1  ,  .01), 3);
+	BOOST_CHECK_EQUAL(count_double_digits(   1.01 ,  .01), 3);
+	BOOST_CHECK_EQUAL(count_double_digits(   1.001,  .01), 4);
+}
+
+BOOST_AUTO_TEST_CASE(count_decimal_places_test)
+{
+	BOOST_CHECK_EQUAL(count_decimal_places(   .00001), 5);
+	BOOST_CHECK_EQUAL(count_decimal_places(   .0001),  4);
+	BOOST_CHECK_EQUAL(count_decimal_places(   .001),   3);
+	BOOST_CHECK_EQUAL(count_decimal_places(   .01),    2);
+	BOOST_CHECK_EQUAL(count_decimal_places(   .1),     1);
+	BOOST_CHECK_EQUAL(count_decimal_places(  0.),      0);
+	BOOST_CHECK_EQUAL(count_decimal_places(  1.),      0);
+	BOOST_CHECK_EQUAL(count_decimal_places( 10.),      0);
+	BOOST_CHECK_EQUAL(count_decimal_places(100.),      0);
+
+	BOOST_CHECK_EQUAL(count_decimal_places(   .00002), 5);
+	BOOST_CHECK_EQUAL(count_decimal_places(   .00003), 5);
+	BOOST_CHECK_EQUAL(count_decimal_places(   .00004), 5);
+	BOOST_CHECK_EQUAL(count_decimal_places(   .00005), 5);
+	BOOST_CHECK_EQUAL(count_decimal_places(   .00006), 5);
+	BOOST_CHECK_EQUAL(count_decimal_places(   .00007), 5);
+	BOOST_CHECK_EQUAL(count_decimal_places(   .00008), 5);
+	BOOST_CHECK_EQUAL(count_decimal_places(   .00009), 5);
+
+	BOOST_CHECK_EQUAL(count_decimal_places(   .11   ), 2);
+	BOOST_CHECK_EQUAL(count_decimal_places(   .111  ), 3);
+	BOOST_CHECK_EQUAL(count_decimal_places(   .1111 ), 4);
+	BOOST_CHECK_EQUAL(count_decimal_places(   .9999 ), 4);
+
+	BOOST_CHECK_EQUAL(count_decimal_places(  1.001  ), 3);
+	BOOST_CHECK_EQUAL(count_decimal_places(  1.00001), 5);
+	BOOST_CHECK_EQUAL(count_decimal_places(   .00007), 5);
+}
+
+BOOST_AUTO_TEST_CASE(get_sr_digits_test)
+{
+	BOOST_CHECK_EQUAL(get_sr_digits(1000000.       ), -6);
+	BOOST_CHECK_EQUAL(get_sr_digits( 100000.       ), -5);
+	BOOST_CHECK_EQUAL(get_sr_digits(  10000.       ), -4);
+	BOOST_CHECK_EQUAL(get_sr_digits(   1000.       ), -3);
+	BOOST_CHECK_EQUAL(get_sr_digits(    100.       ), -2);
+	BOOST_CHECK_EQUAL(get_sr_digits(     10.       ), -1);
+	BOOST_CHECK_EQUAL(get_sr_digits(      1.       ),  0);
+	BOOST_CHECK_EQUAL(get_sr_digits(      0.       ),  0);
+	BOOST_CHECK_EQUAL(get_sr_digits(       .1      ),  1);
+	BOOST_CHECK_EQUAL(get_sr_digits(       .01     ),  2);
+	BOOST_CHECK_EQUAL(get_sr_digits(       .001    ),  3);
+	BOOST_CHECK_EQUAL(get_sr_digits(       .0001   ),  4);
+	BOOST_CHECK_EQUAL(get_sr_digits(       .00001  ),  5);
+	BOOST_CHECK_EQUAL(get_sr_digits(       .000001 ),  6);
+	BOOST_CHECK_EQUAL(get_sr_digits(       .0000001),  7);
+
+	BOOST_CHECK_EQUAL(get_sr_digits(1100000.       ), -5);
+	BOOST_CHECK_EQUAL(get_sr_digits(1110000.       ), -4);
+	BOOST_CHECK_EQUAL(get_sr_digits(1111000.       ), -3);
+	BOOST_CHECK_EQUAL(get_sr_digits(1111100.       ), -2);
+	BOOST_CHECK_EQUAL(get_sr_digits(1111110.       ), -1);
+	BOOST_CHECK_EQUAL(get_sr_digits(1111111.       ),  0);
+	BOOST_CHECK_EQUAL(get_sr_digits(1111111.1      ),  1);
+	BOOST_CHECK_EQUAL(get_sr_digits(1111111.11     ),  2);
+	BOOST_CHECK_EQUAL(get_sr_digits(1111111.111    ),  3);
+
+	BOOST_CHECK_EQUAL(get_sr_digits(       .02     ),  2);
+	BOOST_CHECK_EQUAL(get_sr_digits(       .03     ),  2);
+	BOOST_CHECK_EQUAL(get_sr_digits(       .04     ),  2);
+	BOOST_CHECK_EQUAL(get_sr_digits(       .05     ),  2);
+	BOOST_CHECK_EQUAL(get_sr_digits(       .06     ),  2);
+	BOOST_CHECK_EQUAL(get_sr_digits(       .07     ),  2);
+	BOOST_CHECK_EQUAL(get_sr_digits(       .08     ),  2);
+	BOOST_CHECK_EQUAL(get_sr_digits(       .09     ),  2);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

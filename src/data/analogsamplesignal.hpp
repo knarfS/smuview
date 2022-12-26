@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2019-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2019-2022 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,7 +68,7 @@ public:
 	 * Push a single sample to the signal.
 	 */
 	void push_sample(void *sample, uint32_t pos,
-		size_t unit_size, int digits, int decimal_places);
+		size_t unit_size, int total_digits, int sr_digits);
 
 	uint32_t first_pos() const;
 	uint32_t last_pos() const;

@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2022 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,8 +49,8 @@ AnalogBaseSignal::AnalogBaseSignal(
 		const string &custom_name) :
 	BaseSignal(quantity, quantity_flags, unit, parent_channel, custom_name),
 	sample_count_(0),
-	digits_(7), // A good start value for digits
-	decimal_places_(3), // A good start value for decimal places
+	total_digits_(data::DefaultTotalDigits),
+	sr_digits_(data::DefaultSRDigits),
 	last_value_(0.),
 	min_value_(std::numeric_limits<double>::max()),
 	max_value_(std::numeric_limits<double>::lowest())
@@ -188,14 +188,14 @@ void AnalogSignal::push_sample(void *sample, double timestamp,
 }
 */
 
-int AnalogBaseSignal::digits() const
+int AnalogBaseSignal::total_digits() const
 {
-	return digits_;
+	return total_digits_;
 }
 
-int AnalogBaseSignal::decimal_places() const
+int AnalogBaseSignal::sr_digits() const
 {
-	return decimal_places_;
+	return sr_digits_;
 }
 
 double AnalogBaseSignal::last_value() const

@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2022 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,8 +56,8 @@ IntegrateChannel::IntegrateChannel(
 {
 	assert(int_signal_);
 
-	digits_ = int_signal_->digits();
-	decimal_places_ = int_signal_->decimal_places();
+	total_digits_ = int_signal_->total_digits();
+	sr_digits_ = int_signal_->sr_digits();
 
 	connect(this, &IntegrateChannel::channel_start_timestamp_changed,
 		this, &IntegrateChannel::on_channel_start_timestamp_changed);

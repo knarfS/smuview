@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2022 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,14 +60,14 @@ public:
 	double min() const;
 	double max() const;
 	double step() const;
-	int digits() const;
+	int total_digits() const;
 	int decimal_places() const;
 
 private:
 	double min_;
 	double max_;
 	double step_;
-	int digits_;
+	int total_digits_;
 	int decimal_places_;
 
 public Q_SLOTS:

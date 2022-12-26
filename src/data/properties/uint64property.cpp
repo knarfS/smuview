@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2022 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,15 +62,15 @@ uint64_t UInt64Property::uint64_value() const
 
 QString UInt64Property::to_string(uint64_t value) const
 {
-	// TODO: calc digits+ decimal_places from min/max/step
-	QString str;
+	// TODO: calculate total_digits + decimal_places from min/max/step
+	QString str_val;
 	QString si_prefix;
-	util::format_value_si(static_cast<double>(value), -1, 1, str, si_prefix);
-	if (!si_prefix.isEmpty() ||
-			(unit_ != data::Unit::Unknown && unit_ != data::Unit::Unitless))
-		str.append(" ").append(si_prefix).append(datautil::format_unit(unit_));
+	util::format_value_si(static_cast<double>(value), 0, 0, str_val, si_prefix);
+	QString unit_str = datautil::format_unit(unit_);
+	if (!si_prefix.isEmpty() || !unit_str.isEmpty())
+		str_val.append(" ").append(si_prefix).append(unit_str);
 
-	return str;
+	return str_val;
 }
 
 QString UInt64Property::to_string(const QVariant &qvar) const

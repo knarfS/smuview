@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2019-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2019-2022 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,7 +82,7 @@ analog_pos_sample_t AnalogSampleSignal::get_sample(uint32_t pos) const
 }
 
 void AnalogSampleSignal::push_sample(void *sample, uint32_t pos,
-		size_t unit_size, int digits, int decimal_places)
+		size_t unit_size, int total_digits, int sr_digits)
 {
 	double dsample = 0.;
 	if (unit_size == size_of_float_)
@@ -127,16 +127,16 @@ void AnalogSampleSignal::push_sample(void *sample, uint32_t pos,
 	Q_EMIT sample_appended();
 
 	bool digits_chngd = false;
-	if (digits != digits_) {
-		digits_ = digits;
+	if (total_digits != total_digits_) {
+		total_digits_ = total_digits;
 		digits_chngd = true;
 	}
-	if (decimal_places != decimal_places_) {
-		decimal_places_ = decimal_places;
+	if (sr_digits != sr_digits_) {
+		sr_digits_ = sr_digits;
 		digits_chngd = true;
 	}
 	if (digits_chngd)
-		Q_EMIT digits_changed(digits_, decimal_places_);
+		Q_EMIT digits_changed(total_digits_, sr_digits_);
 }
 
 uint32_t AnalogSampleSignal::first_pos() const

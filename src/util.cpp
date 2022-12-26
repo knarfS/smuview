@@ -2,7 +2,7 @@
  * This file is part of the SmuView project.
  *
  * Copyright (C) 2012 Joel Holdsworth <joel@airwebreathe.org.uk>
- * Copyright (C) 2017-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2022 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@ using std::vector;
 namespace sv {
 namespace util {
 
-static QTextStream& operator<<(QTextStream& stream, SIPrefix prefix)
+static QTextStream &operator<<(QTextStream &stream, SIPrefix prefix)
 {
 	switch (prefix) {
 	case SIPrefix::yocto: return stream << 'y';
@@ -56,7 +56,7 @@ static QTextStream& operator<<(QTextStream& stream, SIPrefix prefix)
 	case SIPrefix::femto: return stream << 'f';
 	case SIPrefix::pico:  return stream << 'p';
 	case SIPrefix::nano:  return stream << 'n';
-	case SIPrefix::micro: return stream << QChar(0x00B5);
+	case SIPrefix::micro: return stream << QChar(0x03BC);
 	case SIPrefix::milli: return stream << 'm';
 	case SIPrefix::kilo:  return stream << 'k';
 	case SIPrefix::mega:  return stream << 'M';
@@ -82,9 +82,19 @@ static SIPrefix successor(SIPrefix prefix)
 	return static_cast<SIPrefix>(static_cast<int>(prefix) + 1);
 }
 
+static int prefix_from_si_prefix(SIPrefix prefix)
+{
+	return static_cast<int>(prefix) - static_cast<int>(SIPrefix::none);
+}
+
+static SIPrefix si_prefix_from_prefix(int prefix)
+{
+	return static_cast<SIPrefix>(static_cast<int>(SIPrefix::none) + prefix);
+}
+
 // Insert the timestamp value into the stream in fixed-point notation
 // (and honor the precision)
-static QTextStream& operator<<(QTextStream& stream, const Timestamp& timestamp)
+static QTextStream &operator<<(QTextStream &stream, const Timestamp &timestamp)
 {
 	// The multiprecision types already have a function and a stream insertion
 	// operator to convert them to a string, however these functions abuse a
@@ -116,9 +126,60 @@ static QTextStream& operator<<(QTextStream& stream, const Timestamp& timestamp)
 	return stream << QString::fromStdString(str);
 }
 
+int prefix_from_value(const double value, const int sr_digits)
+{
+	double logval = log10(fabs(value));
+	int prefix = static_cast<int>((logval / 3) - static_cast<int>(logval < 1));
+
+	if (value == 0 || value == NAN ||
+			value == std::numeric_limits<double>::infinity() ||
+			value >= std::numeric_limits<double>::max() ||
+			value <= std::numeric_limits<double>::lowest()) {
+		prefix = prefix_from_si_prefix(SIPrefix::none);
+	}
+	else if (prefix < prefix_from_si_prefix(SIPrefix::yocto))
+		prefix = prefix_from_si_prefix(SIPrefix::yocto);
+	else if (prefix > prefix_from_si_prefix(SIPrefix::yotta))
+		prefix = prefix_from_si_prefix(SIPrefix::yotta);
+	else if (3 * prefix < -sr_digits)
+		prefix = (-sr_digits + 2 * static_cast<int>(sr_digits < 0)) / 3;
+
+	return prefix;
+}
+
+int decimal_places_from_prefix(const int prefix, const int sr_digits)
+{
+	int decimal_places = sr_digits + (3 * prefix);
+	decimal_places = decimal_places < 0 ? 0 : decimal_places;
+
+	return decimal_places;
+}
+
 void format_value_si(
-	const double value, const int digits, const int decimal_places,
-	QString &value_str, QString &si_prefix_str)
+	const double value, const int total_digits, const int sr_digits,
+	QString &value_str, QString &si_prefix_str, const bool use_locale)
+{
+	int prefix = prefix_from_value(value, sr_digits);
+	SIPrefix si_prefix = si_prefix_from_prefix(prefix);
+	assert(si_prefix >= SIPrefix::yocto);
+	assert(si_prefix <= SIPrefix::yotta);
+
+	int decimal_places = decimal_places_from_prefix(prefix, sr_digits);
+
+	double new_value = value * pow(10, -3 * prefix);
+
+	// Check if, use current locale (%L) for formating.
+	QString format_string = use_locale ? "%L1" : "%1";
+	value_str = QString(format_string)
+		.arg(new_value, total_digits, 'f', decimal_places, QChar(' '));
+
+	QTextStream si_prefix_stream(&si_prefix_str);
+	si_prefix_stream << si_prefix;
+}
+
+void format_value_si_autoscale(
+	const double value, const int total_digits, const int decimal_places,
+	QString &value_str, QString &si_prefix_str, const bool use_locale)
 {
 	SIPrefix si_prefix;
 	if (value == 0 || value == NAN ||
@@ -141,15 +202,16 @@ void format_value_si(
 
 	const double multiplier = pow(10, -exponent(si_prefix));
 
-	// Use actual locale (%L) for formating.
-	value_str = QString("%L1").
-		arg(value * multiplier, digits, 'f', decimal_places, QChar(' '));
+	// Check if, use current locale (%L) for formating.
+	QString format_string = use_locale ? "%L1" : "%1";
+	value_str = QString(format_string).
+		arg(value * multiplier, total_digits, 'f', decimal_places, QChar(' '));
 
 	QTextStream si_prefix_stream(&si_prefix_str);
 	si_prefix_stream << si_prefix;
 }
 
-QString format_time_si(const Timestamp& timestamp, SIPrefix prefix,
+QString format_time_si(const Timestamp &timestamp, SIPrefix prefix,
 	unsigned int precision, const QString &unit, bool sign)
 {
 	if (prefix == SIPrefix::unspecified) {
@@ -157,7 +219,8 @@ QString format_time_si(const Timestamp& timestamp, SIPrefix prefix,
 
 		if (timestamp.is_zero()) {
 			prefix = SIPrefix::none;
-		} else {
+		}
+		else {
 			int exp = exponent(SIPrefix::yotta);
 			prefix = SIPrefix::yocto;
 			while ((fabs(timestamp) * pow(Timestamp(10), exp)) > 999 &&
@@ -183,16 +246,15 @@ QString format_time_si(const Timestamp& timestamp, SIPrefix prefix,
 	return str;
 }
 
-QString format_time_si_adjusted(const Timestamp& timestamp, SIPrefix prefix,
+QString format_time_si_adjusted(const Timestamp &timestamp, SIPrefix prefix,
 	unsigned precision, const QString &unit, bool sign)
 {
 	// The precision is always given without taking the prefix into account
 	// so we need to deduct the number of decimals the prefix might imply
 	const int prefix_order = -exponent(prefix);
 
-	const unsigned int relative_prec =
-		(prefix >= SIPrefix::none) ? precision :
-		max((int)(precision - prefix_order), 0);
+	const unsigned int relative_prec = (prefix >= SIPrefix::none) ?
+		precision : max((int)(precision - prefix_order), 0);
 
 	return format_time_si(timestamp, prefix, relative_prec, unit, sign);
 }
@@ -203,7 +265,7 @@ static QString pad_number(unsigned int number, int length)
 	return QString("%1").arg(number, length, 10, QChar('0'));
 }
 
-QString format_time_minutes(const Timestamp& timestamp, signed precision,
+QString format_time_minutes(const Timestamp &timestamp, signed precision,
 	bool sign)
 {
 	const Timestamp whole_seconds = floor(abs(timestamp));
@@ -294,33 +356,92 @@ vector<string> split_string(string text, const string &separator)
 	return result;
 }
 
-bool starts_with(const string &str, const string &start_str) {
+bool starts_with(const string &str, const string &start_str)
+{
 	return start_str.length() <= str.length() &&
 		std::equal(start_str.begin(), start_str.end(), str.begin());
 }
 
 int count_int_digits(int number)
 {
+	if (number == 0)
+		return 0;
 	int abs_number = abs(number);
 	int digits = 1;
 	while (abs_number >= 10) {
 		abs_number /= 10;
 		digits++;
 	}
-
 	return digits;
 }
 
-int count_double_digits(double value, double step)
+int count_double_digits(double max_value, double step)
 {
-	int value_int = (int)floor(value);
-	return util::count_int_digits(value_int) + util::get_decimal_places(step);
+	int count_int = util::count_int_digits((int)floor(max_value));
+	int count_frac = util::count_decimal_places(fmod(max_value, 1.0));
+	int count_step = util::count_decimal_places(step);
+	return count_int + (count_frac > count_step ? count_frac : count_step);
 }
 
-int get_decimal_places(double value)
+int count_decimal_places(double step)
 {
-	int decimal = (int)ceil(1/value) - 1;
+	double frac_part = fmod(step, 1.0);
+	if (frac_part == 0)
+		return 0;
+
+	std::stringstream stream;
+	stream << frac_part;
+	std::string frac_str = stream.str();
+
+	// Check for exponential notation
+	size_t e_pos = frac_str.find('e');
+	if (e_pos != std::string::npos) {
+		std::string exponent_str = frac_str.substr(e_pos + 1);
+		return -(std::stoi(exponent_str));
+	}
+
+	// Check for the decimal point
+	size_t point_pos = frac_str.find('.');
+	if (point_pos != std::string::npos) {
+		return static_cast<int>(frac_str.length() - point_pos - 1);
+	}
+
+	return 0;
+
+	/*
+	* Old implementation, didn't worked for e.g. `0.111`
+	double frac_part = fmod(step, 1.0);
+	if (frac_part == 0)
+			return 0;
+	int decimal = (int)floor(1/frac_part) - 1;
 	return util::count_int_digits(decimal);
+	*/
+}
+
+int get_sr_digits(double step)
+{
+	if (step == 0)
+		return 0;
+
+	int count_frac = util::count_decimal_places(fmod(step, 1.0));
+	if (count_frac > 0)
+		return count_frac;
+
+	// Count the zeros at the end of the integer part
+	std::stringstream stream;
+	stream << static_cast<int>(floor(step));
+	std::string int_str = stream.str();
+
+	int int_count = 0;
+	size_t int_str_pos = int_str.length();
+	while (int_str_pos > 0) {
+		int_str_pos--;
+		if (int_str[int_str_pos] != '0')
+			break;
+		int_count++;
+	}
+
+	return -int_count;
 }
 
 /*
@@ -329,7 +450,7 @@ int get_decimal_places(double value)
 vector<string> parse_csv_line(const string &line)
 {
 	enum State { UnquotedField, QuotedField, QuotedQuote } state = UnquotedField;
-	std::vector<std::string> fields {""};
+	std::vector<std::string> fields{""};
 
 	size_t index = 0; // index of the current field
 	for (char chr : line) {
@@ -338,7 +459,8 @@ vector<string> parse_csv_line(const string &line)
 			switch (chr) {
 			case ',':
 				// end of field
-				fields.push_back(""); index++;
+				fields.push_back("");
+				index++;
 				break;
 			case '"':
 				state = State::QuotedField;
@@ -362,7 +484,8 @@ vector<string> parse_csv_line(const string &line)
 			switch (chr) {
 			case ',':
 				// , after closing quote
-				fields.push_back(""); index++;
+				fields.push_back("");
+				index++;
 				state = State::UnquotedField;
 				break;
 			case '"':

@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2022 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,15 +62,16 @@ DivideChannel::DivideChannel(
 	assert(dividend_signal_);
 	assert(divisor_signal_);
 
-	if (dividend_signal->digits() >= divisor_signal->digits())
-		digits_ = dividend_signal->digits();
+	if (dividend_signal->total_digits() >= divisor_signal->total_digits())
+		total_digits_ = dividend_signal->total_digits();
 	else
-		digits_ = divisor_signal->digits();
+		total_digits_ = divisor_signal->total_digits();
 
-	if (dividend_signal->decimal_places() >= divisor_signal->decimal_places())
-		decimal_places_ = dividend_signal->decimal_places();
+	// Use the lower sr_digits value to get a greater resoulution
+	if (dividend_signal->sr_digits() < divisor_signal->sr_digits())
+		sr_digits_ = dividend_signal->sr_digits();
 	else
-		decimal_places_ = divisor_signal->decimal_places();
+		sr_digits_ = divisor_signal->sr_digits();
 
 	connect(dividend_signal_.get(), &data::AnalogTimeSignal::sample_appended,
 		this, &DivideChannel::on_sample_appended);

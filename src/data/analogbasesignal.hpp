@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2022 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,6 @@
 #include "src/data/basesignal.hpp"
 #include "src/data/datautil.hpp"
 
-using std::pair;
 using std::set;
 using std::shared_ptr;
 using std::string;
@@ -86,8 +85,15 @@ public:
 		size_t unit_size, int digits, int decimal_places);
 	 */
 
-	int digits() const;
-	int decimal_places() const;
+	/**
+	 * Number of total digits (count) of the measured value.
+	 * NOTE: Not implemented in sigrok yet. There is no good way to get the
+	 *       total number of digits for the analog payload. Therefore
+	 *       `total_digits` is initialized with some reasonable value.
+	 */
+	int total_digits() const;
+	/** digits from ....digits */
+	int sr_digits() const;
 	double last_value() const;
 	double min_value() const;
 	double max_value() const;
@@ -104,8 +110,8 @@ public:
 protected:
 	shared_ptr<vector<double>> data_;
 	size_t sample_count_;
-	int digits_;
-	int decimal_places_;
+	int total_digits_;
+	int sr_digits_;
 	double last_value_;
 	double min_value_;
 	double max_value_;
@@ -116,7 +122,7 @@ protected:
 Q_SIGNALS:
 	void samples_cleared();
 	void sample_appended();
-	void digits_changed(const int digits, const int decimal_places);
+	void digits_changed(const int total_digits, const int sr_digits);
 
 };
 

@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2022 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -219,8 +219,12 @@ void DataView::populate_table()
 				data_table_->setItem(last_row+1, 0, time_item);
 				last_timestamp_[i] = time_item;
 			}
+			int prefix = util::prefix_from_value(
+				sample.second, signals_[i]->sr_digits());
+			int decimal_places = util::decimal_places_from_prefix(
+				prefix, signals_[i]->sr_digits());
 			QTableWidgetItem *value_item = new QTableWidgetItem(
-				QString::number(sample.second, 'f', signals_[i]->decimal_places()));
+				QString::number(sample.second, 'f', decimal_places));
 			value_item->setData(0, QVariant(sample.second));
 			data_table_->setItem(last_row+1, (int)i+1, value_item);
 

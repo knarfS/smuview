@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2022 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,15 +62,16 @@ MultiplySSChannel::MultiplySSChannel(
 	assert(signal1_);
 	assert(signal2_);
 
-	if (signal1_->digits() >= signal2_->digits())
-		digits_ = signal1_->digits();
+	if (signal1_->total_digits() >= signal2_->total_digits())
+		total_digits_ = signal1_->total_digits();
 	else
-		digits_ = signal2_->digits();
+		total_digits_ = signal2_->total_digits();
 
-	if (signal1_->decimal_places() >= signal2_->decimal_places())
-		decimal_places_ = signal1_->decimal_places();
+	// Use the lower sr_digits value to get a greater resolution
+	if (signal1_->sr_digits() < signal2_->sr_digits())
+		sr_digits_ = signal1_->sr_digits();
 	else
-		decimal_places_ = signal2_->decimal_places();
+		sr_digits_ = signal2_->sr_digits();
 
 	connect(signal1_.get(), &data::AnalogTimeSignal::sample_appended,
 		this, &MultiplySSChannel::on_sample_appended);

@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2022 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -92,13 +92,13 @@ public:
 	 * TODO: Can this be removed?
 	 */
 	void push_sample(void *sample, double timestamp,
-		size_t unit_size, int digits, int decimal_places);
+		size_t unit_size, int total_digits, int sr_digits);
 
 	/**
 	 * Push multiple samples to the signal.
 	 */
 	void push_samples(void *data, uint64_t samples, double timestamp,
-		uint64_t samplerate, size_t unit_size, int digits, int decimal_places);
+		uint64_t samplerate, size_t unit_size, int total_digits, int sr_digits);
 
 	double signal_start_timestamp() const;
 	double first_timestamp(bool relative_time) const;
@@ -108,17 +108,17 @@ public:
 	 * Combine two signals with each other.
 	 *
 	 * E.g.:
-	 * Time | S1 | S2 | combined S1 | combined S1 |
-	 * --------------------------------------------
-	 *    1 |  1 |    |             |             |
-	 *    3 |  2 |    |             |             |
-	 *    5 |  3 |    |             |             |
-	 *    6 |    | 10 |         3.5 |          10 |
-	 *    7 |  4 |    |           4 |         9.5 |
-	 *    8 |    |  9 |         4.5 |           9 |
-	 *    9 |  5 |    |           5 |         8.5 |
-	 *   10 |    |  8 |             |             |
-	 *   12 |    |  7 |             |             |
+	 * | Time | S1 | S2 | combined S1 | combined S2 |
+	 * |------|----|----|-------------|-------------|
+	 * |    1 |  1 |    |             |             |
+	 * |    3 |  2 |    |             |             |
+	 * |    5 |  3 |    |             |             |
+	 * |    6 |    | 10 |         3.5 |          10 |
+	 * |    7 |  4 |    |           4 |         9.5 |
+	 * |    8 |    |  9 |         4.5 |           9 |
+	 * |    9 |  5 |    |           5 |         8.5 |
+	 * |   10 |    |  8 |             |             |
+	 * |   12 |    |  7 |             |             |
 	 *
 	 * TODO: Use std::deque<double>& instead of shared_ptr<vector<double>>?
 	 */

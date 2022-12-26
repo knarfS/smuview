@@ -33,6 +33,7 @@
 #include <QVBoxLayout>
 
 #include "valuepanelview.hpp"
+#include "src/data/datautil.hpp"
 #include "src/session.hpp"
 #include "src/settingsmanager.hpp"
 #include "src/util.hpp"
@@ -129,19 +130,16 @@ void ValuePanelView::set_signal(shared_ptr<sv::data::AnalogTimeSignal> signal)
 
 void ValuePanelView::setup_ui()
 {
-	int digits = 7;
-	int decimal_places = 3;
-
 	QVBoxLayout *layout = new QVBoxLayout();
 	QGridLayout *panel_layout = new QGridLayout();
 
 	value_display_ = new widgets::MonoFontDisplay(
-		digits, decimal_places, true, "", "", "", false);
+		widgets::MonoFontDisplayType::AutoRangeWithSRDigits, "", "", "", false);
 	value_min_display_ = new widgets::MonoFontDisplay(
-		digits, decimal_places, true, "", "",
+		widgets::MonoFontDisplayType::AutoRange, "", "",
 		data::datautil::format_quantity_flag(data::QuantityFlag::Min), true);
 	value_max_display_ = new widgets::MonoFontDisplay(
-		digits, decimal_places, true, "", "",
+		widgets::MonoFontDisplayType::AutoRange, "", "",
 		data::datautil::format_quantity_flag(data::QuantityFlag::Max), true);
 
 	panel_layout->addWidget(value_display_, 0, 0, 1, 2, Qt::AlignHCenter);
@@ -172,8 +170,8 @@ void ValuePanelView::init_displays()
 	QString unit = signal_->unit_name();
 	QString unit_suffix;
 	set<sv::data::QuantityFlag> quantity_flags = signal_->quantity_flags();
-	int digits = signal_->digits();
-	int decimal_places = signal_->decimal_places();
+	int total_digits = signal_->total_digits();
+	int sr_digits = signal_->sr_digits();
 
 	if (quantity_flags.count(sv::data::QuantityFlag::AC) > 0) {
 		//unit_suffix = QString::fromUtf8("\u23E6");
@@ -196,19 +194,21 @@ void ValuePanelView::init_displays()
 	value_display_->set_unit_suffix(unit_suffix);
 	value_display_->set_extra_text(
 		sv::data::datautil::format_quantity_flags(quantity_flags, "\n"));
-	value_display_->set_digits(digits, decimal_places);
+	value_display_->set_sr_digits(total_digits, sr_digits);
 
 	value_min_display_->set_unit(unit);
 	value_min_display_->set_unit_suffix(unit_suffix);
 	value_min_display_->set_extra_text(
 		sv::data::datautil::format_quantity_flags(quantity_flags_min, "\n"));
-	value_min_display_->set_digits(digits, decimal_places);
+	value_min_display_->set_decimal_places(
+		sv::data::DefaultTotalDigits, sv::data::DefaultDecimalPlaces);
 
 	value_max_display_->set_unit(unit);
 	value_max_display_->set_unit_suffix(unit_suffix);
 	value_max_display_->set_extra_text(
 		sv::data::datautil::format_quantity_flags(quantity_flags_max, "\n"));
-	value_max_display_->set_digits(digits, decimal_places);
+	value_max_display_->set_decimal_places(
+		sv::data::DefaultTotalDigits, sv::data::DefaultDecimalPlaces);
 }
 
 void ValuePanelView::connect_signals_channel()
@@ -241,11 +241,7 @@ void ValuePanelView::connect_signals_signal()
 	//connect(signal_.get(), SIGNAL(unit_changed(QString)),
 	//	value_display_, SLOT(set_unit(const String)));
 	connect(signal_.get(), &data::AnalogTimeSignal::digits_changed,
-		value_display_, &widgets::MonoFontDisplay::set_digits);
-	connect(signal_.get(), &data::AnalogTimeSignal::digits_changed,
-		value_min_display_, &widgets::MonoFontDisplay::set_digits);
-	connect(signal_.get(), &data::AnalogTimeSignal::digits_changed,
-		value_max_display_, &widgets::MonoFontDisplay::set_digits);
+		value_display_, &widgets::MonoFontDisplay::set_sr_digits);
 }
 
 void ValuePanelView::disconnect_signals_signal()
@@ -256,11 +252,7 @@ void ValuePanelView::disconnect_signals_signal()
 	//disconnect(signal_.get(), SIGNAL(unit_changed(QString)),
 	//	value_display_, SLOT(set_unit(QString)));
 	disconnect(signal_.get(), &data::AnalogTimeSignal::digits_changed,
-		value_display_, &widgets::MonoFontDisplay::set_digits);
-	disconnect(signal_.get(), &data::AnalogTimeSignal::digits_changed,
-		value_min_display_, &widgets::MonoFontDisplay::set_digits);
-	disconnect(signal_.get(), &data::AnalogTimeSignal::digits_changed,
-		value_max_display_, &widgets::MonoFontDisplay::set_digits);
+		value_display_, &widgets::MonoFontDisplay::set_sr_digits);
 }
 
 void ValuePanelView::save_settings(QSettings &settings,

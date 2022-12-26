@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2022 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ namespace datatypes {
 DoubleDisplay::DoubleDisplay(
 		shared_ptr<sv::data::properties::BaseProperty> property,
 		const bool auto_update, QWidget *parent) :
-	widgets::MonoFontDisplay(5/*Dummy*/, 3/*Dummy*/, false,
+	widgets::MonoFontDisplay(widgets::MonoFontDisplayType::FixedRange,
 		QString(""), QString(""), QString(""), false, parent),
 	BaseWidget(property, false, auto_update)
 {
@@ -61,8 +61,7 @@ void DoubleDisplay::setup_ui()
 	if (property_ != nullptr && property_->is_listable()) {
 		shared_ptr<data::properties::DoubleProperty> double_prop =
 			dynamic_pointer_cast<data::properties::DoubleProperty>(property_);
-
-		this->set_digits(double_prop->digits(), double_prop->decimal_places());
+		this->set_decimal_places(double_prop->total_digits(), double_prop->decimal_places());
 	}
 	if (property_ != nullptr && property_->unit() != data::Unit::Unknown &&
 			property_->unit() != data::Unit::Unitless) {
@@ -106,7 +105,7 @@ void DoubleDisplay::on_list_changed()
 	if (property_ != nullptr && property_->is_listable()) {
 		shared_ptr<data::properties::DoubleProperty> double_prop =
 			dynamic_pointer_cast<data::properties::DoubleProperty>(property_);
-		this->set_digits(double_prop->digits(), double_prop->decimal_places());
+		this->set_decimal_places(double_prop->total_digits(), double_prop->decimal_places());
 
 		if (property_->is_getable())
 			this->set_value(double_prop->double_value());
