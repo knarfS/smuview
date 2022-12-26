@@ -119,9 +119,12 @@ set(QT_LIBRARIES Qt5::Gui Qt5::Widgets Qt5::Svg)
 
 find_package(Qwt 6.1.2 REQUIRED)
 
-# Only boost::config and boost::multiprecision are required, so no need to
-# specify any boost libraries
-find_package(Boost 1.54 REQUIRED)
+# boost::multiprecision is required, but it's header only. So no need to specify
+set(BOOSTCOMPS)
+if(ENABLE_TESTS)
+	list(APPEND BOOSTCOMPS unit_test_framework)
+endif()
+find_package(Boost 1.54 COMPONENTS ${BOOSTCOMPS} REQUIRED)
 
 # Find the platform's thread library (needed for C++11 threads).
 # This will set ${CMAKE_THREAD_LIBS_INIT} to the correct, OS-specific value.
@@ -554,3 +557,9 @@ add_subdirectory(manual)
 #===============================================================================
 #= Tests
 #-------------------------------------------------------------------------------
+
+if(ENABLE_TESTS)
+	add_subdirectory(test)
+	enable_testing()
+	add_test(test ${CMAKE_CURRENT_BINARY_DIR}/test/smuview-test)
+endif()
