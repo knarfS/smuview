@@ -18,6 +18,9 @@ compile_commands.json
 CTestTestfile.cmake
 build/
 
+# clangd cache
+.cache/
+
 # C++ objects and libs
 *.slo
 *.lo
