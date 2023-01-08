@@ -60,14 +60,14 @@ indent_size = 4
 
 
 # external: pybind11 C++ header files
-[external/pybind11/**.h]
+[external/pybind11*/**.h]
 indent_style = space
 indent_size = 4
 
 # external: pybind11 CMake files
-[external/pybind11/CMakeLists.txt]
+[external/pybind11*/CMakeLists.txt]
 indent_style = space
 indent_size = 2
-[external/pybind11/**.cmake]
+[external/pybind11*/**.cmake]
 indent_style = space
 indent_size = 2
