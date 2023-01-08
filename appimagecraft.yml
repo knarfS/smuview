@@ -9,6 +9,7 @@ build:
     extra_variables:
       # Taken from some other script
       - DISABLE_WERROR=y
+      - ENABLE_TESTS=n
       - CMAKE_EXPORT_COMPILE_COMMANDS=y
       - PYBIND11_FINDPYTHON=ON
     raw_environment:

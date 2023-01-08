@@ -69,7 +69,7 @@ jobs:
             libzip-dev libusb-1.0-0-dev libftdi1-dev libieee1284-3-dev \
             libvisa-dev nettle-dev libavahi-client-dev libhidapi-dev check \
             doxygen swig \
-            cmake libboost-dev \
+            cmake libboost-dev libboost-test-dev \
             python3-dev python-gi-dev python-setuptools
 
       - name: Checkout sigrok-utils
