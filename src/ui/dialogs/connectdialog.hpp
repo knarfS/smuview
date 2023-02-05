@@ -40,9 +40,11 @@
 #include <QSpinBox>
 #include <QVBoxLayout>
 
+#include "src/devices/deviceutil.hpp"
 #include "src/devices/hardwaredevice.hpp"
 
 using std::shared_ptr;
+using sv::devices::DeviceType;
 
 namespace sigrok {
 class Driver;
@@ -50,6 +52,7 @@ class Driver;
 
 Q_DECLARE_METATYPE(shared_ptr<sigrok::Driver>)
 Q_DECLARE_METATYPE(shared_ptr<sv::devices::HardwareDevice>)
+Q_DECLARE_METATYPE(sv::devices::DeviceType)
 
 namespace sv {
 
@@ -74,13 +77,15 @@ public:
 	shared_ptr<sv::devices::HardwareDevice> get_selected_device() const;
 
 private:
-	void populate_drivers();
+	void populate_drivers(DeviceType type_filter = DeviceType::Any);
+	void populate_filters();
 	void populate_serials_start(shared_ptr<sigrok::Driver> driver);
 	void populate_serials_thread_proc(shared_ptr<sigrok::Driver> driver);
 	void check_available_libs();
 	void unset_connection();
 
 private Q_SLOTS:
+	void filter_selected(int index);
 	void driver_selected(int index);
 	void serial_toggled(bool checked);
 	void tcp_toggled(bool checked);
@@ -99,6 +104,7 @@ private:
 	QWidget form_;
 	QFormLayout form_layout_;
 
+	QComboBox filters_;
 	QComboBox drivers_;
 
 	QRadioButton *radiobtn_usb_;

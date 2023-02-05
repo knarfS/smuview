@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,6 +46,8 @@ namespace devices {
 
 enum class DeviceType
 {
+	/** Any device */
+	Any,
 	/** The device can act as logic analyzer. */
 	LogicAnalyzer,
 	/** The device can act as an oscilloscope. */
@@ -269,6 +271,7 @@ namespace {
 //       QT_TRANSLATE_NOOP() for translation.
 //       See: http://doc.qt.io/qt-5/i18n-source-translation.html
 device_type_name_map_t device_type_name_map = {
+	{ DeviceType::Any, QString("Any device type") },
 	{ DeviceType::LogicAnalyzer, QString("Logic Analyzer") },
 	{ DeviceType::Oscilloscope, QString("Oscilloscope") },
 	{ DeviceType::Multimeter, QString("Multimeter") },
@@ -692,6 +695,15 @@ config_key_name_map_t get_config_key_name_map();
 
 
 /**
+ * Check if the device type is supported by SmuView.
+ *
+ * @param device_type The type to check.
+ *
+ * @return true, if the device is supported.
+ */
+bool is_supported_device(DeviceType device_type);
+
+/**
  * Check if the driver is supported by SmuView.
  *
  * @param sr_driver The sigrok Driver to check.
@@ -699,6 +711,15 @@ config_key_name_map_t get_config_key_name_map();
  * @return true, if the driver is supported.
  */
 bool is_supported_driver(shared_ptr<sigrok::Driver> sr_driver);
+
+/**
+ * Check if the device type is a power supply or a electronic load.
+ *
+ * @param device_type The device type to check.
+ *
+ * @return true, if the device type is a power supply or a electronic load.
+ */
+bool is_source_sink_device(DeviceType device_type);
 
 /**
  * Check if the driver is a power supply or a electronic load.
@@ -710,6 +731,15 @@ bool is_supported_driver(shared_ptr<sigrok::Driver> sr_driver);
 bool is_source_sink_driver(shared_ptr<sigrok::Driver> sr_driver);
 
 /**
+ * Check if the device type is a measurement device (dmm, lcr meter, ...).
+ *
+ * @param device_type The device type to check.
+ *
+ * @return true, if the device type is a measurement device.
+ */
+ bool is_measurement_device(DeviceType device_type);
+
+/**
  * Check if the driver is a measurement device (dmm, lcr meter, ...).
  *
  * @param sr_driver The sigrok Driver to check.
@@ -719,6 +749,15 @@ bool is_source_sink_driver(shared_ptr<sigrok::Driver> sr_driver);
  bool is_measurement_driver(shared_ptr<sigrok::Driver> sr_driver);
 
 /**
+ * Check if the device type is a demo device.
+ *
+ * @param device_type The device type to check.
+ *
+ * @return true, if the device type is a demo device.
+ */
+ bool is_demo_device(DeviceType device_type);
+
+/**
  * Check if the driver is a demo device.
  *
  * @param sr_driver The sigrok Driver to check.
@@ -726,6 +765,15 @@ bool is_source_sink_driver(shared_ptr<sigrok::Driver> sr_driver);
  * @return true, if the driver is a demo device.
  */
  bool is_demo_driver(shared_ptr<sigrok::Driver> sr_driver);
+
+/**
+ * Check if the device type is an oscilloscope.
+ *
+ * @param device_type The device type to check.
+ *
+ * @return true, if the device type is an oscilloscope.
+ */
+ bool is_oscilloscope_device(DeviceType device_type);
 
 /**
  * Check if the driver is an oscilloscope.
@@ -753,6 +801,15 @@ DeviceType get_device_type(const sigrok::ConfigKey *sr_config_key);
  * @return The DeviceType.
  */
 DeviceType get_device_type(uint32_t sr_config_key);
+
+/**
+ * Return all device types for a sigrok driver instance
+ *
+ * @param sr_driver The sigrok driver
+ *
+ * @return A set of device types
+ */
+set<DeviceType> get_device_types(shared_ptr<sigrok::Driver> sr_driver);
 
 /**
  * Return the corresponding sigrok ConfigKey for a DeviceType
