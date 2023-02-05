@@ -50,6 +50,8 @@ using sigrok::Driver;
 
 using sv::devices::HardwareDevice;
 
+Q_DECLARE_METATYPE(const sigrok::ConfigKey *)
+
 namespace sv {
 namespace ui {
 namespace dialogs {
@@ -61,6 +63,7 @@ ConnectDialog::ConnectDialog(sv::DeviceManager &device_manager,
 	layout_(this),
 	form_(this),
 	form_layout_(&form_),
+	filters_(&form_),
 	drivers_(&form_),
 	scan_button_(tr("&Scan for devices using driver above"), this),
 	device_list_(this),
@@ -79,6 +82,10 @@ ConnectDialog::ConnectDialog(sv::DeviceManager &device_manager,
 	connect(this, &ConnectDialog::populate_serials_done,
 		this, &ConnectDialog::populate_serials_finish);
 
+	populate_filters();
+	connect(&filters_, QOverload<int>::of(&QComboBox::activated),
+		this, &ConnectDialog::filter_selected);
+
 	populate_drivers();
 	connect(&drivers_, QOverload<int>::of(&QComboBox::activated),
 		this, &ConnectDialog::driver_selected);
@@ -86,6 +93,7 @@ ConnectDialog::ConnectDialog(sv::DeviceManager &device_manager,
 	form_.setLayout(&form_layout_);
 
 	QVBoxLayout *vbox_drv = new QVBoxLayout;
+	vbox_drv->addWidget(&filters_);
 	vbox_drv->addWidget(&drivers_);
 	QGroupBox *groupbox_drv = new QGroupBox(tr("Step 1: Choose the driver"));
 	groupbox_drv->setLayout(vbox_drv);
@@ -213,17 +221,50 @@ shared_ptr<HardwareDevice> ConnectDialog::get_selected_device() const
 	return item->data(Qt::UserRole).value<shared_ptr<HardwareDevice>>();
 }
 
-void ConnectDialog::populate_drivers()
+void ConnectDialog::populate_drivers(std::set<const sigrok::ConfigKey *> key_filters)
 {
+	drivers_.clear();
+
 	for (const auto &entry : device_manager_.context()->drivers()) {
 		auto name = entry.first;
 		auto sr_driver = entry.second;
 
-		if (sv::devices::deviceutil::is_supported_driver(sr_driver)) {
-			drivers_.addItem(QString("%1 (%2)").arg(
-				sr_driver->long_name().c_str(), name.c_str()),
-				QVariant::fromValue(sr_driver));
+		// No filter -> accept any device
+		bool device_match_filter = false;
+		if (key_filters.empty())
+			device_match_filter = true;
+
+		// Filters -> accept device that match any filter
+		else {
+			for (auto &filter_entry : key_filters) {
+				if (sr_driver->config_keys().count(filter_entry) > 0) {
+					device_match_filter = true;
+					break;
+				}
+			}
 		}
+
+		if (sv::devices::deviceutil::is_supported_driver(sr_driver) &&
+				device_match_filter)
+			drivers_.addItem(QString("%1 (%2)").arg(sr_driver->long_name().c_str(), name.c_str()),
+				QVariant::fromValue(sr_driver));
+	}
+}
+
+void ConnectDialog::populate_filters()
+{
+	// Create a map so we get items ordered by name
+	std::map<QString, QVariant> nameToDataMap;
+	for (const auto &type : sv::devices::deviceutil::device_type_sr_config_key_map) {
+		QString type_string = sv::devices::deviceutil::format_device_type(type.first);
+		QVariant data = QVariant::fromValue(type.second);
+		nameToDataMap[type_string] = data;
+	}
+
+	// Each known device type is populated as an entry
+	filters_.addItem("Any device type");
+	for (const auto &item : nameToDataMap) {
+		filters_.addItem(item.first, item.second);
 	}
 }
 
@@ -376,6 +417,18 @@ void ConnectDialog::scan_pressed()
 
 	device_list_.setCurrentRow(0);
 	button_box_.button(QDialogButtonBox::Ok)->setDisabled(device_list_.count() == 0);
+}
+
+void ConnectDialog::filter_selected(int index)
+{
+	std::set<const sigrok::ConfigKey *> filters_set;
+
+	if (filters_.itemData(index).isValid()) {
+		QVariant data = filters_.itemData(index);
+		filters_set.insert(data.value<const sigrok::ConfigKey *>());
+	}
+
+	populate_drivers(filters_set);
 }
 
 void ConnectDialog::driver_selected(int index)
