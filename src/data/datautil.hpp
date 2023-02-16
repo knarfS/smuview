@@ -78,7 +78,6 @@ enum class Quantity
 	Conductance,
 	/** Electrical power, usually in W, or dBm. */
 	Power,
-	/** TODO: Implement in libsigrok */
 	ElectricCharge,
 	/** Gain (a transistor's gain, or hFE, for example). */
 	Gain,
@@ -425,6 +424,7 @@ map<const sigrok::Quantity *, Quantity> sr_quantity_quantity_map = {
 	{ sigrok::Quantity::MASS, Quantity::Mass },
 	{ sigrok::Quantity::HARMONIC_RATIO, Quantity::HarmonicRatio },
 	{ sigrok::Quantity::ENERGY, Quantity::Energy },
+	{ sigrok::Quantity::ELECTRIC_CHARGE, Quantity::ElectricCharge },
 };
 
 map<Quantity, const sigrok::Quantity *> quantity_sr_quantity_map = {
@@ -462,6 +462,8 @@ map<Quantity, const sigrok::Quantity *> quantity_sr_quantity_map = {
 	{ Quantity::Mass, sigrok::Quantity::MASS },
 	{ Quantity::HarmonicRatio, sigrok::Quantity::HARMONIC_RATIO },
 	{ Quantity::Energy, sigrok::Quantity::ENERGY },
+	{ Quantity::ElectricCharge, sigrok::Quantity::ELECTRIC_CHARGE },
+
 };
 
 map<const sigrok::QuantityFlag *, QuantityFlag> sr_quantity_flag_quantity_flag_map = {
