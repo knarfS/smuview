@@ -299,10 +299,9 @@ void GenerateWaveformDialog::accept()
 		else if (w_type == WaveformType::Triangle)
 			value = (std::asin(std::sin(x))) / (pi/2);
 		else if (w_type == WaveformType::Sawtooth)
-			// y = −arctan(cotan(x))
-			value = -1 * std::atan(1 / std::tan(x)) / (pi/2);
+			value = std::fmod(x / pi, 2.0) - 1.0;
 		else if (w_type == WaveformType::SawtoothInv)
-			value = std::atan(1 / std::tan(x)) / (pi/2);
+			value = -std::fmod(x / pi, 2.0) + 1.0;
 		else
 			value = 0;
 
