@@ -85,10 +85,23 @@ PowerPanelView::~PowerPanelView()
 
 QString PowerPanelView::title() const
 {
-	QString title = tr("Power Panel");
-	if (voltage_signal_ && current_signal_)
-		title = title.append(" ").append(voltage_signal_->display_name()).
-			append(" / ").append(current_signal_->display_name());
+	QString title = tr("Power Panel : ");
+	if (voltage_signal_ && current_signal_) {
+		auto voltage_device = voltage_signal_->parent_channel()->parent_device();
+		auto current_device = current_signal_->parent_channel()->parent_device();
+
+		if (voltage_device == current_device)
+			title = title.append("%1 %2 / %3")
+					.arg(voltage_device->display_name(session_.device_manager()))
+					.arg(voltage_signal_->display_name())
+					.arg(current_signal_->display_name());
+		else
+			title = title.append("%1 %2 / %3 %4")
+					.arg(voltage_device->display_name(session_.device_manager()))
+					.arg(voltage_signal_->display_name())
+					.arg(current_device->display_name(session_.device_manager()))
+					.arg(current_signal_->display_name());
+	}
 
 	return title;
 }
