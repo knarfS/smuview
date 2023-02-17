@@ -60,28 +60,65 @@ void SourceSinkDevice::init_configurables()
 	for (const auto &c_pair : configurable_map_) {
 		auto configurable = c_pair.second;
 
-		// Check if the device has the config key "Range". If so, the config
-		// keys "VoltageTarget" and "CurrentLimit" could have different
-		// min/max/step values for each "Range" value!
-		if (configurable->property_map().count(ConfigKey::Range) > 0 &&
-			configurable->property_map().count(ConfigKey::VoltageTarget) > 0) {
+		/*
+		 * Check if the device has the config key `Range`. If so, the config keys
+		 * `VoltageTarget`, `CurrentLimit`, `OverVoltageProtectionThreshold`,
+		 * `OverCurrentProtectionThreshold` and `UnderVoltageConditionThreshold`
+		 * could have different min/max/step values for each "Range" value!
+		 */
+		if (configurable->property_map().count(ConfigKey::Range) > 0) {
+			auto property_map = configurable->property_map();
+			auto range_property = property_map[ConfigKey::Range];
 
-			auto range_property = configurable->property_map()[ConfigKey::Range];
-			auto volt_property =
-				configurable->property_map()[ConfigKey::VoltageTarget];
-			connect(
-				range_property.get(), &data::properties::BaseProperty::value_changed,
-				volt_property.get(), &data::properties::BaseProperty::list_config);
-		}
-		if (configurable->property_map().count(ConfigKey::Range) > 0 &&
-			configurable->property_map().count(ConfigKey::CurrentLimit) > 0) {
+			if (property_map.count(ConfigKey::VoltageTarget) > 0) {
+				auto volt_property =
+					configurable->property_map()[ConfigKey::VoltageTarget];
+				connect(
+					range_property.get(),
+					&data::properties::BaseProperty::value_changed,
+					volt_property.get(),
+					&data::properties::BaseProperty::list_config);
+			}
 
-			auto range_property = configurable->property_map()[ConfigKey::Range];
-			auto current_property =
-				configurable->property_map()[ConfigKey::CurrentLimit];
-			connect(
-				range_property.get(), &data::properties::BaseProperty::value_changed,
-				current_property.get(), &data::properties::BaseProperty::list_config);
+			if (property_map.count(ConfigKey::CurrentLimit) > 0) {
+				auto current_property =
+					configurable->property_map()[ConfigKey::CurrentLimit];
+				connect(
+					range_property.get(),
+					&data::properties::BaseProperty::value_changed,
+					current_property.get(),
+					&data::properties::BaseProperty::list_config);
+			}
+
+			if (property_map.count(ConfigKey::OverVoltageProtectionThreshold) > 0) {
+				auto ovp_threshold_property =
+					configurable->property_map()[ConfigKey::OverVoltageProtectionThreshold];
+				connect(
+					range_property.get(),
+					&data::properties::BaseProperty::value_changed,
+					ovp_threshold_property.get(),
+					&data::properties::BaseProperty::list_config);
+			}
+
+			if (property_map.count(ConfigKey::OverCurrentProtectionThreshold) > 0) {
+				auto ocp_threshold_property =
+					configurable->property_map()[ConfigKey::OverCurrentProtectionThreshold];
+				connect(
+					range_property.get(),
+					&data::properties::BaseProperty::value_changed,
+					ocp_threshold_property.get(),
+					&data::properties::BaseProperty::list_config);
+			}
+
+			if (property_map.count(ConfigKey::UnderVoltageConditionThreshold) > 0) {
+				auto uvc_threshold_property =
+					configurable->property_map()[ConfigKey::UnderVoltageConditionThreshold];
+				connect(
+					range_property.get(),
+					&data::properties::BaseProperty::value_changed,
+					uvc_threshold_property.get(),
+					&data::properties::BaseProperty::list_config);
+			}
 		}
 	}
 }
@@ -286,7 +323,7 @@ bool SourceSinkDevice::get_channel_name_suffix(string &channel_suffix,
 			continue;
 
 		tmp_ch_suffix = channel_name.substr(
-			 prefix.length(), channel_name.length());
+			prefix.length(), channel_name.length());
 		if (is_initialized && channel_suffix == tmp_ch_suffix)
 			return true;
 		if (!is_initialized) {
