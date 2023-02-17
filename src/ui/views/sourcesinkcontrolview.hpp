@@ -83,6 +83,7 @@ private:
 	ui::datatypes::BoolLed *uvc_led_;
 	ui::datatypes::BoolButton *enable_button_;
 	ui::datatypes::StringComboBox *regulation_box_;
+	ui::datatypes::StringComboBox *range_box_;
 	ui::datatypes::DoubleControl *voltage_control_;
 	ui::datatypes::DoubleControl *current_control_;
 	ui::datatypes::ThresholdControl *ovp_control_;

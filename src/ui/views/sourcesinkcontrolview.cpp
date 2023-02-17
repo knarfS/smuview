@@ -82,12 +82,23 @@ void SourceSinkControlView::setup_ui()
 	//info_layout->addWidget(enable_button_, 0, 0, 2, 1,  Qt::AlignLeft);
 	info_layout->addWidget(enable_button_, 0, 0, Qt::AlignLeft);
 
-	// Regulation
+	// Regulation selector (sinks) / range selector (power supplies)
 	if (configurable_->device_type() == devices::DeviceType::ElectronicLoad) {
 		regulation_box_ = new ui::datatypes::StringComboBox(
 			configurable_->get_property(ConfigKey::Regulation), true, true);
 		info_layout->addWidget(regulation_box_, 1, 0, Qt::AlignLeft);
 	}
+	else if (configurable_->device_type() == devices::DeviceType::PowerSupply &&
+		(configurable_->has_get_config(ConfigKey::Range) ||
+		configurable_->has_set_config(ConfigKey::Range) ||
+		configurable_->has_list_config(ConfigKey::Range))) {
+
+		range_box_ = new ui::datatypes::StringComboBox(
+			configurable_->get_property(ConfigKey::Range), true, true);
+		info_layout->addWidget(range_box_, 1, 0, Qt::AlignLeft);
+	}
+
+	// Regulation indicators for power supplies
 	if (configurable_->device_type() == devices::DeviceType::PowerSupply) {
 		cv_led_ = new ui::datatypes::StringLed(
 			configurable_->get_property(ConfigKey::Regulation),
@@ -101,6 +112,7 @@ void SourceSinkControlView::setup_ui()
 		info_layout->addWidget(cc_led_, 1, 1, Qt::AlignLeft);
 	}
 
+	// Protection indicators
 	ovp_led_ = new ui::datatypes::BoolLed(
 		configurable_->get_property(ConfigKey::OverVoltageProtectionActive),
 		true, red_icon, grey_icon, grey_icon, tr("OVP"));
@@ -122,30 +134,25 @@ void SourceSinkControlView::setup_ui()
 
 	QHBoxLayout *ctrl_layout = new QHBoxLayout();
 
-	// TODO: Change control for regulation mode (CV, CC, CP, CR) for sinks
+	// TODO: Change control when switching regulation mode for sinks
 	if (configurable_->has_get_config(ConfigKey::VoltageTarget) ||
 		configurable_->has_set_config(ConfigKey::VoltageTarget)) {
 
 		voltage_control_ = new ui::datatypes::DoubleControl(
 			configurable_->get_property(ConfigKey::VoltageTarget),
 			true, true, tr("Voltage"));
-		/*
-		 * The voltage control and the current control might vary in height,
-		 * because the scale numbering of the knobs are probably different.
-		 */
 		voltage_control_->setSizePolicy(
 			QSizePolicy::Fixed, QSizePolicy::MinimumExpanding);
 		ctrl_layout->addWidget(voltage_control_);
 	}
 
-	// TODO: Change control for regulation mode (CV, CC, CP, CR) for sinks
+	// TODO: Change control when switching regulation mode for sinks
 	if (configurable_->has_get_config(ConfigKey::CurrentLimit) ||
 		configurable_->has_set_config(ConfigKey::CurrentLimit)) {
 
 		current_control_ = new ui::datatypes::DoubleControl(
 			configurable_->get_property(ConfigKey::CurrentLimit),
 			true, true, tr("Current"));
-		// See above
 		current_control_->setSizePolicy(
 			QSizePolicy::Fixed, QSizePolicy::MinimumExpanding);
 		ctrl_layout->addWidget(current_control_, 1, Qt::AlignLeft);
@@ -197,9 +204,9 @@ SourceSinkControlView *SourceSinkControlView::init_from_settings(
 {
 	auto configurable = SettingsManager::restore_configurable(
 		session, settings, origin_device);
-	if (configurable)
-		return new SourceSinkControlView(session, configurable, uuid);
-	return nullptr;
+	if (!configurable)
+		return nullptr;
+	return new SourceSinkControlView(session, configurable, uuid);
 }
 
 } // namespace views
