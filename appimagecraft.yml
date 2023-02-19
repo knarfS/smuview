@@ -41,7 +41,7 @@ scripts:
     - |2
       # Build libserialport and libsigrok
       for i in libserialport libsigrok; do
-          git clone --depth=1 https://github.com/sigrokproject/"$i"
+          git clone --depth=1 git://sigrok.org/"$i"
           pushd "$i"
           ./autogen.sh
           # Once libserialport is built, libsigrok can be linked against it
