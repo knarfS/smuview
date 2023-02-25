@@ -132,6 +132,7 @@ jobs:
             -DCMAKE_INSTALL_PREFIX:PATH=$INSTALL_DIR \
             -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
             -DDISABLE_WERROR=y \
+            -DENABLE_TESTS=FALSE \
             ..
           make $PARALLEL $V
           make install $V
