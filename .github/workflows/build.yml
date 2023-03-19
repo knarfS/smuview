@@ -22,6 +22,8 @@ env:
   INSTALL_DIR: "${{ github.workspace }}/sr"
   # Git URL for the sigrok dependencies
   SIGROK_REPO_BASE: "git://sigrok.org"
+  # Git branch for the libsigrok dependency
+  LIBSIGROK_BRANCH: "master"
   # Build type for SmuView (Debug, Release, RelWithDebInfo, MinSizeRel)
   BUILD_TYPE: "Release"
   # Misc commands
