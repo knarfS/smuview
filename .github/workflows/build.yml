@@ -20,8 +20,10 @@ defaults:
 env:
   # The path where the compiled packages will be installed.
   INSTALL_DIR: "${{ github.workspace }}/sr"
-  # Git URL for the sigrok dependencies
-  SIGROK_REPO_BASE: "git://sigrok.org"
+  # Git URL for the libserialport dependency
+  LIBSERIALPORT_REPO: "git://sigrok.org/libserialport"
+  # Git URL for the libsigrok dependency
+  LIBSIGROK_REPO: "git://sigrok.org/libsigrok"
   # Git branch for the libsigrok dependency
   LIBSIGROK_BRANCH: "master"
   # Build type for SmuView (Debug, Release, RelWithDebInfo, MinSizeRel)
