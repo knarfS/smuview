@@ -1,60 +1,58 @@
-# Find Qwt
-# ~~~~~~~~
-# Copyright (c) 2010, Tim Sutton <tim at linfiniti.com>
-# Redistribution and use is allowed according to the terms of the BSD license.
-# For details see the accompanying COPYING-CMAKE-SCRIPTS file.
-#
-# Once run this will define:
-#
-# QWT_FOUND       = system has QWT lib
-# QWT_LIBRARY     = full path to the QWT library
-# QWT_INCLUDE_DIR = where to find headers
-#
+##
+## This file is part of the SmuView project.
+##
+## Copyright (C) 2025 Frank Stettner <frank-stettner@gmx.net>
+##
+## This program is free software: you can redistribute it and/or modify
+## it under the terms of the GNU General Public License as published by
+## the Free Software Foundation, either version 2 of the License, or
+## (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+##
+## You should have received a copy of the GNU General Public License
+## along with this program.  If not, see <http://www.gnu.org/licenses/>.
+##
 
+include(FindPackageHandleStandardArgs)
 
-set(QWT_LIBRARY_NAMES qwt-qt5 qwt6-qt5 qwt)
-set(QWT_HOMEBREW_INSTALL_PATH /usr/local/opt/qwt-qt5)
-file(GLOB QWT_CUSTOM_INSTALL_PATH /usr/local/qwt-6.1.[0-9])
+set(QWT_PATH_SUFFIXES qwt qwt6 qwt-qt5 qwt-qt6 qwt6-qt5 qwt6-qt5 qt5/qwt qt6/qwt qt5/qwt6 qt6/qwt6)
+set(QWT_LIBRARY_NAMES qwt qwt6 qwt-qt5 qwt-qt6 qwt6-qt5 qwt6-qt6)
 
-find_library(QWT_LIBRARY
-  NAMES ${QWT_LIBRARY_NAMES}
-  PATHS
-    /usr/lib
-    /usr/local/lib
-    "${QWT_HOMEBREW_INSTALL_PATH}/lib"
-    "${QWT_CUSTOM_INSTALL_PATH}/lib"
-    "$ENV{LIB_DIR}/lib"
-    "$ENV{LIB}"
+# Try to find Qwt in the user specivied CMAKE_PREFIX_PATH path
+find_path(QWT_INCLUDE_DIR NAMES qwt.h
+    NO_DEFAULT_PATH
+    PATHS ${CMAKE_PREFIX_PATH}
+    PATH_SUFFIXES include ${QWT_PATH_SUFFIXES}
+)
+find_library(QWT_LIBRARY NAMES ${QWT_LIBRARY_NAMES}
+    NO_DEFAULT_PATH
+    PATHS ${CMAKE_PREFIX_PATH}
+    PATH_SUFFIXES lib
 )
 
-set(_qwt_fw)
-if(QWT_LIBRARY MATCHES "/qwt.*\\.framework")
-  string(REGEX REPLACE "^(.*/qwt.*\\.framework).*$" "\\1" _qwt_fw "${QWT_LIBRARY}")
+# Now search in the default paths
+if(NOT QWT_INCLUDE_DIR OR NOT QWT_LIBRARY)
+  find_path(QWT_INCLUDE_DIR NAMES qwt.h
+    PATH_SUFFIXES ${QWT_PATH_SUFFIXES})
+  find_library(QWT_LIBRARY
+    NAMES ${QWT_LIBRARY_NAMES})
 endif()
 
-FIND_PATH(QWT_INCLUDE_DIR NAMES qwt.h PATHS
-  "${_qwt_fw}/Headers"
-  /usr/include
-  /usr/local/include
-  "${QWT_HOMEBREW_INSTALL_PATH}/include"
-  "${QWT_CUSTOM_INSTALL_PATH}/include"
-  "$ENV{LIB_DIR}/include"
-  "$ENV{INCLUDE}"
-  PATH_SUFFIXES qwt-qt5 qt5/qwt qwt qwt6
-)
+# Get version
+if(QWT_INCLUDE_DIR)
+  file(READ "${QWT_INCLUDE_DIR}/qwt_global.h" qwt_header)
+  string(REGEX REPLACE ".*QWT_VERSION_STR +\"([^\"]+)\".*" "\\1" QWT_VERSION_STR "${qwt_header}")
+endif()
 
-IF (QWT_INCLUDE_DIR AND QWT_LIBRARY)
-  SET(QWT_FOUND TRUE)
-ENDIF (QWT_INCLUDE_DIR AND QWT_LIBRARY)
+find_package_handle_standard_args(Qwt
+  REQUIRED_VARS QWT_LIBRARY QWT_INCLUDE_DIR
+  VERSION_VAR QWT_VERSION_STR)
 
-IF (QWT_FOUND)
-  FILE(READ ${QWT_INCLUDE_DIR}/qwt_global.h qwt_header)
-  STRING(REGEX REPLACE "^.*QWT_VERSION_STR +\"([^\"]+)\".*$" "\\1" QWT_VERSION_STR "${qwt_header}")
-  IF (NOT QWT_FIND_QUIETLY)
-    MESSAGE(STATUS "Found Qwt: ${QWT_LIBRARY} (${QWT_VERSION_STR})")
-  ENDIF (NOT QWT_FIND_QUIETLY)
-ELSE (QWT_FOUND)
-  IF (QWT_FIND_REQUIRED)
-    MESSAGE(FATAL_ERROR "Could not find Qwt")
-  ENDIF (QWT_FIND_REQUIRED)
-ENDIF (QWT_FOUND)
+if(QWT_FOUND)
+  mark_as_advanced(QWT_LIBRARY)
+  mark_as_advanced(QWT_INCLUDE_DIR)
+endif()
