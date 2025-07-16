@@ -19,7 +19,7 @@
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.15)
 
 project(smuview C CXX)
 
@@ -169,8 +169,7 @@ if(MINGW)
 	# static linking in the MXE cross build
 	set(PYBIND11_SUBDIRECTORY external/pybind11_2.9.2)
 else()
-	# Use pybind11 2.11 dev1 with the emum_docstring patch for all other builds
-	set(PYBIND11_SUBDIRECTORY external/pybind11_2.11_dev1)
+	set(PYBIND11_SUBDIRECTORY external/pybind11_3.0.0)
 endif()
 add_subdirectory(${PYBIND11_SUBDIRECTORY})
 # SmuView has its own copy of QCodeEditor
