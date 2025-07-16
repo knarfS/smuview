@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2019-2022 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2019-2025 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -100,7 +100,7 @@ void MonoFontDisplay::setup_ui()
 	layout_ = new QGridLayout();
 	// Set the margin and spacing to 0, so we can position the value and
 	// the unit by their baselines exactly.
-	layout_->setMargin(0);
+	layout_->setContentsMargins(0, 0, 0, 0);
 	layout_->setSpacing(0);
 
 	// Value

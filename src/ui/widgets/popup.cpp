@@ -24,7 +24,6 @@
 #include <QApplication>
 #include <QCloseEvent>
 #include <QDebug>
-#include <QDesktopWidget>
 #include <QEvent>
 #include <QLineEdit>
 #include <QMouseEvent>

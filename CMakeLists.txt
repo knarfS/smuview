@@ -3,7 +3,7 @@
 ##
 ## Copyright (C) 2012 Joel Holdsworth <joel@airwebreathe.org.uk>
 ## Copyright (C) 2012-2013 Alexandru Gagniuc <mr.nuke.me@gmail.com>
-## Copyright (C) 2017-2022 Frank Stettner <frank-stettner@gmx.net>
+## Copyright (C) 2017-2025 Frank Stettner <frank-stettner@gmx.net>
 ##
 ## This program is free software: you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.12)
 
 project(smuview C CXX)
 
@@ -47,9 +47,9 @@ if(POLICY CMP0054)
 	cmake_policy(SET CMP0054 NEW)
 endif()
 
-# SmuView, QCodeEditor and pybind11 only need C++11, but the upcoming Boost.Math
-# (Boost 1.82 release) library requires C++14 as minimum language standard.
-set(CMAKE_CXX_STANDARD 14)
+# Qt6 requires C++17
+set(CMAKE_CXX_STANDARD 17)
+set(REQUIRED_STD_CXX_FLAGS "-std=c++17")
 
 if(WIN32)
 	# On Windows/MinGW we need to statically link to libraries.
@@ -103,8 +103,18 @@ endif()
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+# TODO: Drop support for Qt < 5.15
+set(QT_NO_CREATE_VERSIONLESS_FUNCTIONS ON)
+set(QT_NO_CREATE_VERSIONLESS_TARGETS ON)
 
-find_package(Qt5 5.7 COMPONENTS Core Gui Widgets Svg REQUIRED)
+find_package(Qt6 6.0 COMPONENTS Core Gui Widgets Svg QUIET)
+if(Qt6_FOUND)
+	set(QT_VERSION_MAJOR 6)
+else()
+	find_package(Qt5 5.7 COMPONENTS Core Gui Widgets Svg REQUIRED)
+	set(QT_VERSION_MAJOR 5)
+endif()
 
 if(MINGW)
 	# MXE workaround: Use pkg-config to find Qt5 libs.
@@ -112,10 +122,14 @@ if(MINGW)
 	# Not required (and doesn't work) on MSYS2.
 	if(NOT DEFINED ENV{MSYSTEM})
 		pkg_check_modules(QT5ALL REQUIRED Qt5Widgets Qt5Gui Qt5Svg)
+		set(QT_VERSION_MAJOR 5)
 	endif()
 endif()
 
-set(QT_LIBRARIES Qt5::Gui Qt5::Widgets Qt5::Svg)
+set(QT_LIBRARIES
+	Qt${QT_VERSION_MAJOR}::Gui
+	Qt${QT_VERSION_MAJOR}::Widgets
+	Qt${QT_VERSION_MAJOR}::Svg)
 
 find_package(Qwt 6.1.2 REQUIRED)
 
@@ -124,7 +138,8 @@ set(BOOSTCOMPS)
 if(ENABLE_TESTS)
 	list(APPEND BOOSTCOMPS unit_test_framework)
 endif()
-find_package(Boost 1.54 COMPONENTS ${BOOSTCOMPS} REQUIRED)
+# CMP0167: CMake >= 3.30 has deprecated FindBoot(), but libboost >= 1.70 supplies a CMake config file
+find_package(Boost 1.70 COMPONENTS ${BOOSTCOMPS} CONFIG REQUIRED)
 
 # Find the platform's thread library (needed for C++11 threads).
 # This will set ${CMAKE_THREAD_LIBS_INIT} to the correct, OS-specific value.
@@ -390,8 +405,11 @@ if(WIN32)
 	list(APPEND smuview_SOURCES smuviewico.rc)
 endif()
 
-qt5_add_resources(smuview_RESOURCES_RCC ${smuview_RESOURCES})
-
+if(Qt6_FOUND)
+	qt6_add_resources(smuview_RESOURCES_RCC ${smuview_RESOURCES})
+else()
+	qt5_add_resources(smuview_RESOURCES_RCC ${smuview_RESOURCES})
+endif()
 
 #===============================================================================
 #= Global Definitions
@@ -400,11 +418,11 @@ qt5_add_resources(smuview_RESOURCES_RCC ${smuview_RESOURCES})
 add_definitions(-DQT_NO_KEYWORDS)
 add_definitions(-D__STDC_LIMIT_MACROS)
 add_definitions(-Wall -Wextra -Woverloaded-virtual -Wdeprecated-declarations) # -Weffc++ -Wconversion -Wsign-conversion)
-add_definitions(-std=c++14)
+add_definitions(${REQUIRED_STD_CXX_FLAGS})
 add_definitions(-DBOOST_MATH_DISABLE_FLOAT128=1)
 
 if(NOT DISABLE_WERROR)
-	#add_definitions(-Werror -pedantic-errors)
+	# add_definitions(-Werror -pedantic-errors)
 	add_definitions(-Werror=pedantic -pedantic-errors)
 endif()
 
@@ -483,8 +501,8 @@ if(WIN32)
 	# We also need QWindowsIntegrationPlugin, Qt5PlatformSupport, and all
 	# Qt libs and their dependencies.
 	add_definitions(-DQT_STATICPLUGIN)
-	list(APPEND SMUVIEW_LINK_LIBS Qt5::QSvgPlugin)
-	list(APPEND SMUVIEW_LINK_LIBS Qt5::QWindowsIntegrationPlugin)
+	list(APPEND SMUVIEW_LINK_LIBS Qt${QT_VERSION_MAJOR}::QSvgPlugin)
+	list(APPEND SMUVIEW_LINK_LIBS Qt${QT_VERSION_MAJOR}::QWindowsIntegrationPlugin)
 
 	# Form Qt 5.8 on, Qt5PlatformSupport is split into several plugins:
 	# QtAccessibilitySupport QtCliboardSupport QtEventDispatcherSupport
@@ -493,12 +511,12 @@ if(WIN32)
 	if(Qt5Core_VERSION VERSION_LESS "5.8.0")
 		list(APPEND SMUVIEW_LINK_LIBS -lQt5PlatformSupport ${QT5ALL_LDFLAGS})
 	else()
-		list(APPEND SMUVIEW_LINK_LIBS -lQt5AccessibilitySupport)
-		list(APPEND SMUVIEW_LINK_LIBS -lQt5EventDispatcherSupport)
-		list(APPEND SMUVIEW_LINK_LIBS -lQt5FontDatabaseSupport)
-		list(APPEND SMUVIEW_LINK_LIBS -lQt5ThemeSupport)
-		#list(APPEND SMUVIEW_LINK_LIBS -lQt5ClipboardSupport)
-		#list(APPEND SMUVIEW_LINK_LIBS -lQt5GraphicsSupport)
+		list(APPEND SMUVIEW_LINK_LIBS -lQt${QT_VERSION_MAJOR}AccessibilitySupport)
+		list(APPEND SMUVIEW_LINK_LIBS -lQt${QT_VERSION_MAJOR}EventDispatcherSupport)
+		list(APPEND SMUVIEW_LINK_LIBS -lQt${QT_VERSION_MAJOR}FontDatabaseSupport)
+		list(APPEND SMUVIEW_LINK_LIBS -lQt${QT_VERSION_MAJOR}ThemeSupport)
+		#list(APPEND SMUVIEW_LINK_LIBS -lQt${QT_VERSION_MAJOR}ClipboardSupport)
+		#list(APPEND SMUVIEW_LINK_LIBS -lQt${QT_VERSION_MAJOR}GraphicsSupport)
 		list(APPEND SMUVIEW_LINK_LIBS ${QT5ALL_LDFLAGS})
 	endif()
 endif()
