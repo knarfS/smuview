@@ -116,7 +116,7 @@ void HardwareChannel::push_interleaved_samples(const float *data,
 
 	static_pointer_cast<data::AnalogTimeSignal>(actual_signal_)->push_samples(
 		deint_data.get(), sample_count, timestamp, samplerate,
-		sr_analog->unitsize(), total_digits, sr_analog->digits());
+		sizeof(float), total_digits, sr_analog->digits());
 }
 
 } // namespace channels
