@@ -244,7 +244,7 @@ void DataView::on_action_auto_scroll_triggered()
 void DataView::on_action_add_signal_triggered()
 {
 	shared_ptr<sv::devices::BaseDevice> selected_device;
-	if (signals_[0])
+	if (!signals_.empty() && signals_[0])
 		selected_device = signals_[0]->parent_channel()->parent_device();
 
 	ui::dialogs::SelectSignalDialog dlg(session(), selected_device);
