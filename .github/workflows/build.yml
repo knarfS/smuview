@@ -243,10 +243,11 @@ jobs:
           path: smuview/build/contrib/SmuView*installer.exe
 
 
+
   build_macos:
     name: SmuView MacOS build (${{ matrix.compiler.compiler }})
 
-    runs-on: macos-11
+    runs-on: macos-15
 
     strategy:
       matrix:
@@ -257,57 +258,47 @@ jobs:
     env:
       CC: ${{ matrix.compiler.cc }}
       CXX: ${{ matrix.compiler.cxx }}
-      # We use Homebrew Qt 5.15.x (current)
-      HB_QTVER: "qt@5"
-      # We use Homebrew Python 3.x (current)
-      HB_PYVER: "python@3"
+      BREW_QT_VERSION: "qt"
+      BREW_QWT_VERSION: "qwt"
+      BREW_PYTHON_VERSION: "python@3"
 
     steps:
       - name: Install dependencies
         run: |
           brew install autoconf automake autoconf-archive pkg-config \
             libtool libzip libusb libftdi hidapi nettle check doxygen swig \
-            glib glibmm@2.66 cmake "$HB_PYVER" boost "$HB_QTVER" qwt-qt5
-
-      - name: Checkout sigrok-utils
-        uses: actions/checkout@v3
-        with:
-          repository: knarfS/sigrok-util
-          path: sigrok-util
-          ref: github
-
-      - name: Build dependencies
-        run: |
-          cd sigrok-util/cross-compile/github-actions
-          source sigrok-macos-init-toolchain.sh
-          ./sigrok-macos-build-dependencies.sh
+            glib glibmm@2.66 cmake "${BREW_PYTHON_VERSION}" boost "${BREW_QT_VERSION}" "${BREW_QWT_VERSION}"
 
       - name: Checkout smuview
         uses: actions/checkout@v3
         with:
           path: smuview
 
+      - name: Build custom sigrok
+        run: |
+          smuview/ci/scripts/macos/build_sigrok.sh
+
       - name: Build smuview
         run: |
-          source sigrok-util/cross-compile/github-actions/sigrok-macos-init-toolchain.sh
           mkdir -p smuview/build
           cd smuview/build
-          PKG_CONFIG_PATH=$P cmake \
-            -DCMAKE_INSTALL_PREFIX:PATH=$INSTALL_DIR \
-            -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+          PKG_CONFIG_PATH="$INSTALL_DIR/lib/pkgconfig" cmake \
+            -DCMAKE_INSTALL_PREFIX:PATH="${INSTALL_DIR}" \
+            -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
+            -DQwt_ROOT="$(brew --prefix "${BREW_QWT_VERSION}")" \
+            -DPython_ROOT_DIR="$(brew --prefix "${BREW_PYTHON_VERSION}")" \
+            -DPython_FIND_FRAMEWORK=NEVER \
             -DDISABLE_WERROR=FALSE \
             -DENABLE_TESTS=TRUE \
             ..
-          make $PARALLEL $V
-          make install $V
+          make -j"$(sysctl -n hw.ncpu)"
+          make install
 
       - name: Build DMG
         run: |
           # Source SmuView versions and names
           source smuview/build/contrib/config_version.sh
-          cd sigrok-util/cross-compile/github-actions
-          source sigrok-macos-init-toolchain.sh
-          ./sigrok-macos-create-dmg.sh
+          smuview/ci/scripts/macos/build_dmg.sh
 
       - name: Upload artifact
         # Only upload artifact from the LLVM build!
@@ -315,7 +306,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: SmuView DMG
-          path: sigrok-util/cross-compile/github-actions/SmuView*.dmg
+          path: SmuView*.dmg
 
 
   publish:
