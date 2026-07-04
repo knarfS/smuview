@@ -1,7 +1,7 @@
 ##
 ## This file is part of the SmuView project.
 ##
-## Copyright (C) 2025 Frank Stettner <frank-stettner@gmx.net>
+## Copyright (C) 2025-2026 Frank Stettner <frank-stettner@gmx.net>
 ##
 ## This program is free software: you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -19,40 +19,61 @@
 
 include(FindPackageHandleStandardArgs)
 
-set(QWT_PATH_SUFFIXES qwt qwt6 qwt-qt5 qwt-qt6 qwt6-qt5 qwt6-qt5 qt5/qwt qt6/qwt qt5/qwt6 qt6/qwt6)
-set(QWT_LIBRARY_NAMES qwt qwt6 qwt-qt5 qwt-qt6 qwt6-qt5 qwt6-qt6)
+# Determin which Qt major version is used
+if(NOT QT_VERSION_MAJOR)
+	if(TARGET Qt6::Core)
+		set(QT_VERSION_MAJOR 6)
+	elseif(TARGET Qt5::Core)
+		set(QT_VERSION_MAJOR 5)
+	else()
+		message(WARNING "FindQwt: Qt5::Core / Qt6::Core target not found! "
+			"Call find_package(Qt6/Qt5) BEFORE find_package(Qwt). "
+			"Falling back to an unordered search which may pick the wrong Qwt build.")
+	endif()
+endif()
 
-# Try to find Qwt in the user specivied CMAKE_PREFIX_PATH path
+if(QT_VERSION_MAJOR EQUAL 6)
+	set(QWT_PATH_SUFFIXES qwt6-qt6 qwt-qt6 qt6/qwt6 qt6/qwt)
+	set(QWT_LIBRARY_NAMES qwt6-qt6 qwt-qt6)
+elseif(QT_VERSION_MAJOR EQUAL 5)
+	set(QWT_PATH_SUFFIXES qwt6-qt5 qwt-qt5 qt5/qwt6 qt5/qwt)
+	set(QWT_LIBRARY_NAMES qwt6-qt5 qwt-qt5)
+endif()
+# Version-less fallbacks
+list(APPEND QWT_PATH_SUFFIXES qwt qwt6)
+list(APPEND QWT_LIBRARY_NAMES qwt qwt6)
+
+# Try to find Qwt in the user specified CMAKE_PREFIX_PATH path
 find_path(QWT_INCLUDE_DIR NAMES qwt.h
-    NO_DEFAULT_PATH
-    PATHS ${CMAKE_PREFIX_PATH}
-    PATH_SUFFIXES include ${QWT_PATH_SUFFIXES}
+	NO_DEFAULT_PATH
+	PATHS ${CMAKE_PREFIX_PATH}
+	PATH_SUFFIXES include lib/qwt.framework/Headers ${QWT_PATH_SUFFIXES}
 )
 find_library(QWT_LIBRARY NAMES ${QWT_LIBRARY_NAMES}
-    NO_DEFAULT_PATH
-    PATHS ${CMAKE_PREFIX_PATH}
-    PATH_SUFFIXES lib
+	NO_DEFAULT_PATH
+	PATHS ${CMAKE_PREFIX_PATH}
+	PATH_SUFFIXES lib ${QWT_PATH_SUFFIXES}
 )
 
 # Now search in the default paths
 if(NOT QWT_INCLUDE_DIR OR NOT QWT_LIBRARY)
-  find_path(QWT_INCLUDE_DIR NAMES qwt.h
-    PATH_SUFFIXES ${QWT_PATH_SUFFIXES})
-  find_library(QWT_LIBRARY
-    NAMES ${QWT_LIBRARY_NAMES})
+	find_path(QWT_INCLUDE_DIR NAMES qwt.h
+		PATH_SUFFIXES include ${QWT_PATH_SUFFIXES})
+	find_library(QWT_LIBRARY NAMES ${QWT_LIBRARY_NAMES}
+		PATH_SUFFIXES lib ${QWT_PATH_SUFFIXES})
 endif()
 
 # Get version
-if(QWT_INCLUDE_DIR)
-  file(READ "${QWT_INCLUDE_DIR}/qwt_global.h" qwt_header)
-  string(REGEX REPLACE ".*QWT_VERSION_STR +\"([^\"]+)\".*" "\\1" QWT_VERSION_STR "${qwt_header}")
+if(QWT_INCLUDE_DIR AND EXISTS "${QWT_INCLUDE_DIR}/qwt_global.h")
+	file(READ "${QWT_INCLUDE_DIR}/qwt_global.h" qwt_header)
+	string(REGEX REPLACE ".*QWT_VERSION_STR +\"([^\"]+)\".*" "\\1" QWT_VERSION_STR "${qwt_header}")
 endif()
 
 find_package_handle_standard_args(Qwt
-  REQUIRED_VARS QWT_LIBRARY QWT_INCLUDE_DIR
-  VERSION_VAR QWT_VERSION_STR)
+	REQUIRED_VARS QWT_LIBRARY QWT_INCLUDE_DIR
+	VERSION_VAR QWT_VERSION_STR)
 
 if(QWT_FOUND)
-  mark_as_advanced(QWT_LIBRARY)
-  mark_as_advanced(QWT_INCLUDE_DIR)
+	mark_as_advanced(QWT_LIBRARY)
+	mark_as_advanced(QWT_INCLUDE_DIR)
 endif()
