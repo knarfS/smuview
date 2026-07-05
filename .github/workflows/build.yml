@@ -301,12 +301,58 @@ jobs:
           smuview/ci/scripts/macos/build_dmg.sh
 
       - name: Upload artifact
-        # Only upload artifact from the LLVM build!
-        if: startsWith(matrix.compiler.compiler, 'LLVM')
         uses: actions/upload-artifact@v3
         with:
-          name: SmuView DMG
+          name: SmuView ${{ matrix.compiler.compiler }} DMG
           path: SmuView*.dmg
+
+
+  verify_macos_dmg:
+    name: "MacOS DMG verification"
+
+    runs-on: macos-latest
+
+    needs: build_macos
+
+    strategy:
+      matrix:
+        compiler: ["GCC", "LLVM"]
+
+    steps:
+      - name: Checkout smuview
+        uses: actions/checkout@v7
+        with:
+          path: smuview
+
+      - name: Download SmuView DMG
+        uses: actions/download-artifact@v4
+        with:
+          name: SmuView ${{ matrix.compiler }} DMG
+
+      - name: Mount DMG and copy
+        run: |
+          mv SmuView*.dmg SmuView.dmg
+          hdiutil attach SmuView.dmg -nobrowse -mountpoint /Volumes/SmuView
+          cp -R "/Volumes/SmuView/SmuView.app" /Applications/
+          hdiutil detach /Volumes/SmuView
+
+      - name: Launch and verify
+        run: |
+          smuview/ci/scripts/macos/verify_dmg.sh
+
+      - name: Upload screenshot
+        if: always() && hashFiles('desktop-screenshot-macos.png') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-screenshot-macos
+          path: desktop-screenshot-macos.png
+
+      - name: Selftest
+        run: |
+          if ! "/Applications/SmuView.app/Contents/MacOS/SmuView" --selftest; then
+            echo "::error::Selftest failed"
+            exit 1
+          fi
 
 
   publish:
@@ -321,7 +367,7 @@ jobs:
       - build_linux
       - build_appimage
       - build_mxe
-      - build_macos
+      - verify_macos_dmg
 
     steps:
       - name: Install dependencies
