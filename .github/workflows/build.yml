@@ -238,7 +238,6 @@ jobs:
           path: smuview/build/packaging/mxe/SmuView*installer.exe
 
 
-
   build_macos:
     name: "MacOS build (${{ matrix.compiler.compiler }})"
 
@@ -302,6 +301,78 @@ jobs:
           path: SmuView*.dmg
 
 
+  verify_windows_installer:
+    name: "Windows Installer verification"
+
+    runs-on: windows-latest
+
+    needs: build_mxe
+
+    steps:
+      - name: Checkout smuview
+        uses: actions/checkout@v7
+        with:
+          path: smuview
+
+      - name: Download SmuView Windows Installer
+        uses: actions/download-artifact@v4
+        with:
+          name: SmuView NSIS x86_64 installer
+
+      - name: Disable crash dialogs
+        shell: pwsh
+        run: |
+          reg add "HKLM\SOFTWARE\Microsoft\Windows\Windows Error Reporting" /v Disabled /t REG_DWORD /d 1 /f
+          reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\AeDebug" /v Auto /t REG_SZ /d 0 /f
+          reg add "HKCU\SOFTWARE\Microsoft\Windows\Windows Error Reporting" /v DontShowUI /t REG_DWORD /d 1 /f
+
+      - name: Install tool "Dependencies"
+        shell: pwsh
+        run: choco install dependencies -y
+
+      - name: Silent install SmuView
+        shell: pwsh
+        run: |
+          Move-Item -Path "SmuView-*-installer.exe" -Destination "SmuView-installer.exe"
+          $installDir = "$env:ProgramFiles\SmuView"
+          Start-Process -FilePath "SmuView-installer.exe" -ArgumentList "/S /V4 /D=$installDir" -Wait
+
+      - name: Scan install tree for unresolved DLL imports
+        shell: pwsh
+        run: |
+          smuview/ci/scripts/windows/verify_dependencies.ps1
+
+      - name: Launch and verify SmuView
+        shell: pwsh
+        env:
+          QT_LOGGING_TO_CONSOLE: "1"
+          QT_FORCE_STDERR_LOGGING: "1"
+          QT_DEBUG_PLUGINS: "1"
+        run: |
+          smuview/ci/scripts/windows/verify_installer.ps1
+
+      - name: Upload screenshot
+        if: always() && hashFiles('desktop-screenshot-windows.png') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-screenshot-windows
+          path: desktop-screenshot-windows.png
+
+      - name: Selftest Smuview
+        shell: pwsh
+        env:
+          QT_LOGGING_TO_CONSOLE: "1"
+          QT_FORCE_STDERR_LOGGING: "1"
+          QT_DEBUG_PLUGINS: "1"
+        run: |
+          $exe = "$env:ProgramFiles\SmuView\smuview.exe"
+          & $exe --selftest 2>&1 | ForEach-Object { Write-Output $_ }
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "Selftest failed (exit code $LASTEXITCODE)"
+            exit 1
+          }
+
+
   verify_macos_dmg:
     name: "MacOS DMG verification"
 
@@ -361,7 +432,7 @@ jobs:
     needs:
       - build_linux
       - build_appimage
-      - build_mxe
+      - verify_windows_installer
       - verify_macos_dmg
 
     steps:
