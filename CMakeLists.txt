@@ -3,7 +3,7 @@
 ##
 ## Copyright (C) 2012 Joel Holdsworth <joel@airwebreathe.org.uk>
 ## Copyright (C) 2012-2013 Alexandru Gagniuc <mr.nuke.me@gmail.com>
-## Copyright (C) 2017-2025 Frank Stettner <frank-stettner@gmx.net>
+## Copyright (C) 2017-2026 Frank Stettner <frank-stettner@gmx.net>
 ##
 ## This program is free software: you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -115,16 +115,6 @@ else()
 	message(STATUS "Found Qt5: ${Qt5_VERSION}")
 endif()
 
-if(MINGW)
-	# MXE workaround: Use pkg-config to find Qt5 libs.
-	# https://github.com/mxe/mxe/issues/1642
-	# Not required (and doesn't work) on MSYS2.
-	if(NOT DEFINED ENV{MSYSTEM})
-		pkg_check_modules(QT5ALL REQUIRED Qt5Widgets Qt5Gui Qt5Svg)
-		set(QT_VERSION_MAJOR 5)
-	endif()
-endif()
-
 set(QT_LIBRARIES
 	Qt${QT_VERSION_MAJOR}::Gui
 	Qt${QT_VERSION_MAJOR}::Widgets
@@ -162,14 +152,7 @@ if(MINGW)
 endif()
 
 # SmuView has its own copy of pybind11
-if(MINGW)
-	# Use pybind11 2.9.2 with the emum_docstring patch for the MXE build. 2.9.2
-	# is the last pybind11 version that supports Python 3.4.4 which is needed for
-	# static linking in the MXE cross build
-	set(PYBIND11_SUBDIRECTORY external/pybind11_2.9.2)
-else()
-	set(PYBIND11_SUBDIRECTORY external/pybind11_3.0.0)
-endif()
+set(PYBIND11_SUBDIRECTORY external/pybind11_3.0.0)
 add_subdirectory(${PYBIND11_SUBDIRECTORY})
 # SmuView has its own copy of QCodeEditor
 add_subdirectory(external/QCodeEditor)
@@ -428,15 +411,6 @@ if(ENABLE_SIGNALS)
 	add_definitions(-DENABLE_SIGNALS)
 endif()
 
-if(MINGW)
-	# MXE workaround: Prevents compile error:
-	# mxe-git-x86_64/usr/lib/gcc/x86_64-w64-mingw32.static.posix/5.5.0/include/c++/cmath:1147:11: error: '::hypot' has not been declared
-	#    using ::hypot;
-	# Alternativ solution:
-	# Add "#include <cmath>" before the pybind11 includes in bindings.cpp and smuscriptrunner.cpp
-	add_compile_options(-D_hypot=hypot)
-endif()
-
 if(MINGW AND ${CMAKE_BUILD_TYPE} STREQUAL "Debug")
 	# Fix error "too many sections (37653)" and "file too big" for mingw/MXE when building for Debug
 	add_definitions(-Wa,-mbig-obj)
@@ -493,32 +467,6 @@ if(MINGW)
 	endif()
 endif()
 
-if(WIN32)
-	# On Windows we need to statically link the libqsvg imageformat
-	# plugin (and the QtSvg component) for SVG graphics/icons to work.
-	# We also need QWindowsIntegrationPlugin, Qt5PlatformSupport, and all
-	# Qt libs and their dependencies.
-	add_definitions(-DQT_STATICPLUGIN)
-	list(APPEND SMUVIEW_LINK_LIBS Qt${QT_VERSION_MAJOR}::QSvgPlugin)
-	list(APPEND SMUVIEW_LINK_LIBS Qt${QT_VERSION_MAJOR}::QWindowsIntegrationPlugin)
-
-	# Form Qt 5.8 on, Qt5PlatformSupport is split into several plugins:
-	# QtAccessibilitySupport QtCliboardSupport QtEventDispatcherSupport
-	# QtFontDatabaseSupport QtGraphicsSupport QtThemeSupport
-	# TODO: Some of the plugins are wrong?
-	if(Qt5Core_VERSION VERSION_LESS "5.8.0")
-		list(APPEND SMUVIEW_LINK_LIBS -lQt5PlatformSupport ${QT5ALL_LDFLAGS})
-	else()
-		list(APPEND SMUVIEW_LINK_LIBS -lQt${QT_VERSION_MAJOR}AccessibilitySupport)
-		list(APPEND SMUVIEW_LINK_LIBS -lQt${QT_VERSION_MAJOR}EventDispatcherSupport)
-		list(APPEND SMUVIEW_LINK_LIBS -lQt${QT_VERSION_MAJOR}FontDatabaseSupport)
-		list(APPEND SMUVIEW_LINK_LIBS -lQt${QT_VERSION_MAJOR}ThemeSupport)
-		#list(APPEND SMUVIEW_LINK_LIBS -lQt${QT_VERSION_MAJOR}ClipboardSupport)
-		#list(APPEND SMUVIEW_LINK_LIBS -lQt${QT_VERSION_MAJOR}GraphicsSupport)
-		list(APPEND SMUVIEW_LINK_LIBS ${QT5ALL_LDFLAGS})
-	endif()
-endif()
-
 add_executable(${PROJECT_NAME} ${smuview_SOURCES} ${smuview_RESOURCES_RCC})
 
 target_link_libraries(${PROJECT_NAME} ${SMUVIEW_LINK_LIBS})
@@ -553,7 +501,7 @@ install(FILES icons/smuview.svg DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/h
 install(DIRECTORY smuscript/ DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/smuscript)
 
 # Generate Windows installer script.
-configure_file(contrib/smuview_cross.nsi.in ${CMAKE_CURRENT_BINARY_DIR}/contrib/smuview_cross.nsi @ONLY)
+configure_file(packaging/mxe/smuview_cross.nsi.in ${CMAKE_CURRENT_BINARY_DIR}/packaging/mxe/smuview_cross.nsi @ONLY)
 
 
 #===============================================================================

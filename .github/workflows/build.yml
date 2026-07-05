@@ -174,78 +174,73 @@ jobs:
 
 
   build_mxe:
-    name: SmuView MXE build (${{ matrix.target.target }})
+    name: "MXE build (${{ matrix.target.target }})"
 
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/knarfs/sigrok-mxe:latest
+      image: ghcr.io/knarfs/smuview/mxe-builder:0.1
 
     strategy:
       matrix:
         target:
-          - { target: "i686", nsis_param: "" }
           - { target: "x86_64", nsis_param: "-DPE64=1" }
 
     env:
       TARGET: ${{ matrix.target.target }}
-      DEBUG: 0
-      # Download python from sigrok.org and smth is wrong with the cert
-      WGET: "wget -c --quiet --no-check-certificate"
+      TOOLCHAIN_TRIPLET: "${{ matrix.target.target }}-w64-mingw32.static.posix"
+      # MXE_DIR is defined in the sigrok-mxe docker image
 
     steps:
-      - name: Checkout sigrok-utils
-        uses: actions/checkout@v3
-        with:
-          repository: knarfS/sigrok-util
-          path: sigrok-util
-          ref: github
-
-      - name: Build dependencies
-        run: |
-          cd sigrok-util/cross-compile/github-actions
-          source sigrok-mxe-init-toolchain.sh
-          ./sigrok-mxe-build-dependencies.sh
-
       - name: Checkout smuview
         uses: actions/checkout@v3
         with:
           path: smuview
 
+      - name: Install custom Python
+        run: |
+          smuview/ci/scripts/mxe/install_python.sh
+
+      - name: Build custom sigrok
+        run: |
+          # We need to find tools in the toolchain. (TODO)
+          export PATH="${MXE_DIR}/usr/bin:${PATH}"
+          export PKG_CONFIG_PATH_x86_64_w64_mingw32_static_posix="${INSTALL_DIR}/lib/pkgconfig":"${MXE_DIR}/usr/${TOOLCHAIN_TRIPLET}/lib/pkgconfig"
+          smuview/ci/scripts/mxe/build_sigrok.sh
+
       - name: Build smuview
         run: |
-          source sigrok-util/cross-compile/github-actions/sigrok-mxe-init-toolchain.sh
+          # We need to find tools in the toolchain. (TODO)
+          export PATH="${MXE_DIR}/usr/bin:${PATH}"
+          export PKG_CONFIG_PATH_x86_64_w64_mingw32_static_posix="${INSTALL_DIR}/lib/pkgconfig":"${MXE_DIR}/usr/${TOOLCHAIN_TRIPLET}/lib/pkgconfig"
           mkdir -p smuview/build
           cd smuview/build
-          $CMAKE \
-            -DCMAKE_INSTALL_PREFIX:PATH=$INSTALL_DIR \
-            -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+          "${TOOLCHAIN_TRIPLET}-cmake" \
+            -DCMAKE_INSTALL_PREFIX:PATH="${INSTALL_DIR}" \
+            -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
             -DDISABLE_WERROR=FALSE \
             -DENABLE_TESTS=TRUE \
             ..
-          make $PARALLEL $V
-          make install/strip $V
+          make -j"$(nproc)"
+          make install/strip
 
       - name: Build NSIS installer
         run: |
-          source sigrok-util/cross-compile/github-actions/sigrok-mxe-init-toolchain.sh
-
           # Zadig (we ship this with frontends for easy driver switching).
-          $WGET https://github.com/pbatard/libwdi/releases/download/b721/zadig-2.4.exe -O $INSTALL_DIR/zadig.exe
-          $WGET https://github.com/pbatard/libwdi/releases/download/v1.2.5/zadig_xp-2.2.exe -O $INSTALL_DIR/zadig_xp.exe
+          wget -c --quiet https://github.com/pbatard/libwdi/releases/download/b755/zadig-2.6.exe -O $INSTALL_DIR/zadig.exe
 
-          cp sigrok-util/cross-compile/github-actions/contrib-mxe/FileAssociation.nsh smuview/build/contrib
-          makensis ${{ matrix.target.nsis_param }} smuview/build/contrib/smuview_cross.nsi
+          cp smuview/packaging/mxe/FileAssociation.nsh smuview/build/packaging/mxe
+          makensis ${{ matrix.target.nsis_param }} smuview/build/packaging/mxe/smuview_cross.nsi
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
           name: SmuView NSIS ${{ matrix.target.target }} installer
-          path: smuview/build/contrib/SmuView*installer.exe
+          path: smuview/build/packaging/mxe/SmuView*installer.exe
 
 
 
   build_macos:
-    name: SmuView MacOS build (${{ matrix.compiler.compiler }})
+    name: "MacOS build (${{ matrix.compiler.compiler }})"
 
     runs-on: macos-15
 

@@ -2,7 +2,7 @@
 ## This file is part of the SmuView project.
 ##
 ## Copyright (C) 2013-2014 Uwe Hermann <uwe@hermann-uwe.de>
-## Copyright (C) 2019-2021 Frank Stettner <frank-stettner@gmx.net>
+## Copyright (C) 2019-2026 Frank Stettner <frank-stettner@gmx.net>
 ##
 ## This program is free software: you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -148,11 +148,14 @@ Section "SmuView (required)" Section1
 
 	# Zadig (used for installing WinUSB drivers).
 	File "${CROSS}/zadig.exe"
-	File "${CROSS}/zadig_xp.exe"
 
 	# Python
-	File "${CROSS}/python34.dll"
-	File "${CROSS}/python34.zip"
+	File "${CROSS}/Python3/runtime/python314.dll"
+	File "${CROSS}/Python3/runtime/python314._pth"
+	File "${CROSS}/Python3/runtime/python314.zip"
+	File "${CROSS}/Python3/runtime/*.pyd"
+	File "${CROSS}/Python3/runtime/vcruntime140.dll"
+	File "${CROSS}/Python3/runtime/vcruntime140_1.dll"
 
 	SetOutPath "$INSTDIR\share"
 
@@ -185,11 +188,6 @@ Section "SmuView (required)" Section1
 	CreateShortCut "$SMPROGRAMS\sigrok\SmuView\Zadig (SmuView).lnk" \
 		"$INSTDIR\zadig.exe" "" "$INSTDIR\zadig.exe" 0 \
 		SW_SHOWNORMAL "" "Zadig (SmuView)"
-
-	# Create a shortcut for the Zadig executable (for Win XP).
-	CreateShortCut "$SMPROGRAMS\sigrok\SmuView\Zadig (SmuView, Win XP).lnk" \
-		"$INSTDIR\zadig_xp.exe" "" "$INSTDIR\zadig_xp.exe" 0 \
-		SW_SHOWNORMAL "" "Zadig (SmuView, Win XP)"
 
 	# Create shortcuts to the HTML and PDF manuals, respectively.
 	!InsertMacro "CreateURL" "SmuView HTML manual" "https://knarfs.github.io/doc/smuview/@SV_MANUAL_VERSION@/manual.html" "SmuView HTML manual"
@@ -250,9 +248,12 @@ Section "Uninstall"
 	Delete "$INSTDIR\COPYING"
 	Delete "$INSTDIR\smuview.exe"
 	Delete "$INSTDIR\zadig.exe"
-	Delete "$INSTDIR\zadig_xp.exe"
-	Delete "$INSTDIR\python34.dll"
-	Delete "$INSTDIR\python34.zip"
+	Delete "$INSTDIR\python314.dll"
+	Delete "$INSTDIR\python314._pth"
+	Delete "$INSTDIR\python314.zip"
+	Delete "$INSTDIR\*.pyd"
+	Delete "$INSTDIR\vcruntime140.dll"
+	Delete "$INSTDIR\vcruntime140_1.dll"
 
 	# Delete the URL files for the manual.
 	#Delete "$INSTDIR\SmuView HTML manual.url"
@@ -271,7 +272,6 @@ Section "Uninstall"
 	Delete "$SMPROGRAMS\sigrok\SmuView\SmuView (Debug).lnk"
 	Delete "$SMPROGRAMS\sigrok\SmuView\Uninstall SmuView.lnk"
 	Delete "$SMPROGRAMS\sigrok\SmuView\Zadig (SmuView).lnk"
-	Delete "$SMPROGRAMS\sigrok\SmuView\Zadig (SmuView, Win XP).lnk"
 	Delete "$SMPROGRAMS\sigrok\SmuView\Examples (SmuScript).lnk"
 
 	# Delete the links to the manual.
