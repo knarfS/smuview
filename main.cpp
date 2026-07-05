@@ -2,7 +2,7 @@
  * This file is part of the SmuView project.
  *
  * Copyright (C) 2012 Joel Holdsworth <joel@airwebreathe.org.uk>
- * Copyright (C) 2017-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,9 +23,11 @@
 #include <unistd.h>
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
+#include <pybind11/embed.h>
 
 #include <QDateTime>
 #include <QDebug>
+#include <QLabel>
 #include <QSettings>
 
 #include "config.h"
@@ -34,6 +36,7 @@
 #include "src/session.hpp"
 #include "src/settingsmanager.hpp"
 #include "src/mainwindow.hpp"
+#include "src/ui/dialogs/aboutdialog.hpp"
 #include "src/ui/tabs/smuscripttab.hpp"
 
 #ifdef ENABLE_SIGNALS
@@ -52,6 +55,8 @@ using std::shared_ptr;
 using std::string;
 using std::vector;
 
+namespace py = pybind11;
+
 void usage()
 {
 	fprintf(stdout,
@@ -68,6 +73,7 @@ void usage()
 		"  -D, --dont-scan            Don't auto-scan for devices, use -d spec only\n"
 		"  -s, --script               Specify the SmuScript to load and execute\n"
 		"  -c, --clean                Don't restore previous settings on startup\n"
+		"  -t, --selftest             Selftest function for CI\n"
 		/* Disable cmd line options i and I
 		"  -i, --input-file           Load input from file\n"
 		"  -I, --input-format         Input format\n"
@@ -82,6 +88,68 @@ void usage()
 		"     --driver uni-t-ut61d:conn=1a86.e008 \\\n"
 		"     --driver uni-t-ut61e-ser:conn=/dev/ttyUSB1\n",
 		SV_BIN_NAME, SV_BIN_NAME, SV_BIN_NAME, SV_BIN_NAME);
+}
+
+shared_ptr<sv::Session> init_session(shared_ptr<sigrok::Context> context,
+	const vector<string> &drivers, bool do_scan, bool restore_settings)
+{
+	sv::Session::sr_context = context;
+	sv::SettingsManager::set_restore_settings(restore_settings);
+
+	// Initialize global start timestamp
+	// TODO: use std::chrono / std::time
+	sv::Session::session_start_timestamp =
+		(double)QDateTime::currentMSecsSinceEpoch() / 1000.0;
+
+	// Create the device manager, initialise the drivers
+	static sv::DeviceManager device_manager(context, drivers, do_scan);
+
+	// Initialise the session.
+	return make_shared<sv::Session>(device_manager);
+}
+
+int selftest()
+{
+	// Initialise libsigrok and the session
+	auto context = sigrok::Context::create();
+	context->set_log_level(sigrok::LogLevel::SPEW);
+	auto session = init_session(context, {}, true, true);
+
+	// Self test for the GUI, using the about dialog.
+	sv::ui::dialogs::AboutDialog about_dlg(session->device_manager(), nullptr);
+	about_dlg.show();
+	QApplication::processEvents();
+
+	QLabel *version_info = about_dlg.findChild<QLabel*>("version_info");
+	if (!version_info) {
+		qCritical() << "Selftest failed, label not found!";
+		return 1;
+	}
+	QString text = version_info->text();
+	bool ok = text.contains(QApplication::applicationVersion());
+	if (!ok) {
+		qCritical() << "About dialog does not contain expected text!";
+		return 1;
+	}
+	qInfo() << "About dialog text: " << text;
+
+	// Self test for the embedded python interpreter
+	py::scoped_interpreter guard{};
+	py::dict locals;
+	py::exec(R"(
+		import sys
+		py_version = sys.version
+		message = "Embedded python version: {}!".format(py_version)
+		print(message)
+	)", py::globals(), locals);
+	string py_message = locals["message"].cast<std::string>();
+	if (py_message.rfind("Embedded python version: 3.", 0) != 0) {
+		qCritical() << "Could not find expected string in python message!";
+		return 1;
+	}
+
+	qInfo() << "Selftest passed.";
+	return 0;
 }
 
 int main(int argc, char *argv[])
@@ -108,6 +176,7 @@ int main(int argc, char *argv[])
 			{ "dont-scan", no_argument, nullptr, 'D' },
 			{ "script", required_argument, nullptr, 's' },
 			{ "clean", no_argument, nullptr, 'c' },
+			{ "selftest", no_argument, nullptr, 't' },
 			/* Disable cmd line options i and I
 			{ "input-file", required_argument, nullptr, 'i' },
 			{ "input-format", required_argument, nullptr, 'I' },
@@ -120,7 +189,7 @@ int main(int argc, char *argv[])
 			"l:Vhc?d:i:I:", long_options, nullptr);
 		*/
 		const int arg_char = getopt_long(argc, argv,
-			"h?VDl:d:s:c", long_options, nullptr);
+			"h?VDl:d:s:ct", long_options, nullptr);
 
 		if (arg_char == -1)
 			break;
@@ -163,6 +232,9 @@ int main(int argc, char *argv[])
 			restore_settings = false;
 			break;
 
+		case 't':
+			return selftest();
+
 		/* Disable cmd line options i and I
 		case 'i':
 			open_file = optarg;
@@ -191,24 +263,15 @@ int main(int argc, char *argv[])
 
 	do {
 		try {
+			// Initialise libsigrok and the session
+			context = sigrok::Context::create();
 			if (loglevel >= 0)
 				context->set_log_level(sigrok::LogLevel::get(loglevel));
-
-			sv::SettingsManager::set_restore_settings(restore_settings);
-
-			// Initialize global start timestamp
-			// TODO: use std::chrono / std::time
-			sv::Session::session_start_timestamp =
-				(double)QDateTime::currentMSecsSinceEpoch() / (double)1000;
-
-			// Create the device manager, initialise the drivers
-			sv::DeviceManager device_manager(context, drivers, do_scan);
-
-			// Initialise the session.
-			auto session = make_shared<sv::Session>(device_manager);
+			auto session =
+				init_session(context, drivers, do_scan, restore_settings);
 
 			// Initialise the main window.
-			sv::MainWindow main_window(device_manager, session);
+			sv::MainWindow main_window(session->device_manager(), session);
 			main_window.show();
 
 			if (!script_file.empty())
@@ -233,7 +296,6 @@ int main(int argc, char *argv[])
 		catch (exception &e) {
 			qCritical() << "main() failed: " << e.what();
 		}
-
 	}
 	while (false);
 

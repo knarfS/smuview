@@ -127,6 +127,8 @@ QWidget *AboutDialog::get_about_page(QWidget *parent) const
 
 	/* Setup the version field */
 	QLabel *version_info = new QLabel();
+	/* Object name for selftest functionality */
+	version_info->setObjectName("version_info");
 	version_info->setText(tr("%1 %2<br />%3<br /><a href=\"http://%4\">%4</a>")
 		.arg(QApplication::applicationName(),
 		QApplication::applicationVersion(),
