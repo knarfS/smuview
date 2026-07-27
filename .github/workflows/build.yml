@@ -309,6 +309,61 @@ jobs:
           path: SmuView*.dmg
 
 
+  verify_appimage:
+    name: "AppImage verification (${{ matrix.target.target }})"
+
+    runs-on: ${{ matrix.target.base_container }}
+
+    needs: build_appimage
+
+    strategy:
+      matrix:
+        target:
+          - target: "x86_64"
+            base_container: "ubuntu-latest"
+          - target: "arm64"
+            base_container: "ubuntu-24.04-arm"
+
+    steps:
+      - name: Install helpers
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y imagemagick xdotool xvfb
+
+      - name: Checkout smuview
+        uses: actions/checkout@v7
+        with:
+          path: smuview
+
+      - name: Download SmuView AppImage
+        uses: actions/download-artifact@v4
+        with:
+          name: SmuView ${{ matrix.target.target }} AppImage
+
+      - name: Prepare AppImage
+        run: |
+          mv SmuView*.AppImage SmuView.AppImage
+          chmod +x ./SmuView.AppImage
+
+      - name: Launch and verify
+        run: |
+          smuview/ci/scripts/linux/verify_appimage.sh
+
+      - name: Upload screenshot
+        if: always() && hashFiles('desktop-screenshot-linux.png') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-screenshot-linux-${{ matrix.target.target }}
+          path: desktop-screenshot-linux-${{ matrix.target.target }}.png
+
+      - name: Selftest
+        run: |
+          if ! xvfb-run -a ./SmuView.AppImage --selftest; then
+            echo "::error::Selftest failed"
+            exit 1
+          fi
+
+
   verify_windows_installer:
     name: "Windows Installer verification"
 
@@ -439,7 +494,7 @@ jobs:
       (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/master')
     needs:
       - build_linux
-      - build_appimage
+      - verify_appimage
       - verify_windows_installer
       - verify_macos_dmg
 
