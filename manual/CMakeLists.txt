@@ -2,7 +2,7 @@
 ## This file is part of the SmuView project.
 ##
 ## Copyright (C) 2018 Gerhard Sittig <gerhard.sittig@gmx.net>
-## Copyright (C) 2019-2025 Frank Stettner <frank-stettner@gmx.net>
+## Copyright (C) 2019-2026 Frank Stettner <frank-stettner@gmx.net>
 ##
 ## This program is free software: you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.22)
 
 # External dependencies, required and optional tools.
 find_program(ASCIIDOCTOR_EXECUTABLE NAMES asciidoctor)
