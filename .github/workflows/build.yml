@@ -144,7 +144,7 @@ jobs:
           apt-get upgrade -y
 
       - name: Checkout smuview
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
         with:
           path: smuview
 
@@ -175,7 +175,7 @@ jobs:
           smuview/ci/scripts/linux/build_appimage.sh
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v7
         with:
           name: SmuView ${{ matrix.target.target }} AppImage
           path: SmuView*.AppImage
@@ -200,7 +200,7 @@ jobs:
 
     steps:
       - name: Checkout smuview
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
         with:
           path: smuview
 
@@ -240,7 +240,7 @@ jobs:
           makensis ${{ matrix.target.nsis_param }} smuview/build/packaging/mxe/smuview_cross.nsi
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v7
         with:
           name: SmuView NSIS ${{ matrix.target.target }} installer
           path: smuview/build/packaging/mxe/SmuView*installer.exe
@@ -272,7 +272,7 @@ jobs:
             glib glibmm@2.66 cmake "${BREW_PYTHON_VERSION}" boost "${BREW_QT_VERSION}" "${BREW_QWT_VERSION}"
 
       - name: Checkout smuview
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
         with:
           path: smuview
 
@@ -303,7 +303,7 @@ jobs:
           smuview/ci/scripts/macos/build_dmg.sh
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v7
         with:
           name: SmuView ${{ matrix.compiler.compiler }} DMG
           path: SmuView*.dmg
@@ -336,7 +336,7 @@ jobs:
           path: smuview
 
       - name: Download SmuView AppImage
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: SmuView ${{ matrix.target.target }} AppImage
 
@@ -351,7 +351,7 @@ jobs:
 
       - name: Upload screenshot
         if: always() && hashFiles('desktop-screenshot-linux.png') != ''
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: desktop-screenshot-linux-${{ matrix.target.target }}
           path: desktop-screenshot-linux-${{ matrix.target.target }}.png
@@ -378,7 +378,7 @@ jobs:
           path: smuview
 
       - name: Download SmuView Windows Installer
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: SmuView NSIS x86_64 installer
 
@@ -416,7 +416,7 @@ jobs:
 
       - name: Upload screenshot
         if: always() && hashFiles('desktop-screenshot-windows.png') != ''
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: desktop-screenshot-windows
           path: desktop-screenshot-windows.png
@@ -454,7 +454,7 @@ jobs:
           path: smuview
 
       - name: Download SmuView DMG
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: SmuView ${{ matrix.compiler }} DMG
 
@@ -471,7 +471,7 @@ jobs:
 
       - name: Upload screenshot
         if: always() && hashFiles('desktop-screenshot-macos.png') != ''
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: desktop-screenshot-macos
           path: desktop-screenshot-macos.png
@@ -505,7 +505,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libfuse2
       - name: Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v8
       - name: Inspect directory after downloading artifacts
         run: ls -alFR
       - name: Upload artifacts and create (continuous) release
