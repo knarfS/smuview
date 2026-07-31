@@ -152,7 +152,7 @@ if(MINGW)
 endif()
 
 # SmuView has its own copy of pybind11
-set(PYBIND11_SUBDIRECTORY external/pybind11_3.0.0)
+set(PYBIND11_SUBDIRECTORY external/pybind11)
 add_subdirectory(${PYBIND11_SUBDIRECTORY})
 # SmuView has its own copy of QCodeEditor
 add_subdirectory(external/QCodeEditor)
