@@ -2,7 +2,7 @@
  * This file is part of the SmuView project.
  * This file is based on the QWT Oscilloscope Example.
  *
- * Copyright (C) 2017-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -149,7 +149,7 @@ private:
 	void init_axis(int axis_id, double min, double max, const QString &title,
 		bool auto_scale);
 	void update_curves();
-	void update_intervals();
+	bool update_intervals();
 	bool update_x_interval(Curve *curve);
 	bool update_y_interval(const Curve *curve);
 	void update_markers_label();

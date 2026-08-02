@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2020-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2020-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,6 +62,9 @@ Curve::Curve(BaseCurveData *curve_data, int x_axis_id, int y_axis_id,
 {
 	id_ = curve_data->id_prefix() + ":" +
 		util::format_uuid(QUuid::createUuid());
+
+	plot_direct_painter_->setAttribute(
+		QwtPlotDirectPainter::FullRepaint, true);
 
 	QPen pen;
 	//pen.setColor(color_);

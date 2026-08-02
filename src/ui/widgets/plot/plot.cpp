@@ -2,7 +2,7 @@
  * This file is part of the SmuView project.
  * This file is based on the QWT Oscilloscope Example.
  *
- * Copyright (C) 2017-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -89,36 +89,17 @@ public:
 	explicit Canvas(QwtPlot *plot = nullptr) : QwtPlotCanvas(plot)
 	{
 		/*
-		 * NOTE:
-		 * The backing store is important, when working with widget overlays
-		 * (f.e rubberbands for zooming). Here we don't have them and the
-		 * internal backing store of QWidget is good enough.
+		 * The backing store is important, when working with widget overlays,
+		 * like rubberbands for zooming
 		 */
-		setPaintAttribute(QwtPlotCanvas::BackingStore, false);
+		setPaintAttribute(QwtPlotCanvas::BackingStore, true);
+
 		/*
-		 * NOTE:
 		 * ImmediatePaint is necessary so "old" curves will be deleted.
-		 * QwtPlot::repaint() in replot() will also work
 		 */
-		setPaintAttribute(QwtPlotCanvas::ImmediatePaint, true);
+ 		setPaintAttribute(QwtPlotCanvas::ImmediatePaint, true);
+
 		setBorderRadius(10);
-
-		if (QwtPainter::isX11GraphicsSystem()) {
-			/*
-			 * NOTE:
-			 * Disabling the backing store of Qt improves the performance for
-			 * the direct painter even more, but the canvas becomes a native
-			 * window of the window system, receiving paint events for resize
-			 * and expose operations. Those might be expensive when there are
-			 * many points and the backing store of the canvas is disabled. So
-			 * in this application we better don't disable both backing stores.
-			 */
-			if (testPaintAttribute(QwtPlotCanvas::BackingStore)) {
-				setAttribute(Qt::WA_PaintOnScreen, true);
-				setAttribute(Qt::WA_NoSystemBackground, true);
-			}
-		}
-
 		setupPalette();
 	}
 
@@ -737,7 +718,7 @@ void Plot::update_curves()
 	}
 }
 
-void Plot::update_intervals()
+bool Plot::update_intervals()
 {
 	bool intervals_changed = false;
 
@@ -750,6 +731,8 @@ void Plot::update_intervals()
 
 	if (intervals_changed)
 		replot();
+
+	return intervals_changed;
 }
 
 bool Plot::update_x_interval(Curve *curve)
@@ -970,8 +953,8 @@ void Plot::update_markers_label()
 void Plot::timerEvent(QTimerEvent *event)
 {
 	if (event->timerId() == timer_id_) {
-		update_intervals();
-		update_curves();
+		if (!update_intervals())
+			update_curves();
 		return;
 	}
 
