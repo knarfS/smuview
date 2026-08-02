@@ -21,7 +21,7 @@
 
 cmake_minimum_required(VERSION 3.22)
 
-project(smuview C CXX)
+project(smuview LANGUAGES CXX)
 
 include(GNUInstallDirs)
 
@@ -37,26 +37,16 @@ option(ENABLE_SIGNALS "Build with UNIX signals" TRUE)
 option(ENABLE_TESTS "Enable unit tests" TRUE)
 option(STATIC_PKGDEPS_LIBS "Statically link to (pkg-config) libraries" FALSE)
 
-# Let AUTOMOC and AUTOUIC process GENERATED files.
-if(POLICY CMP0071)
-	cmake_policy(SET CMP0071 NEW)
-endif()
-
-# Only interpret if() arguments as variables or keywords when unquoted.
-if(POLICY CMP0054)
-	cmake_policy(SET CMP0054 NEW)
-endif()
-
 # Qt6 requires C++17
 set(CMAKE_CXX_STANDARD 17)
-set(REQUIRED_STD_CXX_FLAGS "-std=c++17")
+set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
 if(WIN32)
-	# On Windows/MinGW we need to statically link to libraries.
-	# This option is user configurable, but enable it by default on win32.
+	# On Windows/MinGW we need to statically link to libraries, and UNIX
+	# signals are unsupported. Both options are user configurable, but they
+	# are forced here regardless of what the user requested.
+	message(STATUS "WIN32 build: forcing STATIC_PKGDEPS_LIBS=TRUE and ENABLE_SIGNALS=FALSE")
 	set(STATIC_PKGDEPS_LIBS TRUE)
-
-	# Windows does not support UNIX signals.
 	set(ENABLE_SIGNALS FALSE)
 
 	# When cross compiling this is needed for pkg-config
@@ -85,25 +75,22 @@ list(APPEND PKGDEPS glib-2.0>=2.28.0)
 list(APPEND PKGDEPS glibmm-2.4>=2.28.0)
 
 set(LIBSR_CXX_BINDING "libsigrokcxx>=0.5.2")
-list(APPEND PKGDEPS "${LIBSR_CXX_BINDING}")
 
-find_package(PkgConfig)
-pkg_check_modules(LIBSRCXX ${LIBSR_CXX_BINDING} IMPORTED_TARGET)
-if(NOT LIBSRCXX_FOUND OR NOT LIBSRCXX_VERSION)
-	message(FATAL_ERROR "libsigrok C++ bindings missing, check libsigrok's 'configure' output (missing dependencies?)")
-endif()
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(LIBSRCXX REQUIRED IMPORTED_TARGET ${LIBSR_CXX_BINDING})
 pkg_check_modules(PKGDEPS REQUIRED IMPORTED_TARGET ${PKGDEPS})
 
 include(CheckSigrokFeatures)
 if(STATIC_PKGDEPS_LIBS)
-	check_libsigrok_features("${LIBSRCXX_STATIC_INCLUDE_DIRS}" PkgConfig::PKGDEPS)
+	check_libsigrok_features("${LIBSRCXX_STATIC_INCLUDE_DIRS}" PkgConfig::LIBSRCXX)
 else()
-	check_libsigrok_features("${LIBSRCXX_INCLUDE_DIRS}" PkgConfig::PKGDEPS)
+	check_libsigrok_features("${LIBSRCXX_INCLUDE_DIRS}" PkgConfig::LIBSRCXX)
 endif()
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
 
 find_package(Qt6 6.0 QUIET COMPONENTS Core Gui Widgets Svg)
 if(Qt6_FOUND)
@@ -127,8 +114,8 @@ set(BOOSTCOMPS)
 if(ENABLE_TESTS)
 	list(APPEND BOOSTCOMPS unit_test_framework)
 endif()
-# CMP0167: CMake >= 3.30 has deprecated FindBoot(), but libboost >= 1.70 supplies a CMake config file
-find_package(Boost 1.70 COMPONENTS ${BOOSTCOMPS} CONFIG REQUIRED)
+# CMP0167: CMake >= 3.30 has deprecated FindBoost(), but libboost >= 1.70 supplies a CMake config file
+find_package(Boost 1.70 CONFIG REQUIRED COMPONENTS ${BOOSTCOMPS})
 
 # Find the platform's thread library (needed for C++11 threads).
 # This will set ${CMAKE_THREAD_LIBS_INIT} to the correct, OS-specific value.
@@ -381,8 +368,8 @@ set(smuview_RESOURCES
 
 if(WIN32)
 	# Use the sigrok icon for the smuview.exe executable.
-	set(CMAKE_RC_COMPILE_OBJECT "${CMAKE_RC_COMPILER} -O coff -I${CMAKE_CURRENT_SOURCE_DIR} <SOURCE> <OBJECT>")
 	enable_language(RC)
+	set(CMAKE_RC_COMPILE_OBJECT "${CMAKE_RC_COMPILER} -O coff -I${CMAKE_CURRENT_SOURCE_DIR} <SOURCE> <OBJECT>")
 	list(APPEND smuview_SOURCES smuviewico.rc)
 endif()
 
@@ -396,31 +383,43 @@ endif()
 #= Global Definitions
 #-------------------------------------------------------------------------------
 
-add_definitions(-DQT_NO_KEYWORDS)
-add_definitions(-D__STDC_LIMIT_MACROS)
-add_definitions(-Wall -Wextra -Woverloaded-virtual -Wdeprecated-declarations) # -Weffc++ -Wconversion -Wsign-conversion)
-add_definitions(${REQUIRED_STD_CXX_FLAGS})
-add_definitions(-DBOOST_MATH_DISABLE_FLOAT128=1)
+set(smuview_COMPILE_DEFINITIONS
+	QT_NO_KEYWORDS
+	__STDC_LIMIT_MACROS
+	BOOST_MATH_DISABLE_FLOAT128=1
+)
+
+set(smuview_COMPILE_OPTIONS
+	-Wall
+	-Wextra
+	-Woverloaded-virtual
+	-Wdeprecated-declarations
+	# -Weffc++
+	# -Wconversion
+	# -Wsign-conversion
+)
 
 if(NOT DISABLE_WERROR)
-	# add_definitions(-Werror -pedantic-errors)
-	add_definitions(-Werror=pedantic -pedantic-errors)
+	list(APPEND smuview_COMPILE_OPTIONS
+		-Werror=pedantic
+		-pedantic-errors
+	)
 endif()
 
 if(ENABLE_SIGNALS)
-	add_definitions(-DENABLE_SIGNALS)
+	list(APPEND smuview_COMPILE_DEFINITIONS ENABLE_SIGNALS)
 endif()
 
-if(MINGW AND ${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+if(MINGW AND CMAKE_BUILD_TYPE STREQUAL "Debug")
 	# Fix error "too many sections (37653)" and "file too big" for mingw/MXE when building for Debug
-	add_definitions(-Wa,-mbig-obj)
+	list(APPEND smuview_COMPILE_OPTIONS -Wa,-mbig-obj)
 endif()
 
 #===============================================================================
 #= Global Include Directories
 #-------------------------------------------------------------------------------
 
-include_directories(
+set(smuview_INCLUDE_DIRS
 	${CMAKE_CURRENT_BINARY_DIR}
 	${CMAKE_CURRENT_SOURCE_DIR}
 	${QWT_INCLUDE_DIR}
@@ -429,13 +428,19 @@ include_directories(
 
 if(MINGW)
 	# MXE workaround: Use PkgConfig to find Python
-	include_directories(${PYTHON3_INCLUDE_DIRS})
+	list(APPEND smuview_INCLUDE_DIRS ${PYTHON3_INCLUDE_DIRS})
 endif()
 
 if(STATIC_PKGDEPS_LIBS)
-	include_directories(${PKGDEPS_STATIC_INCLUDE_DIRS})
+	list(APPEND smuview_INCLUDE_DIRS
+		${LIBSRCXX_STATIC_INCLUDE_DIRS}
+		${PKGDEPS_STATIC_INCLUDE_DIRS}
+	)
 else()
-	include_directories(${PKGDEPS_INCLUDE_DIRS})
+	list(APPEND smuview_INCLUDE_DIRS
+		${LIBSRCXX_INCLUDE_DIRS}
+		${PKGDEPS_INCLUDE_DIRS}
+	)
 endif()
 
 
@@ -443,14 +448,14 @@ endif()
 #= Linker Configuration
 #-------------------------------------------------------------------------------
 
-link_directories(${Boost_LIBRARY_DIRS})
+set(smuview_LINK_DIRS ${Boost_LIBRARY_DIRS})
 
-set(SMUVIEW_LINK_LIBS
+set(smuview_LINK_LIBS
 	${Boost_LIBRARIES}
 	${QT_LIBRARIES}
 	${QWT_LIBRARY}
-	${CMAKE_THREAD_LIBS_INIT}
-	#${LIBATOMIC_LIBRARY}
+	Threads::Threads
+	PkgConfig::LIBSRCXX
 	PkgConfig::PKGDEPS
 	pybind11::embed
 	QCodeEditor
@@ -461,17 +466,21 @@ if(MINGW)
 	# MXE workaround: Use PkgConfig to find Python
 	if(PYTHON3_LINK_LIBRARIES)
 		# Try to use the fully qualified name for cross compiling
-		list(APPEND SMUVIEW_LINK_LIBS ${PYTHON3_LINK_LIBRARIES})
+		list(APPEND smuview_LINK_LIBS ${PYTHON3_LINK_LIBRARIES})
 	else()
-		list(APPEND SMUVIEW_LINK_LIBS ${PYTHON3_LIBRARIES})
+		list(APPEND smuview_LINK_LIBS ${PYTHON3_LIBRARIES})
 	endif()
 endif()
 
 add_executable(${PROJECT_NAME} ${smuview_SOURCES} ${smuview_RESOURCES_RCC})
 
-target_link_libraries(${PROJECT_NAME} ${SMUVIEW_LINK_LIBS})
+target_include_directories(${PROJECT_NAME} PRIVATE ${smuview_INCLUDE_DIRS})
+target_compile_definitions(${PROJECT_NAME} PRIVATE ${smuview_COMPILE_DEFINITIONS})
+target_compile_options(${PROJECT_NAME} PRIVATE ${smuview_COMPILE_OPTIONS})
+target_link_directories(${PROJECT_NAME} PRIVATE ${smuview_LINK_DIRS})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${smuview_LINK_LIBS})
 
-if(WIN32 AND NOT ${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+if(WIN32 AND NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
 	# Pass -mwindows so that no "DOS box" opens when SmuView is started.
 	set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-mwindows")
 endif()
