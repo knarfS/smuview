@@ -485,29 +485,44 @@ jobs:
 
 
   publish:
-    name: SmuView publish
+    name: "Publish artifacts"
 
     runs-on: ubuntu-latest
 
     if: |
       (github.event_name == 'push' && github.ref == 'refs/heads/master') ||
       (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/master')
+
     needs:
       - build_linux
       - verify_appimage
       - verify_windows_installer
       - verify_macos_dmg
 
+    env:
+      # For AppImages in pipelines (no FUSE) we need:
+      APPIMAGE_EXTRACT_AND_RUN: 1
+
     steps:
-      - name: Install dependencies
-        run: |
-          # AppImage needs libfuse2 to start
-          sudo apt-get update
-          sudo apt-get install -y libfuse2
-      - name: Download artifacts
+      - name: Download AppImage artifacts
         uses: actions/download-artifact@v8
+        with:
+          pattern: SmuView * AppImage
+          merge-multiple: true
+
+      - name: Download NSIS x86_64 artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: SmuView NSIS x86_64 installer
+
+      - name: Download DMG LLVM artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: SmuView LLVM DMG
+
       - name: Inspect directory after downloading artifacts
         run: ls -alFR
+
       - name: Upload artifacts and create (continuous) release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
