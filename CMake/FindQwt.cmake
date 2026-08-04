@@ -19,7 +19,8 @@
 
 include(FindPackageHandleStandardArgs)
 
-# Determin which Qt major version is used
+# Determin which Qt major version is used, since Qwt's package/library
+# naming differs between Qt5 and Qt6 builds.
 if(NOT QT_VERSION_MAJOR)
 	if(TARGET Qt6::Core)
 		set(QT_VERSION_MAJOR 6)
@@ -32,36 +33,17 @@ if(NOT QT_VERSION_MAJOR)
 	endif()
 endif()
 
-if(QT_VERSION_MAJOR EQUAL 6)
-	set(QWT_PATH_SUFFIXES qwt6-qt6 qwt-qt6 qt6/qwt6 qt6/qwt)
-	set(QWT_LIBRARY_NAMES qwt6-qt6 qwt-qt6)
-elseif(QT_VERSION_MAJOR EQUAL 5)
-	set(QWT_PATH_SUFFIXES qwt6-qt5 qwt-qt5 qt5/qwt6 qt5/qwt)
-	set(QWT_LIBRARY_NAMES qwt6-qt5 qwt-qt5)
-endif()
-# Version-less fallbacks
+set(QWT_PATH_SUFFIXES qwt6-qt${QT_VERSION_MAJOR} qwt-qt${QT_VERSION_MAJOR} qt${QT_VERSION_MAJOR}/qwt6 qt${QT_VERSION_MAJOR}/qwt)
+set(QWT_LIBRARY_NAMES qwt6-qt${QT_VERSION_MAJOR} qwt-qt${QT_VERSION_MAJOR})
+# Qt-version-less fallbacks
 list(APPEND QWT_PATH_SUFFIXES qwt qwt6)
 list(APPEND QWT_LIBRARY_NAMES qwt qwt6)
 
-# Try to find Qwt in the user specified CMAKE_PREFIX_PATH path
+# Try to find Qwt
 find_path(QWT_INCLUDE_DIR NAMES qwt.h
-	NO_DEFAULT_PATH
-	PATHS ${CMAKE_PREFIX_PATH}
-	PATH_SUFFIXES include lib/qwt.framework/Headers ${QWT_PATH_SUFFIXES}
-)
+  PATH_SUFFIXES include lib/qwt.framework/Headers ${QWT_PATH_SUFFIXES})
 find_library(QWT_LIBRARY NAMES ${QWT_LIBRARY_NAMES}
-	NO_DEFAULT_PATH
-	PATHS ${CMAKE_PREFIX_PATH}
-	PATH_SUFFIXES lib ${QWT_PATH_SUFFIXES}
-)
-
-# Now search in the default paths
-if(NOT QWT_INCLUDE_DIR OR NOT QWT_LIBRARY)
-	find_path(QWT_INCLUDE_DIR NAMES qwt.h
-		PATH_SUFFIXES include ${QWT_PATH_SUFFIXES})
-	find_library(QWT_LIBRARY NAMES ${QWT_LIBRARY_NAMES}
-		PATH_SUFFIXES lib ${QWT_PATH_SUFFIXES})
-endif()
+  PATH_SUFFIXES lib ${QWT_PATH_SUFFIXES})
 
 # Get version
 if(QWT_INCLUDE_DIR AND EXISTS "${QWT_INCLUDE_DIR}/qwt_global.h")
