@@ -225,6 +225,7 @@ jobs:
           "${TOOLCHAIN_TRIPLET}-cmake" \
             -DCMAKE_INSTALL_PREFIX:PATH="${INSTALL_DIR}" \
             -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
+            -DPython_ROOT_DIR="${INSTALL_DIR}/Python3" \
             -DDISABLE_WERROR=FALSE \
             -DENABLE_TESTS=TRUE \
             ..

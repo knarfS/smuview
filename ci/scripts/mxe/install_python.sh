@@ -56,17 +56,3 @@ cp "${INSTALL_DIR}"/Python3/runtime/python"${PY_ABI}".dll .
 mkdir -p "${INSTALL_DIR}"/Python3/libs
 mv -f libpython"${PY_ABI}".a "${INSTALL_DIR}"/Python3/libs
 rm -f python"${PY_ABI}".dll python"${PY_ABI}".def
-
-# Create a dummy python3.pc file so that pkg-config finds Python 3.
-mkdir -p "${INSTALL_DIR}"/lib/pkgconfig
-cat > "${INSTALL_DIR}"/lib/pkgconfig/python3.pc <<EOF
-prefix="${INSTALL_DIR}"
-exec_prefix=\${prefix}
-libdir=\${exec_prefix}/Python3/libs
-includedir=\${prefix}/Python3/include
-Name: Python
-Description: Python library
-Version: "${PY_VER}"
-Libs: -L\${libdir} -lpython"${PY_ABI}"
-Cflags: -I\${includedir}
-EOF
