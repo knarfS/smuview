@@ -16,6 +16,23 @@ ToDo Release
 
 - Python binding for save CSV
 
+ToDo Build
+----------
+
+- Remove hard coded python version in installers (nsis, build-appimage.sh)
+- Windows verification window title not reliable
+- contrib/smuview_cross.nsi.in -> packaging/mxe/smuview.nsi and pass values with `makensis -DSV_VERSION_STRING=0.0.7-xxx -DPROJECT_SOURCE_DIR=... ...` and check with
+  ```
+  !ifndef SV_VERSION_STRING
+    !error "SV_VERSION_STRING was not specified!"
+  !endif
+  # ...
+  OutFile "SmuView-${SV_VERSION_STRING}${TARGET}-installer.exe"
+  ```
+- Move `org.sigrok.SmuView.appdata.xml`, `org.sigrok.SmuView.desktop` and `smuview.spec` to `packaging/rpm` and explain or implement build process. Also update dependencies in files.
+- Maybe use CPack to prepare files and directories for AppImage/DMG/NSIS? Maybe, we already have with the Install section in CMakeList.txt
+- Do we really need `SV_PYTHON_VERSION`?
+
 ToDo clazy
 ----------
 
