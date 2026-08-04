@@ -121,21 +121,30 @@ find_package(Boost 1.70 CONFIG REQUIRED COMPONENTS ${BOOSTCOMPS})
 # This will set ${CMAKE_THREAD_LIBS_INIT} to the correct, OS-specific value.
 find_package(Threads REQUIRED)
 
-if(MINGW)
-	# MXE workaround: Use PkgConfig to find the supplied Python 3.4 (see MXE build
-	# script sigrok-cross-mingw-smuview in sigrok-util) and disable the find
-	# python functionality in pybind11
+if(MINGW AND CMAKE_CROSSCOMPILING)
+	# MXE workaround: FindPython cannot find the provided Python for cross
+	# compiling, therefore we have to disable python discovery in pybind11 and
+	# pass Python_ROOT_DIR to cmake.
+	# We have to pass the python lib and the include directory to
+	# target_link_libraries and target_link_libraries manually
 	set(PYBIND11_NOPYTHON ON)
 
-	# This is not needed atm, but might come in handy in the future:
-	# Python 3.8 no longer links to libpython, but it provides a python3-embed.pc
-	# now, so let's try using that first and only fall back on the normal case if
-	# that fails.
-	# See: https://docs.python.org/3.8/whatsnew/3.8.html#debug-build-uses-the-same-abi-as-release-build
-	pkg_check_modules(PYTHON3 python3-embed)
-	if(NOT PYTHON3_FOUND)
-		pkg_check_modules(PYTHON3 python3)
+	if(NOT DEFINED Python_ROOT_DIR)
+		message(FATAL_ERROR "Pass -DPython_ROOT_DIR=<path>/Python3")
 	endif()
+
+	file(GLOB MXE_PYTHON_EMBED_LIBRARY "${Python_ROOT_DIR}/libs/libpython*.a")
+	if(NOT MXE_PYTHON_EMBED_LIBRARY)
+		message(FATAL_ERROR "No libpythonXXX.a found under ${Python_ROOT_DIR}/libs")
+	endif()
+
+	if(NOT EXISTS "${Python_ROOT_DIR}/include/Python.h")
+		message(FATAL_ERROR "No Python.h found in ${Python_ROOT_DIR}/include")
+	endif()
+
+	set(MXE_PYTHON_INCLUDE_DIR "${Python_ROOT_DIR}/include")
+else()
+	find_package(Python 3.8 COMPONENTS Interpreter Development REQUIRED)
 endif()
 
 # SmuView has its own copy of pybind11
@@ -192,9 +201,10 @@ set(SV_GLIBMM_VERSION ${PKGDEPS_glibmm-2.4_VERSION})
 get_directory_property(pybind11_VERSION DIRECTORY ${PYBIND11_SUBDIRECTORY} DEFINITION pybind11_VERSION)
 get_directory_property(pybind11_VERSION_TYPE DIRECTORY ${PYBIND11_SUBDIRECTORY} DEFINITION pybind11_VERSION_TYPE)
 set(SV_PYBIND11_VERSION "${pybind11_VERSION} ${pybind11_VERSION_TYPE}")
-if(MINGW)
-	# MXE workaround: Use PkgConfig to find Python
-	set(SV_PYTHON_VERSION ${PYTHON3_VERSION})
+if(MINGW AND CMAKE_CROSSCOMPILING)
+	# Get the Python version from patchlevel.h for MXE builds
+	file(STRINGS "${MXE_PYTHON_INCLUDE_DIR}/patchlevel.h" PYTHON_VERSION_LINE REGEX "^#define PY_VERSION")
+	string(REGEX REPLACE "^#define PY_VERSION[ \t]+\"([^\"]+)\".*" "\\1" SV_PYTHON_VERSION "${PYTHON_VERSION_LINE}")
 else()
 	set(SV_PYTHON_VERSION ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR})
 endif()
@@ -426,9 +436,9 @@ set(smuview_INCLUDE_DIRS
 	${Boost_INCLUDE_DIRS}
 )
 
-if(MINGW)
-	# MXE workaround: Use PkgConfig to find Python
-	list(APPEND smuview_INCLUDE_DIRS ${PYTHON3_INCLUDE_DIRS})
+if(MINGW AND CMAKE_CROSSCOMPILING)
+	# Set the include directory manually for MXE builds
+	list(APPEND smuview_INCLUDE_DIRS ${MXE_PYTHON_INCLUDE_DIR})
 endif()
 
 if(STATIC_PKGDEPS_LIBS)
@@ -462,14 +472,9 @@ set(smuview_LINK_LIBS
 	QtFindReplaceDialog
 )
 
-if(MINGW)
-	# MXE workaround: Use PkgConfig to find Python
-	if(PYTHON3_LINK_LIBRARIES)
-		# Try to use the fully qualified name for cross compiling
-		list(APPEND smuview_LINK_LIBS ${PYTHON3_LINK_LIBRARIES})
-	else()
-		list(APPEND smuview_LINK_LIBS ${PYTHON3_LIBRARIES})
-	endif()
+if(MINGW AND CMAKE_CROSSCOMPILING)
+	# Set the link library manually for MXE builds
+	list(APPEND smuview_LINK_LIBS "${MXE_PYTHON_EMBED_LIBRARY}")
 endif()
 
 add_executable(${PROJECT_NAME} ${smuview_SOURCES} ${smuview_RESOURCES_RCC})
