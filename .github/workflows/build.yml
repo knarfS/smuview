@@ -116,61 +116,69 @@ jobs:
 
 
   build_appimage:
-    name: SmuView AppImage build (${{ matrix.target.target }})
+    name: "AppImage build (${{ matrix.target.target }})"
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.target.base_image }}
     container:
-      image: ghcr.io/knarfs/sigrok-appimage-${{ matrix.target.container }}:latest
+      image: ghcr.io/knarfs/smuview/appimage-builder:22.04-1
 
     strategy:
       matrix:
         target:
-          - target: "i386"
-            container: "x86_64-i386"
-            cc: "gcc -m32"
-            cxx: "g++ -m32"
-            ld: "ld -melf_i386"
-            ldflags: "-m32"
           - target: "x86_64"
-            container: "x86_64"
-            cc: "gcc"
-            cxx: "g++"
-            ld: "ld"
-            ldflags: ""
+            base_image: "ubuntu-latest"
+            arch: "x86_64"
+          - target: "arm64"
+            base_image: "ubuntu-24.04-arm"
+            arch: "aarch64"
 
     env:
-      CC: ${{ matrix.target.cc }}
-      CXX: ${{ matrix.target.cxx }}
-      LD:  ${{ matrix.target.ld }}
-      LDFLAGS: ${{ matrix.target.ldflags }}
+      APP_DIR: "${{ github.workspace }}/AppDir"
+      ARCH: "${{ matrix.target.arch }}"
+      QMAKE_CMD: "qmake"
 
     steps:
       - name: Update dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get upgrade -y
+          apt-get update
+          apt-get upgrade -y
 
       - name: Checkout smuview
         uses: actions/checkout@v3
         with:
           path: smuview
 
+      - name: Build custom sigrok
+        run: |
+          smuview/ci/scripts/linux/build_sigrok.sh
+
+      - name: Build SmuView
+        run: |
+          mkdir -p "${APP_DIR}"
+          mkdir -p smuview/build
+          cd smuview/build
+          PKG_CONFIG_PATH="$INSTALL_DIR/lib/pkgconfig" cmake \
+            -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
+            -DCMAKE_INSTALL_PREFIX=/usr \
+            -DCMAKE_INSTALL_LIBDIR=/usr/lib \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=TRUE \
+            -DDISABLE_WERROR=FALSE \
+            -DENABLE_TESTS=FALSE \
+            ..
+          make -j"$(nproc)"
+          DESTDIR="${APP_DIR}" make install
+
       - name: Build AppImage
         run: |
-          wget https://github.com/knarfS/appimagecraft/releases/download/continuous/appimagecraft-${{ matrix.target.target }}.AppImage
-          #wget https://github.com/TheAssassin/appimagecraft/releases/download/continuous/appimagecraft-${{ matrix.target.target }}.AppImage
-          chmod ug+x appimagecraft-${{ matrix.target.target }}.AppImage
-
-          export PKG_CONFIG_PATH="/usr/lib/i386-linux-gnu/pkgconfig:$PKG_CONFIG_PATH"
-
-          cd smuview
-          ../appimagecraft-${{ matrix.target.target }}.AppImage build -d build/
+          # Source SmuView versions and names
+          source smuview/build/contrib/config_version.sh
+          smuview/ci/scripts/linux/build_appimage.sh
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
           name: SmuView ${{ matrix.target.target }} AppImage
-          path: smuview/SmuView*.AppImage*
+          path: SmuView*.AppImage
 
 
   build_mxe:
