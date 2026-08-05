@@ -74,10 +74,6 @@ void usage()
 		"  -s, --script               Specify the SmuScript to load and execute\n"
 		"  -c, --clean                Don't restore previous settings on startup\n"
 		"  -t, --selftest             Selftest function for CI\n"
-		/* Disable cmd line options i and I
-		"  -i, --input-file           Load input from file\n"
-		"  -I, --input-format         Input format\n"
-		*/
 		"\n"
 		"Examples:\n"
 		"  %s --driver tecpel-dmm-8061-ser:conn=/dev/ttyUSB0\n"
@@ -158,8 +154,6 @@ int main(int argc, char *argv[])
 	shared_ptr<sigrok::Context> context;
 	int loglevel = -1;
 	vector<string> drivers;
-	//string open_file;
-	//string open_file_format;
 	bool do_scan = true;
 	string script_file;
 	bool restore_settings = true;
@@ -177,17 +171,9 @@ int main(int argc, char *argv[])
 			{ "script", required_argument, nullptr, 's' },
 			{ "clean", no_argument, nullptr, 'c' },
 			{ "selftest", no_argument, nullptr, 't' },
-			/* Disable cmd line options i and I
-			{ "input-file", required_argument, nullptr, 'i' },
-			{ "input-format", required_argument, nullptr, 'I' },
-			*/
 			{ nullptr, 0, nullptr, 0 }
 		};
 
-		/* Disable cmd line options i and I
-		const int arg_char = getopt_long(argc, argv,
-			"l:Vhc?d:i:I:", long_options, nullptr);
-		*/
 		const int arg_char = getopt_long(argc, argv,
 			"h?VDl:d:s:ct", long_options, nullptr);
 
@@ -235,69 +221,48 @@ int main(int argc, char *argv[])
 		case 't':
 			return selftest();
 
-		/* Disable cmd line options i and I
-		case 'i':
-			open_file = optarg;
-			break;
-
-		case 'I':
-			open_file_format = optarg;
-			break;
-		*/
 		}
 	}
-
-	/* Disable cmd line options i and I
-	if (argc - optind > 1) {
-		fprintf(stderr, "Only one file can be opened.\n");
-		return 1;
-	}
-
-	if (argc - optind == 1)
-		open_file = argv[argc - 1];
-	*/
 
 	// Initialise libsigrok
 	context = sigrok::Context::create();
 	sv::Session::sr_context = context;
 
-	do {
-		try {
-			// Initialise libsigrok and the session
-			context = sigrok::Context::create();
-			if (loglevel >= 0)
-				context->set_log_level(sigrok::LogLevel::get(loglevel));
-			auto session =
-				init_session(context, drivers, do_scan, restore_settings);
+	try {
+		// Initialise libsigrok and the session
+		context = sigrok::Context::create();
+		if (loglevel >= 0)
+			context->set_log_level(sigrok::LogLevel::get(loglevel));
+		auto session =
+			init_session(context, drivers, do_scan, restore_settings);
 
-			// Initialise the main window.
-			sv::MainWindow main_window(session->device_manager(), session);
-			main_window.show();
+		// Initialise the main window.
+		sv::MainWindow main_window(session->device_manager(), session);
+		main_window.show();
 
-			if (!script_file.empty())
-				main_window.add_smuscript_tab(script_file)->run_script();
+		if (!script_file.empty())
+			main_window.add_smuscript_tab(script_file)->run_script();
 
 #ifdef ENABLE_SIGNALS
-			if (SignalHandler::prepare_signals()) {
-				SignalHandler *const handler = new SignalHandler(&main_window);
-				QObject::connect(handler, &SignalHandler::int_received,
-					&main_window, &sv::MainWindow::close);
-				QObject::connect(handler, &SignalHandler::term_received,
-					&main_window, &sv::MainWindow::close);
-			}
-			else {
-				qWarning() << "Could not prepare signal handler.";
-			}
+		if (SignalHandler::prepare_signals()) {
+			SignalHandler *const handler = new SignalHandler(&main_window);
+			QObject::connect(handler, &SignalHandler::int_received,
+				&main_window, &sv::MainWindow::close);
+			QObject::connect(handler, &SignalHandler::term_received,
+				&main_window, &sv::MainWindow::close);
+		}
+		else {
+			qWarning() << "Could not prepare signal handler.";
+		}
 #endif
 
-			// Run the application
-			ret = Application::exec();
-		}
-		catch (exception &e) {
-			qCritical() << "main() failed: " << e.what();
-		}
+		// Run the application
+		ret = Application::exec();
 	}
-	while (false);
+	catch (exception &e) {
+		qCritical() << "main() failed: " << e.what();
+		ret = 1;
+	}
 
 	return ret;
 }
