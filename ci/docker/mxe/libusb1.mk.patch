@@ -1,0 +1,41 @@
+commit fa2c9340357958a2f693003e349f97537af207a1
+Author: Frank Stettner <frank-stettner@gmx.net>
+Date:   Thu Jul 23 11:15:12 2026 +0200
+
+    libusb1: update 1.0.27 -> 1.0.30
+    
+    Bump libusb1 to pick up features libsigrok needs on Windows, so the
+    libusb "special branch" and the RAW_IO patch can be droped.
+    
+    - Windows event abstraction: libsigrok used to require a custom libusb
+      branch (github.com/uwehermann/libusb) because libusb emulated Unix
+      file descriptors/poll() on top of native Windows HANDLEs, which didn't
+      work reliably for libsigrok's async USB I/O. This was replaced
+      upstream with a native per-platform events abstraction (pipe/poll on
+      POSIX, `WaitForMultipleObjects()` on Windows), merged with commit
+      libusb/libusb@d67eb5beaa44, PR libusb/libusb#252.
+    
+    - WinUSB RAW_IO: The sigrok MXE build previously carried a local patch
+      that set the WinUSB RAW_IO pipe policy unconditionally for every
+      endpoint. Upstream has now reintroduced RAW_IO support for the WinUSB
+      backend, but as an explicit, opt-in, per-endpoint API
+      (`LIBUSB_OPTION_WINUSB_RAW_IO` via `libusb_set_option()`) rather than
+      an unconditional policy. Merged via libusb/libusb#1069,
+      libusb/libusb#1208 and finally libusb/libusb#1512, commit
+      libusb/libusb@3dac3f2, included in release 1.0.30.
+
+diff --git a/src/libusb1.mk b/src/libusb1.mk
+index 8640daf4..498ad076 100644
+--- a/src/libusb1.mk
++++ b/src/libusb1.mk
+@@ -4,8 +4,8 @@ PKG             := libusb1
+ $(PKG)_WEBSITE  := https://libusb.info/
+ $(PKG)_DESCR    := LibUsb-1.0
+ $(PKG)_IGNORE   :=
+-$(PKG)_VERSION  := 1.0.27
+-$(PKG)_CHECKSUM := ffaa41d741a8a3bee244ac8e54a72ea05bf2879663c098c82fc5757853441575
++$(PKG)_VERSION  := 1.0.30
++$(PKG)_CHECKSUM := fea36f34f9156400209595e300840767ab1a385ede1dc7ee893015aea9c6dbaf
+ $(PKG)_SUBDIR   := libusb-$($(PKG)_VERSION)
+ $(PKG)_FILE     := libusb-$($(PKG)_VERSION).tar.bz2
+ $(PKG)_URL      := https://$(SOURCEFORGE_MIRROR)/project/libusb/libusb-1.0/libusb-$($(PKG)_VERSION)/$($(PKG)_FILE)

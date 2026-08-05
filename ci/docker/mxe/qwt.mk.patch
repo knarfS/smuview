@@ -1,0 +1,21 @@
+commit 51eafd66d4ec5a07265abcec996ecf1a9fbf184d
+Author: Frank Stettner <frank-stettner@gmx.net>
+Date:   Thu Jul 23 11:13:55 2026 +0200
+
+    qwt: update 6.1.5 -> 6.3.0
+
+diff --git a/src/qwt.mk b/src/qwt.mk
+index 6e6df2a4..4dd01758 100644
+--- a/src/qwt.mk
++++ b/src/qwt.mk
+@@ -3,8 +3,8 @@
+ PKG             := qwt
+ $(PKG)_WEBSITE  := https://qwt.sourceforge.io/
+ $(PKG)_DESCR    := Qwt
+-$(PKG)_VERSION  := 6.1.5
+-$(PKG)_CHECKSUM := a1208783c2639101b11a9f359d98eaf007e95f7292f1c1df5514884dd8b4373d
++$(PKG)_VERSION  := 6.3.0
++$(PKG)_CHECKSUM := 268d8d41974d263014fea13168324452f41e02880db573794f559995a4e11331
+ $(PKG)_SUBDIR   := $(PKG)-$($(PKG)_VERSION)
+ $(PKG)_FILE     := $($(PKG)_SUBDIR).zip
+ $(PKG)_URL      := https://$(SOURCEFORGE_MIRROR)/project/$(PKG)/$(PKG)/$($(PKG)_VERSION)/$($(PKG)_FILE)

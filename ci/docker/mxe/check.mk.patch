@@ -1,0 +1,37 @@
+commit 7a2f7898291282abad340150cc8b89b898ca7ceb
+Author: Frank Stettner <frank-stettner@gmx.net>
+Date:   Thu Jul 23 10:32:14 2026 +0200
+
+    check: update 0.15.2 -> commit 35d9cc0
+    
+    check 0.15.2 always compiles its `clock_gettime()` fallback,
+    regardless of whether the target already provides it. Current
+    mingw-w64/winpthreads declares `clock_gettime()` via `pthread_time.h`,
+    so the fallback collides with it and the build fails with
+    `redefinition of 'clock_gettime'`.
+    
+    Upstream fixed this after 0.15.2 (which is still the latest tagged
+    release) with commit libcheck/check@bcb753f by detecting the existing
+    function and skipping the fallback when present.
+    
+    Update check to the latest commit libcheck/check@35d9cc0
+
+diff --git a/src/check.mk b/src/check.mk
+index 5655cd18..e428b30e 100644
+--- a/src/check.mk
++++ b/src/check.mk
+@@ -3,9 +3,11 @@
+ PKG             := check
+ $(PKG)_WEBSITE  := https://libcheck.github.io/check/
+ $(PKG)_IGNORE   :=
+-$(PKG)_VERSION  := 0.15.2
+-$(PKG)_CHECKSUM := a8de4e0bacfb4d76dd1c618ded263523b53b85d92a146d8835eb1a52932fa20a
+-$(PKG)_GH_CONF  := libcheck/check/releases/latest
++$(PKG)_VERSION  := 35d9cc011faa0545bf56d5062ae90bbc2688eba7
++$(PKG)_CHECKSUM := 816e9792abad1979be03eca9b1b780c8b738eefa9706d6ee5c5b432e39e73196
++$(PKG)_SUBDIR   := check-$($(PKG)_VERSION)
++$(PKG)_FILE     := check-$($(PKG)_VERSION).tar.gz
++$(PKG)_URL      := https://github.com/libcheck/check/archive/$($(PKG)_VERSION).tar.gz
+ $(PKG)_DEPS     := cc
+ 
+ define $(PKG)_BUILD
