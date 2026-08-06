@@ -18,7 +18,7 @@ defaults:
     shell: bash
 
 env:
-  # The path where the compiled packages will be installed.
+  # The path where the compiled custom packages will be installed.
   INSTALL_DIR: "${{ github.workspace }}/sr"
   # Git URL for the libserialport dependency
   LIBSERIALPORT_REPO: "git://sigrok.org/libserialport"
@@ -28,42 +28,34 @@ env:
   LIBSIGROK_BRANCH: "master"
   # Build type for SmuView (Debug, Release, RelWithDebInfo, MinSizeRel)
   BUILD_TYPE: "Release"
-  # Misc commands
-  WGET: "wget -c --quiet"
-  GIT_CLONE: "git clone --depth=1"
   # AppImage related properties are set as container ENVs if needed.
 
 jobs:
 
   build_linux:
-    name: SmuView Linux build (${{ matrix.target }}, ${{ matrix.compiler.compiler }},  Qt ${{ matrix.qt.version }})
+    name: "Linux build (${{ matrix.target }}, ${{ matrix.compiler.compiler }},  Qt: ${{ matrix.qt.source }} ${{ matrix.qt.version }})"
 
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        # i686 build is disabled for now!
         target: ["x86_64"]
         compiler:
           - { compiler: GCC, cc: "gcc", cxx: "g++" }
           - { compiler: LLVM, cc: "clang", cxx: "clang++" }
         qt:
-          - { version: 5.12.11, system_qwt: false }
-          - { version: 5.13.2, system_qwt: false }
-          - { version: 5.14.2, system_qwt: false }
-          - { version: 5.15.2, system_qwt: true }
+          - { version: "5.15.2", source: "jurplel", qmake_cmd: "qmake" }
+          - { version: "6.8.2", source: "jurplel", qmake_cmd: "qmake" }
+          - { version: "6.10.2", source: "jurplel", qmake_cmd: "qmake" }
+          - { version: "Qt5", source: "system", qmake_cmd: "qmake" }
+          - { version: "Qt6", source: "system", qmake_cmd: "qmake6" }
 
     env:
-      BUILD_TYPE: "Release"
       CC: ${{ matrix.compiler.cc }}
       CXX: ${{ matrix.compiler.cxx }}
+      QMAKE_CMD: ${{ matrix.qt.qmake_cmd }}
 
     steps:
-      - name: Set up Qt environment
-        uses: jurplel/install-qt-action@v3
-        with:
-          version: ${{ matrix.qt.version }}
-
       - name: Install dependencies
         run: |
           sudo apt-get update
@@ -74,51 +66,53 @@ jobs:
             libvisa-dev nettle-dev libavahi-client-dev libhidapi-dev check \
             doxygen swig \
             cmake libboost-dev libboost-test-dev \
-            python3-dev python-gi-dev python-setuptools
-
-      - name: Checkout sigrok-utils
-        uses: actions/checkout@v3
-        with:
-          repository: knarfS/sigrok-util
-          path: sigrok-util
-          ref: github
-
-      - name: Install system Qwt
-        if: ${{ matrix.qt.system_qwt }}
-        run: |
-          sudo apt-get install -y libqwt-qt5-dev
-
-      - name: Build custom Qwt
-        if: ${{ !matrix.qt.system_qwt }}
-        run: |
-          sudo apt-get install -y mesa-common-dev libgl1-mesa-dev
-          cd sigrok-util/cross-compile/github-actions
-          source sigrok-linux-init-toolchain.sh
-          ./sigrok-linux-build-qwt.sh
-
-      - name: Build dependencies
-        run: |
-          cd sigrok-util/cross-compile/github-actions
-          source sigrok-linux-init-toolchain.sh
-          ./sigrok-linux-build-dependencies.sh
+            python3-dev python-gi-dev python3-setuptools
 
       - name: Checkout smuview
-        uses: actions/checkout@v3
+        uses: actions/checkout@v7
         with:
           path: smuview
 
+      - name: Install Qt via jurplel
+        if: matrix.qt.source == 'jurplel'
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: ${{ matrix.qt.version }}
+
+      - name: Install system Qt5 and system Qwt
+        if: matrix.qt.source == 'system' && matrix.qt.version == 'Qt5'
+        run: |
+          sudo apt-get install -y \
+            qtbase5-dev libqt5svg5-dev libqwt-qt5-dev qt5-qmake
+
+      - name: Install system Qt6
+        if: matrix.qt.source == 'system' && matrix.qt.version == 'Qt6'
+        run: |
+          sudo apt-get install -y \
+            qt6-base-dev qt6-svg-dev qmake6
+
+      - name: Build custom Qwt
+        if: matrix.qt.source == 'jurplel' || matrix.qt.version == 'Qt6'
+        run: |
+          sudo apt-get install -y \
+            mesa-common-dev libgl1-mesa-dev
+          smuview/ci/scripts/linux/build_qwt.sh
+
+      - name: Build custom sigrok
+        run: |
+          smuview/ci/scripts/linux/build_sigrok.sh
+
       - name: Build smuview
         run: |
-          source sigrok-util/cross-compile/github-actions/sigrok-linux-init-toolchain.sh
           mkdir -p smuview/build
           cd smuview/build
-          PKG_CONFIG_PATH=$P cmake \
-            -DCMAKE_INSTALL_PREFIX:PATH=$INSTALL_DIR \
-            -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+          PKG_CONFIG_PATH="${INSTALL_DIR}/lib/pkgconfig" cmake \
+            -DCMAKE_INSTALL_PREFIX:PATH="${INSTALL_DIR}" \
+            -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
             -DDISABLE_WERROR=FALSE \
             -DENABLE_TESTS=TRUE \
             ..
-          make $PARALLEL $V
+          make -j"$(nproc)"
 
 
   build_appimage:
