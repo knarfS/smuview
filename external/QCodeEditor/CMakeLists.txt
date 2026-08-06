@@ -1,7 +1,8 @@
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.22)
 project(QCodeEditor)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
 option(BUILD_EXAMPLE "Example building required" Off)
 
@@ -80,10 +81,16 @@ set(CMAKE_AUTORCC ON)
 # Generate compile_commands.json in build/ for analyzers like clang-tidy.
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# Find includes in corresponding build directories
-find_package(Qt5Core    CONFIG REQUIRED)
-find_package(Qt5Widgets CONFIG REQUIRED)
-find_package(Qt5Gui     CONFIG REQUIRED)
+# Find Qt6 / Qt5
+find_package(Qt6 COMPONENTS Core Widgets Gui QUIET)
+if(Qt6_FOUND)
+    set(QT_VERSION_MAJOR 6)
+	message(STATUS "Found Qt6: ${Qt6_VERSION}")
+else()
+    find_package(Qt5 REQUIRED COMPONENTS Core Widgets Gui REQUIRED)
+    set(QT_VERSION_MAJOR 5)
+	message(STATUS "Found Qt5: ${Qt5_VERSION}")
+endif()
 
 add_library(QCodeEditor STATIC
     ${RESOURCES_FILE}
@@ -109,7 +116,7 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 endif(CMAKE_COMPILER_IS_GNUCXX)
 
 target_link_libraries(QCodeEditor
-    Qt5::Core
-    Qt5::Widgets
-    Qt5::Gui
+    Qt${QT_VERSION_MAJOR}::Core
+    Qt${QT_VERSION_MAJOR}::Widgets
+    Qt${QT_VERSION_MAJOR}::Gui
 )
