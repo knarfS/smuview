@@ -5,7 +5,6 @@
 
 #include <QtGui>
 #include <QTextEdit>
-#include <QRegExp>
 
 #include "findform.h"
 #include "ui_findreplaceform.h"
@@ -18,13 +17,13 @@ FindForm::FindForm(QWidget *parent) :
 
 FindForm::~FindForm()
 {
-
 }
 
 void FindForm::changeEvent(QEvent *e)
 {
     QWidget::changeEvent(e);
-    switch (e->type()) {
+    switch (e->type())
+    {
     case QEvent::LanguageChange:
         ui->retranslateUi(this);
         break;
@@ -33,11 +32,13 @@ void FindForm::changeEvent(QEvent *e)
     }
 }
 
-void FindForm::writeSettings(QSettings &settings, const QString &prefix) {
+void FindForm::writeSettings(QSettings &settings, const QString &prefix)
+{
     FindReplaceForm::writeSettings(settings, prefix);
 }
 
-void FindForm::readSettings(QSettings &settings, const QString &prefix) {
+void FindForm::readSettings(QSettings &settings, const QString &prefix)
+{
     FindReplaceForm::readSettings(settings, prefix);
 }
 

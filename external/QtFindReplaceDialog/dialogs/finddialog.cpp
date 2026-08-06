@@ -17,10 +17,12 @@ FindDialog::~FindDialog()
 {
 }
 
-void FindDialog::writeSettings(QSettings &settings, const QString &prefix) {
+void FindDialog::writeSettings(QSettings &settings, const QString &prefix)
+{
     FindReplaceDialog::writeSettings(settings, prefix);
 }
 
-void FindDialog::readSettings(QSettings &settings, const QString &prefix) {
+void FindDialog::readSettings(QSettings &settings, const QString &prefix)
+{
     FindReplaceDialog::readSettings(settings, prefix);
 }
