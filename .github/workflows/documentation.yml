@@ -16,13 +16,14 @@ defaults:
 env:
   # The path where the compiled packages will be installed.
   INSTALL_DIR: "${{ github.workspace }}/sr"
-  # Git URL for the sigrok dependencies
-  SIGROK_REPO_BASE: "https://github.com/sigrokproject"
+  # Git URL for the libserialport dependency
+  LIBSERIALPORT_REPO: "https://github.com/sigrokproject/libserialport"
+  # Git URL for the libsigrok dependency
+  LIBSIGROK_REPO: "https://github.com/sigrokproject/libsigrok"
+  # Git branch for the libsigrok dependency
+  LIBSIGROK_BRANCH: "master"
   # Build type for SmuView (Debug, Release, RelWithDebInfo, MinSizeRel)
   BUILD_TYPE: "Release"
-  # Misc commands
-  WGET: "wget -c --quiet"
-  GIT_CLONE: "git clone --depth=1"
 
 
 jobs:
@@ -32,52 +33,41 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    env:
-      BUILD_TYPE: "Release"
-
     steps:
       - name: Install dependencies
         run: |
+          # Minimal set of dependencies needed to build sigrok + smuview
           sudo apt-get update
           sudo apt-get install -y \
             git-core gcc make autoconf automake libtool \
             g++ autoconf-archive pkg-config libglib2.0-dev libglibmm-2.4-dev \
             libzip-dev check doxygen swig \
-            cmake libboost-dev libqt5svg5-dev qtbase5-dev libqwt-qt5-dev \
-            python3-dev python-gi-dev python-setuptools \
+            cmake libboost-dev libboost-test-dev \
+            qtbase5-dev libqt5svg5-dev libqwt-qt5-dev \
+            python3-dev python-gi-dev python3-setuptools \
             asciidoctor ruby-asciidoctor-pdf coderay
-
-      - name: Checkout sigrok-utils
-        uses: actions/checkout@v7
-        with:
-          repository: knarfS/sigrok-util
-          path: sigrok-util
-          ref: github
-
-      - name: Build dependencies
-        run: |
-          cd sigrok-util/cross-compile/github-actions
-          source sigrok-linux-init-toolchain.sh
-          ./sigrok-linux-build-dependencies.sh
 
       - name: Checkout smuview
         uses: actions/checkout@v7
         with:
           path: smuview
 
+      - name: Build custom sigrok
+        run: |
+          smuview/ci/scripts/linux/build_sigrok.sh
+
       - name: Build manual
         run: |
-          source sigrok-util/cross-compile/github-actions/sigrok-linux-init-toolchain.sh
           mkdir -p smuview/build
           cd smuview/build
-          PKG_CONFIG_PATH=$P cmake \
-            -DCMAKE_INSTALL_PREFIX:PATH=$INSTALL_DIR \
-            -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
-            -DDISABLE_WERROR=TRUE \
+          PKG_CONFIG_PATH="${INSTALL_DIR}/lib/pkgconfig" cmake \
+            -DCMAKE_INSTALL_PREFIX:PATH="${INSTALL_DIR}" \
+            -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
+            -DDISABLE_WERROR=FALSE \
             -DENABLE_TESTS=FALSE \
             ..
-          make manual $V
-          make manual-publish $V
+          make manual
+          make manual-publish
 
       - name: Upload artifact
         uses: actions/upload-artifact@v7
@@ -91,70 +81,59 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    env:
-      BUILD_TYPE: "Release"
-
     steps:
       - name: Install dependencies
         run: |
+          # Minimal set of dependencies needed to build sigrok + smuview
           sudo apt-get update
           sudo apt-get install -y \
             git-core gcc make autoconf automake libtool \
             g++ autoconf-archive pkg-config libglib2.0-dev libglibmm-2.4-dev \
             libzip-dev check doxygen swig \
-            cmake libboost-dev libqt5svg5-dev qtbase5-dev libqwt-qt5-dev \
-            python3-dev python-gi-dev python-setuptools coreutils
-
-      - name: Checkout sigrok-utils
-        uses: actions/checkout@v7
-        with:
-          repository: knarfS/sigrok-util
-          path: sigrok-util
-          ref: github
-
-      - name: Build dependencies
-        run: |
-          cd sigrok-util/cross-compile/github-actions
-          source sigrok-linux-init-toolchain.sh
-          ./sigrok-linux-build-dependencies.sh
+            cmake libboost-dev libboost-test-dev \
+            qtbase5-dev libqt5svg5-dev libqwt-qt5-dev \
+            python3-dev python-gi-dev python3-setuptools coreutils
 
       - name: Checkout smuview
         uses: actions/checkout@v7
         with:
           path: smuview
 
+      - name: Build custom sigrok
+        run: |
+          smuview/ci/scripts/linux/build_sigrok.sh
+
       - name: Build smuview
         run: |
-          source sigrok-util/cross-compile/github-actions/sigrok-linux-init-toolchain.sh
           mkdir -p smuview/build
           cd smuview/build
-          PKG_CONFIG_PATH=$P cmake \
-            -DCMAKE_INSTALL_PREFIX:PATH=$INSTALL_DIR \
-            -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
-            -DDISABLE_WERROR=y \
+          PKG_CONFIG_PATH="${INSTALL_DIR}/lib/pkgconfig" cmake \
+            -DCMAKE_INSTALL_PREFIX:PATH="${INSTALL_DIR}" \
+            -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
+            -DDISABLE_WERROR=FALSE \
             -DENABLE_TESTS=FALSE \
             ..
-          make $PARALLEL $V
-          make install $V
+          make -j"$(nproc)"
+          make install
 
       - name: Build API doc
         run: |
           pip3 install pdoc3
-          export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:"$INSTALL_DIR/lib"
+          export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}":"${INSTALL_DIR}/lib"
           # Source versions  and create destination folders
           source smuview/build/contrib/config_version.sh
-          mkdir -p api_doc/"$SV_MANUAL_VERSION"
+          mkdir -p api_doc/"${SV_MANUAL_VERSION}"
           # Create script for generating the API doc
           cat > gen_api.py << EOF
           import smuview
           import pdoc
           html_str = pdoc.html("smuview", show_type_annotations=True)
-          f = open('./api_doc/$SV_MANUAL_VERSION/python_bindings_api.html', 'w')
+          f = open('./api_doc/${SV_MANUAL_VERSION}/python_bindings_api.html', 'w')
           print(html_str, file=f)
           f.close()
           EOF
           # Generating the API doc
-          timeout --preserve-status 60 $INSTALL_DIR/bin/smuview -s gen_api.py -platform offscreen
+          timeout --preserve-status 60 "${INSTALL_DIR}"/bin/smuview -s gen_api.py -platform offscreen
 
       - name: Upload artifact
         uses: actions/upload-artifact@v7
@@ -194,7 +173,7 @@ jobs:
       - name: Publish documentation
         uses: cpina/github-action-push-to-another-repository@main
         env:
-          SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
+          SSH_DEPLOY_KEY: ${{ secrets.KNARFS_GITHUB_IO_DEPLOY_KEY }}
         with:
           source-directory: "knarfS.github.io"
           destination-github-username: "knarfS"
