@@ -1,4 +1,4 @@
-.TH SMUVIEW 1 "Januray 6, 2021"
+.TH SMUVIEW 1 "August 08, 2026"
 .SH "NAME"
 SmuView \- Qt-based source measure unit GUI for sigrok
 .SH "SYNOPSIS"
@@ -42,17 +42,19 @@ Specify the capture device to connect to.
 .BR "\-D, \-\-dont\-scan "
 Usually SmuView automatically scans all drivers to find suitable
 devices during program startup. This option disables the auto-scan.
-.TP
-.B "\-c, \-\-clean"
-Don't restore previous settings (like views, position and size) on startup.
-.TP
-.B \-\-driver
 Users can either specify the
+.B \-\-driver
 option to pick a device at startup, or interactively scan for devices
 after SmuView has finished starting up.
 .TP
+.BR "\-c, \-\-clean"
+Don't restore previous settings (like views, position and size) on startup.
+.TP
 .BR "\-s, \-\-script " <path_to_smuscript>
 Specify the SmuScript to load and execute.
+.TP
+.BR "\-t, \-\-selftest"
+Selftest functionality for CI/CD.
 .SH "EXIT STATUS"
 .B SmuView
 exits with 0 on success, 1 on most failures.
