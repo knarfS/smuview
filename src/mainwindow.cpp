@@ -32,7 +32,7 @@
 #include <QVBoxLayout>
 
 #include "mainwindow.hpp"
-#include "config.h"
+#include "src/config.h"
 #include "src/devicemanager.hpp"
 #include "src/session.hpp"
 #include "src/settingsmanager.hpp"

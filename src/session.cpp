@@ -28,7 +28,7 @@
 #include <QDebug>
 
 #include "session.hpp"
-#include "config.h"
+#include "src/config.h"
 #include "src/devicemanager.hpp"
 #include "src/util.hpp"
 #include "src/devices/basedevice.hpp"

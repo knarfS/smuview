@@ -22,9 +22,9 @@
 #include <QWidget>
 
 #include "welcometab.hpp"
+#include "src/config.h"
 #include "src/session.hpp"
 #include "src/ui/tabs/basetab.hpp"
-#include <config.h>
 
 namespace sv {
 namespace ui {

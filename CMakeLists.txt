@@ -210,8 +210,8 @@ else()
 endif()
 
 configure_file (
-	${PROJECT_SOURCE_DIR}/config.h.in
-	${PROJECT_BINARY_DIR}/config.h
+	${PROJECT_SOURCE_DIR}/src/config.h.in
+	${PROJECT_BINARY_DIR}/src/config.h
 )
 configure_file (
 	${PROJECT_SOURCE_DIR}/contrib/config_version.sh.in
@@ -224,7 +224,7 @@ configure_file (
 #-------------------------------------------------------------------------------
 
 set(smuview_SOURCES
-	main.cpp
+	src/main.cpp
 	src/application.cpp
 	src/devicemanager.cpp
 	src/mainwindow.cpp
@@ -369,7 +369,7 @@ set(smuview_SOURCES
 )
 
 if(ENABLE_SIGNALS)
-	list(APPEND smuview_SOURCES signalhandler.cpp)
+	list(APPEND smuview_SOURCES src/signalhandler.cpp)
 endif()
 
 set(smuview_RESOURCES

@@ -36,7 +36,7 @@
 #include <qwt_global.h>
 
 #include "aboutdialog.hpp"
-#include "config.h"
+#include "src/config.h"
 #include "src/util.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/data/properties/baseproperty.hpp"

@@ -25,7 +25,7 @@
 #include <pybind11/stl.h>
 
 #include "bindings.hpp"
-#include "config.h"
+#include "src/config.h"
 #include "src/session.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/channels/hardwarechannel.hpp"

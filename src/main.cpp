@@ -30,8 +30,8 @@
 #include <QLabel>
 #include <QSettings>
 
-#include "config.h"
 #include "src/application.hpp"
+#include "src/config.h"
 #include "src/devicemanager.hpp"
 #include "src/session.hpp"
 #include "src/settingsmanager.hpp"
@@ -40,7 +40,7 @@
 #include "src/ui/tabs/smuscripttab.hpp"
 
 #ifdef ENABLE_SIGNALS
-#include "signalhandler.hpp"
+#include "src/signalhandler.hpp"
 #endif
 
 #ifdef _WIN32

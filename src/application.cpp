@@ -21,7 +21,7 @@
 #include <iostream>
 
 #include "application.hpp"
-#include "config.h"
+#include "src/config.h"
 
 using std::cerr;
 using std::endl;
