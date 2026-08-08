@@ -63,7 +63,7 @@ RequestExecutionLevel admin
 # --- MUI interface configuration ---------------------------------------------
 
 # Use the following icon for the installer EXE file.
-!define MUI_ICON "@PROJECT_SOURCE_DIR@/icons/smuview.ico"
+!define MUI_ICON "@PROJECT_SOURCE_DIR@/resources/icons/smuview.ico"
 
 # Show a nice image at the top of each installer page.
 !define MUI_HEADERIMAGE

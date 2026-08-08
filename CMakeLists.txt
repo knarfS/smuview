@@ -373,14 +373,14 @@ if(ENABLE_SIGNALS)
 endif()
 
 set(smuview_RESOURCES
-	smuview.qrc
+	resources/smuview.qrc
 )
 
 if(WIN32)
 	# Use the sigrok icon for the smuview.exe executable.
 	enable_language(RC)
 	set(CMAKE_RC_COMPILE_OBJECT "${CMAKE_RC_COMPILER} -O coff -I${CMAKE_CURRENT_SOURCE_DIR} <SOURCE> <OBJECT>")
-	list(APPEND smuview_SOURCES smuviewico.rc)
+	list(APPEND smuview_SOURCES packaging/mxe/smuviewico.rc)
 endif()
 
 if(Qt6_FOUND)
@@ -507,9 +507,9 @@ install(FILES contrib/org.sigrok.SmuView.desktop DESTINATION ${CMAKE_INSTALL_DAT
 # Install the AppData/AppStream file.
 install(FILES contrib/org.sigrok.SmuView.appdata.xml DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/metainfo)
 
-# Install the SmuView icons.
-install(FILES icons/smuview.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/48x48/apps)
-install(FILES icons/smuview.svg DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/scalable/apps)
+# Install the SmuView icons (for smuview.spec)
+install(FILES resources/icons/smuview.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/48x48/apps)
+install(FILES resources/icons/smuview.svg DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/scalable/apps)
 
 # Install the SmuScript examples.
 install(DIRECTORY smuscript/ DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/smuscript)
