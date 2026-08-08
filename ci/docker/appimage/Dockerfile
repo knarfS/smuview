@@ -1,4 +1,4 @@
-FROM ubuntu:22.04 AS sigrok-appimage
+FROM ubuntu:22.04 AS smuview-appimage-builder
 
 LABEL org.opencontainers.image.title="SmuView AppImage Multi-Arch Build Image" \
 	org.opencontainers.image.description="This image is used to build the SmuView AppImage" \

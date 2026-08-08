@@ -2,7 +2,7 @@ ARG BASE_DIR=/opt
 ARG MXE_DIR=$BASE_DIR/mxe
 
 
-FROM debian:trixie AS sigrok-mxe-builder
+FROM debian:trixie AS smuview-mxe-installer
 
 ENV DEBIAN_FRONTEND="noninteractive"
 RUN apt-get update \
@@ -95,7 +95,7 @@ RUN make -j"$(nproc)" MXE_USE_CCACHE= DONT_CHECK_REQUIREMENTS=1 MXE_VERBOSE=1 MX
 	&& rm -rf ${MXE_DIR}/.git
 
 
-FROM debian:trixie-slim AS sigrok-mxe
+FROM debian:trixie-slim AS smuview-mxe-builder
 
 LABEL org.opencontainers.image.title="SmuView MXE Build Image" \
 	org.opencontainers.image.description="This image is used to cross-compile SmuView for Windows with MXE" \
@@ -134,6 +134,6 @@ ARG MXE_DIR
 ENV BASE_DIR=${BASE_DIR}
 ENV MXE_DIR=${MXE_DIR}
 
-COPY --from=sigrok-mxe-builder ${MXE_DIR} ${MXE_DIR}
+COPY --from=smuview-mxe-installer ${MXE_DIR} ${MXE_DIR}
 
 WORKDIR ${MXE_DIR}
