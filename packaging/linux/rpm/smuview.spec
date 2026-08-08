@@ -45,12 +45,12 @@ make manual-html
 %files
 %{!?_licensedir:%global license %%doc}
 %license COPYING
-%doc README INSTALL stuff
+%doc README INSTALL
 %{_docdir}/%{name}/images/sv_with_load.png
 %{_docdir}/%{name}/manual.html
 %{_bindir}/smuview
 %{_mandir}/man1/%{name}.*
 %{_datadir}/applications/org.sigrok.SmuView.desktop
-%{_datadir}/metainfo/org.sigrok.SmuView.appdata.xml
+%{_datadir}/metainfo/org.sigrok.SmuView.metainfo.xml
 %{_datadir}/icons/hicolor/48x48/apps/smuview.png
 %{_datadir}/icons/hicolor/scalable/apps/smuview.svg
