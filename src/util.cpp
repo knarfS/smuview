@@ -2,7 +2,7 @@
  * This file is part of the SmuView project.
  *
  * Copyright (C) 2012 Joel Holdsworth <joel@airwebreathe.org.uk>
- * Copyright (C) 2017-2022 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,7 +32,6 @@
 #include <QTextStream>
 #include <QUuid>
 
-#include "extdef.h"
 #include "util.hpp"
 
 using std::fixed;
