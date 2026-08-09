@@ -1,4 +1,4 @@
-name: Build and Push AppImage Builder Image
+name: AppImage-Builder Image build
 
 on:
   workflow_dispatch:
