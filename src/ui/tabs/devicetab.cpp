@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -109,7 +109,7 @@ void DeviceTab::setup_toolbar()
 	action_save_as_->setIcon(
 		QIcon::fromTheme("document-save",
 		QIcon(":/icons/document-save.png")));
-	action_save_as_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
+	action_save_as_->setShortcut(QKeySequence(QKeySequence::Save));
 	connect(action_save_as_, &QAction::triggered,
 		this, &DeviceTab::on_action_save_as_triggered);
 

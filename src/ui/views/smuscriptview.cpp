@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -152,7 +152,7 @@ void SmuScriptView::setup_toolbar()
 	action_open_->setIcon(
 		QIcon::fromTheme("document-open",
 		QIcon(":/icons/document-open.png")));
-	action_open_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_O));
+	action_open_->setShortcut(QKeySequence(QKeySequence::Open));
 	connect(action_open_, &QAction::triggered,
 		this, &SmuScriptView::on_action_open_triggered);
 
@@ -161,7 +161,7 @@ void SmuScriptView::setup_toolbar()
 	action_save_->setIcon(
 		QIcon::fromTheme("document-save",
 		QIcon(":/icons/document-save.png")));
-	action_save_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
+	action_save_->setShortcut(QKeySequence(QKeySequence::Save));
 	connect(action_save_, &QAction::triggered,
 		this, &SmuScriptView::on_action_save_triggered);
 
@@ -190,7 +190,7 @@ void SmuScriptView::setup_toolbar()
 	action_find_->setIcon(
 		QIcon::fromTheme("edit-find",
 		QIcon(":/icons/edit-find.png")));
-	action_find_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_F));
+	action_find_->setShortcut(QKeySequence(QKeySequence::Find));
 	connect(action_find_, &QAction::triggered,
 		this, &SmuScriptView::on_action_find_triggered);
 
