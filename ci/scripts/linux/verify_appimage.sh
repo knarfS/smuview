@@ -20,6 +20,8 @@
 
 set -e
 
+echo "ALWAYS_SCREENSHOT: ${ALWAYS_SCREENSHOT:=false}"
+
 xvfb-run -a bash <<'EOF'
 
 FAILED=0
@@ -28,15 +30,15 @@ PID=""
 
 ./SmuView.AppImage --driver demo > stdout.log 2> stderr.log &
 PID=$!
-sleep 10
+sleep 20
 
 if ! kill -0 "${PID}" 2> /dev/null; then
-wait "${PID}" || EXIT_CODE=$?
-echo "::error::SmuView exited early with code ${EXIT_CODE}"
-FAILED=1
+	wait "${PID}" || EXIT_CODE=$?
+	echo "::error::SmuView exited early with code ${EXIT_CODE}"
+	FAILED=1
 fi
 
-if [[ ${FAILED} -eq 0 ]]; then
+if [[ "${FAILED}" -eq 0 ]]; then
 	TITLE=""
 	for _ in {1..20}; do
 		WINDOW_ID="$(xdotool search --onlyvisible --pid "${PID}" 2>/dev/null | head -n1 || true)"
@@ -48,11 +50,16 @@ if [[ ${FAILED} -eq 0 ]]; then
 	done
 
 	echo "Window title: '${TITLE}'"
+
 	if [[ "${TITLE}" != SmuView\ * ]]; then
-		echo "::error::Window title is wrong, taking screenshot"
-		import -window root desktop-screenshot-linux.png || true
+		echo "::error::Window title is wrong"
 		FAILED=1
 	fi
+fi
+
+if [[ "${FAILED}" -eq 1 || "${ALWAYS_SCREENSHOT}" == "true" ]]; then
+	echo "Taking screenshot"
+	import -window root desktop-screenshot-linux.png || true
 fi
 
 kill "${PID}" 2> /dev/null || true

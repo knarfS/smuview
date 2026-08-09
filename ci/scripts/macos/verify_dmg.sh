@@ -20,11 +20,13 @@
 
 set -e
 
+echo "ALWAYS_SCREENSHOT: ${ALWAYS_SCREENSHOT:=false}"
+
 FAILED=0
 
 "/Applications/SmuView.app/Contents/MacOS/SmuView" --driver demo > stdout.log 2> stderr.log &
 PID=$!
-sleep 10
+sleep 20
 
 if ! kill -0 "${PID}" 2> /dev/null; then
 	EXIT_CODE=0
@@ -36,9 +38,13 @@ fi
 TITLE=$(osascript -e 'tell application "System Events" to get title of front window of process "SmuView"' 2> /dev/null || echo "")
 echo "Window title: '${TITLE}'"
 if [[ "${FAILED}" -eq 0 && "${TITLE}" != "SmuView "* ]]; then
-	echo "::error::Window title is wrong, taking screenshot"
-	screencapture -x desktop-screenshot-macos.png || true
+	echo "::error::Window title is wrong"
 	FAILED=1
+fi
+
+if [[ "${FAILED}" -eq 1 || "${ALWAYS_SCREENSHOT}" == "true" ]]; then
+	echo "Taking screenshot"
+	screencapture -x desktop-screenshot-macos.png || true
 fi
 
 kill "${PID}" 2> /dev/null || true

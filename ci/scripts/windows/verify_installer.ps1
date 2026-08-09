@@ -23,7 +23,7 @@ $exe = "$env:ProgramFiles\SmuView\smuview.exe"
 $proc = Start-Process -FilePath $exe -ArgumentList "--driver demo" -PassThru `
 	-RedirectStandardOutput "stdout.log" `
 	-RedirectStandardError "stderr.log"
-Start-Sleep -Seconds 10
+Start-Sleep -Seconds 20
 $proc.Refresh()
 
 Write-Output "HasExited: $($proc.HasExited)"
@@ -35,16 +35,18 @@ if ($proc.HasExited) {
 Write-Output "MainWindowTitle: '$($proc.MainWindowTitle)'"
 Write-Output "MainWindowHandle: $($proc.MainWindowHandle)"
 if (!$failed -and !$proc.MainWindowTitle.StartsWith("SmuView ")) {
-	Write-Output "::error::Window title is wrong, taking screenshot"
+	Write-Output "::error::Window title is wrong"
+	$failed = $true
+}
 
+if ($failed -or $env:ALWAYS_SCREENSHOT -eq "true") {
+	Write-Output "Taking screenshot"
 	Add-Type -AssemblyName System.Windows.Forms,System.Drawing
 	$bounds = [System.Windows.Forms.SystemInformation]::VirtualScreen
 	$bmp = New-Object System.Drawing.Bitmap $bounds.Width, $bounds.Height
 	$graphics = [System.Drawing.Graphics]::FromImage($bmp)
 	$graphics.CopyFromScreen($bounds.Location, [System.Drawing.Point]::Empty, $bounds.Size)
 	$bmp.Save("$env:GITHUB_WORKSPACE\desktop-screenshot-windows.png")
-
-	$failed = $true
 }
 
 Stop-Process -Id $proc.Id -Force -ErrorAction SilentlyContinue
