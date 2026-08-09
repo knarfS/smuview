@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,11 +75,11 @@ template<typename ...Arg>
 shared_ptr<Configurable> Configurable::create(Arg&&...arg)
 {
 	struct make_shared_enabler : public Configurable {
-		make_shared_enabler(Arg&&...arg) : Configurable(forward<Arg>(arg)...) {}
+		make_shared_enabler(Arg&&...arg) : Configurable(std::forward<Arg>(arg)...) {}
 	};
 
 	shared_ptr<Configurable> configurable =
-		make_shared<make_shared_enabler>(forward<Arg>(arg)...);
+		make_shared<make_shared_enabler>(std::forward<Arg>(arg)...);
 	configurable->init();
 
 	return configurable;

@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,6 @@
 
 #include "src/devices/hardwaredevice.hpp"
 
-using std::forward;
 using std::shared_ptr;
 
 namespace sigrok {
@@ -51,12 +50,12 @@ public:
 	{
 		struct make_shared_enabler : public MeasurementDevice {
 			explicit make_shared_enabler(Arg&&...arg) :
-				MeasurementDevice(forward<Arg>(arg)...)
+				MeasurementDevice(std::forward<Arg>(arg)...)
 			{
 			}
 		};
 
-		return make_shared<make_shared_enabler>(forward<Arg>(arg)...);
+		return make_shared<make_shared_enabler>(std::forward<Arg>(arg)...);
 	}
 
 protected:
