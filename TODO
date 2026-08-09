@@ -22,7 +22,7 @@ ToDo Build
 - Remove hard coded python version in installers (nsis, build-appimage.sh)
 - Windows verification window title not reliable
 - Document RPM gerneration prcess.
-- Maybe use CPack to prepare files and directories for AppImage/DMG/NSIS? Maybe, we already have with the Install section in CMakeList.txt
+- Use CPack to build NSIS, AppImage, DMG, RPM, deb, ...
 - Do we really need `SV_PYTHON_VERSION`?
 
 ToDo clazy

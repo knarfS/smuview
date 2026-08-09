@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 ##
-## This file is part of the sigrok-util project.
+## This file is part of the SmuView project.
 ##
 ## Copyright (C) 2017 Uwe Hermann <uwe@hermann-uwe.de>
 ## Copyright (C) 2021-2026 Frank Stettner <frank-stettner@gmx.net>
@@ -50,7 +50,7 @@ mkdir -p "${MACOS_DIR}" "${FRAMEWORKS_DIR}" "${SHARE_DIR}"
 # Copy executable
 cp "${INSTALL_DIR}/bin/${SV_BIN_NAME}" "${MACOS_DIR}"
 # Copy smuscripts
-cp -R "${INSTALL_DIR}"/share/smuscript "${SHARE_DIR}"
+cp -R "${INSTALL_DIR}"/share/smuview/smuscript "${SHARE_DIR}"
 
 "${QT_BIN_DIR}"/macdeployqt "${SV_TITLE}".app -verbose=1
 

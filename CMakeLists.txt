@@ -218,6 +218,12 @@ configure_file (
 	${PROJECT_BINARY_DIR}/contrib/config_version.sh
 )
 
+# Generate Windows installer script
+configure_file(
+	packaging/mxe/smuview_cross.nsi.in
+	${CMAKE_CURRENT_BINARY_DIR}/packaging/mxe/smuview_cross.nsi
+	@ONLY
+)
 
 #===============================================================================
 #= Sources
@@ -495,27 +501,36 @@ endif()
 #= Installation
 #-------------------------------------------------------------------------------
 
-# Install the executable.
-install(TARGETS ${PROJECT_NAME} DESTINATION bin/)
+# Install the executable
+install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_BINDIR})
 
-# Install the manpage.
-install(FILES packaging/linux/smuview.1 DESTINATION ${CMAKE_INSTALL_MANDIR}/man1 COMPONENT doc)
+# Install license, readme, etc.
+install(FILES COPYING DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/doc/smuview/)
+install(FILES README DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/doc/smuview/)
+install(FILES INSTALL DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/doc/smuview/)
+install(FILES NEWS DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/doc/smuview/)
 
-# Install the desktop file.
-install(FILES packaging/linux/org.sigrok.SmuView.desktop DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications)
+# Install the SmuScript examples
+install(DIRECTORY smuscript/ DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/smuview/smuscript)
 
-# Install the AppData/AppStream file.
-install(FILES packaging/linux/org.sigrok.SmuView.metainfo.xml DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/metainfo)
+# All Unix (Linux, *BSD, Macos)
+if(UNIX)
+	# Install the manpage.
+	install(FILES packaging/linux/smuview.1 DESTINATION ${CMAKE_INSTALL_MANDIR}/man1 COMPONENT doc)
+endif()
 
-# Install the SmuView icons (for smuview.spec)
-install(FILES resources/icons/smuview.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/48x48/apps)
-install(FILES resources/icons/smuview.svg DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/scalable/apps)
+# Only Linux
+if(UNIX AND NOT APPLE)
+	# Install the desktop file
+	install(FILES packaging/linux/org.sigrok.SmuView.desktop DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/applications)
 
-# Install the SmuScript examples.
-install(DIRECTORY smuscript/ DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/smuscript)
+	# Install the AppData/AppStream file
+	install(FILES packaging/linux/org.sigrok.SmuView.metainfo.xml DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/metainfo)
 
-# Generate Windows installer script.
-configure_file(packaging/mxe/smuview_cross.nsi.in ${CMAKE_CURRENT_BINARY_DIR}/packaging/mxe/smuview_cross.nsi @ONLY)
+	# Install the SmuView icons
+	install(FILES resources/icons/smuview.png DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/48x48/apps)
+	install(FILES resources/icons/smuview.svg DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/icons/hicolor/scalable/apps)
+endif()
 
 
 #===============================================================================

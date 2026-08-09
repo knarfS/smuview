@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 ##
-## This file is part of the sigrok-util project.
+## This file is part of the SmuView project.
 ##
 ## Copyright (C) 2021-2026 Frank Stettner <frank-stettner@gmx.net>
 ##
