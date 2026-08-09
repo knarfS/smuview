@@ -218,6 +218,13 @@ configure_file (
 	${PROJECT_BINARY_DIR}/contrib/config_version.sh
 )
 
+# Generate DMG plist file
+configure_file(
+	packaging/macos/Info.plist.in
+	${CMAKE_CURRENT_BINARY_DIR}/packaging/macos/Info.plist
+	@ONLY
+)
+
 # Generate Windows installer script
 configure_file(
 	packaging/mxe/smuview_cross.nsi.in

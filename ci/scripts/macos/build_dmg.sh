@@ -93,8 +93,7 @@ exec "./${SV_BIN_NAME}.real" "\$@"
 EOF
 chmod 755 "${MACOS_DIR}/${SV_BIN_NAME}"
 
-xsltproc --stringparam VERSION "${SV_VERSION_STRING}" -o "${CONTENTS_DIR}"/Info.plist \
-	../smuview/packaging/macos/Info-smuview.xslt ../smuview/packaging/macos/Info-smuview.plist
+cp ../smuview/build/packaging/macos/Info.plist "${CONTENTS_DIR}"
 cp ../smuview/packaging/macos/smuview.icns "${CONTENTS_DIR}"/Resources
 
 hdiutil create "${SV_TITLE}-${SV_VERSION_STRING}.dmg" \
