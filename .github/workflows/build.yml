@@ -308,6 +308,7 @@ jobs:
       - name: Build DMG
         run: |
           # Source SmuView versions and names
+          brew install dylibbundler
           source smuview/build/contrib/config_version.sh
           smuview/ci/scripts/macos/build_dmg.sh
 
