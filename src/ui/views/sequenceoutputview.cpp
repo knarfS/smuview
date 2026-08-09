@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2019-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2019-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -181,8 +181,13 @@ void SequenceOutputView::setup_ui()
 	repeat_layout->addSpacing(8);
 	repeat_infinite_box_ = new QCheckBox(tr("infinite"));
 	repeat_infinite_box_->setChecked(true);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
+	connect(repeat_infinite_box_, &QCheckBox::checkStateChanged,
+		this, &SequenceOutputView::on_repeat_infinite_changed);
+#else
 	connect(repeat_infinite_box_, &QCheckBox::stateChanged,
 		this, &SequenceOutputView::on_repeat_infinite_changed);
+#endif
 	repeat_layout->addWidget(repeat_infinite_box_);
 	repeat_layout->addSpacing(8);
 	repeat_count_box_ = new QSpinBox();
