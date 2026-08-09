@@ -164,7 +164,7 @@ memaccess_check_unaligned_le(HAVE_UNALIGNED_LITTLE_ENDIAN_ACCESS)
 
 
 #===============================================================================
-#= Config Header
+#= Examin versions and replace in templates
 #-------------------------------------------------------------------------------
 
 set(SV_TITLE SmuView)
@@ -209,13 +209,14 @@ else()
 	set(SV_PYTHON_VERSION ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR})
 endif()
 
-configure_file (
-	${PROJECT_SOURCE_DIR}/src/config.h.in
-	${PROJECT_BINARY_DIR}/src/config.h
+configure_file(
+	src/config.h.in
+	${CMAKE_CURRENT_BINARY_DIR}/src/config.h
 )
-configure_file (
-	${PROJECT_SOURCE_DIR}/contrib/config_version.sh.in
-	${PROJECT_BINARY_DIR}/contrib/config_version.sh
+
+configure_file(
+	contrib/config_version.sh.in
+	${CMAKE_CURRENT_BINARY_DIR}/contrib/config_version.sh
 )
 
 # Generate DMG plist file
