@@ -19,6 +19,9 @@ ToDo Release
 ToDo Build
 ----------
 
+- pdoc3 / pybind11 is generating incomplete binding docs (https://github.com/knarfS/knarfS.github.io/commit/5e761cbeafec1a793a5cf4337bff09f3b5a6e308)
+- Integrate udev rules to AppImage
+- Remove relative paths (`./smuview/build/` and `../smuview/`) in `macos/build_dmg.sh` and pass in `${SV_SOURCE_DIR}` and `${SV_BUILD_DIR}`
 - Remove hard coded python version in installers (nsis, build-appimage.sh)
 - Windows verification window title not reliable
 - Document RPM gerneration prcess.
@@ -46,6 +49,7 @@ ToDo
 - Plot: Sampling
 - Mutex for aquisition_state_?
 - Save all data (gnuplot, octave, ...)
+	- Move CSV logic out of `signalsavedialog.cpp`!
 	- add a saveutil.cpp
 - Configurable:
 	- default check for getable/setable in get/set functions without assert(false)?
@@ -88,7 +92,6 @@ ToDo
 - Unify name of static (const) variables
 - Remove devicetab.hpp time_unit_
 - Cycle: replace BaseChannel::parent_device_ with device_id_, and so on....
-- main.cpp: Remove while loop.
 - AnalogTimeSignal: Move signal_start_timestamp_ to BaseSignal
 - *Signal: Clean up Signal classes
 - Add a way to change a channel/signal name in the GUI. Connect BaseSignal::name_changed() signal.
@@ -160,6 +163,7 @@ Done
 - Save session
 - Segfault when closing/disconnet devices via UI/DevicesView
 - Move `org.sigrok.SmuView.appdata.xml`, `org.sigrok.SmuView.desktop` and `smuview.spec` to `packaging/rpm` and update dependencies in files.
+- main.cpp: Remove while loop.
 
 Won't fix
 ---------
