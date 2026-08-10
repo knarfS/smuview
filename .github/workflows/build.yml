@@ -475,6 +475,10 @@ jobs:
           cp -R "/Volumes/SmuView/SmuView.app" /Applications/
           hdiutil detach /Volumes/SmuView
 
+      - name: Scan for unresolved dependencies
+        run: |
+          smuview/ci/scripts/macos/verify_dependencies.sh
+
       - name: Launch and verify
         run: |
           smuview/ci/scripts/macos/verify_dmg.sh
