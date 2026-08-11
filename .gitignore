@@ -74,6 +74,7 @@ CMakeLists.txt.user*
 
 # KDEvelop
 .kdev4/
+*.kdev4
 
 # JetBrains
 .idea/
