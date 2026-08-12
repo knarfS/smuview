@@ -22,6 +22,10 @@ jobs:
       contents: read
       packages: write
 
+    environment:
+      name: docker-mxe
+      url: https://github.com/knarfS/smuview/pkgs/container/smuview%2Fmxe-builder
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7

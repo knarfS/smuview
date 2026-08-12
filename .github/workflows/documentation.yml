@@ -151,6 +151,10 @@ jobs:
       - build_manual
       - build_python_doc
 
+    environment:
+      name: github-pages
+      url: https://knarfs.github.io
+
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v8

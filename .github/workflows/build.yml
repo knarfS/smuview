@@ -513,6 +513,10 @@ jobs:
       - verify_windows_installer
       - verify_macos_dmg
 
+    environment:
+      name: releases
+      url: https://github.com/knarfS/smuview/releases
+
     env:
       # For AppImages in pipelines (no FUSE) we need:
       APPIMAGE_EXTRACT_AND_RUN: 1
