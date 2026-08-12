@@ -18,7 +18,7 @@
 ## along with this program; if not, see <http://www.gnu.org/licenses/>.
 ##
 
-set -e
+set -euo pipefail
 
 echo "INSTALL_DIR: ${INSTALL_DIR:?INSTALL_DIR is not set}"
 echo "MXE_DIR: ${MXE_DIR:?MXE_DIR is not set}"

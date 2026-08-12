@@ -18,11 +18,13 @@
 ## along with this program; if not, see <http://www.gnu.org/licenses/>.
 ##
 
-set -e
+set -euo pipefail
 
 echo "ALWAYS_SCREENSHOT: ${ALWAYS_SCREENSHOT:=false}"
 
 xvfb-run -a bash <<'EOF'
+
+set -euo pipefail
 
 FAILED=0
 EXIT_CODE=0

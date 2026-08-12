@@ -18,7 +18,7 @@
 ## along with this program; if not, see <http://www.gnu.org/licenses/>.
 ##
 
-set -e
+set -euo pipefail
 
 echo "ALWAYS_SCREENSHOT: ${ALWAYS_SCREENSHOT:=false}"
 

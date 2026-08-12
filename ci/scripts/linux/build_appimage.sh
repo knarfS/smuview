@@ -18,7 +18,7 @@
 ## along with this program; if not, see <http://www.gnu.org/licenses/>.
 ##
 
-set -e
+set -euo pipefail
 
 echo "INSTALL_DIR: ${INSTALL_DIR:?INSTALL_DIR is not set}"
 echo "APP_DIR: ${APP_DIR:?APP_DIR is not set}"
@@ -50,7 +50,7 @@ export LD_LIBRARY_PATH="$this_dir/usr/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 EOF
 
 export LINUXDEPLOY_OUTPUT_VERSION="${SV_VERSION_STRING}"
-LD_LIBRARY_PATH="${LD_LIBRARY_PATH}":"${INSTALL_DIR}/lib:/usr/local/lib" ./downloads/linuxdeploy-"${ARCH}".AppImage \
+LD_LIBRARY_PATH="${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}${INSTALL_DIR}/lib:/usr/local/lib" ./downloads/linuxdeploy-"${ARCH}".AppImage \
 	--appdir "${APP_DIR}" \
 	--output appimage \
 	--plugin qt
