@@ -118,7 +118,8 @@ jobs:
 
       - name: Build API doc
         run: |
-          pip3 install pdoc3
+          #pip3 install pdoc3
+          pip3 install git+https://github.com/knarfS/pdoc3.git@pybind11_typing
           export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}":"${INSTALL_DIR}/lib"
           # Source versions  and create destination folders
           source smuview/build/contrib/config_version.sh
