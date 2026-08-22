@@ -251,7 +251,7 @@ void DeviceTab::on_action_save_as_triggered()
 void DeviceTab::on_action_add_control_view_triggered()
 {
 	shared_ptr<sv::devices::BaseDevice> device = nullptr;
-	if (device_->type() != sv::devices::DeviceType::UserDevice)
+	if (!sv::devices::deviceutil::is_user_device(device_->type()))
 		device = device_;
 
 	ui::dialogs::AddViewDialog dlg(session(), device, 0);

@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2022 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,7 +60,7 @@ MathChannel::MathChannel(
 	index_ = parent_device->next_channel_index();
 	fixed_signal_ = true;
 
-	if (parent_device_->type() == devices::DeviceType::UserDevice) {
+	if (devices::deviceutil::is_user_device(parent_device_->type())) {
 		auto sr_udev = static_pointer_cast<sigrok::UserDevice>(
 			parent_device_->sr_device());
 		sr_channel_ = sr_udev->add_channel(

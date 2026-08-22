@@ -59,9 +59,9 @@ bool is_supported_driver(shared_ptr<sigrok::Driver> sr_driver)
 {
 	assert(sr_driver);
 
-	return is_source_sink_driver(sr_driver) ||
-		is_measurement_driver(sr_driver) ||
-		is_oscilloscope_driver(sr_driver);
+	const auto &device_types = get_device_types(sr_driver);
+	return std::any_of(
+		device_types.begin(), device_types.end(), is_supported_device);
 }
 
 bool is_source_sink_device(DeviceType device_type)
@@ -76,9 +76,9 @@ bool is_source_sink_driver(shared_ptr<sigrok::Driver> sr_driver)
 {
 	assert(sr_driver);
 
-	const auto keys = sr_driver->config_keys();
-	return keys.count(sigrok::ConfigKey::POWER_SUPPLY) > 0
-		|| keys.count(sigrok::ConfigKey::ELECTRONIC_LOAD) > 0;
+	const auto &device_types = get_device_types(sr_driver);
+	return std::any_of(
+		device_types.begin(), device_types.end(), is_source_sink_device);
 }
 
 bool is_measurement_device(DeviceType device_type)
@@ -102,18 +102,9 @@ bool is_measurement_driver(shared_ptr<sigrok::Driver> sr_driver)
 {
 	assert(sr_driver);
 
-	const auto keys = sr_driver->config_keys();
-	return keys.count(sigrok::ConfigKey::MULTIMETER) > 0
-		|| keys.count(sigrok::ConfigKey::SOUNDLEVELMETER) > 0
-		|| keys.count(sigrok::ConfigKey::THERMOMETER) > 0
-		|| keys.count(sigrok::ConfigKey::HYGROMETER) > 0
-		|| keys.count(sigrok::ConfigKey::ENERGYMETER) > 0
-		|| keys.count(sigrok::ConfigKey::LCRMETER) > 0
-		|| keys.count(sigrok::ConfigKey::SCALE) > 0
-		|| keys.count(sigrok::ConfigKey::SIGNAL_GENERATOR) > 0
-		|| keys.count(sigrok::ConfigKey::POWERMETER) > 0
-		|| keys.count(sigrok::ConfigKey::MULTIPLEXER) > 0
-		|| keys.count(sigrok::ConfigKey::DEMO_DEV) > 0;
+	const auto &device_types = get_device_types(sr_driver);
+	return std::any_of(
+		device_types.begin(), device_types.end(), is_measurement_device);
 }
 
 bool is_demo_device(DeviceType device_type)
@@ -127,8 +118,9 @@ bool is_demo_driver(shared_ptr<sigrok::Driver> sr_driver)
 {
 	assert(sr_driver);
 
-	const auto keys = sr_driver->config_keys();
-	return keys.count(sigrok::ConfigKey::DEMO_DEV) > 0;
+	const auto &device_types = get_device_types(sr_driver);
+	return std::any_of(
+		device_types.begin(), device_types.end(), is_demo_device);
 }
 
 bool is_oscilloscope_device(DeviceType device_type)
@@ -142,8 +134,25 @@ bool is_oscilloscope_driver(shared_ptr<sigrok::Driver> sr_driver)
 {
 	assert(sr_driver);
 
-	const auto keys = sr_driver->config_keys();
-	return keys.count(sigrok::ConfigKey::OSCILLOSCOPE) > 0;
+	const auto &device_types = get_device_types(sr_driver);
+	return std::any_of(
+		device_types.begin(), device_types.end(), is_oscilloscope_device);
+}
+
+bool is_user_device(DeviceType device_type)
+{
+	assert(device_type);
+
+	return device_type == DeviceType::UserDevice;
+}
+
+bool is_user_driver(shared_ptr<sigrok::Driver> sr_driver)
+{
+	assert(sr_driver);
+
+	const auto &device_types = get_device_types(sr_driver);
+	return std::any_of(
+		device_types.begin(), device_types.end(), is_user_device);
 }
 
 DeviceType get_device_type(const sigrok::ConfigKey *sr_config_key)
@@ -163,8 +172,7 @@ DeviceType get_device_type(uint32_t sr_config_key)
 set<DeviceType> get_device_types(shared_ptr<sigrok::Driver> sr_driver)
 {
 	set<DeviceType> device_types;
-	const auto &config_keys = sr_driver->config_keys();
-	for (const auto &sr_config_key : config_keys) {
+	for (const auto &sr_config_key : sr_driver->config_keys()) {
 		if (sr_config_key_device_type_map.count(sr_config_key) > 0)
 			device_types.insert(sr_config_key_device_type_map[sr_config_key]);
 	}

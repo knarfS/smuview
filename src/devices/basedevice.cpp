@@ -2,7 +2,7 @@
  * This file is part of the SmuView project.
  *
  * Copyright (C) 2015 Joel Holdsworth <joel@airwebreathe.org.uk>
- * Copyright (C) 2017-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -117,7 +117,7 @@ string BaseDevice::id() const
 	else if (!sr_device_->connection_id().empty()) {
 		id += ":" + SettingsManager::format_key(sr_device_->connection_id());
 	}
-	else if (type_ == DeviceType::DemoDev) {
+	else if (deviceutil::is_demo_device(type_)) {
 		// Create a random id for the demo device, to make it available and
 		// identifiable in the device tree or via the python API.
 		id += ":" + util::format_uuid(QUuid::createUuid());
@@ -128,7 +128,7 @@ string BaseDevice::id() const
 
 QString BaseDevice::settings_id() const
 {
-	if (type_ == DeviceType::DemoDev) {
+	if (deviceutil::is_demo_device(type_)) {
 		string vendor = SettingsManager::format_key(sr_device_->vendor());
 		string model = SettingsManager::format_key(sr_device_->model());
 		return QString::fromStdString(vendor + ":" + model);

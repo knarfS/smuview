@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2020-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2020-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -146,7 +146,8 @@ std::shared_ptr< sv::devices::BaseDevice > sv::SettingsManager::restore_device(
 		// this setting (>= 0.0.5).
 		return origin_device;
 	}
-	if (origin_device != nullptr && origin_device->type() == DeviceType::DemoDev) {
+	if (origin_device != nullptr &&
+			devices::deviceutil::is_demo_device(origin_device->type())) {
 		// This is a fallback for older settings (pre 0.0.5):
 		return origin_device;
 	}

@@ -737,7 +737,7 @@ bool is_source_sink_driver(shared_ptr<sigrok::Driver> sr_driver);
  *
  * @return true, if the device type is a measurement device.
  */
- bool is_measurement_device(DeviceType device_type);
+bool is_measurement_device(DeviceType device_type);
 
 /**
  * Check if the driver is a measurement device (dmm, lcr meter, ...).
@@ -746,7 +746,7 @@ bool is_source_sink_driver(shared_ptr<sigrok::Driver> sr_driver);
  *
  * @return true, if the driver is a measurement device.
  */
- bool is_measurement_driver(shared_ptr<sigrok::Driver> sr_driver);
+bool is_measurement_driver(shared_ptr<sigrok::Driver> sr_driver);
 
 /**
  * Check if the device type is a demo device.
@@ -755,7 +755,7 @@ bool is_source_sink_driver(shared_ptr<sigrok::Driver> sr_driver);
  *
  * @return true, if the device type is a demo device.
  */
- bool is_demo_device(DeviceType device_type);
+bool is_demo_device(DeviceType device_type);
 
 /**
  * Check if the driver is a demo device.
@@ -764,7 +764,7 @@ bool is_source_sink_driver(shared_ptr<sigrok::Driver> sr_driver);
  *
  * @return true, if the driver is a demo device.
  */
- bool is_demo_driver(shared_ptr<sigrok::Driver> sr_driver);
+bool is_demo_driver(shared_ptr<sigrok::Driver> sr_driver);
 
 /**
  * Check if the device type is an oscilloscope.
@@ -773,7 +773,7 @@ bool is_source_sink_driver(shared_ptr<sigrok::Driver> sr_driver);
  *
  * @return true, if the device type is an oscilloscope.
  */
- bool is_oscilloscope_device(DeviceType device_type);
+bool is_oscilloscope_device(DeviceType device_type);
 
 /**
  * Check if the driver is an oscilloscope.
@@ -782,7 +782,25 @@ bool is_source_sink_driver(shared_ptr<sigrok::Driver> sr_driver);
  *
  * @return true, if the driver is an oscilloscope.
  */
- bool is_oscilloscope_driver(shared_ptr<sigrok::Driver> sr_driver);
+bool is_oscilloscope_driver(shared_ptr<sigrok::Driver> sr_driver);
+
+/**
+ * Check if the device type is an user device.
+ *
+ * @param device_type The device type to check.
+ *
+ * @return true, if the device type is an user device.
+ */
+bool is_user_device(DeviceType device_type);
+
+/**
+ * Check if the driver is an user device.
+ *
+ * @param sr_driver The sigrok Driver to check.
+ *
+ * @return true, if the driver is an user device.
+ */
+bool is_user_driver(shared_ptr<sigrok::Driver> sr_driver);
 
 /**
  * Return the corresponding DeviceType for a sigrok ConfigKey

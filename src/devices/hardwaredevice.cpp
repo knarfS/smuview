@@ -2,7 +2,7 @@
  * This file is part of the SmuView project.
  *
  * Copyright (C) 2015 Joel Holdsworth <joel@airwebreathe.org.uk>
- * Copyright (C) 2017-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@
 #include <algorithm>
 #include <cassert>
 #include <string>
-#include <thread>
 #include <utility>
 #include <vector>
 
@@ -61,32 +60,25 @@ HardwareDevice::HardwareDevice(
 		shared_ptr<sigrok::HardwareDevice> sr_device) :
 	BaseDevice(sr_context, sr_device)
 {
-	// Set options for different device types
 	// TODO: Multiple DeviceTypes per HardwareDevice
-	// TODO: Use deviceutil::is_supported_driver() instead
-	type_ = DeviceType::Unknown;
-	const auto sr_keys = sr_device->driver()->config_keys();
-	for (const auto &sr_key : sr_keys) {
-		DeviceType dt = deviceutil::get_device_type(sr_key);
-		if (dt == DeviceType::PowerSupply ||
-				dt == DeviceType::ElectronicLoad ||
-				dt == DeviceType::Oscilloscope ||
-				dt == DeviceType::DemoDev ||
-				dt == DeviceType::Multimeter ||
-				dt == DeviceType::SoundLevelMeter ||
-				dt == DeviceType::Thermometer ||
-				dt == DeviceType::Hygrometer ||
-				dt == DeviceType::Energymeter ||
-				dt == DeviceType::LcrMeter ||
-				dt == DeviceType::Scale ||
-				dt == DeviceType::SignalGenerator ||
-				dt == DeviceType::Powermeter ||
-				dt == DeviceType::Multiplexer) {
-			type_ = dt;
-			break;
-		}
+
+	// Check for the demo device first, as the demo device can have multiple
+	// types like oscilloscope. We have to make sure, that this HardwareDevice
+	// is of the type DemoDevice, with the highest priority.
+	const auto &device_types = deviceutil::get_device_types(sr_device->driver());
+	if (std::any_of(device_types.begin(), device_types.end(),
+			deviceutil::is_demo_device)) {
+		type_ = DeviceType::DemoDev;
+		return;
 	}
-	if (type_ == DeviceType::Unknown)
+
+	// Now check all other device types
+	const auto &it = std::find_if(device_types.begin(), device_types.end(),
+		deviceutil::is_supported_device);
+
+	if (it != device_types.end())
+		type_ = *it;
+	else
 		assert("Unknown device");
 }
 
@@ -101,10 +93,8 @@ QString HardwareDevice::display_name(
 	const bool multiple_dev = hw_dev && any_of(
 		devices.begin(), devices.end(),
 		[&](shared_ptr<devices::HardwareDevice> dev) {
-			return dev->sr_hardware_device()->vendor() ==
-					hw_dev->vendor() &&
-				dev->sr_hardware_device()->model() ==
-					hw_dev->model() &&
+			return dev->sr_hardware_device()->vendor() == hw_dev->vendor() &&
+				dev->sr_hardware_device()->model() == hw_dev->model() &&
 				dev->sr_device_ != sr_device_;
 		});
 

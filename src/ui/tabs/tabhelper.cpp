@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,6 @@
 
 using std::shared_ptr;
 using std::static_pointer_cast;
-using sv::devices::DeviceType;
 
 namespace sv {
 namespace ui {
@@ -51,39 +50,26 @@ DeviceTab *get_tab_for_device(Session &session,
 		return nullptr;
 
 	// Power supplies or electronic loads
-	if (device->type() == DeviceType::PowerSupply ||
-		device->type() == DeviceType::ElectronicLoad) {
-
+	if (devices::deviceutil::is_source_sink_device(device->type())) {
 		return new SourceSinkTab(session,
 			static_pointer_cast<devices::SourceSinkDevice>(device), parent);
 	}
 
 	// Oscilloscopes
-	if (device->type() == DeviceType::Oscilloscope) {
+	if (devices::deviceutil::is_oscilloscope_device(device->type())) {
 		return new OscilloscopeTab(session,
 			static_pointer_cast<devices::OscilloscopeDevice>(device), parent);
 	}
 
 	// Measurement devices like DMMs, scales, LCR meters, etc., but also
 	// the demo device(s)
-	if (device->type() == DeviceType::Multimeter ||
-		device->type() == DeviceType::SoundLevelMeter ||
-		device->type() == DeviceType::Thermometer ||
-		device->type() == DeviceType::Hygrometer ||
-		device->type() == DeviceType::Energymeter ||
-		device->type() == DeviceType::LcrMeter ||
-		device->type() == DeviceType::Scale ||
-		device->type() == DeviceType::SignalGenerator ||
-		device->type() == DeviceType::Powermeter ||
-		device->type() == DeviceType::Multiplexer ||
-		device->type() == DeviceType::DemoDev) {
-
+	if (devices::deviceutil::is_measurement_device(device->type())) {
 		return new MeasurementTab(session,
 			static_pointer_cast<devices::MeasurementDevice>(device), parent);
 	}
 
 	// User device tab
-	if (device->type() == DeviceType::UserDevice) {
+	if (devices::deviceutil::is_user_device(device->type())) {
 		return new UserTab(session,
 			static_pointer_cast<devices::UserDevice>(device), parent);
 	}

@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,6 @@
  */
 
 #include <memory>
-#include <set>
-#include <utility>
 #include <vector>
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
@@ -55,7 +53,7 @@ using std::shared_ptr;
 using std::vector;
 
 using sv::devices::ConfigKey;
-using sv::devices::DeviceType;
+using namespace sv::devices::deviceutil;
 
 namespace sv {
 namespace ui {
@@ -71,8 +69,7 @@ vector<BaseView *> get_views_for_configurable(Session &session,
 		return views;
 
 	// Power supplies or electronic loads control view
-	if ((configurable->device_type() == DeviceType::PowerSupply ||
-		configurable->device_type() == DeviceType::ElectronicLoad) &&
+	if (is_source_sink_device(configurable->device_type()) &&
 		(configurable->has_get_config(ConfigKey::Enabled) ||
 		configurable->has_set_config(ConfigKey::Enabled) ||
 		configurable->has_get_config(ConfigKey::Regulation) ||
@@ -98,7 +95,7 @@ vector<BaseView *> get_views_for_configurable(Session &session,
 	}
 
 	// Vertical control for scopes
-	if (configurable->device_type() == DeviceType::Oscilloscope &&
+	if (is_oscilloscope_device(configurable->device_type()) &&
 		(configurable->has_get_config(ConfigKey::Enabled) ||
 		configurable->has_set_config(ConfigKey::Enabled) ||
 		configurable->has_get_config(ConfigKey::VDiv) ||
@@ -112,7 +109,7 @@ vector<BaseView *> get_views_for_configurable(Session &session,
 	}
 
 	// Trigger control for scopes
-	if (configurable->device_type() == DeviceType::Oscilloscope &&
+	if (is_oscilloscope_device(configurable->device_type()) &&
 		(configurable->has_get_config(ConfigKey::TriggerSource) ||
 		configurable->has_set_config(ConfigKey::TriggerSource) ||
 		configurable->has_get_config(ConfigKey::TriggerSlope) ||
@@ -124,7 +121,7 @@ vector<BaseView *> get_views_for_configurable(Session &session,
 	}
 
 	// Horizontal control for scopes
-	if (configurable->device_type() == DeviceType::Oscilloscope &&
+	if (is_oscilloscope_device(configurable->device_type()) &&
 		(configurable->has_get_config(ConfigKey::TimeBase) ||
 		configurable->has_set_config(ConfigKey::TimeBase))) {
 
@@ -132,7 +129,7 @@ vector<BaseView *> get_views_for_configurable(Session &session,
 	}
 
 	// View for Demo Device
-	if (configurable->device_type() == DeviceType::DemoDev &&
+	if (is_demo_device(configurable->device_type()) &&
 		(configurable->has_get_config(ConfigKey::MeasuredQuantity) ||
 		configurable->has_set_config(ConfigKey::MeasuredQuantity) ||
 		configurable->has_get_config(ConfigKey::Amplitude) ||
@@ -144,16 +141,8 @@ vector<BaseView *> get_views_for_configurable(Session &session,
 	}
 
 	// Measurement devices like DMMs, scales, LCR meters, etc.
-	if ((configurable->device_type() == DeviceType::Multimeter ||
-		configurable->device_type() == DeviceType::SoundLevelMeter ||
-		configurable->device_type() == DeviceType::Thermometer ||
-		configurable->device_type() == DeviceType::Hygrometer ||
-		configurable->device_type() == DeviceType::Energymeter ||
-		configurable->device_type() == DeviceType::LcrMeter ||
-		configurable->device_type() == DeviceType::Scale ||
-		configurable->device_type() == DeviceType::Powermeter ||
-		// TODO: Multiplexers doesn't really fit here
-		configurable->device_type() == DeviceType::Multiplexer) &&
+	// TODO: Multiplexers don't really fit in here
+	if (is_measurement_device(configurable->device_type()) &&
 		(configurable->has_get_config(ConfigKey::MeasuredQuantity) ||
 		configurable->has_set_config(ConfigKey::MeasuredQuantity) ||
 		configurable->has_get_config(ConfigKey::Range) ||
