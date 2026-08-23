@@ -2,7 +2,7 @@
  * This file is part of the SmuView project.
  *
  * Copyright (C) 2012-2013 Joel Holdsworth <joel@airwebreathe.org.uk>
- * Copyright (C) 2017-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,9 +21,11 @@
 #ifndef UI_DIALOGS_CONNECTDIALOG_HPP
 #define UI_DIALOGS_CONNECTDIALOG_HPP
 
+#include <array>
 #include <map>
 #include <memory>
 #include <mutex>
+#include <qhashfunctions.h>
 #include <string>
 #include <thread>
 
@@ -43,6 +45,7 @@
 #include "src/devices/deviceutil.hpp"
 #include "src/devices/hardwaredevice.hpp"
 
+using std::array;
 using std::shared_ptr;
 using sv::devices::DeviceType;
 
@@ -77,12 +80,51 @@ public:
 	shared_ptr<sv::devices::HardwareDevice> get_selected_device() const;
 
 private:
-	void populate_drivers(DeviceType type_filter = DeviceType::Any);
+	// Constants for serial
+	static constexpr array<uint, 5> BAUD_RATES_DEFAULT = {
+		921600, 115200, 57600, 19200, 9600
+	};
+
+	// Constants for TCP
+	inline static const QString TCP_HOST_DEFAULT =
+		QStringLiteral("192.168.1.100");
+	static constexpr uint TCP_PORT_MIN = 1;
+	static constexpr uint TCP_PORT_MAX = 65535;
+	static constexpr uint TCP_PORT_DEFAULT = 5555;
+	struct ProtocolInfo { QString label; QString format; };
+	inline static const array<ProtocolInfo, 2> TCP_PROTOCOLS = {{
+		{ QStringLiteral("Raw TCP"), QStringLiteral("tcp-raw/%1/%2")},
+		{ QStringLiteral("VXI"), QStringLiteral("vxi/%1/%2")}
+	}};
+
+	void setup_ui();
 	void populate_filters();
+	void populate_drivers(DeviceType type_filter);
 	void populate_serials_start(shared_ptr<sigrok::Driver> driver);
 	void populate_serials_thread_proc(shared_ptr<sigrok::Driver> driver);
 	void check_available_libs();
 	void unset_connection();
+
+	sv::DeviceManager &device_manager_;
+
+	bool gpib_avialable_;
+
+	std::thread populate_serials_thread_;
+	std::mutex populate_serials_mtx_;
+
+	QComboBox *filters_;
+	QComboBox *drivers_;
+	QRadioButton *radiobtn_serial_;
+	QWidget *serial_config_;
+	QComboBox *serial_devices_;
+	QComboBox *serial_baudrate_;
+	QWidget *tcp_config_;
+	QLineEdit *tcp_host_;
+	QSpinBox *tcp_port_;
+	QComboBox *tcp_protocol_;
+	QLineEdit *gpib_libgpib_name_;
+	QListWidget *device_list_;
+	QDialogButtonBox *button_box_;
 
 private Q_SLOTS:
 	void filter_selected(int index);
@@ -93,42 +135,6 @@ private Q_SLOTS:
 	void scan_pressed();
 	void populate_serials_finish(
 		const std::map<std::string, std::string> &serials);
-
-private:
-	sv::DeviceManager &device_manager_;
-
-	bool gpib_avialable_;
-
-	QVBoxLayout layout_;
-
-	QWidget form_;
-	QFormLayout form_layout_;
-
-	QComboBox filters_;
-	QComboBox drivers_;
-
-	QRadioButton *radiobtn_usb_;
-	QRadioButton *radiobtn_serial_;
-	QRadioButton *radiobtn_tcp_;
-	QRadioButton *radiobtn_gpib_;
-
-	std::thread populate_serials_thread_;
-	std::mutex populate_serials_mtx_;
-	QWidget *serial_config_;
-	QComboBox serial_devices_;
-	QComboBox serial_baudrate_;
-
-	QWidget *tcp_config_;
-	QLineEdit *tcp_host_;
-	QSpinBox *tcp_port_;
-	QComboBox *tcp_protocol_;
-
-	QLineEdit *gpib_libgpib_name_;
-
-	QPushButton scan_button_;
-	QListWidget device_list_;
-
-	QDialogButtonBox button_box_;
 
 Q_SIGNALS:
 	void populate_serials_done(std::map<std::string, std::string> serials);

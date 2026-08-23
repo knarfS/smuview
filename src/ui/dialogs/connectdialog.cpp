@@ -2,7 +2,7 @@
  * This file is part of the SmuView project.
  *
  * Copyright (C) 2012-2013 Joel Holdsworth <joel@airwebreathe.org.uk>
- * Copyright (C) 2017-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,16 +22,20 @@
 #include <map>
 #include <memory>
 #include <mutex>
-#include <qvariant.h>
 #include <string>
 #include <thread>
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
+#include <QBoxLayout>
+#include <QComboBox>
 #include <QDebug>
+#include <QFormLayout>
 #include <QGroupBox>
 #include <QLabel>
+#include <QListWidget>
 #include <QRadioButton>
+#include <QVariant>
 
 #include "connectdialog.hpp"
 #include "src/devicemanager.hpp"
@@ -50,10 +54,11 @@ using sigrok::ConfigKey;
 using sigrok::Driver;
 
 using sv::devices::DeviceType;
+using sv::devices::deviceutil::format_device_type;
+using sv::devices::deviceutil::get_device_type_map;
+using sv::devices::deviceutil::get_device_types;
 using sv::devices::deviceutil::is_supported_device;
 using sv::devices::deviceutil::is_supported_driver;
-using sv::devices::deviceutil::get_device_type_name_map;
-using sv::devices::deviceutil::get_device_types;
 using sv::devices::HardwareDevice;
 
 namespace sv {
@@ -63,147 +68,22 @@ namespace dialogs {
 ConnectDialog::ConnectDialog(sv::DeviceManager &device_manager,
 		QWidget *parent) :
 	QDialog(parent),
-	device_manager_(device_manager),
-	layout_(this),
-	form_(this),
-	form_layout_(&form_),
-	filters_(&form_),
-	drivers_(&form_),
-	scan_button_(tr("&Scan for devices using driver above"), this),
-	device_list_(this),
-	button_box_(QDialogButtonBox::Ok | QDialogButtonBox::Cancel,
-		Qt::Horizontal, this)
+	device_manager_(device_manager)
 {
-	qRegisterMetaType<std::map<std::string, std::string>>("std::map<std::string, std::string>");
+	qRegisterMetaType<std::map<std::string, std::string>>(
+		"std::map<std::string, std::string>");
 
-	setWindowTitle(tr("Connect to Device"));
-
-	connect(&button_box_, &QDialogButtonBox::accepted,
-		this, &ConnectDialog::accept);
-	connect(&button_box_, &QDialogButtonBox::rejected,
-		this, &ConnectDialog::reject);
+	check_available_libs();
 
 	connect(this, &ConnectDialog::populate_serials_done,
 		this, &ConnectDialog::populate_serials_finish);
 
-	populate_filters();
-	connect(&filters_, QOverload<int>::of(&QComboBox::activated),
-		this, &ConnectDialog::filter_selected);
-
-	populate_drivers();
-	connect(&drivers_, QOverload<int>::of(&QComboBox::activated),
-		this, &ConnectDialog::driver_selected);
-
-	form_.setLayout(&form_layout_);
-
-	QVBoxLayout *vbox_drv = new QVBoxLayout;
-	vbox_drv->addWidget(&filters_);
-	vbox_drv->addWidget(&drivers_);
-	QGroupBox *groupbox_drv = new QGroupBox(tr("Step 1: Choose the driver"));
-	groupbox_drv->setLayout(vbox_drv);
-	form_layout_.addRow(groupbox_drv);
-
-	radiobtn_usb_ = new QRadioButton(tr("&USB"), this);
-	radiobtn_serial_ = new QRadioButton(tr("Serial &Port"), this);
-	radiobtn_tcp_ = new QRadioButton(tr("&TCP/IP"), this);
-
-	radiobtn_usb_->setChecked(true);
-
-	serial_config_ = new QWidget();
-	QHBoxLayout *serial_config_layout = new QHBoxLayout(serial_config_);
-	serial_devices_.setEditable(true);
-	serial_devices_.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-	serial_config_layout->addWidget(&serial_devices_);
-	serial_baudrate_.setEditable(true);
-	serial_baudrate_.addItem("");
-	serial_baudrate_.addItem("921600");
-	serial_baudrate_.addItem("115200");
-	serial_baudrate_.addItem("57600");
-	serial_baudrate_.addItem("19200");
-	serial_baudrate_.addItem("9600");
-	serial_config_layout->addWidget(&serial_baudrate_);
-	serial_config_layout->addWidget(new QLabel("baud"));
-	serial_config_->setEnabled(false);
-
-	tcp_config_ = new QWidget();
-	QHBoxLayout *tcp_config_layout = new QHBoxLayout(tcp_config_);
-	tcp_host_ = new QLineEdit;
-	tcp_host_->setText("192.168.1.100");
-	tcp_config_layout->addWidget(tcp_host_);
-	tcp_config_layout->addWidget(new QLabel(":"));
-	tcp_port_ = new QSpinBox;
-	tcp_port_->setRange(1, 65535);
-	tcp_port_->setValue(5555);
-	tcp_config_layout->addWidget(tcp_port_);
-
-	tcp_config_layout->addSpacing(30);
-	tcp_config_layout->addWidget(new QLabel(tr("Protocol:")));
-	tcp_protocol_ = new QComboBox();
-	tcp_protocol_->addItem("Raw TCP", QVariant("tcp-raw/%1/%2"));
-	tcp_protocol_->addItem("VXI", QVariant("vxi/%1/%2"));
-	tcp_config_layout->addWidget(tcp_protocol_);
-	tcp_config_layout->setContentsMargins(0, 0, 0, 0);
-	tcp_config_->setEnabled(false);
-
-	check_available_libs();
-
-	QVBoxLayout *vbox_if = new QVBoxLayout;
-	vbox_if->addWidget(radiobtn_usb_);
-	vbox_if->addWidget(radiobtn_serial_);
-	vbox_if->addWidget(serial_config_);
-	vbox_if->addWidget(radiobtn_tcp_);
-	vbox_if->addWidget(tcp_config_);
-
-	QGroupBox *groupbox_if = new QGroupBox(tr("Step 2: Choose the interface"));
-	groupbox_if->setLayout(vbox_if);
-	form_layout_.addRow(groupbox_if);
-
-	QVBoxLayout *vbox_scan = new QVBoxLayout;
-	vbox_scan->addWidget(&scan_button_);
-	QGroupBox *groupbox_scan = new QGroupBox(tr("Step 3: Scan for devices"));
-	groupbox_scan->setLayout(vbox_scan);
-	form_layout_.addRow(groupbox_scan);
-
-	QVBoxLayout *vbox_select = new QVBoxLayout;
-	// Let the device list occupy only the minimum space needed
-	device_list_.setMaximumHeight(device_list_.minimumSizeHint().height());
-	vbox_select->addWidget(&device_list_);
-	QGroupBox *groupbox_select = new QGroupBox(tr("Step 4: Select the device"));
-	groupbox_select->setLayout(vbox_select);
-	form_layout_.addRow(groupbox_select);
+	setup_ui();
 
 	unset_connection();
 
-	connect(radiobtn_serial_, &QRadioButton::toggled,
-		this, &ConnectDialog::serial_toggled);
-	connect(radiobtn_tcp_, &QRadioButton::toggled,
-		this, &ConnectDialog::tcp_toggled);
-	connect(&scan_button_, &QPushButton::pressed,
-		this, &ConnectDialog::scan_pressed);
-
-	if (gpib_avialable_) {
-		radiobtn_gpib_ = new QRadioButton(tr("&GPIB"), this);
-		/*
-		 * TODO: Replace with QComboBox and prefill with available GPIB
-		 * connection strings (like the serial box).
-		 * Must be implemented in libsigrok.
-		 */
-		gpib_libgpib_name_ = new QLineEdit;
-		gpib_libgpib_name_->setEnabled(false);
-		vbox_if->addWidget(radiobtn_gpib_);
-		vbox_if->addWidget(gpib_libgpib_name_);
-
-		connect(radiobtn_gpib_, &QRadioButton::toggled,
-			this, &ConnectDialog::gpib_toggled);
-	}
-
-	setLayout(&layout_);
-
-	layout_.addWidget(&form_);
-	layout_.addWidget(&button_box_);
-
 	// Initially populate serials for current selected device
-	driver_selected(drivers_.currentIndex());
+	driver_selected(drivers_->currentIndex());
 }
 
 ConnectDialog::~ConnectDialog() {
@@ -218,16 +98,172 @@ ConnectDialog::~ConnectDialog() {
 
 shared_ptr<HardwareDevice> ConnectDialog::get_selected_device() const
 {
-	const QListWidgetItem *const item = device_list_.currentItem();
+	const QListWidgetItem *const item = device_list_->currentItem();
 	if (!item)
 		return shared_ptr<HardwareDevice>();
 
 	return item->data(Qt::UserRole).value<shared_ptr<HardwareDevice>>();
 }
 
+void ConnectDialog::setup_ui()
+{
+	QIcon main_icon;
+	main_icon.addFile(QStringLiteral(":/icons/smuview.ico"),
+		QSize(), QIcon::Normal, QIcon::Off);
+	this->setWindowIcon(main_icon);
+	this->setWindowTitle(tr("Connect to Device"));
+
+	QVBoxLayout *main_layout = new QVBoxLayout();
+
+	QFormLayout *form_layout = new QFormLayout();
+
+	// Driver selection
+	QGroupBox *groupbox_drv = new QGroupBox(tr("Step 1: Choose the driver"));
+	QVBoxLayout *vbox_drv = new QVBoxLayout();
+
+	filters_ = new QComboBox();
+	populate_filters();
+	connect(filters_, QOverload<int>::of(&QComboBox::activated),
+		this, &ConnectDialog::filter_selected);
+	vbox_drv->addWidget(filters_);
+	drivers_ = new QComboBox();
+	populate_drivers(DeviceType::Any);
+	connect(drivers_, QOverload<int>::of(&QComboBox::activated),
+		this, &ConnectDialog::driver_selected);
+	vbox_drv->addWidget(drivers_);
+
+	groupbox_drv->setLayout(vbox_drv);
+	form_layout->addRow(groupbox_drv);
+
+	// Interface configuration
+	QGroupBox *groupbox_if = new QGroupBox(tr("Step 2: Choose the interface"));
+	QVBoxLayout *vbox_if = new QVBoxLayout();
+
+	QRadioButton *radiobtn_usb = new QRadioButton(tr("&USB"));
+	radiobtn_usb->setChecked(true);
+	vbox_if->addWidget(radiobtn_usb);
+
+	radiobtn_serial_ = new QRadioButton(tr("Serial &Port"));
+	connect(radiobtn_serial_, &QRadioButton::toggled,
+		this, &ConnectDialog::serial_toggled);
+	vbox_if->addWidget(radiobtn_serial_);
+
+	serial_config_ = new QWidget();
+	QHBoxLayout *serial_config_layout = new QHBoxLayout(serial_config_);
+	serial_devices_ = new QComboBox();
+	serial_devices_->setEditable(true);
+	serial_config_layout->addWidget(serial_devices_,1);
+	serial_baudrate_ = new QComboBox();
+	serial_baudrate_->setEditable(true);
+	serial_baudrate_->addItem("");
+	for (const auto &baud : BAUD_RATES_DEFAULT)
+		serial_baudrate_->addItem(QString::number(baud), QVariant(baud));
+	serial_config_layout->addWidget(serial_baudrate_);
+	serial_config_layout->addWidget(new QLabel("baud"));
+	serial_config_->setEnabled(false);
+	vbox_if->addWidget(serial_config_);
+
+	QRadioButton *radiobtn_tcp = new QRadioButton(tr("&TCP/IP"));
+	connect(radiobtn_tcp, &QRadioButton::toggled,
+		this, &ConnectDialog::tcp_toggled);
+	vbox_if->addWidget(radiobtn_tcp);
+
+	tcp_config_ = new QWidget();
+	QHBoxLayout *tcp_config_layout = new QHBoxLayout(tcp_config_);
+	tcp_host_ = new QLineEdit;
+	tcp_host_->setText(TCP_HOST_DEFAULT);
+	tcp_config_layout->addWidget(tcp_host_);
+	tcp_config_layout->addWidget(new QLabel(":"));
+	tcp_port_ = new QSpinBox;
+	tcp_port_->setRange(TCP_PORT_MIN, TCP_PORT_MAX);
+	tcp_port_->setValue(TCP_PORT_DEFAULT);
+	tcp_config_layout->addWidget(tcp_port_);
+	tcp_config_layout->addSpacing(30);
+	tcp_config_layout->addWidget(new QLabel(tr("Protocol:")));
+	tcp_protocol_ = new QComboBox();
+	for (const auto &protocol : TCP_PROTOCOLS)
+		tcp_protocol_->addItem(protocol.label, QVariant(protocol.format));
+	tcp_config_layout->addWidget(tcp_protocol_);
+	tcp_config_->setEnabled(false);
+	vbox_if->addWidget(tcp_config_);
+
+	if (gpib_avialable_) {
+		QRadioButton *radiobtn_gpib = new QRadioButton(tr("&GPIB"));
+		connect(radiobtn_gpib, &QRadioButton::toggled,
+			this, &ConnectDialog::gpib_toggled);
+		vbox_if->addWidget(radiobtn_gpib);
+
+		/*
+		 * TODO: Replace with QComboBox and prefill with available GPIB
+		 * connection strings (like the serial box).
+		 * Must be implemented in libsigrok.
+		 */
+		gpib_libgpib_name_ = new QLineEdit;
+		gpib_libgpib_name_->setEnabled(false);
+		vbox_if->addWidget(gpib_libgpib_name_);
+	}
+
+	groupbox_if->setLayout(vbox_if);
+	form_layout->addRow(groupbox_if);
+
+	// Scan
+	QGroupBox *groupbox_scan = new QGroupBox(tr("Step 3: Scan for devices"));
+	QVBoxLayout *vbox_scan = new QVBoxLayout;
+
+	QPushButton *scan_button = new QPushButton(
+		tr("&Scan for devices using driver above"));
+	connect(scan_button, &QPushButton::pressed,
+		this, &ConnectDialog::scan_pressed);
+	vbox_scan->addWidget(scan_button);
+
+	groupbox_scan->setLayout(vbox_scan);
+	form_layout->addRow(groupbox_scan);
+
+	// Devices
+	QGroupBox *groupbox_select = new QGroupBox(tr("Step 4: Select the device"));
+	QVBoxLayout *vbox_select = new QVBoxLayout;
+
+	device_list_ = new QListWidget();
+	// Let the device list occupy only the minimum space needed
+	device_list_->setMaximumHeight(device_list_->minimumSizeHint().height());
+	vbox_select->addWidget(device_list_);
+
+	groupbox_select->setLayout(vbox_select);
+	form_layout->addRow(groupbox_select);
+
+	main_layout->addLayout(form_layout);
+
+	// Button box
+	button_box_ = new QDialogButtonBox(
+		QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
+	main_layout->addWidget(button_box_);
+	connect(button_box_, &QDialogButtonBox::accepted,
+		this, &ConnectDialog::accept);
+	connect(button_box_, &QDialogButtonBox::rejected,
+		this, &ConnectDialog::reject);
+
+	this->setLayout(main_layout);
+}
+
+void ConnectDialog::populate_filters()
+{
+	// Add all know device types and sort by name
+	for (const auto &type : get_device_type_map()) {
+		if (is_supported_device(type.device_type))
+			filters_->addItem(type.name, QVariant::fromValue(type.device_type));
+	}
+	filters_->model()->sort(0);
+
+	// Add the 'Any' type as first item and select
+	filters_->insertItem(0,
+		format_device_type(DeviceType::Any),
+		QVariant::fromValue(DeviceType::Any));
+	filters_->setCurrentIndex(0);
+}
+
 void ConnectDialog::populate_drivers(DeviceType type_filter)
 {
-	drivers_.clear();
+	drivers_->clear();
 
 	for (const auto &entry : device_manager_.context()->drivers()) {
 		const auto &name = entry.first;
@@ -238,25 +274,15 @@ void ConnectDialog::populate_drivers(DeviceType type_filter)
 			// No filter -> accept any devices
 			match = true;
 		else if (is_supported_driver(sr_driver) &&
-				get_device_types(sr_driver).count(type_filter) > 0) {
+				get_device_types(sr_driver).count(type_filter) > 0)
 			match = true;
-		}
 
-		if (match)
-			drivers_.addItem(
-				QString("%1 (%2)").arg(sr_driver->long_name().c_str(), name.c_str()),
+		if (match) {
+			drivers_->addItem(
+				QString("%1 (%2)").arg(
+					sr_driver->long_name().c_str(), name.c_str()),
 				QVariant::fromValue(sr_driver));
-	}
-}
-
-void ConnectDialog::populate_filters()
-{
-	filters_.addItem(
-		get_device_type_name_map().at(DeviceType::Any),
-		QVariant::fromValue(DeviceType::Any));
-	for (const auto &type : get_device_type_name_map()) {
-		if (is_supported_device(type.first))
-			filters_.addItem(type.second, QVariant::fromValue(type.first));
+		}
 	}
 }
 
@@ -282,8 +308,8 @@ void ConnectDialog::check_available_libs()
 
 void ConnectDialog::populate_serials_start(shared_ptr<Driver> driver)
 {
-	serial_devices_.clear();
-	serial_devices_.addItem(tr("Loading..."));
+	serial_devices_->clear();
+	serial_devices_->addItem(tr("Loading..."));
 	serial_config_->setDisabled(true);
 
 	populate_serials_thread_ =
@@ -296,9 +322,9 @@ void ConnectDialog::populate_serials_finish(
 {
 	std::lock_guard<std::mutex> lock(populate_serials_mtx_);
 
-	serial_devices_.clear();
+	serial_devices_->clear();
 	for (const auto &serial : serials) {
-		serial_devices_.addItem(QString("%1 (%2)").arg(
+		serial_devices_->addItem(QString("%1 (%2)").arg(
 			serial.first.c_str(), serial.second.c_str()),
 			QString::fromStdString(serial.first));
 	}
@@ -317,8 +343,8 @@ void ConnectDialog::populate_serials_thread_proc(shared_ptr<Driver> driver)
 
 void ConnectDialog::unset_connection()
 {
-	device_list_.clear();
-	button_box_.button(QDialogButtonBox::Ok)->setDisabled(true);
+	device_list_->clear();
+	button_box_->button(QDialogButtonBox::Ok)->setDisabled(true);
 }
 
 void ConnectDialog::serial_toggled(bool checked)
@@ -340,14 +366,14 @@ void ConnectDialog::gpib_toggled(bool checked)
 
 void ConnectDialog::scan_pressed()
 {
-	device_list_.clear();
+	device_list_->clear();
 
-	const int d_index = drivers_.currentIndex();
+	const int d_index = drivers_->currentIndex();
 	if (d_index == -1)
 		return;
 
 	shared_ptr<Driver> driver =
-		drivers_.itemData(d_index).value<shared_ptr<Driver>>();
+		drivers_->itemData(d_index).value<shared_ptr<Driver>>();
 
 	assert(driver);
 
@@ -355,19 +381,21 @@ void ConnectDialog::scan_pressed()
 
 	if (serial_config_->isEnabled()) {
 		QString serial;
-		const int s_index = serial_devices_.currentIndex();
-		if (s_index >= 0 && s_index < serial_devices_.count() &&
-				serial_devices_.currentText() == serial_devices_.itemText(s_index))
-			serial = serial_devices_.itemData(s_index).value<QString>();
+		const int s_index = serial_devices_->currentIndex();
+		if (s_index >= 0 && s_index < serial_devices_->count() &&
+				serial_devices_->currentText() == serial_devices_->itemText(s_index))
+			serial = serial_devices_->itemData(s_index).value<QString>();
 		else
-			serial = serial_devices_.currentText();
+			serial = serial_devices_->currentText();
 		drvopts[ConfigKey::CONN] = Variant<ustring>::create(
 			serial.toUtf8().constData());
 
-		// Set baud rate if specified
-		if (serial_baudrate_.currentText().length() > 0)
+		// Set baud rate if specified (TODO: use value)
+		if (serial_baudrate_->currentText().length() > 0) {
 			drvopts[ConfigKey::SERIALCOMM] = Variant<ustring>::create(
-				QString("%1/8n1").arg(serial_baudrate_.currentText()).toUtf8().constData());
+				QString("%1/8n1").arg(
+					serial_baudrate_->currentText()).toUtf8().constData());
+		}
 	}
 
 	if (tcp_config_->isEnabled()) {
@@ -401,33 +429,29 @@ void ConnectDialog::scan_pressed()
 		text += QString(" with %1 channels").arg(
 			device->sr_device()->channels().size());
 
-		QListWidgetItem *const item = new QListWidgetItem(text,
-			&device_list_);
+		QListWidgetItem *const item = new QListWidgetItem(text);
 		item->setData(Qt::UserRole, QVariant::fromValue(device));
-		device_list_.addItem(item);
+		device_list_->addItem(item);
 	}
 
-	device_list_.setCurrentRow(0);
-	button_box_.button(QDialogButtonBox::Ok)->setDisabled(device_list_.count() == 0);
+	device_list_->setCurrentRow(0);
+	button_box_->button(QDialogButtonBox::Ok)->
+		setDisabled(device_list_->count() == 0);
 }
 
 void ConnectDialog::filter_selected(int index)
 {
-	auto device_type = filters_.itemData(index).value<DeviceType>();
-
 	unset_connection();
 
-	populate_drivers(device_type);
+	populate_drivers(filters_->itemData(index).value<DeviceType>());
 }
 
 void ConnectDialog::driver_selected(int index)
 {
-	shared_ptr<Driver> driver =
-		drivers_.itemData(index).value<shared_ptr<Driver>>();
-
 	unset_connection();
 
-	populate_serials_start(driver);
+	populate_serials_start(
+		drivers_->itemData(index).value<shared_ptr<Driver>>());
 }
 
 } // namespace dialogs
