@@ -29,6 +29,7 @@
 
 #include <QObject>
 #include <QString>
+#include <QStringLiteral>
 
 #include "src/data/datautil.hpp"
 
@@ -261,334 +262,30 @@ enum class ConfigKey
 
 namespace deviceutil {
 
-typedef map<DeviceType, QString> device_type_name_map_t;
-typedef map<ConnectionKey, QString> connection_key_name_map_t;
-typedef map<ConfigKey, QString> config_key_name_map_t;
+struct DeviceTypeMapping
+{
+	DeviceType device_type;
+	const sigrok::ConfigKey *sr_config_key;
+	const QString name;
+};
+
+struct ConnectionKeyMapping
+{
+	ConnectionKey connection_key;
+	const sigrok::ConfigKey *sr_config_key;
+	const QString name;
+};
+
+struct ConfigKeyMapping
+{
+	ConfigKey config_key;
+	const sigrok::ConfigKey *sr_config_key;
+	const QString name;
+};
 
 namespace {
 
-// TODO: Use tr(), QCoreApplication::translate(), QT_TR_NOOP() or
-//       QT_TRANSLATE_NOOP() for translation.
-//       See: http://doc.qt.io/qt-5/i18n-source-translation.html
-device_type_name_map_t device_type_name_map = {
-	{ DeviceType::Any, QString("Any device type") },
-	{ DeviceType::LogicAnalyzer, QString("Logic Analyzer") },
-	{ DeviceType::Oscilloscope, QString("Oscilloscope") },
-	{ DeviceType::Multimeter, QString("Multimeter") },
-	{ DeviceType::DemoDev, QString("Demo Device") },
-	{ DeviceType::SoundLevelMeter, QString("Soundlevelmeter") },
-	{ DeviceType::Thermometer, QString("Thermometer") },
-	{ DeviceType::Hygrometer, QString("Hygrometer") },
-	{ DeviceType::Energymeter, QString("Energymeter") },
-	{ DeviceType::Demodulator, QString("Demodulator") },
-	{ DeviceType::PowerSupply, QString("Power Supply") },
-	{ DeviceType::LcrMeter, QString("LCR Meter") },
-	{ DeviceType::ElectronicLoad, QString("Electronic Load") },
-	{ DeviceType::Scale, QString("Scale") },
-	{ DeviceType::SignalGenerator, QString("Signal Generator") },
-	{ DeviceType::Powermeter, QString("Power Meter") },
-	{ DeviceType::Multiplexer, QString("Multiplexer") },
-	{ DeviceType::UserDevice, QString("Virtual User Device") },
-	{ DeviceType::Unknown, QString("Unknown") },
-};
 
-connection_key_name_map_t connection_key_name_map = {
-	{ ConnectionKey::Conn, QString("Connection String") },
-	{ ConnectionKey::SerialComm, QString("Serial Command") },
-	{ ConnectionKey::ModbusAddr, QString("ModBus Address") },
-	{ ConnectionKey::LimitMsec, QString("Limit Milliseconds") },
-	{ ConnectionKey::LimitSamples, QString("Limit Samples") },
-	{ ConnectionKey::LimitFrames, QString("Limit Frames") },
-	{ ConnectionKey::Continuous, QString("Continuous") },
-	{ ConnectionKey::Unknown, QString("Unknown") },
-};
-
-config_key_name_map_t config_key_name_map = {
-	{ ConfigKey::Samplerate, QString("Samplerate") },
-	{ ConfigKey::CaptureRatio, QString("Capture Ratio") },
-	{ ConfigKey::PatternMode, QString("Pattern Mode") },
-	{ ConfigKey::RLE, QString("Run-Length Encoding") },
-	{ ConfigKey::TriggerSlope, QString("Trigger Slope") },
-	{ ConfigKey::Averaging, QString("Averaging") },
-	{ ConfigKey::AvgSamples, QString("Averaging Samples") },
-	{ ConfigKey::TriggerSource, QString("Trigger Source") },
-	{ ConfigKey::HorizTriggerPos, QString("Horizonal Trigger Position") },
-	{ ConfigKey::BufferSize, QString("Buffer Size") },
-	{ ConfigKey::TimeBase, QString("Time Base") },
-	{ ConfigKey::Filter, QString("Filter") },
-	{ ConfigKey::VDiv, QString("Vertical Division") },
-	{ ConfigKey::Coupling, QString("Coupling") },
-	{ ConfigKey::TriggerMatch, QString("Trigger Match") },
-	{ ConfigKey::SampleInterval, QString("Sample Interval") },
-	{ ConfigKey::NumHDiv, QString("Number Horizontal Divisions") },
-	{ ConfigKey::NumVDiv, QString("Number Vertical Divisions") },
-	{ ConfigKey::SplWeightFreq, QString("SPL-Weight Frequency") },
-	{ ConfigKey::SplWeightTime, QString("SPL-Weight Time") },
-	{ ConfigKey::SplMeasurementRange, QString("SPL Measurement Range") },
-	{ ConfigKey::HoldMax, QString("Hold Max") },
-	{ ConfigKey::HoldMin, QString("Hold Min") },
-	{ ConfigKey::VoltageThreshold, QString("Voltage Threshold") },
-	{ ConfigKey::ExternalClock, QString("External Clock") },
-	{ ConfigKey::Swap, QString("Swap") },
-	{ ConfigKey::CenterFrequency, QString("Center Frequency") },
-	{ ConfigKey::NumLogicChannels, QString("Number of Logic Channels") },
-	{ ConfigKey::NumAnalogChannels, QString("Number of Analog Channels") },
-	{ ConfigKey::Voltage, QString("Voltage") },
-	{ ConfigKey::VoltageTarget, QString("Voltage Target") },
-	{ ConfigKey::Current, QString("Current") },
-	{ ConfigKey::CurrentLimit, QString("Current Limit") },
-	{ ConfigKey::Enabled, QString("Enabled") },
-	{ ConfigKey::ChannelConfig, QString("ChannelConfig") },
-	{ ConfigKey::OverVoltageProtectionEnabled, QString("Over Voltage Protection Enabled") },
-	{ ConfigKey::OverVoltageProtectionActive, QString("Over Voltage Protection Active") },
-	{ ConfigKey::OverVoltageProtectionThreshold, QString("Over Voltage Protection Threshold") },
-	{ ConfigKey::OverCurrentProtectionEnabled, QString("Over Current Protection Enabled") },
-	{ ConfigKey::OverCurrentProtectionActive, QString("Over Current Protection Active") },
-	{ ConfigKey::OverCurrentProtectionThreshold, QString("Over Current Protection Threshold") },
-	{ ConfigKey::OverTemperatureProtectionEnabled, QString("Over Temperature Protection Enabled") },
-	{ ConfigKey::OverTemperatureProtectionActive, QString("Over Temperature Protection Active") },
-	{ ConfigKey::UnderVoltageConditionEnabled, QString("Under Voltage Condition Enabled") },
-	{ ConfigKey::UnderVoltageConditionActive, QString("Under Voltage Condition Active") },
-	{ ConfigKey::UnderVoltageConditionThreshold, QString("Under Voltage Condition Threshold") },
-	{ ConfigKey::ClockEdge, QString("Clock Edge") },
-	{ ConfigKey::Amplitude, QString("Amplitude") },
-	{ ConfigKey::Regulation, QString("Regulation") },
-	{ ConfigKey::OutputFrequency, QString("Output Frequency") },
-	{ ConfigKey::OutputFrequencyTarget, QString("Output Frequency Target") },
-	{ ConfigKey::MeasuredQuantity, QString("Measured Quantity") },
-	{ ConfigKey::EquivCircuitModel, QString("Equivalent Circuit Model") },
-	{ ConfigKey::TriggerLevel, QString("Trigger Level") },
-	{ ConfigKey::ExternalClockSource, QString("External Clock Source") },
-	{ ConfigKey::Offset, QString("Offset") },
-	{ ConfigKey::TriggerPattern, QString("Trigger Pattern") },
-	{ ConfigKey::HighResolution, QString("High Resolution") },
-	{ ConfigKey::PeakDetection, QString("Peak Detection") },
-	{ ConfigKey::LogicThreshold, QString("Logic Threshold") },
-	{ ConfigKey::LogicThresholdCustom, QString("Logic Threshold Custom") },
-	{ ConfigKey::Range, QString("Range") },
-	{ ConfigKey::Digits, QString("Digits") },
-	{ ConfigKey::SessionFile, QString("Session File") },
-	{ ConfigKey::CaptureFile, QString("Capture File") },
-	{ ConfigKey::CaptureUnitSize, QString("Capture Unit Size") },
-	{ ConfigKey::PowerOff, QString("Power Off") },
-	{ ConfigKey::DataSource, QString("Data Source") },
-	{ ConfigKey::ProbeFactor, QString("Probe Factor") },
-	{ ConfigKey::ADCPowerlineCycles, QString("ADC Powerline Cycles") },
-	{ ConfigKey::DataLog, QString("Data Log") },
-	{ ConfigKey::DeviceMode, QString("Device Mode") },
-	{ ConfigKey::TestMode, QString("Test Mode") },
-	{ ConfigKey::Unknown, QString("Unknown") },
-};
-
-map<const sigrok::ConfigKey *, DeviceType> sr_config_key_device_type_map = {
-	{ sigrok::ConfigKey::LOGIC_ANALYZER, DeviceType::LogicAnalyzer },
-	{ sigrok::ConfigKey::OSCILLOSCOPE, DeviceType::Oscilloscope },
-	{ sigrok::ConfigKey::MULTIMETER, DeviceType::Multimeter },
-	{ sigrok::ConfigKey::DEMO_DEV, DeviceType::DemoDev },
-	{ sigrok::ConfigKey::SOUNDLEVELMETER, DeviceType::SoundLevelMeter },
-	{ sigrok::ConfigKey::THERMOMETER, DeviceType::Thermometer },
-	{ sigrok::ConfigKey::HYGROMETER, DeviceType::Hygrometer },
-	{ sigrok::ConfigKey::ENERGYMETER, DeviceType::Energymeter },
-	{ sigrok::ConfigKey::DEMODULATOR, DeviceType::Demodulator },
-	{ sigrok::ConfigKey::POWER_SUPPLY, DeviceType::PowerSupply },
-	{ sigrok::ConfigKey::LCRMETER, DeviceType::LcrMeter },
-	{ sigrok::ConfigKey::ELECTRONIC_LOAD, DeviceType::ElectronicLoad },
-	{ sigrok::ConfigKey::SCALE, DeviceType::Scale },
-	{ sigrok::ConfigKey::SIGNAL_GENERATOR, DeviceType::SignalGenerator },
-	{ sigrok::ConfigKey::POWERMETER, DeviceType::Powermeter },
-	{ sigrok::ConfigKey::MULTIPLEXER, DeviceType::Multiplexer },
-};
-
-map<DeviceType, const sigrok::ConfigKey *> device_type_sr_config_key_map = {
-	{ DeviceType::LogicAnalyzer, sigrok::ConfigKey::LOGIC_ANALYZER },
-	{ DeviceType::Oscilloscope, sigrok::ConfigKey::OSCILLOSCOPE },
-	{ DeviceType::Multimeter, sigrok::ConfigKey::MULTIMETER },
-	{ DeviceType::DemoDev, sigrok::ConfigKey::DEMO_DEV },
-	{ DeviceType::SoundLevelMeter, sigrok::ConfigKey::SOUNDLEVELMETER },
-	{ DeviceType::Thermometer, sigrok::ConfigKey::THERMOMETER },
-	{ DeviceType::Hygrometer, sigrok::ConfigKey::HYGROMETER },
-	{ DeviceType::Energymeter, sigrok::ConfigKey::ENERGYMETER },
-	{ DeviceType::Demodulator, sigrok::ConfigKey::DEMODULATOR },
-	{ DeviceType::PowerSupply, sigrok::ConfigKey::POWER_SUPPLY },
-	{ DeviceType::LcrMeter, sigrok::ConfigKey::LCRMETER },
-	{ DeviceType::ElectronicLoad, sigrok::ConfigKey::ELECTRONIC_LOAD },
-	{ DeviceType::Scale, sigrok::ConfigKey::SCALE },
-	{ DeviceType::SignalGenerator, sigrok::ConfigKey::SIGNAL_GENERATOR },
-	{ DeviceType::Powermeter, sigrok::ConfigKey::POWERMETER },
-	{ DeviceType::Multiplexer, sigrok::ConfigKey::MULTIPLEXER },
-};
-
-map<const sigrok::ConfigKey *, ConnectionKey> sr_config_key_connection_key_map = {
-	{ sigrok::ConfigKey::CONN, ConnectionKey::Conn },
-	{ sigrok::ConfigKey::SERIALCOMM, ConnectionKey::SerialComm },
-	{ sigrok::ConfigKey::MODBUSADDR, ConnectionKey::ModbusAddr },
-	{ sigrok::ConfigKey::LIMIT_MSEC, ConnectionKey::LimitMsec },
-	{ sigrok::ConfigKey::LIMIT_SAMPLES, ConnectionKey::LimitSamples },
-	{ sigrok::ConfigKey::LIMIT_FRAMES, ConnectionKey::LimitFrames },
-	{ sigrok::ConfigKey::CONTINUOUS, ConnectionKey::Continuous },
-};
-
-map<ConnectionKey, const sigrok::ConfigKey *> connection_key_sr_config_key_map = {
-	{ ConnectionKey::Conn, sigrok::ConfigKey::CONN },
-	{ ConnectionKey::SerialComm, sigrok::ConfigKey::SERIALCOMM },
-	{ ConnectionKey::ModbusAddr, sigrok::ConfigKey::MODBUSADDR },
-	{ ConnectionKey::LimitMsec, sigrok::ConfigKey::LIMIT_MSEC },
-	{ ConnectionKey::LimitSamples, sigrok::ConfigKey::LIMIT_SAMPLES },
-	{ ConnectionKey::LimitFrames, sigrok::ConfigKey::LIMIT_FRAMES },
-	{ ConnectionKey::Continuous, sigrok::ConfigKey::CONTINUOUS },
-};
-
-map<const sigrok::ConfigKey *, ConfigKey> sr_config_key_config_key_map = {
-	{ sigrok::ConfigKey::SAMPLERATE, ConfigKey::Samplerate },
-	{ sigrok::ConfigKey::CAPTURE_RATIO, ConfigKey::CaptureRatio },
-	{ sigrok::ConfigKey::PATTERN_MODE, ConfigKey::PatternMode },
-	{ sigrok::ConfigKey::RLE, ConfigKey::RLE },
-	{ sigrok::ConfigKey::TRIGGER_SLOPE, ConfigKey::TriggerSlope },
-	{ sigrok::ConfigKey::AVERAGING, ConfigKey::Averaging },
-	{ sigrok::ConfigKey::AVG_SAMPLES, ConfigKey::AvgSamples },
-	{ sigrok::ConfigKey::TRIGGER_SOURCE, ConfigKey::TriggerSource },
-	{ sigrok::ConfigKey::HORIZ_TRIGGERPOS, ConfigKey::HorizTriggerPos },
-	{ sigrok::ConfigKey::BUFFERSIZE, ConfigKey::BufferSize },
-	{ sigrok::ConfigKey::TIMEBASE, ConfigKey::TimeBase },
-	{ sigrok::ConfigKey::FILTER, ConfigKey::Filter },
-	{ sigrok::ConfigKey::VDIV, ConfigKey::VDiv },
-	{ sigrok::ConfigKey::COUPLING, ConfigKey::Coupling },
-	{ sigrok::ConfigKey::TRIGGER_MATCH, ConfigKey::TriggerMatch },
-	{ sigrok::ConfigKey::SAMPLE_INTERVAL, ConfigKey::SampleInterval },
-	{ sigrok::ConfigKey::NUM_HDIV, ConfigKey::NumHDiv },
-	{ sigrok::ConfigKey::NUM_VDIV, ConfigKey::NumVDiv },
-	{ sigrok::ConfigKey::SPL_WEIGHT_FREQ, ConfigKey::SplWeightFreq },
-	{ sigrok::ConfigKey::SPL_WEIGHT_TIME, ConfigKey::SplWeightTime },
-	{ sigrok::ConfigKey::SPL_MEASUREMENT_RANGE, ConfigKey::SplMeasurementRange },
-	{ sigrok::ConfigKey::HOLD_MAX, ConfigKey::HoldMax },
-	{ sigrok::ConfigKey::HOLD_MIN, ConfigKey::HoldMin },
-	{ sigrok::ConfigKey::VOLTAGE_THRESHOLD, ConfigKey::VoltageThreshold },
-	{ sigrok::ConfigKey::EXTERNAL_CLOCK, ConfigKey::ExternalClock },
-	{ sigrok::ConfigKey::SWAP, ConfigKey::Swap },
-	{ sigrok::ConfigKey::CENTER_FREQUENCY, ConfigKey::CenterFrequency },
-	{ sigrok::ConfigKey::NUM_LOGIC_CHANNELS, ConfigKey::NumLogicChannels },
-	{ sigrok::ConfigKey::NUM_ANALOG_CHANNELS, ConfigKey::NumAnalogChannels },
-	{ sigrok::ConfigKey::VOLTAGE, ConfigKey::Voltage },
-	{ sigrok::ConfigKey::VOLTAGE_TARGET, ConfigKey::VoltageTarget },
-	{ sigrok::ConfigKey::CURRENT, ConfigKey::Current },
-	{ sigrok::ConfigKey::CURRENT_LIMIT, ConfigKey::CurrentLimit },
-	{ sigrok::ConfigKey::ENABLED, ConfigKey::Enabled },
-	{ sigrok::ConfigKey::CHANNEL_CONFIG, ConfigKey::ChannelConfig },
-	{ sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_ENABLED, ConfigKey::OverVoltageProtectionEnabled },
-	{ sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_ACTIVE, ConfigKey::OverVoltageProtectionActive },
-	{ sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_THRESHOLD, ConfigKey::OverVoltageProtectionThreshold },
-	{ sigrok::ConfigKey::OVER_CURRENT_PROTECTION_ENABLED, ConfigKey::OverCurrentProtectionEnabled },
-	{ sigrok::ConfigKey::OVER_CURRENT_PROTECTION_ACTIVE, ConfigKey::OverCurrentProtectionActive },
-	{ sigrok::ConfigKey::OVER_CURRENT_PROTECTION_THRESHOLD, ConfigKey::OverCurrentProtectionThreshold },
-	{ sigrok::ConfigKey::OVER_TEMPERATURE_PROTECTION, ConfigKey::OverTemperatureProtectionEnabled },
-	{ sigrok::ConfigKey::OVER_TEMPERATURE_PROTECTION_ACTIVE, ConfigKey::OverTemperatureProtectionActive },
-	{ sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION, ConfigKey::UnderVoltageConditionEnabled },
-	{ sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_ACTIVE, ConfigKey::UnderVoltageConditionActive },
-	{ sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD, ConfigKey::UnderVoltageConditionThreshold },
-	{ sigrok::ConfigKey::CLOCK_EDGE, ConfigKey::ClockEdge },
-	{ sigrok::ConfigKey::AMPLITUDE, ConfigKey::Amplitude },
-	{ sigrok::ConfigKey::REGULATION, ConfigKey::Regulation },
-	{ sigrok::ConfigKey::OUTPUT_FREQUENCY, ConfigKey::OutputFrequency },
-	{ sigrok::ConfigKey::OUTPUT_FREQUENCY_TARGET, ConfigKey::OutputFrequencyTarget },
-	{ sigrok::ConfigKey::MEASURED_QUANTITY, ConfigKey::MeasuredQuantity },
-	{ sigrok::ConfigKey::EQUIV_CIRCUIT_MODEL, ConfigKey::EquivCircuitModel },
-	{ sigrok::ConfigKey::TRIGGER_LEVEL, ConfigKey::TriggerLevel },
-	{ sigrok::ConfigKey::EXTERNAL_CLOCK_SOURCE, ConfigKey::ExternalClockSource },
-	{ sigrok::ConfigKey::OFFSET, ConfigKey::Offset },
-	{ sigrok::ConfigKey::TRIGGER_PATTERN, ConfigKey::TriggerPattern },
-	{ sigrok::ConfigKey::HIGH_RESOLUTION, ConfigKey::HighResolution },
-	{ sigrok::ConfigKey::PEAK_DETECTION, ConfigKey::PeakDetection },
-	{ sigrok::ConfigKey::LOGIC_THRESHOLD, ConfigKey::LogicThreshold },
-	{ sigrok::ConfigKey::LOGIC_THRESHOLD_CUSTOM, ConfigKey::LogicThresholdCustom },
-	{ sigrok::ConfigKey::RANGE, ConfigKey::Range },
-	{ sigrok::ConfigKey::DIGITS, ConfigKey::Digits },
-	{ sigrok::ConfigKey::SESSIONFILE, ConfigKey::SessionFile },
-	{ sigrok::ConfigKey::CAPTUREFILE, ConfigKey::CaptureFile },
-	{ sigrok::ConfigKey::CAPTURE_UNITSIZE, ConfigKey::CaptureUnitSize },
-	{ sigrok::ConfigKey::POWER_OFF, ConfigKey::PowerOff },
-	{ sigrok::ConfigKey::DATA_SOURCE, ConfigKey::DataSource },
-	{ sigrok::ConfigKey::PROBE_FACTOR, ConfigKey::ProbeFactor },
-	{ sigrok::ConfigKey::ADC_POWERLINE_CYCLES, ConfigKey::ADCPowerlineCycles },
-	{ sigrok::ConfigKey::DATALOG, ConfigKey::DataLog },
-	{ sigrok::ConfigKey::DEVICE_MODE, ConfigKey::DeviceMode },
-	{ sigrok::ConfigKey::TEST_MODE, ConfigKey::TestMode },
-};
-
-map<ConfigKey, const sigrok::ConfigKey *> config_key_sr_config_key_map = {
-	{ ConfigKey::Samplerate, sigrok::ConfigKey::SAMPLERATE },
-	{ ConfigKey::CaptureRatio, sigrok::ConfigKey::CAPTURE_RATIO },
-	{ ConfigKey::PatternMode, sigrok::ConfigKey::PATTERN_MODE },
-	{ ConfigKey::RLE, sigrok::ConfigKey::RLE },
-	{ ConfigKey::TriggerSlope, sigrok::ConfigKey::TRIGGER_SLOPE },
-	{ ConfigKey::Averaging, sigrok::ConfigKey::AVERAGING },
-	{ ConfigKey::AvgSamples, sigrok::ConfigKey::AVG_SAMPLES },
-	{ ConfigKey::TriggerSource, sigrok::ConfigKey::TRIGGER_SOURCE },
-	{ ConfigKey::HorizTriggerPos, sigrok::ConfigKey::HORIZ_TRIGGERPOS },
-	{ ConfigKey::BufferSize, sigrok::ConfigKey::BUFFERSIZE },
-	{ ConfigKey::TimeBase, sigrok::ConfigKey::TIMEBASE },
-	{ ConfigKey::Filter, sigrok::ConfigKey::FILTER },
-	{ ConfigKey::VDiv, sigrok::ConfigKey::VDIV },
-	{ ConfigKey::Coupling, sigrok::ConfigKey::COUPLING },
-	{ ConfigKey::TriggerMatch, sigrok::ConfigKey::TRIGGER_MATCH },
-	{ ConfigKey::SampleInterval, sigrok::ConfigKey::SAMPLE_INTERVAL },
-	{ ConfigKey::NumHDiv, sigrok::ConfigKey::NUM_HDIV },
-	{ ConfigKey::NumVDiv, sigrok::ConfigKey::NUM_VDIV },
-	{ ConfigKey::SplWeightFreq, sigrok::ConfigKey::SPL_WEIGHT_FREQ },
-	{ ConfigKey::SplWeightTime, sigrok::ConfigKey::SPL_WEIGHT_TIME },
-	{ ConfigKey::SplMeasurementRange, sigrok::ConfigKey::SPL_MEASUREMENT_RANGE },
-	{ ConfigKey::HoldMax, sigrok::ConfigKey::HOLD_MAX },
-	{ ConfigKey::HoldMin, sigrok::ConfigKey::HOLD_MIN },
-	{ ConfigKey::VoltageThreshold, sigrok::ConfigKey::VOLTAGE_THRESHOLD },
-	{ ConfigKey::ExternalClock, sigrok::ConfigKey::EXTERNAL_CLOCK },
-	{ ConfigKey::Swap, sigrok::ConfigKey::SWAP },
-	{ ConfigKey::CenterFrequency, sigrok::ConfigKey::CENTER_FREQUENCY },
-	{ ConfigKey::NumLogicChannels, sigrok::ConfigKey::NUM_LOGIC_CHANNELS },
-	{ ConfigKey::NumAnalogChannels, sigrok::ConfigKey::NUM_ANALOG_CHANNELS },
-	{ ConfigKey::Voltage, sigrok::ConfigKey::VOLTAGE },
-	{ ConfigKey::VoltageTarget, sigrok::ConfigKey::VOLTAGE_TARGET },
-	{ ConfigKey::Current, sigrok::ConfigKey::CURRENT },
-	{ ConfigKey::CurrentLimit, sigrok::ConfigKey::CURRENT_LIMIT },
-	{ ConfigKey::Enabled, sigrok::ConfigKey::ENABLED },
-	{ ConfigKey::ChannelConfig, sigrok::ConfigKey::CHANNEL_CONFIG },
-	{ ConfigKey::OverVoltageProtectionEnabled, sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_ENABLED },
-	{ ConfigKey::OverVoltageProtectionActive, sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_ACTIVE },
-	{ ConfigKey::OverVoltageProtectionThreshold, sigrok::ConfigKey::OVER_VOLTAGE_PROTECTION_THRESHOLD },
-	{ ConfigKey::OverCurrentProtectionEnabled, sigrok::ConfigKey::OVER_CURRENT_PROTECTION_ENABLED },
-	{ ConfigKey::OverCurrentProtectionActive, sigrok::ConfigKey::OVER_CURRENT_PROTECTION_ACTIVE },
-	{ ConfigKey::OverCurrentProtectionThreshold, sigrok::ConfigKey::OVER_CURRENT_PROTECTION_THRESHOLD },
-	{ ConfigKey::OverTemperatureProtectionEnabled, sigrok::ConfigKey::OVER_TEMPERATURE_PROTECTION },
-	{ ConfigKey::OverTemperatureProtectionActive, sigrok::ConfigKey::OVER_TEMPERATURE_PROTECTION_ACTIVE },
-	{ ConfigKey::UnderVoltageConditionEnabled, sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION },
-	{ ConfigKey::UnderVoltageConditionActive, sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_ACTIVE },
-	{ ConfigKey::UnderVoltageConditionThreshold, sigrok::ConfigKey::UNDER_VOLTAGE_CONDITION_THRESHOLD },
-	{ ConfigKey::ClockEdge, sigrok::ConfigKey::CLOCK_EDGE },
-	{ ConfigKey::Amplitude, sigrok::ConfigKey::AMPLITUDE },
-	{ ConfigKey::Regulation, sigrok::ConfigKey::REGULATION },
-	{ ConfigKey::OutputFrequency, sigrok::ConfigKey::OUTPUT_FREQUENCY },
-	{ ConfigKey::OutputFrequencyTarget, sigrok::ConfigKey::OUTPUT_FREQUENCY_TARGET },
-	{ ConfigKey::MeasuredQuantity, sigrok::ConfigKey::MEASURED_QUANTITY },
-	{ ConfigKey::EquivCircuitModel, sigrok::ConfigKey::EQUIV_CIRCUIT_MODEL },
-	{ ConfigKey::TriggerLevel, sigrok::ConfigKey::TRIGGER_LEVEL },
-	{ ConfigKey::ExternalClockSource, sigrok::ConfigKey::EXTERNAL_CLOCK_SOURCE },
-	{ ConfigKey::Offset, sigrok::ConfigKey::OFFSET },
-	{ ConfigKey::TriggerPattern, sigrok::ConfigKey::TRIGGER_PATTERN },
-	{ ConfigKey::HighResolution, sigrok::ConfigKey::HIGH_RESOLUTION },
-	{ ConfigKey::PeakDetection, sigrok::ConfigKey::PEAK_DETECTION },
-	{ ConfigKey::LogicThreshold, sigrok::ConfigKey::LOGIC_THRESHOLD },
-	{ ConfigKey::LogicThresholdCustom, sigrok::ConfigKey::LOGIC_THRESHOLD_CUSTOM },
-	{ ConfigKey::Range, sigrok::ConfigKey::RANGE },
-	{ ConfigKey::Digits, sigrok::ConfigKey::DIGITS },
-	{ ConfigKey::SessionFile, sigrok::ConfigKey::SESSIONFILE },
-	{ ConfigKey::CaptureFile, sigrok::ConfigKey::CAPTUREFILE },
-	{ ConfigKey::CaptureUnitSize, sigrok::ConfigKey::CAPTURE_UNITSIZE },
-	{ ConfigKey::PowerOff, sigrok::ConfigKey::POWER_OFF },
-	{ ConfigKey::DataSource, sigrok::ConfigKey::DATA_SOURCE },
-	{ ConfigKey::ProbeFactor, sigrok::ConfigKey::PROBE_FACTOR },
-	{ ConfigKey::ADCPowerlineCycles, sigrok::ConfigKey::ADC_POWERLINE_CYCLES },
-	{ ConfigKey::DataLog, sigrok::ConfigKey::DATALOG },
-	{ ConfigKey::DeviceMode, sigrok::ConfigKey::DEVICE_MODE },
-	{ ConfigKey::TestMode, sigrok::ConfigKey::TEST_MODE },
-};
 
 /**
  * TODO: Find a better way get the Unit/Q/QF from the ConfigKey.
@@ -673,26 +370,25 @@ map<ConfigKey, data::Unit> config_key_unit_map = {
 } // namespace
 
 /**
- * Return all known device type
+ * Return all known device types
  *
- * @return The device type name map
+ * @return The device type map
  */
-device_type_name_map_t get_device_type_name_map();
+const vector<DeviceTypeMapping> &get_device_type_map();
 
 /**
  * Return all known connection keys
  *
- * @return The connection key name map
+ * @return The connection key map
  */
-connection_key_name_map_t get_connection_key_name_map();
+const vector<ConnectionKeyMapping> &get_connection_key_map();
 
 /**
  * Return all known config keys
  *
- * @return The config key name map
+ * @return The config key map
  */
-config_key_name_map_t get_config_key_name_map();
-
+const vector<ConfigKeyMapping> &get_config_key_map();
 
 /**
  * Check if the device type is supported by SmuView.

@@ -205,6 +205,8 @@ libsigrok
 - scpi-pps/hp66xxx: Return always TRUE for OVP_ENABLED
 - hp3478a: spec_digits and enc_digits are used in the wrong way!
 - Fix UserDevice::open() and ::close() -> virtual in BaseDevice and empty in UserDevice
+- Rename `OVER_TEMPERATURE_PROTECTION` to `OVER_TEMPERATURE_PROTECTION_ENABLED`
+- Rename `UNDER_VOLTAGE_CONDITION` to `OVER_TEMPERATURE_PROTECTION_ENABLED`
 
 WIP
 ---
