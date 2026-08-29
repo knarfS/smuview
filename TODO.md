@@ -1,8 +1,6 @@
-SmuView
-=======
+# SmuView
 
-ToDo clang-tidy
----------------
+## ToDo clang-tidy
 
 - Unify readability-implicit-bool-conversion (AllowPointerConditions) -> " == nullptr" and " != nullptr"
 - readability-redundant-member-init.IgnoreBaseInCopyConstructors = 1 not always working!
@@ -11,13 +9,11 @@ ToDo clang-tidy
 - src/ui/datatypes/doubledisplay.hpp: setup_ui() override, b/c of widgets::MonoFontDisplay.
 - bugprone-narrowing-conversions: Maybe use boost convert_to<>() -> see util.cpp, format_time_minutes()
 
-ToDo Release
-------------
+## ToDo Release
 
 - Python binding for save CSV
 
-ToDo Build
-----------
+## ToDo Build
 
 - pdoc3 / pybind11 is generating incomplete binding docs (https://github.com/knarfS/knarfS.github.io/commit/5e761cbeafec1a793a5cf4337bff09f3b5a6e308)
 - Integrate udev rules to AppImage
@@ -28,21 +24,18 @@ ToDo Build
 - Use CPack to build NSIS, AppImage, DMG, RPM, deb, ...
 - Do we really need `SV_PYTHON_VERSION`?
 
-ToDo clazy
-----------
+## ToDo clazy
 
 - Disabled due to false positives:
 	- connect-non-signal
 	- incorrect-emit
 
 
-ToDo Scope
-----------
+## ToDo Scope
 
 - Fix ConfigKey sample_rate in UInt64Property::change_value(const QVariant qvar)
 
-ToDo
-----
+## ToDo
 
 - Use util::Timestamp?
 - last_value_, min_value_, max_value_ -> std::atomic!
@@ -105,8 +98,7 @@ ToDo
 - example_multiplexer.py: Checkboxes in control views don't change.
 - Keyboard shortcuts (Ctrl-Q -> Close App, Ctrl-W -> Close tab)
 
-Done
-----
+## Done
 
 - Check in connect.cpp if GPIB is part of build info (libsigrok -> backend.c)
 - Everey device must have its own session:
@@ -165,8 +157,7 @@ Done
 - Move `org.sigrok.SmuView.appdata.xml`, `org.sigrok.SmuView.desktop` and `smuview.spec` to `packaging/rpm` and update dependencies in files.
 - main.cpp: Remove while loop.
 
-Won't fix
----------
+## Won't fix
 
 - QWT Multiaxis
 - Refactore:
@@ -183,9 +174,7 @@ Won't fix
   ```
 
 
-
-libsigrok
-=========
+# libsigrok
 
 - Add GPIB address to libgpib:conn as paramenter
 - Re:load Pro: when acquisition is running and we send a command (e.g. "set xxx"), there are 2 listeners (1st send_cmd() (<-serial_write_blocking) and 2nd handle_new_data() (<-serial_read_nonblocking))
@@ -208,13 +197,11 @@ libsigrok
 - Rename `OVER_TEMPERATURE_PROTECTION` to `OVER_TEMPERATURE_PROTECTION_ENABLED`
 - Rename `UNDER_VOLTAGE_CONDITION` to `OVER_TEMPERATURE_PROTECTION_ENABLED`
 
-WIP
----
+## WIP
 
 - Change key naming (see load + psu wiki pages)
 
-Done
-----
+## Done
 
 - Re:load Pro: send "monitor 0" when device is scaned to stop eventually running monitoring and version can be read properly
 - Re:load Pro: send "monitor 0" when device is closed
@@ -243,24 +230,20 @@ Done
 - Add missing units: sigrok::Unit::JOULE, sigrok::Unit::AMPEREHOUR, sigrok::Unit::COULOMB
 - HP-3478A: R4W -> R2W not working
 
-Won't fix
----------
+## Won't fix
 
 - Re:load Pro: Don't use "monitor 200", Instead "read" values every aquisition cycle with serial "read line blocking" and use a mutex around every read, write and write+read
 - Add missing units: sigrok::Unit::(HECTO)PASCAL
 
 
-
-Doku
-====
+# Doku
 
 - Link API to the psu and load wiki pages
 
 
-
-Re:load Pro Firmware
-====================
+# Re:load Pro Firmware
 
 - Add "output" command (returns "on" / "off") to determin in wich state the output is (git commit 448cf71, 558bc0e (part))
 - Send "on" / "off" when output state was changed at the device directly
 - Send "uvlo xxx" when undervoltage threshold was changed at the device directly (git commit 224ab62)
+
