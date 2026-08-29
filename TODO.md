@@ -37,6 +37,9 @@
 
 ## ToDo
 
+- User better titels for views. Depending on the device (actual device, user device),
+  the window title should not only show the channel / signal name but also the
+  device name
 - Use util::Timestamp?
 - last_value_, min_value_, max_value_ -> std::atomic!
 - Plot: Sampling
