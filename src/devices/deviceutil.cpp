@@ -161,8 +161,6 @@ const vector<ConfigKeyMapping> &get_config_key_map()
 
 bool is_supported_device(DeviceType device_type)
 {
-	assert(device_type);
-
 	return is_source_sink_device(device_type)
 		|| is_measurement_device(device_type)
 		|| is_demo_device(device_type)
@@ -180,8 +178,6 @@ bool is_supported_driver(shared_ptr<sigrok::Driver> sr_driver)
 
 bool is_source_sink_device(DeviceType device_type)
 {
-	assert(device_type);
-
 	return device_type == DeviceType::PowerSupply
 		|| device_type == DeviceType::ElectronicLoad;
 }
@@ -197,8 +193,6 @@ bool is_source_sink_driver(shared_ptr<sigrok::Driver> sr_driver)
 
 bool is_measurement_device(DeviceType device_type)
 {
-	assert(device_type);
-
 	return device_type == DeviceType::Multimeter
 		|| device_type == DeviceType::SoundLevelMeter
 		|| device_type == DeviceType::Thermometer
@@ -223,8 +217,6 @@ bool is_measurement_driver(shared_ptr<sigrok::Driver> sr_driver)
 
 bool is_demo_device(DeviceType device_type)
 {
-	assert(device_type);
-
 	return device_type == DeviceType::DemoDev;
 }
 
@@ -239,8 +231,6 @@ bool is_demo_driver(shared_ptr<sigrok::Driver> sr_driver)
 
 bool is_oscilloscope_device(DeviceType device_type)
 {
-	assert(device_type);
-
 	return device_type == DeviceType::Oscilloscope;
 }
 
@@ -255,8 +245,6 @@ bool is_oscilloscope_driver(shared_ptr<sigrok::Driver> sr_driver)
 
 bool is_user_device(DeviceType device_type)
 {
-	assert(device_type);
-
 	return device_type == DeviceType::UserDevice;
 }
 
