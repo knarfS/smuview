@@ -22,6 +22,7 @@
 #include <QDialog>
 #include <QFormLayout>
 #include <QIcon>
+#include <QMessageBox>
 #include <QVariant>
 #include <QVBoxLayout>
 #include <QWidget>
@@ -93,6 +94,13 @@ void PlotDiffMarkerDialog::accept()
 {
 	QVariant marker_1_var = marker_1_combobox_->currentData();
 	QVariant marker_2_var = marker_2_combobox_->currentData();
+	if (!marker_1_var.isValid() || !marker_2_var.isValid()) {
+		QMessageBox::warning(this, tr("No markers selected."),
+			tr("Please select two markers to add a diff marker."),
+			QMessageBox::Ok);
+		return;
+	}
+
 	plot_->add_diff_marker(
 		marker_1_var.value<QwtPlotMarker *>(),
 		marker_2_var.value<QwtPlotMarker *>());
