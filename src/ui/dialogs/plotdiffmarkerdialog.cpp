@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,8 +16,6 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-#include <map>
 
 #include <QComboBox>
 #include <QDebug>
@@ -52,7 +50,7 @@ void PlotDiffMarkerDialog::setup_ui()
 	main_icon.addFile(QStringLiteral(":/icons/smuview.ico"),
 		QSize(), QIcon::Normal, QIcon::Off);
 	this->setWindowIcon(main_icon);
-	this->setWindowTitle(tr("Plot Diff Merker"));
+	this->setWindowTitle(tr("Plot Diff Marker"));
 	this->setMinimumWidth(250);
 
 	QVBoxLayout *main_layout = new QVBoxLayout();
