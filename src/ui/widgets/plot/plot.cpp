@@ -688,6 +688,9 @@ void Plot::on_legend_clicked(const QVariant &item_info, int index)
 void Plot::update_curves()
 {
 	for (const auto &curve : curve_map_) {
+		if (!curve.second->plot_curve()->isVisible())
+			continue;
+
 		const size_t painted_points = curve.second->painted_points();
 		const size_t num_points = curve.second->curve_data()->size();
 		if (num_points > painted_points) {
