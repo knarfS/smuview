@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  */
 
 #include <memory>
-#include <string>
 
 #include <QImageWriter>
 #include <QFileDialog>
@@ -223,7 +222,7 @@ void BasePlotView::on_action_add_marker_triggered()
 
 void BasePlotView::on_action_add_diff_marker_triggered()
 {
-	ui::dialogs::PlotDiffMarkerDialog dlg(plot_);
+	dialogs::PlotDiffMarkerDialog dlg(plot_, this);
 	dlg.exec();
 }
 
@@ -255,7 +254,7 @@ void BasePlotView::on_action_save_triggered()
 
 void BasePlotView::on_action_config_plot_triggered()
 {
-	ui::dialogs::PlotConfigDialog dlg(plot_, plot_type_);
+	dialogs::PlotConfigDialog dlg(plot_, plot_type_, this);
 	dlg.exec();
 }
 

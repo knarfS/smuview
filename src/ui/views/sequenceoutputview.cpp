@@ -535,7 +535,7 @@ void SequenceOutputView::on_action_generate_waveform_triggered()
 			QMessageBox::Ok);
 	}
 
-	ui::dialogs::GenerateWaveformDialog dlg(property_);
+	dialogs::GenerateWaveformDialog dlg(property_, this);
 	if (!dlg.exec())
 		return;
 

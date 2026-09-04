@@ -247,7 +247,7 @@ void DataView::on_action_add_signal_triggered()
 	if (!signals_.empty() && signals_[0])
 		selected_device = signals_[0]->parent_channel()->parent_device();
 
-	ui::dialogs::SelectSignalDialog dlg(session(), selected_device);
+	dialogs::SelectSignalDialog dlg(session(), selected_device, this);
 	if (!dlg.exec())
 		return;
 
