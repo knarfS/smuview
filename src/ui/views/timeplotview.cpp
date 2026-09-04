@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2020-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2020-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -173,7 +173,7 @@ void TimePlotView::on_action_add_curve_triggered()
 	if (channel_)
 		selected_device = channel_->parent_device();
 
-	ui::dialogs::SelectSignalDialog dlg(session(), selected_device);
+	dialogs::SelectSignalDialog dlg(session(), selected_device, this);
 	if (!dlg.exec())
 		return;
 

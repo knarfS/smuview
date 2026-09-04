@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2019-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2019-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -135,14 +135,15 @@ void DevicesView::restore_settings(QSettings &settings,
 
 void DevicesView::on_action_add_device_triggered()
 {
-	ui::dialogs::ConnectDialog dlg(session().device_manager());
-	if (dlg.exec()) {
-		auto device = dlg.get_selected_device();
-		// NOTE: add_device() must be called, before the device tab
-		//       tries to access the device (device is not opend yet).
-		session().add_device(device);
-		session().main_window()->add_device_tab(device);
-	}
+	dialogs::ConnectDialog dlg(session().device_manager(), this);
+	if (!dlg.exec())
+		return;
+
+	auto device = dlg.get_selected_device();
+	// NOTE: add_device() must be called, before the device tab
+	//       tries to access the device (device is not opend yet).
+	session().add_device(device);
+	session().main_window()->add_device_tab(device);
 }
 
 void DevicesView::on_action_add_userdevice_triggered()

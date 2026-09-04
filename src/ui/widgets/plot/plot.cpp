@@ -678,7 +678,7 @@ void Plot::on_legend_clicked(const QVariant &item_info, int index)
 	if (!curve)
 		return;
 
-	ui::dialogs::PlotCurveConfigDialog dlg(curve, this);
+	dialogs::PlotCurveConfigDialog dlg(curve, this);
 	dlg.exec();
 }
 

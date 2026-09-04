@@ -244,7 +244,7 @@ void DeviceTab::on_action_aquire_triggered()
 
 void DeviceTab::on_action_save_as_triggered()
 {
-	ui::dialogs::SignalSaveDialog dlg(session(), device_);
+	dialogs::SignalSaveDialog dlg(session(), device_, this);
 	dlg.exec();
 }
 
@@ -254,7 +254,7 @@ void DeviceTab::on_action_add_control_view_triggered()
 	if (!sv::devices::deviceutil::is_user_device(device_->type()))
 		device = device_;
 
-	ui::dialogs::AddViewDialog dlg(session(), device, 0);
+	dialogs::AddViewDialog dlg(session(), device, 0, this);
 	if (!dlg.exec())
 		return;
 
@@ -264,7 +264,7 @@ void DeviceTab::on_action_add_control_view_triggered()
 
 void DeviceTab::on_action_add_panel_view_triggered()
 {
-	ui::dialogs::AddViewDialog dlg(session(), device_, 2);
+	dialogs::AddViewDialog dlg(session(), device_, 2, this);
 	if (!dlg.exec())
 		return;
 
@@ -274,7 +274,7 @@ void DeviceTab::on_action_add_panel_view_triggered()
 
 void DeviceTab::on_action_add_plot_view_triggered()
 {
-	ui::dialogs::AddViewDialog dlg(session(), device_, 3);
+	dialogs::AddViewDialog dlg(session(), device_, 3, this);
 	if (!dlg.exec())
 		return;
 
@@ -284,7 +284,7 @@ void DeviceTab::on_action_add_plot_view_triggered()
 
 void DeviceTab::on_action_add_table_view_triggered()
 {
-	ui::dialogs::AddViewDialog dlg(session(), device_, 5);
+	dialogs::AddViewDialog dlg(session(), device_, 5, this);
 	if (!dlg.exec())
 		return;
 
@@ -294,7 +294,7 @@ void DeviceTab::on_action_add_table_view_triggered()
 
 void DeviceTab::on_action_add_math_channel_triggered()
 {
-	ui::dialogs::AddMathChannelDialog dlg(session(), device_);
+	dialogs::AddMathChannelDialog dlg(session(), device_, this);
 	if (!dlg.exec())
 		return;
 
@@ -307,7 +307,7 @@ void DeviceTab::on_action_add_math_channel_triggered()
 
 void DeviceTab::on_action_about_triggered()
 {
-	ui::dialogs::AboutDialog dlg(this->session().device_manager(), device_);
+	dialogs::AboutDialog dlg(this->session().device_manager(), device_, this);
 	dlg.exec();
 }
 
