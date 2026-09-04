@@ -50,6 +50,7 @@
 #include <QVBoxLayout>
 
 #include "sequenceoutputview.hpp"
+#include "src/data/datautil.hpp"
 #include "src/session.hpp"
 #include "src/settingsmanager.hpp"
 #include "src/util.hpp"
@@ -285,7 +286,7 @@ void SequenceOutputView::save_settings(QSettings &settings,
 {
 	BaseView::save_settings(settings, origin_device);
 
-	if (!property_)
+	if (!property_ || property_->data_type() != data::DataType::Double)
 		return;
 	SettingsManager::save_property(property_, settings, origin_device);
 
@@ -316,7 +317,7 @@ void SequenceOutputView::restore_settings(QSettings &settings,
 
 	auto property = SettingsManager::restore_property(
 		session_, settings, origin_device);
-	if (!property)
+	if (!property || property->data_type() != data::DataType::Double)
 		return;
 	set_property(
 		dynamic_pointer_cast<sv::data::properties::DoubleProperty>(property));
@@ -394,6 +395,7 @@ void SequenceOutputView::insert_row(int row, double value, double delay)
 		QMessageBox::warning(this, tr("No property assigned."),
 			tr("Please assign a property to this sequence output view first."),
 			QMessageBox::Ok);
+		return;
 	}
 
 	sequence_table_->insertRow(row);
@@ -533,6 +535,7 @@ void SequenceOutputView::on_action_generate_waveform_triggered()
 		QMessageBox::warning(this, tr("No property assigned."),
 			tr("Please assign a property to this sequence output view first."),
 			QMessageBox::Ok);
+		return;
 	}
 
 	dialogs::GenerateWaveformDialog dlg(property_, this);
