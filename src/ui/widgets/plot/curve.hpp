@@ -103,6 +103,9 @@ private:
 	bool has_custom_color_;
 	QColor color_;
 
+Q_SIGNALS:
+	void replot();
+
 };
 
 } // namespace plot

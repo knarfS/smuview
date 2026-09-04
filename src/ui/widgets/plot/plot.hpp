@@ -94,7 +94,6 @@ public:
 	explicit Plot(Session &session, QWidget *parent = nullptr);
 	virtual ~Plot();
 
-	virtual void replot() override;
 	virtual bool eventFilter(QObject * object, QEvent *event) override;
 	/**
 	 * Return the id of the new curve. Empty string when curve couldn't be
@@ -128,6 +127,7 @@ public:
 public Q_SLOTS:
 	void start();
 	void stop();
+	virtual void replot() override;
 	void add_axis_icons(const int axis_id);
 	void lock_all_axis();
 	void on_axis_lock_clicked();

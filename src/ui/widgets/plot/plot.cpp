@@ -226,6 +226,7 @@ string Plot::add_curve(BaseCurveData *curve_data)
 	Curve *curve = new Curve(curve_data, x_axis_id, y_axis_id);
 	curve->plot_curve()->attach(this);
 	curve_map_.insert(make_pair(curve->id(), curve));
+	connect(curve, &Curve::replot, this, &Plot::replot);
 
 	QwtPlot::replot();
 	Q_EMIT curve_added();

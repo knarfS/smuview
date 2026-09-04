@@ -136,6 +136,8 @@ void PlotCurveConfigDialog::accept()
 	curve_->set_style(line_type_box_->currentData().value<Qt::PenStyle>());
 	curve_->set_symbol(symbol_type_box_->currentData().value<QwtSymbol::Style>());
 
+	Q_EMIT curve_->replot();
+
 	QDialog::accept();
 }
 
