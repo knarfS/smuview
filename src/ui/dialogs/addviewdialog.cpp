@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 #include <QDebug>
 #include <QGroupBox>
 #include <QHBoxLayout>
+#include <QMessageBox>
 #include <QString>
 #include <QVBoxLayout>
 #include <QWidget>
@@ -30,6 +31,7 @@
 #include "addviewdialog.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/data/analogtimesignal.hpp"
+#include "src/data/datautil.hpp"
 #include "src/data/properties/baseproperty.hpp"
 #include "src/data/properties/doubleproperty.hpp"
 #include "src/devices/basedevice.hpp"
@@ -245,9 +247,14 @@ void AddViewDialog::accept()
 		{
 			auto configurable =
 				configurable_configurable_form_->selected_configurable();
+			if (configurable == nullptr) {
+				QMessageBox::warning(this, tr("No configurable selected."),
+					tr("Please select a configurable to add a control view."),
+					QMessageBox::Ok);
+				return;
+			}
 			auto conf_views = views::viewhelper::get_views_for_configurable(
 				session_, configurable);
-
 			for (const auto &view : conf_views) {
 				views_.push_back(view);
 			}
@@ -257,14 +264,26 @@ void AddViewDialog::accept()
 		// Add sequence view for property
 		{
 			auto property = sequence_property_form_->selected_property();
+			if (property->data_type() != data::DataType::Double) {
+				QMessageBox::warning(this, tr("No config key selected."),
+					tr("Please select a config key to add a sequence output view."),
+					QMessageBox::Ok);
+				return;
+			}
 			auto *conf_views = new ui::views::SequenceOutputView(session_);
 			conf_views->set_property(
-				static_pointer_cast<sv::data::properties::DoubleProperty>(property));
+				static_pointer_cast<data::properties::DoubleProperty>(property));
 			views_.push_back(conf_views);
 		}
 		break;
 	case 2:
 		// Add value panel view
+		if (panel_channel_tree_->checked_channels().empty()) {
+			QMessageBox::warning(this, tr("No channel selected."),
+				tr("Please select at least one channel to add a value panel."),
+				QMessageBox::Ok);
+			return;
+		}
 		for (const auto &channel : panel_channel_tree_->checked_channels()) {
 			auto *conf_views = new ui::views::ValuePanelView(session_);
 			conf_views->set_channel(channel);
@@ -273,6 +292,13 @@ void AddViewDialog::accept()
 		break;
 	case 3:
 		// Add time plot view
+		if (time_plot_channel_tree_->checked_channels().empty() &&
+				time_plot_channel_tree_->checked_signals().empty()) {
+			QMessageBox::warning(this, tr("No channel/signal selected."),
+				tr("Please select at least one channel/signal to add a time plot."),
+				QMessageBox::Ok);
+			return;
+		}
 		for (const auto &channel : time_plot_channel_tree_->checked_channels()) {
 			auto *conf_views = new ui::views::TimePlotView(session_);
 			conf_views->set_channel(channel);
@@ -289,27 +315,35 @@ void AddViewDialog::accept()
 		{
 			auto x_signal = xy_plot_x_signal_widget_->selected_signal();
 			auto y_signal = xy_plot_y_signal_widget_->selected_signal();
-			if (x_signal != nullptr && y_signal != nullptr) {
-				auto *view = new ui::views::XYPlotView(session_);
-				view->add_signals(
-					static_pointer_cast<data::AnalogTimeSignal>(x_signal),
-					static_pointer_cast<data::AnalogTimeSignal>(y_signal));
-				views_.push_back(view);
+			if (x_signal == nullptr || y_signal == nullptr) {
+				QMessageBox::warning(this, tr("No x and/or y signal selected."),
+					tr("Please select a x and a y signal to add a x/y plot."),
+					QMessageBox::Ok);
+				return;
 			}
+			auto *view = new ui::views::XYPlotView(session_);
+			view->add_signals(
+				static_pointer_cast<data::AnalogTimeSignal>(x_signal),
+				static_pointer_cast<data::AnalogTimeSignal>(y_signal));
+			views_.push_back(view);
 		}
 		break;
 	case 5:
 		// Add data table view
 		{
 			auto signals = data_table_signal_tree_->checked_signals();
-			if (!signals.empty()) {
-				auto *view = new ui::views::DataView(session_);
-				for (const auto &signal : signals) {
-					view->add_signal(
-						static_pointer_cast<data::AnalogTimeSignal>(signal));
-				}
-				views_.push_back(view);
+			if (signals.empty()) {
+				QMessageBox::warning(this, tr("No signal selected."),
+					tr("Please select at least one signal to add a data table."),
+					QMessageBox::Ok);
+				return;
 			}
+			auto *view = new ui::views::DataView(session_);
+			for (const auto &signal : signals) {
+				view->add_signal(
+					static_pointer_cast<data::AnalogTimeSignal>(signal));
+			}
+			views_.push_back(view);
 		}
 		break;
 	case 6:
@@ -317,13 +351,18 @@ void AddViewDialog::accept()
 		{
 			auto v_signal = ppanel_voltage_signal_widget_->selected_signal();
 			auto c_signal = ppanel_current_signal_widget_->selected_signal();
-			if (v_signal != nullptr && c_signal != nullptr) {
-				auto *view = new ui::views::PowerPanelView(session_);
-				view->set_signals(
-					static_pointer_cast<data::AnalogTimeSignal>(v_signal),
-					static_pointer_cast<data::AnalogTimeSignal>(c_signal));
-				views_.push_back(view);
+			if (v_signal == nullptr || c_signal == nullptr) {
+				QMessageBox::warning(this,
+					tr("No voltage and/or current signal selected."),
+					tr("Please select a voltage and a current signal to add a power panel."),
+					QMessageBox::Ok);
+				return;
 			}
+			auto *view = new ui::views::PowerPanelView(session_);
+			view->set_signals(
+				static_pointer_cast<data::AnalogTimeSignal>(v_signal),
+				static_pointer_cast<data::AnalogTimeSignal>(c_signal));
+			views_.push_back(view);
 		}
 		break;
 	default:
