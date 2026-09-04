@@ -89,7 +89,10 @@ void GenerateWaveformDialog::setup_ui()
 	this->setWindowTitle(tr("Generate Waveform"));
 	this->setMinimumWidth(500);
 
-	QFormLayout *layout = new QFormLayout;
+	QVBoxLayout *main_layout = new QVBoxLayout;
+
+	QFormLayout *form_layout = new QFormLayout;
+	main_layout->addLayout(form_layout);
 
 	waveform_box_ = new QComboBox();
 	waveform_box_->addItem(tr("Sine"),
@@ -104,7 +107,7 @@ void GenerateWaveformDialog::setup_ui()
 		QVariant::fromValue(WaveformType::SawtoothInv));
 	connect(waveform_box_, QOverload<int>::of(&QComboBox::currentIndexChanged),
 			this, &GenerateWaveformDialog::on_waveform_changed);
-	layout->addRow(tr("Waveform"), waveform_box_);
+	form_layout->addRow(tr("Waveform"), waveform_box_);
 
 	QGroupBox *amp_group = new QGroupBox(tr("Min/Max - Amplitude"));
 	QHBoxLayout *amp_layout = new QHBoxLayout;
@@ -153,7 +156,7 @@ void GenerateWaveformDialog::setup_ui()
 	ampf_layout->addRow(tr("Offset"), offset_box_);
 	amp_layout->addLayout(ampf_layout);
 	amp_group->setLayout(amp_layout);
-	layout->addRow(amp_group);
+	form_layout->addRow(amp_group);
 
 	QGroupBox *freq_group = new QGroupBox(tr("Periode - Frequency"));
 	QHBoxLayout *freq_layout = new QHBoxLayout;
@@ -182,7 +185,7 @@ void GenerateWaveformDialog::setup_ui()
 	freqf_layout->addRow(tr("Frequency"), frequency_box_);
 	freq_layout->addLayout(freqf_layout);
 	freq_group->setLayout(freq_layout);
-	layout->addRow(freq_group);
+	form_layout->addRow(freq_group);
 
 	QGroupBox *samples_group = new QGroupBox(tr("Samples"));
 	QHBoxLayout *samples_layout = new QHBoxLayout;
@@ -208,7 +211,7 @@ void GenerateWaveformDialog::setup_ui()
 	samplesc_layout->addRow(tr("Number of samples"), sample_count_box_);
 	samples_layout->addLayout(samplesc_layout);
 	samples_group->setLayout(samples_layout);
-	layout->addRow(samples_group);
+	form_layout->addRow(samples_group);
 
 	QGroupBox *phi_group = new QGroupBox(tr("Phase offset"));
 	QHBoxLayout *phi_layout = new QHBoxLayout;
@@ -236,11 +239,11 @@ void GenerateWaveformDialog::setup_ui()
 	phir_layout->addRow(tr("%1 (rad)").arg(QChar(0x03C6)), phi_rad_box_);
 	phi_layout->addLayout(phir_layout);
 	phi_group->setLayout(phi_layout);
-	layout->addRow(phi_group);
+	form_layout->addRow(phi_group);
 
 	button_box_ = new QDialogButtonBox(
 		QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
-	layout->addRow(button_box_);
+	main_layout->addWidget(button_box_);
 	connect(button_box_, &QDialogButtonBox::accepted,
 		this, &GenerateWaveformDialog::accept);
 	connect(button_box_, &QDialogButtonBox::rejected,
@@ -253,7 +256,7 @@ void GenerateWaveformDialog::setup_ui()
 	interval_box_->setValue(0.1);
 	phi_deg_box_->setValue(270);
 
-	this->setLayout(layout);
+	this->setLayout(main_layout);
 }
 
 vector<double> GenerateWaveformDialog::sequence_values() const
