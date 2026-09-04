@@ -19,6 +19,7 @@
 
 #include <cassert>
 
+#include <QBoxLayout>
 #include <QCheckBox>
 #include <QComboBox>
 #include <QBrush>
@@ -66,19 +67,22 @@ void PlotCurveConfigDialog::setup_ui()
 	this->setWindowTitle(tr("Curve Config"));
 	this->setMinimumWidth(500);
 
-	QFormLayout *main_layout = new QFormLayout;
+	QVBoxLayout *main_layout = new QVBoxLayout;
+
+	QFormLayout *form_layout = new QFormLayout;
+	main_layout->addLayout(form_layout);
 
 	name_edit_ = new QLineEdit();
 	name_edit_->setText(curve_->name());
-	main_layout->addRow(tr("Name"), name_edit_);
+	form_layout->addRow(tr("Name"), name_edit_);
 
 	visible_checkbox_ = new QCheckBox();
 	visible_checkbox_->setChecked(curve_->plot_curve()->isVisible());
-	main_layout->addRow(tr("Visible"), visible_checkbox_);
+	form_layout->addRow(tr("Visible"), visible_checkbox_);
 
 	color_button_ = new widgets::ColorButton();
 	color_button_->set_color(curve_->color());
-	main_layout->addRow(tr("Color"), color_button_);
+	form_layout->addRow(tr("Color"), color_button_);
 
 	line_type_box_ = new QComboBox();
 	line_type_box_->addItem(tr("None"), QVariant::fromValue(Qt::NoPen));
@@ -92,7 +96,7 @@ void PlotCurveConfigDialog::setup_ui()
 			break;
 		}
 	}
-	main_layout->addRow(tr("Line type"), line_type_box_);
+	form_layout->addRow(tr("Line type"), line_type_box_);
 
 	symbol_type_box_ = new QComboBox();
 	symbol_type_box_->addItem(tr("None"), QwtSymbol::NoSymbol);
@@ -105,7 +109,7 @@ void PlotCurveConfigDialog::setup_ui()
 			break;
 		}
 	}
-	main_layout->addRow(tr("Symbol type"), symbol_type_box_);
+	form_layout->addRow(tr("Symbol type"), symbol_type_box_);
 
 	button_box_ = new QDialogButtonBox(
 		QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
