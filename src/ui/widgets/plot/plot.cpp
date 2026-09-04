@@ -275,6 +275,8 @@ void Plot::remove_curve(Curve *curve)
 	curve->plot_curve()->detach();
 	delete curve;
 
+	replot();
+
 	Q_EMIT curve_removed();
 }
 
