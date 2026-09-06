@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QBoxLayout>
 #include <QCheckBox>
+#include <QDialog>
 #include <QDialogButtonBox>
 #include <QDoubleValidator>
 #include <QFormLayout>
@@ -29,16 +31,14 @@
 #include <QWidget>
 #include <qwt_scale_engine.h>
 
-#include "axispopup.hpp"
-#include "src/ui/widgets/popup.hpp"
+#include "src/ui/dialogs/plotaxisdialog.hpp"
 
 namespace sv {
 namespace ui {
-namespace widgets {
-namespace plot {
+namespace dialogs {
 
-AxisPopup::AxisPopup(Plot *plot, int axis_id, QWidget *parent) :
-	Popup(parent),
+PlotAxisDialog::PlotAxisDialog(widgets::plot::Plot *plot, int axis_id, QWidget *parent) :
+	QDialog(parent),
 	plot_(plot),
 	axis_id_(axis_id)
 {
@@ -46,9 +46,19 @@ AxisPopup::AxisPopup(Plot *plot, int axis_id, QWidget *parent) :
 }
 
 
-void AxisPopup::setup_ui()
+void PlotAxisDialog::setup_ui()
 {
+	QIcon main_icon;
+	main_icon.addFile(QStringLiteral(":/icons/smuview.ico"),
+		QSize(), QIcon::Normal, QIcon::Off);
+	this->setWindowIcon(main_icon);
+	this->setWindowTitle(tr("Plot %1 Axis Config").arg(plot_->axisTitle(axis_id_).text()));
+	this->setMinimumWidth(300);
+
+	QVBoxLayout *main_layout = new QVBoxLayout;
+
 	QFormLayout *form_layout = new QFormLayout;
+	main_layout->addLayout(form_layout);
 
 	// Lower boundary
 	double lower_value = plot_->axisScaleDiv(axis_id_).lowerBound();
@@ -60,19 +70,15 @@ void AxisPopup::setup_ui()
 		lower_label = tr("Left boundary");
 	else
 		lower_label = tr("Bottom boundary");
-	connect(axis_lower_edit_, &QLineEdit::returnPressed,
-		this, &AxisPopup::on_accept);
 
 	axis_lower_locked_check_ = new QCheckBox(tr("Locked"));
 	axis_lower_locked_check_->setChecked(plot_->is_axis_locked(
-		axis_id_, AxisBoundary::LowerBoundary));
+		axis_id_, widgets::plot::AxisBoundary::LowerBoundary));
 
 	QHBoxLayout *lower_layout = new QHBoxLayout;
 	lower_layout->addWidget(axis_lower_edit_);
 	lower_layout->addSpacing(15);
 	lower_layout->addWidget(axis_lower_locked_check_);
-	QWidget *lower_widget = new QWidget();
-	lower_widget->setLayout(lower_layout);
 
 	// Upper boundary
 	double upper_value = plot_->axisScaleDiv(axis_id_).upperBound();
@@ -84,28 +90,24 @@ void AxisPopup::setup_ui()
 		upper_label = tr("Right boundary");
 	else
 		upper_label = tr("Top boundary");
-	connect(axis_upper_edit_, &QLineEdit::returnPressed,
-		this, &AxisPopup::on_accept);
 
 	axis_upper_locked_check_ = new QCheckBox(tr("Locked"));
 	axis_upper_locked_check_->setChecked(plot_->is_axis_locked(
-		axis_id_, AxisBoundary::UpperBoundary));
+		axis_id_, widgets::plot::AxisBoundary::UpperBoundary));
 
 	QHBoxLayout *upper_layout = new QHBoxLayout;
 	upper_layout->addWidget(axis_upper_edit_);
 	upper_layout->addSpacing(15);
 	upper_layout->addWidget(axis_upper_locked_check_);
-	QWidget *upper_widget = new QWidget();
-	upper_widget->setLayout(upper_layout);
 
 	if (axis_id_ == QwtPlot::xTop  || axis_id_ == QwtPlot::xBottom) {
-		form_layout->addRow(lower_label, lower_widget);
-		form_layout->addRow(upper_label, upper_widget);
+		form_layout->addRow(lower_label, lower_layout);
+		form_layout->addRow(upper_label, upper_layout);
 	}
 	else {
 		// Reverse the display order for y axes
-		form_layout->addRow(upper_label, upper_widget);
-		form_layout->addRow(lower_label, lower_widget);
+		form_layout->addRow(upper_label, upper_layout);
+		form_layout->addRow(lower_label, lower_layout);
 	}
 
 	bool is_log_scale = false;
@@ -117,29 +119,24 @@ void AxisPopup::setup_ui()
 
 	button_box_ = new QDialogButtonBox(
 		QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal);
-	form_layout->addWidget(button_box_);
+	main_layout->addWidget(button_box_);
 	connect(button_box_, &QDialogButtonBox::accepted,
-		this, &AxisPopup::on_accept);
+		this, &PlotAxisDialog::accept);
 	connect(button_box_, &QDialogButtonBox::rejected,
-		this, &AxisPopup::close);
+		this, &PlotAxisDialog::reject);
 
-	this->setLayout(form_layout);
+	this->setLayout(main_layout);
 }
 
-void AxisPopup::showEvent(QShowEvent *event)
-{
-	widgets::Popup::showEvent(event);
-}
-
-void AxisPopup::on_accept()
+void PlotAxisDialog::accept()
 {
 	plot_->setAxisScale(axis_id_,
 		axis_lower_edit_->text().toDouble(),
 		axis_upper_edit_->text().toDouble());
 
-	plot_->set_axis_locked(axis_id_, AxisBoundary::LowerBoundary,
+	plot_->set_axis_locked(axis_id_, widgets::plot::AxisBoundary::LowerBoundary,
 		axis_lower_locked_check_->isChecked());
-	plot_->set_axis_locked(axis_id_, AxisBoundary::UpperBoundary,
+	plot_->set_axis_locked(axis_id_, widgets::plot::AxisBoundary::UpperBoundary,
 		axis_upper_locked_check_->isChecked());
 
 	if (axis_log_check_->isChecked())
@@ -148,10 +145,10 @@ void AxisPopup::on_accept()
 		plot_->setAxisScaleEngine(axis_id_, new QwtLinearScaleEngine);
 
 	plot_->replot();
-	this->close();
+
+	QDialog::accept();
 }
 
-} // namespace plot
-} // namespace widgets
+} // namespace dialogs
 } // namespace ui
 } // namespace sv

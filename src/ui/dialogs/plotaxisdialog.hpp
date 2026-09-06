@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,32 +17,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UI_WIDGETS_PLOT_AXISPOPUP_HPP
-#define UI_WIDGETS_PLOT_AXISPOPUP_HPP
+#ifndef UI_DIALOGS_PLOTAXISDIALOG_HPP
+#define UI_DIALOGS_PLOTAXISDIALOG_HPP
 
 #include <QCheckBox>
+#include <QDialog>
 #include <QDialogButtonBox>
 #include <QLineEdit>
 #include <QShowEvent>
 #include <QWidget>
 
-#include "src/ui/widgets/popup.hpp"
 #include "src/ui/widgets/plot/plot.hpp"
 
 namespace sv {
 namespace ui {
+
 namespace widgets {
 namespace plot {
+class Plot;
+}
+}
 
-class AxisPopup : public widgets::Popup
+namespace dialogs {
+
+class PlotAxisDialog : public QDialog
 {
 	Q_OBJECT
 
 public:
-	AxisPopup(Plot *plot, int axis_id, QWidget *parent);
+	PlotAxisDialog(widgets::plot::Plot *plot, int axis_id, QWidget *parent);
 
 private:
-	Plot *plot_;
+	void setup_ui();
+
+	widgets::plot::Plot *plot_;
 	int axis_id_;
 
 	QLineEdit *axis_lower_edit_;
@@ -52,17 +60,13 @@ private:
 	QCheckBox *axis_log_check_;
 	QDialogButtonBox *button_box_;
 
-	void setup_ui();
-	void showEvent(QShowEvent *event) override;
-
-private Q_SLOTS:
-	void on_accept();
+public Q_SLOTS:
+	void accept() override;
 
 };
 
-} // namespace plot
-} // namespace widgets
+} // namespace dialogs
 } // namespace ui
 } // namespace sv
 
-#endif // UI_WIDGETS_PLOT_AXISPOPUP_HPP
+#endif // UI_DIALOGS_PLOTAXISDIALOG_HPP

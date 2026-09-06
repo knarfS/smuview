@@ -331,6 +331,7 @@ set(smuview_SOURCES
 	src/ui/dialogs/addviewdialog.cpp
 	src/ui/dialogs/connectdialog.cpp
 	src/ui/dialogs/generatewaveformdialog.cpp
+	src/ui/dialogs/plotaxisdialog.cpp
 	src/ui/dialogs/plotconfigdialog.cpp
 	src/ui/dialogs/plotcurveconfigdialog.cpp
 	src/ui/dialogs/plotdiffmarkerdialog.cpp
@@ -372,7 +373,6 @@ set(smuview_SOURCES
 	src/ui/widgets/monofontdisplay.cpp
 	src/ui/widgets/popup.cpp
 	src/ui/widgets/plot/axislocklabel.cpp
-	src/ui/widgets/plot/axispopup.cpp
 	src/ui/widgets/plot/basecurvedata.cpp
 	src/ui/widgets/plot/curve.cpp
 	src/ui/widgets/plot/plot.cpp

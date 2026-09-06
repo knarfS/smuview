@@ -2,7 +2,7 @@
  * This file is part of the SmuView project.
  * This file is based on the QWT EventFilter Example.
  *
- * Copyright (C) 2018-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@
 #include <qwt_scale_widget.h>
 
 #include "plotscalepicker.hpp"
-#include "src/ui/widgets/plot/axispopup.hpp"
+#include "src/ui/dialogs/plotaxisdialog.hpp"
 #include "src/ui/widgets/plot/plot.hpp"
 
 namespace sv {
@@ -220,31 +220,23 @@ bool PlotScalePicker::eventFilter(QObject *object, QEvent *event)
 				is_double_clicked = false;
 
 				int axis_id = -1;
-				PopupPosition popup_pos = PopupPosition::Right;
 				switch (scale_widget->alignment()) {
 				case QwtScaleDraw::LeftScale:
 					axis_id = QwtPlot::yLeft;
-					popup_pos = PopupPosition::Right;
 					break;
 				case QwtScaleDraw::RightScale:
 					axis_id = QwtPlot::yRight;
-					popup_pos = PopupPosition::Left;
 					break;
 				case QwtScaleDraw::BottomScale:
 					axis_id = QwtPlot::xBottom;
-					popup_pos = PopupPosition::Top;
 					break;
 				case QwtScaleDraw::TopScale:
 					axis_id = QwtPlot::xTop;
-					popup_pos = PopupPosition::Bottom;
 					break;
 				}
 
-				AxisPopup *const axis_popup =
-					new AxisPopup(plot_, axis_id, scale_widget);
-				axis_popup->set_position(scale_widget->mapToGlobal(
-					mouse_event->pos()), popup_pos);
-				axis_popup->show();
+				dialogs::PlotAxisDialog dlg(plot_, axis_id, plot_);
+				dlg.exec();
 
 				return true;
 			}
