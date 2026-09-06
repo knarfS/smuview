@@ -26,6 +26,7 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
+#include <QMessageBox>
 #include <QShowEvent>
 #include <QVBoxLayout>
 #include <QWidget>
@@ -60,11 +61,16 @@ void PlotAxisDialog::setup_ui()
 	QFormLayout *form_layout = new QFormLayout;
 	main_layout->addLayout(form_layout);
 
+	constexpr int DECIMALS = 3;
+	auto *double_validator = new QDoubleValidator(this);
+	double_validator->setNotation(QDoubleValidator::ScientificNotation);
+	double_validator->setDecimals(DECIMALS);
+
 	// Lower boundary
 	double lower_value = plot_->axisScaleDiv(axis_id_).lowerBound();
 	axis_lower_edit_ = new QLineEdit();
-	axis_lower_edit_->setValidator(new QDoubleValidator());
-	axis_lower_edit_->setText(QString("%1").arg(lower_value, 0, 'f'));
+	axis_lower_edit_->setValidator(double_validator);
+	axis_lower_edit_->setText(QLocale().toString(lower_value, 'f', DECIMALS));
 	QString lower_label;
 	if (axis_id_ == QwtPlot::xTop  || axis_id_ == QwtPlot::xBottom)
 		lower_label = tr("Left boundary");
@@ -83,8 +89,8 @@ void PlotAxisDialog::setup_ui()
 	// Upper boundary
 	double upper_value = plot_->axisScaleDiv(axis_id_).upperBound();
 	axis_upper_edit_ = new QLineEdit();
-	axis_upper_edit_->setValidator(new QDoubleValidator());
-	axis_upper_edit_->setText(QString("%1").arg(upper_value, 0, 'f'));
+	axis_upper_edit_->setValidator(double_validator);
+	axis_upper_edit_->setText(QLocale().toString(upper_value, 'f', DECIMALS));
 	QString upper_label;
 	if (axis_id_ == QwtPlot::xTop  || axis_id_ == QwtPlot::xBottom)
 		upper_label = tr("Right boundary");
@@ -130,9 +136,21 @@ void PlotAxisDialog::setup_ui()
 
 void PlotAxisDialog::accept()
 {
-	plot_->setAxisScale(axis_id_,
-		axis_lower_edit_->text().toDouble(),
-		axis_upper_edit_->text().toDouble());
+	bool ok = false;
+	double lower_value = QLocale().toDouble(axis_lower_edit_->text(), &ok);
+	if (!ok) {
+		QMessageBox::warning(this, tr("Empty left/bottom boundary"),
+			tr("Please enter a left/bottom boundary."), QMessageBox::Ok);
+		return;
+	}
+	double upper_value = QLocale().toDouble(axis_upper_edit_->text(), &ok);
+	if (!ok) {
+		QMessageBox::warning(this, tr("Empty right/top boundary"),
+			tr("Please enter a right/top boundary."), QMessageBox::Ok);
+		return;
+	}
+
+	plot_->setAxisScale(axis_id_, lower_value, upper_value);
 
 	plot_->set_axis_locked(axis_id_, widgets::plot::AxisBoundary::LowerBoundary,
 		axis_lower_locked_check_->isChecked());
