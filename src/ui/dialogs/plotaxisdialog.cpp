@@ -150,6 +150,14 @@ void PlotAxisDialog::accept()
 		return;
 	}
 
+	if (axis_log_check_->isChecked() &&
+			(lower_value >= upper_value || lower_value <= 0)) {
+		QMessageBox::warning(this, tr("Invalid boundaries"),
+			tr("When using a logarithmic scale, the left/bottom boundary must be greater zero."),
+			QMessageBox::Ok);
+		return;
+	}
+
 	plot_->setAxisScale(axis_id_, lower_value, upper_value);
 
 	plot_->set_axis_locked(axis_id_, widgets::plot::AxisBoundary::LowerBoundary,
