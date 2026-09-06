@@ -371,7 +371,6 @@ set(smuview_SOURCES
 	src/ui/widgets/clickablelabel.cpp
 	src/ui/widgets/colorbutton.cpp
 	src/ui/widgets/monofontdisplay.cpp
-	src/ui/widgets/popup.cpp
 	src/ui/widgets/plot/axislocklabel.cpp
 	src/ui/widgets/plot/basecurvedata.cpp
 	src/ui/widgets/plot/curve.cpp
