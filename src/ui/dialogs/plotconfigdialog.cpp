@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  */
 
 #include <cmath>
-#include <map>
 #include <set>
 
 #include <QApplication>
@@ -32,6 +31,7 @@
 #include <QHeaderView>
 #include <QIcon>
 #include <QLineEdit>
+#include <QMessageBox>
 #include <QString>
 #include <QStyle>
 #include <QStyleOptionViewItem>
@@ -184,14 +184,19 @@ void PlotConfigDialog::setup_ui_plot_mode_tab()
 		this, &PlotConfigDialog::on_update_mode_changed);
 	layout->addRow(tr("Plot mode"), plot_update_mode_combobox_);
 
+	constexpr int DECIMALS = 3;
+	auto *double_validator = new QDoubleValidator(this);
+	double_validator->setNotation(QDoubleValidator::ScientificNotation);
+	double_validator->setDecimals(DECIMALS);
+
 	time_span_edit_ = new QLineEdit();
-	time_span_edit_->setValidator(new QDoubleValidator);
-	time_span_edit_->setText(QString("%1").arg(plot_->time_span(), 0, 'f'));
+	time_span_edit_->setValidator(double_validator);
+	time_span_edit_->setText(QLocale().toString(plot_->time_span(), 'f', DECIMALS));
 	layout->addRow(tr("Time span"), time_span_edit_);
 
 	add_time_edit_ = new QLineEdit();
-	add_time_edit_->setValidator(new QDoubleValidator);
-	add_time_edit_->setText(QString("%1").arg(plot_->add_time(), 0, 'f'));
+	add_time_edit_->setValidator(double_validator);
+	add_time_edit_->setText(QLocale().toString(plot_->add_time(), 'f', DECIMALS));
 	layout->addRow(tr("Add time"), add_time_edit_);
 
 	switch (plot_->update_mode()) {
@@ -366,16 +371,30 @@ void PlotConfigDialog::on_update_mode_changed()
 void PlotConfigDialog::accept()
 {
 	if (plot_type_ == views::PlotType::TimePlot) {
+		bool ok = false;
+		double time_span = QLocale().toDouble(time_span_edit_->text(), &ok);
+		if (!ok) {
+			QMessageBox::warning(this, tr("Empty time span"),
+				tr("Please enter a time span."), QMessageBox::Ok);
+			return;
+		}
+		double add_time = QLocale().toDouble(add_time_edit_->text(), &ok);
+		if (!ok) {
+			QMessageBox::warning(this, tr("Empty add time"),
+				tr("Please enter a time to add."), QMessageBox::Ok);
+			return;
+		}
+
 		QVariant update_mode_var = plot_update_mode_combobox_->currentData();
-		sv::ui::widgets::plot::PlotUpdateMode update_mode =
+		widgets::plot::PlotUpdateMode update_mode =
 			update_mode_var.value<sv::ui::widgets::plot::PlotUpdateMode>();
 		plot_->set_update_mode(update_mode);
 		if (update_mode == widgets::plot::PlotUpdateMode::Rolling ||
 				update_mode == widgets::plot::PlotUpdateMode::Oscilloscope)
-			plot_->set_time_span(time_span_edit_->text().toDouble());
+			plot_->set_time_span(time_span);
 		if (update_mode == widgets::plot::PlotUpdateMode::Additive ||
 				update_mode == widgets::plot::PlotUpdateMode::Rolling)
-			plot_->set_add_time(add_time_edit_->text().toDouble());
+			plot_->set_add_time(add_time);
 	}
 
 	plot_->set_markers_label_alignment(
