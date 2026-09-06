@@ -249,9 +249,17 @@ void GenerateWaveformDialog::setup_ui()
 	connect(button_box_, &QDialogButtonBox::rejected,
 		this, &GenerateWaveformDialog::reject);
 
-	// Set values
-	min_value_box_->setValue(min_value_);
-	max_value_box_->setValue(max_value_);
+	// Set min value, use a sensible value when not set in property (::lowest)
+	if (min_value_ == std::numeric_limits<double>::lowest())
+		min_value_box_->setValue(-10);
+	else
+		min_value_box_->setValue(min_value_);
+	// Set max value, use a sensible value when not set in property (::max)
+	if (max_value_ == std::numeric_limits<double>::max())
+		max_value_box_->setValue(10);
+	else
+		max_value_box_->setValue(max_value_);
+	// Set other values
 	periode_box_->setValue(60);
 	interval_box_->setValue(0.1);
 	phi_deg_box_->setValue(270);
