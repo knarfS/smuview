@@ -2,7 +2,7 @@
  * This file is part of the SmuView project.
  *
  * Copyright (C) 2017 Soeren Apel <soeren@apelpie.net>
- * Copyright (C) 2017-2022 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,8 +82,7 @@ AboutDialog::AboutDialog(DeviceManager &device_manager,
 	tab_layout->addWidget(page_list);
 	tab_layout->addWidget(pages, Qt::AlignLeft);
 
-	QDialogButtonBox *button_box = new QDialogButtonBox(
-		QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+	QDialogButtonBox *button_box = new QDialogButtonBox(QDialogButtonBox::Ok);
 
 	QVBoxLayout* root_layout = new QVBoxLayout(this);
 	root_layout->addLayout(tab_layout);
@@ -91,8 +90,6 @@ AboutDialog::AboutDialog(DeviceManager &device_manager,
 
 	connect(button_box, &QDialogButtonBox::accepted,
 		this, &AboutDialog::accept);
-	connect(button_box, &QDialogButtonBox::rejected,
-		this, &AboutDialog::rejected);
 	connect(page_list, &QListWidget::currentItemChanged,
 		this, &AboutDialog::on_page_changed);
 }
