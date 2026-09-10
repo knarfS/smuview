@@ -541,6 +541,15 @@ jobs:
       - name: Inspect directory after downloading artifacts
         run: ls -alFR
 
+      - name: Inspect releases and tags
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "--- releases ---"
+          gh release list --limit 20
+          echo "--- tags ---"
+          git ls-remote --tags origin
+
       - name: Upload artifacts and create (continuous) release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
