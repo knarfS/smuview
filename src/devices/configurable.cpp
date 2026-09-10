@@ -158,7 +158,7 @@ void Configurable::init()
 	}
 }
 
-bool Configurable::has_get_config(devices::ConfigKey config_key)  const
+bool Configurable::has_get_config(devices::ConfigKey config_key) const
 {
 	return getable_configs_.count(config_key) > 0;
 }
