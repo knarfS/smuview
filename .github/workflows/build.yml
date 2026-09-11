@@ -513,6 +513,10 @@ jobs:
       - verify_windows_installer
       - verify_macos_dmg
 
+    concurrency:
+      group: continuous-release
+      cancel-in-progress: false
+
     environment:
       name: releases
       url: https://github.com/knarfS/smuview/releases
