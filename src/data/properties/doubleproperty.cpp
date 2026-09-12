@@ -37,7 +37,7 @@ DoubleProperty::DoubleProperty(shared_ptr<devices::Configurable> configurable,
 	BaseProperty(configurable, config_key),
 	min_(std::numeric_limits<double>::lowest()),
 	max_(std::numeric_limits<double>::max()),
-	step_(0.001), //std::numeric_limits<double>::epsilon()
+	step_(0.01), //std::numeric_limits<double>::epsilon()
 	total_digits_(data::DefaultTotalDigits),
 	decimal_places_(data::DefaultDecimalPlaces)
 {
