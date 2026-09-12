@@ -30,7 +30,6 @@
 	- connect-non-signal
 	- incorrect-emit
 
-
 ## ToDo Scope
 
 - Fix ConfigKey sample_rate in UInt64Property::change_value(const QVariant qvar)
@@ -100,6 +99,11 @@
 - SettingsManager: Method for getting the QSettings object and maybe load an user defined QSettings-file.
 - example_multiplexer.py: Checkboxes in control views don't change.
 - Keyboard shortcuts (Ctrl-Q -> Close App, Ctrl-W -> Close tab)
+
+## Documentation
+
+- PlotAxisDialog: Screenshot, system locale for double inputs
+- PlotConfigDialog: Screenshot, system locale for double inputs
 
 ## Done
 
