@@ -133,13 +133,18 @@ int selftest()
 	py::scoped_interpreter guard{};
 	py::dict locals;
 	py::exec(R"(
-		import sys
-		py_version = sys.version
-		message = "Embedded python version: {}!".format(py_version)
-		print(message)
+		import sys, os
+		py_version_msg = f"Embedded python version: {sys.version}"
+		print(py_version_msg)
+		print(f"os module file: {os.__file__}")
+		print(f"prefix:         {sys.prefix}")
+		print(f"base_prefix:    {sys.base_prefix}")
+		print(f"sys.path:       {repr(sys.path)}")
+		print(f"sys.path:       {repr(sys.path)}")
+		print(f"executable:     {sys.executable}")
 	)", py::globals(), locals);
-	string py_message = locals["message"].cast<std::string>();
-	if (py_message.rfind("Embedded python version: 3.", 0) != 0) {
+	string py_version_msg = locals["py_version_msg"].cast<std::string>();
+	if (py_version_msg.rfind("Embedded python version: 3.", 0) != 0) {
 		qCritical() << "Could not find expected string in python message!";
 		return 1;
 	}
