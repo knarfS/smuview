@@ -27,6 +27,7 @@
 
 #include <QDateTime>
 #include <QDebug>
+#include <QDir>
 #include <QLabel>
 #include <QSettings>
 
@@ -107,11 +108,13 @@ shared_ptr<sv::Session> init_session(shared_ptr<sigrok::Context> context,
 int selftest()
 {
 	// Initialise libsigrok and the session
+	qInfo() << "--- Selftest Application Startup ---";
 	auto context = sigrok::Context::create();
 	context->set_log_level(sigrok::LogLevel::SPEW);
 	auto session = init_session(context, {}, true, true);
 
 	// Self test for the GUI, using the about dialog.
+	qInfo() << "--- Selftest GUI ---";
 	sv::ui::dialogs::AboutDialog about_dlg(session->device_manager(), nullptr);
 	about_dlg.show();
 	QApplication::processEvents();
@@ -127,24 +130,54 @@ int selftest()
 		qCritical() << "About dialog does not contain expected text!";
 		return 1;
 	}
-	qInfo() << "About dialog text: " << text;
+	qInfo().noquote() << QString("About dialog text: %1").arg(text);
 
 	// Self test for the embedded python interpreter
+	qInfo() << "--- Selftest Embedded Python ---";
 	py::scoped_interpreter guard{};
 	py::dict locals;
 	py::exec(R"(
-		import sys
-		py_version = sys.version
-		message = "Embedded python version: {}!".format(py_version)
-		print(message)
+		import sys, os
+		py_test_msg = f"Embedded python version: {sys.version}"
+		py_sys_version = sys.version
+		py_sys_executable = sys.executable
+		py_sys_prefix = sys.prefix
+		py_sys_base_prefix = sys.base_prefix
+		py_sys_path = repr(sys.path)
+		py_os_module_file = os.__file__
 	)", py::globals(), locals);
-	string py_message = locals["message"].cast<std::string>();
-	if (py_message.rfind("Embedded python version: 3.", 0) != 0) {
-		qCritical() << "Could not find expected string in python message!";
+	string py_test_msg = locals["py_test_msg"].cast<std::string>();
+	string py_sys_version = locals["py_sys_version"].cast<std::string>();
+	string py_sys_executable = locals["py_sys_executable"].cast<std::string>();
+	string py_sys_prefix = locals["py_sys_prefix"].cast<std::string>();
+	string py_sys_base_prefix = locals["py_sys_base_prefix"].cast<std::string>();
+	string py_sys_path = locals["py_sys_path"].cast<std::string>();
+	string py_os_module_file = locals["py_os_module_file"].cast<std::string>();
+	qInfo().noquote() << QString::fromStdString(py_test_msg);
+	qInfo().noquote() << QString("Embedded sys.version: %1").arg(
+		QString::fromStdString(py_sys_version));
+	qInfo().noquote() << QString("Embedded sys.executable: %1").arg(
+		QString::fromStdString(py_sys_executable));
+	qInfo().noquote() << QString("Embedded sys.prefix: %1").arg(
+		QString::fromStdString(py_sys_prefix));
+	qInfo().noquote() << QString("Embedded sys.base_prefix: %1").arg(
+		QString::fromStdString(py_sys_base_prefix));
+	qInfo().noquote() << QString("Embedded sys.path: %1").arg(
+		QString::fromStdString(py_sys_path));
+	qInfo().noquote() << QString("Embedded os.__file__: %1").arg(
+		QString::fromStdString(py_os_module_file));
+	if (py_test_msg.rfind("Embedded python version: 3.", 0) != 0) {
+		qCritical() << "Could not find expected string in py_test_msg!";
 		return 1;
 	}
 
+	// Print some config vars
+	qInfo() << "--- Selftest Build Time Vars ---";
+	qInfo().noquote() << QString("SV_VERSION_STRING: %1").arg(SV_VERSION_STRING);
+	qInfo().noquote() << QString("SV_PYTHON_VERSION: %1").arg(SV_PYTHON_VERSION);
+	qInfo() << "----------------";
 	qInfo() << "Selftest passed.";
+	qInfo() << "----------------";
 	return 0;
 }
 
