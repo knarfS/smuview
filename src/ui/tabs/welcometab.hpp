@@ -52,6 +52,10 @@ protected:
 private:
 	void setup_ui();
 
+private Q_SLOTS:
+	void on_add_device();
+	void on_open_manual();
+
 };
 
 } // namespace tabs
