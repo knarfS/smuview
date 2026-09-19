@@ -216,6 +216,12 @@ jobs:
         run: |
           smuview/ci/scripts/mxe/install_python.sh
 
+      - name: Debug custom Python
+        run: |
+          find "${INSTALL_DIR}"/Python3
+          echo "--------------------------------"
+          cat "${INSTALL_DIR}"/Python3/runtime/python314._pth
+
       - name: Build custom sigrok
         run: |
           # We need to find tools in the toolchain. (TODO)
