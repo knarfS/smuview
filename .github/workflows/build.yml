@@ -451,6 +451,10 @@ jobs:
             exit 1
           }
 
+      - name: List dir
+        shell: pwsh
+        run: |
+          Get-ChildItem -Path "$env:ProgramFiles\SmuView" -Force -Recurse
 
   verify_macos_dmg:
     name: "MacOS DMG verification"
