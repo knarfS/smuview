@@ -102,6 +102,7 @@ cat > "${MACOS_DIR}/${SV_BIN_NAME}" << EOF
 #!/bin/sh
 DIR="\$(dirname "\$0")"
 cd "\${DIR}"
+unset PYTHONPATH
 export PYTHONHOME="../Frameworks/Python.framework/Versions/${PYTHON_VERSION}"
 exec "./${SV_BIN_NAME}.real" "\$@"
 EOF
