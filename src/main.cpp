@@ -136,10 +136,12 @@ int selftest()
 		import sys, os
 		py_version_msg = f"Embedded python version: {sys.version}"
 		print(py_version_msg)
+		print("os loader:", type(os.__loader__).__name__)
+		print("sys.path (again):", sys.path)
+		print("-----------------------------------")
 		print(f"os module file: {os.__file__}")
 		print(f"prefix:         {sys.prefix}")
 		print(f"base_prefix:    {sys.base_prefix}")
-		print(f"sys.path:       {repr(sys.path)}")
 		print(f"sys.path:       {repr(sys.path)}")
 		print(f"executable:     {sys.executable}")
 	)", py::globals(), locals);
