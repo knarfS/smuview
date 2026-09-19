@@ -29,12 +29,12 @@ while IFS= read -r -d '' file; do
 
 	# Exclude dylib/framework's own LC_ID_DYLIB line, because it looks identical
 	# to a broken dependency
-	self_id="$(otool -D "${file}" 2>/dev/null | tail -n +2)"
+	self_ids="$(otool -D "${file}" 2>/dev/null | grep -v ':$' || true)"
 
 	while IFS= read -r dep; do
-		[[ -n "${self_id}" && "${dep}" == "${self_id}" ]] && continue
-		if [[ "${dep}" == /opt/homebrew/* || "${dep}" == /usr/local/* ]]; then
-			echo "::error::External Homebrew dependency in ${file}: ${dep}"
+		grep -qxF "${dep}" <<< "${self_ids}" && continue
+		if [[ "${dep}" == /opt/homebrew/* || "${dep}" == /Library/Frameworks/* || "${dep}" == /usr/local/* ]]; then
+			echo "::error::External Homebrew / Library dependency in ${file}: ${dep}"
 			FAILURE=1
 		fi
 	done < <(otool -L "${file}" | awk 'NR>1{print $1}')

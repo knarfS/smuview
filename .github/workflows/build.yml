@@ -277,19 +277,23 @@ jobs:
       CXX: ${{ matrix.compiler.cxx }}
       BREW_QT_VERSION: "qt"
       BREW_QWT_VERSION: "qwt"
-      BREW_PYTHON_VERSION: "python@3"
+      PYTHON_VERSION: "3.14.3"
 
     steps:
       - name: Install dependencies
         run: |
           brew install autoconf automake autoconf-archive pkg-config \
             libtool libzip libusb libftdi hidapi nettle check doxygen swig \
-            glib glibmm@2.66 cmake "${BREW_PYTHON_VERSION}" boost "${BREW_QT_VERSION}" "${BREW_QWT_VERSION}"
+            glib glibmm@2.66 cmake boost "${BREW_QT_VERSION}" "${BREW_QWT_VERSION}"
 
       - name: Checkout smuview
         uses: actions/checkout@v7
         with:
           path: smuview
+
+      - name: Install custom Python
+        run: |
+          smuview/ci/scripts/macos/install_python.sh
 
       - name: Build custom sigrok
         run: |
@@ -303,8 +307,7 @@ jobs:
             -DCMAKE_INSTALL_PREFIX:PATH="${INSTALL_DIR}" \
             -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
             -DQwt_ROOT="$(brew --prefix "${BREW_QWT_VERSION}")" \
-            -DPython_ROOT_DIR="$(brew --prefix "${BREW_PYTHON_VERSION}")" \
-            -DPython_FIND_FRAMEWORK=NEVER \
+            -DPython_EXECUTABLE="${INSTALL_DIR}/Frameworks/Python.framework/Versions/3.14/bin/python3" \
             -DDISABLE_WERROR=FALSE \
             -DENABLE_TESTS=TRUE \
             ..
@@ -314,7 +317,6 @@ jobs:
       - name: Build DMG
         run: |
           # Source SmuView versions and names
-          brew install dylibbundler
           source smuview/build/contrib/config_version.sh
           smuview/ci/scripts/macos/build_dmg.sh
 
