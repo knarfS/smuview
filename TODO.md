@@ -36,6 +36,8 @@
 
 ## ToDo
 
+- move open device from `WelcomeTab::on_add_device` and `DeviceView::on_action_add_device_triggered`
+  to a common static helper function
 - User better titels for views. Depending on the device (actual device, user device),
   the window title should not only show the channel / signal name but also the
   device name
@@ -104,6 +106,16 @@
 
 - PlotAxisDialog: Screenshot, system locale for double inputs
 - PlotConfigDialog: Screenshot, system locale for double inputs
+- Include manual with DMG, AppImage, Windows installer
+- Show included / installed http manual:
+	```cpp
+	const auto manual = QDir(QCoreApplication::applicationDirPath()).filePath(
+		"manual_publish/continuous/manual.html");
+	auto url = QUrl::fromLocalFile(manual);
+	url.setFragment("value_panel_view");
+	QDesktopServices::openUrl(url);
+	```
+- Include python bindings doc and add possibility to show it.
 
 ## Done
 
