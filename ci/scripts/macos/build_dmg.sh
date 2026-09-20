@@ -37,6 +37,10 @@ PYTHON_FRAMEWORK_DIR="${PYTHON_PREFIX_DIR}/Frameworks/Python.framework"
 # Get Python version
 PYTHON_VERSION=$("${PYTHON_PREFIX_DIR}/bin/python3" -c 'import sys; print(".".join(map(str, sys.version_info[0:2])))')
 
+echo "--------------------------------"
+find "${PYTHON_PREFIX_DIR}" -type d
+echo "--------------------------------"
+
 DMG_BUILD_DIR=./build_dmg
 mkdir -p "${DMG_BUILD_DIR}"
 cd "${DMG_BUILD_DIR}"
@@ -62,6 +66,11 @@ cp ../smuview/packaging/macos/smuview.icns "${RESOURCES_DIR}"
 
 # Copy Python framework
 cp -R "${PYTHON_FRAMEWORK_DIR}" "${FRAMEWORKS_DIR}"
+
+echo "--------------------------------"
+find "${CONTENTS_DIR}"
+echo "--------------------------------"
+
 # Homebrew Cellar files are read-only, make the copied framework writable
 chmod -R u+w "${FRAMEWORKS_DIR}/Python.framework"
 # Remove stuff we don't want/need or that breaks signing (site-packages)
