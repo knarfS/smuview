@@ -21,7 +21,7 @@
 set -euo pipefail
 set -x
 
-OUTPUT=$(xvfb-run -a ./SmuView.AppImage --selftest)
+OUTPUT=$(xvfb-run -a ./SmuView.AppImage --selftest 2>&1)
 RET=$?
 echo "$OUTPUT"
 
