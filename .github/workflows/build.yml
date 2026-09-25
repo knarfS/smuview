@@ -370,7 +370,7 @@ jobs:
 
       - name: Selftest
         run: |
-          smuview/scripts/linux/verify_selftest.sh
+          smuview/ci/scripts/linux/verify_selftest.sh
 
 
   verify_windows_installer:

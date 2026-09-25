@@ -19,12 +19,13 @@
 ##
 
 set -euo pipefail
+set -x
 
 OUTPUT=$(xvfb-run -a ./SmuView.AppImage --selftest)
 RET=$?
 echo "$OUTPUT"
 
-if ! "${RET}" ; then
+if [ "${RET}" -ne 0 ]; then
     echo "::error::Selftest failed"
     exit 1
 fi
