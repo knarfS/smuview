@@ -34,6 +34,11 @@ indent_size = 2
 indent_style = space
 indent_size = 2
 
+# SmuView shell files
+[**.sh]
+indent_style = tab
+indent_size = 4
+
 # SmuView yml files
 [**.yml]
 indent_style = space
