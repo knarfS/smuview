@@ -2,7 +2,7 @@
  * This file is part of the SmuView project.
  *
  * Copyright (C) 2017 Soeren Apel <soeren@apelpie.net>
- * Copyright (C) 2017-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,11 +21,15 @@
 #ifndef UI_DIALOGS_ABOUTDIALOG_HPP
 #define UI_DIALOGS_ABOUTDIALOG_HPP
 
-#include <QDialog>
-#include <QListWidget>
-#include <QStackedWidget>
+#include <memory>
 
+#include <QDialog>
+#include <QTextBrowser>
+
+#include "src/devices/basedevice.hpp"
 #include "src/devicemanager.hpp"
+
+using std::shared_ptr;
 
 namespace sv {
 
@@ -46,18 +50,16 @@ public:
 		QWidget *parent = nullptr);
 
 private:
-	void create_pages();
-	QWidget *get_about_page(QWidget *parent) const;
-	QWidget *get_device_page(QWidget *parent) const;
+	void setup_ui();
+	QTextBrowser *get_about_page() const;
+	QTextBrowser *get_device_page() const;
+	QTextBrowser *get_versions_page() const;
+	QTextBrowser *get_license_page() const;
+	void copy_version_info();
+	void open_manual();
 
 	DeviceManager &device_manager_;
 	shared_ptr<sv::devices::BaseDevice> device_;
-
-	QListWidget *page_list;
-	QStackedWidget *pages;
-
-private Q_SLOTS:
-	void on_page_changed(QListWidgetItem *current, QListWidgetItem *previous);
 
 };
 

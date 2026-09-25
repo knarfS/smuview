@@ -21,29 +21,29 @@
 #include <memory>
 
 #include <glib.h>
-#include <boost/version.hpp>
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
 #include <QApplication>
-#include <QDebug>
+#include <QClipboard>
+#include <QDesktopServices>
 #include <QDialogButtonBox>
+#include <QGuiApplication>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QPushButton>
 #include <QSize>
+#include <QTabWidget>
 #include <QTextBrowser>
-#include <QTextDocument>
-#include <qwt_global.h>
+#include <QUrl>
 
 #include "aboutdialog.hpp"
-#include "src/config.h"
-#include "src/util.hpp"
-#include "src/channels/basechannel.hpp"
 #include "src/data/properties/baseproperty.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/devices/configurable.hpp"
 #include "src/devices/deviceutil.hpp"
 #include "src/devices/hardwaredevice.hpp"
+#include "src/utils/apputil.hpp"
 
 using std::dynamic_pointer_cast;
 
@@ -58,190 +58,132 @@ AboutDialog::AboutDialog(DeviceManager &device_manager,
 	device_manager_(device_manager),
 	device_(device)
 {
-	resize(600, 400);
+	setup_ui();
+}
 
-	const int icon_size = 64;
+void AboutDialog::setup_ui()
+{
+	QIcon main_icon;
+	main_icon.addFile(QStringLiteral(":/icons/smuview.ico"),
+		QSize(), QIcon::Normal, QIcon::Off);
+	this->setWindowIcon(main_icon);
+	this->setWindowTitle(tr("About SmuView"));
+	this->resize(600, 400);
 
-	page_list = new QListWidget;
-	page_list->setViewMode(QListView::IconMode);
-	page_list->setIconSize(QSize(icon_size, icon_size));
-	page_list->setMovement(QListView::Static);
-	page_list->setMaximumWidth(icon_size + (icon_size / 2) + 2);
-	page_list->setSpacing(12);
-	// NOTE: setItemAlignment() is introduced in Qt 5.12, but MXE uses Qt 5.7
-	//       and Ubuntu 16.04 (AppImage) uses Qt 5.5, but
-	//       setUniformItemSizes(true) does the trick!
-	//page_list->setItemAlignment(Qt::AlignHCenter);
-	page_list->setUniformItemSizes(true);
+	QVBoxLayout *main_layout = new QVBoxLayout();
 
-	pages = new QStackedWidget;
-	create_pages();
-	page_list->setCurrentIndex(page_list->model()->index(0, 0));
+	QHBoxLayout *header_layout = new QHBoxLayout();
 
-	QHBoxLayout *tab_layout = new QHBoxLayout;
-	tab_layout->addWidget(page_list);
-	tab_layout->addWidget(pages, Qt::AlignLeft);
+	QLabel *smuview_icon = new QLabel();
+	smuview_icon->setPixmap(QIcon(":/icons/smuview.svg").pixmap(64, 64));
+	header_layout->addWidget(smuview_icon, 0, Qt::AlignHCenter);
+
+	header_layout->addSpacing(20);
+
+	QString header_text = QStringLiteral(
+		"<center>"
+		"  <big><b>%1</b></big><br>"
+		"  %2<br>"
+		"  %3"
+		"</center>").arg(
+			QApplication::applicationName().toHtmlEscaped(),
+			QApplication::applicationVersion().toHtmlEscaped(),
+			tr("GNU GPL, version 3 or later").toHtmlEscaped());
+
+	QLabel *header_label = new QLabel();
+	/* Object name for selftest functionality */
+	header_label->setObjectName("about_header_text");
+	header_label->setText(header_text);
+	header_layout->addWidget(header_label);
+
+	header_layout->addStretch(5);
+
+	QVBoxLayout *header_buttons = new QVBoxLayout();
+	QPushButton *version_button = new QPushButton();
+	version_button->setText(tr("Copy version info"));
+	connect(version_button, &QPushButton::clicked,
+		this, &AboutDialog::copy_version_info);
+	header_buttons->addWidget(version_button);
+	QPushButton *manual_button = new QPushButton();
+	manual_button->setText(tr("SmuView manual"));
+	connect(manual_button, &QPushButton::clicked,
+		this, &AboutDialog::open_manual);
+	header_buttons->addWidget(manual_button);
+	header_layout->addLayout(header_buttons);
+
+	main_layout->addLayout(header_layout);
+
+	QTabWidget *tab_widget = new QTabWidget();
+	tab_widget->addTab(get_about_page(), tr("About"));
+	if (device_)
+		tab_widget->addTab(get_device_page(), tr("Device"));
+	tab_widget->addTab(get_versions_page(), tr("Versions"));
+	tab_widget->addTab(get_license_page(), tr("Licenses"));
+	main_layout->addWidget(tab_widget);
 
 	QDialogButtonBox *button_box = new QDialogButtonBox(QDialogButtonBox::Ok);
-
-	QVBoxLayout* root_layout = new QVBoxLayout(this);
-	root_layout->addLayout(tab_layout);
-	root_layout->addWidget(button_box);
-
 	connect(button_box, &QDialogButtonBox::accepted,
 		this, &AboutDialog::accept);
-	connect(page_list, &QListWidget::currentItemChanged,
-		this, &AboutDialog::on_page_changed);
+	main_layout->addWidget(button_box);
+
+	this->setLayout(main_layout);
 }
 
-void AboutDialog::create_pages()
+QTextBrowser *AboutDialog::get_about_page() const
 {
-	// Device page
-	if (device_) {
-		pages->addWidget(get_device_page(pages));
+	QString about_html = QStringLiteral(
+		"<h3>%1</h3>"
+		"<p>%2</p>"
+		"<h3>%3</h3>"
+		"<ul>"
+		"  <li>%4: <a href=\"%5\">%5</a></li>"
+		"  <li>%6: <a href=\"%7\">%7</a></li>"
+		"  <li>%8: <a href=\"%9\">%9</a></li>"
+		"</ul>").arg(
+			tr("About").toHtmlEscaped(),
+			tr("SmuView is a GUI for sigrok that supports power supplies, "
+				"electronic loads and all sorts of measurement devices like "
+				"multimeters, LCR meters and so on.").toHtmlEscaped(),
+			tr("Links").toHtmlEscaped(),
+			tr("Homepage").toHtmlEscaped(),
+			"https://github.com/knarfS/SmuView",
+			tr("Manual").toHtmlEscaped(),
+			"https://knarfs.github.io/doc/smuview/continuous/manual.html",
+			tr("sigrok Wiki").toHtmlEscaped(),
+			"https://sigrok.org");
 
-		QListWidgetItem *device_button = new QListWidgetItem(page_list);
-		device_button->setIcon(QIcon(":/icons/smuview.svg"));
-		device_button->setText(tr("Device"));
-		device_button->setTextAlignment(Qt::AlignHCenter);
-		device_button->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-	}
+	// Max. of 9 arguments for Qt < 5.14
+	about_html += QStringLiteral(
+		"<h3>%1</h3>"
+		"<ul>"
+		"  <li>%2: <a href=\"%3\">%3</a></li>"
+		"</ul>").arg(
+			tr("Bugtracker").toHtmlEscaped(),
+			tr("Report bugs here").toHtmlEscaped(),
+			"https://github.com/knarfS/SmuView/issues");
 
-	// About page
-	pages->addWidget(get_about_page(pages));
+	QTextBrowser *about_widget = new QTextBrowser();
+	about_widget->setHtml(about_html);
+	about_widget->setOpenExternalLinks(true);
 
-	QListWidgetItem *about_button = new QListWidgetItem(page_list);
-	about_button->setIcon(QIcon(":/icons/information.svg"));
-	about_button->setText(tr("About"));
-	about_button->setTextAlignment(Qt::AlignHCenter);
-	about_button->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+	return about_widget;
 }
 
-QWidget *AboutDialog::get_about_page(QWidget *parent) const
+QTextBrowser *AboutDialog::get_versions_page() const
 {
-	QLabel *icon = new QLabel();
-	icon->setPixmap(QPixmap(QString::fromUtf8(":/icons/smuview.svg")));
+	QTextBrowser *versions_widget = new QTextBrowser();
+	QString version_md = utils::apputil::get_versions_markdown(device_manager_);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+	versions_widget->setMarkdown(version_md);
+#else
+	versions_widget->setPlainText(version_md);
+#endif
 
-	/* Setup the version field */
-	QLabel *version_info = new QLabel();
-	/* Object name for selftest functionality */
-	version_info->setObjectName("version_info");
-	version_info->setText(tr("%1 %2<br />%3<br /><a href=\"http://%4\">%4</a>")
-		.arg(QApplication::applicationName(),
-		QApplication::applicationVersion(),
-		tr("GNU GPL, version 3 or later"),
-		QApplication::organizationDomain()));
-	version_info->setOpenExternalLinks(true);
-
-	shared_ptr<sigrok::Context> context = device_manager_.context();
-
-	QString html;
-
-	html.append("<style type=\"text/css\"> tr .id { white-space: pre; padding-right: 5px; } </style>");
-
-	html.append("<table>");
-
-	/* Library info */
-	html.append("<tr><td colspan=\"2\"><b>" +
-		tr("Libraries and features:") + "</b></td></tr>");
-
-	html.append(QString("<tr><td><i>%1</i></td><td>%2</td></tr>")
-		.arg(QString("Qt"), qVersion()));
-	html.append(QString("<tr><td><i>%1</i></td><td>%2</td></tr>")
-		.arg(QString("Qwt"), QWT_VERSION_STR));
-	html.append(QString("<tr><td><i>%1</i></td><td>%2</td></tr>")
-		.arg(QString("glibmm"), SV_GLIBMM_VERSION));
-	html.append(QString("<tr><td><i>%1</i></td><td>%2</td></tr>")
-		.arg(QString("Boost"), BOOST_LIB_VERSION));
-	html.append(QString("<tr><td><i>%1</i></td><td>%2</td></tr>")
-		.arg(QString("pybind11"), SV_PYBIND11_VERSION));
-	html.append(QString("<tr><td><i>%1</i></td><td>%2</td></tr>")
-		.arg(QString("Python"), SV_PYTHON_VERSION));
-
-	html.append(QString("<tr><td><i>%1</i></td><td>%2/%3 (rt: %4/%5)</td></tr>")
-		.arg(QString("libsigrok"), SR_PACKAGE_VERSION_STRING,
-		SR_LIB_VERSION_STRING, sr_package_version_string_get(),
-		sr_lib_version_string_get()));
-
-	GSList *libs_orig = sr_buildinfo_libs_get();
-	for (GSList *lib = libs_orig; lib; lib = lib->next) {
-		GSList *lib_data = static_cast<GSList *>(lib->data);
-		const char *name = static_cast<const char *>(lib_data->data);
-		const char *version = static_cast<const char *>(lib_data->next->data);
-		html.append(QString("<tr><td><i>- %1</i></td><td>%2</td></tr>")
-			.arg(QString(name), QString(version)));
-		g_slist_free_full(lib_data, g_free);
-	}
-	g_slist_free(libs_orig);
-
-	char *host = sr_buildinfo_host_get();
-	html.append(QString("<tr><td><i>- Host</i></td><td>%1</td></tr>")
-		.arg(QString(host)));
-	g_free(host);
-
-	char *scpi_backends = sr_buildinfo_scpi_backends_get();
-	html.append(QString("<tr><td><i>- SCPI backends</i></td><td>%1</td></tr>")
-		.arg(QString(scpi_backends)));
-	g_free(scpi_backends);
-
-	/* Set up the supported field */
-	html.append("<tr><td colspan=\"2\"></td></tr>");
-	html.append("<tr><td colspan=\"2\"><b>" +
-		tr("Supported hardware drivers:") + "</b></td></tr>");
-	for (const auto &entry : context->drivers()) {
-		html.append(QString("<tr><td class=\"id\"><i>%1</i></td><td>%2</td></tr>")
-			.arg(QString::fromUtf8(entry.first.c_str()),
-				QString::fromUtf8(entry.second->long_name().c_str())));
-	}
-
-	// No need for input formats
-	/*
-	html.append("<tr><td colspan=\"2\"></td></tr>");
-	html.append("<tr><td colspan=\"2\"><b>" +
-		tr("Supported input formats:") + "</b></td></tr>");
-	for (const auto &entry : context->input_formats()) {
-		html.append(QString("<tr><td class=\"id\"><i>%1</i></td><td>%2</td></tr>")
-			.arg(QString::fromUtf8(entry.first.c_str()),
-				QString::fromUtf8(entry.second->description().c_str())));
-	}
-	*/
-
-	// No need for output formats
-	/*
-	html.append("<tr><td colspan=\"2\"></td></tr>");
-	html.append("<tr><td colspan=\"2\"><b>" +
-		tr("Supported output formats:") + "</b></td></tr>");
-	for (const auto &entry : context->output_formats()) {
-		html.append(QString("<tr><td class=\"id\"><i>%1</i></td><td>%2</td></tr>")
-			.arg(QString::fromUtf8(entry.first.c_str()),
-				QString::fromUtf8(entry.second->description().c_str())));
-	}
-	*/
-
-	html.append("</table>");
-
-	QTextDocument *supported_doc = new QTextDocument();
-	supported_doc->setHtml(html);
-
-	QTextBrowser *support_list = new QTextBrowser();
-	support_list->setDocument(supported_doc);
-
-	QGridLayout *layout = new QGridLayout();
-	layout->addWidget(icon, 0, 0, 1, 1);
-	layout->addWidget(version_info, 0, 1, 1, 1);
-	layout->addWidget(support_list, 1, 1, 1, 1);
-
-	QWidget *page = new QWidget(parent);
-	page->setLayout(layout);
-
-	return page;
+	return versions_widget;
 }
 
-QWidget *AboutDialog::get_device_page(QWidget *parent) const
+QTextBrowser *AboutDialog::get_device_page() const
 {
-	QLabel *icon = new QLabel();
-	icon->setPixmap(QPixmap(QString::fromUtf8(":/icons/smuview.svg")));
-
 	// Device info
 	auto sr_device = device_->sr_device();
 	auto hw_device = dynamic_pointer_cast<devices::HardwareDevice>(device_);
@@ -249,131 +191,137 @@ QWidget *AboutDialog::get_device_page(QWidget *parent) const
 	if (hw_device)
 		sr_hw_device = hw_device->sr_hardware_device();
 
-	QString device_info_text("<b>");
-
+	QString device_name;
 	if (sr_device->vendor().length() > 0) {
-		device_info_text.append(QString("%1 ").arg(
-			QString::fromStdString(sr_device->vendor())));
+		device_name += QString("%1 ").arg(
+			QString::fromStdString(sr_device->vendor()));
 	}
-	device_info_text.append(QString("%1</b>").arg(
-		QString::fromStdString(sr_device->model())));
+	device_name += QString::fromStdString(sr_device->model());
 	if (sr_device->version().length() > 0) {
-		device_info_text.append(QString(" (%1)").arg(
-			QString::fromStdString(sr_device->version())));
+		device_name += QString(" (%1)").arg(
+			QString::fromStdString(sr_device->version()));
 	}
 
-	QString sn("-");
+	QString serial_nr("-");
 	if (sr_device->serial_number().length() > 0)
-		sn = QString::fromStdString(sr_device->serial_number());
-	device_info_text.append(
-		QString("<br /><b>" + tr("Serial Number") + ":</b> %1").arg(sn));
+		serial_nr = QString::fromStdString(sr_device->serial_number());
 
 	QString conn_id("-");
 	if (sr_device->connection_id().length() > 0)
 		conn_id = QString::fromStdString(sr_device->connection_id());
-	device_info_text.append(
-		QString("<br /><b>" + tr("Connection") + ":</b> %1").arg(conn_id));
 
-	QString id("-");
+	QString dev_id("-");
 	if (device_->id().length() > 0)
-		id = QString::fromStdString(device_->id());
-	device_info_text.append(
-		QString("<br /><b>" + tr("Device ID") + ":</b> %1").arg(id));
+		dev_id = QString::fromStdString(device_->id());
 
-	QLabel *device_info = new QLabel();
-	device_info->setText(device_info_text);
-
-	QString html;
-	html.append("<style type=\"text/css\"> tr .id { white-space: pre; padding-right: 5px; } </style>");
-	html.append("<table width=\"100%\" border=\"0\">");
-
-	/* Device functions */
-	html.append("<tr><td colspan=\"7\"><b>" +
-		tr("Sigrok device functions:") + "</b></td></tr>");
-	html.append(QString("<tr><td>&nbsp;</td><td colspan=\"6\">"));
+	QString dev_types_sigrok;
 	if (sr_hw_device) {
 		const auto sr_keys = sr_hw_device->driver()->config_keys();
 		QString sep("");
 		for (const auto &sr_key : sr_keys) {
-				html.append(sep).append(
-					QString::fromStdString(sr_key->description()));
-				sep = QString(", ");
+			dev_types_sigrok.append(sep).append( // TODO join
+				QString::fromStdString(sr_key->description()));
+			sep = QString(", ");
 		}
 	}
-	html.append(QString("</td></tr>"));
-	html.append("<tr><td colspan=\"7\"><b>" +
-		tr("SmuView device functions:") + "</b></td></tr>");
-	html.append(QString("<tr><td>&nbsp;</td><td colspan=\"6\">%1</td></tr>")
-		.arg(devices::deviceutil::format_device_type(device_->type())));
-	html.append("<tr><td colspan=\"7\">&nbsp;</td></tr>");
+	else
+		dev_types_sigrok = "-";
 
-	/* SmuView device configurables and config keys */
+	QString device_html = QStringLiteral(
+		"<h2>%1</h2>"
+		"<ul>"
+		"  <li><b>%2:</b> %3</li>"
+		"  <li><b>%4:</b> %5</li>"
+		"  <li><b>%6:</b> %7</li>"
+		"  <li><b>%8:</b> %9</li>").arg(
+			device_name.toHtmlEscaped(),
+			tr("Serial Number").toHtmlEscaped(), serial_nr.toHtmlEscaped(),
+			tr("Connection").toHtmlEscaped(), conn_id.toHtmlEscaped(),
+			tr("Device ID").toHtmlEscaped(), dev_id.toHtmlEscaped(),
+			tr("Device types (sigrok)").toHtmlEscaped(),
+			dev_types_sigrok.toHtmlEscaped());
+
+	// Max. of 9 arguments for Qt < 5.14
+	device_html += QStringLiteral(
+		"  <li><b>%1:</b> %2</li>"
+		"</ul>").arg(
+			tr("Device types (SmuView)").toHtmlEscaped(),
+			devices::deviceutil::format_device_type(device_->type())
+				.toHtmlEscaped());
+
 	if (hw_device) {
-		html.append("<tr><td colspan=\"7\"><b>" +
-			tr("SmuView device configurables and properties:") +
-			"</b></td></tr>");
-		for (const auto &c_pair : hw_device->configurable_map()) {
-			auto configurable = c_pair.second;
-			html.append(QString("<tr><td>&nbsp;</td><td>%1</td><b>")
-				.arg(configurable->display_name()));
-			html.append(QString("</b><td>GET</td><td>Value</td><td>SET</td>"));
-			html.append(QString("<td>LIST</td><td>Values</td></tr>"));
-			auto props = configurable->property_map();
-			for (const auto &prop : props) {
-				html.append(QString("<tr><td>&nbsp;</td>"));
-				html.append(QString("<td><i>%1</i></td>")
-					.arg(devices::deviceutil::format_config_key(prop.first)));
-				if (prop.second->is_getable()) {
-					html.append(QString("<td>X</td>"));
-					//if (prop.second->value().canConvert<QString>())
-					//	html.append(QString("<td>%1</td>").arg(
-					//		prop.second->value().toString()));
-					//else
-						html.append(QString("<td>?</td>"));
-				}
-				else
-					html.append(QString("<td>&nbsp;</td><td>&nbsp;</td>"));
-				if (prop.second->is_setable())
-					html.append(QString("<td>X</td>"));
-				else
-					html.append(QString("<td>&nbsp;</td>"));
-				if (prop.second->is_listable())
-					html.append(QString("<td>X</td><td>&nbsp;</td>"));
-				else
-					html.append(QString("<td>&nbsp;</td><td>&nbsp;</td>"));
+		for (const auto &[_, configurable] : hw_device->configurable_map()) {
+			device_html += QStringLiteral(
+				"<h3>%1 %2</h3>"
+				"<p></p>"
+				"<table border=\"1\" cellspacing=\"0\" cellpadding=\"4\">"
+				"  <thead>"
+				"    <tr>"
+				"      <th></th>"
+				"      <th align=\"center\">GET</th>"
+				"      <th align=\"center\">SET</th>"
+				"      <th align=\"center\">LIST</th>"
+				"    </tr>"
+				"  </thead>").arg(
+					tr("Configurable").toHtmlEscaped(),
+					configurable->display_name().toHtmlEscaped());
 
-				html.append(QString("</tr>"));
+			for (const auto &[ck, property] : configurable->property_map()) {
+				device_html += QStringLiteral(
+					"<tr>"
+					"  <td align=\"left\"><b>%1</b></td>"
+					"  <td align=\"center\">%2</td>"
+					"  <td align=\"center\">%3</td>"
+					"  <td align=\"center\">%4</td>"
+					"</tr>").arg(
+						devices::deviceutil::format_config_key(ck),
+						property->is_getable() ? tr("yes") : tr("no"),
+						property->is_setable() ? tr("yes") : tr("no"),
+						property->is_listable() ? tr("yes") : tr("no"));
 			}
+
+			device_html += "</table>";
 		}
-		html.append("<tr><td colspan=\"7\">&nbsp;</td></tr>");
 	}
 
-	html.append("</table>");
+	QTextBrowser *device_widget = new QTextBrowser();
+	device_widget->setHtml(device_html);
+	device_widget->setOpenExternalLinks(true);
 
-	QTextDocument *device_doc = new QTextDocument();
-	device_doc->setHtml(html);
-
-	QTextBrowser *device_list = new QTextBrowser();
-	device_list->setDocument(device_doc);
-
-	QGridLayout *layout = new QGridLayout();
-	layout->addWidget(icon, 0, 0, 1, 1);
-	layout->addWidget(device_info, 0, 1, 1, 1);
-	layout->addWidget(device_list, 1, 1, 1, 1);
-
-	QWidget *page = new QWidget(parent);
-	page->setLayout(layout);
-
-	return page;
+	return device_widget;
 }
 
-void AboutDialog::on_page_changed(
-	QListWidgetItem *current, QListWidgetItem *previous)
+QTextBrowser *AboutDialog::get_license_page() const
 {
-	if (!current)
-		current = previous;
+	QString license_html = QStringLiteral(
+		"<p>%1</p>"
+		"<p><a href=\"https://www.gnu.org/licenses/gpl-3.0\">%2</a></p>"
+		"<p>%3</p>").arg(
+			tr("SmuView is licensed under the").toHtmlEscaped(),
+			tr("GNU General Public License, version 3 or later (GPLv3+)")
+				.toHtmlEscaped(),
+			tr("Some individual source files are licensed under GPLv2+ or "
+				"GPLv3+ specifically, but the project as a whole is "
+				"distributed under GPLv3+ terms.").toHtmlEscaped());
 
-	pages->setCurrentIndex(page_list->row(current));
+	QTextBrowser *license_widget = new QTextBrowser();
+	license_widget->setHtml(license_html);
+	license_widget->setOpenExternalLinks(true);
+
+	return license_widget;
+}
+
+void AboutDialog::copy_version_info()
+{
+	QClipboard *clipboard = QGuiApplication::clipboard();
+	clipboard->setText(utils::apputil::get_versions_markdown(device_manager_));
+}
+
+void AboutDialog::open_manual()
+{
+	QUrl manual_url(
+		"https://knarfs.github.io/doc/smuview/continuous/manual.html");
+	QDesktopServices::openUrl(manual_url);
 }
 
 } // namespace dialogs
