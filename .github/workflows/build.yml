@@ -370,10 +370,7 @@ jobs:
 
       - name: Selftest
         run: |
-          if ! xvfb-run -a ./SmuView.AppImage --selftest; then
-            echo "::error::Selftest failed"
-            exit 1
-          fi
+          smuview/scripts/linux/verify_selftest.sh
 
 
   verify_windows_installer:
