@@ -19,6 +19,7 @@
 ##
 
 set -euo pipefail
+set -x
 
 APP_DIR="/Applications/SmuView.app/Contents"
 
@@ -26,9 +27,9 @@ OUTPUT=$(${APP_DIR}"/MacOS/SmuView" --selftest)
 RET=$?
 echo "$OUTPUT"
 
-if ! "${RET}" ; then
+if ! "${RET}"; then
     echo "::error::Selftest failed"
-    exit 1 
+    exit 1
 fi
 
 FAILED=0
