@@ -494,10 +494,7 @@ jobs:
 
       - name: Selftest
         run: |
-          if ! "/Applications/SmuView.app/Contents/MacOS/SmuView" --selftest; then
-            echo "::error::Selftest failed"
-            exit 1
-          fi
+          smuview/ci/scripts/macos/verify_selftest.sh
 
 
   publish:
