@@ -23,11 +23,11 @@ set -x
 
 APP_DIR="/Applications/SmuView.app/Contents"
 
-OUTPUT=$(${APP_DIR}"/MacOS/SmuView" --selftest)
+OUTPUT=$(${APP_DIR}"/MacOS/SmuView" --selftest 2>&1)
 RET=$?
 echo "$OUTPUT"
 
-if ! "${RET}"; then
+if [ "${RET}" -ne 0 ]; then
     echo "::error::Selftest failed"
     exit 1
 fi
