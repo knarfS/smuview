@@ -43,7 +43,10 @@ cd ..
 git clone --depth=1 -b "${LIBSIGROK_BRANCH:-master}" "${LIBSIGROK_REPO}" libsigrok
 cd libsigrok
 ./autogen.sh
-PKG_CONFIG_PATH="${INSTALL_DIR}/lib/pkgconfig" ./configure --prefix="${INSTALL_DIR}" --disable-java --disable-ruby
+# Add -Wno-error=incompatible-pointer-types to fix build error cause by vxi.x
+PKG_CONFIG_PATH="${INSTALL_DIR}/lib/pkgconfig" \
+	CFLAGS="-Wno-error=incompatible-pointer-types" \
+	./configure --prefix="${INSTALL_DIR}" --disable-java --disable-ruby
 make -j"$(sysctl -n hw.ncpu)"
 make install
 cd ..

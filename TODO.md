@@ -215,6 +215,12 @@
 - Fix UserDevice::open() and ::close() -> virtual in BaseDevice and empty in UserDevice
 - Rename `OVER_TEMPERATURE_PROTECTION` to `OVER_TEMPERATURE_PROTECTION_ENABLED`
 - Rename `UNDER_VOLTAGE_CONDITION` to `OVER_TEMPERATURE_PROTECTION_ENABLED`
+- With LLVM >= v16 `-Wincompatible-pointer-types` is enabled by default, which
+  makes the generate code from `vxi.x` fail: In the VXI-11 spec int and long are
+  synonymously used (32-bit), which is not the case on 64-bit systems. Solution
+  is to change all `long` and `unsigned long` to `int` and `unsigned int`.
+  At a later point, remove `-Wno-error=incompatible-pointer-types` from
+  `ci/scripts/macos/build_sigrok.sh`
 
 ## WIP
 
