@@ -20,10 +20,12 @@
 
 #include <getopt.h>
 #include <memory>
+#include <qcontainerfwd.h>
 #include <unistd.h>
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
 #include <pybind11/embed.h>
+#include <pybind11/stl.h>
 
 #include <QDateTime>
 #include <QDebug>
@@ -44,7 +46,7 @@
 #include "src/signalhandler.hpp"
 #endif
 
-#ifdef _WIN32
+#if defined(_WIN32)
 #include <QtPlugin>
 Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin)
 Q_IMPORT_PLUGIN(QSvgPlugin)
@@ -132,7 +134,7 @@ int selftest()
 	}
 	qInfo().noquote() << QString("About dialog text: %1").arg(text);
 
-	// Self test for the embedded python interpreter
+	// Self test the embedded python interpreter
 	qInfo() << "--- Selftest Embedded Python ---";
 	py::scoped_interpreter guard{};
 	py::dict locals;
@@ -143,16 +145,22 @@ int selftest()
 		py_sys_executable = sys.executable
 		py_sys_prefix = sys.prefix
 		py_sys_base_prefix = sys.base_prefix
-		py_sys_path = repr(sys.path)
+		py_sys_path = sys.path
 		py_os_module_file = os.__file__
 	)", py::globals(), locals);
-	string py_test_msg = locals["py_test_msg"].cast<std::string>();
-	string py_sys_version = locals["py_sys_version"].cast<std::string>();
-	string py_sys_executable = locals["py_sys_executable"].cast<std::string>();
-	string py_sys_prefix = locals["py_sys_prefix"].cast<std::string>();
-	string py_sys_base_prefix = locals["py_sys_base_prefix"].cast<std::string>();
-	string py_sys_path = locals["py_sys_path"].cast<std::string>();
-	string py_os_module_file = locals["py_os_module_file"].cast<std::string>();
+
+	string py_test_msg = locals["py_test_msg"].cast<string>();
+	string py_sys_version = locals["py_sys_version"].cast<string>();
+	string py_sys_executable = locals["py_sys_executable"].cast<string>();
+	string py_sys_prefix = locals["py_sys_prefix"].cast<string>();
+	string py_sys_base_prefix = locals["py_sys_base_prefix"].cast<string>();
+	vector<string> py_sys_path = locals["py_sys_path"].cast<vector<string>>();
+	QString py_sys_path_str;
+	for (const auto &path : py_sys_path)
+		py_sys_path_str.append("'").append(QString::fromStdString(path))
+			.append("', ");
+	string py_os_module_file = locals["py_os_module_file"].cast<string>();
+
 	qInfo().noquote() << QString::fromStdString(py_test_msg);
 	qInfo().noquote() << QString("Embedded sys.version: %1").arg(
 		QString::fromStdString(py_sys_version));
@@ -162,17 +170,48 @@ int selftest()
 		QString::fromStdString(py_sys_prefix));
 	qInfo().noquote() << QString("Embedded sys.base_prefix: %1").arg(
 		QString::fromStdString(py_sys_base_prefix));
-	qInfo().noquote() << QString("Embedded sys.path: %1").arg(
-		QString::fromStdString(py_sys_path));
+	qInfo().noquote() << QString("Embedded sys.path: %1").arg(py_sys_path_str);
 	qInfo().noquote() << QString("Embedded os.__file__: %1").arg(
 		QString::fromStdString(py_os_module_file));
+
 	if (py_test_msg.rfind("Embedded python version: 3.", 0) != 0) {
 		qCritical() << "Could not find expected string in py_test_msg!";
 		return 1;
 	}
 
+	// Validate python sys.path
+	qInfo() << "--- Selftest Python sys.path ---";
+	QString app_dir = QCoreApplication::applicationDirPath();
+#if defined(_WIN32)
+	QString expected_prefix = app_dir;
+#elif defined(__APPLE__)
+	QString expected_prefix = QDir::cleanPath(app_dir + "/../Frameworks");
+#else // Linux / AppImage
+	 QString expected_prefix = QDir::cleanPath(app_dir + "/../lib");
+#endif
+	qInfo().noquote() << QString("Validating python paths agains '%1'").arg(
+		expected_prefix);
+
+	if (!QDir(expected_prefix).exists()) {
+		qWarning().noquote() << QString(
+				"Application directory '%1' does not exits, skipping sys.path validation")
+			.arg(expected_prefix);
+	}
+	else {
+		for (const auto &entry : py_sys_path) {
+			QString normalized =
+				QDir::fromNativeSeparators(QString::fromStdString(entry));
+			if (!normalized.isEmpty() && !normalized.startsWith(expected_prefix)) {
+				qCritical().noquote()
+					<< QString("sys.path '%1' is outside the app directory")
+						.arg(QString::fromStdString(entry));
+				return 1;
+			}
+		}
+	}
+
 	// Print some config vars
-	qInfo() << "--- Selftest Build Time Vars ---";
+	qInfo() << "--- Selftest Build Time Variables ---";
 	qInfo().noquote() << QString("SV_VERSION_STRING: %1").arg(SV_VERSION_STRING);
 	qInfo().noquote() << QString("SV_PYTHON_VERSION: %1").arg(SV_PYTHON_VERSION);
 	qInfo() << "----------------";
