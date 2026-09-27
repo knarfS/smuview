@@ -548,10 +548,10 @@ jobs:
         with:
           name: SmuView NSIS x86_64 installer
 
-      - name: Download DMG LLVM artifact
+      - name: Download DMG AppleClang artifact
         uses: actions/download-artifact@v8
         with:
-          name: SmuView LLVM DMG
+          name: SmuView AppleClang DMG
 
       - name: Inspect directory after downloading artifacts
         run: ls -alFR
