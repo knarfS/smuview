@@ -2,7 +2,7 @@
  * This file is part of the SmuView project.
  *
  * Copyright (C) 2013 Joel Holdsworth <joel@airwebreathe.org.uk>
- * Copyright (C) 2017-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,8 +21,6 @@
 #include <cassert>
 #include <functional>
 #include <memory>
-#include <sstream>
-#include <stdexcept>
 #include <string>
 
 #include <glib.h>
@@ -74,15 +72,13 @@ DeviceManager::DeviceManager(shared_ptr<sigrok::Context> context,
 	 * applicable.
 	 */
 	multimap<string, vector<string> > user_drvs_name_opts;
-	if (!drivers.empty()) {
-		for (const auto &driver : drivers) {
-			vector<string> user_drv_opts = sv::util::split_string(driver, ":");
-			string user_drv_name = user_drv_opts.front();
-			user_drv_opts.erase(user_drv_opts.begin());
+	for (const auto &driver : drivers) {
+		vector<string> user_drv_opts = sv::util::split_string(driver, ":");
+		string user_drv_name = user_drv_opts.front();
+		user_drv_opts.erase(user_drv_opts.begin());
 
-			user_drvs_name_opts.insert(
-				pair< string, vector<string> >(user_drv_name, user_drv_opts));
-		}
+		user_drvs_name_opts.insert(
+			pair< string, vector<string> >(user_drv_name, user_drv_opts));
 	}
 
 	/*
@@ -119,20 +115,13 @@ DeviceManager::DeviceManager(shared_ptr<sigrok::Context> context,
 	 * device pre-selected for new sessions upon user's request.
 	 */
 	user_spec_devices_.clear();
- 	if (!drivers.empty() && !user_drvs_name_opts.empty()) {
-		for( auto it = user_drvs_name_opts.begin(), end = user_drvs_name_opts.end();
-			it != end;
- 			it = user_drvs_name_opts.upper_bound(it->first)) {
-
-			auto user_drv_name = it->first;
-			auto user_drv_opts = it->second;
-
-			list< shared_ptr<devices::HardwareDevice> > found =
-				driver_scan(user_drv_name, user_drv_opts);
-			if (!found.empty())
-				user_spec_devices_.push_back(found.front());
-		}
+	for (const auto &user_drv : user_drvs_name_opts) {
+		list<shared_ptr<devices::HardwareDevice>> found =
+			driver_scan(user_drv.first, user_drv.second);
+		if (!found.empty())
+			user_spec_devices_.push_back(found.front());
 	}
+
 	progress->setValue(entry_num++);
 }
 

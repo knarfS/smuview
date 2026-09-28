@@ -20,7 +20,6 @@
 
 #include <getopt.h>
 #include <memory>
-#include <qcontainerfwd.h>
 #include <unistd.h>
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
