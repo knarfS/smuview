@@ -36,13 +36,15 @@
 
 ## ToDo
 
+- Signal select dialog: select already selected signals, only analog signals
+  (maybe with filter)
 - Fix test/util.cpp and specify a test execution strategie with boost.test,
   Qt test framework for unit tests and ctest.
 - move open device from `WelcomeTab::on_add_device` and `DeviceView::on_action_add_device_triggered`
   to a common static helper function
 - User better titels for views. Depending on the device (actual device, user device),
   the window title should not only show the channel / signal name but also the
-  device name
+  device name. Should also be used for export utils CSV headers. Make testable.
 - Use util::Timestamp?
 - last_value_, min_value_, max_value_ -> std::atomic!
 - Plot: Sampling

@@ -17,13 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cmath>
-#include <iostream>
 #include <fstream>
 #include <limits>
 #include <memory>
 #include <string>
 
+#include <QComboBox>
 #include <QDebug>
 #include <QDir>
 #include <QFileDialog>
@@ -45,6 +44,7 @@
 #include "src/devices/basedevice.hpp"
 #include "src/devices/hardwaredevice.hpp"
 #include "src/ui/devices/devicetree/devicetreeview.hpp"
+#include "src/utils/exportutil.hpp"
 
 using std::dynamic_pointer_cast;
 using std::ofstream;
@@ -111,9 +111,20 @@ void SignalSaveDialog::setup_ui()
 	time_absolut_ = new QCheckBox(tr("Absolut time"));
 	form_layout->addRow("", time_absolut_);
 
+	separator_box_ = new QComboBox();
+	separator_box_->addItem(tr("Comma (,)"), ",");
+	separator_box_->addItem(tr("Semicolon (;)"), ";");
+	separator_box_->addItem(tr("Tab (\\t)"), "\t");
+	separator_box_->addItem(tr("Pipe (|)"), "|");
+	separator_box_->addItem(tr("Space"), " ");
+	separator_box_->addItem(tr("Custom..."));
+	form_layout->addRow(tr("CSV separator"), separator_box_);
 	separator_edit_ = new QLineEdit();
-	separator_edit_->setText(",");
-	form_layout->addRow(tr("CSV separator"), separator_edit_);
+	separator_edit_->setMaxLength(1);
+	separator_edit_->setFixedWidth(40);
+	separator_edit_->setDisabled(true);
+	separator_edit_->setText("");
+	form_layout->addRow(tr("Custom separator"), separator_edit_);
 
 	main_layout->addLayout(form_layout);
 
@@ -124,11 +135,13 @@ void SignalSaveDialog::setup_ui()
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
 	connect(timestamps_combined_, &QCheckBox::checkStateChanged,
-		this, &SignalSaveDialog::toggle_combined);
+		this, &SignalSaveDialog::on_combined_toggled);
 #else
 	connect(timestamps_combined_, &QCheckBox::stateChanged,
-		this, &SignalSaveDialog::toggle_combined);
+		this, &SignalSaveDialog::on_combined_toggled);
 #endif
+	connect(separator_box_, QOverload<int>::of(&QComboBox::currentIndexChanged),
+		 this, &SignalSaveDialog::on_separator_changed);
 	connect(button_box_, &QDialogButtonBox::accepted,
 		this, &SignalSaveDialog::accept);
 	connect(button_box_, &QDialogButtonBox::rejected,
@@ -137,298 +150,51 @@ void SignalSaveDialog::setup_ui()
 	this->setLayout(main_layout);
 }
 
-void SignalSaveDialog::save(const QString &file_name)
+bool SignalSaveDialog::save_csv(const QString &file_name)
 {
-	ofstream output_file;
-	string str_file_name = file_name.toStdString();
-	vector<size_t> sample_counts;
-
-	output_file.open(str_file_name);
-
-	auto signals = device_tree_->checked_signals();
-	bool relative_time = !time_absolut_->isChecked();
-	string sep = separator_edit_->text().toStdString();
-	size_t max_sample_count = 0;
-
-	// Header
-	string start_sep;
-	string device_header_line;
-	string chg_name_header_line;
-	string ch_name_header_line;
-	string signal_name_header_line;
-	for (const auto &signal : signals) {
-		// Only handle AnalogSignals
+	vector<shared_ptr<sv::data::AnalogTimeSignal>> time_signals;
+	for (const auto &signal : device_tree_->checked_signals()) {
 		auto analog_signal =
 			dynamic_pointer_cast<sv::data::AnalogTimeSignal>(signal);
-		if (!analog_signal)
-			continue;
-
-		size_t sample_count = analog_signal->sample_count();
-		if (sample_count > max_sample_count)
-			max_sample_count = sample_count;
-		sample_counts.push_back(sample_count);
-
-		string name = analog_signal->name();
-		shared_ptr<sv::channels::BaseChannel> parent_channel =
-			analog_signal->parent_channel();
-
-		qWarning() << "SaveDialog::save(): signal.name() = " <<
-			QString::fromStdString(name);
-		qWarning() << "SaveDialog::save(): signal.parent_channel().name() = " <<
-			QString::fromStdString(parent_channel->name());
-		qWarning() << "SaveDialog::save(): signal.parent_channel().parent_device().name() = " <<
-			QString::fromStdString(parent_channel->parent_device()->name());
-
-		string chg_names;
-		string chg_sep;
-		for (const auto &chg_name : parent_channel->channel_group_names()) {
-			chg_names += chg_sep;
-			if (chg_name.empty())
-				chg_names += "\"\"";
-			else
-				chg_names += chg_name;
-			// TODO: Ugly workaround. Implement escaping or quotation characters?
-			chg_sep = sep == "," ? "; " : ", ";
-		}
-
-		device_header_line += start_sep;
-		device_header_line += parent_channel->parent_device()->name(); // Time
-		device_header_line += sep;
-		device_header_line += parent_channel->parent_device()->name(); // Value
-		chg_name_header_line += start_sep;
-		chg_name_header_line += chg_names; // Time
-		chg_name_header_line += sep;
-		chg_name_header_line += chg_names; // Value
-		ch_name_header_line += start_sep;
-		ch_name_header_line += parent_channel->name(); // Time
-		ch_name_header_line += sep;
-		ch_name_header_line += parent_channel->name(); // Value
-		signal_name_header_line += start_sep;
-		signal_name_header_line += "Time ";
-		signal_name_header_line += name; // Time
-		signal_name_header_line += sep;
-		signal_name_header_line += name; // Value
-
-		start_sep = sep;
-	}
-	output_file << device_header_line << std::endl;
-	output_file << chg_name_header_line << std::endl;
-	output_file << ch_name_header_line << std::endl;
-	output_file << signal_name_header_line << std::endl;
-
-	// Data
-	// TODO: we asume here, that the vector size is the same for all vectors....
-	for (size_t index = 0; index < max_sample_count; index++) {
-		start_sep = "";
-		QString line("");
-		int sample_count_index = 0;
-		for (const auto &signal : signals) {
-			// Only handle AnalogSignals
-			auto analog_signal =
-				dynamic_pointer_cast<sv::data::AnalogTimeSignal>(signal);
-			if (!analog_signal)
-				continue;
-
-			QString time("");
-			QString value("");
-
-			size_t sample_count = sample_counts[sample_count_index];
-			if (index < sample_count-1) {
-				// More samples for this signal
-				auto sample = analog_signal->get_sample(index, relative_time);
-				value = QString("%1").arg(sample.second);
-				if (relative_time)
-					time = QString("%1").arg(sample.first, 0, 'f', 4);
-				else
-					time = util::format_time_date(sample.first);
-			}
-
-			line.append(QString("%1%2%3%4").arg(
-				QString::fromStdString(start_sep), time,
-				QString::fromStdString(sep), value));
-			start_sep = sep;
-
-			++sample_count_index;
-		}
-		output_file << line.toStdString() << std::endl;
+		if (analog_signal)
+			time_signals.push_back(analog_signal);
 	}
 
-	output_file.close();
-}
-
-void SignalSaveDialog::save_combined(const QString &file_name)
-{
-	ofstream output_file;
-	string str_file_name = file_name.toStdString();
-	vector<size_t> sample_counts;
-	vector<size_t> sample_pos;
-
-	output_file.open(str_file_name);
-
-	double combined_timeframe = .0;
+	double combined_timeframe = 0.;
 	int combined_timeframe_ms = timestamps_combined_timeframe_->value();
 	if (combined_timeframe_ms != 0)
 		combined_timeframe = ((double)combined_timeframe_ms) / 1000;
 
-	auto signals = device_tree_->checked_signals();
 	bool relative_time = !time_absolut_->isChecked();
-	string sep = separator_edit_->text().toStdString();
 
-	// Header
-	string device_header_line("Time"); // Time
-	string chg_name_header_line("Time"); // Time
-	string ch_name_header_line("Time"); // Time
-	string signal_name_header_line("Time"); // Time
-	for (const auto &signal : signals) {
-		// Only handle AnalogSignals
-		auto analog_signal =
-			dynamic_pointer_cast<sv::data::AnalogTimeSignal>(signal);
-		if (!analog_signal)
-			continue;
+	QString separator_str = separator_box_->currentData().isValid()
+		? separator_box_->currentData().toString()
+		: separator_edit_->text();
+	char separator = separator_str.isEmpty()
+		? ',' : separator_str.at(0).toLatin1();
 
-		shared_ptr<sv::channels::BaseChannel> parent_channel =
-			analog_signal->parent_channel();
-
-		sample_counts.push_back(analog_signal->sample_count());
-		sample_pos.push_back(0);
-
-		string chg_names;
-		string chg_sep;
-		for (const auto &chg_name : parent_channel->channel_group_names()) {
-			chg_names += chg_sep;
-			if (chg_name.empty())
-				chg_names += "\"\"";
-			else
-				chg_names += chg_name;
-			// TODO: Ugly workaround. Implement escaping or quotation characters?
-			chg_sep = sep == "," ? "; " : ", ";
-		}
-
-		device_header_line += sep;
-		device_header_line += parent_channel->parent_device()->name(); // Value
-		chg_name_header_line += sep;
-		chg_name_header_line += chg_names; // Value
-		ch_name_header_line += sep;
-		ch_name_header_line += parent_channel->name(); // Value
-		signal_name_header_line += sep;
-		signal_name_header_line += analog_signal->name(); // Value
+	ofstream output_file(file_name.toStdString());
+	if (!output_file.is_open()) {
+		QMessageBox::warning(this,
+			tr("Failed to open file"),
+			tr("An error occured while opening the file %1.").arg(file_name),
+			QMessageBox::Ok);
+		return false;
 	}
-	output_file << device_header_line << std::endl;
-	output_file << chg_name_header_line << std::endl;
-	output_file << ch_name_header_line << std::endl;
-	output_file << signal_name_header_line << std::endl;
 
-	// Data
-	while (true) {
-		double next_timestamp = -1;
-		int index = 0;
-		for (const auto &signal : signals) {
-			// Only handle AnalogSignals
-			auto analog_signal =
-				dynamic_pointer_cast<sv::data::AnalogTimeSignal>(signal);
-			if (!analog_signal)
-				continue;
-
-			if (sample_pos[index] >= sample_counts[index]-1)
-				continue;
-
-			double timestamp =
-				analog_signal->get_sample(sample_pos[index], relative_time).first;
-			if (next_timestamp < 0 || timestamp < next_timestamp)
-				next_timestamp = timestamp;
-
-			++index;
-		}
-
-		if (next_timestamp < 0)
-			break;
-
-		// Timestamp
-		QString line;
-		if (relative_time)
-			line = QString("%1").arg(next_timestamp, 0, 'f', 4);
-		else
-			line = util::format_time_date(next_timestamp);
-
-		// Values
-		index = 0;
-		for (const auto &signal : signals) {
-			// Only handle AnalogSignals
-			auto analog_signal =
-				dynamic_pointer_cast<sv::data::AnalogTimeSignal>(signal);
-			if (!analog_signal)
-				continue;
-
-			line.append(QString::fromStdString(sep));
-
-			auto sample =
-				analog_signal->get_sample(sample_pos[index], relative_time);
-			double timestamp = sample.first;
-			if (timestamp + combined_timeframe >= next_timestamp) {
-				line.append(QString("%1").arg(sample.second, 0, 'g', -1));
-				++sample_pos[index];
-			}
-
-			++index;
-		}
-		output_file << line.toStdString() << std::endl;
+	if (timestamps_combined_->isChecked()) {
+		auto aligned_data = sv::utils::exportutil::align_timestamps(
+			time_signals, relative_time, combined_timeframe);
+		sv::utils::exportutil::export_csv_aligned(
+			output_file, aligned_data, separator);
+	}
+	else {
+		sv::utils::exportutil::export_csv_parallel(
+			output_file, time_signals, separator, relative_time);
 	}
 
 	output_file.close();
-}
 
-bool SignalSaveDialog::validate_combined_timeframe()
-{
-	int combined_timeframe_ms = timestamps_combined_timeframe_->value();
-	if (combined_timeframe_ms == 0)
-		return true;
-	const double combined_timeframe = ((double)combined_timeframe_ms) / 1000;
-
-	int num_signals = static_cast<int>(device_tree_->checked_signals().size());
-	int act_signal = 0;
-	QProgressDialog progress(tr("Validating combined timeframe ..."),
-		tr("Abort validation"), 0, num_signals, this);
-	progress.setMinimumDuration(500);
-	progress.setWindowModality(Qt::WindowModal);
-
-	double min_delta = combined_timeframe;
-	for (const auto &signal : device_tree_->checked_signals()) {
-		progress.setValue(act_signal++);
-		size_t count = signal->sample_count();
-		if (count < 2)
-			continue;
-
-		// Only handle AnalogSignals
-		auto analog_signal =
-			dynamic_pointer_cast<sv::data::AnalogTimeSignal>(signal);
-		if (!analog_signal)
-			continue;
-
-		double ts1 = analog_signal->get_sample(0, false).first;
-		for (size_t i = 1; i<count; i++) {
-			const double ts2 = analog_signal->get_sample(i, false).first;
-			const double delta = ts2 - ts1;
-			if (delta < min_delta)
-				min_delta = delta;
-			ts1 = ts2;
-
-			if (progress.wasCanceled())
-				return false;
-		}
-	}
-
-	progress.setValue(num_signals);
-
-	if (min_delta < combined_timeframe) {
-		int min_delta_ms = (int)std::floor(min_delta * 1000);
-		QMessageBox::critical(this,
-			tr("Combination time frame too large"),
-			tr("The combination time frame is too large. Time span must be "
-				"smaller than %1 ms.").arg(min_delta_ms),
-			QMessageBox::Ok);
-		timestamps_combined_timeframe_->setValue(min_delta_ms - 1);
-		return false;
-	}
 	return true;
 }
 
@@ -441,7 +207,9 @@ void SignalSaveDialog::save_settings(QSettings &settings) const
 	settings.setValue("timestamps_combined_timeframe",
 		timestamps_combined_timeframe_->value());
 	settings.setValue("time_absolut", time_absolut_->isChecked());
-	settings.setValue("csv_separator", separator_edit_->text());
+	settings.setValue("csv_separator", separator_box_->currentData().isValid()
+		? separator_box_->currentData().toString()
+		: separator_edit_->text());
 	settings.setValue("file_dialog_path", file_dialog_path_);
 
 	settings.endGroup();
@@ -463,7 +231,16 @@ void SignalSaveDialog::restore_settings(QSettings &settings)
 		time_absolut_->setChecked(settings.value("time_absolut").toBool());
 	}
 	if (settings.contains("csv_separator")) {
-		separator_edit_->setText(settings.value("csv_separator").toString());
+		QString sep = settings.value("csv_separator").toString();
+		int index = separator_box_->findData(sep);
+		if (index < 0) {
+			separator_edit_->setText(sep);
+			separator_edit_->setDisabled(false);
+			separator_box_->setCurrentIndex(
+				separator_box_->count() - 1);
+		}
+		else
+			separator_box_->setCurrentIndex(index);
 	}
 	if (settings.contains("file_dialog_path")) {
 		file_dialog_path_ =
@@ -475,6 +252,8 @@ void SignalSaveDialog::restore_settings(QSettings &settings)
 
 void SignalSaveDialog::accept()
 {
+	// TODO: validate inputs: separator not \", \n, \r, !Latin1
+
 	// Get file name
 	QString file_name = QFileDialog::getSaveFileName(this,
 		tr("Save CSV-File"), file_dialog_path_, tr("CSV Files (*.csv)"));
@@ -482,17 +261,10 @@ void SignalSaveDialog::accept()
 		return;
 
 	file_dialog_path_ = QDir().absoluteFilePath(file_name);
-
-	if (timestamps_combined_->isChecked()) {
-		if (!validate_combined_timeframe())
-			return;
-		save_combined(file_name);
-	}
-	else {
-		save(file_name);
-	}
-
-	QDialog::accept();
+	if (!save_csv(file_name))
+		QDialog::reject();
+	else
+		QDialog::accept();
 }
 
 void SignalSaveDialog::done(int result)
@@ -503,10 +275,16 @@ void SignalSaveDialog::done(int result)
 	QDialog::done(result);
 }
 
-void SignalSaveDialog::toggle_combined()
+void SignalSaveDialog::on_combined_toggled()
 {
 	timestamps_combined_timeframe_->setDisabled(
 		!timestamps_combined_->isChecked());
+}
+
+void SignalSaveDialog::on_separator_changed()
+{
+	separator_edit_->setDisabled(
+		separator_box_->currentData().isValid());
 }
 
 } // namespace dialogs
