@@ -279,6 +279,7 @@ set(smuview_SOURCES
 	src/devices/sourcesinkdevice.cpp
 	src/devices/userdevice.cpp
 	src/utils/apputil.cpp
+	src/utils/exportutil.cpp
 
 	src/python/bindings.cpp
 	src/python/bindingsenums.cpp

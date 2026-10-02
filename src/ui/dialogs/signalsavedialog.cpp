@@ -45,6 +45,7 @@
 #include "src/devices/basedevice.hpp"
 #include "src/devices/hardwaredevice.hpp"
 #include "src/ui/devices/devicetree/devicetreeview.hpp"
+#include "src/utils/exportutil.hpp"
 
 using std::dynamic_pointer_cast;
 using std::ofstream;
@@ -258,122 +259,27 @@ void SignalSaveDialog::save(const QString &file_name)
 
 void SignalSaveDialog::save_combined(const QString &file_name)
 {
-	ofstream output_file;
-	string str_file_name = file_name.toStdString();
-	vector<size_t> sample_counts;
-	vector<size_t> sample_pos;
+	vector<shared_ptr<sv::data::AnalogTimeSignal>> time_signals;
+	for (const auto &signal : device_tree_->checked_signals()) {
+		auto analog_signal = dynamic_pointer_cast<sv::data::AnalogTimeSignal>(signal);
+		if (analog_signal)
+			time_signals.push_back(analog_signal);
+	}
 
-	output_file.open(str_file_name);
-
-	double combined_timeframe = .0;
+	double combined_timeframe = 0.;
 	int combined_timeframe_ms = timestamps_combined_timeframe_->value();
 	if (combined_timeframe_ms != 0)
 		combined_timeframe = ((double)combined_timeframe_ms) / 1000;
 
-	auto signals = device_tree_->checked_signals();
 	bool relative_time = !time_absolut_->isChecked();
-	string sep = separator_edit_->text().toStdString();
+	string separator = separator_edit_->text().toStdString();
 
-	// Header
-	string device_header_line("Time"); // Time
-	string chg_name_header_line("Time"); // Time
-	string ch_name_header_line("Time"); // Time
-	string signal_name_header_line("Time"); // Time
-	for (const auto &signal : signals) {
-		// Only handle AnalogSignals
-		auto analog_signal =
-			dynamic_pointer_cast<sv::data::AnalogTimeSignal>(signal);
-		if (!analog_signal)
-			continue;
+	auto aligned_data = sv::utils::exportutil::align_timestamps(
+		time_signals, relative_time, combined_timeframe);
 
-		shared_ptr<sv::channels::BaseChannel> parent_channel =
-			analog_signal->parent_channel();
-
-		sample_counts.push_back(analog_signal->sample_count());
-		sample_pos.push_back(0);
-
-		string chg_names;
-		string chg_sep;
-		for (const auto &chg_name : parent_channel->channel_group_names()) {
-			chg_names += chg_sep;
-			if (chg_name.empty())
-				chg_names += "\"\"";
-			else
-				chg_names += chg_name;
-			// TODO: Ugly workaround. Implement escaping or quotation characters?
-			chg_sep = sep == "," ? "; " : ", ";
-		}
-
-		device_header_line += sep;
-		device_header_line += parent_channel->parent_device()->name(); // Value
-		chg_name_header_line += sep;
-		chg_name_header_line += chg_names; // Value
-		ch_name_header_line += sep;
-		ch_name_header_line += parent_channel->name(); // Value
-		signal_name_header_line += sep;
-		signal_name_header_line += analog_signal->name(); // Value
-	}
-	output_file << device_header_line << std::endl;
-	output_file << chg_name_header_line << std::endl;
-	output_file << ch_name_header_line << std::endl;
-	output_file << signal_name_header_line << std::endl;
-
-	// Data
-	while (true) {
-		double next_timestamp = -1;
-		int index = 0;
-		for (const auto &signal : signals) {
-			// Only handle AnalogSignals
-			auto analog_signal =
-				dynamic_pointer_cast<sv::data::AnalogTimeSignal>(signal);
-			if (!analog_signal)
-				continue;
-
-			if (sample_pos[index] >= sample_counts[index]-1)
-				continue;
-
-			double timestamp =
-				analog_signal->get_sample(sample_pos[index], relative_time).first;
-			if (next_timestamp < 0 || timestamp < next_timestamp)
-				next_timestamp = timestamp;
-
-			++index;
-		}
-
-		if (next_timestamp < 0)
-			break;
-
-		// Timestamp
-		QString line;
-		if (relative_time)
-			line = QString("%1").arg(next_timestamp, 0, 'f', 4);
-		else
-			line = util::format_time_date(next_timestamp);
-
-		// Values
-		index = 0;
-		for (const auto &signal : signals) {
-			// Only handle AnalogSignals
-			auto analog_signal =
-				dynamic_pointer_cast<sv::data::AnalogTimeSignal>(signal);
-			if (!analog_signal)
-				continue;
-
-			line.append(QString::fromStdString(sep));
-
-			auto sample =
-				analog_signal->get_sample(sample_pos[index], relative_time);
-			double timestamp = sample.first;
-			if (timestamp + combined_timeframe >= next_timestamp) {
-				line.append(QString("%1").arg(sample.second, 0, 'g', -1));
-				++sample_pos[index];
-			}
-
-			++index;
-		}
-		output_file << line.toStdString() << std::endl;
-	}
-
+	ofstream output_file;
+	output_file.open(file_name.toStdString());
+	sv::utils::exportutil::export_csv(output_file, aligned_data, separator);
 	output_file.close();
 }
 
