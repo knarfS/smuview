@@ -24,6 +24,7 @@
 #include <vector>
 
 #include <QCheckBox>
+#include <QComboBox>
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QLineEdit>
@@ -64,9 +65,7 @@ public:
 
 private:
 	void setup_ui();
-	void save(const QString &file_name);
-	void save_combined(const QString &file_name);
-	bool validate_combined_timeframe();
+	bool save_csv(const QString &file_name);
 	void save_settings(QSettings &settings) const;
 	void restore_settings(QSettings &settings);
 
@@ -77,6 +76,7 @@ private:
 	QCheckBox *timestamps_combined_;
 	QSpinBox *timestamps_combined_timeframe_;
 	QCheckBox *time_absolut_;
+	QComboBox *separator_box_;
 	QLineEdit *separator_edit_;
 	QDialogButtonBox *button_box_;
 	QString file_dialog_path_;
@@ -87,7 +87,8 @@ public Q_SLOTS:
 	void done(int result) override;
 
 private Q_SLOTS:
-	void toggle_combined();
+	void on_combined_toggled();
+	void on_separator_changed();
 
 };
 
