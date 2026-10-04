@@ -25,7 +25,6 @@
 #include <map>
 #include <memory>
 #include <mutex>
-#include <qhashfunctions.h>
 #include <string>
 #include <thread>
 
