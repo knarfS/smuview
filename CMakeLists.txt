@@ -278,6 +278,7 @@ set(smuview_SOURCES
 	src/devices/oscilloscopedevice.cpp
 	src/devices/sourcesinkdevice.cpp
 	src/devices/userdevice.cpp
+	src/utils/apputil.cpp
 
 	src/python/bindings.cpp
 	src/python/pystreambuf.cpp
