@@ -120,7 +120,7 @@ int selftest()
 	about_dlg.show();
 	QApplication::processEvents();
 
-	QLabel *version_info = about_dlg.findChild<QLabel*>("version_info");
+	QLabel *version_info = about_dlg.findChild<QLabel*>("about_header_text");
 	if (!version_info) {
 		qCritical() << "Selftest failed, label not found!";
 		return 1;
