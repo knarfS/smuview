@@ -93,12 +93,12 @@ void WelcomeTab::setup_ui()
 	button_layout->addStretch(2);
 	QPushButton *add_device_button = new QPushButton();
 	add_device_button->setText(tr("Connect new device"));
-	connect(add_device_button, &QPushButton::pressed,
+	connect(add_device_button, &QPushButton::clicked,
 		this, &WelcomeTab::on_add_device);
 	button_layout->addWidget(add_device_button, 1);
 	QPushButton *open_manual_button = new QPushButton();
 	open_manual_button->setText(tr("Open SmuView manual"));
-	connect(open_manual_button, &QPushButton::pressed,
+	connect(open_manual_button, &QPushButton::clicked,
 		this, &WelcomeTab::on_open_manual);
 	button_layout->addWidget(open_manual_button, 1);
 	button_layout->addStretch(2);
