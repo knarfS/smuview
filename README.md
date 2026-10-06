@@ -133,7 +133,5 @@ Bundled assets have their own licenses:
 - [pybind11](https://github.com/pybind/pybind11) (BSD-style license)
 - [QCodeEditor](https://github.com/knarfS/QCodeEditor) (MIT License)
 - [QtFindReplaceDialog](https://github.com/knarfS/QtFindReplaceDialog) (LGPLv2.1 license)
-- Icons:
-  - [Oxygen Icon Theme](https://invent.kde.org/frameworks/oxygen-icons) (LGPLv3 license);
-  - [`icons/information.svg`](https://en.wikipedia.org/wiki/File:Information.svg) by Bobarino (GFDL 1.2 or later / CC-BY-SA 3.0)
+- Icons: [Oxygen Icon Theme](https://invent.kde.org/frameworks/oxygen-icons) (LGPLv3 license);
 - Font: [DejaVu Sans Mono](https://github.com/dejavu-fonts/dejavu-fonts) (Public Domain / Bitstream Vera Fonts / Arev Fonts copyright)

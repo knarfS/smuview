@@ -44,11 +44,6 @@
 		<file>icons/zoom-original.png</file>
 		<file>icons/zoom-out.png</file>
 
-		<file>icons/channels.svg</file>
-		<file>icons/information.svg</file>
-		<file>icons/menu.svg</file>
-		<file>icons/settings-views.svg</file>
-
 		<!-- Fonts -->
 		<file>fonts/DejaVuSansMono.ttf</file>
 
