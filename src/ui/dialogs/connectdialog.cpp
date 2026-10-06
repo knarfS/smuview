@@ -212,7 +212,7 @@ void ConnectDialog::setup_ui()
 
 	QPushButton *scan_button = new QPushButton(
 		tr("&Scan for devices using driver above"));
-	connect(scan_button, &QPushButton::pressed,
+	connect(scan_button, &QPushButton::clicked,
 		this, &ConnectDialog::scan_pressed);
 	vbox_scan->addWidget(scan_button);
 
