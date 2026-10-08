@@ -75,7 +75,7 @@ void WelcomeTab::setup_ui()
 		"  <a href=\"https://github.com/knarfS/smuview\">github.com/knarfS/smuview</a><br><br>"
 		"  %4 %5<br><br>"
 		"  Copyright 2017-2026, Frank Stettner<br>"
-		"  %6: <a href=\"https://www.gnu.org/licenses/gpl.html\">GNU General Public License Version 3</a>"
+		"  %6: <a href=\"https://www.gnu.org/licenses/gpl-3.0\">GNU General Public License Version 3</a>"
 		"</center>").arg(
 			tr("Welcome to").toHtmlEscaped(),
 			QApplication::applicationName().toHtmlEscaped(),
