@@ -17,6 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <QApplication>
 #include <QDesktopServices>
 #include <QLabel>
 #include <QPushButton>
@@ -67,18 +68,21 @@ void WelcomeTab::setup_ui()
 
 	layout->addSpacing(20);
 
-	QString welcome("");
-	welcome
-		.append("<center>")
-		.append(tr("<big>Welcome to <b>SmuView</b></big>"))
-		.append("<br>")
-		.append(tr("Multimeters, Power Supplies, Loads and more"))
-		.append("<br>")
-		.append("<a href=\"https://github.com/knarfS/smuview\">github.com/knarfS/smuview</a><br><br>")
-		.append("Version ").append(SV_VERSION_STRING).append("<br><br>")
-		.append("Copyright 2017-2026, Frank Stettner<br>")
-		.append(tr("License: <a href=\"https://www.gnu.org/licenses/gpl.html\">GNU General Public License Version 3</a>"))
-		.append("</center>");
+	QString welcome = QStringLiteral(
+		"<center>"
+		"  <big>%1 <b>%2</b></big><br>"
+		"  %3<br>"
+		"  <a href=\"https://github.com/knarfS/smuview\">github.com/knarfS/smuview</a><br><br>"
+		"  %4 %5<br><br>"
+		"  Copyright 2017-2026, Frank Stettner<br>"
+		"  %6: <a href=\"https://www.gnu.org/licenses/gpl.html\">GNU General Public License Version 3</a>"
+		"</center>").arg(
+			tr("Welcome to").toHtmlEscaped(),
+			QApplication::applicationName().toHtmlEscaped(),
+			tr("Multimeters, Power Supplies, Loads and more").toHtmlEscaped(),
+			tr("Version").toHtmlEscaped(),
+			SV_VERSION_STRING,
+			tr("License").toHtmlEscaped());
 
 	QLabel *welcome_label = new QLabel();
 	welcome_label->setTextFormat(Qt::RichText);
