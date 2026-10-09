@@ -53,9 +53,9 @@ docker build \
 
 ## Notes
 
-- MXE patch for updating check (see patch file for details)
-- MXE patch for updating libusb1 (see patch file for details)
+- MXE patch for updating `check` (see patch file for details)
+- MXE patch for updating `libusb1` (see patch file for details)
 - MXE patch for updating Qwt to the latest version (see patch file for details)
 - ToDo: Add packets required for building PulseView (`scons`, `sdcc`)
-- Package `doxygen is a dependency for libsigrok C++, but is not available in
+- Package `doxygen` is a dependency for libsigrok C++, but is not available in
   MXE. The host `doxygen` installation is sufficient for building
