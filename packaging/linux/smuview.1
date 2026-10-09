@@ -1,8 +1,9 @@
-.TH SMUVIEW 1 "October 09, 2026"
+.TH SMUVIEW 1 "October 9, 2026"
 .SH "NAME"
 SmuView \- Qt-based source measure unit GUI for sigrok
 .SH "SYNOPSIS"
-.B smuview \fR[\fBOPTIONS\fR]
+.B smuview
+.RI [ OPTIONS ]
 .SH "DESCRIPTION"
 .B SmuView
 is a cross-platform Qt-based GUI for the
@@ -14,9 +15,9 @@ electronic loads, multimeters and more.
 has very few command line options, as most configuration elements are
 available from the GUI itself.
 .TP
-.BR "\-l, \-\-loglevel " <level>
-Set the libsigrok loglevel. The higher the number, the more debug output will
-be printed. The dafault loglevel is 2 (Warnings), valid loglevels are:
+.BI "\-l, \-\-loglevel " LEVEL
+Set the libsigrok log level. The higher the number, the more debug output will
+be printed. The default log level is 2 (Warnings), valid log levels are:
 .sp
 \fB0\fP   None
 .br
@@ -31,44 +32,46 @@ be printed. The dafault loglevel is 2 (Warnings), valid loglevels are:
 \fB5\fP   Spew
 .TP
 .B "\-h, \-?, \-\-help"
-Show a help text and exit.
+Show this help text and exit.
 .TP
 .B "\-V, \-\-version"
 Show version information and exit.
 .TP
-.BR "\-\-version-long"
+.B "\-\-version\-long"
 Show extended version information including library versions formatted as
 markdown. Exit afterwards.
 .TP
-.BR "\-d, \-\-driver " <drivername>
+.BI "\-d, \-\-driver " DRIVERNAME
 Specify the capture device to connect to.
 .TP
-.BR "\-D, \-\-dont\-scan "
-Usually SmuView automatically scans all drivers to find suitable
-devices during program startup. This option disables the auto-scan.
-Users can either specify the
+.B "\-D, \-\-dont\-scan"
+Usually
+.B SmuView
+automatically scans all drivers to find suitable devices during program startup.
+This option disables the auto-scan. Users can either specify the
 .B \-\-driver
-option to pick a device at startup, or interactively scan for devices
-after SmuView has finished starting up.
+option to pick a device at startup, or interactively scan for devices after
+.B SmuView
+has finished starting up.
 .TP
-.BR "\-c, \-\-clean"
+.B "\-c, \-\-clean"
 Don't restore previous settings (like views, position and size) on startup.
 .TP
-.BR "\-s, \-\-script " <path_to_smuscript>
+.BI "\-s, \-\-script " FILE
 Specify the SmuScript to load and execute.
 .TP
-.BR "\-\-selftest"
+.B "\-\-selftest"
 Selftest functionality for CI/CD.
 .SH "EXIT STATUS"
 .B SmuView
 exits with 0 on success, 1 on most failures.
 .SH "SEE ALSO"
-\fBsigrok\-cli\fP(1)
+.BR sigrok\-cli (1)
 .SH "BUGS"
-Please report any bugs via Github
+Please report any bugs via GitHub
 .RB "(" https://github.com/knarfS/smuview/issues ")"
 or on the sigrok\-devel mailing list
-.RB "(" sigrok\-devel@lists.souceforge.net ")."
+.RB "(" sigrok\-devel@lists.sourceforge.net ")."
 .SH "LICENSE"
 .B SmuView
 is covered by the GNU General Public License (GPL), version 3 or later.
