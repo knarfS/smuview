@@ -366,6 +366,10 @@ jobs:
           mv SmuView*.AppImage SmuView.AppImage
           chmod +x ./SmuView.AppImage
 
+      - name: Print versions
+        run: |
+          xvfb-run -a ./SmuView.AppImage --version-long
+
       - name: Launch and verify
         run: |
           smuview/ci/scripts/linux/verify_appimage.sh
@@ -420,6 +424,12 @@ jobs:
           Move-Item -Path "SmuView-*-installer.exe" -Destination "SmuView-installer.exe"
           $installDir = "$env:ProgramFiles\SmuView"
           Start-Process -FilePath "SmuView-installer.exe" -ArgumentList "/S /V4 /D=$installDir" -Wait
+
+      - name: Print versions
+        shell: pwsh
+        run: |
+          $exe = "$env:ProgramFiles\SmuView\smuview.exe"
+          & $exe --version-long 2>&1 | ForEach-Object { Write-Output $_ }
 
       - name: Scan install tree for unresolved DLL imports
         shell: pwsh
@@ -485,6 +495,10 @@ jobs:
           hdiutil attach SmuView.dmg -nobrowse -mountpoint /Volumes/SmuView
           cp -R "/Volumes/SmuView/SmuView.app" /Applications/
           hdiutil detach /Volumes/SmuView
+
+      - name: Print versions
+        run: |
+          /Applications/SmuView.app/Contents/MacOS/SmuView --version-long
 
       - name: Scan for unresolved dependencies
         run: |
