@@ -28,7 +28,10 @@ namespace sv {
 namespace utils {
 namespace apputil {
 
-QString get_versions_markdown(DeviceManager &device_manager);
+QString get_versions_md();
+QString get_supported_drivers_md(DeviceManager &device_manager);
+QString get_supported_input_formats_md(DeviceManager &device_manager);
+QString get_supported_output_formats_md(DeviceManager &device_manager);
 
 } // namespace apputil
 } // namespace utils

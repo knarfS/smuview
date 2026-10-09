@@ -172,7 +172,8 @@ QTextBrowser *AboutDialog::get_about_page() const
 QTextBrowser *AboutDialog::get_versions_page() const
 {
 	QTextBrowser *versions_widget = new QTextBrowser();
-	QString version_md = utils::apputil::get_versions_markdown(device_manager_);
+	QString version_md = utils::apputil::get_versions_md();
+	version_md += utils::apputil::get_supported_drivers_md(device_manager_);
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
 	versions_widget->setMarkdown(version_md);
 #else
@@ -313,8 +314,11 @@ QTextBrowser *AboutDialog::get_license_page() const
 
 void AboutDialog::copy_version_info()
 {
+	QString versions = utils::apputil::get_versions_md();
+	versions += utils::apputil::get_supported_drivers_md(device_manager_);
+
 	QClipboard *clipboard = QGuiApplication::clipboard();
-	clipboard->setText(utils::apputil::get_versions_markdown(device_manager_));
+	clipboard->setText(versions);
 }
 
 void AboutDialog::open_manual()

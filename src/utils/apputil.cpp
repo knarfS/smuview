@@ -36,7 +36,7 @@ namespace sv {
 namespace utils {
 namespace apputil {
 
-QString get_versions_markdown(DeviceManager &device_manager)
+QString get_versions_md()
 {
 	char *sr_host = sr_buildinfo_host_get();
 	QString host = QString(sr_host);
@@ -91,39 +91,52 @@ QString get_versions_markdown(DeviceManager &device_manager)
 	g_slist_free(libs_orig);
 	versions += "\n";
 
+	return versions;
+}
+
+QString get_supported_drivers_md(DeviceManager &device_manager)
+{
 	shared_ptr<sigrok::Context> context = device_manager.context();
 
-	versions += "### libsigrok supported hardware drivers\n\n";
+	QString drivers = "### libsigrok supported hardware drivers\n\n";
 	for (const auto &[name, driver] : context->drivers()) {
-		versions += QString("- **%1:** %2\n").arg(
+		drivers += QStringLiteral("- **%1:** %2\n").arg(
 			QString::fromUtf8(name.c_str()),
 			QString::fromUtf8(driver->long_name().c_str()));
 	}
-	versions += "\n";
+	drivers += "\n";
 
-	// No need for input formats (yet?)
-	/*
-	versions += "### libsigrok supported input formats\n\n";
+	return drivers;
+}
+
+QString get_supported_input_formats_md(DeviceManager &device_manager)
+{
+	shared_ptr<sigrok::Context> context = device_manager.context();
+
+	QString inputs = "### libsigrok supported input formats\n\n";
 	for (const auto &[name, input] : context->input_formats()) {
-		versions += QString("- **%1:** %2\n").arg(
+		inputs += QStringLiteral("- **%1:** %2\n").arg(
 			QString::fromUtf8(name.c_str()),
 			QString::fromUtf8(input->description().c_str()));
 	}
-	versions += "\n";
-	*/
+	inputs += "\n";
 
-	/*
-	// No need for output formats (yet?)
-	versions += "### libsigrok supported output formats\n\n";
+	return inputs;
+}
+
+QString get_supported_output_formats_md(DeviceManager &device_manager)
+{
+	shared_ptr<sigrok::Context> context = device_manager.context();
+
+	QString outputs = "### libsigrok supported output formats\n\n";
 	for (const auto &[name, output] : context->output_formats()) {
-		versions += QString("- **%1:** %2\n").arg(
+		outputs += QStringLiteral("- **%1:** %2\n").arg(
 			QString::fromUtf8(name.c_str()),
 			QString::fromUtf8(output->description().c_str()));
 	}
-	versions += "\n";
-	*/
+	outputs += "\n";
 
-	return versions;
+	return outputs;
 }
 
 } // namespace apputil
