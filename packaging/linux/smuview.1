@@ -1,4 +1,4 @@
-.TH SMUVIEW 1 "August 08, 2026"
+.TH SMUVIEW 1 "October 09, 2026"
 .SH "NAME"
 SmuView \- Qt-based source measure unit GUI for sigrok
 .SH "SYNOPSIS"
@@ -36,6 +36,10 @@ Show a help text and exit.
 .B "\-V, \-\-version"
 Show version information and exit.
 .TP
+.BR "\-\-version-long"
+Show extended version information including library versions formatted as
+markdown. Exit afterwards.
+.TP
 .BR "\-d, \-\-driver " <drivername>
 Specify the capture device to connect to.
 .TP
@@ -53,7 +57,7 @@ Don't restore previous settings (like views, position and size) on startup.
 .BR "\-s, \-\-script " <path_to_smuscript>
 Specify the SmuScript to load and execute.
 .TP
-.BR "\-t, \-\-selftest"
+.BR "\-\-selftest"
 Selftest functionality for CI/CD.
 .SH "EXIT STATUS"
 .B SmuView

@@ -18,7 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <cstdio>
 #include <getopt.h>
+#include <iostream>
 #include <memory>
 #include <unistd.h>
 
@@ -40,6 +42,7 @@
 #include "src/mainwindow.hpp"
 #include "src/ui/dialogs/aboutdialog.hpp"
 #include "src/ui/tabs/smuscripttab.hpp"
+#include "src/utils/apputil.hpp"
 
 #ifdef ENABLE_SIGNALS
 #include "src/signalhandler.hpp"
@@ -56,8 +59,14 @@ using std::make_shared;
 using std::shared_ptr;
 using std::string;
 using std::vector;
+using sv::utils::apputil::get_versions_md;
 
 namespace py = pybind11;
+
+enum LongOptionsOnly {
+	OPT_SELFTEST = 1000,
+	OPT_VERSION_LONG
+};
 
 void usage()
 {
@@ -70,12 +79,13 @@ void usage()
 		"\n"
 		"Application Options:\n"
 		"  -V, --version              Show release version\n"
+		"      --version-long         Show release version and library versions as markdown\n"
 		"  -l, --loglevel             Set libsigrok loglevel (0-5, default: 2)\n"
 		"  -d, --driver               Specify the device driver(s) to use\n"
 		"  -D, --dont-scan            Don't auto-scan for devices, use -d spec only\n"
 		"  -s, --script               Specify the SmuScript to load and execute\n"
 		"  -c, --clean                Don't restore previous settings on startup\n"
-		"  -t, --selftest             Selftest function for CI\n"
+		"      --selftest             Selftest function for CI\n"
 		"\n"
 		"Examples:\n"
 		"  %s --driver tecpel-dmm-8061-ser:conn=/dev/ttyUSB0\n"
@@ -231,23 +241,25 @@ int main(int argc, char *argv[])
 
 	Application app(argc, argv);
 
+	static const char *short_options = "h?VDl:d:s:c";
+
+	static const struct option long_options[] = {
+		{ "help", no_argument, nullptr, 'h' },
+		{ "version", no_argument, nullptr, 'V' },
+		{ "loglevel", required_argument, nullptr, 'l' },
+		{ "driver", required_argument, nullptr, 'd' },
+		{ "dont-scan", no_argument, nullptr, 'D' },
+		{ "script", required_argument, nullptr, 's' },
+		{ "clean", no_argument, nullptr, 'c' },
+		{ "selftest", no_argument, nullptr, OPT_SELFTEST },
+		{ "version-long", no_argument, nullptr, OPT_VERSION_LONG },
+		{ nullptr, 0, nullptr, 0 }
+	};
+
 	// Parse arguments
 	while (true) {
-		static const struct option long_options[] = {
-			{ "help", no_argument, nullptr, 'h' },
-			{ "version", no_argument, nullptr, 'V' },
-			{ "loglevel", required_argument, nullptr, 'l' },
-			{ "driver", required_argument, nullptr, 'd' },
-			{ "dont-scan", no_argument, nullptr, 'D' },
-			{ "script", required_argument, nullptr, 's' },
-			{ "clean", no_argument, nullptr, 'c' },
-			{ "selftest", no_argument, nullptr, 't' },
-			{ nullptr, 0, nullptr, 0 }
-		};
-
-		const int arg_char = getopt_long(argc, argv,
-			"h?VDl:d:s:ct", long_options, nullptr);
-
+		const int arg_char = getopt_long(
+			argc, argv, short_options, long_options, nullptr);
 		if (arg_char == -1)
 			break;
 
@@ -289,8 +301,12 @@ int main(int argc, char *argv[])
 			restore_settings = false;
 			break;
 
-		case 't':
+		case OPT_SELFTEST:
 			return selftest();
+
+		case OPT_VERSION_LONG:
+			std::cout << get_versions_md().toStdString();
+			return 0;
 
 		}
 	}
