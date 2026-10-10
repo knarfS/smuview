@@ -122,7 +122,7 @@ jobs:
           pip3 install git+https://github.com/knarfS/pdoc3.git@pybind11_typing
           export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}":"${INSTALL_DIR}/lib"
           # Source versions  and create destination folders
-          source smuview/build/contrib/config_version.sh
+          source smuview/build/ci/scripts/config_version.sh
           mkdir -p api_doc/"${SV_MANUAL_VERSION}"
           # Create script for generating the API doc
           cat > gen_api.py << EOF

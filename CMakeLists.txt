@@ -215,8 +215,8 @@ configure_file(
 )
 
 configure_file(
-	contrib/config_version.sh.in
-	${CMAKE_CURRENT_BINARY_DIR}/contrib/config_version.sh
+	ci/scripts/config_version.sh.in
+	${CMAKE_CURRENT_BINARY_DIR}/ci/scripts/config_version.sh
 )
 
 # Generate DMG plist file

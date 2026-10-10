@@ -179,7 +179,7 @@ jobs:
       - name: Build AppImage
         run: |
           # Source SmuView versions and names
-          source smuview/build/contrib/config_version.sh
+          source smuview/build/ci/scripts/config_version.sh
           smuview/ci/scripts/linux/build_appimage.sh
 
       - name: Upload artifact
@@ -320,7 +320,7 @@ jobs:
       - name: Build DMG
         run: |
           # Source SmuView versions and names
-          source smuview/build/contrib/config_version.sh
+          source smuview/build/ci/scripts/config_version.sh
           smuview/ci/scripts/macos/build_dmg.sh
 
       - name: Upload artifact
