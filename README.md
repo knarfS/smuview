@@ -75,9 +75,9 @@ or in the manual:
 ```bash
 git clone https://github.com/knarfS/smuview.git
 cd smuview
-mkdir build && cd build
-cmake ..
-make
+cmake -B build
+cmake --build build --parallel
+sudo cmake --install build
 ```
 
 ## Documentation

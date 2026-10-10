@@ -112,15 +112,14 @@ jobs:
 
       - name: Build smuview
         run: |
-          mkdir -p smuview/build
-          cd smuview/build
+          cd smuview
           PKG_CONFIG_PATH="${INSTALL_DIR}/lib/pkgconfig" cmake \
             -DCMAKE_INSTALL_PREFIX:PATH="${INSTALL_DIR}" \
             -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
             -DDISABLE_WERROR=FALSE \
             -DENABLE_TESTS=TRUE \
-            ..
-          make -j"$(nproc)"
+            -B build
+          cmake --build build --parallel "$(nproc)"
 
 
   build_appimage:
@@ -163,8 +162,7 @@ jobs:
       - name: Build SmuView
         run: |
           mkdir -p "${APP_DIR}"
-          mkdir -p smuview/build
-          cd smuview/build
+          cd smuview
           PKG_CONFIG_PATH="$INSTALL_DIR/lib/pkgconfig" cmake \
             -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
             -DCMAKE_INSTALL_PREFIX=/usr \
@@ -172,9 +170,9 @@ jobs:
             -DCMAKE_EXPORT_COMPILE_COMMANDS=TRUE \
             -DDISABLE_WERROR=FALSE \
             -DENABLE_TESTS=FALSE \
-            ..
-          make -j"$(nproc)"
-          DESTDIR="${APP_DIR}" make install
+            -B build
+          cmake --build build --parallel "$(nproc)"
+          DESTDIR="${APP_DIR}" cmake --install build
 
       - name: Build AppImage
         run: |
@@ -228,17 +226,16 @@ jobs:
           # We need to find tools in the toolchain. (TODO)
           export PATH="${MXE_DIR}/usr/bin:${PATH}"
           export PKG_CONFIG_PATH_x86_64_w64_mingw32_static_posix="${INSTALL_DIR}/lib/pkgconfig":"${MXE_DIR}/usr/${TOOLCHAIN_TRIPLET}/lib/pkgconfig"
-          mkdir -p smuview/build
-          cd smuview/build
+          cd smuview
           "${TOOLCHAIN_TRIPLET}-cmake" \
             -DCMAKE_INSTALL_PREFIX:PATH="${INSTALL_DIR}" \
             -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
             -DPython_ROOT_DIR="${INSTALL_DIR}/Python3" \
             -DDISABLE_WERROR=FALSE \
             -DENABLE_TESTS=TRUE \
-            ..
-          make -j"$(nproc)"
-          make install/strip
+            -B build
+          "${TOOLCHAIN_TRIPLET}-cmake" --build build --parallel "$(nproc)"
+          "${TOOLCHAIN_TRIPLET}-cmake" --install build --strip
 
       - name: Build NSIS installer
         run: |
@@ -304,8 +301,7 @@ jobs:
 
       - name: Build smuview
         run: |
-          mkdir -p smuview/build
-          cd smuview/build
+          cd smuview
           PKG_CONFIG_PATH="$INSTALL_DIR/lib/pkgconfig" cmake \
             -DCMAKE_INSTALL_PREFIX:PATH="${INSTALL_DIR}" \
             -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
@@ -313,9 +309,9 @@ jobs:
             -DPython_EXECUTABLE="${INSTALL_DIR}/Frameworks/Python.framework/Versions/3.14/bin/python3" \
             -DDISABLE_WERROR=FALSE \
             -DENABLE_TESTS=TRUE \
-            ..
-          make -j"$(sysctl -n hw.ncpu)"
-          make install
+            -B build
+          cmake --build build --parallel "$(sysctl -n hw.ncpu)"
+          cmake --install build
 
       - name: Build DMG
         run: |

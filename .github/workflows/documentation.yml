@@ -58,16 +58,15 @@ jobs:
 
       - name: Build manual
         run: |
-          mkdir -p smuview/build
-          cd smuview/build
+          cd smuview
           PKG_CONFIG_PATH="${INSTALL_DIR}/lib/pkgconfig" cmake \
             -DCMAKE_INSTALL_PREFIX:PATH="${INSTALL_DIR}" \
             -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
             -DDISABLE_WERROR=FALSE \
             -DENABLE_TESTS=FALSE \
-            ..
-          make manual
-          make manual-publish
+            -B build
+          cmake --build build --target manual
+          cmake --build build --target manual-publish
 
       - name: Upload artifact
         uses: actions/upload-artifact@v7
@@ -105,16 +104,15 @@ jobs:
 
       - name: Build smuview
         run: |
-          mkdir -p smuview/build
-          cd smuview/build
+          cd smuview
           PKG_CONFIG_PATH="${INSTALL_DIR}/lib/pkgconfig" cmake \
             -DCMAKE_INSTALL_PREFIX:PATH="${INSTALL_DIR}" \
             -DCMAKE_BUILD_TYPE="${BUILD_TYPE}" \
             -DDISABLE_WERROR=FALSE \
             -DENABLE_TESTS=FALSE \
-            ..
-          make -j"$(nproc)"
-          make install
+            -B build
+          cmake --build build --parallel "$(nproc)"
+          cmake --install build
 
       - name: Build API doc
         run: |
