@@ -121,6 +121,10 @@ jobs:
             -B build
           cmake --build build --parallel "$(nproc)"
 
+      - name: Run tests
+        run: |
+          smuview/build/test/smuview-test
+
 
   build_appimage:
     name: "AppImage build (${{ matrix.target.target }})"
@@ -312,6 +316,10 @@ jobs:
             -B build
           cmake --build build --parallel "$(sysctl -n hw.ncpu)"
           cmake --install build
+
+      - name: Run tests
+        run: |
+          smuview/build/test/smuview-test
 
       - name: Build DMG
         run: |
