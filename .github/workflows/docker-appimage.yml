@@ -18,6 +18,7 @@ jobs:
     name: Build and push smuview/appimage-builder:${{ inputs.tag }}
 
     runs-on: ubuntu-latest
+
     permissions:
       contents: read
       packages: write
@@ -29,6 +30,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Set up QEMU (for cross-arch build)
         uses: docker/setup-qemu-action@v4
@@ -45,11 +48,14 @@ jobs:
 
       - name: Compute image name and tags
         id: meta
+        env:
+          TAG: ${{ inputs.tag }}
+          LATEST: ${{ inputs.latest }}
         run: |
           # GHCR requires lowercase repository names
           IMAGE="ghcr.io/knarfs/smuview/appimage-builder"
-          TAGS="${IMAGE}:${{ inputs.tag }}"
-          if [ "${{ inputs.latest }}" = "true" ]; then
+          TAGS="${IMAGE}:${TAG}"
+          if [ "${LATEST}" = "true" ]; then
             TAGS="${TAGS},${IMAGE}:latest"
           fi
           echo "tags=${TAGS}" >> "$GITHUB_OUTPUT"
