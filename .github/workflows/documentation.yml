@@ -65,7 +65,6 @@ jobs:
             -DDISABLE_WERROR=FALSE \
             -DENABLE_TESTS=FALSE \
             -B build
-          cmake --build build --target manual
           cmake --build build --target manual-publish
 
       - name: Upload artifact

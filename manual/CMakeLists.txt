@@ -103,6 +103,7 @@ endif ()
 
 set(MANUAL_PUP_DIR "${CMAKE_BINARY_DIR}/manual_publish/${SV_MANUAL_VERSION}")
 add_custom_target(manual-publish)
+add_dependencies(manual-publish manual)
 add_custom_command(TARGET manual-publish PRE_BUILD
 	COMMAND ${CMAKE_COMMAND} -E make_directory ${MANUAL_PUP_DIR}
 	COMMAND ${CMAKE_COMMAND} -E copy ${MANUAL_OUT_HTML} ${MANUAL_PUP_DIR}
