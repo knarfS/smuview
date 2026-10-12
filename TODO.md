@@ -15,8 +15,8 @@
 
 ## ToDo Build
 
+- Use `ctest` for test execution
 - pdoc3 / pybind11 is generating incomplete binding docs (https://github.com/knarfS/knarfS.github.io/commit/5e761cbeafec1a793a5cf4337bff09f3b5a6e308)
-- Integrate udev rules to AppImage
 - Remove relative paths (`./smuview/build/` and `../smuview/`) in `macos/build_dmg.sh` and pass in `${SV_SOURCE_DIR}` and `${SV_BUILD_DIR}`
 - Remove hard coded python version in installers (nsis, build-appimage.sh)
 - Windows verification window title not reliable
@@ -36,6 +36,8 @@
 
 ## ToDo
 
+- Fix test/util.cpp and specify a test execution strategie with boost.test,
+  Qt test framework for unit tests and ctest.
 - move open device from `WelcomeTab::on_add_device` and `DeviceView::on_action_add_device_triggered`
   to a common static helper function
 - User better titels for views. Depending on the device (actual device, user device),
@@ -104,6 +106,9 @@
 
 ## Documentation
 
+- "Build from source" section is working, but outdated. Either describe the
+  build of `libserialport`, `libsigrok` and `smuview` or add build script to
+  the smuview repo (e.g. `ci/` or `packaging`)
 - PlotAxisDialog: Screenshot, system locale for double inputs
 - PlotConfigDialog: Screenshot, system locale for double inputs
 - Include manual with DMG, AppImage, Windows installer
@@ -191,6 +196,7 @@
   # ...
   OutFile "SmuView-${SV_VERSION_STRING}${TARGET}-installer.exe"
   ```
+- Integrate udev rules to AppImage
 
 
 # libsigrok
