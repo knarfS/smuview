@@ -175,22 +175,25 @@ jobs:
         uses: actions/checkout@v7
         with:
           repository: knarfS/knarfS.github.io
+          ref: master
           path: knarfS.github.io
-          persist-credentials: false
+          ssh-key: ${{ secrets.KNARFS_GITHUB_IO_DEPLOY_KEY }}
 
       - name: Copy documentation
         run: |
+          mkdir -p knarfS.github.io/doc/smuview
           cp -r SmuView_manual/* knarfS.github.io/doc/smuview
           cp -r SmuView_Python_API/* knarfS.github.io/doc/smuview
 
       - name: Publish documentation
-        uses: cpina/github-action-push-to-another-repository@main
-        env:
-          SSH_DEPLOY_KEY: ${{ secrets.KNARFS_GITHUB_IO_DEPLOY_KEY }}
-        with:
-          source-directory: "knarfS.github.io"
-          destination-github-username: "knarfS"
-          destination-repository-name: "knarfS.github.io"
-          user-email: "frank-stettner@gmx.net"
-          target-branch: "master"
-          commit-message: "Automated update for ORIGIN_COMMIT"
+        run: |
+          cd knarfS.github.io
+          git config user.name "Frank Stettner"
+          git config user.email "frank-stettner@gmx.net"
+          git add --all doc/smuview
+          if git diff --cached --quiet; then
+            echo "No documentation changes to publish."
+            exit 0
+          fi
+          git commit --message "Automated update for ${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}"
+          git push origin HEAD:master
