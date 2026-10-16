@@ -244,8 +244,8 @@ void init_Enums(py::module &module)
 	module.attr("__pdoc__")["Quantity.Temperature"] = "Temperature";
 	py_quantity.value("Frequency", sv::data::Quantity::Frequency);
 	module.attr("__pdoc__")["Quantity.Frequency"] = "Frequency";
-	py_quantity.value("DutyCyle", sv::data::Quantity::DutyCyle);
-	module.attr("__pdoc__")["Quantity.DutyCyle"] = "DutyCyle";
+	py_quantity.value("DutyCycle", sv::data::Quantity::DutyCycle);
+	module.attr("__pdoc__")["Quantity.DutyCycle"] = "DutyCycle";
 	py_quantity.value("Continuity", sv::data::Quantity::Continuity);
 	module.attr("__pdoc__")["Quantity.Continuity"] = "Continuity";
 	py_quantity.value("PulseWidth", sv::data::Quantity::PulseWidth);

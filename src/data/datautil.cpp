@@ -40,7 +40,7 @@ static const std::vector<QuantityMapping> quantity_map = {
 	{ Quantity::Capacitance,         sigrok::Quantity::CAPACITANCE,          QString("Capacitance"),          { Unit::Farad } },
 	{ Quantity::Temperature,         sigrok::Quantity::TEMPERATURE,          QString("Temperature"),          { Unit::Kelvin, Unit::Celsius, Unit::Fahrenheit} },
 	{ Quantity::Frequency,           sigrok::Quantity::FREQUENCY,            QString("Frequency"),            { Unit::Hertz } },
-	{ Quantity::DutyCyle,            sigrok::Quantity::DUTY_CYCLE,           QString("Duty Cycle"),           { Unit::Percentage } },
+	{ Quantity::DutyCycle,           sigrok::Quantity::DUTY_CYCLE,           QString("Duty Cycle"),           { Unit::Percentage } },
 	{ Quantity::Continuity,          sigrok::Quantity::CONTINUITY,           QString("Continuity"),           { Unit::Ohm, Unit::Boolean } },
 	{ Quantity::PulseWidth,          sigrok::Quantity::PULSE_WIDTH,          QString("Pulse Width"),          { Unit::Percentage } },
 	{ Quantity::Conductance,         sigrok::Quantity::CONDUCTANCE,          QString("Conductance"),          { Unit::Siemens } },

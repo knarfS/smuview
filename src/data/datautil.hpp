@@ -69,7 +69,7 @@ enum class Quantity
 	Capacitance,
 	Temperature,
 	Frequency,
-	DutyCyle,
+	DutyCycle,
 	Continuity,
 	PulseWidth,
 	Conductance,
