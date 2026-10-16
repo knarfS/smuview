@@ -281,6 +281,7 @@ set(smuview_SOURCES
 	src/utils/apputil.cpp
 
 	src/python/bindings.cpp
+	src/python/bindingsenums.cpp
 	src/python/pystreambuf.cpp
 	src/python/pystreamredirect.hpp
 	src/python/smuscriptrunner.cpp

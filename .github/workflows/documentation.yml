@@ -7,6 +7,7 @@ on:
     paths:
       - "manual/**"
       - "src/python/bindings.cpp"
+      - "src/python/bindingsenums.cpp"
   workflow_dispatch:
 
 permissions:

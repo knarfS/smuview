@@ -31,6 +31,5 @@ void init_Signal(py::module &module);
 void init_Configurable(py::module &module);
 void init_UI(py::module &module);
 void init_StreamBuf(py::module &module);
-void init_Enums(py::module &module);
 
 #endif // PYTHON_BINDINGS_HPP
