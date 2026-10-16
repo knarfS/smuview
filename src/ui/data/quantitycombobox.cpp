@@ -50,9 +50,8 @@ sv::data::Quantity QuantityComboBox::selected_quantity()
 
 void QuantityComboBox::setup_ui()
 {
-	for (const auto &q_name_pair : sv::data::datautil::get_quantity_name_map()) {
-		this->addItem(
-			q_name_pair.second, QVariant::fromValue(q_name_pair.first));
+	for (const auto &entry : sv::data::datautil::get_quantity_map()) {
+		this->addItem(entry.name, QVariant::fromValue(entry.quantity));
 	}
 }
 

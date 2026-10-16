@@ -70,11 +70,11 @@ void QuantityFlagsList::setup_ui()
 {
 	this->setSelectionMode(QListView::MultiSelection);
 
-	for (const auto &qf_name_pair : sv::data::datautil::get_quantity_flag_name_map()) {
+	for (const auto &entry : sv::data::datautil::get_quantity_flag_map()) {
 		QListWidgetItem *item = new QListWidgetItem();
-		item->setText(qf_name_pair.second);
+		item->setText(entry.name);
 		item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
-		item->setData(Qt::UserRole, QVariant::fromValue(qf_name_pair.first));
+		item->setData(Qt::UserRole, QVariant::fromValue(entry.quantity_flag));
 		this->addItem(item);
 	}
 }

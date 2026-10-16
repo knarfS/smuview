@@ -948,6 +948,8 @@ void init_Enums(py::module &module)
 	module.attr("__pdoc__")["DataType.Int32"] = "Int32";
 	py_data_type.value("MQ", sv::data::DataType::MQ);
 	module.attr("__pdoc__")["DataType.MQ"] = "MQ";
+	py_data_type.value("UInt32", sv::data::DataType::UInt32);
+	module.attr("__pdoc__")["DataType.UInt32"] = "UInt32";
 	py_data_type.value("Unknown", sv::data::DataType::Unknown);
 	module.attr("__pdoc__")["DataType.Unknown"] = "Unknown";
 

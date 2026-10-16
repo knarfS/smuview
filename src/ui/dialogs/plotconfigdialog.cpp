@@ -292,37 +292,37 @@ void PlotConfigDialog::setup_ui_curve_colors_tab()
 	color_table_->setSelectionMode(QTableWidget::NoSelection);
 	color_table_->setItemDelegateForColumn(1, new ColorItemDelegate());
 
-	for (const auto &q_n_pair : data::datautil::get_quantity_name_map()) {
+	for (const auto &entry : data::datautil::get_quantity_map()) {
 		int last_row = color_table_->rowCount();
 		color_table_->insertRow(last_row);
-		QTableWidgetItem *quantity_item = new QTableWidgetItem(q_n_pair.second);
+		QTableWidgetItem *quantity_item = new QTableWidgetItem(entry.name);
 		quantity_item->setData(Qt::UserRole, QString("%1_0").arg(
-			data::datautil::get_sr_quantity_id(q_n_pair.first)));
+			data::datautil::get_sr_quantity_id(entry.quantity)));
 		quantity_item->setFlags(quantity_item->flags() ^ Qt::ItemIsEditable);
 		color_table_->setItem(last_row, 0, quantity_item);
-		QTableWidgetItem *color_item = new QTableWidgetItem(q_n_pair.second);
+		QTableWidgetItem *color_item = new QTableWidgetItem(entry.name);
 		color_item->setData(Qt::EditRole, widgets::plot::Curve::default_color(
-			q_n_pair.first, set<data::QuantityFlag>()));
+			entry.quantity, set<data::QuantityFlag>()));
 		color_table_->setItem(last_row, 1, color_item);
 
 		// For Voltage and Current, we want to make AC/DC also configurable.
-		if (q_n_pair.first == data::Quantity::Voltage ||
-				q_n_pair.first == data::Quantity::Current) {
+		if (entry.quantity == data::Quantity::Voltage ||
+				entry.quantity == data::Quantity::Current) {
 			for (auto const &qf : {data::QuantityFlag::AC, data::QuantityFlag::DC}) {
 				QString name = QString("%1 %2").arg(
-					q_n_pair.second, data::datautil::format_quantity_flag(qf));
+					entry.name, data::datautil::format_quantity_flag(qf));
 				auto qfs = set<data::QuantityFlag>{qf};
 				last_row = color_table_->rowCount();
 				color_table_->insertRow(last_row);
 				QTableWidgetItem *q_item = new QTableWidgetItem(name);
 				q_item->setData(Qt::UserRole, QString("%1_%2").
-					arg(data::datautil::get_sr_quantity_id(q_n_pair.first)).
+					arg(data::datautil::get_sr_quantity_id(entry.quantity)).
 					arg(data::datautil::get_sr_quantity_flags_id(qfs)));
 				q_item->setFlags(q_item->flags() ^ Qt::ItemIsEditable);
 				color_table_->setItem(last_row, 0, q_item);
 				QTableWidgetItem *c_item = new QTableWidgetItem(name);
 				c_item->setData(Qt::EditRole,
-					widgets::plot::Curve::default_color(q_n_pair.first, qfs));
+					widgets::plot::Curve::default_color(entry.quantity, qfs));
 				color_table_->setItem(last_row, 1, c_item);
 			}
 		}

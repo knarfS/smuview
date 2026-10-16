@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2012 Joel Holdsworth <joel@airwebreathe.org.uk>
  * Copyright (C) 2016 Soeren Apel <soeren@apelpie.net>
- * Copyright (C) 2017-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,17 +22,14 @@
 #ifndef DATA_DATAUTIL_HPP
 #define DATA_DATAUTIL_HPP
 
-#include <map>
 #include <set>
 #include <vector>
 #include <utility>
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
-#include <QObject>
 #include <QString>
 
-using std::map;
 using std::pair;
 using std::set;
 using std::vector;
@@ -237,6 +234,7 @@ enum class DataType
 	DoubleRange,
 	Int32,
 	MQ,
+	UInt32,
 	Unknown,
 };
 
@@ -251,454 +249,63 @@ typedef pair<uint64_t, uint64_t> uint64_range_t;
 
 namespace datautil {
 
-typedef map<Quantity, QString> quantity_name_map_t;
-typedef map<QuantityFlag, QString> quantity_flag_name_map_t;
-typedef map<Unit, QString> unit_name_map_t;
-typedef map<DataType, QString> data_type_name_map_t;
-
-namespace {
-
-typedef map<Quantity, set<Unit>> quantity_unit_map_t;
-
-// TODO: Use tr(), QCoreApplication::translate(), QT_TR_NOOP() or
-//       QT_TRANSLATE_NOOP() for translation.
-//       See: http://doc.qt.io/qt-5/i18n-source-translation.html
-quantity_name_map_t quantity_name_map = {
-	{ Quantity::Voltage, QString("Voltage") },
-	{ Quantity::Current, QString("Current") },
-	{ Quantity::Resistance, QString("Resistance") },
-	{ Quantity::Capacitance, QString("Capacitance") },
-	{ Quantity::Temperature, QString("Temperature") },
-	{ Quantity::Frequency, QString("Frequency") },
-	{ Quantity::DutyCyle, QString("Duty Cycle") },
-	{ Quantity::Continuity, QString("Continuity") },
-	{ Quantity::PulseWidth, QString("Pulse Width") },
-	{ Quantity::Conductance, QString("Conductance") },
-	{ Quantity::Power, QString("Power") },
-	{ Quantity::ElectricCharge, QString("Electric Charge") },
-	{ Quantity::Gain, QString("Gain") },
-	{ Quantity::SoundPressureLevel, QString("Sound Pressure Level") },
-	{ Quantity::CarbonMonoxide, QString("Carbon Monoxide") },
-	{ Quantity::RelativeHumidity, QString("Relative Humidity") },
-	{ Quantity::Time, QString("Time") },
-	{ Quantity::WindSpeed, QString("Wind Speed") },
-	{ Quantity::Pressure, QString("Pressure") },
-	{ Quantity::ParallelInductance, QString("Parallel Inductance") },
-	{ Quantity::ParallelCapacitance, QString("Parallel Capacitance") },
-	{ Quantity::ParallelResistance, QString("Parallel Resistance") },
-	{ Quantity::SeriesInductance, QString("Series Inductance") },
-	{ Quantity::SeriesCapacitance, QString("Series Capacitance") },
-	{ Quantity::SeriesResistance, QString("Series Resistance") },
-	{ Quantity::DissipationFactor, QString("Dissipation Factor") },
-	{ Quantity::QualityFactor, QString("Quality Factor") },
-	{ Quantity::PhaseAngle, QString("Phase Angle") },
-	{ Quantity::Difference, QString("Difference") },
-	{ Quantity::Count, QString("Count") },
-	{ Quantity::PowerFactor, QString("Power Factor") },
-	{ Quantity::ApparentPower, QString("Apparent Power") },
-	{ Quantity::Mass, QString("Mass") },
-	{ Quantity::HarmonicRatio, QString("Harmonic Ratio") },
-	{ Quantity::Energy, QString("Energy") },
-	{ Quantity::Unknown, QString("Unknown") },
+struct QuantityMapping
+{
+	Quantity quantity;
+	const sigrok::Quantity *sr_quantity;
+	const QString name;
+	set<Unit> units;
 };
 
-quantity_flag_name_map_t quantity_flag_name_map = {
-	{ QuantityFlag::AC, QString("AC") },
-	{ QuantityFlag::DC, QString("DC") },
-	{ QuantityFlag::RMS, QString("RMS") },
-	{ QuantityFlag::Diode, QString("Diode") },
-	{ QuantityFlag::Hold, QString("Hold") },
-	{ QuantityFlag::Max, QString("max") },
-	{ QuantityFlag::Min, QString("min") },
-	{ QuantityFlag::Autorange, QString("Autorange") },
-	{ QuantityFlag::Relative, QString("Relative") },
-	{ QuantityFlag::SplFreqWeightA, QString("SPL A-weighted F") },
-	{ QuantityFlag::SplFreqWeightC, QString("SPL C-weighted F") },
-	{ QuantityFlag::SplFreqWeightZ, QString("SPL Z-weighted F") },
-	{ QuantityFlag::SplFreqWeightFlat, QString("SPL flat weighted") },
-	{ QuantityFlag::SplTimeWeightS, QString("SPL S-weighted t") },
-	{ QuantityFlag::SplTimeWeightF, QString("SPL F-weighted t") },
-	{ QuantityFlag::SplLAT, QString("SPL LAT") },
-	{ QuantityFlag::SplPctOverAlarm, QString("SPL Over%") },
-	{ QuantityFlag::Duration, QString("Duration") },
-	{ QuantityFlag::Avg, QString("avg") },
-	{ QuantityFlag::Reference, QString("Reference") },
-	{ QuantityFlag::Unstable, QString("Unstable") },
-	{ QuantityFlag::FourWire, QString("4W") },
-	{ QuantityFlag::Unknown, QString("Unknown") },
+struct QuantityFlagMapping
+{
+	QuantityFlag quantity_flag;
+	const sigrok::QuantityFlag *sr_quantity_flag;
+	const QString name;
 };
 
-unit_name_map_t unit_name_map = {
-	{ Unit::Volt, QString("V") },
-	{ Unit::Ampere, QString("A") },
-	{ Unit::Ohm, QString::fromUtf8("\u2126") },
-	{ Unit::Farad, QString("F") },
-	{ Unit::Kelvin, QString("K") },
-	{ Unit::Celsius, QString("°C") },
-	{ Unit::Fahrenheit, QString("°F") },
-	{ Unit::Hertz, QString("Hz") },
-	{ Unit::Percentage, QString("%") },
-	{ Unit::Boolean, QString("bool") },
-	{ Unit::Second, QString("s") },
-	{ Unit::Siemens, QString("S") },
-	{ Unit::DecibelMW, QString("dBm") },
-	{ Unit::DecibelVolt, QString("dBV") },
-	{ Unit::Unitless, QString("") },
-	{ Unit::DecibelSpl, QString("dB") },
-	{ Unit::Concentration, QString("ppx") },
-	{ Unit::RevolutionsPerMinute, QString("RPM") },
-	{ Unit::VoltAmpere, QString("VA") },
-	{ Unit::Watt, QString("W") },
-	{ Unit::WattHour, QString("Wh") },
-	{ Unit::MeterPerSecond, QString("m/s") },
-	{ Unit::HectoPascal, QString("hPa") },
-	{ Unit::Humidity293K, QString("%") },
-	{ Unit::Degree, QString("°") },
-	{ Unit::Henry, QString("H") },
-	{ Unit::Gram, QString("g") },
-	{ Unit::Carat, QString("ct") },
-	{ Unit::Ounce, QString("oz.") },
-	{ Unit::TroyOunce, QString("oz.tr.") },
-	{ Unit::Pound, QString("lb") },
-	{ Unit::Pennyweight, QString("dwt.") },
-	{ Unit::Grain, QString("gr.") },
-	{ Unit::Tael, QString::fromUtf8("\u4E24") },
-	{ Unit::Momme, QString::fromUtf8("\u5301") },
-	{ Unit::Tola, QString("tola") },
-	{ Unit::Piece, QString("pc.") },
-	{ Unit::Joule, QString("J") },
-	{ Unit::AmpereHour, QString("Ah") },
-	{ Unit::Coulomb, QString("C") },
-	// TODO: Implement in libsigrok
-	//{ Unit::Decibel, QString("dB") },
-	{ Unit::Unknown, QString("??") },
+struct UnitMapping
+{
+	Unit unit;
+	const sigrok::Unit *sr_unit;
+	const QString name;
 };
 
-data_type_name_map_t data_type_name_map = {
-	{ DataType::UInt64, QString("UInt64") },
-	{ DataType::String, QString("String") },
-	{ DataType::Bool, QString("Boolean") },
-	{ DataType::Double, QString("Double") },
-	{ DataType::RationalPeriod, QString("Rational Period") },
-	{ DataType::RationalVolt, QString("Rational Volt") },
-	{ DataType::KeyValue, QString("Key Value") },
-	{ DataType::UInt64Range, QString("UInt64 Range") },
-	{ DataType::DoubleRange, QString("Double Range") },
-	{ DataType::Int32, QString("Int32") },
-	{ DataType::MQ, QString("Measured Quantity") },
-	{ DataType::Unknown, QString("Unknown") },
+struct DataTypeMapping
+{
+	DataType data_type;
+	const sigrok::DataType *sr_data_type;
+	const QString name;
 };
 
-map<const sigrok::Quantity *, Quantity> sr_quantity_quantity_map = {
-	{ sigrok::Quantity::VOLTAGE, Quantity::Voltage },
-	{ sigrok::Quantity::CURRENT, Quantity::Current },
-	{ sigrok::Quantity::RESISTANCE, Quantity::Resistance },
-	{ sigrok::Quantity::CAPACITANCE, Quantity::Capacitance },
-	{ sigrok::Quantity::TEMPERATURE, Quantity::Temperature },
-	{ sigrok::Quantity::FREQUENCY, Quantity::Frequency },
-	{ sigrok::Quantity::DUTY_CYCLE, Quantity::DutyCyle },
-	{ sigrok::Quantity::CONTINUITY, Quantity::Continuity },
-	{ sigrok::Quantity::PULSE_WIDTH, Quantity::PulseWidth },
-	{ sigrok::Quantity::CONDUCTANCE, Quantity::Conductance },
-	{ sigrok::Quantity::POWER, Quantity::Power },
-	{ sigrok::Quantity::GAIN, Quantity::Gain },
-	{ sigrok::Quantity::SOUND_PRESSURE_LEVEL, Quantity::SoundPressureLevel },
-	{ sigrok::Quantity::CARBON_MONOXIDE, Quantity::CarbonMonoxide },
-	{ sigrok::Quantity::RELATIVE_HUMIDITY, Quantity::RelativeHumidity },
-	{ sigrok::Quantity::TIME, Quantity::Time },
-	{ sigrok::Quantity::WIND_SPEED, Quantity::WindSpeed },
-	{ sigrok::Quantity::PRESSURE, Quantity::Pressure },
-	{ sigrok::Quantity::PARALLEL_INDUCTANCE, Quantity::ParallelInductance },
-	{ sigrok::Quantity::PARALLEL_CAPACITANCE, Quantity::ParallelCapacitance },
-	{ sigrok::Quantity::PARALLEL_RESISTANCE, Quantity::ParallelResistance },
-	{ sigrok::Quantity::SERIES_INDUCTANCE, Quantity::SeriesInductance },
-	{ sigrok::Quantity::SERIES_CAPACITANCE, Quantity::SeriesCapacitance },
-	{ sigrok::Quantity::SERIES_RESISTANCE, Quantity::SeriesResistance },
-	{ sigrok::Quantity::DISSIPATION_FACTOR, Quantity::DissipationFactor },
-	{ sigrok::Quantity::QUALITY_FACTOR, Quantity::QualityFactor },
-	{ sigrok::Quantity::PHASE_ANGLE, Quantity::PhaseAngle },
-	{ sigrok::Quantity::DIFFERENCE, Quantity::Difference },
-	{ sigrok::Quantity::COUNT, Quantity::Count },
-	{ sigrok::Quantity::POWER_FACTOR, Quantity::PowerFactor },
-	{ sigrok::Quantity::APPARENT_POWER, Quantity::ApparentPower },
-	{ sigrok::Quantity::MASS, Quantity::Mass },
-	{ sigrok::Quantity::HARMONIC_RATIO, Quantity::HarmonicRatio },
-	{ sigrok::Quantity::ENERGY, Quantity::Energy },
-	{ sigrok::Quantity::ELECTRIC_CHARGE, Quantity::ElectricCharge },
-};
-
-map<Quantity, const sigrok::Quantity *> quantity_sr_quantity_map = {
-	{ Quantity::Voltage, sigrok::Quantity::VOLTAGE },
-	{ Quantity::Current, sigrok::Quantity::CURRENT },
-	{ Quantity::Resistance, sigrok::Quantity::RESISTANCE },
-	{ Quantity::Capacitance, sigrok::Quantity::CAPACITANCE },
-	{ Quantity::Temperature, sigrok::Quantity::TEMPERATURE },
-	{ Quantity::Frequency, sigrok::Quantity::FREQUENCY },
-	{ Quantity::DutyCyle, sigrok::Quantity::DUTY_CYCLE },
-	{ Quantity::Continuity, sigrok::Quantity::CONTINUITY },
-	{ Quantity::PulseWidth, sigrok::Quantity::PULSE_WIDTH },
-	{ Quantity::Conductance, sigrok::Quantity::CONDUCTANCE },
-	{ Quantity::Power, sigrok::Quantity::POWER },
-	{ Quantity::Gain, sigrok::Quantity::GAIN },
-	{ Quantity::SoundPressureLevel, sigrok::Quantity::SOUND_PRESSURE_LEVEL },
-	{ Quantity::CarbonMonoxide, sigrok::Quantity::CARBON_MONOXIDE },
-	{ Quantity::RelativeHumidity, sigrok::Quantity::RELATIVE_HUMIDITY },
-	{ Quantity::Time, sigrok::Quantity::TIME },
-	{ Quantity::WindSpeed, sigrok::Quantity::WIND_SPEED },
-	{ Quantity::Pressure, sigrok::Quantity::PRESSURE },
-	{ Quantity::ParallelInductance, sigrok::Quantity::PARALLEL_INDUCTANCE },
-	{ Quantity::ParallelCapacitance, sigrok::Quantity::PARALLEL_CAPACITANCE },
-	{ Quantity::ParallelResistance, sigrok::Quantity::PARALLEL_RESISTANCE },
-	{ Quantity::SeriesInductance, sigrok::Quantity::SERIES_INDUCTANCE },
-	{ Quantity::SeriesCapacitance,  sigrok::Quantity::SERIES_CAPACITANCE },
-	{ Quantity::SeriesResistance, sigrok::Quantity::SERIES_RESISTANCE },
-	{ Quantity::DissipationFactor, sigrok::Quantity::DISSIPATION_FACTOR },
-	{ Quantity::QualityFactor, sigrok::Quantity::QUALITY_FACTOR },
-	{ Quantity::PhaseAngle, sigrok::Quantity::PHASE_ANGLE },
-	{ Quantity::Difference, sigrok::Quantity::DIFFERENCE },
-	{ Quantity::Count, sigrok::Quantity::COUNT },
-	{ Quantity::PowerFactor, sigrok::Quantity::POWER_FACTOR },
-	{ Quantity::ApparentPower, sigrok::Quantity::APPARENT_POWER },
-	{ Quantity::Mass, sigrok::Quantity::MASS },
-	{ Quantity::HarmonicRatio, sigrok::Quantity::HARMONIC_RATIO },
-	{ Quantity::Energy, sigrok::Quantity::ENERGY },
-	{ Quantity::ElectricCharge, sigrok::Quantity::ELECTRIC_CHARGE },
-
-};
-
-map<const sigrok::QuantityFlag *, QuantityFlag> sr_quantity_flag_quantity_flag_map = {
-	{ sigrok::QuantityFlag::AC, QuantityFlag::AC },
-	{ sigrok::QuantityFlag::DC, QuantityFlag::DC },
-	{ sigrok::QuantityFlag::RMS, QuantityFlag::RMS },
-	{ sigrok::QuantityFlag::DIODE, QuantityFlag::Diode },
-	{ sigrok::QuantityFlag::HOLD, QuantityFlag::Hold },
-	{ sigrok::QuantityFlag::MAX, QuantityFlag::Max },
-	{ sigrok::QuantityFlag::MIN, QuantityFlag::Min },
-	{ sigrok::QuantityFlag::AUTORANGE, QuantityFlag::Autorange },
-	{ sigrok::QuantityFlag::RELATIVE, QuantityFlag::Relative },
-	{ sigrok::QuantityFlag::SPL_FREQ_WEIGHT_A, QuantityFlag::SplFreqWeightA },
-	{ sigrok::QuantityFlag::SPL_FREQ_WEIGHT_C, QuantityFlag::SplFreqWeightC },
-	{ sigrok::QuantityFlag::SPL_FREQ_WEIGHT_Z, QuantityFlag::SplFreqWeightZ },
-	{ sigrok::QuantityFlag::SPL_FREQ_WEIGHT_FLAT, QuantityFlag::SplFreqWeightFlat },
-	{ sigrok::QuantityFlag::SPL_TIME_WEIGHT_S, QuantityFlag::SplTimeWeightS },
-	{ sigrok::QuantityFlag::SPL_TIME_WEIGHT_F, QuantityFlag::SplTimeWeightF },
-	{ sigrok::QuantityFlag::SPL_LAT, QuantityFlag::SplLAT },
-	{ sigrok::QuantityFlag::SPL_PCT_OVER_ALARM, QuantityFlag::SplPctOverAlarm },
-	{ sigrok::QuantityFlag::DURATION, QuantityFlag::Duration },
-	{ sigrok::QuantityFlag::AVG, QuantityFlag::Avg },
-	{ sigrok::QuantityFlag::REFERENCE, QuantityFlag::Reference },
-	{ sigrok::QuantityFlag::UNSTABLE, QuantityFlag::Unstable },
-	{ sigrok::QuantityFlag::FOUR_WIRE, QuantityFlag::FourWire },
-};
-
-map<QuantityFlag, const sigrok::QuantityFlag *> quantity_flag_sr_quantity_flag_map = {
-	{ QuantityFlag::AC, sigrok::QuantityFlag::AC },
-	{ QuantityFlag::DC, sigrok::QuantityFlag::DC },
-	{ QuantityFlag::RMS, sigrok::QuantityFlag::RMS },
-	{ QuantityFlag::Diode, sigrok::QuantityFlag::DIODE },
-	{ QuantityFlag::Hold, sigrok::QuantityFlag::HOLD },
-	{ QuantityFlag::Max, sigrok::QuantityFlag::MAX },
-	{ QuantityFlag::Min, sigrok::QuantityFlag::MIN },
-	{ QuantityFlag::Autorange, sigrok::QuantityFlag::AUTORANGE },
-	{ QuantityFlag::Relative, sigrok::QuantityFlag::RELATIVE },
-	{ QuantityFlag::SplFreqWeightA, sigrok::QuantityFlag::SPL_FREQ_WEIGHT_A },
-	{ QuantityFlag::SplFreqWeightC, sigrok::QuantityFlag::SPL_FREQ_WEIGHT_C },
-	{ QuantityFlag::SplFreqWeightZ, sigrok::QuantityFlag::SPL_FREQ_WEIGHT_Z },
-	{ QuantityFlag::SplFreqWeightFlat, sigrok::QuantityFlag::SPL_FREQ_WEIGHT_FLAT },
-	{ QuantityFlag::SplTimeWeightS, sigrok::QuantityFlag::SPL_TIME_WEIGHT_S },
-	{ QuantityFlag::SplTimeWeightF, sigrok::QuantityFlag::SPL_TIME_WEIGHT_F },
-	{ QuantityFlag::SplLAT, sigrok::QuantityFlag::SPL_LAT },
-	{ QuantityFlag::SplPctOverAlarm, sigrok::QuantityFlag::SPL_PCT_OVER_ALARM },
-	{ QuantityFlag::Duration, sigrok::QuantityFlag::DURATION },
-	{ QuantityFlag::Avg, sigrok::QuantityFlag::AVG },
-	{ QuantityFlag::Reference, sigrok::QuantityFlag::REFERENCE },
-	{ QuantityFlag::Unstable, sigrok::QuantityFlag::UNSTABLE },
-	{ QuantityFlag::FourWire, sigrok::QuantityFlag::FOUR_WIRE },
-};
-
-map<const sigrok::Unit *, Unit> sr_unit_unit_map = {
-	{ sigrok::Unit::VOLT, Unit::Volt },
-	{ sigrok::Unit::AMPERE, Unit::Ampere },
-	{ sigrok::Unit::OHM, Unit::Ohm },
-	{ sigrok::Unit::FARAD, Unit::Farad },
-	{ sigrok::Unit::KELVIN, Unit::Kelvin },
-	{ sigrok::Unit::CELSIUS, Unit::Celsius },
-	{ sigrok::Unit::FAHRENHEIT, Unit::Fahrenheit },
-	{ sigrok::Unit::HERTZ, Unit::Hertz },
-	{ sigrok::Unit::PERCENTAGE, Unit::Percentage },
-	{ sigrok::Unit::BOOLEAN, Unit::Boolean },
-	{ sigrok::Unit::SECOND, Unit::Second },
-	{ sigrok::Unit::SIEMENS, Unit::Siemens },
-	{ sigrok::Unit::DECIBEL_MW, Unit::DecibelMW },
-	{ sigrok::Unit::DECIBEL_VOLT, Unit::DecibelVolt },
-	{ sigrok::Unit::UNITLESS, Unit::Unitless },
-	{ sigrok::Unit::DECIBEL_SPL, Unit::DecibelSpl },
-	{ sigrok::Unit::CONCENTRATION, Unit::Concentration },
-	{ sigrok::Unit::REVOLUTIONS_PER_MINUTE, Unit::RevolutionsPerMinute },
-	{ sigrok::Unit::VOLT_AMPERE, Unit::VoltAmpere },
-	{ sigrok::Unit::WATT, Unit::Watt },
-	{ sigrok::Unit::WATT_HOUR, Unit::WattHour },
-	{ sigrok::Unit::METER_SECOND, Unit::MeterPerSecond },
-	{ sigrok::Unit::HECTOPASCAL, Unit::HectoPascal },
-	{ sigrok::Unit::HUMIDITY_293K, Unit::Humidity293K },
-	{ sigrok::Unit::DEGREE, Unit::Degree },
-	{ sigrok::Unit::HENRY, Unit::Henry },
-	{ sigrok::Unit::GRAM, Unit::Gram },
-	{ sigrok::Unit::CARAT, Unit::Carat },
-	{ sigrok::Unit::OUNCE, Unit::Ounce },
-	{ sigrok::Unit::TROY_OUNCE, Unit::TroyOunce },
-	{ sigrok::Unit::POUND, Unit::Pound },
-	{ sigrok::Unit::PENNYWEIGHT, Unit::Pennyweight },
-	{ sigrok::Unit::GRAIN, Unit::Grain },
-	{ sigrok::Unit::TAEL, Unit::Tael },
-	{ sigrok::Unit::MOMME, Unit::Momme },
-	{ sigrok::Unit::TOLA, Unit::Tola },
-	{ sigrok::Unit::PIECE, Unit::Piece },
-	{ sigrok::Unit::JOULE, Unit::Joule },
-	{ sigrok::Unit::COULOMB, Unit::Coulomb },
-	{ sigrok::Unit::AMPERE_HOUR, Unit::AmpereHour },
-};
-
-map<Unit, const sigrok::Unit *> unit_sr_unit_map = {
-	{ Unit::Volt, sigrok::Unit::VOLT },
-	{ Unit::Ampere, sigrok::Unit::AMPERE },
-	{ Unit::Ohm, sigrok::Unit::OHM },
-	{ Unit::Farad, sigrok::Unit::FARAD },
-	{ Unit::Kelvin, sigrok::Unit::KELVIN },
-	{ Unit::Celsius, sigrok::Unit::CELSIUS },
-	{ Unit::Fahrenheit, sigrok::Unit::FAHRENHEIT },
-	{ Unit::Hertz, sigrok::Unit::HERTZ },
-	{ Unit::Percentage, sigrok::Unit::PERCENTAGE },
-	{ Unit::Boolean, sigrok::Unit::BOOLEAN },
-	{ Unit::Second, sigrok::Unit::SECOND },
-	{ Unit::Siemens, sigrok::Unit::SIEMENS },
-	{ Unit::DecibelMW, sigrok::Unit::DECIBEL_MW },
-	{ Unit::DecibelVolt, sigrok::Unit::DECIBEL_VOLT },
-	{ Unit::Unitless, sigrok::Unit::UNITLESS },
-	{ Unit::DecibelSpl, sigrok::Unit::DECIBEL_SPL },
-	{ Unit::Concentration, sigrok::Unit::CONCENTRATION },
-	{ Unit::RevolutionsPerMinute, sigrok::Unit::REVOLUTIONS_PER_MINUTE },
-	{ Unit::VoltAmpere, sigrok::Unit::VOLT_AMPERE },
-	{ Unit::Watt, sigrok::Unit::WATT },
-	{ Unit::WattHour, sigrok::Unit::WATT_HOUR },
-	{ Unit::MeterPerSecond, sigrok::Unit::METER_SECOND },
-	{ Unit::HectoPascal, sigrok::Unit::HECTOPASCAL },
-	{ Unit::Humidity293K, sigrok::Unit::HUMIDITY_293K },
-	{ Unit::Degree, sigrok::Unit::DEGREE },
-	{ Unit::Henry, sigrok::Unit::HENRY },
-	{ Unit::Gram, sigrok::Unit::GRAM },
-	{ Unit::Carat, sigrok::Unit::CARAT },
-	{ Unit::Ounce, sigrok::Unit::OUNCE },
-	{ Unit::TroyOunce, sigrok::Unit::TROY_OUNCE },
-	{ Unit::Pound, sigrok::Unit::POUND },
-	{ Unit::Pennyweight, sigrok::Unit::PENNYWEIGHT },
-	{ Unit::Grain, sigrok::Unit::GRAIN },
-	{ Unit::Tael, sigrok::Unit::TAEL },
-	{ Unit::Momme, sigrok::Unit::MOMME },
-	{ Unit::Tola, sigrok::Unit::TOLA },
-	{ Unit::Piece, sigrok::Unit::PIECE },
-	{ Unit::Joule, sigrok::Unit::JOULE },
-	{ Unit::Coulomb, sigrok::Unit::COULOMB },
-	{ Unit::AmpereHour, sigrok::Unit::AMPERE_HOUR },
-};
-
-map<const sigrok::DataType *, DataType> sr_data_type_data_type_map = {
-	{ sigrok::DataType::UINT64, DataType::UInt64 },
-	{ sigrok::DataType::STRING, DataType::String },
-	{ sigrok::DataType::BOOL, DataType::Bool },
-	{ sigrok::DataType::FLOAT, DataType::Double },
-	{ sigrok::DataType::RATIONAL_PERIOD, DataType::RationalPeriod },
-	{ sigrok::DataType::RATIONAL_VOLT, DataType::RationalVolt },
-	{ sigrok::DataType::KEYVALUE, DataType::KeyValue },
-	{ sigrok::DataType::UINT64_RANGE, DataType::UInt64Range },
-	{ sigrok::DataType::DOUBLE_RANGE, DataType::DoubleRange },
-	{ sigrok::DataType::INT32, DataType::Int32 },
-	{ sigrok::DataType::MQ, DataType::MQ },
-};
-
-map<DataType, const sigrok::DataType *> data_type_sr_data_type_map = {
-	{ DataType::UInt64, sigrok::DataType::UINT64 },
-	{ DataType::String, sigrok::DataType::STRING },
-	{ DataType::Bool, sigrok::DataType::BOOL },
-	{ DataType::Double, sigrok::DataType::FLOAT },
-	{ DataType::RationalPeriod, sigrok::DataType::RATIONAL_PERIOD },
-	{ DataType::RationalVolt, sigrok::DataType::RATIONAL_VOLT },
-	{ DataType::KeyValue, sigrok::DataType::KEYVALUE },
-	{ DataType::UInt64Range, sigrok::DataType::UINT64_RANGE },
-	{ DataType::DoubleRange, sigrok::DataType::DOUBLE_RANGE },
-	{ DataType::Int32, sigrok::DataType::INT32 },
-	{ DataType::MQ, sigrok::DataType::MQ },
-};
-
-quantity_unit_map_t quantity_unit_map = {
-	{ Quantity::Voltage, { Unit::Volt } },
-	{ Quantity::Current, { Unit::Ampere } },
-	{ Quantity::Resistance, { Unit::Ohm } },
-	{ Quantity::Capacitance, { Unit::Farad } },
-	{ Quantity::Temperature, { Unit::Kelvin, Unit::Celsius, Unit::Fahrenheit} },
-	{ Quantity::Frequency, { Unit::Hertz } },
-	{ Quantity::DutyCyle, { Unit::Percentage } },
-	{ Quantity::Continuity, { Unit::Ohm, Unit::Boolean } },
-	{ Quantity::PulseWidth, { Unit::Percentage } },
-	{ Quantity::Conductance, { Unit::Siemens } },
-	{ Quantity::Power, { Unit::Watt, Unit::VoltAmpere } },
-	{ Quantity::ElectricCharge, { Unit::AmpereHour, Unit::Coulomb } },
-	{ Quantity::Gain, { /* TODO Unit::Decibel,*/ Unit::Unitless } },
-	{ Quantity::SoundPressureLevel, { Unit::DecibelSpl } },
-	{ Quantity::CarbonMonoxide, { Unit::Concentration } },
-	{ Quantity::RelativeHumidity, { Unit::Humidity293K } },
-	{ Quantity::Time, { Unit::Second } },
-	{ Quantity::WindSpeed, { Unit::MeterPerSecond } },
-	{ Quantity::Pressure, { Unit::HectoPascal } },
-	{ Quantity::ParallelInductance, { Unit::Henry } },
-	{ Quantity::ParallelCapacitance, { Unit::Farad } },
-	{ Quantity::ParallelResistance, { Unit::Ohm } },
-	{ Quantity::SeriesInductance, { Unit::Henry } },
-	{ Quantity::SeriesCapacitance, { Unit::Farad } },
-	{ Quantity::SeriesResistance, { Unit::Ohm } },
-	{ Quantity::DissipationFactor, { Unit::Unitless } },
-	{ Quantity::QualityFactor, { Unit::Unitless } },
-	{ Quantity::PhaseAngle, { Unit::Degree } },
-	{ Quantity::Difference, { Unit::Unitless } },
-	{ Quantity::Count, { Unit::Piece, Unit::Unitless } },
-	{ Quantity::PowerFactor, { Unit::Unitless } },
-	{ Quantity::ApparentPower, { Unit::VoltAmpere } },
-	{ Quantity::Mass, { Unit::Gram, Unit::Carat, Unit::Ounce, Unit::TroyOunce,
-						Unit::Pound, Unit::Pennyweight, Unit::Grain, Unit::Tael,
-						Unit::Momme, Unit::Tola} },
-	{ Quantity::HarmonicRatio, { Unit::Unitless } },
-	{ Quantity::Energy, { Unit::WattHour, Unit::Joule } },
-};
-
-} // namespace
 
 /**
  * Return all known quantities
  *
  * @return The quantity name map
  */
-quantity_name_map_t get_quantity_name_map();
+const vector<QuantityMapping> &get_quantity_map();
 
 /**
  * Return all known quantity flags
  *
  * @return The quantity flags name map
  */
-quantity_flag_name_map_t get_quantity_flag_name_map();
+const vector<QuantityFlagMapping> &get_quantity_flag_map();
 
 /**
  * Return all known units
  *
  * @return The unit name map
  */
-unit_name_map_t get_unit_name_map();
+const vector<UnitMapping> &get_unit_map();
 
 /**
  * Return all known data types
  *
  * @return The data type name map
  */
-data_type_name_map_t get_data_type_name_map();
+const vector<DataTypeMapping> &get_data_type_map();
 
 
 /**
@@ -748,6 +355,15 @@ bool is_valid_sr_quantity(data::Quantity quantity);
 QuantityFlag get_quantity_flag(const sigrok::QuantityFlag *sr_quantity_flag);
 
 /**
+ * Return the corresponding QuantityFlag for a sigrok QuantityFlag (unit32_t)
+ *
+ * @param sr_quantity_flag The sigrok QuantityFlag as uint32_t
+ *
+ * @return The QuantityFlag.
+ */
+QuantityFlag get_quantity_flag(uint32_t sr_quantity);
+
+/**
  * Return the corresponding sigrok QuantityFlag ID for a QuantityFlag
  *
  * @param quantity_flag The QuantityFlag
@@ -786,6 +402,15 @@ set<QuantityFlag> get_quantity_flags(uint64_t sr_quantity_flags);
  */
 uint64_t get_sr_quantity_flags_id(const set<QuantityFlag> &quantity_flags);
 
+/**
+ * Check if the quantity flag is a known sigrok quantity flag
+ *
+ * @param quantity_flag The quantity flag
+ *
+ * @return true if it is a known sigrok quantity flag
+ */
+bool is_valid_sr_quantity_flag(data::QuantityFlag quantity_flag);
+
 
 /**
  * Return the corresponding Unit for a sigrok Unit
@@ -795,6 +420,15 @@ uint64_t get_sr_quantity_flags_id(const set<QuantityFlag> &quantity_flags);
  * @return The Unit.
  */
 Unit get_unit(const sigrok::Unit *sr_unit);
+
+/**
+ * Return the corresponding sigrok Unit ID for a Unit
+ *
+ * @param unit The Unit
+ *
+ * @return The sigrok Unit ID as uint32_t.
+ */
+uint32_t get_sr_unit_id(Unit unit);
 
 
 /**
