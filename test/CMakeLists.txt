@@ -23,10 +23,12 @@ set(smuview_TEST_SOURCES
 	${PROJECT_SOURCE_DIR}/src/util.cpp
 	${PROJECT_SOURCE_DIR}/src/data/datautil.cpp
 	${PROJECT_SOURCE_DIR}/src/devices/deviceutil.cpp
+	${PROJECT_SOURCE_DIR}/src/python/bindingsenums.cpp
 	test.cpp
 	#util.cpp
 	data/datautil.cpp
 	devices/deviceutil.cpp
+	python/bindingsenums.cpp
 )
 
 # NOTE: smuview_COMPILE_DEFINITIONS, smuview_INCLUDE_DIRS,
