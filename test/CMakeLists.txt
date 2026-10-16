@@ -25,6 +25,7 @@ set(smuview_TEST_SOURCES
 	${PROJECT_SOURCE_DIR}/src/devices/deviceutil.cpp
 	test.cpp
 	#util.cpp
+	data/datautil.cpp
 	devices/deviceutil.cpp
 )
 
