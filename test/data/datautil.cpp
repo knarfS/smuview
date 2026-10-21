@@ -24,7 +24,7 @@
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
 #include "src/data/datautil.hpp"
-#include "test/test.hpp"
+#include "test/testutils/boostutil.hpp"
 
 using std::make_pair;
 using std::set;

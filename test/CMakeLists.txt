@@ -19,15 +19,25 @@
 ## along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##
 
+if(Qt6_FOUND)
+	find_package(Qt6 6.0 REQUIRED COMPONENTS Test)
+else()
+	find_package(Qt5 5.7 REQUIRED COMPONENTS Test)
+endif()
+
+# CMP0167: CMake >= 3.30 has deprecated FindBoost(), but libboost >= 1.70 supplies a CMake config file
+find_package(Boost 1.70 CONFIG REQUIRED COMPONENTS unit_test_framework)
+
 set(smuview_TEST_SOURCES
 	${PROJECT_SOURCE_DIR}/src/util.cpp
 	${PROJECT_SOURCE_DIR}/src/data/datautil.cpp
 	${PROJECT_SOURCE_DIR}/src/devices/deviceutil.cpp
 	${PROJECT_SOURCE_DIR}/src/python/bindingsenums.cpp
+	${PROJECT_SOURCE_DIR}/src/utils/csvutil.cpp
 	${PROJECT_SOURCE_DIR}/src/utils/exportutil.cpp
 
-	test.cpp
-	${PROJECT_SOURCE_DIR}/src/utils/csvutil.cpp
+	main.cpp
+
 	#util.cpp
 	data/datautil.cpp
 	devices/deviceutil.cpp
@@ -42,6 +52,12 @@ set(smuview_TEST_SOURCES
 # with the same defines/includes/warnings as SmuView itself.
 set(smuview_TEST_COMPILE_DEFINITIONS ${smuview_COMPILE_DEFINITIONS})
 
+set(smuview_TEST_LINK_LIBS ${smuview_LINK_LIBS})
+list(APPEND smuview_TEST_LINK_LIBS
+	Boost::unit_test_framework
+	Qt${QT_VERSION_MAJOR}::Test
+)
+
 # On Windows/MinGW, Boost is linked statically (forced for WIN32 builds
 # in the top-level CMakeLists.txt). Everywhere else Boost.Test is used
 # as a shared library, which needs this define.
@@ -55,4 +71,4 @@ target_include_directories(smuview-test PRIVATE ${smuview_INCLUDE_DIRS})
 target_compile_definitions(smuview-test PRIVATE ${smuview_TEST_COMPILE_DEFINITIONS})
 target_compile_options(smuview-test PRIVATE ${smuview_COMPILE_OPTIONS})
 target_link_directories(smuview-test PRIVATE ${smuview_LINK_DIRS})
-target_link_libraries(smuview-test PRIVATE ${smuview_LINK_LIBS})
+target_link_libraries(smuview-test PRIVATE ${smuview_TEST_LINK_LIBS})
