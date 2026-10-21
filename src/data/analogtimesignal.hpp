@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2022 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -108,17 +108,17 @@ public:
 	 * Combine two signals with each other.
 	 *
 	 * E.g.:
-	 * | Time | S1 | S2 | combined S1 | combined S2 |
-	 * |------|----|----|-------------|-------------|
-	 * |    1 |  1 |    |             |             |
-	 * |    3 |  2 |    |             |             |
-	 * |    5 |  3 |    |             |             |
-	 * |    6 |    | 10 |         3.5 |          10 |
-	 * |    7 |  4 |    |           4 |         9.5 |
-	 * |    8 |    |  9 |         4.5 |           9 |
-	 * |    9 |  5 |    |           5 |         8.5 |
-	 * |   10 |    |  8 |             |             |
-	 * |   12 |    |  7 |             |             |
+	 * | Time | S1 | S2 | combined Time | combined S1 | combined S2 |
+	 * |------|----|----|---------------|-------------|-------------|
+	 * |    1 |  1 |    |               |             |             |
+	 * |    3 |  2 |    |               |             |             |
+	 * |    5 |  3 |    |               |             |             |
+	 * |    6 |    | 10 |             6 |         3.5 |          10 |
+	 * |    7 |  4 |    |             7 |           4 |         9.5 |
+	 * |    8 |    |  9 |             8 |         4.5 |           9 |
+	 * |    9 |  5 |    |             9 |           5 |         8.5 |
+	 * |   10 |    |  8 |               |             |             |
+	 * |   12 |    |  7 |               |             |             |
 	 *
 	 * TODO: Use std::deque<double>& instead of shared_ptr<vector<double>>?
 	 */
