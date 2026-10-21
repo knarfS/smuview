@@ -26,7 +26,8 @@ set(smuview_TEST_SOURCES
 	${PROJECT_SOURCE_DIR}/src/python/bindingsenums.cpp
 	${PROJECT_SOURCE_DIR}/src/utils/exportutil.cpp
 
-	test.cpp
+	main.cpp
+
 	#util.cpp
 	data/datautil.cpp
 	devices/deviceutil.cpp

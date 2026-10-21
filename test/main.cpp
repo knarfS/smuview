@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2012 Joel Holdsworth <joel@airwebreathe.org.uk>
+ * Copyright (C) 2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,13 +17,32 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#define BOOST_TEST_MAIN
-#include "test/test.hpp"
-#include <boost/test/unit_test.hpp>
+#define BOOST_TEST_MODULE SmuViewTest
 
-using std::ostream;
+#include <boost/test/included/unit_test.hpp>
+#include <boost/test/unit_test_suite.hpp>
 
-ostream& operator<<(ostream& stream, const QString& str)
+#include <QCoreApplication>
+
+/**
+ * This fixture provides a Qt main loop, which is needed to test signals
+ */
+struct QtApplicationFixture
 {
-	return stream << str.toUtf8().data();
-}
+	QtApplicationFixture()
+	{
+		static char app_name[] = "smuview-test";
+		static int argc = 1;
+		static char *argv[] = { app_name, nullptr };
+		app = new QCoreApplication(argc, argv);
+	}
+
+	~QtApplicationFixture()
+	{
+		delete app;
+	}
+
+	QCoreApplication *app = nullptr;
+};
+
+BOOST_GLOBAL_FIXTURE(QtApplicationFixture);

@@ -92,12 +92,17 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-find_package(Qt6 6.0 QUIET COMPONENTS Core Gui Widgets Svg)
+set(QTCOMPS Core Gui Widgets Svg)
+if(ENABLE_TESTS)
+	list(APPEND QTCOMPS Test)
+endif()
+
+find_package(Qt6 6.0 QUIET COMPONENTS ${QTCOMPS})
 if(Qt6_FOUND)
 	set(QT_VERSION_MAJOR 6)
 	message(STATUS "Found Qt6: ${Qt6_VERSION}")
 else()
-	find_package(Qt5 5.7 REQUIRED COMPONENTS Core Gui Widgets Svg)
+	find_package(Qt5 5.7 REQUIRED COMPONENTS ${QTCOMPS})
 	set(QT_VERSION_MAJOR 5)
 	message(STATUS "Found Qt5: ${Qt5_VERSION}")
 endif()
@@ -106,6 +111,9 @@ set(QT_LIBRARIES
 	Qt${QT_VERSION_MAJOR}::Gui
 	Qt${QT_VERSION_MAJOR}::Widgets
 	Qt${QT_VERSION_MAJOR}::Svg)
+if(ENABLE_TESTS)
+	list(APPEND QT_LIBRARIES Qt${QT_VERSION_MAJOR}::Test)
+endif()
 
 find_package(Qwt 6.1.2 REQUIRED)
 
