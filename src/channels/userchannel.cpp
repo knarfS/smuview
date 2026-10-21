@@ -84,7 +84,7 @@ void UserChannel::push_sample(double sample, double timestamp,
 	}
 
 	static_pointer_cast<data::AnalogTimeSignal>(actual_signal_)->push_sample(
-		&sample, timestamp, size_of_double_, total_digits, sr_digits);
+		sample, timestamp, total_digits, sr_digits);
 }
 
 } // namespace channels

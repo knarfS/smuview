@@ -331,17 +331,14 @@ void init_Signal(py::module &module)
 		"Tuple[float, float]\n"
 		"    The sample with 1. timestamp in milliseconds and 2. the sample value.");
 	py_analog_time_signal.def("push_sample", &sv::data::AnalogTimeSignal::push_sample,
-		py::arg("sample"), py::arg("timestamp"), py::arg("unit_size"),
-		py::arg("digits"), py::arg("decimal_places"),
+		py::arg("sample"), py::arg("timestamp"), py::arg("digits"), py::arg("decimal_places"),
 		"Push a new sample to the signal.\n\n"
 		"Parameters\n"
 		"----------\n"
-		"sample : float or double\n"
+		"sample : float\n"
 		"    The sample value.\n"
 		"timestamp : float\n"
 		"    The absolute timestamp in milliseconds.\n"
-		"unit_size : int\n"
-		"    The size of the floating point data type (float=4, double=8) for the `sample` argument.\n"
 		"digits : int\n"
 		"    The total number of digits.\n"
 		"decimal_places : int\n"
@@ -361,17 +358,14 @@ void init_Signal(py::module &module)
 		"Tuple[int, float]\n"
 		"    The sample with 1. the key and 2. the sample value.");
 	py_analog_sample_signal.def("push_sample", &sv::data::AnalogSampleSignal::push_sample,
-		py::arg("sample"), py::arg("pos"), py::arg("unit_size"),
-		py::arg("digits"), py::arg("decimal_places"),
+		py::arg("sample"), py::arg("pos"), py::arg("digits"), py::arg("decimal_places"),
 		"Push a new sample to the signal.\n\n"
 		"Parameters\n"
 		"----------\n"
-		"sample : float or double\n"
+		"sample : float\n"
 		"    The sample value.\n"
 		"pos : int\n"
 		"    The key (position) of the new sample.\n"
-		"unit_size : int\n"
-		"    The size of the floating point data type (float=4, double=8) for the `sample` argument.\n"
 		"digits : int\n"
 		"    The total number of digits.\n"
 		"decimal_places : int\n"
@@ -847,7 +841,7 @@ void init_UI(py::module &module)
 		py::arg("min") = std::numeric_limits<int>::min(),
 		py::arg("max") = std::numeric_limits<int>::max(),
 		"Show a dialog window to get an integer value from the user. It returns "
-		"the entered float value or `None` if the Cancel button was pressed.\n\n"
+		"the entered integer value or `None` if the Cancel button was pressed.\n\n"
 		"Parameters\n"
 		"----------\n"
 		"title : str\n"

@@ -94,8 +94,7 @@ data::Unit MathChannel::unit()
 void MathChannel::push_sample(double sample, double timestamp)
 {
 	auto signal = static_pointer_cast<data::AnalogTimeSignal>(actual_signal_);
-	signal->push_sample(&sample, timestamp, size_of_double_,
-		total_digits_, sr_digits_);
+	signal->push_sample(sample, timestamp, total_digits_, sr_digits_);
 }
 
 } // namespace channels

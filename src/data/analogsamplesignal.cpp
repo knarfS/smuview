@@ -73,15 +73,9 @@ analog_pos_sample_t AnalogSampleSignal::get_sample(uint32_t pos) const
 	return make_pair(pos, data_.at(pos));
 }
 
-void AnalogSampleSignal::push_sample(void *sample, uint32_t pos,
-		size_t unit_size, int total_digits, int sr_digits)
+void AnalogSampleSignal::push_sample(double sample, uint32_t pos,
+	int total_digits, int sr_digits)
 {
-	double dsample = 0.;
-	if (unit_size == size_of_float_)
-		dsample = static_cast<double>(*static_cast<float *>(sample));
-	else if (unit_size == size_of_double_)
-		dsample = *static_cast<double *>(sample);
-
 	/*
 	qWarning() << "AnalogSampleSignal::push_sample(): " << name_
 		<< ": sample = " << dsample << " @ " <<  pos;
@@ -91,14 +85,14 @@ void AnalogSampleSignal::push_sample(void *sample, uint32_t pos,
 
 	// TODO: Mutex?
 	last_pos_ = pos;
-	last_value_ = dsample;
-	if (min_value_ > dsample)
-		min_value_ = dsample;
+	last_value_ = sample;
+	if (min_value_ > sample)
+		min_value_ = sample;
 	// Ignore infinitiy (overflow) as max value.
-	if (max_value_ < dsample &&
-		dsample != std::numeric_limits<double>::infinity()) {
+	if (max_value_ < sample &&
+		sample != std::numeric_limits<double>::infinity()) {
 
-		max_value_ = dsample;
+		max_value_ = sample;
 	}
 
 	/*
@@ -114,7 +108,7 @@ void AnalogSampleSignal::push_sample(void *sample, uint32_t pos,
 
 	// TODO: Mutex?
 	pos_.push_back(pos);
-	data_.push_back(dsample);
+	data_.push_back(sample);
 	sample_count_++;
 	Q_EMIT sample_appended();
 

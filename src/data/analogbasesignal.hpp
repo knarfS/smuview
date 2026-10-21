@@ -77,9 +77,6 @@ protected:
 	double min_value_;
 	double max_value_;
 
-	static const size_t size_of_float_ = sizeof(float);
-	static const size_t size_of_double_ = sizeof(double);
-
 Q_SIGNALS:
 	void samples_cleared();
 	void sample_appended();

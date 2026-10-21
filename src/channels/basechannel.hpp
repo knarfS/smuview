@@ -199,8 +199,6 @@ public:
 	virtual void restore_settings(QSettings &settings);
 
 protected:
-	static const size_t size_of_double_ = sizeof(double);
-
 	/** The corresponding sigrok channel object. */
 	shared_ptr<sigrok::Channel> sr_channel_;
 	/** Name of this channel. */

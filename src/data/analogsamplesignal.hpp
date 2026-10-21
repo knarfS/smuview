@@ -67,8 +67,8 @@ public:
 	/**
 	 * Push a single sample to the signal.
 	 */
-	void push_sample(void *sample, uint32_t pos,
-		size_t unit_size, int total_digits, int sr_digits);
+	void push_sample(double sample, uint32_t pos,
+		int total_digits, int sr_digits);
 
 	uint32_t first_pos() const;
 	uint32_t last_pos() const;
