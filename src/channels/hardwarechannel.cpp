@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2022 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,7 +39,6 @@ using std::make_pair;
 using std::set;
 using std::static_pointer_cast;
 using std::string;
-using std::unique_ptr;
 using sv::data::measured_quantity_t;
 
 namespace sv {
@@ -103,20 +102,17 @@ void HardwareChannel::push_interleaved_samples(const float *data,
 	}
 
 	// Deinterleave the samples and add them
-	unique_ptr<float[]> deint_data(new float[sample_count]);
-	float *deint_data_ptr = deint_data.get();
+	vector<double> deint_data(sample_count);
 	for (size_t i = 0; i < sample_count; i++) {
-		*deint_data_ptr = (float)(*data);
-		deint_data_ptr++;
+		deint_data[i] = *data;
 		data += stride;
 	}
 
-	// NOTE: Not implementet in sigrok yet, so using the default for now.
+	// NOTE: Not implemented in sigrok yet, so using the default for now.
 	const int total_digits = data::DefaultTotalDigits;
 
 	static_pointer_cast<data::AnalogTimeSignal>(actual_signal_)->push_samples(
-		deint_data.get(), sample_count, timestamp, samplerate,
-		sizeof(float), total_digits, sr_analog->digits());
+		deint_data, timestamp, samplerate, total_digits, sr_analog->digits());
 }
 
 } // namespace channels

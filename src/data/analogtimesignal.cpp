@@ -135,15 +135,9 @@ bool AnalogTimeSignal::get_value_at_timestamp(
 	return true;
 }
 
-void AnalogTimeSignal::push_sample(void *sample, double timestamp,
-	size_t unit_size, int total_digits, int sr_digits)
+void AnalogTimeSignal::push_sample(double sample, double timestamp,
+	int total_digits, int sr_digits)
 {
-	double dsample = 0.;
-	if (unit_size == size_of_float_)
-		dsample = static_cast<double>(*static_cast<float *>(sample));
-	else if (unit_size == size_of_double_)
-		dsample = *static_cast<double *>(sample);
-
 	/*
 	qWarning() << "AnalogTimeSignal::push_sample(): " << display_name()
 		<< ": sample = " << dsample << " @ " <<  timestamp;
@@ -153,14 +147,14 @@ void AnalogTimeSignal::push_sample(void *sample, double timestamp,
 
 	// TODO: Mutex?
 	last_timestamp_ = timestamp;
-	last_value_ = dsample;
-	if (min_value_ > dsample)
-		min_value_ = dsample;
+	last_value_ = sample;
+	if (min_value_ > sample)
+		min_value_ = sample;
 	// Ignore infinitiy (overflow) as max value.
-	if (max_value_ < dsample &&
-		dsample != std::numeric_limits<double>::infinity()) {
+	if (max_value_ < sample &&
+		sample != std::numeric_limits<double>::infinity()) {
 
-		max_value_ = dsample;
+		max_value_ = sample;
 	}
 
 	/*
@@ -176,7 +170,7 @@ void AnalogTimeSignal::push_sample(void *sample, double timestamp,
 
 	// TODO: Mutex?
 	time_.push_back(timestamp);
-	data_.push_back(dsample);
+	data_.push_back(sample);
 	sample_count_++;
 	Q_EMIT sample_appended();
 
@@ -193,18 +187,15 @@ void AnalogTimeSignal::push_sample(void *sample, double timestamp,
 		Q_EMIT digits_changed(total_digits_, sr_digits_);
 }
 
-void AnalogTimeSignal::push_samples(void *data,
-	uint64_t samples, double timestamp, uint64_t samplerate, size_t unit_size,
-	int total_digits, int sr_digits)
+void AnalogTimeSignal::push_samples(const vector<double> &samples,
+	double timestamp, uint64_t samplerate, int total_digits, int sr_digits)
 {
-	if (samples == 0)
+	if (samples.empty())
 		return;
 
 	//lock_guard<recursive_mutex> lock(mutex_);
 
-	double dsample = 0.0;
-	uint64_t pos = 0;
-	double time_stride = 0.0;
+	double time_stride = 0.;
 	if (samplerate > 0)
 		time_stride = 1 / (double)samplerate;
 
@@ -217,11 +208,7 @@ void AnalogTimeSignal::push_samples(void *data,
 	}
 	*/
 
-	while (pos < samples) {
-		if (unit_size == size_of_float_)
-			dsample = static_cast<double>(static_cast<float *>(data)[pos]);
-		else if (unit_size == size_of_double_)
-			dsample = static_cast<double *>(data)[pos];
+	for (const double sample : samples) {
 
 		/*
 		qWarning() << "AnalogSignal::push_samples(): " << name_
@@ -232,25 +219,24 @@ void AnalogTimeSignal::push_samples(void *data,
 		*/
 
 		// TODO: Mutex?
-		if (min_value_ > dsample)
-			min_value_ = dsample;
+		if (min_value_ > sample)
+			min_value_ = sample;
 		// Ignore infinitiy (overflow) as max value.
-		if (max_value_ < dsample &&
-			dsample != std::numeric_limits<double>::infinity()) {
+		if (max_value_ < sample &&
+			sample != std::numeric_limits<double>::infinity()) {
 
-			max_value_ = dsample;
+			max_value_ = sample;
 		}
 
 		time_.push_back(timestamp);
-		data_.push_back(dsample);
+		data_.push_back(sample);
 
 		timestamp += time_stride;
-		++pos;
 		++sample_count_;
 	}
 
 	last_timestamp_ = timestamp - time_stride;
-	last_value_ = dsample;
+	last_value_ = samples.back();
 	Q_EMIT sample_appended();
 
 	bool digits_chngd = false;

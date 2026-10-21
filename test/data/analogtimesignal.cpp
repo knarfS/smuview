@@ -61,9 +61,7 @@ BOOST_AUTO_TEST_CASE(push_samples_test)
 	auto s = sv::test::testutils::TimeSignalBuilder().start(1000.).build();
 	QSignalSpy appended(s.get(), &sv::data::AnalogTimeSignal::sample_appended);
 
-	std::vector<double> samples{2., 3., 10., 4.};
-	s->push_samples(
-		samples.data(), samples.size(), 1010., 4, sizeof(double), 7, 3);
+	s->push_samples(std::vector<double>{2., 3., 10., 4.}, 1010., 4, 7, 3);
 
 	BOOST_CHECK_EQUAL(s->signal_start_timestamp(), 1000.);
 	BOOST_CHECK_EQUAL(s->sample_count(), 4);
@@ -91,9 +89,7 @@ BOOST_AUTO_TEST_CASE(push_samples_empty_test)
 	auto s = sv::test::testutils::TimeSignalBuilder().start(1000.).build();
 	QSignalSpy appended(s.get(), &sv::data::AnalogTimeSignal::sample_appended);
 
-	std::vector<double> samples{};
-	s->push_samples(
-		samples.data(), samples.size(), 1010., 4, sizeof(double), 7, 3);
+	s->push_samples(std::vector<double>{}, 1010., 4, 7, 3);
 
 	BOOST_CHECK_EQUAL(s->signal_start_timestamp(), 1000.);
 	BOOST_CHECK_EQUAL(s->sample_count(), 0);
@@ -121,9 +117,7 @@ BOOST_AUTO_TEST_CASE(push_samples_samplerate_0_test)
 	auto s = sv::test::testutils::TimeSignalBuilder().start(1000.).build();
 	QSignalSpy appended(s.get(), &sv::data::AnalogTimeSignal::sample_appended);
 
-	std::vector<double> samples{2., 3., 10., 4.};
-	s->push_samples(
-		samples.data(), samples.size(), 1010., 0, sizeof(double), 7, 3);
+	s->push_samples(std::vector<double>{2., 3., 10., 4.}, 1010., 0, 7, 3);
 
 	BOOST_CHECK_EQUAL(s->signal_start_timestamp(), 1000.);
 	BOOST_CHECK_EQUAL(s->sample_count(), 4);
@@ -232,9 +226,8 @@ BOOST_AUTO_TEST_CASE(signals_test)
 	QSignalSpy appended(s.get(), &sv::data::AnalogTimeSignal::sample_appended);
 	QSignalSpy digits(s.get(), &sv::data::AnalogTimeSignal::digits_changed);
 
-	double value = 2.;
-	s->push_sample(&value, 1., sizeof(double), 5, 2);
-	s->push_sample(&value, 2., sizeof(double), 5, 2);
+	s->push_sample(2., 1., 5, 2);
+	s->push_sample(2., 2., 5, 2);
 
 	BOOST_CHECK_EQUAL(appended.count(), 2);
 	BOOST_CHECK_EQUAL(digits.count(), 1);

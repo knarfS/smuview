@@ -260,9 +260,9 @@ void init_Channel(py::module &module)
 		"Push a single sample to the channel.\n\n"
 		"Parameters\n"
 		"----------\n"
-		"sample : float\n"
+		"sample : double\n"
 		"    The sample value.\n"
-		"timestamp : float\n"
+		"timestamp : double\n"
 		"    The absolute timestamp in milliseconds.\n"
 		"quantity : Quantity\n"
 		"    The `Quantity` of the new signal.\n"
@@ -317,7 +317,7 @@ void init_Signal(py::module &module)
 		"    When `True`, the returned timestamp is relative to the start of the SmuView session.\n\n"
 		"Returns\n"
 		"-------\n"
-		"Tuple[float, float]\n"
+		"Tuple[double, double]\n"
 		"    The sample with 1. timestamp in milliseconds and 2. the sample value.");
 	py_analog_time_signal.def("get_last_sample", &sv::data::AnalogTimeSignal::get_last_sample,
 		py::arg("relative_time"),
@@ -328,20 +328,17 @@ void init_Signal(py::module &module)
 		"    When `True`, the returned timestamp is relative to the start of the SmuView session.\n\n"
 		"Returns\n"
 		"-------\n"
-		"Tuple[float, float]\n"
+		"Tuple[double, double]\n"
 		"    The sample with 1. timestamp in milliseconds and 2. the sample value.");
 	py_analog_time_signal.def("push_sample", &sv::data::AnalogTimeSignal::push_sample,
-		py::arg("sample"), py::arg("timestamp"), py::arg("unit_size"),
-		py::arg("digits"), py::arg("decimal_places"),
+		py::arg("sample"), py::arg("timestamp"), py::arg("digits"), py::arg("decimal_places"),
 		"Push a new sample to the signal.\n\n"
 		"Parameters\n"
 		"----------\n"
-		"sample : float or double\n"
+		"sample : double\n"
 		"    The sample value.\n"
-		"timestamp : float\n"
+		"timestamp : double\n"
 		"    The absolute timestamp in milliseconds.\n"
-		"unit_size : int\n"
-		"    The size of the floating point data type (float=4, double=8) for the `sample` argument.\n"
 		"digits : int\n"
 		"    The total number of digits.\n"
 		"decimal_places : int\n"
@@ -358,20 +355,17 @@ void init_Signal(py::module &module)
 		"    The position/number of the sample.\n\n"
 		"Returns\n"
 		"-------\n"
-		"Tuple[int, float]\n"
+		"Tuple[int, double]\n"
 		"    The sample with 1. the key and 2. the sample value.");
 	py_analog_sample_signal.def("push_sample", &sv::data::AnalogSampleSignal::push_sample,
-		py::arg("sample"), py::arg("pos"), py::arg("unit_size"),
-		py::arg("digits"), py::arg("decimal_places"),
+		py::arg("sample"), py::arg("pos"), py::arg("digits"), py::arg("decimal_places"),
 		"Push a new sample to the signal.\n\n"
 		"Parameters\n"
 		"----------\n"
-		"sample : float or double\n"
+		"sample : double\n"
 		"    The sample value.\n"
 		"pos : int\n"
 		"    The key (position) of the new sample.\n"
-		"unit_size : int\n"
-		"    The size of the floating point data type (float=4, double=8) for the `sample` argument.\n"
 		"digits : int\n"
 		"    The total number of digits.\n"
 		"decimal_places : int\n"
@@ -816,8 +810,8 @@ void init_UI(py::module &module)
 		py::arg("value") = 0.0, py::arg("decimals") = 1, py::arg("step") = 0.1,
 		py::arg("min") = std::numeric_limits<double>::min(),
 		py::arg("max") = std::numeric_limits<double>::max(),
-		"Show a dialog window to get a float value from the user. It returns "
-		"the entered float value or `None` if the Cancel button was pressed.\n\n"
+		"Show a dialog window to get a double value from the user. It returns "
+		"the entered double value or `None` if the Cancel button was pressed.\n\n"
 		"Only has effect if the used Qt version is equal or greater than 5.10!\n\n"
 		"Parameters\n"
 		"----------\n"
@@ -825,29 +819,29 @@ void init_UI(py::module &module)
 		"    The window title of the input dialog.\n"
 		"label : str\n"
 		"    The label to display in the input dialog.\n"
-		"value : float\n"
-		"    The default value of the float.\n"
+		"value : double\n"
+		"    The default value of the double.\n"
 		"decimals : int\n"
 		"    The maximum number of decimal places the number may have. Default is 1.\n"
-		"step : float\n"
+		"step : double\n"
 		"    The amount by which the value can be incremented or decremented by the user."
 		"    Default is 0.1.\n"
 		"    Only has effect for Qt versions >= 5.10!\n"
-		"min : float\n"
+		"min : double\n"
 		"    The minimum value the user may choose.\n"
-		"max : float\n"
+		"max : double\n"
 		"    The maximum value the user may choose.\n\n"
 		"Returns\n"
 		"-------\n"
-		"float or None\n"
-		"    The user entered float value or `None` when the Cancel button was pressed.");
+		"double or None\n"
+		"    The user entered double value or `None` when the Cancel button was pressed.");
 	py_ui_proxy.def("show_int_input_dialog", &sv::python::UiProxy::ui_show_int_input_dialog,
 		py::arg("title"), py::arg("label"),
 		py::arg("value") = 0, py::arg("step") = 1,
 		py::arg("min") = std::numeric_limits<int>::min(),
 		py::arg("max") = std::numeric_limits<int>::max(),
 		"Show a dialog window to get an integer value from the user. It returns "
-		"the entered float value or `None` if the Cancel button was pressed.\n\n"
+		"the entered integer value or `None` if the Cancel button was pressed.\n\n"
 		"Parameters\n"
 		"----------\n"
 		"title : str\n"
