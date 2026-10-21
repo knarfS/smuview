@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2012 Joel Holdsworth <joel@airwebreathe.org.uk>
+ * Copyright (C) 2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,13 +17,22 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
-#define BOOST_TEST_MAIN
-#include "test/test.hpp"
+#define BOOST_TEST_MODULE SmuViewTest
+
 #include <boost/test/unit_test.hpp>
 
-using std::ostream;
+#include "src/sessionglobals.hpp"
 
-ostream& operator<<(ostream& stream, const QString& str)
+/**
+ * This fixture provides a mocked session start timestamp, e.g. for absolute
+ * timestamp tests
+ */
+struct SessionFixture
 {
-	return stream << str.toUtf8().data();
-}
+	SessionFixture()
+	{
+		sv::sessionglobals::session_start_timestamp = 1000.;
+	}
+};
+
+BOOST_GLOBAL_FIXTURE(SessionFixture);

@@ -92,12 +92,13 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-find_package(Qt6 6.0 QUIET COMPONENTS Core Gui Widgets Svg)
+set(QTCOMPS Core Gui Widgets Svg)
+find_package(Qt6 6.0 QUIET COMPONENTS ${QTCOMPS})
 if(Qt6_FOUND)
 	set(QT_VERSION_MAJOR 6)
 	message(STATUS "Found Qt6: ${Qt6_VERSION}")
 else()
-	find_package(Qt5 5.7 REQUIRED COMPONENTS Core Gui Widgets Svg)
+	find_package(Qt5 5.7 REQUIRED COMPONENTS ${QTCOMPS})
 	set(QT_VERSION_MAJOR 5)
 	message(STATUS "Found Qt5: ${Qt5_VERSION}")
 endif()
@@ -111,9 +112,6 @@ find_package(Qwt 6.1.2 REQUIRED)
 
 # boost::multiprecision is required, but it's header only. So no need to specify
 set(BOOSTCOMPS)
-if(ENABLE_TESTS)
-	list(APPEND BOOSTCOMPS unit_test_framework)
-endif()
 # CMP0167: CMake >= 3.30 has deprecated FindBoost(), but libboost >= 1.70 supplies a CMake config file
 find_package(Boost 1.70 CONFIG REQUIRED COMPONENTS ${BOOSTCOMPS})
 
