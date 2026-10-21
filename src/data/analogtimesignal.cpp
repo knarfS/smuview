@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2022 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <limits>
 #include <memory>
 #include <set>
 #include <string>
@@ -65,7 +66,9 @@ void AnalogTimeSignal::clear()
 	// TODO: mutex
 	time_->clear();
 	data_->clear();
-	sample_count_ = 0;
+	sample_count_ = 0.;
+	min_value_ = std::numeric_limits<double>::max();
+	max_value_ = std::numeric_limits<double>::lowest();
 
 	Q_EMIT samples_cleared();
 }
@@ -106,6 +109,9 @@ analog_time_sample_t AnalogTimeSignal::get_last_sample(bool relative_time) const
 bool AnalogTimeSignal::get_value_at_timestamp(
 	double timestamp, double &value, bool relative_time) const
 {
+	if (relative_time)
+		timestamp += signal_start_timestamp_;
+
 	if (time_->empty())
 		return false;
 	if (timestamp < time_->at(0))
@@ -113,18 +119,14 @@ bool AnalogTimeSignal::get_value_at_timestamp(
 	if (timestamp > time_->back())
 		return false;
 
-	if (relative_time)
-		timestamp += signal_start_timestamp_;
-
 	auto lower = std::lower_bound(time_->begin(), time_->end(), timestamp);
+	size_t lower_pos = lower - time_->begin();
 
 	// Check if timestamp and found timestamp match
 	if (timestamp == *lower) {
-		value = *lower;
+		value = data_->at(lower_pos);
 		return true;
 	}
-
-	size_t lower_pos = lower - time_->begin();
 
 	// Get the previous timestamp for linear interpolation
 	if (lower_pos > 0)
@@ -206,6 +208,9 @@ void AnalogTimeSignal::push_samples(void *data,
 	uint64_t samples, double timestamp, uint64_t samplerate, size_t unit_size,
 	int total_digits, int sr_digits)
 {
+	if (samples == 0)
+		return;
+
 	//lock_guard<recursive_mutex> lock(mutex_);
 
 	double dsample = 0.0;
