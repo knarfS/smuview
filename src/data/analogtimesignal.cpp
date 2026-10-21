@@ -34,7 +34,6 @@
 #include "src/data/datautil.hpp"
 
 using std::make_pair;
-using std::make_shared;
 using std::set;
 using std::shared_ptr;
 using std::string;
@@ -57,16 +56,15 @@ AnalogTimeSignal::AnalogTimeSignal(
 	qWarning() << "Init analog time signal " << display_name()
 		<< ", signal_start_timestamp_ = "
 		<< util::format_time_date(signal_start_timestamp_);
-
-	time_ = make_shared<vector<double>>();
 }
 
 void AnalogTimeSignal::clear()
 {
 	// TODO: mutex
-	time_->clear();
-	data_->clear();
+	time_.clear();
+	data_.clear();
 	sample_count_ = 0.;
+	last_timestamp_ = 0.;
 	min_value_ = std::numeric_limits<double>::max();
 	max_value_ = std::numeric_limits<double>::lowest();
 
@@ -76,34 +74,25 @@ void AnalogTimeSignal::clear()
 analog_time_sample_t AnalogTimeSignal::get_sample(
 	size_t pos, bool relative_time) const
 {
-	// TODO: retrun reference (&double)? See get_value_at_timestamp()
+	if (pos >= sample_count_)
+		return make_pair(0., 0.);
 
-	//qWarning() << "AnalogSignal::get_sample(" << pos
-	//	<< "): sample_count_ = " << sample_count_;
-
-	if (pos < sample_count_) {
-		double timestamp = time_->at(pos);
-		if (relative_time)
-			timestamp -= signal_start_timestamp_;
-		//qWarning() << "AnalogSignal::get_sample(" << pos
-		//	<< "): sample = " << timestamp << ", " << data_->at(pos);
-		return make_pair(timestamp, data_->at(pos));
-	}
-
-	return make_pair(0., 0.);
+	double timestamp = time_.at(pos);
+	if (relative_time)
+		timestamp -= signal_start_timestamp_;
+	return make_pair(timestamp, data_.at(pos));
 }
 
 analog_time_sample_t AnalogTimeSignal::get_last_sample(bool relative_time) const
 {
-	// TODO: retrun reference (&double)? See get_value_at_timestamp()
 	if (sample_count_ == 0)
 		return make_pair(0., 0.);
 
 	size_t pos = sample_count_ - 1;
-	double timestamp = time_->at(pos);
+	double timestamp = time_.at(pos);
 	if (relative_time)
 		timestamp -= signal_start_timestamp_;
-	return make_pair(timestamp, data_->at(pos));
+	return make_pair(timestamp, data_.at(pos));
 }
 
 bool AnalogTimeSignal::get_value_at_timestamp(
@@ -112,19 +101,19 @@ bool AnalogTimeSignal::get_value_at_timestamp(
 	if (relative_time)
 		timestamp += signal_start_timestamp_;
 
-	if (time_->empty())
+	if (time_.empty())
 		return false;
-	if (timestamp < time_->at(0))
+	if (timestamp < time_.at(0))
 		return false;
-	if (timestamp > time_->back())
+	if (timestamp > time_.back())
 		return false;
 
-	auto lower = std::lower_bound(time_->begin(), time_->end(), timestamp);
-	size_t lower_pos = lower - time_->begin();
+	auto lower = std::lower_bound(time_.begin(), time_.end(), timestamp);
+	size_t lower_pos = lower - time_.begin();
 
 	// Check if timestamp and found timestamp match
 	if (timestamp == *lower) {
-		value = data_->at(lower_pos);
+		value = data_.at(lower_pos);
 		return true;
 	}
 
@@ -132,14 +121,14 @@ bool AnalogTimeSignal::get_value_at_timestamp(
 	if (lower_pos > 0)
 		--lower_pos;
 
-	double lower_ts = time_->at(lower_pos);
-	double lower_data = data_->at(lower_pos);
+	double lower_ts = time_.at(lower_pos);
+	double lower_data = data_.at(lower_pos);
 	size_t upper_pos = lower_pos + 1;
-	double upper_ts = time_->at(upper_pos);
+	double upper_ts = time_.at(upper_pos);
 
 	// Use linear interpolation to get the value beetween time stamps
 	double ts_factor = (timestamp - lower_ts) / (upper_ts - lower_ts);
-	double data_diff = data_->at(upper_pos) - lower_data;
+	double data_diff = data_.at(upper_pos) - lower_data;
 	double lininter_data = lower_data + (data_diff * ts_factor);
 
 	value = lininter_data;
@@ -186,8 +175,8 @@ void AnalogTimeSignal::push_sample(void *sample, double timestamp,
 	*/
 
 	// TODO: Mutex?
-	time_->push_back(timestamp);
-	data_->push_back(dsample);
+	time_.push_back(timestamp);
+	data_.push_back(dsample);
 	sample_count_++;
 	Q_EMIT sample_appended();
 
@@ -252,9 +241,8 @@ void AnalogTimeSignal::push_samples(void *data,
 			max_value_ = dsample;
 		}
 
-		// TODO: Limit memory!
-		time_->push_back(timestamp);
-		data_->push_back(dsample);
+		time_.push_back(timestamp);
+		data_.push_back(dsample);
 
 		timestamp += time_stride;
 		++pos;
@@ -285,18 +273,18 @@ double AnalogTimeSignal::signal_start_timestamp() const
 
 double AnalogTimeSignal::first_timestamp(bool relative_time) const
 {
-	if (time_->empty())
+	if (time_.empty())
 		return 0.;
 
 	if (relative_time)
-		return time_->front() - signal_start_timestamp_;
+		return time_.front() - signal_start_timestamp_;
 	else // NOLINT
-		return time_->front();
+		return time_.front();
 }
 
 double AnalogTimeSignal::last_timestamp(bool relative_time) const
 {
-	if (time_->empty())
+	if (time_.empty())
 		return 0.;
 
 	if (relative_time)
