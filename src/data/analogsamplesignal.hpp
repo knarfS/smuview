@@ -83,7 +83,7 @@ public:
 	*/
 
 private:
-	shared_ptr<vector<uint32_t>> pos_;
+	vector<uint32_t> pos_;
 	uint32_t last_pos_;
 
 };

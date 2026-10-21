@@ -23,7 +23,6 @@
 #include <memory>
 #include <set>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include <QObject>
@@ -57,35 +56,6 @@ public:
 	size_t sample_count() const override;
 
 	/**
-	 * Return the sample at the given position.
-	analog_time_sample_t get_sample(size_t pos, bool relative_time) const;
-	 */
-
-	/**
-	 * Return the value at the given timestamp in &value. If there is no
-	 * exactty matching timestamp, the value is linearly interpolated. No
-	 * value can be found/interpolated, if the timestamp is smaller than the
-	 * first timestamp in the signal or bigger than the last timestamp in the
-	 * signal.
-	 *
-	 * @param timestamp The timestamp for the value to return.
-	 * @param value The found/interpolated value at the given timestamp.
-	 * @param relative_time Use time relative to the session start time.
-	 *
-	 * @return true if a value was found/interpolated, false if not.
-	bool get_value_at_timestamp(
-		double timestamp, double &value, bool relative_time) const;
-	 */
-
-	/**
-	 * Push a single sample to the signal.
-	 *
-	 * TODO: Can this be removed?
-	void push_sample(void *sample, double timestamp,
-		size_t unit_size, int digits, int decimal_places);
-	 */
-
-	/**
 	 * Number of total digits (count) of the measured value.
 	 * NOTE: Not implemented in sigrok yet. There is no good way to get the
 	 *       total number of digits for the analog payload. Therefore
@@ -98,17 +68,8 @@ public:
 	double min_value() const;
 	double max_value() const;
 
-	/*
-	static void combine_signals(
-		shared_ptr<AnalogSignal> signal1, size_t &signal1_pos,
-		shared_ptr<AnalogSignal> signal2, size_t &signal2_pos,
-		shared_ptr<vector<double>> time_vector,
-		shared_ptr<vector<double>> data1_vector,
-		shared_ptr<vector<double>> data2_vector);
-	*/
-
 protected:
-	shared_ptr<vector<double>> data_;
+	vector<double> data_;
 	size_t sample_count_;
 	int total_digits_;
 	int sr_digits_;
