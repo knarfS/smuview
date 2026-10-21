@@ -30,6 +30,10 @@ find_package(Boost 1.70 CONFIG REQUIRED COMPONENTS unit_test_framework)
 
 set(smuview_TEST_SOURCES
 	${PROJECT_SOURCE_DIR}/src/util.cpp
+	${PROJECT_SOURCE_DIR}/src/channels/basechannel.cpp
+	${PROJECT_SOURCE_DIR}/src/data/basesignal.cpp
+	${PROJECT_SOURCE_DIR}/src/data/analogbasesignal.cpp
+	${PROJECT_SOURCE_DIR}/src/data/analogtimesignal.cpp
 	${PROJECT_SOURCE_DIR}/src/data/datautil.cpp
 	${PROJECT_SOURCE_DIR}/src/devices/deviceutil.cpp
 	${PROJECT_SOURCE_DIR}/src/python/bindingsenums.cpp
@@ -40,6 +44,7 @@ set(smuview_TEST_SOURCES
 
 	#util.cpp
 	data/datautil.cpp
+	data/analogtimesignal.cpp
 	devices/deviceutil.cpp
 	python/bindingsenums.cpp
 	utils/csvutil.cpp
