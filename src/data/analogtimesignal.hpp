@@ -88,17 +88,15 @@ public:
 
 	/**
 	 * Push a single sample to the signal.
-	 *
-	 * TODO: Can this be removed?
 	 */
-	void push_sample(void *sample, double timestamp,
-		size_t unit_size, int total_digits, int sr_digits);
+	void push_sample(double sample, double timestamp,
+		int total_digits, int sr_digits);
 
 	/**
 	 * Push multiple samples to the signal.
 	 */
-	void push_samples(void *data, uint64_t samples, double timestamp,
-		uint64_t samplerate, size_t unit_size, int total_digits, int sr_digits);
+	void push_samples(const vector<double> &samples, double timestamp,
+		uint64_t samplerate, int total_digits, int sr_digits);
 
 	double signal_start_timestamp() const;
 	double first_timestamp(bool relative_time) const;

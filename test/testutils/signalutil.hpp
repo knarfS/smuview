@@ -54,8 +54,7 @@ public:
 			data::Unit::Volt,
 			nullptr, name_);
 		for (auto [t, v] : samples_) {
-			double x = v;
-			sig->push_sample(&x, t, sizeof(double), 7, 3);
+			sig->push_sample(v, t, 7, 3);
 		}
 		return sig;
 	}
