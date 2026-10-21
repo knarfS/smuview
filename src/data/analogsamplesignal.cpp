@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <algorithm>
 #include <cassert>
+#include <limits>
 #include <memory>
 #include <set>
 #include <string>
@@ -33,11 +33,9 @@
 #include "src/data/datautil.hpp"
 
 using std::make_pair;
-using std::make_shared;
 using std::set;
 using std::shared_ptr;
 using std::string;
-using std::vector;
 
 namespace sv {
 namespace data {
@@ -52,33 +50,27 @@ AnalogSampleSignal::AnalogSampleSignal(
 	last_pos_(0)
 {
 	qWarning() << "Init analog sample signal " << display_name();
-	pos_ = make_shared<vector<uint32_t>>();
 }
 
 void AnalogSampleSignal::clear()
 {
 	// TODO: mutex
-	pos_->clear();
-	data_->clear();
+	pos_.clear();
+	data_.clear();
 	sample_count_ = 0;
+	last_pos_ = 0;
+	min_value_ = std::numeric_limits<double>::max();
+	max_value_ = std::numeric_limits<double>::lowest();
 
 	Q_EMIT samples_cleared();
 }
 
 analog_pos_sample_t AnalogSampleSignal::get_sample(uint32_t pos) const
 {
-	// TODO: retrun reference (&double)? See get_value_at_timestamp()
+	if (pos >= sample_count_)
+		return make_pair(0, 0.);
 
-	//qWarning() << "AnalogSampleSignal::get_sample(" << pos
-	//	<< "): sample_count_ = " << sample_count_;
-
-	if (pos < sample_count_) {
-		//qWarning() << "AnalogSampleSignal::get_sample(" << pos
-		//	<< "): value = " << data_->at(pos);
-		return make_pair(pos, data_->at(pos));
-	}
-
-	return make_pair(0, 0.);
+	return make_pair(pos, data_.at(pos));
 }
 
 void AnalogSampleSignal::push_sample(void *sample, uint32_t pos,
@@ -121,8 +113,8 @@ void AnalogSampleSignal::push_sample(void *sample, uint32_t pos,
 	*/
 
 	// TODO: Mutex?
-	pos_->push_back(pos);
-	data_->push_back(dsample);
+	pos_.push_back(pos);
+	data_.push_back(dsample);
 	sample_count_++;
 	Q_EMIT sample_appended();
 
@@ -141,15 +133,15 @@ void AnalogSampleSignal::push_sample(void *sample, uint32_t pos,
 
 uint32_t AnalogSampleSignal::first_pos() const
 {
-	if (pos_->empty())
+	if (pos_.empty())
 		return 0;
 
-	return pos_->front();
+	return pos_.front();
 }
 
 uint32_t AnalogSampleSignal::last_pos() const
 {
-	if (pos_->empty())
+	if (pos_.empty())
 		return 0;
 
 	return last_pos_;

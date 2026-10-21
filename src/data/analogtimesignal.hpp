@@ -130,7 +130,7 @@ public:
 		shared_ptr<vector<double>> data2_vector);
 
 private:
-	shared_ptr<vector<double>> time_;
+	vector<double> time_;
 	double signal_start_timestamp_;
 	double last_timestamp_;
 
