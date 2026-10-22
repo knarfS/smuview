@@ -22,6 +22,7 @@
 #include <set>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include <QDebug>
 
@@ -39,6 +40,7 @@ using std::make_pair;
 using std::set;
 using std::static_pointer_cast;
 using std::string;
+using std::vector;
 using sv::data::measured_quantity_t;
 
 namespace sv {
@@ -58,26 +60,12 @@ HardwareChannel::HardwareChannel(
 	name_ = sr_channel_->name();
 }
 
-void HardwareChannel::push_interleaved_samples(const float *data,
-	size_t sample_count, size_t stride, double timestamp, uint64_t samplerate,
-	shared_ptr<sigrok::Analog> sr_analog)
+void HardwareChannel::push_samples(const vector<double> &samples,
+	double timestamp, uint64_t samplerate, data::Quantity quantity,
+	const set<data::QuantityFlag> &quantity_flags, data::Unit unit,
+	int sr_digits)
 {
 	//lock_guard<recursive_mutex> lock(mutex_);
-
-	/*
-	 * NOTE: Sometimes the mq is not set (e.g. for the demo driver in
-	 *       sigrok 6.0.0) and mq() just throws an exception, without a
-	 *       possibility to check if mq is set or not.
-	 */
-	data::Quantity quantity;
-	try {
-		quantity = data::datautil::get_quantity(sr_analog->mq());
-	}
-	catch (const sigrok::Error &e) {
-		quantity = data::Quantity::Unknown;
-	}
-	set<data::QuantityFlag> quantity_flags =
-		data::datautil::get_quantity_flags(sr_analog->mq_flags());
 
 	if (!actual_signal_ || actual_signal_->quantity() != quantity ||
 		actual_signal_->quantity_flags() != quantity_flags) {
@@ -86,9 +74,8 @@ void HardwareChannel::push_interleaved_samples(const float *data,
 		measured_quantity_t mq = make_pair(quantity, quantity_flags);
 		size_t signals_count = signal_map_.count(mq);
 		if (signals_count == 0) {
-			data::Unit unit = data::datautil::get_unit(sr_analog->unit());
 			add_signal(quantity, quantity_flags, unit);
-			qWarning() << "HardwareChannel::push_sample_sr_analog(): "
+			qWarning() << "HardwareChannel::push_samples(): "
 				<< display_name()
 				<< " - Signal was not found and was therefore created: "
 				<< actual_signal_->display_name();
@@ -101,18 +88,11 @@ void HardwareChannel::push_interleaved_samples(const float *data,
 		Q_EMIT signal_changed(actual_signal_);
 	}
 
-	// Deinterleave the samples and add them
-	vector<double> deint_data(sample_count);
-	for (size_t i = 0; i < sample_count; i++) {
-		deint_data[i] = *data;
-		data += stride;
-	}
-
 	// NOTE: Not implemented in sigrok yet, so using the default for now.
 	const int total_digits = data::DefaultTotalDigits;
 
 	static_pointer_cast<data::AnalogTimeSignal>(actual_signal_)->push_samples(
-		deint_data, timestamp, samplerate, total_digits, sr_analog->digits());
+		samples, timestamp, samplerate, total_digits, sr_digits);
 }
 
 } // namespace channels

@@ -17,12 +17,14 @@
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <vector>
 #include <boost/test/unit_test.hpp>
 #include <boost/test/unit_test_suite.hpp>
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
 #include "src/devices/deviceutil.hpp"
+#include "test/testutils/boostutil.hpp"
 
 using namespace sv::devices::deviceutil;
 using sv::devices::ConnectionKey;
@@ -287,5 +289,66 @@ BOOST_AUTO_TEST_CASE(format_config_key_test)
 	BOOST_CHECK(format_config_key(ConfigKey::Unknown) == QString("Unknown"));
 }
 
+BOOST_AUTO_TEST_CASE(deinterleave_sigrok_data_nullptr_test)
+{
+	const float *data = nullptr;
+
+	BOOST_CHECK(deinterleave_sigrok_data(data, 1, 0, 1).empty());
+	BOOST_CHECK(deinterleave_sigrok_data(data, 0, 0, 1).empty());
+}
+
+BOOST_AUTO_TEST_CASE(deinterleave_sigrok_data_sample_count_0_test)
+{
+	const float data[] = {1, 2, 3};
+
+	BOOST_CHECK(deinterleave_sigrok_data(data, 0, 0, 1).empty());
+	BOOST_CHECK(deinterleave_sigrok_data(data, 0, 1, 1).empty());
+}
+
+BOOST_AUTO_TEST_CASE(deinterleave_sigrok_data_channel_count_0_test)
+{
+	const float data[] = {1, 2, 3};
+
+	BOOST_CHECK(deinterleave_sigrok_data(data, 1, 0, 0).empty());
+	BOOST_CHECK(deinterleave_sigrok_data(data, 1, 1, 0).empty());
+}
+
+BOOST_AUTO_TEST_CASE(deinterleave_sigrok_data_channel_index_to_big_test)
+{
+	const float data[] = {1, 2, 3};
+
+	BOOST_CHECK(deinterleave_sigrok_data(data, 1, 1, 1).empty());
+	BOOST_CHECK(deinterleave_sigrok_data(data, 1, 2, 1).empty());
+}
+
+BOOST_AUTO_TEST_CASE(deinterleave_sigrok_data_single_sample_test)
+{
+	const float data[] = {3};
+
+	BOOST_CHECK_EQUAL(deinterleave_sigrok_data(data, 1, 0, 1),
+		(std::vector<double>{3}));
+	BOOST_CHECK(deinterleave_sigrok_data(data, 0, 0, 1).empty());
+}
+
+BOOST_AUTO_TEST_CASE(deinterleave_sigrok_data_single_channel_test)
+{
+	const float data[] = {1, 2, 3};
+
+	BOOST_CHECK_EQUAL(deinterleave_sigrok_data(data, 3, 0, 1),
+		(std::vector<double>{1, 2, 3}));
+	BOOST_CHECK(deinterleave_sigrok_data(data, 0, 0, 1).empty());
+}
+
+BOOST_AUTO_TEST_CASE(deinterleave_sigrok_data_multi_channel_test)
+{
+	const float data[] = {1, 10, 2, 20, 3, 30};
+
+	BOOST_CHECK_EQUAL(deinterleave_sigrok_data(data, 3, 0, 2),
+		(std::vector<double>{1, 2, 3}));
+	BOOST_CHECK(deinterleave_sigrok_data(data, 0, 0, 2).empty());
+	BOOST_CHECK_EQUAL(deinterleave_sigrok_data(data, 3, 1, 2),
+		(std::vector<double>{10, 20, 30}));
+	BOOST_CHECK(deinterleave_sigrok_data(data, 0, 1, 2).empty());
+}
 
 BOOST_AUTO_TEST_SUITE_END()

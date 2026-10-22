@@ -20,6 +20,7 @@
 #include <cassert>
 #include <libsigrokcxx/libsigrokcxx.hpp>
 #include <memory>
+#include <vector>
 
 #include "deviceutil.hpp"
 #include "src/data/datautil.hpp"
@@ -430,6 +431,23 @@ data::Unit get_unit_for_config_key(ConfigKey config_key)
 	if (config_key_unit_map.count(config_key) > 0)
 		return config_key_unit_map[config_key];
 	return data::Unit::Unknown;
+}
+
+std::vector<double> deinterleave_sigrok_data(const float *data,
+	size_t sample_count, size_t channel_index, size_t channel_count)
+{
+	std::vector<double> samples;
+	if (data == nullptr || sample_count == 0 || channel_count == 0
+			|| channel_index >= channel_count)
+		return samples;
+
+	samples.reserve(sample_count);
+	for (size_t i=0; i<sample_count; i++) {
+		samples.push_back(
+			static_cast<double>(data[channel_index + (i * channel_count)]));
+	}
+
+	return samples;
 }
 
 } // namespace deviceutil

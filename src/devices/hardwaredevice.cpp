@@ -255,47 +255,53 @@ void HardwareDevice::feed_in_logic(shared_ptr<sigrok::Logic> sr_logic)
 
 void HardwareDevice::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
 {
-	size_t num_samples = sr_analog->num_samples();
-	if (num_samples == 0)
+	size_t sample_count = sr_analog->num_samples();
+	if (sample_count == 0)
 		return;
+
+	/*
+	 * NOTE: Sometimes the mq is not set (e.g. for the demo driver in
+	 *       sigrok 6.0.0) and mq() just throws an exception, without a
+	 *       possibility to check if mq is set or not.
+	 */
+	data::Quantity quantity;
+	try {
+		quantity = data::datautil::get_quantity(sr_analog->mq());
+	}
+	catch (const sigrok::Error &e) {
+		quantity = data::Quantity::Unknown;
+	}
+	set<data::QuantityFlag> quantity_flags =
+		data::datautil::get_quantity_flags(sr_analog->mq_flags());
+	data::Unit unit = data::datautil::get_unit(sr_analog->unit());
+
+	uint64_t samplerate = samplerate_prop_ != nullptr
+		? samplerate_prop_->uint64_value() : 0;
+
+	// TODO: use std::chrono / std::time
+	double timestamp = frame_began_
+		? frame_start_timestamp_
+		: static_cast<double>(QDateTime::currentMSecsSinceEpoch()) / 1000;
 
 	lock_guard<recursive_mutex> lock(data_mutex_);
 
-	uint64_t samplerate = 0;
-	if (samplerate_prop_ != nullptr)
-		samplerate = samplerate_prop_->uint64_value();
-
 	const vector<shared_ptr<sigrok::Channel>> sr_channels = sr_analog->channels();
+	size_t channel_count = sr_channels.size();
 
-	unique_ptr<float[]> data(new float[num_samples * sr_channels.size()]);
+	unique_ptr<float[]> data(new float[sample_count * channel_count]);
 	sr_analog->get_data_as_float(data.get());
-	float *channel_data = data.get();
 
-	for (const auto &sr_channel : sr_channels) {
-		/*
-		qWarning() << "HardwareDevice::feed_in_analog(): HardwareDevice = " <<
-			QString::fromStdString(sr_device_->model()) <<
-			", Channel.Id = " <<
-			QString::fromStdString(sr_channel->name()) <<
-			" channel_data = " << *channel_data;
-		*/
+	for (size_t ch_idx = 0; ch_idx < channel_count; ch_idx++) {
+		const auto it = sr_channel_map_.find(sr_channels.at(ch_idx));
+		if (it == sr_channel_map_.end() || !it->second)
+			continue;
+		auto channel = static_pointer_cast<channels::HardwareChannel>(it->second);
 
-		if (sr_channel_map_.count(sr_channel) == 0)
-			assert("Unknown channel");
-		auto channel = static_pointer_cast<channels::HardwareChannel>(
-			sr_channel_map_[sr_channel]);
+		vector<double> samples = deviceutil::deinterleave_sigrok_data(
+			data.get(), sample_count, ch_idx, channel_count);
 
-		// TODO: use std::chrono / std::time
-		double timestamp;
-		if (frame_began_)
-			timestamp = frame_start_timestamp_;
-		else
-			timestamp =
-				static_cast<double>(QDateTime::currentMSecsSinceEpoch()) / 1000;
-
-		//channel->push_sample_sr_analog(channel_data++, timestamp, sr_analog);
-		channel->push_interleaved_samples(channel_data++, num_samples,
-			sr_channels.size(), timestamp, samplerate, sr_analog);
+		channel->push_samples(samples, timestamp, samplerate,
+			quantity, quantity_flags, unit, sr_analog->digits());
 	}
 }
 
