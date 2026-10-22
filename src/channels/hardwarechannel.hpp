@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <vector>
 
 #include <QObject>
 
@@ -31,6 +32,7 @@
 using std::set;
 using std::shared_ptr;
 using std::string;
+using std::vector;
 
 namespace sigrok {
 class Analog;
@@ -62,11 +64,12 @@ public:
 
 public:
 	/**
-	 * Add one or more interleaved samples with timestamps to the channel
+	 * Add samples with timestamps to the channel
 	 */
-	void push_interleaved_samples(const float *data, size_t sample_count,
-		size_t stride, double timestamp, uint64_t samplerate,
-		shared_ptr<sigrok::Analog> sr_analog);
+	void push_samples(const vector<double> &samples, double timestamp,
+		uint64_t samplerate, data::Quantity quantity,
+		const set<data::QuantityFlag> &quantity_flags, data::Unit unit,
+		int sr_digits);
 
 };
 

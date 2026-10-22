@@ -285,8 +285,6 @@ struct ConfigKeyMapping
 
 namespace {
 
-
-
 /**
  * TODO: Find a better way get the Unit/Q/QF from the ConfigKey.
  * Implement in libsr: Add analog.meaning, etc. to the config_key structure.
@@ -690,6 +688,19 @@ data::DataType get_data_type_for_config_key(ConfigKey config_key);
  * @return The Unit for the ConfigKey.
  */
 data::Unit get_unit_for_config_key(ConfigKey config_key);
+
+/**
+ * Deinterleave the sigrok pointer to a float array into a vector
+ *
+ * @param data Pointer to a float array
+ * @param sample_count Total number of samples in the array
+ * @param channel_index Which channel to extract
+ * @param channel_count Total number of channels, the samples belong to
+ *
+ * @return Deinterleaved samples
+ */
+std::vector<double> deinterleave_sigrok_data(const float *data,
+	size_t sample_count, size_t channel_index, size_t channel_count);
 
 } // namespace deviceutil
 } // namespace devices
