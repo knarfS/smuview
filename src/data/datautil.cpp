@@ -398,7 +398,7 @@ QString format_quantity_flag(QuantityFlag quantity_flag)
 }
 
 QString format_quantity_flags(const set<QuantityFlag> &quantity_flags,
-	const QString &seperator)
+	const QString &separator)
 {
 	QString qfs_str("");
 	QString sep("");
@@ -406,34 +406,34 @@ QString format_quantity_flags(const set<QuantityFlag> &quantity_flags,
 	// Show AC/DC first
 	if (quantity_flags.count(QuantityFlag::AC) > 0) {
 		qfs_str.append(format_quantity_flag(QuantityFlag::AC));
-		sep = seperator;
+		sep = separator;
 	}
 	if (quantity_flags.count(QuantityFlag::DC) > 0) {
 		qfs_str.append(sep);
 		qfs_str.append(format_quantity_flag(QuantityFlag::DC));
-		sep = seperator;
+		sep = separator;
 	}
 	// 2nd is RMS
 	if (quantity_flags.count(QuantityFlag::RMS) > 0) {
 		qfs_str.append(sep);
 		qfs_str.append(format_quantity_flag(QuantityFlag::RMS));
-		sep = seperator;
+		sep = separator;
 	}
 	// 3rd is min/max/avg
 	if (quantity_flags.count(QuantityFlag::Min) > 0) {
 		qfs_str.append(sep);
 		qfs_str.append(format_quantity_flag(QuantityFlag::Min));
-		sep = seperator;
+		sep = separator;
 	}
 	if (quantity_flags.count(QuantityFlag::Max) > 0) {
 		qfs_str.append(sep);
 		qfs_str.append(format_quantity_flag(QuantityFlag::Max));
-		sep = seperator;
+		sep = separator;
 	}
 	if (quantity_flags.count(QuantityFlag::Avg) > 0) {
 		qfs_str.append(sep);
 		qfs_str.append(format_quantity_flag(QuantityFlag::Avg));
-		sep = seperator;
+		sep = separator;
 	}
 
 	// And now the rest of the flags
@@ -445,7 +445,7 @@ QString format_quantity_flags(const set<QuantityFlag> &quantity_flags,
 
 		qfs_str.append(sep);
 		qfs_str.append(format_quantity_flag(qf));
-		sep = seperator;
+		sep = separator;
 	}
 
 	return qfs_str;
