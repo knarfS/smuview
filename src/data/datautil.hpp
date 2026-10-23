@@ -499,12 +499,12 @@ QString format_quantity_flag(QuantityFlag quantity_flag);
  * Format a QuantityFlag enum set to a string
  *
  * @param quantity_flags The QuantityFlags to format.
- * @param seperator The seperator between the flags.
+ * @param separator The separator between the flags.
  *
  * @return The formatted QuantityFlags.
  */
 QString format_quantity_flags(const set<QuantityFlag> &quantity_flags,
-	const QString &seperator);
+	const QString &separator);
 
 /**
  * Format a measured_quantity_t (pair<Quantity, set<QuantityFlag>>) to a string
