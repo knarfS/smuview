@@ -1,6 +1,6 @@
 # This file is part of the SmuView project.
 #
-# Copyright (C) 2019-2021 Frank Stettner <frank-stettner@gmx.net>
+# Copyright (C) 2019-2026 Frank Stettner <frank-stettner@gmx.net>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -43,6 +43,7 @@ i = 0
 while i<10000:
     ts = time.time()
     result_ch.push_sample(sin(i), ts, smuview.Quantity.Power, set(), smuview.Unit.Watt, 6, 3)
-    print("  new value = {}".format(result_ch.actual_signal().get_last_sample(True)[1]))
+    sample = result_ch.actual_signal().get_last_sample(True)
+    print("  new value = {}".format(sample[1] if sample is not None else None))
     time.sleep(0.25)
     i = i + 0.1

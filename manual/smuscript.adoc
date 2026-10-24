@@ -60,7 +60,7 @@ dmm_dev = Session.connect_device("hp-3478a:conn=libgpib/hp3478a")[0]
 time.sleep(1)
 # Get last sample from channel P1
 sample = dmm_dev.channels()["P1"].actual_signal().get_last_sample(True)
-print(sample)
+print("last sample = {0}".format(sample))
 
 # Add default tab for the DMM device.
 UiProxy.add_device_tab(dmm_dev)
@@ -108,8 +108,9 @@ value = 100
 while value > 0.5:
     # Take a reading every 2s and write it to the user channel
     time_stamp = time.time()
-    value = dmm_device.channels()["P1"].actual_signal().get_last_sample(True)[1]
-    result_ch.push_sample(value, time_stamp, smuview.Quantity.Voltage, set(), smuview.Unit.Volt, 6, 5)
+    sample = dmm_device.channels()["P1"].actual_signal().get_last_sample(True)
+    if sample is not None:
+        result_ch.push_sample(sample[1], time_stamp, smuview.Quantity.Voltage, set(), smuview.Unit.Volt, 6, 5)
     time.sleep(2)
 
 # Set device settings to a save state

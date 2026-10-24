@@ -21,6 +21,7 @@
 #define DATA_ANALOGTIMESIGNAL_HPP
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -31,6 +32,7 @@
 #include "src/data/analogbasesignal.hpp"
 #include "src/data/datautil.hpp"
 
+using std::optional;
 using std::pair;
 using std::set;
 using std::shared_ptr;
@@ -40,7 +42,14 @@ using std::vector;
 namespace sv {
 namespace data {
 
-typedef pair<double, double> analog_time_sample_t;
+typedef optional<pair<double, double>> analog_time_sample_t;
+
+struct AnalogTimeSignalBoundaries {
+	double first_timestamp;
+	double last_timestamp;
+	double min_value;
+	double max_value;
+};
 
 class AnalogTimeSignal : public AnalogBaseSignal
 {
@@ -71,20 +80,18 @@ public:
 	analog_time_sample_t get_last_sample(bool relative_time) const;
 
 	/**
-	 * Return the value at the given timestamp in &value. If there is no
-	 * exactty matching timestamp, the value is linearly interpolated. No
-	 * value can be found/interpolated, if the timestamp is smaller than the
-	 * first timestamp in the signal or bigger than the last timestamp in the
-	 * signal.
+	 * Return the value at the given timestamp. If there is no exactty matching
+	 * timestamp, the value is linearly interpolated. No value can be found or
+	 * interpolated, if the timestamp is smaller than the first timestamp in the
+	 * signal or bigger than the last timestamp in the signal.
 	 *
-	 * @param timestamp The timestamp for the value to return.
-	 * @param value The found/interpolated value at the given timestamp.
-	 * @param relative_time Use time relative to the session start time.
+	 * @param timestamp The timestamp for the value to return
+	 * @param relative_time Use time relative to the session start time
 	 *
-	 * @return true if a value was found/interpolated, false if not.
+	 * @return The found/interpolated value at the given timestamp
 	 */
-	bool get_value_at_timestamp(
-		double timestamp, double &value, bool relative_time) const;
+	optional<double> get_value_at_timestamp(
+		double timestamp, bool relative_time) const;
 
 	/**
 	 * Push a single sample to the signal.
@@ -99,8 +106,11 @@ public:
 		uint64_t samplerate, int total_digits, int sr_digits);
 
 	double signal_start_timestamp() const;
-	double first_timestamp(bool relative_time) const;
-	double last_timestamp(bool relative_time) const;
+	optional<double> first_timestamp(bool relative_time) const;
+	optional<double> last_timestamp(bool relative_time) const;
+
+	optional<AnalogTimeSignalBoundaries> get_boundaries(
+		bool relative_time) const;
 
 	/**
 	 * Combine two signals with each other.
@@ -130,7 +140,6 @@ public:
 private:
 	vector<double> time_;
 	double signal_start_timestamp_;
-	double last_timestamp_;
 
 public Q_SLOTS:
 	void on_channel_start_timestamp_changed(double timestamp);

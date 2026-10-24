@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2022 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,7 @@
 #include "src/devices/basedevice.hpp"
 
 using std::set;
+using std::shared_ptr;
 using std::string;
 
 namespace sv {
@@ -65,11 +66,9 @@ MultiplySFChannel::MultiplySFChannel(
 
 void MultiplySFChannel::on_sample_appended()
 {
-	size_t signal_sample_count = signal_->sample_count();
-	while (next_signal_pos_ < signal_sample_count) {
-		auto sample = signal_->get_sample(next_signal_pos_, false);
-		double time = sample.first;
-		double value = sample.second * factor_;
+	while (const auto sample = signal_->get_sample(next_signal_pos_, false)) {
+		double time = sample->first;
+		double value = sample->second * factor_;
 		push_sample(value, time);
 		++next_signal_pos_;
 	}

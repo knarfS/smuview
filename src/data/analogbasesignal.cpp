@@ -18,7 +18,6 @@
  */
 
 #include <cassert>
-#include <limits>
 #include <memory>
 #include <set>
 #include <string>
@@ -46,19 +45,17 @@ AnalogBaseSignal::AnalogBaseSignal(
 		shared_ptr<channels::BaseChannel> parent_channel,
 		const string &custom_name) :
 	BaseSignal(quantity, quantity_flags, unit, parent_channel, custom_name),
-	sample_count_(0),
 	total_digits_(data::DefaultTotalDigits),
 	sr_digits_(data::DefaultSRDigits),
-	last_value_(0.),
-	min_value_(std::numeric_limits<double>::max()),
-	max_value_(std::numeric_limits<double>::lowest())
+	min_value_(),
+	max_value_()
 {
 	qWarning() << "Init analog base signal " << display_name();
 }
 
 size_t AnalogBaseSignal::sample_count() const
 {
-	return sample_count_;
+	return data_.size();
 }
 
 int AnalogBaseSignal::total_digits() const
@@ -71,18 +68,24 @@ int AnalogBaseSignal::sr_digits() const
 	return sr_digits_;
 }
 
-double AnalogBaseSignal::last_value() const
+optional<double> AnalogBaseSignal::last_value() const
 {
-	return last_value_;
+	if (data_.empty())
+		return {};
+	return data_.back();
 }
 
-double AnalogBaseSignal::min_value() const
+optional<double> AnalogBaseSignal::min_value() const
 {
+	if (data_.empty())
+		return {};
 	return min_value_;
 }
 
-double AnalogBaseSignal::max_value() const
+optional<double> AnalogBaseSignal::max_value() const
 {
+	if (data_.empty())
+		return {};
 	return max_value_;
 }
 

@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2022 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,7 @@
 #include "src/devices/basedevice.hpp"
 
 using std::set;
+using std::shared_ptr;
 using std::string;
 
 namespace sv {
@@ -75,12 +76,12 @@ void IntegrateChannel::on_channel_start_timestamp_changed(double timestamp)
 void IntegrateChannel::on_sample_appended()
 {
 	// Integrate
-	size_t int_signal_sample_count = int_signal_->sample_count();
-	while (next_int_signal_pos_ < int_signal_sample_count) {
-		auto sample = int_signal_->get_sample(next_int_signal_pos_, false);
-		double time = sample.first;
+	while (const auto sample =
+		int_signal_->get_sample(next_int_signal_pos_, false)) {
+
+		double time = sample->first;
 		double elapsed_time_hours = (time - last_timestamp_) / (double)3600;
-		double value = last_value_ + (sample.second * elapsed_time_hours);
+		double value = last_value_ + (sample->second * elapsed_time_hours);
 
 		push_sample(value, time);
 

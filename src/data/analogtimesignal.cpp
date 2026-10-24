@@ -21,6 +21,7 @@
 #include <cassert>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -34,6 +35,7 @@
 #include "src/data/datautil.hpp"
 
 using std::make_pair;
+using std::optional;
 using std::set;
 using std::shared_ptr;
 using std::string;
@@ -50,8 +52,7 @@ AnalogTimeSignal::AnalogTimeSignal(
 		double signal_start_timestamp,
 		const string &custom_name) :
 	AnalogBaseSignal(quantity, quantity_flags, unit, parent_channel, custom_name),
-	signal_start_timestamp_(signal_start_timestamp),
-	last_timestamp_(0.)
+	signal_start_timestamp_(signal_start_timestamp)
 {
 	qWarning() << "Init analog time signal " << display_name()
 		<< ", signal_start_timestamp_ = "
@@ -63,10 +64,8 @@ void AnalogTimeSignal::clear()
 	// TODO: mutex
 	time_.clear();
 	data_.clear();
-	sample_count_ = 0.;
-	last_timestamp_ = 0.;
-	min_value_ = std::numeric_limits<double>::max();
-	max_value_ = std::numeric_limits<double>::lowest();
+	min_value_ = {};
+	max_value_ = {};
 
 	Q_EMIT samples_cleared();
 }
@@ -74,8 +73,8 @@ void AnalogTimeSignal::clear()
 analog_time_sample_t AnalogTimeSignal::get_sample(
 	size_t pos, bool relative_time) const
 {
-	if (pos >= sample_count_)
-		return make_pair(0., 0.);
+	if (pos >= data_.size())
+		return {};
 
 	double timestamp = time_.at(pos);
 	if (relative_time)
@@ -85,37 +84,35 @@ analog_time_sample_t AnalogTimeSignal::get_sample(
 
 analog_time_sample_t AnalogTimeSignal::get_last_sample(bool relative_time) const
 {
-	if (sample_count_ == 0)
-		return make_pair(0., 0.);
+	if (data_.size() == 0)
+		return {};
 
-	size_t pos = sample_count_ - 1;
-	double timestamp = time_.at(pos);
-	if (relative_time)
-		timestamp -= signal_start_timestamp_;
+	size_t pos = data_.size() - 1;
+	double timestamp = relative_time
+		? time_.at(pos) - signal_start_timestamp_
+		: time_.at(pos);
 	return make_pair(timestamp, data_.at(pos));
 }
 
-bool AnalogTimeSignal::get_value_at_timestamp(
-	double timestamp, double &value, bool relative_time) const
+optional<double> AnalogTimeSignal::get_value_at_timestamp(
+	double timestamp, bool relative_time) const
 {
 	if (relative_time)
 		timestamp += signal_start_timestamp_;
 
 	if (time_.empty())
-		return false;
+		return {};
 	if (timestamp < time_.at(0))
-		return false;
+		return {};
 	if (timestamp > time_.back())
-		return false;
+		return {};
 
 	auto lower = std::lower_bound(time_.begin(), time_.end(), timestamp);
 	size_t lower_pos = lower - time_.begin();
 
 	// Check if timestamp and found timestamp match
-	if (timestamp == *lower) {
-		value = data_.at(lower_pos);
-		return true;
-	}
+	if (timestamp == *lower)
+		return data_.at(lower_pos);
 
 	// Get the previous timestamp for linear interpolation
 	if (lower_pos > 0)
@@ -131,8 +128,7 @@ bool AnalogTimeSignal::get_value_at_timestamp(
 	double data_diff = data_.at(upper_pos) - lower_data;
 	double lininter_data = lower_data + (data_diff * ts_factor);
 
-	value = lininter_data;
-	return true;
+	return lininter_data;
 }
 
 void AnalogTimeSignal::push_sample(double sample, double timestamp,
@@ -146,16 +142,12 @@ void AnalogTimeSignal::push_sample(double sample, double timestamp,
 	*/
 
 	// TODO: Mutex?
-	last_timestamp_ = timestamp;
-	last_value_ = sample;
-	if (min_value_ > sample)
+	if (!min_value_.has_value() || min_value_ > sample)
 		min_value_ = sample;
 	// Ignore infinitiy (overflow) as max value.
-	if (max_value_ < sample &&
-		sample != std::numeric_limits<double>::infinity()) {
-
+	if (!max_value_.has_value() || (max_value_ < sample &&
+			sample != std::numeric_limits<double>::infinity()))
 		max_value_ = sample;
-	}
 
 	/*
 	qWarning() << "AnalogTimeSignal::push_sample(): " << display_name()
@@ -171,7 +163,6 @@ void AnalogTimeSignal::push_sample(double sample, double timestamp,
 	// TODO: Mutex?
 	time_.push_back(timestamp);
 	data_.push_back(sample);
-	sample_count_++;
 	Q_EMIT sample_appended();
 
 	bool digits_chngd = false;
@@ -219,24 +210,19 @@ void AnalogTimeSignal::push_samples(const vector<double> &samples,
 		*/
 
 		// TODO: Mutex?
-		if (min_value_ > sample)
+		if (!min_value_.has_value() || min_value_ > sample)
 			min_value_ = sample;
 		// Ignore infinitiy (overflow) as max value.
-		if (max_value_ < sample &&
-			sample != std::numeric_limits<double>::infinity()) {
-
+		if (!max_value_.has_value() || (max_value_ < sample &&
+				sample != std::numeric_limits<double>::infinity()))
 			max_value_ = sample;
-		}
 
 		time_.push_back(timestamp);
 		data_.push_back(sample);
 
 		timestamp += time_stride;
-		++sample_count_;
 	}
 
-	last_timestamp_ = timestamp - time_stride;
-	last_value_ = samples.back();
 	Q_EMIT sample_appended();
 
 	bool digits_chngd = false;
@@ -257,32 +243,42 @@ double AnalogTimeSignal::signal_start_timestamp() const
 	return signal_start_timestamp_;
 }
 
-double AnalogTimeSignal::first_timestamp(bool relative_time) const
+optional<double> AnalogTimeSignal::first_timestamp(bool relative_time) const
 {
 	if (time_.empty())
-		return 0.;
+		return {};
 
-	if (relative_time)
-		return time_.front() - signal_start_timestamp_;
-	else // NOLINT
-		return time_.front();
+	return relative_time
+		? time_.front() - signal_start_timestamp_
+		: time_.front();
 }
 
-double AnalogTimeSignal::last_timestamp(bool relative_time) const
+optional<double> AnalogTimeSignal::last_timestamp(bool relative_time) const
 {
 	if (time_.empty())
-		return 0.;
+		return {};
 
-	if (relative_time)
-		return last_timestamp_ - signal_start_timestamp_;
-	else // NOLINT
-		return last_timestamp_;
+	return relative_time
+		? time_.back() - signal_start_timestamp_
+		: time_.back();
 }
 
-void AnalogTimeSignal::on_channel_start_timestamp_changed(double timestamp)
+optional<AnalogTimeSignalBoundaries> AnalogTimeSignal::get_boundaries(
+	bool relative_time) const
 {
-	signal_start_timestamp_ = timestamp;
-	Q_EMIT signal_start_timestamp_changed(timestamp);
+	if (time_.empty())
+		return {};
+
+	return AnalogTimeSignalBoundaries {
+		relative_time
+			? time_.front() - signal_start_timestamp_
+			: time_.front(),
+		relative_time
+			? time_.back() - signal_start_timestamp_
+			: time_.back(),
+		min_value_.value(),
+		max_value_.value()
+	};
 }
 
 void AnalogTimeSignal::combine_signals(
@@ -292,77 +288,85 @@ void AnalogTimeSignal::combine_signals(
 	shared_ptr<vector<double>> data1_vector,
 	shared_ptr<vector<double>> data2_vector)
 {
-	if (signal1 == nullptr || signal1->sample_count() == 0)
+	if (signal1 == nullptr)
 		return;
-	if (signal2 == nullptr || signal2->sample_count() == 0)
+	if (signal2 == nullptr)
 		return;
 
-	// Ignore the first sample(s)
+	// Find the first adjacent sample(s)
 	if (signal1_pos == 0 || signal2_pos == 0) {
-		if (signal1->sample_count() <= signal1_pos ||
-				signal2->sample_count() <= signal2_pos)
+		auto signal1_sample = signal1->get_sample(signal1_pos, false);
+		auto signal2_sample = signal2->get_sample(signal2_pos, false);
+		if (!signal1_sample.has_value() || !signal2_sample.has_value())
 			return;
 
-		double signal1_ts = signal1->get_sample(signal1_pos, false).first;
-		double signal2_ts = signal2->get_sample(signal2_pos, false).first;
+		double signal1_ts = signal1_sample.value().first;
+		double signal2_ts = signal2_sample.value().first;
 		if (signal1_ts < signal2_ts) {
 			while (signal1_ts < signal2_ts &&
-					signal1->sample_count() > signal1_pos+1)
-				signal1_ts = signal1->get_sample(++signal1_pos, false).first;
+				(signal1_sample = signal1->get_sample(signal1_pos+1, false))) {
+
+				if (!signal1_sample.has_value())
+					break;
+				signal1_ts = signal1_sample.value().first;
+				signal1_pos++;
+			}
 		}
 		else if (signal1_ts > signal2_ts) {
 			while (signal1_ts > signal2_ts &&
-					signal2->sample_count() > signal2_pos+1)
-				signal2_ts = signal2->get_sample(++signal2_pos, false).first;
+				(signal2_sample = signal2->get_sample(signal2_pos+1, false))) {
+
+				if (!signal2_sample.has_value())
+					break;
+				signal2_ts = signal2_sample.value().first;
+				signal2_pos++;
+			}
 		}
 	}
 
+	auto signal1_sample = signal1->get_sample(signal1_pos, false);
+	auto signal2_sample = signal2->get_sample(signal2_pos, false);
 	while (true) {
-		if (signal1->sample_count() <= signal1_pos ||
-				signal2->sample_count() <= signal2_pos)
-			break;
+		if (!signal1_sample.has_value() || !signal2_sample.has_value())
+			return;
+
+		auto signal1_ts = signal1_sample.value().first;
+		auto signal2_ts = signal2_sample.value().first;
 
 		double time;
-		double value1;
-		double value2;
-
-		auto signal1_sample = signal1->get_sample(signal1_pos, false);
-		auto signal1_ts = signal1_sample.first;
-		auto signal2_sample = signal2->get_sample(signal2_pos, false);
-		auto signal2_ts = signal2_sample.first;
+		optional<double> value1;
+		optional<double> value2;
 
 		if (signal1_ts == signal2_ts) {
 			time = signal1_ts;
-			value1 = signal1_sample.second;
-			value2 = signal2_sample.second;
-			++signal1_pos;
-			++signal2_pos;
+			value1 = signal1_sample.value().second;
+			value2 = signal2_sample.value().second;
+			signal1_sample = signal1->get_sample(++signal1_pos, false);
+			signal2_sample = signal2->get_sample(++signal2_pos, false);
 		}
-		else if (signal1_ts < signal2_ts &&
-			signal2->sample_count() > signal2_pos) {
-
+		else if (signal1_ts < signal2_ts) {
 			time = signal1_ts;
-			if (!signal2->get_value_at_timestamp(time, value2, false))
+			value2 = signal2->get_value_at_timestamp(time, false);
+			if (!value2.has_value())
 				return;
-			value1 = signal1_sample.second;
-			++signal1_pos;
+			value1 = signal1_sample.value().second;
+			signal1_sample = signal1->get_sample(++signal1_pos, false);
 		}
-		else if (signal1_ts > signal2_ts &&
-			signal1->sample_count() > signal1_pos) {
-
+		else if (signal1_ts > signal2_ts) {
 			time = signal2_ts;
-			if (!signal1->get_value_at_timestamp(time, value1, false))
+			value1 = signal1->get_value_at_timestamp(time, false);
+			if (!value1.has_value())
 				return;
-			value2 = signal2_sample.second;
-			++signal2_pos;
+			value2 = signal2_sample.value().second;
+			signal2_sample = signal2->get_sample(++signal2_pos, false);
 		}
 		else {
 			return;
 		}
 
 		time_vector->push_back(time);
-		data1_vector->push_back(value1);
-		data2_vector->push_back(value2);
+		data1_vector->push_back(value1.value());
+		data2_vector->push_back(value2.value());
 	}
 }
 

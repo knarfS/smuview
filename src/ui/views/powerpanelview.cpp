@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2022 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,6 @@
 
 #include <memory>
 #include <set>
-#include <string>
 
 #include <QApplication>
 #include <QDateTime>
@@ -411,47 +410,50 @@ void PowerPanelView::stop_timer()
 
 void PowerPanelView::on_update()
 {
-	if (!voltage_signal_ || voltage_signal_->sample_count() == 0 ||
-			!current_signal_ || current_signal_->sample_count() == 0)
+	if (!voltage_signal_ || !current_signal_)
+		return;
+
+	const auto voltage = voltage_signal_->last_value();
+	const auto current = current_signal_->last_value();
+
+	if (!voltage.has_value() || !current.has_value())
 		return;
 
 	qint64 now = QDateTime::currentMSecsSinceEpoch();
 	double elapsed_time = (double)(now - last_time_) / (double)3600000; // / 1h
 	last_time_ = now;
 
-	double voltage = voltage_signal_->last_value();
-	if (voltage_min_ > voltage)
-		voltage_min_ = voltage;
-	if (voltage_max_ < voltage)
-		voltage_max_ = voltage;
+	if (voltage_min_ > voltage.value())
+		voltage_min_ = voltage.value();
+	if (voltage_max_ < voltage.value())
+		voltage_max_ = voltage.value();
 
-	double current = current_signal_->last_value();
-	if (current_min_ > current)
-		current_min_ = current;
-	if (current_max_ < current)
-		current_max_ = current;
+	if (current_min_ > current.value())
+		current_min_ = current.value();
+	if (current_max_ < current.value())
+		current_max_ = current.value();
 
 	double resistance = current == 0. ?
-		std::numeric_limits<double>::max() : voltage / current;
+		std::numeric_limits<double>::max() : voltage.value() / current.value();
 	if (resistance_min_ > resistance)
 		resistance_min_ = resistance;
 	if (resistance_max_ < resistance)
 		resistance_max_ = resistance;
 
-	double power = voltage * current;
+	double power = voltage.value() * current.value();
 	if (power_min_ > power)
 		power_min_ = power;
 	if (power_max_ < power)
 		power_max_ = power;
 
-	actual_amp_hours_ = actual_amp_hours_ + (current * elapsed_time);
+	actual_amp_hours_ = actual_amp_hours_ + (current.value() * elapsed_time);
 	actual_watt_hours_ = actual_watt_hours_ + (power * elapsed_time);
 
-	voltage_display_->set_value(voltage);
+	voltage_display_->set_value(voltage.value());
 	voltage_min_display_->set_value(voltage_min_);
 	voltage_max_display_->set_value(voltage_max_);
 
-	current_display_->set_value(current);
+	current_display_->set_value(current.value());
 	current_min_display_->set_value(current_min_);
 	current_max_display_->set_value(current_max_);
 

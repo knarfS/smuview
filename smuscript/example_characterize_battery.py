@@ -1,6 +1,6 @@
 # This file is part of the SmuView project.
 #
-# Copyright (C) 2019-2021 Frank Stettner <frank-stettner@gmx.net>
+# Copyright (C) 2019-2026 Frank Stettner <frank-stettner@gmx.net>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -57,8 +57,9 @@ value = 100
 while value > 0.5:
     # Take a reading every 2s and write it to the user channel
     time_stamp = time.time()
-    value = dmm_device.channels()["P1"].actual_signal().get_last_sample(True)[1]
-    result_ch.push_sample(value, time_stamp, smuview.Quantity.Voltage, set(), smuview.Unit.Volt, 6, 5)
+    sample = dmm_device.channels()["P1"].actual_signal().get_last_sample(True)
+    if sample is not None:
+        result_ch.push_sample(sample[1], time_stamp, smuview.Quantity.Voltage, set(), smuview.Unit.Volt, 6, 5)
     time.sleep(2)
 
 # Set device settings to a save state

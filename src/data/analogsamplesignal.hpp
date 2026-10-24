@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2019-2022 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2019-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 #define DATA_ANALOGSAMPLESIGNAL_HPP
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -31,6 +32,7 @@
 #include "src/data/analogbasesignal.hpp"
 #include "src/data/datautil.hpp"
 
+using std::optional;
 using std::pair;
 using std::set;
 using std::shared_ptr;
@@ -40,7 +42,7 @@ using std::vector;
 namespace sv {
 namespace data {
 
-typedef pair<uint32_t, double> analog_pos_sample_t;
+typedef optional<pair<uint32_t, double>> analog_pos_sample_t;
 
 class AnalogSampleSignal : public AnalogBaseSignal
 {
@@ -70,8 +72,8 @@ public:
 	void push_sample(double sample, uint32_t pos,
 		int total_digits, int sr_digits);
 
-	uint32_t first_pos() const;
-	uint32_t last_pos() const;
+	optional<uint32_t> first_pos() const;
+	optional<uint32_t> last_pos() const;
 
 	/*
 	static void combine_signals(
@@ -84,7 +86,6 @@ public:
 
 private:
 	vector<uint32_t> pos_;
-	uint32_t last_pos_;
 
 };
 
