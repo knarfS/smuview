@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,11 +62,12 @@ QPointF TimeCurveData::sample(size_t index) const
 	//signal_data_->lock();
 
 	auto sample = signal_->get_sample(index, relative_time_);
-	QPointF sample_point(sample.first, sample.second);
+	if (!sample.has_value())
+		return QPointF();
 
 	//signal_data_->.unlock();
 
-	return sample_point;
+	return QPointF(sample.value().first, sample.value().second);
 }
 
 size_t TimeCurveData::size() const
@@ -77,21 +78,14 @@ size_t TimeCurveData::size() const
 
 QRectF TimeCurveData::boundingRect() const
 {
-	/*
-	qWarning() << "TimeCurveData::boundingRect(): min time = "
-		<< signal_->first_timestamp(relative_time_);
-	qWarning() << "TimeCurveData::boundingRect(): max time = "
-		<< signal_->last_timestamp(relative_time_);
-	qWarning() << "TimeCurveData::boundingRect(): min value = "
-		<< signal_->min_value();
-	qWarning() << "TimeCurveData::boundingRect(): max value = "
-		<< signal_->max_value();
-	*/
+	const auto signal_bounds = signal_->get_boundaries(relative_time_);
+	if (!signal_bounds.has_value())
+		return QRectF();
 
 	// top left, bottom right
 	return QRectF(
-		QPointF(signal_->first_timestamp(relative_time_), signal_->max_value()),
-		QPointF(signal_->last_timestamp(relative_time_), signal_->min_value()));
+		QPointF(signal_bounds->first_timestamp, signal_bounds->max_value),
+		QPointF(signal_bounds->last_timestamp, signal_bounds->min_value));
 }
 
 QPointF TimeCurveData::closest_point(const QPointF &pos, double *dist) const

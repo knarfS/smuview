@@ -20,6 +20,7 @@
 #include <cassert>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -33,6 +34,7 @@
 #include "src/data/datautil.hpp"
 
 using std::make_pair;
+using std::optional;
 using std::set;
 using std::shared_ptr;
 using std::string;
@@ -46,8 +48,7 @@ AnalogSampleSignal::AnalogSampleSignal(
 		data::Unit unit,
 		shared_ptr<channels::BaseChannel> parent_channel,
 		const string &custom_name) :
-	AnalogBaseSignal(quantity, quantity_flags, unit, parent_channel, custom_name),
-	last_pos_(0)
+	AnalogBaseSignal(quantity, quantity_flags, unit, parent_channel, custom_name)
 {
 	qWarning() << "Init analog sample signal " << display_name();
 }
@@ -57,18 +58,16 @@ void AnalogSampleSignal::clear()
 	// TODO: mutex
 	pos_.clear();
 	data_.clear();
-	sample_count_ = 0;
-	last_pos_ = 0;
-	min_value_ = std::numeric_limits<double>::max();
-	max_value_ = std::numeric_limits<double>::lowest();
+	min_value_ = {};
+	max_value_ = {};
 
 	Q_EMIT samples_cleared();
 }
 
 analog_pos_sample_t AnalogSampleSignal::get_sample(uint32_t pos) const
 {
-	if (pos >= sample_count_)
-		return make_pair(0, 0.);
+	if (pos >= data_.size())
+		return {};
 
 	return make_pair(pos, data_.at(pos));
 }
@@ -84,13 +83,11 @@ void AnalogSampleSignal::push_sample(double sample, uint32_t pos,
 	*/
 
 	// TODO: Mutex?
-	last_pos_ = pos;
-	last_value_ = sample;
-	if (min_value_ > sample)
+	if (!min_value_.has_value() || min_value_ > sample)
 		min_value_ = sample;
 	// Ignore infinitiy (overflow) as max value.
-	if (max_value_ < sample &&
-		sample != std::numeric_limits<double>::infinity()) {
+	if (!max_value_.has_value() || (max_value_ < sample &&
+		sample != std::numeric_limits<double>::infinity())) {
 
 		max_value_ = sample;
 	}
@@ -109,7 +106,6 @@ void AnalogSampleSignal::push_sample(double sample, uint32_t pos,
 	// TODO: Mutex?
 	pos_.push_back(pos);
 	data_.push_back(sample);
-	sample_count_++;
 	Q_EMIT sample_appended();
 
 	bool digits_chngd = false;
@@ -125,20 +121,20 @@ void AnalogSampleSignal::push_sample(double sample, uint32_t pos,
 		Q_EMIT digits_changed(total_digits_, sr_digits_);
 }
 
-uint32_t AnalogSampleSignal::first_pos() const
+optional<uint32_t> AnalogSampleSignal::first_pos() const
 {
 	if (pos_.empty())
-		return 0;
+		return {};
 
 	return pos_.front();
 }
 
-uint32_t AnalogSampleSignal::last_pos() const
+optional<uint32_t> AnalogSampleSignal::last_pos() const
 {
 	if (pos_.empty())
-		return 0;
+		return {};
 
-	return last_pos_;
+	return pos_.back();
 }
 
 /*

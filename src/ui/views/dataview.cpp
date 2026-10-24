@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2022 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,8 +19,6 @@
 
 #include <memory>
 #include <mutex>
-#include <set>
-#include <string>
 
 #include <QAction>
 #include <QDebug>
@@ -173,9 +171,10 @@ void DataView::populate_table()
 		return;
 
 	for (size_t i=0; i<signals_.size(); ++i) {
-		size_t signal_size = signals_[i]->sample_count();
-		while (next_signal_pos_[i] < signal_size) {
-			auto sample = signals_[i]->get_sample(next_signal_pos_[i], true);
+		int sr_digits = signals_[i]->sr_digits();
+		while (const auto sample =
+			signals_[i]->get_sample(next_signal_pos_[i], true)) {
+
 			int row_count  = data_table_->rowCount();
 
 			int last_row  = -1;
@@ -192,12 +191,12 @@ void DataView::populate_table()
 				while (last_row+1 < row_count) {
 					auto *item = data_table_->item(last_row+1, 0);
 					double timestamp = item->data(0).toDouble();
-					if (timestamp > sample.first) {
+					if (timestamp > sample->first) {
 						data_table_->insertRow(last_row+1);
 						new_row = true;
 						break;
 					}
-					if (timestamp == sample.first) {
+					if (timestamp == sample->first) {
 						last_timestamp_[i] = item;
 						new_row = false;
 						break;
@@ -214,18 +213,17 @@ void DataView::populate_table()
 
 			if (new_row) {
 				QTableWidgetItem *time_item = new QTableWidgetItem(
-					QString::number(sample.first, 'f', 3));
-				time_item->setData(0, QVariant(sample.first));
+					QString::number(sample->first, 'f', 3));
+				time_item->setData(0, QVariant(sample->first));
 				data_table_->setItem(last_row+1, 0, time_item);
 				last_timestamp_[i] = time_item;
 			}
-			int prefix = util::prefix_from_value(
-				sample.second, signals_[i]->sr_digits());
+			int prefix = util::prefix_from_value(sample->second, sr_digits);
 			int decimal_places = util::decimal_places_from_prefix(
-				prefix, signals_[i]->sr_digits());
+				prefix, sr_digits);
 			QTableWidgetItem *value_item = new QTableWidgetItem(
-				QString::number(sample.second, 'f', decimal_places));
-			value_item->setData(0, QVariant(sample.second));
+				QString::number(sample->second, 'f', decimal_places));
+			value_item->setData(0, QVariant(sample->second));
 			data_table_->setItem(last_row+1, (int)i+1, value_item);
 
 			++next_signal_pos_[i];

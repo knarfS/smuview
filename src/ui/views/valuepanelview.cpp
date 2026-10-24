@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2022 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,6 @@
 
 #include <cassert>
 #include <memory>
-#include <string>
 #include <utility>
 
 #include <QApplication>
@@ -314,16 +313,19 @@ void ValuePanelView::stop_timer()
 
 void ValuePanelView::on_update()
 {
-	if (!signal_ || signal_->sample_count() == 0)
+	if (!signal_)
 		return;
 
-	double value = signal_->last_value();
-	if (value_min_ > value)
-		value_min_ = value;
-	if (value_max_ < value)
-		value_max_ = value;
+	const auto value = signal_->last_value();
+	if (!value.has_value())
+		return;
 
-	value_display_->set_value(value);
+	if (value_min_ > value.value())
+		value_min_ = value.value();
+	if (value_max_ < value.value())
+		value_max_ = value.value();
+
+	value_display_->set_value(value.value());
 	value_min_display_->set_value(value_min_);
 	value_max_display_->set_value(value_max_);
 }

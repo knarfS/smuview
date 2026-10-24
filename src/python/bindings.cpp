@@ -80,7 +80,7 @@ PYBIND11_EMBEDDED_MODULE(smuview, module) {
 		"time.sleep(1)\n"
 		"# Get last sample from channel P1.\n"
 		"sample = dmm_dev.channels()[\"P1\"].actual_signal().get_last_sample(True)\n"
-		"print(sample)\n\n"
+		"print(\"last sample = {0}\".format(sample))\n\n"
 		"# Add default tab for the DMM device.\n"
 		"UiProxy.add_device_tab(dmm_dev)\n"
 		"```\n\n"
@@ -116,8 +116,8 @@ void init_Session(py::module &module)
 		"`/dev/ttyUSB2`).\n\n"
 		"Returns\n"
 		"-------\n"
-		"Dict[str, BaseDevice]\n"
-		"    A Dict where the key is the device id and the value is the device object.");
+		"dict[str, BaseDevice]\n"
+		"    A dict where the key is the device id and the value is the device object.");
 	py_session.def("connect_device", &sv::Session::connect_device,
 		py::arg("conn_str"),
 		"Connect a new device. For some devices (like DMMs) you may want to "
@@ -137,8 +137,8 @@ void init_Session(py::module &module)
 		"    The connection string. See https://sigrok.org/wiki/Connection_parameters\n\n"
 		"Returns\n"
 		"-------\n"
-		"List[HardwareDevice]\n"
-		"    A List with the newly connected device objects.");
+		"list[HardwareDevice]\n"
+		"    A list with the newly connected device objects.");
 	py_session.def("add_user_device", &sv::Session::add_user_device,
 		"Create a new user device.\n\n"
 		"Returns\n"
@@ -175,14 +175,14 @@ void init_Device(py::module &module)
 		"Return all channels of the device.\n\n"
 		"Returns\n"
 		"-------\n"
-		"Dict[str, BaseChannel]\n"
-		"    A Dict where the key is the id of the channel and the value is the channel object.");
+		"dict[str, BaseChannel]\n"
+		"    A dict where the key is the id of the channel and the value is the channel object.");
 	py_base_device.def("configurables", &sv::devices::BaseDevice::configurable_map,
 		"Return all configurables of the device.\n\n"
 		"Returns\n"
 		"-------\n"
-		"Dict[str, Configurable]\n"
-		"    A Dict where the key is the id of the `Configurable` and the value is the `Configurable` object.");
+		"dict[str, Configurable]\n"
+		"    A dict where the key is the id of the `Configurable` and the value is the `Configurable` object.");
 	py_base_device.def("add_user_channel", &sv::devices::BaseDevice::add_user_channel,
 		py::arg("channel_name"), py::arg("channel_group_name"),
 		"Add a new user channel to the device.\n\n"
@@ -225,7 +225,7 @@ void init_Channel(py::module &module)
 		"----------\n"
 		"quantity : Quantity\n"
 		"    The `Quantity` of the new signal.\n"
-		"quantity_flags : Set[QuantityFlag]\n"
+		"quantity_flags : set[QuantityFlag]\n"
 		"    The `QuantityFlag`s of the new signal.\n"
 		"unit : Unit\n"
 		"    The `Unit` of the new signal.\n"
@@ -245,7 +245,7 @@ void init_Channel(py::module &module)
 		"Return all signals of the channel.\n\n"
 		"Returns\n"
 		"-------\n"
-		"List[BaseSignal]\n"
+		"list[BaseSignal]\n"
 		"    All signals of the channel.");
 
 	py::class_<sv::channels::HardwareChannel, std::shared_ptr<sv::channels::HardwareChannel>> py_hardware_channel(module, "HardwareChannel", py_base_channel);
@@ -266,7 +266,7 @@ void init_Channel(py::module &module)
 		"    The absolute timestamp in milliseconds.\n"
 		"quantity : Quantity\n"
 		"    The `Quantity` of the new signal.\n"
-		"quantity_flags : Set[QuantityFlag]\n"
+		"quantity_flags : set[QuantityFlag]\n"
 		"    The `QuantityFlag`s of the new signal.\n"
 		"unit : Unit\n"
 		"    The `Unit` of the new signal.\n"
@@ -278,11 +278,6 @@ void init_Channel(py::module &module)
 
 void init_Signal(py::module &module)
 {
-	/*
-	 * TODO:
-	 *  - get_value_at_timestamp(): reference parameter &value
-	 */
-
 	py::class_<sv::data::BaseSignal, std::shared_ptr<sv::data::BaseSignal>> py_base_signal(module, "BaseSignal");
 	py_base_signal.doc() = "The base class for all signal types.";
 	py_base_signal.def("name", &sv::data::BaseSignal::name,
@@ -314,22 +309,22 @@ void init_Signal(py::module &module)
 		"pos : int\n"
 		"    The position/number of the sample.\n"
 		"relative_time : bool\n"
-		"    When `True`, the returned timestamp is relative to the start of the SmuView session.\n\n"
+		"    When `True` the returned timestamp is relative to the start of the SmuView session, else it is in seconds since epoc.\n\n"
 		"Returns\n"
 		"-------\n"
-		"Tuple[float, float]\n"
-		"    The sample with 1. timestamp in milliseconds and 2. the sample value.");
+		"tuple[float, float] or None\n"
+		"    The sample with the timestamp in seconds (1) and the sample value (2) or `None` when there is no sample at `pos`.");
 	py_analog_time_signal.def("get_last_sample", &sv::data::AnalogTimeSignal::get_last_sample,
 		py::arg("relative_time"),
 		"Return the last sample of the signal.\n\n"
 		"Parameters\n"
 		"----------\n"
 		"relative_time : bool\n"
-		"    When `True`, the returned timestamp is relative to the start of the SmuView session.\n\n"
+		"    When `True` the returned timestamp is relative to the start of the SmuView session, else it is in seconds since epoc.\n\n"
 		"Returns\n"
 		"-------\n"
-		"Tuple[float, float]\n"
-		"    The sample with 1. timestamp in milliseconds and 2. the sample value.");
+		"tuple[float, float] or None\n"
+		"    The sample with the timestamp in seconds (1) and the sample value (2) or `None` when there is no last sample.");
 	py_analog_time_signal.def("push_sample", &sv::data::AnalogTimeSignal::push_sample,
 		py::arg("sample"), py::arg("timestamp"), py::arg("digits"), py::arg("decimal_places"),
 		"Push a new sample to the signal.\n\n"
@@ -355,8 +350,8 @@ void init_Signal(py::module &module)
 		"    The position/number of the sample.\n\n"
 		"Returns\n"
 		"-------\n"
-		"Tuple[int, float]\n"
-		"    The sample with 1. the key and 2. the sample value.");
+		"tuple[int, float] or None\n"
+		"    The sample with the key (1) and the sample value (2) or `None` when there is no sample at `pos`.");
 	py_analog_sample_signal.def("push_sample", &sv::data::AnalogSampleSignal::push_sample,
 		py::arg("sample"), py::arg("pos"), py::arg("digits"), py::arg("decimal_places"),
 		"Push a new sample to the signal.\n\n"
@@ -374,11 +369,6 @@ void init_Signal(py::module &module)
 
 void init_Configurable(py::module &module)
 {
-	/*
-	 * TODO:
-	 *  - list
-	 */
-
 	py::class_<sv::devices::Configurable, std::shared_ptr<sv::devices::Configurable>> py_configurable(module, "Configurable");
 	py_configurable.doc() = "A configurable for controlling a device with config keys.";
 	py_configurable.def("name", &sv::devices::Configurable::name,
@@ -439,7 +429,7 @@ void init_Configurable(py::module &module)
 		"----------\n"
 		"config_key : ConfigKey\n"
 		"    The `ConfigKey` to set.\n"
-		"value : Tuple[Quantity, Set[QuantityFlag]]\n"
+		"value : tuple[Quantity, set[QuantityFlag]]\n"
 		"    The measured quantity value to set.");
 	py_configurable.def("get_bool_config",
 		[](const sv::devices::Configurable &self, sv::devices::ConfigKey config_key) {
@@ -535,25 +525,25 @@ void init_Configurable(py::module &module)
 		"    The `ConfigKey` to get.\n\n"
 		"Returns\n"
 		"-------\n"
-		"Tuple[Quantity, Set[QuantityFlag]]\n"
+		"tuple[Quantity, set[QuantityFlag]]\n"
 		"    The measured quantity value of the config key.");
 	py_configurable.def("getable_configs", &sv::devices::Configurable::getable_configs,
 		"Return all getable config keys.\n\n"
 		"Returns\n"
 		"-------\n"
-		"List[ConfigKey]\n"
+		"list[ConfigKey]\n"
 		"    All getable config keys.");
 	py_configurable.def("setable_configs", &sv::devices::Configurable::setable_configs,
 		"Return all setable config keys.\n\n"
 		"Returns\n"
 		"-------\n"
-		"List[ConfigKey]\n"
+		"list[ConfigKey]\n"
 		"    All setable config keys.");
 	py_configurable.def("listable_configs", &sv::devices::Configurable::listable_configs,
 		"Return all listable config keys.\n\n"
 		"Returns\n"
 		"-------\n"
-		"List[ConfigKey]\n"
+		"list[ConfigKey]\n"
 		"    All listable config keys.");
 }
 
@@ -600,8 +590,8 @@ void init_UI(py::module &module)
 		"    The `Configurable` object.\n\n"
 		"Returns\n"
 		"-------\n"
-		"List[str]\n"
-		"    A List with the ids of the new views or an empty list if no control views were added.");
+		"list[str]\n"
+		"    A list with the ids of the new views or an empty list if no control views were added.");
 	py_ui_proxy.def("add_time_plot_view",  &sv::python::UiProxy::ui_add_time_plot_view,
 		py::arg("tab_id"), py::arg("area"),
 		"Add a time plot view to the given tab. Use "
@@ -773,8 +763,8 @@ void init_UI(py::module &module)
 		"    The id of the plot view.\n"
 		"curve_id : str\n"
 		"    The id of the curve.\n"
-		"color : Tuple[int, int, int]\n"
-		"    The color for the curve as a Tuple with the RGB values.");
+		"color : tuple[int, int, int]\n"
+		"    The color for the curve as a tuple with the RGB values.");
 	py_ui_proxy.def("show_message_box", &sv::python::UiProxy::ui_show_message_box,
 		py::arg("title"), py::arg("text"),
 		"Show a (info) message box with the given window title and text. "

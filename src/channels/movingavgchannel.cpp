@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2019-2022 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2019-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,7 @@
 #include "src/devices/basedevice.hpp"
 
 using std::set;
+using std::shared_ptr;
 using std::string;
 
 namespace sv {
@@ -70,16 +71,14 @@ MovingAvgChannel::MovingAvgChannel(
 
 void MovingAvgChannel::on_sample_appended()
 {
-	size_t signal_sample_count = signal_->sample_count();
-	while (next_signal_pos_ < signal_sample_count) {
-		auto sample = signal_->get_sample(next_signal_pos_, false);
-		avg_samples_[next_signal_pos_%avg_sample_count_] = sample.second;
+	while (const auto sample = signal_->get_sample(next_signal_pos_, false)) {
+		avg_samples_[next_signal_pos_%avg_sample_count_] = sample->second;
 		double value = 0.;
 		for (size_t i=0; i<avg_sample_count_; ++i) {
 			value += avg_samples_[i];
 		}
 		value /= avg_sample_count_;
-		push_sample(value, sample.first);
+		push_sample(value, sample->first);
 		++next_signal_pos_;
 	}
 }

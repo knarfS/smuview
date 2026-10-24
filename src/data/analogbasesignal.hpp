@@ -21,6 +21,7 @@
 #define DATA_ANALOGBASESIGNAL_HPP
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -30,6 +31,7 @@
 #include "src/data/basesignal.hpp"
 #include "src/data/datautil.hpp"
 
+using std::optional;
 using std::set;
 using std::shared_ptr;
 using std::string;
@@ -64,18 +66,16 @@ public:
 	int total_digits() const;
 	/** digits from ....digits */
 	int sr_digits() const;
-	double last_value() const;
-	double min_value() const;
-	double max_value() const;
+	optional<double> last_value() const;
+	optional<double> min_value() const;
+	optional<double> max_value() const;
 
 protected:
 	vector<double> data_;
-	size_t sample_count_;
 	int total_digits_;
 	int sr_digits_;
-	double last_value_;
-	double min_value_;
-	double max_value_;
+	optional<double> min_value_;
+	optional<double> max_value_;
 
 Q_SIGNALS:
 	void samples_cleared();

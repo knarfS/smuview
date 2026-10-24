@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,6 +43,7 @@ using std::make_shared;
 using std::mutex;
 using std::set;
 using std::shared_ptr;
+using std::vector;
 
 namespace sv {
 namespace ui {
@@ -92,10 +93,15 @@ size_t XYCurveData::size() const
 
 QRectF XYCurveData::boundingRect() const
 {
+	const auto x_t_signal_bounds = x_t_signal_->get_boundaries(false);
+	const auto y_t_signal_bounds = y_t_signal_->get_boundaries(false);
+	if (!x_t_signal_bounds.has_value() || !y_t_signal_bounds.has_value())
+		return QRectF();
+
 	// top left, bottom right
 	return QRectF(
-		QPointF(x_t_signal_->min_value(), y_t_signal_->max_value()),
-		QPointF(x_t_signal_->max_value(), y_t_signal_->min_value()));
+		QPointF(x_t_signal_bounds->min_value, y_t_signal_bounds->max_value),
+		QPointF(x_t_signal_bounds->max_value, y_t_signal_bounds->min_value));
 }
 
 QPointF XYCurveData::closest_point(const QPointF &pos, double *dist) const

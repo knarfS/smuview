@@ -1,6 +1,6 @@
 # This file is part of the SmuView project.
 #
-# Copyright (C) 2019-2021 Frank Stettner <frank-stettner@gmx.net>
+# Copyright (C) 2019-2026 Frank Stettner <frank-stettner@gmx.net>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -65,13 +65,15 @@ d = .0
 while d <= 2.0:
     load_conf.set_config(smuview.ConfigKey.CurrentLimit, d)
     time.sleep(0.5)
-    u_in = psu_dev.channels()["V1"].actual_signal().get_last_sample(True)[1]
-    i_in = dmm_dev.channels()["P1"].actual_signal().get_last_sample(True)[1]
-    power_in = u_in * i_in
-    u_out = load_dev.channels()["V"].actual_signal().get_last_sample(True)[1]
-    i_out = load_dev.channels()["I"].actual_signal().get_last_sample(True)[1]
+    u_in_sample = psu_dev.channels()["V1"].actual_signal().get_last_sample(True)
+    i_in_sample = dmm_dev.channels()["P1"].actual_signal().get_last_sample(True)
+    u_out_sample = load_dev.channels()["V"].actual_signal().get_last_sample(True)
+    i_out_sample = load_dev.channels()["I"].actual_signal().get_last_sample(True)
+    if u_in_sample is None or i_in_sample is None or u_out_sample is None or i_out_sample is None:
+        continue
+    power_in = u_in_sample[1] * i_in_sample[1]
     # MathChannels are not in the python bindings yet, so we have to calculate by our own.
-    power_out = u_out * i_out
+    power_out = u_out_sample[1] * i_out_sample[1]
     eff = (power_out / power_in) * 100
     ts = time.time()
     p_in_ch.push_sample(power_in, ts, smuview.Quantity.Power, set(), smuview.Unit.Watt, 6, 3)
