@@ -25,6 +25,7 @@
 #include <QDebug>
 
 #include "integratechannel.hpp"
+#include "src/sessionglobals.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/channels/mathchannel.hpp"
 #include "src/data/analogtimesignal.hpp"
@@ -45,14 +46,12 @@ IntegrateChannel::IntegrateChannel(
 		shared_ptr<data::AnalogTimeSignal> int_signal,
 		shared_ptr<devices::BaseDevice> parent_device,
 		const set<string> &channel_group_names,
-		const string &channel_name,
-		double channel_start_timestamp) :
+		const string &channel_name) :
 	MathChannel(quantity, quantity_flags, unit,
-		parent_device, channel_group_names, channel_name,
-		channel_start_timestamp),
+		parent_device, channel_group_names, channel_name),
 	int_signal_(int_signal),
 	next_int_signal_pos_(0),
-	last_timestamp_(channel_start_timestamp),
+	last_timestamp_(sv::sessionglobals::session_start_timestamp),
 	last_value_(0.)
 {
 	assert(int_signal_);
@@ -60,17 +59,8 @@ IntegrateChannel::IntegrateChannel(
 	total_digits_ = int_signal_->total_digits();
 	sr_digits_ = int_signal_->sr_digits();
 
-	connect(this, &IntegrateChannel::channel_start_timestamp_changed,
-		this, &IntegrateChannel::on_channel_start_timestamp_changed);
 	connect(int_signal_.get(), &data::AnalogTimeSignal::sample_appended,
 		this, &IntegrateChannel::on_sample_appended);
-}
-
-void IntegrateChannel::on_channel_start_timestamp_changed(double timestamp)
-{
-	// TODO: check if already started?
-	if (last_timestamp_ < 0)
-		last_timestamp_ = timestamp;
 }
 
 void IntegrateChannel::on_sample_appended()

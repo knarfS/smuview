@@ -338,15 +338,10 @@ void AddMathChannelDialog::accept()
 			auto signal_2 = static_pointer_cast<sv::data::AnalogTimeSignal>(
 				m_ss_signal2_->selected_signal());
 
-			double start_timestamp = signal_1->signal_start_timestamp();
-			if (signal_2->signal_start_timestamp() < start_timestamp)
-				start_timestamp = signal_2->signal_start_timestamp();
-
 			channel_ = make_shared<channels::MultiplySSChannel>(
 				quantity, quantity_flags, unit,
 				signal_1, signal_2,
-				device, channel_group_names, name_edit_->text().toStdString(),
-				start_timestamp);
+				device, channel_group_names, name_edit_->text().toStdString());
 		}
 		break;
 	case 1: {
@@ -381,8 +376,7 @@ void AddMathChannelDialog::accept()
 			channel_ = make_shared<channels::MultiplySFChannel>(
 				quantity, quantity_flags, unit,
 				signal, factor,
-				device, channel_group_names, name_edit_->text().toStdString(),
-				signal->signal_start_timestamp());
+				device, channel_group_names, name_edit_->text().toStdString());
 		}
 		break;
 	case 2: {
@@ -406,15 +400,10 @@ void AddMathChannelDialog::accept()
 			auto signal2 = static_pointer_cast<sv::data::AnalogTimeSignal>(
 				d_ss_signal2_->selected_signal());
 
-			double start_timestamp = signal1->signal_start_timestamp();
-			if (signal2->signal_start_timestamp() < start_timestamp)
-				start_timestamp = signal2->signal_start_timestamp();
-
 			channel_ = make_shared<channels::DivideChannel>(
 				quantity, quantity_flags, unit,
 				signal1, signal2,
-				device, channel_group_names, name_edit_->text().toStdString(),
-				start_timestamp);
+				device, channel_group_names, name_edit_->text().toStdString());
 		}
 		break;
 	case 3: {
@@ -449,8 +438,7 @@ void AddMathChannelDialog::accept()
 			channel_ = make_shared<channels::AddSCChannel>(
 				quantity, quantity_flags, unit,
 				signal, constant,
-				device, channel_group_names, name_edit_->text().toStdString(),
-				signal->signal_start_timestamp());
+				device, channel_group_names, name_edit_->text().toStdString());
 		}
 		break;
 	case 4: {
@@ -467,8 +455,7 @@ void AddMathChannelDialog::accept()
 			channel_ = make_shared<channels::IntegrateChannel>(
 				quantity, quantity_flags, unit,
 				signal,
-				device, channel_group_names, name_edit_->text().toStdString(),
-				signal->signal_start_timestamp());
+				device, channel_group_names, name_edit_->text().toStdString());
 		}
 		break;
 	case 5: {
@@ -487,8 +474,7 @@ void AddMathChannelDialog::accept()
 			channel_ = make_shared<channels::MovingAvgChannel>(
 				quantity, quantity_flags, unit,
 				signal, num_samples,
-				device, channel_group_names, name_edit_->text().toStdString(),
-				signal->signal_start_timestamp());
+				device, channel_group_names, name_edit_->text().toStdString());
 		}
 		break;
 	default:

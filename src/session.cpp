@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,7 +51,6 @@ class Context;
 namespace sv {
 
 shared_ptr<sigrok::Context> Session::sr_context;
-double Session::session_start_timestamp = .0;
 
 Session::Session(DeviceManager &device_manager) :
 	device_manager_(device_manager)

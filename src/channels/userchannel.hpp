@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2022 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,8 +55,7 @@ public:
 	UserChannel(
 		const string &channel_name,
 		const set<string> &channel_group_names,
-		shared_ptr<devices::BaseDevice> parent_device,
-		double channel_start_timestamp);
+		shared_ptr<devices::BaseDevice> parent_device);
 
 	/**
 	 * Add a single sample with timestamp to the channel/signal

@@ -46,11 +46,9 @@ AddSCChannel::AddSCChannel(
 		double constant,
 		shared_ptr<devices::BaseDevice> parent_device,
 		const set<string> &channel_group_names,
-		const string &channel_name,
-		double channel_start_timestamp) :
+		const string &channel_name) :
 	MathChannel(quantity, quantity_flags, unit,
-		parent_device, channel_group_names, channel_name,
-		channel_start_timestamp),
+		parent_device, channel_group_names, channel_name),
 	signal_(signal),
 	constant_(constant),
 	next_signal_pos_(0)

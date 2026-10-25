@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,8 +61,7 @@ public:
 		shared_ptr<data::AnalogTimeSignal> signal2,
 		shared_ptr<devices::BaseDevice> parent_device,
 		const set<string> &channel_group_names,
-		const string &channel_name,
-		double channel_start_timestamp);
+		const string &channel_name);
 
 private:
 	shared_ptr<data::AnalogTimeSignal> signal1_;

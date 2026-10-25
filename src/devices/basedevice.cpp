@@ -78,13 +78,6 @@ BaseDevice::BaseDevice(const shared_ptr<sigrok::Context> sr_context,
 
 	// Every device gets its own unique index
 	index_ = BaseDevice::device_counter++;
-
-	/*
-	 * NOTE: Get the start timestamp from the session.
-	 *       This way, combining signals from different devices (export as
-	 *       CSV, XY-Plots) can be displayed with relative timestamps.
-	 */
-	aquisition_start_timestamp_ = sv::Session::session_start_timestamp;
 }
 
 BaseDevice::~BaseDevice()
@@ -339,9 +332,6 @@ void BaseDevice::add_channel(shared_ptr<channels::BaseChannel> channel,
 {
 	// Check if channel already exists. Channel names are unique per device.
 	if (channel_map_.count(channel->name()) == 0) {
-		connect(this, &BaseDevice::aquisition_start_timestamp_changed,
-			channel.get(), &channels::BaseChannel::on_aquisition_start_timestamp_changed);
-
 		// map<QString, shared_ptr<channels::BaseChannel>> channel_name_map_;
 		channel_map_.insert(make_pair(channel->name(), channel));
 	}
@@ -372,7 +362,7 @@ shared_ptr<channels::BaseChannel> BaseDevice::add_sr_channel(
 	else {
 		set<string> chg_names { channel_group_name };
 		channel = make_shared<channels::HardwareChannel>(sr_channel,
-			shared_from_this(), chg_names, aquisition_start_timestamp_);
+			shared_from_this(), chg_names);
 
 		// map<shared_ptr<sigrok::Channel>, shared_ptr<channels::BaseChannel>> sr_channel_map_;
 		sr_channel_map_.insert(make_pair(sr_channel, channel));
@@ -405,7 +395,7 @@ shared_ptr<channels::UserChannel> BaseDevice::add_user_channel(
 	shared_ptr<channels::UserChannel> channel =
 		make_shared<channels::UserChannel>(
 			channel_name, set<string> { channel_group_name },
-			shared_from_this(), aquisition_start_timestamp_);
+			shared_from_this());
 	add_channel(channel, channel_group_name);
 
 	return channel;
@@ -520,18 +510,8 @@ void BaseDevice::aquisition_thread_proc()
 	}
 
 	aquisition_state_ = AquisitionState::Running;
-	/*
-	// TODO: use std::chrono / std::time
-	// NOTE: ATM only the session start timestamp is used!
-	aquisition_start_timestamp_ =
-		QDateTime::currentMSecsSinceEpoch() / (double)1000;
-	Q_EMIT aquisition_start_timestamp_changed(aquisition_start_timestamp_);
-	*/
 
-	qWarning()
-		<< "Start aquisition for " << short_name()
-		<< ",  aquisition_start_timestamp_ = "
-		<< util::format_time_date(aquisition_start_timestamp_);
+	qWarning() << "Start aquisition for " << short_name();
 
 	try {
 		sr_session_->run();

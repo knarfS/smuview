@@ -61,7 +61,6 @@ public:
 		const set<data::QuantityFlag> &quantity_flags,
 		data::Unit unit,
 		shared_ptr<channels::BaseChannel> parent_channel,
-		double signal_start_timestamp,
 		const string &custom_name = "");
 
 	/**
@@ -105,7 +104,6 @@ public:
 	void push_samples(const vector<double> &samples, double timestamp,
 		uint64_t samplerate, int total_digits, int sr_digits);
 
-	double signal_start_timestamp() const;
 	optional<double> first_timestamp(bool relative_time) const;
 	optional<double> last_timestamp(bool relative_time) const;
 
@@ -139,13 +137,6 @@ public:
 
 private:
 	vector<double> time_;
-	double signal_start_timestamp_;
-
-public Q_SLOTS:
-	void on_channel_start_timestamp_changed(double timestamp);
-
-Q_SIGNALS:
-	void signal_start_timestamp_changed(double timestamp);
 
 };
 

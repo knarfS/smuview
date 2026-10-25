@@ -54,10 +54,8 @@ namespace channels {
 BaseChannel::BaseChannel(
 		shared_ptr<sigrok::Channel> sr_channel,
 		shared_ptr<devices::BaseDevice> parent_device,
-		const set<string> &channel_group_names,
-		double channel_start_timestamp) :
+		const set<string> &channel_group_names) :
 	sr_channel_(sr_channel),
-	channel_start_timestamp_(channel_start_timestamp),
 	parent_device_(parent_device),
 	channel_group_names_(channel_group_names),
 	fixed_signal_(false),
@@ -65,9 +63,7 @@ BaseChannel::BaseChannel(
 {
 	name_ = (sr_channel_) ? sr_channel_->name() : "";
 
-	qWarning() << "Init channel " << QString::fromStdString(name_)
-		<< ", channel_start_timestamp = "
-		<< util::format_time_date(channel_start_timestamp);
+	qWarning() << "Init channel " << QString::fromStdString(name_);
 }
 
 BaseChannel::~BaseChannel()
@@ -165,9 +161,6 @@ void BaseChannel::add_signal(shared_ptr<data::AnalogTimeSignal> signal)
 		qCritical() << "WARNING: Please fix this in the libsigrok driver!";
 	}
 
-	connect(this, &BaseChannel::channel_start_timestamp_changed,
-		signal.get(), &data::AnalogTimeSignal::on_channel_start_timestamp_changed);
-
 	measured_quantity_t mq = make_pair(
 		signal->quantity(), signal->quantity_flags());
 	if (signal_map_.count(mq) > 0) {
@@ -194,7 +187,7 @@ shared_ptr<data::BaseSignal> BaseChannel::add_signal(
 	 */
 	auto signal = make_shared<data::AnalogTimeSignal>(
 		quantity, quantity_flags, unit,
-		shared_from_this(), channel_start_timestamp_, custom_name);
+		shared_from_this(), custom_name);
 
 	this->add_signal(signal);
 
@@ -241,15 +234,6 @@ void BaseChannel::restore_settings(QSettings &settings)
 {
 	set_name(settings.value("name").toString().toStdString());
 	set_enabled(settings.value("enabled").toBool());
-}
-
-void BaseChannel::on_aquisition_start_timestamp_changed(double timestamp)
-{
-	qWarning()
-		<< "BaseChannel::on_aquisition_start_timestamp_changed() timestamp = "
-		<< util::format_time_date(timestamp);
-	channel_start_timestamp_ = timestamp;
-	Q_EMIT channel_start_timestamp_changed(timestamp);
 }
 
 } // namespace channels

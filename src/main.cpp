@@ -38,6 +38,7 @@
 #include "src/config.h"
 #include "src/devicemanager.hpp"
 #include "src/session.hpp"
+#include "src/sessionglobals.hpp"
 #include "src/settingsmanager.hpp"
 #include "src/mainwindow.hpp"
 #include "src/ui/dialogs/aboutdialog.hpp"
@@ -105,8 +106,7 @@ shared_ptr<sv::Session> init_session(shared_ptr<sigrok::Context> context,
 	sv::SettingsManager::set_restore_settings(restore_settings);
 
 	// Initialize global start timestamp
-	// TODO: use std::chrono / std::time
-	sv::Session::session_start_timestamp =
+	sv::sessionglobals::session_start_timestamp =
 		(double)QDateTime::currentMSecsSinceEpoch() / 1000.0;
 
 	// Create the device manager, initialise the drivers
