@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,8 +58,6 @@ class Session : public QObject
 
 public:
 	static shared_ptr<sigrok::Context> sr_context;
-	// TODO: use std::chrono / std::time
-	static double session_start_timestamp;
 
 public:
 	explicit Session(DeviceManager &device_manager);

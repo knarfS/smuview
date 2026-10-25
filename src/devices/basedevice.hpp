@@ -256,7 +256,6 @@ protected:
 	mutable mutex aquisition_mutex_; //!< Protects access to capture_state_. // TODO
 	mutable recursive_mutex data_mutex_; // TODO
 	AquisitionState aquisition_state_;
-	double aquisition_start_timestamp_;
 
 	bool frame_began_;
 
@@ -266,7 +265,6 @@ private:
 	std::thread aquisition_thread_;
 
 Q_SIGNALS:
-	void aquisition_start_timestamp_changed(double timestamp);
 	void channel_added(shared_ptr<sv::channels::BaseChannel> channel);
 	void device_error(const std::string &sender, const std::string &msg);
 

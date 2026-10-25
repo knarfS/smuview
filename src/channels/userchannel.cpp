@@ -42,10 +42,8 @@ namespace channels {
 UserChannel::UserChannel(
 		const string &channel_name,
 		const set<string> &channel_group_names,
-		shared_ptr<devices::BaseDevice> parent_device,
-		double channel_start_timestamp) :
-	BaseChannel(nullptr, parent_device, channel_group_names,
-		channel_start_timestamp)
+		shared_ptr<devices::BaseDevice> parent_device) :
+	BaseChannel(nullptr, parent_device, channel_group_names)
 {
 	name_ = channel_name;
 	type_ = ChannelType::UserChannel;

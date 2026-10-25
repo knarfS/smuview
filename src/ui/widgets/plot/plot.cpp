@@ -63,7 +63,7 @@
 #include <qwt_symbol.h>
 
 #include "plot.hpp"
-#include "src/session.hpp"
+#include "src/sessionglobals.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/ui/dialogs/plotcurveconfigdialog.hpp"
 #include "src/ui/widgets/plot/axislocklabel.hpp"
@@ -327,7 +327,7 @@ int Plot::init_x_axis(BaseCurveData *curve_data, int x_axis_id)
 	}
 	else if (curve_data->type() == CurveType::TimeCurve &&
 			!curve_data->is_relative_time()) {
-		min = Session::session_start_timestamp;
+		min = sv::sessionglobals::session_start_timestamp;
 		max = min + add_time_;
 	}
 	else if (curve_data->type() == CurveType::XYCurve) {

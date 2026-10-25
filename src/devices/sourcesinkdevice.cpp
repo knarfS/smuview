@@ -261,8 +261,7 @@ void SourceSinkDevice::init_channels()
 					data::Unit::Watt,
 					voltage_signal, current_signal,
 					shared_from_this(),
-					chg_names, "P" + ch_suffix,
-					aquisition_start_timestamp_);
+					chg_names, "P" + ch_suffix);
 			BaseDevice::add_math_channel(power_channel, chg_name);
 			power_signal = static_pointer_cast<data::AnalogTimeSignal>(
 				power_channel->actual_signal());
@@ -277,8 +276,7 @@ void SourceSinkDevice::init_channels()
 					data::Unit::Ohm,
 					voltage_signal, current_signal,
 					shared_from_this(),
-					chg_names, "R" + ch_suffix,
-					aquisition_start_timestamp_);
+					chg_names, "R" + ch_suffix);
 			BaseDevice::add_math_channel(resistance_channel, chg_name);
 		}
 
@@ -291,8 +289,7 @@ void SourceSinkDevice::init_channels()
 					data::Unit::WattHour,
 					power_signal,
 					shared_from_this(),
-					chg_names, "Wh" + ch_suffix,
-					aquisition_start_timestamp_);
+					chg_names, "Wh" + ch_suffix);
 			BaseDevice::add_math_channel(wh_channel, chg_name);
 		}
 
@@ -305,8 +302,7 @@ void SourceSinkDevice::init_channels()
 					data::Unit::AmpereHour,
 					current_signal,
 					shared_from_this(),
-					chg_names, "Ah" + ch_suffix,
-					aquisition_start_timestamp_);
+					chg_names, "Ah" + ch_suffix);
 			BaseDevice::add_math_channel(ah_channel, chg_name);
 		}
 	}

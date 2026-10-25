@@ -82,8 +82,7 @@ public:
 	BaseChannel(
 		shared_ptr<sigrok::Channel> sr_channel,
 		shared_ptr<devices::BaseDevice> parent_device,
-		const set<string> &channel_group_names,
-		double channel_start_timestamp);
+		const set<string> &channel_group_names);
 	virtual ~BaseChannel();
 
 public:
@@ -207,8 +206,6 @@ protected:
 	unsigned int index_;
 	/** Type of this channel. */
 	ChannelType type_;
-	/** Timestamp when this channel was created/started. */
-	double channel_start_timestamp_;
 
 	/** The device this channel belongs to. */
 	shared_ptr<devices::BaseDevice> parent_device_;
@@ -219,11 +216,7 @@ protected:
 	shared_ptr<data::BaseSignal> actual_signal_;
 	map<measured_quantity_t, vector<shared_ptr<data::BaseSignal>>> signal_map_;
 
-public Q_SLOTS:
-	void on_aquisition_start_timestamp_changed(double timestamp);
-
 Q_SIGNALS:
-	void channel_start_timestamp_changed(double timestamp);
 	void enabled_changed(const bool enabled);
 	void name_changed(const std::string &name);
 	void signal_added(shared_ptr<sv::data::BaseSignal> signal);

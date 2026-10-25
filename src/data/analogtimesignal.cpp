@@ -29,6 +29,7 @@
 #include <QString>
 
 #include "analogtimesignal.hpp"
+#include "src/sessionglobals.hpp"
 #include "src/util.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/data/basesignal.hpp"
@@ -49,14 +50,10 @@ AnalogTimeSignal::AnalogTimeSignal(
 		const set<data::QuantityFlag> &quantity_flags,
 		data::Unit unit,
 		shared_ptr<channels::BaseChannel> parent_channel,
-		double signal_start_timestamp,
 		const string &custom_name) :
-	AnalogBaseSignal(quantity, quantity_flags, unit, parent_channel, custom_name),
-	signal_start_timestamp_(signal_start_timestamp)
+	AnalogBaseSignal(quantity, quantity_flags, unit, parent_channel, custom_name)
 {
-	qWarning() << "Init analog time signal " << display_name()
-		<< ", signal_start_timestamp_ = "
-		<< util::format_time_date(signal_start_timestamp_);
+	qWarning() << "Init analog time signal " << display_name();
 }
 
 void AnalogTimeSignal::clear()
@@ -78,7 +75,7 @@ analog_time_sample_t AnalogTimeSignal::get_sample(
 
 	double timestamp = time_.at(pos);
 	if (relative_time)
-		timestamp -= signal_start_timestamp_;
+		timestamp -= sv::sessionglobals::session_start_timestamp;
 	return make_pair(timestamp, data_.at(pos));
 }
 
@@ -89,7 +86,7 @@ analog_time_sample_t AnalogTimeSignal::get_last_sample(bool relative_time) const
 
 	size_t pos = data_.size() - 1;
 	double timestamp = relative_time
-		? time_.at(pos) - signal_start_timestamp_
+		? time_.at(pos) - sv::sessionglobals::session_start_timestamp
 		: time_.at(pos);
 	return make_pair(timestamp, data_.at(pos));
 }
@@ -98,7 +95,7 @@ optional<double> AnalogTimeSignal::get_value_at_timestamp(
 	double timestamp, bool relative_time) const
 {
 	if (relative_time)
-		timestamp += signal_start_timestamp_;
+		timestamp += sv::sessionglobals::session_start_timestamp;
 
 	if (time_.empty())
 		return {};
@@ -194,8 +191,8 @@ void AnalogTimeSignal::push_samples(const vector<double> &samples,
 	if (timestamp < last_timestamp_) {
 		qWarning() << "AnalogSignal::push_samples(): samples = " << samples
 			<<  ", timestamp < last_timestamp = "
-			<< timestamp-signal_start_timestamp_ << " < "
-			<< last_timestamp_-signal_start_timestamp_;
+			<< timestamp-sv::SessionGlobals::session_start_timestamp << " < "
+			<< last_timestamp_-sv::SessionGlobals::session_start_timestamp;
 	}
 	*/
 
@@ -238,18 +235,13 @@ void AnalogTimeSignal::push_samples(const vector<double> &samples,
 		Q_EMIT digits_changed(total_digits_, sr_digits_);
 }
 
-double AnalogTimeSignal::signal_start_timestamp() const
-{
-	return signal_start_timestamp_;
-}
-
 optional<double> AnalogTimeSignal::first_timestamp(bool relative_time) const
 {
 	if (time_.empty())
 		return {};
 
 	return relative_time
-		? time_.front() - signal_start_timestamp_
+		? time_.front() - sv::sessionglobals::session_start_timestamp
 		: time_.front();
 }
 
@@ -259,7 +251,7 @@ optional<double> AnalogTimeSignal::last_timestamp(bool relative_time) const
 		return {};
 
 	return relative_time
-		? time_.back() - signal_start_timestamp_
+		? time_.back() - sv::sessionglobals::session_start_timestamp
 		: time_.back();
 }
 
@@ -271,10 +263,10 @@ optional<AnalogTimeSignalBoundaries> AnalogTimeSignal::get_boundaries(
 
 	return AnalogTimeSignalBoundaries {
 		relative_time
-			? time_.front() - signal_start_timestamp_
+			? time_.front() - sv::sessionglobals::session_start_timestamp
 			: time_.front(),
 		relative_time
-			? time_.back() - signal_start_timestamp_
+			? time_.back() - sv::sessionglobals::session_start_timestamp
 			: time_.back(),
 		min_value_.value(),
 		max_value_.value()
