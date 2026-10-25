@@ -121,7 +121,6 @@ private:
 	void start_timer();
 	void stop_timer();
 	void insert_row(int row, double value, double delay);
-	QStringList parse_csv_line(QString line);
 
 private Q_SLOTS:
 	void on_timer_update();

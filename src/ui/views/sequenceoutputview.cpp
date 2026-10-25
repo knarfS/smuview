@@ -60,6 +60,7 @@
 #include "src/ui/dialogs/generatewaveformdialog.hpp"
 #include "src/ui/views/baseview.hpp"
 #include "src/ui/views/viewhelper.hpp"
+#include "src/utils/csvutil.hpp"
 
 using std::dynamic_pointer_cast;
 using std::shared_ptr;
@@ -506,7 +507,8 @@ void SequenceOutputView::on_action_load_from_file_triggered()
 		string line;
 		int row = 0;
 		while (std::getline(file, line)) {
-			auto fields = sv::util::parse_csv_line(line);
+			// TODO: pass user defined separator
+			auto fields = sv::utils::csvutil::parse_csv_line(line, ',');
 
 			// TODO: Define CSV file format somehow/somewhere...
 			// TODO: Parse header

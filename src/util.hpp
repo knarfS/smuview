@@ -261,16 +261,6 @@ int count_decimal_places(double step);
  */
 int get_sr_digits(double step);
 
-/**
- * Parse a single CSV line.
- * Based on https://stackoverflow.com/a/30338543
- *
- * @param[in] line The CSV line to parse.
- *
- * @return A vector of the values.
- */
-vector<string> parse_csv_line(const string &line);
-
 } // namespace util
 } // namespace sv
 
