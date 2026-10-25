@@ -27,6 +27,7 @@
 #include <QString>
 #include <qwt_global.h>
 
+#include "apputil.hpp"
 #include "src/config.h"
 #include "src/devicemanager.hpp"
 
