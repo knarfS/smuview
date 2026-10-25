@@ -70,7 +70,7 @@ BaseSignal::BaseSignal(
 
 BaseSignal::~BaseSignal()
 {
-	qWarning() << "BaseSignal::~BaseSignal(): " << display_name();
+	//qWarning() << "BaseSignal::~BaseSignal(): " << display_name();
 }
 
 data::Quantity BaseSignal::quantity() const

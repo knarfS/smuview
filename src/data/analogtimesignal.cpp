@@ -19,8 +19,8 @@
 
 #include <algorithm>
 #include <cassert>
-#include <limits>
 #include <memory>
+#include <mutex>
 #include <optional>
 #include <set>
 #include <string>
@@ -53,16 +53,19 @@ AnalogTimeSignal::AnalogTimeSignal(
 		const string &custom_name) :
 	AnalogBaseSignal(quantity, quantity_flags, unit, parent_channel, custom_name)
 {
-	qWarning() << "Init analog time signal " << display_name();
+	//qWarning() << "Init analog time signal " << display_name();
 }
 
 void AnalogTimeSignal::clear()
 {
-	// TODO: mutex
-	time_.clear();
-	data_.clear();
-	min_value_ = {};
-	max_value_ = {};
+	{
+		std::scoped_lock lock(data_mutex_);
+
+		time_.clear();
+		data_.clear();
+		min_value_ = {};
+		max_value_ = {};
+	}
 
 	Q_EMIT samples_cleared();
 }
@@ -70,6 +73,8 @@ void AnalogTimeSignal::clear()
 analog_time_sample_t AnalogTimeSignal::get_sample(
 	size_t pos, bool relative_time) const
 {
+	std::scoped_lock lock(data_mutex_);
+
 	if (pos >= data_.size())
 		return {};
 
@@ -81,6 +86,8 @@ analog_time_sample_t AnalogTimeSignal::get_sample(
 
 analog_time_sample_t AnalogTimeSignal::get_last_sample(bool relative_time) const
 {
+	std::scoped_lock lock(data_mutex_);
+
 	if (data_.size() == 0)
 		return {};
 
@@ -94,6 +101,8 @@ analog_time_sample_t AnalogTimeSignal::get_last_sample(bool relative_time) const
 optional<double> AnalogTimeSignal::get_value_at_timestamp(
 	double timestamp, bool relative_time) const
 {
+	std::scoped_lock lock(data_mutex_);
+
 	if (relative_time)
 		timestamp += sv::sessionglobals::session_start_timestamp;
 
@@ -131,48 +140,33 @@ optional<double> AnalogTimeSignal::get_value_at_timestamp(
 void AnalogTimeSignal::push_sample(double sample, double timestamp,
 	int total_digits, int sr_digits)
 {
-	/*
-	qWarning() << "AnalogTimeSignal::push_sample(): " << display_name()
-		<< ": sample = " << dsample << " @ " <<  timestamp;
-	qWarning() << "AnalogTimeSignal::push_sample(): " << display_name()
-		<< ": sample_count_ = " << sample_count_+1;
-	*/
-
-	// TODO: Mutex?
-	if (!min_value_.has_value() || min_value_ > sample)
-		min_value_ = sample;
-	// Ignore infinitiy (overflow) as max value.
-	if (!max_value_.has_value() || (max_value_ < sample &&
-			sample != std::numeric_limits<double>::infinity()))
-		max_value_ = sample;
-
-	/*
-	qWarning() << "AnalogTimeSignal::push_sample(): " << display_name()
-		<< ": last_timestamp_ = " << last_timestamp_;
-	qWarning() << "AnalogTimeSignal::push_sample(): " << display_name()
-		<< ": last_value_ = " << last_value_;
-	qWarning() << "AnalogTimeSignal::push_sample(): " << display_name()
-		<< ": min_value_ = " << min_value_;
-	qWarning() << "AnalogTimeSignal::push_sample(): " << display_name()
-		<< ": max_value_ = " << max_value_;
-	*/
-
-	// TODO: Mutex?
-	time_.push_back(timestamp);
-	data_.push_back(sample);
-	Q_EMIT sample_appended();
-
 	bool digits_chngd = false;
-	if (total_digits != total_digits_) {
-		total_digits_ = total_digits;
-		digits_chngd = true;
+
+	// Copy the digits vars inside the locked scope to avoid race conditions
+	int total_digits_copy;
+	int sr_digits_copy;
+
+	{
+		std::scoped_lock lock(data_mutex_);
+
+		/*
+		qWarning() << "AnalogTimeSignal::push_sample(): " << display_name()
+			<< ": sample = " << sample << " @ " <<  timestamp;
+		*/
+
+		update_min_max_unlocked(sample);
+		digits_chngd = update_digits_unlocked(total_digits, sr_digits);
+
+		total_digits_copy = total_digits_;
+		sr_digits_copy = sr_digits_;
+
+		time_.push_back(timestamp);
+		data_.push_back(sample);
 	}
-	if (sr_digits != sr_digits_) {
-		sr_digits_ = sr_digits;
-		digits_chngd = true;
-	}
+
+	Q_EMIT sample_appended();
 	if (digits_chngd)
-		Q_EMIT digits_changed(total_digits_, sr_digits_);
+		Q_EMIT digits_changed(total_digits_copy, sr_digits_copy);
 }
 
 void AnalogTimeSignal::push_samples(const vector<double> &samples,
@@ -181,62 +175,46 @@ void AnalogTimeSignal::push_samples(const vector<double> &samples,
 	if (samples.empty())
 		return;
 
-	//lock_guard<recursive_mutex> lock(mutex_);
-
 	double time_stride = 0.;
 	if (samplerate > 0)
 		time_stride = 1 / (double)samplerate;
 
-	/*
-	if (timestamp < last_timestamp_) {
-		qWarning() << "AnalogSignal::push_samples(): samples = " << samples
-			<<  ", timestamp < last_timestamp = "
-			<< timestamp-sv::SessionGlobals::session_start_timestamp << " < "
-			<< last_timestamp_-sv::SessionGlobals::session_start_timestamp;
-	}
-	*/
+	bool digits_chngd = false;
 
-	for (const double sample : samples) {
+	// Copy the digits vars inside the locked scope to avoid race conditions
+	int total_digits_copy;
+	int sr_digits_copy;
 
-		/*
-		qWarning() << "AnalogSignal::push_samples(): " << name_
-			<< ": sample = " << dsample << " @ "
-			<<  timestamp - signal_start_timestamp_;
-		qWarning() << "AnalogSignal::push_samples(): " << name_
-			<< ": remaining_samples = " << remaining_samples;
-		*/
+	{
+		std::scoped_lock lock(data_mutex_);
 
-		// TODO: Mutex?
-		if (!min_value_.has_value() || min_value_ > sample)
-			min_value_ = sample;
-		// Ignore infinitiy (overflow) as max value.
-		if (!max_value_.has_value() || (max_value_ < sample &&
-				sample != std::numeric_limits<double>::infinity()))
-			max_value_ = sample;
+		for (const double sample : samples) {
+			/*
+			qWarning() << "AnalogTimeSignal::push_sample(): " << display_name()
+				<< ": sample = " << sample << " @ " <<  timestamp;
+			*/
 
-		time_.push_back(timestamp);
-		data_.push_back(sample);
+			update_min_max_unlocked(sample);
 
-		timestamp += time_stride;
+			time_.push_back(timestamp);
+			data_.push_back(sample);
+			timestamp += time_stride;
+		}
+
+		digits_chngd = update_digits_unlocked(total_digits, sr_digits);
+		total_digits_copy = total_digits_;
+		sr_digits_copy = sr_digits_;
 	}
 
 	Q_EMIT sample_appended();
-
-	bool digits_chngd = false;
-	if (total_digits != total_digits_) {
-		total_digits_ = total_digits;
-		digits_chngd = true;
-	}
-	if (sr_digits != sr_digits_) {
-		sr_digits_ = sr_digits;
-		digits_chngd = true;
-	}
 	if (digits_chngd)
-		Q_EMIT digits_changed(total_digits_, sr_digits_);
+		Q_EMIT digits_changed(total_digits_copy, sr_digits_copy);
 }
 
 optional<double> AnalogTimeSignal::first_timestamp(bool relative_time) const
 {
+	std::scoped_lock lock(data_mutex_);
+
 	if (time_.empty())
 		return {};
 
@@ -247,6 +225,8 @@ optional<double> AnalogTimeSignal::first_timestamp(bool relative_time) const
 
 optional<double> AnalogTimeSignal::last_timestamp(bool relative_time) const
 {
+	std::scoped_lock lock(data_mutex_);
+
 	if (time_.empty())
 		return {};
 
@@ -258,6 +238,8 @@ optional<double> AnalogTimeSignal::last_timestamp(bool relative_time) const
 optional<AnalogTimeSignalBoundaries> AnalogTimeSignal::get_boundaries(
 	bool relative_time) const
 {
+	std::scoped_lock lock(data_mutex_);
+
 	if (time_.empty())
 		return {};
 

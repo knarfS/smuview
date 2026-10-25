@@ -21,6 +21,7 @@
 #define DATA_ANALOGBASESIGNAL_HPP
 
 #include <memory>
+#include <mutex>
 #include <optional>
 #include <set>
 #include <string>
@@ -31,6 +32,7 @@
 #include "src/data/basesignal.hpp"
 #include "src/data/datautil.hpp"
 
+using std::mutex;
 using std::optional;
 using std::set;
 using std::shared_ptr;
@@ -71,6 +73,10 @@ public:
 	optional<double> max_value() const;
 
 protected:
+	void update_min_max_unlocked(double sample);
+	bool update_digits_unlocked(int total_digits, int sr_digits);
+
+	mutable mutex data_mutex_;
 	vector<double> data_;
 	int total_digits_;
 	int sr_digits_;
