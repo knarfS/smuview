@@ -20,6 +20,7 @@
 #include <cassert>
 #include <limits>
 #include <memory>
+#include <mutex>
 #include <optional>
 #include <set>
 #include <string>
@@ -55,17 +56,22 @@ AnalogSampleSignal::AnalogSampleSignal(
 
 void AnalogSampleSignal::clear()
 {
-	// TODO: mutex
-	pos_.clear();
-	data_.clear();
-	min_value_ = {};
-	max_value_ = {};
+	{
+		std::scoped_lock lock(data_mutex_);
+
+		pos_.clear();
+		data_.clear();
+		min_value_ = {};
+		max_value_ = {};
+	}
 
 	Q_EMIT samples_cleared();
 }
 
 analog_pos_sample_t AnalogSampleSignal::get_sample(uint32_t pos) const
 {
+	std::scoped_lock lock(data_mutex_);
+
 	if (pos >= data_.size())
 		return {};
 
@@ -75,54 +81,39 @@ analog_pos_sample_t AnalogSampleSignal::get_sample(uint32_t pos) const
 void AnalogSampleSignal::push_sample(double sample, uint32_t pos,
 	int total_digits, int sr_digits)
 {
-	/*
-	qWarning() << "AnalogSampleSignal::push_sample(): " << name_
-		<< ": sample = " << dsample << " @ " <<  pos;
-	qWarning() << "AnalogSampleSignal::push_sample(): " << name_
-		<< ": sample_count_ = " << sample_count_+1;
-	*/
-
-	// TODO: Mutex?
-	if (!min_value_.has_value() || min_value_ > sample)
-		min_value_ = sample;
-	// Ignore infinitiy (overflow) as max value.
-	if (!max_value_.has_value() || (max_value_ < sample &&
-		sample != std::numeric_limits<double>::infinity())) {
-
-		max_value_ = sample;
-	}
-
-	/*
-	qWarning() << "AnalogSampleSignal::push_sample(): " << name_
-		<< ":last_pos_ = " << last_pos_;
-	qWarning() << "AnalogSampleSignal::push_sample(): " << name_
-		<< ":last_value_ = " << last_value_;
-	qWarning() << "AnalogSampleSignal::push_sample(): " << name_
-		<< ":min_value_ = " << min_value_;
-	qWarning() << "AnalogSampleSignal::push_sample(): " << name_
-		<< ":max_value_ = " << max_value_;
-	*/
-
-	// TODO: Mutex?
-	pos_.push_back(pos);
-	data_.push_back(sample);
-	Q_EMIT sample_appended();
-
 	bool digits_chngd = false;
-	if (total_digits != total_digits_) {
-		total_digits_ = total_digits;
-		digits_chngd = true;
+
+	// Copy the digits vars inside the locked scope to avoid race conditions
+	int total_digits_copy;
+	int sr_digits_copy;
+
+	{
+		std::scoped_lock lock(data_mutex_);
+
+		/*
+		qWarning() << "AnalogSampleSignal::push_sample(): " << name_
+			<< ": sample = " << dsample << " @ " <<  pos;
+		*/
+
+		update_min_max_unlocked(sample);
+		digits_chngd = update_digits_unlocked(total_digits, sr_digits);
+
+		total_digits_copy = total_digits_;
+		sr_digits_copy = sr_digits_;
+
+		pos_.push_back(pos);
+		data_.push_back(sample);
 	}
-	if (sr_digits != sr_digits_) {
-		sr_digits_ = sr_digits;
-		digits_chngd = true;
-	}
+
+	Q_EMIT sample_appended();
 	if (digits_chngd)
-		Q_EMIT digits_changed(total_digits_, sr_digits_);
+		Q_EMIT digits_changed(total_digits_copy, sr_digits_copy);
 }
 
 optional<uint32_t> AnalogSampleSignal::first_pos() const
 {
+	std::scoped_lock lock(data_mutex_);
+
 	if (pos_.empty())
 		return {};
 
@@ -131,6 +122,8 @@ optional<uint32_t> AnalogSampleSignal::first_pos() const
 
 optional<uint32_t> AnalogSampleSignal::last_pos() const
 {
+	std::scoped_lock lock(data_mutex_);
+
 	if (pos_.empty())
 		return {};
 

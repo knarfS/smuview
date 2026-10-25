@@ -18,7 +18,9 @@
  */
 
 #include <cassert>
+#include <cmath>
 #include <memory>
+#include <mutex>
 #include <set>
 #include <string>
 
@@ -50,26 +52,33 @@ AnalogBaseSignal::AnalogBaseSignal(
 	min_value_(),
 	max_value_()
 {
-	qWarning() << "Init analog base signal " << display_name();
 }
 
 size_t AnalogBaseSignal::sample_count() const
 {
+	std::scoped_lock lock(data_mutex_);
+
 	return data_.size();
 }
 
 int AnalogBaseSignal::total_digits() const
 {
+	std::scoped_lock lock(data_mutex_);
+
 	return total_digits_;
 }
 
 int AnalogBaseSignal::sr_digits() const
 {
+	std::scoped_lock lock(data_mutex_);
+
 	return sr_digits_;
 }
 
 optional<double> AnalogBaseSignal::last_value() const
 {
+	std::scoped_lock lock(data_mutex_);
+
 	if (data_.empty())
 		return {};
 	return data_.back();
@@ -77,6 +86,8 @@ optional<double> AnalogBaseSignal::last_value() const
 
 optional<double> AnalogBaseSignal::min_value() const
 {
+	std::scoped_lock lock(data_mutex_);
+
 	if (data_.empty())
 		return {};
 	return min_value_;
@@ -84,9 +95,41 @@ optional<double> AnalogBaseSignal::min_value() const
 
 optional<double> AnalogBaseSignal::max_value() const
 {
+	std::scoped_lock lock(data_mutex_);
+
 	if (data_.empty())
 		return {};
 	return max_value_;
+}
+
+void AnalogBaseSignal::update_min_max_unlocked(double sample)
+{
+	// Ignore +/- infinitiy (overflow / underflow) and NaN as max/min values
+	if (!std::isfinite(sample))
+		return;
+
+	if (!min_value_.has_value() || min_value_ > sample)
+		min_value_ = sample;
+
+	if (!max_value_.has_value() || max_value_ < sample)
+		max_value_ = sample;
+}
+
+bool AnalogBaseSignal::update_digits_unlocked(int total_digits, int sr_digits)
+{
+	bool digits_changed = false;
+
+	if (total_digits != total_digits_) {
+		total_digits_ = total_digits;
+		digits_changed = true;
+	}
+
+	if (sr_digits != sr_digits_) {
+		sr_digits_ = sr_digits;
+		digits_changed = true;
+	}
+
+	return digits_changed;
 }
 
 } // namespace data
