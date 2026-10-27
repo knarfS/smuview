@@ -232,13 +232,13 @@ void DeviceTab::on_action_aquire_triggered()
 		action_aquire_->setText(tr("Stop"));
 		action_aquire_->setIconText(tr("Stop"));
 		action_aquire_->setIcon(QIcon(":/icons/status-green.svg"));
-		device_->start_aquisition();
+		device_->start_acquisition();
 	}
 	else {
 		action_aquire_->setText(tr("Start"));
 		action_aquire_->setIconText(tr("Start"));
 		action_aquire_->setIcon(QIcon(":/icons/status-red.svg"));
-		device_->pause_aquisition();
+		device_->pause_acquisition();
 	}
 }
 
