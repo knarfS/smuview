@@ -94,7 +94,6 @@ protected:
 	void feed_in_analog(shared_ptr<sigrok::Analog> sr_analog) override;
 
 private:
-	double frame_start_timestamp_;
 	string vendor_;
 	string model_;
 	string version_;

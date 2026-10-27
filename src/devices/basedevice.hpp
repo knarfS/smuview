@@ -21,9 +21,9 @@
 #ifndef DEVICES_BASEDEVICE_HPP
 #define DEVICES_BASEDEVICE_HPP
 
+#include <atomic>
 #include <map>
 #include <memory>
-#include <mutex>
 #include <string>
 #include <thread>
 
@@ -33,8 +33,6 @@
 #include "src/devices/deviceutil.hpp"
 
 using std::map;
-using std::mutex;
-using std::recursive_mutex;
 using std::shared_ptr;
 using std::string;
 using std::vector;
@@ -68,7 +66,7 @@ namespace devices {
 
 class Configurable;
 
-enum class AquisitionState {
+enum class AcquisitionState {
 	Stopped,
 	Running,
 	Paused
@@ -140,19 +138,19 @@ public:
 	void close();
 
 	/**
-	 * Start data aquisition from device after init or pause.
+	 * Start data acquisition from device after init or pause.
 	 */
-	virtual void start_aquisition();
+	virtual void start_acquisition();
 
 	/**
-	 * Pause data aquisition from device.
+	 * Pause data acquisition from device.
 	 */
-	virtual void pause_aquisition();
+	virtual void pause_acquisition();
 
 	/**
-	 * Get the aquisition state.
+	 * Get the acquisition state.
 	 */
-	AquisitionState aquisition_state();
+	AcquisitionState acquisition_state();
 
 	/**
 	 * Get the next index for a new channel.
@@ -253,16 +251,14 @@ protected:
 	map<string, vector<shared_ptr<channels::BaseChannel>>> channel_group_map_;
 	map<shared_ptr<sigrok::Channel>, shared_ptr<channels::BaseChannel>> sr_channel_map_;
 
-	mutable mutex aquisition_mutex_; //!< Protects access to capture_state_. // TODO
-	mutable recursive_mutex data_mutex_; // TODO
-	AquisitionState aquisition_state_;
+	std::atomic<AcquisitionState> acquisition_state_;
 
 	bool frame_began_;
 
 private:
-	void aquisition_thread_proc();
+	void acquisition_thread_proc();
 
-	std::thread aquisition_thread_;
+	std::thread acquisition_thread_;
 
 Q_SIGNALS:
 	void channel_added(shared_ptr<sv::channels::BaseChannel> channel);

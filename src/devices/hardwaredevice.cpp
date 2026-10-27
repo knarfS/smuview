@@ -43,7 +43,6 @@
 #include "src/devices/configurable.hpp"
 #include "src/devices/deviceutil.hpp"
 
-using std::lock_guard;
 using std::make_pair;
 using std::map;
 using std::shared_ptr;
@@ -283,9 +282,7 @@ void HardwareDevice::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
 		? frame_start_timestamp_
 		: static_cast<double>(QDateTime::currentMSecsSinceEpoch()) / 1000;
 
-	lock_guard<recursive_mutex> lock(data_mutex_);
-
-	const vector<shared_ptr<sigrok::Channel>> sr_channels = sr_analog->channels();
+	const auto sr_channels = sr_analog->channels();
 	size_t channel_count = sr_channels.size();
 
 	unique_ptr<float[]> data(new float[sample_count * channel_count]);
@@ -293,9 +290,15 @@ void HardwareDevice::feed_in_analog(shared_ptr<sigrok::Analog> sr_analog)
 
 	for (size_t ch_idx = 0; ch_idx < channel_count; ch_idx++) {
 		const auto it = sr_channel_map_.find(sr_channels.at(ch_idx));
-		if (it == sr_channel_map_.end() || !it->second)
+		if (it == sr_channel_map_.end() || !it->second) {
+			qWarning() << "HardwareDevice::feed_in_analog(): "
+				<< "Could not find sr_channel "
+				<< QString::fromStdString(sr_channels.at(ch_idx)->name());
 			continue;
-		auto channel = static_pointer_cast<channels::HardwareChannel>(it->second);
+		}
+
+		auto channel =
+			static_pointer_cast<channels::HardwareChannel>(it->second);
 
 		vector<double> samples = deviceutil::deinterleave_sigrok_data(
 			data.get(), sample_count, ch_idx, channel_count);

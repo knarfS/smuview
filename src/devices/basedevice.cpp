@@ -21,7 +21,6 @@
 #include <cassert>
 #include <map>
 #include <memory>
-#include <mutex>
 #include <string>
 #include <utility>
 #include <vector>
@@ -50,7 +49,6 @@
 
 using std::bad_alloc;
 using std::dynamic_pointer_cast;
-using std::lock_guard;
 using std::make_pair;
 using std::make_shared;
 using std::map;
@@ -146,11 +144,8 @@ void BaseDevice::open()
 	// Add device to session (do this in constructor??)
 	sr_session_->add_device(sr_device_);
 
-	// Init all configurables
 	this->init_configurables();
-	// Init all channels
 	this->init_channels();
-	// Init aquisition
 	this->init_acquisition();
 
 	is_open_ = true;
@@ -167,10 +162,10 @@ void BaseDevice::close()
 	sr_session_->stop();
 
 	// Check that sampling stopped
-	if (aquisition_thread_.joinable())
-		aquisition_thread_.join();
+	if (acquisition_thread_.joinable())
+		acquisition_thread_.join();
 	sr_session_->remove_datafeed_callbacks();
-	aquisition_state_ = AquisitionState::Stopped;
+	acquisition_state_ = AcquisitionState::Stopped;
 
 	/*
 	 * NOTE: The device may already be closed from sr_session_->stop()
@@ -197,14 +192,14 @@ void BaseDevice::close()
 		BaseDevice::full_name();
 }
 
-void BaseDevice::start_aquisition()
+void BaseDevice::start_acquisition()
 {
-	aquisition_state_ = AquisitionState::Running;
+	acquisition_state_ = AcquisitionState::Running;
 }
 
-void BaseDevice::pause_aquisition()
+void BaseDevice::pause_acquisition()
 {
-	aquisition_state_ = AquisitionState::Paused;
+	acquisition_state_ = AcquisitionState::Paused;
 }
 
 string BaseDevice::name() const
@@ -407,9 +402,8 @@ void BaseDevice::init_acquisition()
 		(shared_ptr<sigrok::Device> sr_device, shared_ptr<sigrok::Packet> sr_packet) {
 			data_feed_in(sr_device, sr_packet);
 		});
-	aquisition_thread_ = std::thread(
-		&BaseDevice::aquisition_thread_proc, this);
-	aquisition_state_ = AquisitionState::Running;
+	acquisition_thread_ = std::thread(
+		&BaseDevice::acquisition_thread_proc, this);
 }
 
 void BaseDevice::data_feed_in(shared_ptr<sigrok::Device> sr_device,
@@ -448,7 +442,7 @@ void BaseDevice::data_feed_in(shared_ptr<sigrok::Device> sr_device,
 
 	case SR_DF_LOGIC:
 		//qWarning() << "data_feed_in(): SR_DF_LOGIC";
-		if (aquisition_state_ != AquisitionState::Running)
+		if (acquisition_state_ != AcquisitionState::Running)
 			return;
 
 		try {
@@ -461,7 +455,7 @@ void BaseDevice::data_feed_in(shared_ptr<sigrok::Device> sr_device,
 
 	case SR_DF_ANALOG:
 		//qWarning() << "data_feed_in(): SR_DF_ANALOG";
-		if (aquisition_state_ != AquisitionState::Running)
+		if (acquisition_state_ != AcquisitionState::Running)
 			return;
 
 		try {
@@ -487,9 +481,6 @@ void BaseDevice::data_feed_in(shared_ptr<sigrok::Device> sr_device,
 		// Strictly speaking, this is performed when a frame end marker was
 		// received, so there's no point doing this again. However, not all
 		// devices use frames, and for those devices, we need to do it here.
-		{
-			lock_guard<recursive_mutex> lock(data_mutex_);
-		}
 		break;
 
 	default:
@@ -497,7 +488,7 @@ void BaseDevice::data_feed_in(shared_ptr<sigrok::Device> sr_device,
 	}
 }
 
-void BaseDevice::aquisition_thread_proc()
+void BaseDevice::acquisition_thread_proc()
 {
 	try {
 		sr_session_->start();
@@ -506,12 +497,13 @@ void BaseDevice::aquisition_thread_proc()
 		string error_detail = string(e.what())
 			+ " when trying to start() the sigrok session";
 		Q_EMIT device_error(name(), error_detail);
+		acquisition_state_ = AcquisitionState::Stopped;
 		return;
 	}
 
-	aquisition_state_ = AquisitionState::Running;
+	acquisition_state_ = AcquisitionState::Running;
 
-	qWarning() << "Start aquisition for " << short_name();
+	qWarning() << "Start acquisition for " << short_name();
 
 	try {
 		sr_session_->run();
@@ -520,10 +512,10 @@ void BaseDevice::aquisition_thread_proc()
 		string error_detail = string(e.what())
 			+ " when trying to run() the sigrok session";
 		Q_EMIT device_error(name(), error_detail);
-		aquisition_state_ = AquisitionState::Stopped;
+		acquisition_state_ = AcquisitionState::Stopped;
 		return;
 	}
-	aquisition_state_ = AquisitionState::Stopped;
+	acquisition_state_ = AcquisitionState::Stopped;
 }
 
 } // namespace devices

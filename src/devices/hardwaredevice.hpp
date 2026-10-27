@@ -21,35 +21,13 @@
 #ifndef DEVICES_HARDWAREDEVICE_HPP
 #define DEVICES_HARDWAREDEVICE_HPP
 
-#include <map>
-#include <mutex>
-#include <string>
-#include <unordered_set>
-
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
 #include <QString>
 
 #include "src/devices/basedevice.hpp"
 
-using std::bad_alloc;
-using std::dynamic_pointer_cast;
-using std::lock_guard;
-using std::make_shared;
-using std::set;
 using std::shared_ptr;
-using std::static_pointer_cast;
-using std::string;
-using std::vector;
-using std::unique_ptr;
-
-using std::map;
-using std::mutex;
-using std::recursive_mutex;
-using std::set;
-using std::shared_ptr;
-using std::string;
-using std::unordered_set;
 
 namespace sigrok {
 class Channel;
@@ -60,6 +38,8 @@ class HardwareDevice;
 }
 
 namespace sv {
+
+class DeviceManager;
 
 namespace channels {
 class BaseChannel;
