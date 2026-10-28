@@ -19,7 +19,6 @@
 
 #include <cassert>
 #include <memory>
-#include <utility>
 
 #include <QApplication>
 #include <QDateTime>
@@ -100,7 +99,7 @@ void ValuePanelView::set_channel(shared_ptr<channels::BaseChannel> channel)
 
 	channel_ = channel;
 	signal_ = dynamic_pointer_cast<sv::data::AnalogTimeSignal>(
-		channel_->actual_signal());
+		channel_->current_signal());
 	if (signal_) {
 		init_displays();
 		connect_signals_signal();
@@ -339,7 +338,7 @@ void ValuePanelView::on_signal_changed()
 	disconnect_signals_signal();
 
 	signal_ = dynamic_pointer_cast<sv::data::AnalogTimeSignal>(
-		channel_->actual_signal());
+		channel_->current_signal());
 	if (!signal_)
 		return;
 	init_displays();

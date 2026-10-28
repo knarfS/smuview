@@ -94,9 +94,9 @@ void TimePlotView::set_channel(shared_ptr<channels::BaseChannel> channel)
 	channel_ = channel;
 
 	shared_ptr<data::AnalogTimeSignal> signal;
-	if (channel_->actual_signal())
+	if (channel_->current_signal())
 		signal = static_pointer_cast<data::AnalogTimeSignal>(
-			channel_->actual_signal());
+			channel_->current_signal());
 	if (signal)
 		add_signal(signal);
 
@@ -113,7 +113,7 @@ string TimePlotView::add_signal(shared_ptr<sv::data::AnalogTimeSignal> signal)
 	assert(signal);
 	string id;
 
-	// Check if new actual_signal is already added to this plot
+	// Check if new current_signal is already added to this plot
 	for (const auto &curve : plot_->curve_map()) {
 		auto *curve_data = qobject_cast<widgets::plot::TimeCurveData *>(
 			curve.second->curve_data());
@@ -188,9 +188,9 @@ void TimePlotView::on_signal_changed()
 		return;
 
 	shared_ptr<sv::data::AnalogTimeSignal> signal;
-	if (channel_->actual_signal())
+	if (channel_->current_signal())
 		signal = dynamic_pointer_cast<sv::data::AnalogTimeSignal>(
-			channel_->actual_signal());
+			channel_->current_signal());
 	if (signal)
 		add_signal(signal);
 }

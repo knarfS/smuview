@@ -32,7 +32,6 @@
 #include "src/data/datautil.hpp"
 #include "src/devices/basedevice.hpp"
 
-using std::lock_guard;
 using std::make_shared;
 using std::mutex;
 using std::set;
@@ -79,7 +78,7 @@ MultiplySSChannel::MultiplySSChannel(
 
 void MultiplySSChannel::on_sample_appended()
 {
-	lock_guard<mutex> lock(sample_append_mutex_);
+	std::scoped_lock lock(sample_append_mutex_);
 
 	shared_ptr<vector<double>> time = make_shared<vector<double>>();
 	shared_ptr<vector<double>> signal1_data = make_shared<vector<double>>();

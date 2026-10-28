@@ -49,7 +49,7 @@ def test_pr30():
     # Add a xy-plot to get AnalogTimeSignal::combine_signals() called and force the error.
     # Without the fix from PR #30 SmuView will get stuck in an infinite loop!
     plot = UiProxy.add_xy_plot_view(tab, smuview.DockArea.TopDockArea)
-    curve = UiProxy.add_curve_to_xy_plot_view(tab, plot, ch1.actual_signal(), ch2.actual_signal())
+    curve = UiProxy.add_curve_to_xy_plot_view(tab, plot, ch1.current_signal(), ch2.current_signal())
 
     # Push more data
     ch1.push_sample(3, start_ts+5, smuview.Quantity.Voltage, set(), smuview.Unit.Volt, 4, 2)
@@ -72,7 +72,7 @@ def test_empty():
 
     # Add a xy-plot to call AnalogTimeSignal::combine_signals()
     plot = UiProxy.add_xy_plot_view(tab, smuview.DockArea.TopDockArea)
-    curve = UiProxy.add_curve_to_xy_plot_view(tab, plot, ch1.actual_signal(), ch2.actual_signal())
+    curve = UiProxy.add_curve_to_xy_plot_view(tab, plot, ch1.current_signal(), ch2.current_signal())
 
     # Push more data
     ch1.push_sample(3, start_ts+5, smuview.Quantity.Voltage, set(), smuview.Unit.Volt, 4, 2)
@@ -96,7 +96,7 @@ def test_improved1():
 
     # Add a xy-plot to call AnalogTimeSignal::combine_signals()
     plot = UiProxy.add_xy_plot_view(tab, smuview.DockArea.TopDockArea)
-    curve = UiProxy.add_curve_to_xy_plot_view(tab, plot, ch1.actual_signal(), ch2.actual_signal())
+    curve = UiProxy.add_curve_to_xy_plot_view(tab, plot, ch1.current_signal(), ch2.current_signal())
 
     # Push more data
     ch1.push_sample(4, start_ts+7, smuview.Quantity.Voltage, set(), smuview.Unit.Volt, 4, 2)
@@ -162,7 +162,7 @@ def test_improved2():
 
     # Add a xy-plot to call AnalogTimeSignal::combine_signals()
     plot = UiProxy.add_xy_plot_view(tab, smuview.DockArea.TopDockArea)
-    curve = UiProxy.add_curve_to_xy_plot_view(tab, plot, ch1.actual_signal(), ch2.actual_signal())
+    curve = UiProxy.add_curve_to_xy_plot_view(tab, plot, ch1.current_signal(), ch2.current_signal())
 
 # Call tests
 test_pr30()

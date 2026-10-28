@@ -254,7 +254,7 @@ shared_ptr<data::BaseSignal> SettingsManager::restore_signal(
 	if (channel->signal_map().count(mq) == 0)
 		return nullptr;
 
-	return channel->signal_map()[mq][0];
+	return channel->signal_map().at(mq);
 }
 
 } // namespace sv

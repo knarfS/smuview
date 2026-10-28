@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <map>
 #include <memory>
 
 #include <QComboBox>
@@ -90,11 +89,10 @@ void SignalComboBox::fill_signals()
 		return;
 
 	for (const auto &signal_pair : channel_->signal_map()) {
-		for (const auto &signal : signal_pair.second) {
-			if (filter_active_ && filter_quantity_ != signal->quantity())
-				continue;
-			this->addItem(signal->display_name(), QVariant::fromValue(signal));
-		}
+		const auto signal = signal_pair.second;
+		if (filter_active_ && filter_quantity_ != signal->quantity())
+			continue;
+		this->addItem(signal->display_name(), QVariant::fromValue(signal));
 	}
 
 	connect(

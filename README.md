@@ -97,7 +97,7 @@ dmm_dev = Session.connect_device("hp-3478a:conn=libgpib/hp3478a")[0]
 time.sleep(1)  # give the device time to create its signals
 
 # Read the last sample from channel P1.
-sample = dmm_dev.channels()["P1"].actual_signal().get_last_sample(True)
+sample = dmm_dev.channels()["P1"].current_signal().get_last_sample(True)
 print(sample)
 
 # Open the default tab for the device in the UI.

@@ -65,10 +65,10 @@ d = .0
 while d <= 2.0:
     load_conf.set_config(smuview.ConfigKey.CurrentLimit, d)
     time.sleep(0.5)
-    u_in_sample = psu_dev.channels()["V1"].actual_signal().get_last_sample(True)
-    i_in_sample = dmm_dev.channels()["P1"].actual_signal().get_last_sample(True)
-    u_out_sample = load_dev.channels()["V"].actual_signal().get_last_sample(True)
-    i_out_sample = load_dev.channels()["I"].actual_signal().get_last_sample(True)
+    u_in_sample = psu_dev.channels()["V1"].current_signal().get_last_sample(True)
+    i_in_sample = dmm_dev.channels()["P1"].current_signal().get_last_sample(True)
+    u_out_sample = load_dev.channels()["V"].current_signal().get_last_sample(True)
+    i_out_sample = load_dev.channels()["I"].current_signal().get_last_sample(True)
     if u_in_sample is None or i_in_sample is None or u_out_sample is None or i_out_sample is None:
         continue
     power_in = u_in_sample[1] * i_in_sample[1]

@@ -79,7 +79,7 @@ PYBIND11_EMBEDDED_MODULE(smuview, module) {
 		"# Sleep 1s to give the devices the chance to create signals.\n"
 		"time.sleep(1)\n"
 		"# Get last sample from channel P1.\n"
-		"sample = dmm_dev.channels()[\"P1\"].actual_signal().get_last_sample(True)\n"
+		"sample = dmm_dev.channels()[\"P1\"].current_signal().get_last_sample(True)\n"
 		"print(\"last sample = {0}\".format(sample))\n\n"
 		"# Add default tab for the DMM device.\n"
 		"UiProxy.add_device_tab(dmm_dev)\n"
@@ -235,12 +235,12 @@ void init_Channel(py::module &module)
 		"-------\n"
 		"BaseSignal\n"
 		"    The new signal object.");
-	py_base_channel.def("actual_signal", &sv::channels::BaseChannel::actual_signal,
-		"Return the actual signal of the channel.\n\n"
+	py_base_channel.def("current_signal", &sv::channels::BaseChannel::current_signal,
+		"Return the currently active signal of the channel.\n\n"
 		"Returns\n"
 		"-------\n"
 		"BaseSignal\n"
-		"    The actual signal object.");
+		"    The current signal object.");
 	py_base_channel.def("signals", &sv::channels::BaseChannel::signals,
 		"Return all signals of the channel.\n\n"
 		"Returns\n"

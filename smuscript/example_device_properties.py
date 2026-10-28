@@ -80,13 +80,13 @@ for deviceId in devices:
         print("  channel   = " + channel.name())
         print("  channelId = " + channelId)
 
-        actual_signal = channel.actual_signal()
-        if actual_signal != None:
+        current_signal = channel.current_signal()
+        if current_signal != None:
             print("")
-            print("    actual_signal   = " + actual_signal.name())
-            print("      sample_count  = {}".format(actual_signal.sample_count()))
-            print("      get_sample(1) = {}".format(actual_signal.get_sample(1, True)))
-            print("      last_sample   = {}".format(actual_signal.get_last_sample(True)))
+            print("    current_signal  = " + current_signal.name())
+            print("      sample_count  = {}".format(current_signal.sample_count()))
+            print("      get_sample(1) = {}".format(current_signal.get_sample(1, True)))
+            print("      last_sample   = {}".format(current_signal.get_last_sample(True)))
 
         signals = channel.signals()
         for signal in signals:

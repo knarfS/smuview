@@ -43,7 +43,7 @@ i = 0
 while i<10000:
     ts = time.time()
     result_ch.push_sample(sin(i), ts, smuview.Quantity.Power, set(), smuview.Unit.Watt, 6, 3)
-    sample = result_ch.actual_signal().get_last_sample(True)
+    sample = result_ch.current_signal().get_last_sample(True)
     print("  new value = {}".format(sample[1] if sample is not None else None))
     time.sleep(0.25)
     i = i + 0.1
