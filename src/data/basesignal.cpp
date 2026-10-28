@@ -49,7 +49,7 @@ BaseSignal::BaseSignal(
 {
 	/* TODO
 	if (!util::is_valid_sr_quantity(sr_quantity_))
-		assert("Invalide quantity for BaseSignal()");
+		throw std::runtime_error("Invalide quantity for BaseSignal()");
 	*/
 
 	quantity_name_ = data::datautil::format_quantity(quantity_);
