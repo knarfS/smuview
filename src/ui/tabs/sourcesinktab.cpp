@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+#include <memory>
 
 #include <QDebug>
 #include <QGroupBox>
@@ -38,6 +40,8 @@
 #include "src/ui/views/powerpanelview.hpp"
 #include "src/ui/views/timeplotview.hpp"
 #include "src/ui/views/viewhelper.hpp"
+
+using std::static_pointer_cast;
 
 namespace sv {
 namespace ui {

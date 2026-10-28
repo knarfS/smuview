@@ -21,12 +21,16 @@
 #ifndef DEVICES_HARDWAREDEVICE_HPP
 #define DEVICES_HARDWAREDEVICE_HPP
 
+#include <memory>
+
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
 #include <QString>
 
 #include "src/devices/basedevice.hpp"
 
+using std::make_shared;
+/* Needed for create() in sub classes */
 using std::shared_ptr;
 
 namespace sigrok {
