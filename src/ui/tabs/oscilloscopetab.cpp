@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2019-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2019-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <memory>
+
 #include <QDebug>
 #include <QHBoxLayout>
 #include <QGroupBox>
@@ -28,13 +30,14 @@
 #include "src/channels/basechannel.hpp"
 #include "src/data/analogtimesignal.hpp"
 #include "src/data/basesignal.hpp"
-#include "src/data/datautil.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/devices/configurable.hpp"
 #include "src/devices/hardwaredevice.hpp"
 #include "src/ui/tabs/devicetab.hpp"
 #include "src/ui/views/scopetriggercontrolview.hpp"
 #include "src/ui/views/viewhelper.hpp"
+
+using std::static_pointer_cast;
 
 namespace sv {
 namespace ui {
