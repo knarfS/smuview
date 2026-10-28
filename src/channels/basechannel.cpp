@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2012 Joel Holdsworth <joel@airwebreathe.org.uk>
  * Copyright (C) 2016 Soeren Apel <soeren@apelpie.net>
- * Copyright (C) 2017-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 
 #include <cassert>
 #include <memory>
+#include <mutex>
 #include <set>
 #include <string>
 #include <utility>
@@ -59,7 +60,7 @@ BaseChannel::BaseChannel(
 	parent_device_(parent_device),
 	channel_group_names_(channel_group_names),
 	fixed_signal_(false),
-	actual_signal_(nullptr)
+	current_signal_(nullptr)
 {
 	name_ = (sr_channel_) ? sr_channel_->name() : "";
 
@@ -144,73 +145,91 @@ void BaseChannel::add_channel_group_name(const string &channel_group_name)
 	channel_group_names_.insert(channel_group_name);
 }
 
-void BaseChannel::add_signal(shared_ptr<data::AnalogTimeSignal> signal)
-{
-	if (!signal_map_.empty() && fixed_signal_) {
-		/*
-		 * NOTE: Previous versions didn't create a new signal but just exited
-		 *       here, which led to a subsequent segfault.
-		 *       Just print a message and create the new signals anyways.
-		 */
-		qCritical() << "WARNING: Adding the unexpected signal "
-			<< signal->display_name() << " to the fixed channel "
-			<< display_name() << " with an already existing signal "
-			<< actual_signal_->display_name();
-		qCritical() << "WARNING: The sigrok device driver is propably sending "
-			<< "a wrong measured qunatity or wrong mq_flags.";
-		qCritical() << "WARNING: Please fix this in the libsigrok driver!";
-	}
-
-	measured_quantity_t mq = make_pair(
-		signal->quantity(), signal->quantity_flags());
-	if (signal_map_.count(mq) > 0) {
-		signal_map_[mq].push_back(signal);
-	}
-	else {
-		signal_map_.insert(
-			make_pair(mq, vector<shared_ptr<data::BaseSignal>> { signal }));
-	}
-
-	actual_signal_ = signal;
-	Q_EMIT signal_added(signal);
-}
-
 shared_ptr<data::BaseSignal> BaseChannel::add_signal(
 	data::Quantity quantity,
 	set<data::QuantityFlag> quantity_flags,
 	data::Unit unit,
 	string custom_name)
 {
-	/*
-	 * TODO: Remove shared_from_this() / (channel pointer in signal), so that
-	 *       "add_signal()" can be called from MathChannel ctor.
-	 */
-	auto signal = make_shared<data::AnalogTimeSignal>(
-		quantity, quantity_flags, unit,
-		shared_from_this(), custom_name);
+	shared_ptr<data::BaseSignal> signal;
+	bool sig_added = false;
 
-	this->add_signal(signal);
+	{
+		std::scoped_lock lock(signals_mutex_);
+
+		if (!signal_map_.empty() && fixed_signal_) {
+			qCritical() << "WARNING: Adding unexpected signal ["
+				<< data::datautil::format_quantity(quantity) << " "
+				<< data::datautil::format_quantity_flags(quantity_flags, " ")
+				<< " to the fixed channel " << display_name()
+				<< " with an already existing signal "
+				<< current_signal_->display_name();
+			qCritical() << "WARNING: The sigrok device driver is propably "
+				<< "sending a wrong qunatity or wrong mq_flags.";
+			qCritical() << "WARNING: Please fix this in the libsigrok driver!";
+		}
+
+		/* This is already the current signal */
+		if (current_signal_ && current_signal_->quantity() == quantity &&
+				current_signal_->quantity_flags() == quantity_flags)
+			return current_signal_;
+
+		measured_quantity_t mq = make_pair(quantity, quantity_flags);
+		if (signal_map_.count(mq) == 0) {
+			/*
+			 * TODO: Remove shared_from_this() / (channel pointer in signal), so
+			 *       that "add_signal()" can be called from MathChannel ctor.
+			 */
+			signal = make_shared<data::AnalogTimeSignal>(
+				quantity, quantity_flags, unit,
+				shared_from_this(), custom_name);
+			signal_map_.insert(make_pair(mq, signal));
+
+			qInfo() << "BaseChannel::add_signal(): New signal added to cannel "
+				<< display_name() << ": " << signal->display_name();
+		}
+		else {
+			signal = signal_map_.at(mq);
+		}
+
+		current_signal_ = signal;
+	}
+
+	if (sig_added)
+		Q_EMIT signal_added(signal);
+	Q_EMIT signal_changed(signal);
 
 	return signal;
 }
 
-shared_ptr<data::BaseSignal> BaseChannel::actual_signal()
+shared_ptr<data::BaseSignal> BaseChannel::current_signal()
 {
-	return actual_signal_;
+	{
+		std::scoped_lock lock(signals_mutex_);
+
+		return current_signal_;
+	}
 }
 
-map<measured_quantity_t, vector<shared_ptr<data::BaseSignal>>>
+map<measured_quantity_t, shared_ptr<data::BaseSignal>>
 	BaseChannel::signal_map()
 {
-	return signal_map_;
+	{
+		std::scoped_lock lock(signals_mutex_);
+
+		return signal_map_;
+	}
 }
 
 vector<shared_ptr<data::BaseSignal>> BaseChannel::signals()
 {
 	vector<shared_ptr<data::BaseSignal>> signals;
-	for (const auto &signal_pair : signal_map_) {
-		signals.insert(signals.end(),
-			signal_pair.second.begin(), signal_pair.second.end());
+	{
+		std::scoped_lock lock(signals_mutex_);
+
+		for (const auto &signal_pair : signal_map_) {
+			signals.push_back(signal_pair.second);
+		}
 	}
 	return signals;
 }
@@ -218,8 +237,12 @@ vector<shared_ptr<data::BaseSignal>> BaseChannel::signals()
 void BaseChannel::clear_signals()
 {
 	/* TODO
-	for (const auto &signal_pair : signal_map_) {
-		signal_pair.second->
+	{
+		std::scoped_lock lock(signals_mutex_);
+
+		for (const auto &signal_pair : signal_map_) {
+			signal_pair.second->
+		}
 	}
 	*/
 }

@@ -17,14 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cassert>
 #include <memory>
 #include <set>
 #include <string>
-#include <utility>
 #include <vector>
-
-#include <QDebug>
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
 
@@ -36,12 +32,10 @@
 #include "src/data/datautil.hpp"
 #include "src/devices/basedevice.hpp"
 
-using std::make_pair;
 using std::set;
 using std::static_pointer_cast;
 using std::string;
 using std::vector;
-using sv::data::measured_quantity_t;
 
 namespace sv {
 namespace channels {
@@ -63,33 +57,11 @@ void HardwareChannel::push_samples(const vector<double> &samples,
 	const set<data::QuantityFlag> &quantity_flags, data::Unit unit,
 	int sr_digits)
 {
-	//lock_guard<recursive_mutex> lock(mutex_);
-
-	if (!actual_signal_ || actual_signal_->quantity() != quantity ||
-		actual_signal_->quantity_flags() != quantity_flags) {
-
-		/* actual_signal_ not set or doesn't match the mq/mqf */
-		measured_quantity_t mq = make_pair(quantity, quantity_flags);
-		size_t signals_count = signal_map_.count(mq);
-		if (signals_count == 0) {
-			add_signal(quantity, quantity_flags, unit);
-			qWarning() << "HardwareChannel::push_samples(): "
-				<< display_name()
-				<< " - Signal was not found and was therefore created: "
-				<< actual_signal_->display_name();
-		}
-		else if (signals_count > 1) {
-			throw ("More than one signal found for " + name());
-		}
-
-		actual_signal_ = signal_map_[mq][0];
-		Q_EMIT signal_changed(actual_signal_);
-	}
+	add_signal(quantity, quantity_flags, unit);
 
 	// NOTE: Not implemented in sigrok yet, so using the default for now.
 	const int total_digits = data::DefaultTotalDigits;
-
-	static_pointer_cast<data::AnalogTimeSignal>(actual_signal_)->push_samples(
+	static_pointer_cast<data::AnalogTimeSignal>(current_signal_)->push_samples(
 		samples, timestamp, samplerate, total_digits, sr_digits);
 }
 

@@ -35,7 +35,6 @@ using std::string;
 using std::vector;
 
 namespace sigrok {
-class Analog;
 class Channel;
 }
 

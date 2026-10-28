@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2019-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2019-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -191,9 +191,7 @@ void DeviceTreeModel::add_channel(shared_ptr<channels::BaseChannel> channel,
 
 		// Signals
 		for (const auto &signal_pair : channel->signal_map()) {
-			for (const auto &signal : signal_pair.second) {
-				add_signal(signal, channel_item);
-			}
+			add_signal(signal_pair.second, channel_item);
 		}
 	}
 }

@@ -58,6 +58,7 @@ MathChannel::MathChannel(
 	index_ = parent_device->next_channel_index();
 	fixed_signal_ = true;
 
+	// TODO: Move to device, then we can remove shared_from_this
 	if (devices::deviceutil::is_user_device(parent_device_->type())) {
 		auto sr_udev = static_pointer_cast<sigrok::UserDevice>(
 			parent_device_->sr_device());
@@ -91,7 +92,7 @@ data::Unit MathChannel::unit()
 
 void MathChannel::push_sample(double sample, double timestamp)
 {
-	auto signal = static_pointer_cast<data::AnalogTimeSignal>(actual_signal_);
+	auto signal = static_pointer_cast<data::AnalogTimeSignal>(current_signal_);
 	signal->push_sample(sample, timestamp, total_digits_, sr_digits_);
 }
 

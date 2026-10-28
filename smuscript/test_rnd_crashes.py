@@ -39,7 +39,7 @@ demo_dev_id = demo_dev.id()
 #demo_dev_tab = UiProxy.get_base_tab_from_device_id(demo_dev_id);
 
 # Add a data view to the device tab
-UiProxy.add_data_view(demo_dev_id, smuview.DockArea.TopDockArea, demo_dev.channels()["A1"].actual_signal())
+UiProxy.add_data_view(demo_dev_id, smuview.DockArea.TopDockArea, demo_dev.channels()["A1"].current_signal())
 
 # Sleep 3 sec to finish the adding of the view in the MainThread, otherwise SmuView will crash... TODO
 #time.sleep(3)

@@ -308,9 +308,7 @@ vector<shared_ptr<data::BaseSignal>> BaseDevice::signals() const
 	vector<shared_ptr<sv::data::BaseSignal>> signals;
 	for (const auto &ch_pair : channel_map_) {
 		for (const auto &signal_pair : ch_pair.second->signal_map()) {
-			for (const auto &signal : signal_pair.second) {
-				signals.push_back(signal);
-			}
+			signals.push_back(signal_pair.second);
 		}
 	}
 	return signals;

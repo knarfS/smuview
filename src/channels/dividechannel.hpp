@@ -68,6 +68,12 @@ private:
 	shared_ptr<data::AnalogTimeSignal> divisor_signal_;
 	size_t dividend_signal_pos_;
 	size_t divisor_signal_pos_;
+	/**
+	 * Protects sample processing of concurrent updates from the two signals.
+	 * Not really sure, this is a real problem or if the slot isn't queued
+	 * anyways. If `on_sample_appended()` is called directly, this mutex is
+	 * neccessary.
+	 */
 	mutex sample_append_mutex_;
 
 private Q_SLOTS:

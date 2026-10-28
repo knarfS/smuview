@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2012 Joel Holdsworth <joel@airwebreathe.org.uk>
  * Copyright (C) 2016 Soeren Apel <soeren@apelpie.net>
- * Copyright (C) 2016-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2016-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 #define CHANNELS_BASECHANNEL_HPP
 
 #include <memory>
+#include <mutex>
 #include <set>
 #include <string>
 #include <vector>
@@ -34,6 +35,7 @@
 #include "src/data/datautil.hpp"
 
 using std::map;
+using std::mutex;
 using std::set;
 using std::shared_ptr;
 using std::string;
@@ -157,13 +159,10 @@ public:
 	void add_channel_group_name(const string &channel_group_name);
 
 	/**
-	 * Add a signal to the channel. For now only AnalogTimeSignals
-	 * are supported.
-	 */
-	void add_signal(shared_ptr<data::AnalogTimeSignal> signal);
-
-	/**
-	 * Add a signal by its quantity, quantity_flags and unit.
+	 * Add a signal by its quantity, quantity_flags and unit, if a signal with
+	 * these properties does not exists, a new AnalogTimeSignal is created and
+	 * added.
+	 * This signal becomes the current active signal.
 	 */
 	shared_ptr<data::BaseSignal> add_signal(
 		data::Quantity quantity,
@@ -172,16 +171,15 @@ public:
 		string custom_name = "");
 
 	/**
-	 * Get the actual signal
+	 * Get the currently active signal
 	 */
-	shared_ptr<data::BaseSignal> actual_signal();
+	shared_ptr<data::BaseSignal> current_signal();
 
 	/**
-	 * Get all signals for this channel. Normaly a measurement quantity only
-	 * has one corresponding signal, but for user channels this can be
-	 * different.
+	 * Get all signals for this channel. A measurement quantity can only have
+	 * one corresponding signal.
 	 */
-	map<measured_quantity_t, vector<shared_ptr<data::BaseSignal>>> signal_map();
+	map<measured_quantity_t, shared_ptr<data::BaseSignal>> signal_map();
 
 	/**
 	 * Get all signals for this channel.
@@ -212,9 +210,17 @@ protected:
 	/** The channel group names this channel belongs to. */
 	set<string> channel_group_names_;
 
+	/**
+	 * `true`, if this channel has only one signal with a fixed measurement
+	 * quantity.
+	 */
 	bool fixed_signal_;
-	shared_ptr<data::BaseSignal> actual_signal_;
-	map<measured_quantity_t, vector<shared_ptr<data::BaseSignal>>> signal_map_;
+	/** The currently active signal */
+	shared_ptr<data::BaseSignal> current_signal_;
+	/** Maps the measuremnet quantity to a signal */
+	map<measured_quantity_t, shared_ptr<data::BaseSignal>> signal_map_;
+	/** Protects the signal_map_ and current_signal_ */
+	mutex signals_mutex_;
 
 Q_SIGNALS:
 	void enabled_changed(const bool enabled);

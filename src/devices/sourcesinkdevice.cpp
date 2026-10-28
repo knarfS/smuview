@@ -17,7 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <algorithm>
 #include <cassert>
 #include <string>
 #include <vector>
@@ -225,7 +224,7 @@ void SourceSinkDevice::init_channels()
 		for (const auto &channel : chg_name_channels_pair.second) {
 			if (!channel->fixed_signal())
 				continue;
-			auto signal = channel->actual_signal();
+			auto signal = channel->current_signal();
 			if (signal->quantity() == data::Quantity::Voltage) {
 				voltage_signal =
 					static_pointer_cast<data::AnalogTimeSignal>(signal);
@@ -264,7 +263,7 @@ void SourceSinkDevice::init_channels()
 					chg_names, "P" + ch_suffix);
 			BaseDevice::add_math_channel(power_channel, chg_name);
 			power_signal = static_pointer_cast<data::AnalogTimeSignal>(
-				power_channel->actual_signal());
+				power_channel->current_signal());
 		}
 
 		// Create resistance channel

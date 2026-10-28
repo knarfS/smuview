@@ -94,7 +94,7 @@ void SourceSinkTab::setup_ui()
 		for (const auto &channel : chg_pair.second) {
 			if (channel->fixed_signal()) {
 				auto signal = static_pointer_cast<data::AnalogTimeSignal>(
-					channel->actual_signal());
+					channel->current_signal());
 
 				// Only plot voltage and current
 				if (signal->quantity() == data::Quantity::Voltage) {

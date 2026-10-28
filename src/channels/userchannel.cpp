@@ -17,12 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cassert>
 #include <memory>
 #include <set>
 #include <string>
-
-#include <QDebug>
 
 #include "userchannel.hpp"
 #include "src/channels/basechannel.hpp"
@@ -31,7 +28,6 @@
 #include "src/data/datautil.hpp"
 #include "src/devices/basedevice.hpp"
 
-using std::make_pair;
 using std::set;
 using std::static_pointer_cast;
 using std::string;
@@ -50,6 +46,7 @@ UserChannel::UserChannel(
 	index_ = parent_device->next_channel_index();
 	fixed_signal_ = false;
 
+	// TODO: Move to device, then we can remove shared_from_this
 	if (devices::deviceutil::is_user_device(parent_device_->type())) {
 		auto sr_udev = static_pointer_cast<sigrok::UserDevice>(
 			parent_device_->sr_device());
@@ -62,26 +59,8 @@ void UserChannel::push_sample(double sample, double timestamp,
 	data::Quantity quantity, set<data::QuantityFlag> quantity_flags,
 	data::Unit unit, int total_digits, int sr_digits)
 {
-	if (!actual_signal_ || actual_signal_->quantity() != quantity ||
-		actual_signal_->quantity_flags() != quantity_flags) {
-
-		measured_quantity_t mq = make_pair(quantity, quantity_flags);
-		size_t signals_count = signal_map_.count(mq);
-		if (signals_count == 0) {
-			actual_signal_ = add_signal(quantity, quantity_flags, unit);
-			qWarning() << "UserChannel::push_sample(): " << display_name() <<
-				" - No signal found: " << actual_signal_->display_name();
-		}
-		else if (signals_count > 1) {
-			actual_signal_ = signal_map_[mq][0];
-			qWarning() << "UserChannel::push_sample(): " << display_name() <<
-				" - More than one signal found, using first found signal: " <<
-				actual_signal_->display_name();
-		}
-		Q_EMIT signal_changed(actual_signal_);
-	}
-
-	static_pointer_cast<data::AnalogTimeSignal>(actual_signal_)->push_sample(
+	add_signal(quantity, quantity_flags, unit);
+	static_pointer_cast<data::AnalogTimeSignal>(current_signal_)->push_sample(
 		sample, timestamp, total_digits, sr_digits);
 }
 

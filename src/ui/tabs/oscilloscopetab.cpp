@@ -84,7 +84,7 @@ void OscilloscopeTab::setup_ui()
 
 		//shared_ptr<data::AnalogScopeSignal> signal; // TODO
 		auto signal = static_pointer_cast<data::AnalogTimeSignal>(
-			channel->actual_signal());
+			channel->current_signal());
 		++added_channels;
 
 		// TODO: Voltage plot

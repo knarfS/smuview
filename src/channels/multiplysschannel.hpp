@@ -68,6 +68,12 @@ private:
 	shared_ptr<data::AnalogTimeSignal> signal2_;
 	size_t signal1_pos_;
 	size_t signal2_pos_;
+	/**
+	 * Protects sample processing of concurrent updates from the two signals.
+	 * Not really sure, this is a real problem or if the slot isn't queued
+	 * anyways. If `on_sample_appended()` is called directly, this mutex is
+	 * neccessary.
+	 */
 	mutex sample_append_mutex_;
 
 private Q_SLOTS:

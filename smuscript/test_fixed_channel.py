@@ -31,7 +31,7 @@ channel_name = "V"
 #channel_name = "P1"
 
 # Don't give the devices a chance to create a (non fixed) signal by receiving samples
-signal = device.channels()[channel_name].actual_signal()
+signal = device.channels()[channel_name].current_signal()
 
 # Read signals from a fixed channel. This will only work for fixed channels!
 print("signal.sample_count() = {0}".format(signal.sample_count()))
