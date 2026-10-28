@@ -151,7 +151,7 @@ void Configurable::init()
 			// TODO: What is KeyValue?
 		case data::DataType::Unknown:
 		default:
-			assert("Unknown DataType");
+			throw std::runtime_error("Unknown DataType");
 		}
 
 		property_map_.insert(make_pair(config_key, property));

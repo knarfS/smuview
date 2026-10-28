@@ -20,6 +20,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <stdexcept>
 #include <string>
 #include <utility>
 #include <vector>
@@ -78,7 +79,7 @@ HardwareDevice::HardwareDevice(
 	if (it != device_types.end())
 		type_ = *it;
 	else
-		assert("Unknown device");
+		throw std::runtime_error("Unknown device type");
 }
 
 QString HardwareDevice::display_name(
