@@ -75,15 +75,6 @@ public:
 	optional<uint32_t> first_pos() const;
 	optional<uint32_t> last_pos() const;
 
-	/*
-	static void combine_signals(
-		shared_ptr<AnalogSampleSignal> signal1, size_t &signal1_pos,
-		shared_ptr<AnalogSampleSignal> signal2, size_t &signal2_pos,
-		shared_ptr<vector<uint32_t>> pos_vector,
-		shared_ptr<vector<double>> data1_vector,
-		shared_ptr<vector<double>> data2_vector);
-	*/
-
 private:
 	vector<uint32_t> pos_;
 
