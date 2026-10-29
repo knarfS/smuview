@@ -36,6 +36,7 @@ option(DISABLE_WERROR "Build without -Werror" FALSE)
 option(ENABLE_SIGNALS "Build with UNIX signals" TRUE)
 option(ENABLE_TESTS "Enable unit tests" TRUE)
 option(STATIC_PKGDEPS_LIBS "Statically link to (pkg-config) libraries" FALSE)
+option(ENABLE_TSAN "Enable ThreadSanitizer" FALSE)
 
 # Qt6 requires C++17
 set(CMAKE_CXX_STANDARD 17)
@@ -65,7 +66,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 message(STATUS "DISABLE_WERROR: ${DISABLE_WERROR}")
 message(STATUS "ENABLE_SIGNALS: ${ENABLE_SIGNALS}")
 message(STATUS "ENABLE_TESTS: ${ENABLE_TESTS}")
+message(STATUS "ENABLE_TSAN: ${ENABLE_TSAN}")
 message(STATUS "STATIC_PKGDEPS_LIBS: ${STATIC_PKGDEPS_LIBS}")
+
 
 #===============================================================================
 #= Dependencies
@@ -153,6 +156,7 @@ add_subdirectory(external/QCodeEditor)
 # SmuView has its own copy of QtFindReplaceDialog
 add_subdirectory(external/QtFindReplaceDialog/dialogs)
 
+
 #===============================================================================
 #= System Introspection
 #-------------------------------------------------------------------------------
@@ -230,6 +234,7 @@ configure_file(
 	${CMAKE_CURRENT_BINARY_DIR}/packaging/mxe/smuview_cross.nsi
 	@ONLY
 )
+
 
 #===============================================================================
 #= Sources
@@ -404,6 +409,7 @@ else()
 	qt5_add_resources(smuview_RESOURCES_RCC ${smuview_RESOURCES})
 endif()
 
+
 #===============================================================================
 #= Global Definitions
 #-------------------------------------------------------------------------------
@@ -431,6 +437,14 @@ if(NOT DISABLE_WERROR)
 	)
 endif()
 
+if(ENABLE_TSAN)
+	list(APPEND smuview_COMPILE_OPTIONS
+		-fsanitize=thread
+		-g
+		-O1
+	)
+endif()
+
 if(ENABLE_SIGNALS)
 	list(APPEND smuview_COMPILE_DEFINITIONS ENABLE_SIGNALS)
 endif()
@@ -439,6 +453,7 @@ if(MINGW AND CMAKE_BUILD_TYPE STREQUAL "Debug")
 	# Fix error "too many sections (37653)" and "file too big" for mingw/MXE when building for Debug
 	list(APPEND smuview_COMPILE_OPTIONS -Wa,-mbig-obj)
 endif()
+
 
 #===============================================================================
 #= Global Include Directories
@@ -492,6 +507,14 @@ if(MINGW AND CMAKE_CROSSCOMPILING)
 	list(APPEND smuview_LINK_LIBS "${MXE_PYTHON_EMBED_LIBRARY}")
 endif()
 
+set(smuview_LINK_OPTIONS "")
+
+if(ENABLE_TSAN)
+	list(APPEND smuview_LINK_OPTIONS
+		-fsanitize=thread
+	)
+endif()
+
 add_executable(${PROJECT_NAME} ${smuview_SOURCES} ${smuview_RESOURCES_RCC})
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${smuview_INCLUDE_DIRS})
@@ -499,6 +522,7 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE ${smuview_COMPILE_DEFINITIONS
 target_compile_options(${PROJECT_NAME} PRIVATE ${smuview_COMPILE_OPTIONS})
 target_link_directories(${PROJECT_NAME} PRIVATE ${smuview_LINK_DIRS})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${smuview_LINK_LIBS})
+target_link_options(${PROJECT_NAME} PRIVATE ${smuview_LINK_OPTIONS})
 
 if(WIN32 AND NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
 	# Pass -mwindows so that no "DOS box" opens when SmuView is started.
