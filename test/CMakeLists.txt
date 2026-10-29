@@ -43,8 +43,10 @@ set(smuview_TEST_SOURCES
 	main.cpp
 
 	#util.cpp
+	channels/basechannel_concurrency.cpp
 	data/datautil.cpp
 	data/analogtimesignal.cpp
+	data/analogtimesignal_concurrency.cpp
 	devices/deviceutil.cpp
 	python/bindingsenums.cpp
 	utils/csvutil.cpp
@@ -77,3 +79,4 @@ target_compile_definitions(smuview-test PRIVATE ${smuview_TEST_COMPILE_DEFINITIO
 target_compile_options(smuview-test PRIVATE ${smuview_COMPILE_OPTIONS})
 target_link_directories(smuview-test PRIVATE ${smuview_LINK_DIRS})
 target_link_libraries(smuview-test PRIVATE ${smuview_TEST_LINK_LIBS})
+target_link_options(smuview-test PRIVATE ${smuview_LINK_OPTIONS})
