@@ -69,6 +69,8 @@ message(STATUS "ENABLE_TESTS: ${ENABLE_TESTS}")
 message(STATUS "ENABLE_TSAN: ${ENABLE_TSAN}")
 message(STATUS "STATIC_PKGDEPS_LIBS: ${STATIC_PKGDEPS_LIBS}")
 
+message(STATUS "CMAKE_CXX_COMPILER_ID: ${CMAKE_CXX_COMPILER_ID}")
+
 
 #===============================================================================
 #= Dependencies
@@ -452,6 +454,14 @@ endif()
 if(MINGW AND CMAKE_BUILD_TYPE STREQUAL "Debug")
 	# Fix error "too many sections (37653)" and "file too big" for mingw/MXE when building for Debug
 	list(APPEND smuview_COMPILE_OPTIONS -Wa,-mbig-obj)
+endif()
+
+if (CMAKE_CXX_COMPILER_ID MATCHES "^(AppleClang|Clang)$")
+	# Temporaily disable deprecated-pragma until we update to qwt 6.4
+	# Atm qwt fails with AppleClang 17 because of deprecated Q_ENUMS
+	list(APPEND smuview_COMPILE_OPTIONS
+		-Wno-deprecated-pragma
+	)
 endif()
 
 
