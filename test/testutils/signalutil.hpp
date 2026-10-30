@@ -26,6 +26,7 @@
 #include <utility>
 #include <vector>
 
+#include "src/data/analogsamplesignal.hpp"
 #include "src/data/analogtimesignal.hpp"
 
 namespace sv::test::testutils {
@@ -62,6 +63,40 @@ public:
 private:
 	std::string name_ = "test";
 	std::vector<std::pair<double, double>> samples_;
+};
+
+class SampleSignalBuilder
+{
+
+public:
+	SampleSignalBuilder &name(std::string n)
+	{
+		name_ = std::move(n);
+		return *this;
+	}
+
+	SampleSignalBuilder &push(uint32_t p, double v)
+	{
+		samples_.emplace_back(p, v);
+		return *this;
+	}
+
+	std::shared_ptr<data::AnalogSampleSignal> build() const
+	{
+		auto sig = std::make_shared<data::AnalogSampleSignal>(
+			data::Quantity::Voltage,
+			std::set<data::QuantityFlag>{data::QuantityFlag::DC},
+			data::Unit::Volt,
+			nullptr, name_);
+		for (auto [p, v] : samples_) {
+			sig->push_sample(v, p, 7, 3);
+		}
+		return sig;
+	}
+
+private:
+	std::string name_ = "test";
+	std::vector<std::pair<uint32_t, double>> samples_;
 };
 
 } // namespace sv::test::testutils

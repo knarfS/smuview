@@ -33,6 +33,7 @@ set(smuview_TEST_SOURCES
 	${PROJECT_SOURCE_DIR}/src/channels/basechannel.cpp
 	${PROJECT_SOURCE_DIR}/src/data/basesignal.cpp
 	${PROJECT_SOURCE_DIR}/src/data/analogbasesignal.cpp
+	${PROJECT_SOURCE_DIR}/src/data/analogsamplesignal.cpp
 	${PROJECT_SOURCE_DIR}/src/data/analogtimesignal.cpp
 	${PROJECT_SOURCE_DIR}/src/data/datautil.cpp
 	${PROJECT_SOURCE_DIR}/src/devices/deviceutil.cpp
@@ -45,6 +46,7 @@ set(smuview_TEST_SOURCES
 	#util.cpp
 	channels/basechannel_concurrency.cpp
 	data/datautil.cpp
+	data/analogsamplesignal.cpp
 	data/analogtimesignal.cpp
 	data/analogtimesignal_concurrency.cpp
 	devices/deviceutil.cpp
