@@ -67,6 +67,11 @@ public:
 	analog_pos_sample_t get_sample(uint32_t pos) const;
 
 	/**
+	 * Return the last captured sample.
+	 */
+	analog_pos_sample_t get_last_sample() const;
+
+	/**
 	 * Push a single sample to the signal.
 	 */
 	void push_sample(double sample, uint32_t pos,

@@ -51,7 +51,7 @@ AnalogSampleSignal::AnalogSampleSignal(
 		const string &custom_name) :
 	AnalogBaseSignal(quantity, quantity_flags, unit, parent_channel, custom_name)
 {
-	qWarning() << "Init analog sample signal " << display_name();
+	qInfo() << "Init analog sample signal " << display_name();
 }
 
 void AnalogSampleSignal::clear()
@@ -75,8 +75,20 @@ analog_pos_sample_t AnalogSampleSignal::get_sample(uint32_t pos) const
 	if (pos >= data_.size())
 		return {};
 
-	return make_pair(pos, data_.at(pos));
+	return make_pair(pos_.at(pos), data_.at(pos));
 }
+
+analog_pos_sample_t AnalogSampleSignal::get_last_sample() const
+{
+	std::scoped_lock lock(data_mutex_);
+
+	if (data_.size() == 0)
+		return {};
+
+	size_t pos = data_.size() - 1;
+	return make_pair(pos_.at(pos), data_.at(pos));
+}
+
 
 void AnalogSampleSignal::push_sample(double sample, uint32_t pos,
 	int total_digits, int sr_digits)
