@@ -53,7 +53,7 @@ AnalogTimeSignal::AnalogTimeSignal(
 		const string &custom_name) :
 	AnalogBaseSignal(quantity, quantity_flags, unit, parent_channel, custom_name)
 {
-	//qWarning() << "Init analog time signal " << display_name();
+	qInfo() << "Init analog time signal " << display_name();
 }
 
 void AnalogTimeSignal::clear()
@@ -149,11 +149,6 @@ void AnalogTimeSignal::push_sample(double sample, double timestamp,
 	{
 		std::scoped_lock lock(data_mutex_);
 
-		/*
-		qWarning() << "AnalogTimeSignal::push_sample(): " << display_name()
-			<< ": sample = " << sample << " @ " <<  timestamp;
-		*/
-
 		update_min_max_unlocked(sample);
 		digits_chngd = update_digits_unlocked(total_digits, sr_digits);
 
@@ -188,17 +183,17 @@ void AnalogTimeSignal::push_samples(const vector<double> &samples,
 	{
 		std::scoped_lock lock(data_mutex_);
 
-		for (const double sample : samples) {
-			/*
-			qWarning() << "AnalogTimeSignal::push_sample(): " << display_name()
-				<< ": sample = " << sample << " @ " <<  timestamp;
-			*/
+		double start_timestamp = timestamp;
+		time_.reserve(time_.size() + samples.size());
+		data_.reserve(data_.size() + samples.size());
 
-			update_min_max_unlocked(sample);
+		for (size_t i = 0; i < samples.size(); i++) {
+			update_min_max_unlocked(samples.at(i));
 
-			time_.push_back(timestamp);
-			data_.push_back(sample);
-			timestamp += time_stride;
+			// Calculate timestamp from start_timestamp and not just add
+			// time_stride, so no floating point rounding error accumulates
+			time_.push_back(start_timestamp + i * time_stride);
+			data_.push_back(samples.at(i));
 		}
 
 		digits_chngd = update_digits_unlocked(total_digits, sr_digits);
