@@ -68,7 +68,7 @@ void SmuScriptRunner::run(const string &file_name)
 		return;
 	}
 
-    QFileInfo file_info(QString::fromStdString(file_name));
+	QFileInfo file_info(QString::fromStdString(file_name));
 	if (!file_info.exists() || !file_info.isFile()) {
 		Q_EMIT script_error("SmuScriptRunner",
 			tr("No valide script file specified!").toStdString());
