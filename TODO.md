@@ -46,12 +46,8 @@
   the window title should not only show the channel / signal name but also the
   device name. Should also be used for export utils CSV headers. Make testable.
 - Use util::Timestamp?
-- last_value_, min_value_, max_value_ -> std::atomic!
 - Plot: Sampling
-- Mutex for aquisition_state_?
 - Save all data (gnuplot, octave, ...)
-	- Move CSV logic out of `signalsavedialog.cpp`!
-	- add a saveutil.cpp
 - Configurable:
 	- default check for getable/setable in get/set functions without assert(false)?
 	- add button to sink/source/demodmm/measurement-ControlViews to control non default config keys.
@@ -65,7 +61,6 @@
 - Start timestamp to session
 - Use new connect/disconnet variant whenever possible.
 - Use connect(obj, SIGNAL, SIGNAL) when possible (UIProxy/UIHelper)
-- Lookup: std::atomic, std::condition_variable, std::mutex
 - Remove "const Session &session" form ui::devices::* ctors and more??
 - Maybe: In all ctors "Session &session" -> "const Session &session"
 - Resize the DockWidgets/Views to their best sizes (value panels minimum, plot views max, ...). Maybe with QMainWindow->resizeDocks, SizePolicy in QDockWidget does not work....
@@ -75,7 +70,6 @@
 - Use AnalogBaseSignal in all(?) Channel classes, in View classes and in Plot classes
 - Remove Configurable and ConfigKey from data::properties::*
 - Session: shared_ptr or reference?
-- Missing msvcr100.dll (Windows Server 2016) SmuView/PulseView
 - DeviceTree: Button for expand/close all
 - Plot: Add gradient (dY/dX) to diff marker in plot marker box
 - Plot: Movable polt marker box. Maybe not possible b/c of missing stuff in qwt?
@@ -86,15 +80,16 @@
 - PlotView: Make resolution and dpi configurable when saving as image
 - Implement AnalogXYDataSignal (for python automatisation)? See scope support?
 - MonoFontDisplay/PowerPanelView: To small for neg. values (esp. W/Ah/Wh with 6632B). B/c of the decimal point?
-- Remove LCDDisplay?
 - Reduce/Simplyfy BaseDevice name methods
-- Bindings: Implement add_math_channel()
+- Python-Bindings:
+	- Implement add_math_channel()
+	- Add get_value_at_timestamp() and other missing AnalogTimeSignal methods
+	- Add missing AnlogSampleSignal methods
+	- Add Configurable list method
 - Can we inherit MathChannel from UserChannel?
 - Unify name of static (const) variables
 - Remove devicetab.hpp time_unit_
 - Cycle: replace BaseChannel::parent_device_ with device_id_, and so on....
-- AnalogTimeSignal: Move signal_start_timestamp_ to BaseSignal
-- *Signal: Clean up Signal classes
 - Add a way to change a channel/signal name in the GUI. Connect BaseSignal::name_changed() signal.
 - Add a way to change the plot curves that have a default color to the new default color configured in the PlotConfigDialog. E.g. with a singleton to connect a dialog to multiple curves from different plots.
 - Use singleton for SettingsManager instead of static methods?
@@ -182,6 +177,14 @@
 - Segfault when closing/disconnet devices via UI/DevicesView
 - Move `org.sigrok.SmuView.appdata.xml`, `org.sigrok.SmuView.desktop` and `smuview.spec` to `packaging/rpm` and update dependencies in files.
 - main.cpp: Remove while loop.
+- last_value_, min_value_, max_value_ -> std::atomic! -> mutex!
+- Mutex for aquisition_state_? -> atomic!
+- Move CSV logic out of `signalsavedialog.cpp`!
+- add a saveutil.cpp -> exportutil.cpp
+- Lookup: std::atomic, std::condition_variable, std::mutex
+- Remove LCDDisplay?
+- AnalogTimeSignal: Move signal_start_timestamp_ to BaseSignal
+- *Signal: Clean up Signal classes
 
 ## Won't fix
 
@@ -199,6 +202,7 @@
   OutFile "SmuView-${SV_VERSION_STRING}${TARGET}-installer.exe"
   ```
 - Integrate udev rules to AppImage
+- Missing msvcr100.dll (Windows Server 2016) SmuView/PulseView
 
 
 # libsigrok
