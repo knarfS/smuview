@@ -415,7 +415,13 @@ void DeviceTreeModel::on_device_removed(
 void DeviceTreeModel::on_channel_added(
 	shared_ptr<channels::BaseChannel> channel)
 {
-	shared_ptr<sv::devices::BaseDevice> device = channel->parent_device();
+	if (channel == nullptr)
+		return;
+
+	const auto &device = channel->parent_device();
+	if (device == nullptr)
+		return;
+
 	// Device must exist
 	TreeItem *device_item = find_device(device);
 	add_channel(channel, channel->channel_group_names(), device_item);
@@ -430,8 +436,9 @@ void DeviceTreeModel::on_channel_removed(
 
 void DeviceTreeModel::on_signal_added(shared_ptr<sv::data::BaseSignal> signal)
 {
-	shared_ptr<sv::channels::BaseChannel> channel = signal->parent_channel();
-	on_channel_added(channel);
+	const auto &parent_channel = session_.get_channel_from_device(
+		signal->parent_device_id(), signal->parent_channel_name());
+	on_channel_added(parent_channel);
 }
 
 void DeviceTreeModel::on_signal_removed(shared_ptr<sv::data::BaseSignal> signal)

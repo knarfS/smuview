@@ -89,29 +89,33 @@ void SettingsManager::save_configurable(
 }
 
 void SettingsManager::save_channel(
-	const shared_ptr<channels::BaseChannel> &channel,
-	QSettings &settings, shared_ptr<sv::devices::BaseDevice> origin_device,
+	const string &channel_name,
+	const string &parent_device_id,
+	QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device,
 	const QString &key_prefix)
 {
 	if (origin_device == nullptr ||
-			origin_device->id() != channel->parent_device()->id()) {
+			origin_device->id() != parent_device_id) {
 		// Only store the device value if this specific channel belongs to
 		// an other device than the tab-/device-setting (origin_device) it is
 		// stored into, belongs to (>= 0.0.5).
 		settings.setValue(key_prefix + "device",
-			QVariant(QString::fromStdString(channel->parent_device()->id())));
+			QVariant(QString::fromStdString(parent_device_id)));
 	}
 	settings.setValue(key_prefix + "channel",
-		QVariant(QString::fromStdString(channel->name())));
+		QVariant(QString::fromStdString(channel_name)));
 }
 
 void SettingsManager::save_signal(
 	const shared_ptr<data::BaseSignal> &signal,
-	QSettings &settings, shared_ptr<sv::devices::BaseDevice> origin_device,
+	QSettings& settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device,
 	const QString &key_prefix)
 {
 	SettingsManager::save_channel(
-		signal->parent_channel(), settings, origin_device, key_prefix);
+		signal->parent_channel_name(), signal->parent_device_id(),
+		settings, origin_device, key_prefix);
 
 	settings.setValue(key_prefix + "signal_sr_q",
 		data::datautil::get_sr_quantity_id(signal->quantity()));
@@ -223,11 +227,11 @@ shared_ptr<channels::BaseChannel> SettingsManager::restore_channel(
 	if (!settings.contains(channel_key))
 		return nullptr;
 
-	string channel_id = settings.value(channel_key).toString().toStdString();
-	if (device->channel_map().count(channel_id) == 0)
+	string channel_name = settings.value(channel_key).toString().toStdString();
+	if (device->channel_map().count(channel_name) == 0)
 		return nullptr;
 
-	return device->channel_map()[channel_id];
+	return device->channel_map().at(channel_name);
 }
 
 shared_ptr<data::BaseSignal> SettingsManager::restore_signal(

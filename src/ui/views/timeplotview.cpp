@@ -145,7 +145,8 @@ void TimePlotView::save_settings(QSettings &settings,
 	// TODO: Can the channel be saved inside the plot widget?
 	bool save_curves = true;
 	if (channel_) {
-		SettingsManager::save_channel(channel_, settings, origin_device);
+		SettingsManager::save_channel(channel_->name(),
+			channel_->parent_device()->id(), settings, origin_device);
 		save_curves = false;
 	}
 	plot_->save_settings(settings, save_curves, origin_device);

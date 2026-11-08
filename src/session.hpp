@@ -42,6 +42,10 @@ namespace sv {
 class DeviceManager;
 class MainWindow;
 
+namespace channels {
+class BaseChannel;
+}
+
 namespace devices {
 class BaseDevice;
 class HardwareDevice;
@@ -72,6 +76,10 @@ public:
 	void add_device(shared_ptr<devices::BaseDevice> device);
 	shared_ptr<devices::UserDevice> add_user_device();
 	void remove_device(shared_ptr<devices::BaseDevice> device);
+
+	shared_ptr<devices::BaseDevice> get_device_by_id(const string &id) const;
+	shared_ptr<channels::BaseChannel> get_channel_from_device(
+		const string &device_id, const string &channel_name) const;
 
 	shared_ptr<python::SmuScriptRunner> smu_script_runner();
 	void run_smu_script(const string &script_file);

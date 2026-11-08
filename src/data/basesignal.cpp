@@ -26,11 +26,9 @@
 #include <QString>
 
 #include "basesignal.hpp"
-#include "src/channels/basechannel.hpp"
 #include "src/data/datautil.hpp"
 
 using std::set;
-using std::shared_ptr;
 using std::string;
 
 namespace sv {
@@ -40,12 +38,18 @@ BaseSignal::BaseSignal(
 		data::Quantity quantity,
 		const set<data::QuantityFlag> &quantity_flags,
 		data::Unit unit,
-		shared_ptr<channels::BaseChannel> parent_channel,
-		const string &custom_name) :
+		const string &custom_name,
+		const string &parent_device_id,
+		const string &parent_device_name,
+		const set<string> &parent_channel_group_names,
+		const string &parent_channel_name) :
 	quantity_(quantity),
 	quantity_flags_(quantity_flags),
 	unit_(unit),
-	parent_channel_(parent_channel)
+	parent_device_id_(parent_device_id),
+	parent_device_name_(parent_device_name),
+	parent_channel_group_names_(parent_channel_group_names),
+	parent_channel_name_(parent_channel_name)
 {
 	/* TODO
 	if (!util::is_valid_sr_quantity(sr_quantity_))
@@ -58,7 +62,7 @@ BaseSignal::BaseSignal(
 	unit_name_ = data::datautil::format_unit(unit_);
 
 	if (custom_name.empty()) {
-		name_ = parent_channel_->name() + " [" + unit_name_.toStdString();
+		name_ = parent_channel_name_ + " [" + unit_name_.toStdString();
 		if (!quantity_flags_.empty())
 			name_ += " " + quantity_flags_name_.toStdString();
 		name_ += "]";
@@ -103,11 +107,6 @@ QString BaseSignal::unit_name() const
 	return unit_name_;
 }
 
-shared_ptr<channels::BaseChannel> BaseSignal::parent_channel() const
-{
-	return parent_channel_;
-}
-
 void BaseSignal::set_name(const string &custom_name)
 {
 	if (!custom_name.empty()) {
@@ -124,6 +123,26 @@ string BaseSignal::name() const
 QString BaseSignal::display_name() const
 {
 	return QString::fromStdString(name_);
+}
+
+string BaseSignal::parent_device_id() const
+{
+	return parent_device_id_;
+}
+
+string BaseSignal::parent_device_name() const
+{
+	return parent_device_name_;
+}
+
+set<string> BaseSignal::parent_channel_group_names() const
+{
+	return parent_channel_group_names_;
+}
+
+string BaseSignal::parent_channel_name() const
+{
+	return parent_channel_name_;
 }
 
 } // namespace data

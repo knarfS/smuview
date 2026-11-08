@@ -105,13 +105,15 @@ public:
 	/**
 	 * Save the channel to the settings.
 	 *
-	 * @param[in] channel The channel to save.
+	 * @param[in] channel_name The name of the channel to save.
+	 * @param[in] parent_device_id The id of the parent device.
 	 * @param[in] settings The settings.
 	 * @param[in] origin_device The origin device, this settings belongs to.
 	 * @param[in] key_prefix The prefix of the settings keys for the channel.
 	 */
 	static void save_channel(
-		const shared_ptr<sv::channels::BaseChannel> &channel,
+		const string &channel_name,
+		const string &parent_device_id,
 		QSettings &settings,
 		shared_ptr<sv::devices::BaseDevice> origin_device,
 		const QString &key_prefix = "");

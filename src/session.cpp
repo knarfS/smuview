@@ -155,6 +155,28 @@ void Session::remove_device(shared_ptr<devices::BaseDevice> device)
 	}
 }
 
+shared_ptr<devices::BaseDevice> Session::get_device_by_id(
+	const string &id) const
+{
+	if (device_map_.count(id) == 0)
+		return nullptr;
+
+	return device_map_.at(id);
+}
+
+shared_ptr<channels::BaseChannel> Session::get_channel_from_device(
+	const string &device_id, const string &channel_name) const
+{
+	const auto &device = get_device_by_id(device_id);
+	if (device == nullptr)
+		return nullptr;
+
+	if (device->channel_map().count(channel_name) == 0)
+		return nullptr;
+
+	return device->channel_map().at(channel_name);
+}
+
 
 shared_ptr<python::SmuScriptRunner> Session::smu_script_runner()
 {
