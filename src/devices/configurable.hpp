@@ -73,7 +73,7 @@ private:
 	Configurable(const shared_ptr<sigrok::Configurable> sr_configurable,
 		unsigned int configurable_index,
 		const string &device_name, const DeviceType device_type,
-		const QString &device_settings_id);
+		const string &device_id);
 
 public:
 	template<typename ...Arg>
@@ -167,9 +167,9 @@ public:
 	DeviceType device_type() const;
 
 	/**
-	 * Get the settings id of the device this configurable belongs to.
+	 * Get the id of the device this configurable belongs to.
 	 */
-	QString device_settings_id() const;
+	string device_id() const;
 
 	set<devices::ConfigKey> getable_configs() const;
 	set<devices::ConfigKey> setable_configs() const;
@@ -187,7 +187,7 @@ private:
 	unsigned int index_;
 	const string device_name_;
 	const DeviceType device_type_;
-	const QString device_settings_id_;
+	const string device_id_;
 
 	set<devices::ConfigKey> getable_configs_;
 	set<devices::ConfigKey> setable_configs_;

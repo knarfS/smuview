@@ -65,7 +65,7 @@ DeviceTab::DeviceTab(Session &session,
 	action_about_(new QAction(this))
 {
 	id_ = TAB_ID_PREFIX + device_->id();
-	settings_id_ = QString::fromStdString(TAB_ID_PREFIX) + device_->settings_id();
+	settings_id_ = QString::fromStdString(TAB_ID_PREFIX + device_->id());
 
 	setup_toolbar();
 }
@@ -178,7 +178,7 @@ void DeviceTab::restore_settings()
 	QSettings settings;
 
 	// Restore device views
-	settings.beginGroup(device_->settings_id());
+	settings.beginGroup(QString::fromStdString(device_->id()));
 
 	const QStringList view_keys = settings.childGroups();
 	for (const auto &view_key : view_keys) {
@@ -207,7 +207,7 @@ void DeviceTab::save_settings() const
 {
 	QSettings settings;
 
-	settings.beginGroup(device_->settings_id());
+	settings.beginGroup(QString::fromStdString(device_->id()));
 	settings.remove("");  // Remove all keys in this group
 
 	size_t index = 0;
