@@ -35,6 +35,7 @@ using std::string;
 
 namespace sigrok {
 class Context;
+class Device;
 }
 
 namespace sv {
@@ -80,12 +81,12 @@ public:
 	MainWindow *main_window() const;
 
 private:
+	string get_unique_device_id(const string &base_id);
+
 	DeviceManager &device_manager_;
 	map<string, shared_ptr<devices::BaseDevice>> device_map_;
 	MainWindow *main_window_;
 	shared_ptr<python::SmuScriptRunner> smu_script_runner_;
-
-	void free_unused_memory();
 
 private Q_SLOTS:
 	void error_handler(const std::string &sender, const std::string &msg);

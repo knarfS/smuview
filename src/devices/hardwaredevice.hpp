@@ -21,6 +21,7 @@
 #ifndef DEVICES_HARDWAREDEVICE_HPP
 #define DEVICES_HARDWAREDEVICE_HPP
 
+#include <functional>
 #include <memory>
 
 #include <libsigrokcxx/libsigrokcxx.hpp>
@@ -79,7 +80,8 @@ public:
 	 */
 	QString display_name(const DeviceManager &device_manager) const override;
 
-	void open() override;
+	void open(
+		const std::function<string(const string &)> &get_unique_id) override;
 
 protected:
 	/**

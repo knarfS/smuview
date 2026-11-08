@@ -94,10 +94,9 @@ protected:
 	void feed_in_analog(shared_ptr<sigrok::Analog> sr_analog) override;
 
 private:
-	string vendor_;
-	string model_;
-	string version_;
-	unsigned int channel_index_;
+	const string vendor_;
+	const string model_;
+	const string version_;
 
 };
 

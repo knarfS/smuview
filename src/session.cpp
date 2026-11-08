@@ -30,6 +30,7 @@
 #include "session.hpp"
 #include "src/config.h"
 #include "src/devicemanager.hpp"
+#include "src/settingsmanager.hpp"
 #include "src/util.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/devices/hardwaredevice.hpp"
@@ -109,17 +110,19 @@ void Session::add_device(shared_ptr<devices::BaseDevice> device)
 	assert(device);
 
 	try {
-		device->open();
+		device->open([this](const std::string &base_id) {
+			return get_unique_device_id(base_id);
+		});
 	}
 	catch (const QString &e) {
 		qCritical() << e;
 		device.reset();
 	}
 
+	device_map_.insert(make_pair(device->id(), device));
+
 	connect(device.get(), &devices::BaseDevice::device_error,
 		this, &Session::error_handler);
-
-	device_map_.insert(make_pair(device->id(), device));
 
 	Q_EMIT device_added(device);
 }
@@ -176,6 +179,19 @@ void Session::error_handler(const std::string &sender, const std::string &msg)
 {
 	qCritical() << QString::fromStdString(sender) <<
 		" error: " << QString::fromStdString(msg);
+}
+
+string Session::get_unique_device_id(const string &base_id)
+{
+	if (device_map_.count(base_id) == 0)
+		return base_id;
+
+	size_t cnt = 0;
+	while (true) {
+		string id = base_id + ":" + std::to_string(cnt++);
+		if (device_map_.count(id) == 0)
+			return id;
+	}
 }
 
 } // namespace sv

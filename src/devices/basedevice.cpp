@@ -19,6 +19,7 @@
  */
 
 #include <cassert>
+#include <functional>
 #include <map>
 #include <memory>
 #include <string>
@@ -30,7 +31,6 @@
 
 #include <QDebug>
 #include <QString>
-#include <QUuid>
 
 #include "basedevice.hpp"
 #include "src/session.hpp"
@@ -60,8 +60,6 @@ using std::vector;
 namespace sv {
 namespace devices {
 
-unsigned int BaseDevice::device_counter = 0;
-
 BaseDevice::BaseDevice(const shared_ptr<sigrok::Context> sr_context,
 		shared_ptr<sigrok::Device> sr_device) :
 	sr_context_(sr_context),
@@ -72,11 +70,8 @@ BaseDevice::BaseDevice(const shared_ptr<sigrok::Context> sr_context,
 	acquisition_state_(AcquisitionState::Stopped),
 	frame_began_(false)
 {
-	// Set up a sigrok session per smuvierw device
+	// Set up a sigrok session per SmuView device
 	sr_session_ = sv::Session::sr_context->create_session();
-
-	// Every device gets its own unique index
-	index_ = BaseDevice::device_counter++;
 }
 
 BaseDevice::~BaseDevice()
@@ -99,23 +94,7 @@ DeviceType BaseDevice::type() const
 
 string BaseDevice::id() const
 {
-	string vendor = SettingsManager::format_key(sr_device_->vendor());
-	string model = SettingsManager::format_key(sr_device_->model());
-	string id = vendor + ":" + model;
-
-	if (!sr_device_->serial_number().empty()) {
-		id +=  ":" + SettingsManager::format_key(sr_device_->serial_number());
-	}
-	else if (!sr_device_->connection_id().empty()) {
-		id += ":" + SettingsManager::format_key(sr_device_->connection_id());
-	}
-	else if (deviceutil::is_demo_device(type_)) {
-		// Create a random id for the demo device, to make it available and
-		// identifiable in the device tree or via the python API.
-		id += ":" + util::format_uuid(QUuid::createUuid());
-	}
-
-	return id;
+	return id_;
 }
 
 QString BaseDevice::settings_id() const
@@ -125,10 +104,11 @@ QString BaseDevice::settings_id() const
 		string model = SettingsManager::format_key(sr_device_->model());
 		return QString::fromStdString(vendor + ":" + model);
 	}
-	return QString::fromStdString(this->id());
+	return QString::fromStdString(id_);
 }
 
-void BaseDevice::open()
+void BaseDevice::open(
+	const std::function<string(const string &)> &get_unique_id)
 {
 	if (is_open_)
 		close();
@@ -145,6 +125,10 @@ void BaseDevice::open()
 	// Add device to session (do this in constructor??)
 	sr_session_->add_device(sr_device_);
 
+	// TODO: Do we really need to get the id **after** the sr_device_ is opened,
+	//       or can we just pass the unique id itself into the open method.
+	//       This would eliminate the std::function / callback
+	id_ = get_unique_id(base_id());
 	this->init_configurables();
 	this->init_channels();
 	this->init_acquisition();
@@ -491,6 +475,20 @@ void BaseDevice::data_feed_in(shared_ptr<sigrok::Device> sr_device,
 	default:
 		break;
 	}
+}
+
+string BaseDevice::base_id() const
+{
+	string vendor = SettingsManager::format_key(sr_device_->vendor());
+	string model = SettingsManager::format_key(sr_device_->model());
+	string id = vendor + ":" + model;
+
+	if (!sr_device_->serial_number().empty())
+		id += ":" + SettingsManager::format_key(sr_device_->serial_number());
+	else if (!sr_device_->connection_id().empty())
+		id += ":" + SettingsManager::format_key(sr_device_->connection_id());
+
+	return id;
 }
 
 void BaseDevice::acquisition_thread_proc()

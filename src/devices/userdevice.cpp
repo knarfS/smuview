@@ -29,8 +29,6 @@
 #include "src/devices/basedevice.hpp"
 #include "src/devices/deviceutil.hpp"
 
-using std::static_pointer_cast;
-
 namespace sv {
 namespace devices {
 
@@ -40,8 +38,7 @@ UserDevice::UserDevice(
 	BaseDevice(sr_context, nullptr),
 	vendor_(vendor),
 	model_(model),
-	version_(version),
-	channel_index_(0)
+	version_(version)
 {
 	sr_device_ = sr_context_->create_user_device(vendor_, model_, version_);
 	type_ = DeviceType::UserDevice;

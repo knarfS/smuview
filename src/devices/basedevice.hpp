@@ -22,6 +22,7 @@
 #define DEVICES_BASEDEVICE_HPP
 
 #include <atomic>
+#include <functional>
 #include <map>
 #include <memory>
 #include <string>
@@ -128,9 +129,12 @@ public:
 		const DeviceManager &device_manager) const = 0;
 
 	/**
-	 * Open the device.
+	 * Open the device. The callback `get_unique_id` is invoked once, after
+	 * opening the sigrok device and before initializing the configurables,
+	 * channels and the acquisition thread.
 	 */
-	virtual void open();
+	virtual void open(
+		const std::function<string(const string &)> &get_unique_id);
 
 	/**
 	 * Close the device.
@@ -214,10 +218,12 @@ protected:
 	 * specific device.
 	 */
 	virtual void init_configurables() = 0;
+
 	/**
 	 * Init all channels for this device. Implemented in the specific device.
 	 */
 	virtual void init_channels() = 0;
+
 	/**
 	 * Init acquisition for this device.
 	 */
@@ -234,13 +240,11 @@ protected:
 	void data_feed_in(shared_ptr<sigrok::Device> sr_device,
 		shared_ptr<sigrok::Packet> sr_packet);
 
-	static unsigned int device_counter;
-
 	const shared_ptr<sigrok::Context> sr_context_;
 	shared_ptr<sigrok::Session> sr_session_;
 	shared_ptr<sigrok::Device> sr_device_;
 	DeviceType type_;
-	unsigned int index_;
+	string id_;
 	bool is_open_;
 
 	unsigned int next_channel_index_;
@@ -256,6 +260,12 @@ protected:
 	bool frame_began_;
 
 private:
+	/**
+	 * Get the device base id. The id might not be unique, that is done by the
+	 * session in a later step.
+	 */
+	string base_id() const;
+
 	void acquisition_thread_proc();
 
 	std::thread acquisition_thread_;

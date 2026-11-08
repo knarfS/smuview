@@ -20,6 +20,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <functional>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -121,9 +122,10 @@ QString HardwareDevice::display_name(
 	return parts.join(" ");
 }
 
-void HardwareDevice::open()
+void HardwareDevice::open(
+	const std::function<string(const string &)> &get_unique_id)
 {
-	BaseDevice::open();
+	BaseDevice::open(get_unique_id);
 
 	// Special handling for device "demo": Set a initial moderate samplerate of
 	// 5 samples per second, to slow down the analog channels.
