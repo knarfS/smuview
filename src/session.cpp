@@ -108,6 +108,10 @@ void Session::add_device(shared_ptr<devices::BaseDevice> device)
 {
 	assert(device);
 
+	// Set the device id before opening the device. Some devices like the demo
+	// device must set an unique index
+	device->init_id();
+
 	try {
 		device->open();
 	}

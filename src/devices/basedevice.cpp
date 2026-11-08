@@ -30,7 +30,6 @@
 
 #include <QDebug>
 #include <QString>
-#include <QUuid>
 
 #include "basedevice.hpp"
 #include "src/session.hpp"
@@ -60,7 +59,9 @@ using std::vector;
 namespace sv {
 namespace devices {
 
-unsigned int BaseDevice::device_counter = 0;
+unsigned int BaseDevice::device_index = 0;
+unsigned int BaseDevice::demo_device_index = 0;
+unsigned int BaseDevice::user_device_index = 0;
 
 BaseDevice::BaseDevice(const shared_ptr<sigrok::Context> sr_context,
 		shared_ptr<sigrok::Device> sr_device) :
@@ -76,7 +77,7 @@ BaseDevice::BaseDevice(const shared_ptr<sigrok::Context> sr_context,
 	sr_session_ = sv::Session::sr_context->create_session();
 
 	// Every device gets its own unique index
-	index_ = BaseDevice::device_counter++;
+	index_ = BaseDevice::device_index++;
 }
 
 BaseDevice::~BaseDevice()
@@ -97,25 +98,38 @@ DeviceType BaseDevice::type() const
 	return type_;
 }
 
-string BaseDevice::id() const
+void BaseDevice::init_id()
 {
+	assert(sr_device_);
+	assert(type_ != DeviceType::Any);
+
 	string vendor = SettingsManager::format_key(sr_device_->vendor());
 	string model = SettingsManager::format_key(sr_device_->model());
 	string id = vendor + ":" + model;
 
 	if (!sr_device_->serial_number().empty()) {
-		id +=  ":" + SettingsManager::format_key(sr_device_->serial_number());
+		id += ":" + SettingsManager::format_key(sr_device_->serial_number());
 	}
 	else if (!sr_device_->connection_id().empty()) {
 		id += ":" + SettingsManager::format_key(sr_device_->connection_id());
 	}
 	else if (deviceutil::is_demo_device(type_)) {
-		// Create a random id for the demo device, to make it available and
-		// identifiable in the device tree or via the python API.
-		id += ":" + util::format_uuid(QUuid::createUuid());
+		// Create a unique id for the demo device, based on its count,to make it
+		// available and identifiable in the device tree or via the python API.
+		id += ":" + std::to_string(demo_device_index++);
+	}
+	else if (deviceutil::is_user_device(type_)) {
+		// Create a unique id for the user device, based on its count,to make it
+		// available and identifiable in the device tree or via the python API.
+		id += ":" + std::to_string(user_device_index++);
 	}
 
-	return id;
+	id_ = id;
+}
+
+string BaseDevice::id() const
+{
+	return id_;
 }
 
 QString BaseDevice::settings_id() const
@@ -125,7 +139,7 @@ QString BaseDevice::settings_id() const
 		string model = SettingsManager::format_key(sr_device_->model());
 		return QString::fromStdString(vendor + ":" + model);
 	}
-	return QString::fromStdString(this->id());
+	return QString::fromStdString(id_);
 }
 
 void BaseDevice::open()

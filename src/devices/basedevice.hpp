@@ -94,6 +94,11 @@ public:
 	DeviceType type() const;
 
 	/**
+	 * Init the unique Id of this device.
+	 */
+	void init_id();
+
+	/**
 	 * Get the unique Id of the device.
 	 */
 	string id() const;
@@ -234,13 +239,24 @@ protected:
 	void data_feed_in(shared_ptr<sigrok::Device> sr_device,
 		shared_ptr<sigrok::Packet> sr_packet);
 
-	static unsigned int device_counter;
+	static unsigned int device_index;
+	/**
+	 * Device index for demo devices, so multiple demo devices can be handled
+	 * like in the settings or in the device tree
+	 */
+	static unsigned int demo_device_index;
+	/**
+	 * Device index for user devices, so multiple user devices can be handled
+	 * like in the settings or in the device tree
+	 */
+	static unsigned int user_device_index;
 
 	const shared_ptr<sigrok::Context> sr_context_;
 	shared_ptr<sigrok::Session> sr_session_;
 	shared_ptr<sigrok::Device> sr_device_;
 	DeviceType type_;
 	unsigned int index_;
+	string id_;
 	bool is_open_;
 
 	unsigned int next_channel_index_;
