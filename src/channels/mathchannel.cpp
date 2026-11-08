@@ -66,28 +66,7 @@ MathChannel::MathChannel(
 			index_, sigrok::ChannelType::ANALOG, name_);
 	}
 
-	/*
-	 * TODO: Remove shared_from_this() / (channel pointer in signal), so that
-	 *       "add_signal()" can be called from MathChannel ctor.
-	 *       But are the signals channel_added() and signal_added() in
-	 *       the correct order then?
 	add_signal(quantity_, quantity_flags_, unit_);
-	 */
-}
-
-data::Quantity MathChannel::quantity()
-{
-	return quantity_;
-}
-
-set<data::QuantityFlag> MathChannel::quantity_flags()
-{
-	return quantity_flags_;
-}
-
-data::Unit MathChannel::unit()
-{
-	return unit_;
 }
 
 void MathChannel::push_sample(double sample, double timestamp)

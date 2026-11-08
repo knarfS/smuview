@@ -176,10 +176,6 @@ shared_ptr<data::BaseSignal> BaseChannel::add_signal(
 
 		measured_quantity_t mq = make_pair(quantity, quantity_flags);
 		if (signal_map_.count(mq) == 0) {
-			/*
-			 * TODO: Remove shared_from_this() / (channel pointer in signal), so
-			 *       that "add_signal()" can be called from MathChannel ctor.
-			 */
 			signal = make_shared<data::AnalogTimeSignal>(
 				quantity, quantity_flags, unit, custom_name,
 				parent_device_->id(), parent_device_->name(),
