@@ -149,7 +149,7 @@ void HardwareDevice::init_configurables()
 
 		auto cg_c = Configurable::create(
 			sr_cg, next_configurable_index_++,
-			short_name().toStdString(), type_, settings_id());
+			short_name().toStdString(), type_, id_);
 		configurable_map_.insert(make_pair(sr_cg_pair.first, cg_c));
 	}
 
@@ -169,7 +169,7 @@ void HardwareDevice::init_configurables()
 	// Init Configurable from Device
 	auto d_c = Configurable::create(
 		sr_device_, next_configurable_index_++,
-		short_name().toStdString(), type_, settings_id());
+		short_name().toStdString(), type_, id_);
 	configurable_map_.insert(make_pair("", d_c));
 
 	// Sample rate for interleaved samples

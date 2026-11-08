@@ -104,11 +104,6 @@ public:
 	string id() const;
 
 	/**
-	 * Get the Id of the device, used as a identifier for QSettings.
-	 */
-	QString settings_id() const;
-
-	/**
 	 * Builds the name
 	 */
 	virtual string name() const;

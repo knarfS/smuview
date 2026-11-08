@@ -132,16 +132,6 @@ string BaseDevice::id() const
 	return id_;
 }
 
-QString BaseDevice::settings_id() const
-{
-	if (deviceutil::is_demo_device(type_)) {
-		string vendor = SettingsManager::format_key(sr_device_->vendor());
-		string model = SettingsManager::format_key(sr_device_->model());
-		return QString::fromStdString(vendor + ":" + model);
-	}
-	return QString::fromStdString(id_);
-}
-
 void BaseDevice::open()
 {
 	if (is_open_)

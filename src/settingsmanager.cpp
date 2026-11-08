@@ -35,7 +35,6 @@
 
 using std::shared_ptr;
 using std::string;
-using sv::devices::DeviceType;
 
 namespace sv {
 
@@ -68,7 +67,8 @@ bool SettingsManager::has_device_settings(
 	shared_ptr<devices::BaseDevice> device)
 {
 	QSettings settings;
-	return settings.childGroups().contains(device->settings_id());
+	return settings.childGroups().contains(
+		QString::fromStdString(device->id()));
 }
 
 void SettingsManager::save_configurable(
@@ -77,12 +77,12 @@ void SettingsManager::save_configurable(
 	const QString &key_prefix)
 {
 	if (origin_device == nullptr ||
-			origin_device->settings_id() != configurable->device_settings_id()) {
+			origin_device->id() != configurable->device_id()) {
 		// Only store the device value if this specific configurable belongs to
 		// an other device than the tab-/device-setting (origin_device) it is
 		// stored into, belongs to (>= 0.0.5).
 		settings.setValue(key_prefix + "device",
-			QVariant(configurable->device_settings_id()));
+			QVariant(QString::fromStdString(configurable->device_id())));
 	}
 	settings.setValue(key_prefix + "configurable",
 		QVariant(QString::fromStdString(configurable->name())));
@@ -94,12 +94,12 @@ void SettingsManager::save_channel(
 	const QString &key_prefix)
 {
 	if (origin_device == nullptr ||
-			origin_device->settings_id() != channel->parent_device()->settings_id()) {
+			origin_device->id() != channel->parent_device()->id()) {
 		// Only store the device value if this specific channel belongs to
 		// an other device than the tab-/device-setting (origin_device) it is
 		// stored into, belongs to (>= 0.0.5).
 		settings.setValue(key_prefix + "device",
-			QVariant(channel->parent_device()->settings_id()));
+			QVariant(QString::fromStdString(channel->parent_device()->id())));
 	}
 	settings.setValue(key_prefix + "channel",
 		QVariant(QString::fromStdString(channel->name())));
