@@ -67,27 +67,10 @@ MathChannel::MathChannel(
 	}
 
 	/*
-	 * TODO: Remove shared_from_this() / (channel pointer in signal), so that
-	 *       "add_signal()" can be called from MathChannel ctor.
-	 *       But are the signals channel_added() and signal_added() in
-	 *       the correct order then?
-	add_signal(quantity_, quantity_flags_, unit_);
+	 * TODO: Are the signals channel_added() and signal_added() in the
+	 *       correct order?
 	 */
-}
-
-data::Quantity MathChannel::quantity()
-{
-	return quantity_;
-}
-
-set<data::QuantityFlag> MathChannel::quantity_flags()
-{
-	return quantity_flags_;
-}
-
-data::Unit MathChannel::unit()
-{
-	return unit_;
+	add_signal(quantity_, quantity_flags_, unit_);
 }
 
 void MathChannel::push_sample(double sample, double timestamp)

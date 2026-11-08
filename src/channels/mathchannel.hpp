@@ -60,24 +60,6 @@ public:
 		const set<string> &channel_group_names,
 		const string &channel_name);
 
-	/**
-	 * Get the quantity of the math channel.
-	 * TODO: remove when add_signal() is calles in the MathChannel ctor
-	 */
-	data::Quantity quantity();
-
-	/**
-	 * Get the quantity flags of the math channel.
-	 * TODO: remove when add_signal() is calles in the MathChannel ctor
-	 */
-	set<data::QuantityFlag> quantity_flags();
-
-	/**
-	 * Get the unit of the math channel
-	 * TODO: remove when add_signal() is calles in the MathChannel ctor
-	 */
-	data::Unit unit();
-
 protected:
 	/**
 	 * Add a single sample with timestamp to the channel/signal

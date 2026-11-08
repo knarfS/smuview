@@ -382,14 +382,6 @@ void BaseDevice::add_math_channel(
 {
 	add_channel(math_channel, channel_group_name);
 
-	/*
-	 * TODO: Remove shared_from_this() / (channel pointer in signal), so that
-	 *       "add_signal()" can be called from MathChannel ctor.
-	 */
-	math_channel->add_signal(
-		math_channel->quantity(),
-		math_channel->quantity_flags(),
-		math_channel->unit());
 }
 
 shared_ptr<channels::UserChannel> BaseDevice::add_user_channel(
