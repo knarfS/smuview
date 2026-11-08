@@ -53,7 +53,8 @@ public:
 			data::Quantity::Voltage,
 			std::set<data::QuantityFlag>{data::QuantityFlag::DC},
 			data::Unit::Volt,
-			nullptr, name_);
+			name_,
+			"deviceId", "deviceName", std::set<string>{}, "channelName");
 		for (auto [t, v] : samples_) {
 			sig->push_sample(v, t, 7, 3);
 		}
@@ -87,7 +88,8 @@ public:
 			data::Quantity::Voltage,
 			std::set<data::QuantityFlag>{data::QuantityFlag::DC},
 			data::Unit::Volt,
-			nullptr, name_);
+			name_,
+			"deviceId", "deviceName", std::set<string>{}, "channelName");
 		for (auto [p, v] : samples_) {
 			sig->push_sample(v, p, 7, 3);
 		}

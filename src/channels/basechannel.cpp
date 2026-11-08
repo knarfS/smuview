@@ -181,8 +181,9 @@ shared_ptr<data::BaseSignal> BaseChannel::add_signal(
 			 *       that "add_signal()" can be called from MathChannel ctor.
 			 */
 			signal = make_shared<data::AnalogTimeSignal>(
-				quantity, quantity_flags, unit,
-				shared_from_this(), custom_name);
+				quantity, quantity_flags, unit, custom_name,
+				parent_device_->id(), parent_device_->name(),
+				channel_group_names_, name_);
 			signal_map_.insert(make_pair(mq, signal));
 			sig_added = true;
 

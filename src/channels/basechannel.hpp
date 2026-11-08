@@ -74,9 +74,7 @@ enum class ChannelType {
 	UserChannel
 };
 
-class BaseChannel :
-	public QObject,
-	public std::enable_shared_from_this<BaseChannel>
+class BaseChannel : public QObject
 {
 	Q_OBJECT
 

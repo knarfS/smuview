@@ -22,7 +22,6 @@
 #ifndef DATA_BASESIGNAL_HPP
 #define DATA_BASESIGNAL_HPP
 
-#include <memory>
 #include <set>
 #include <string>
 
@@ -33,15 +32,9 @@
 #include "src/data/datautil.hpp"
 
 using std::set;
-using std::shared_ptr;
 using std::string;
 
 namespace sv {
-
-namespace channels {
-class BaseChannel;
-}
-
 namespace data {
 
 class BaseSignal : public QObject
@@ -53,8 +46,11 @@ public:
 		data::Quantity quantity,
 		const set<data::QuantityFlag> &quantity_flags,
 		data::Unit unit,
-		shared_ptr<channels::BaseChannel> parent_channel,
-		const string &custom_name);
+		const string &custom_name,
+		const string &parent_device_id,
+		const string &parent_device_name,
+		const set<string> &parent_channel_group_names,
+		const string &parent_channel_name);
 	virtual ~BaseSignal();
 
 public:
@@ -99,11 +95,6 @@ public:
 	QString unit_name() const;
 
 	/**
-	 * Return the parent channel, this signal belongs to
-	 */
-	shared_ptr<channels::BaseChannel> parent_channel() const;
-
-	/**
 	 * Set a custom name for this signal.
 	 */
 	void set_name(const string &custom_name);
@@ -118,6 +109,26 @@ public:
 	 */
 	QString display_name() const;
 
+	/**
+	 * Get the id of the parent device.
+	 */
+	string parent_device_id() const;
+
+	/**
+	 * Get the name of the parent device.
+	 */
+	string parent_device_name() const;
+
+	/**
+	 * Get the name of the parent device.
+	 */
+	set<string> parent_channel_group_names() const;
+
+	/**
+	 * Get the name of the parent channel.
+	 */
+	string parent_channel_name() const;
+
 protected:
 	data::Quantity quantity_;
 	QString quantity_name_;
@@ -125,9 +136,13 @@ protected:
 	QString quantity_flags_name_;
 	data::Unit unit_;
 	QString unit_name_;
-	shared_ptr<channels::BaseChannel> parent_channel_;
 
 	string name_;
+
+	string parent_device_id_;
+	string parent_device_name_;
+	set<string> parent_channel_group_names_;
+	string parent_channel_name_;
 
 Q_SIGNALS:
 	void name_changed(const std::string &name);

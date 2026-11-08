@@ -20,7 +20,6 @@
 #ifndef DATA_ANALOGSAMPLESIGNAL_HPP
 #define DATA_ANALOGSAMPLESIGNAL_HPP
 
-#include <memory>
 #include <optional>
 #include <set>
 #include <string>
@@ -35,7 +34,6 @@
 using std::optional;
 using std::pair;
 using std::set;
-using std::shared_ptr;
 using std::string;
 using std::vector;
 
@@ -53,8 +51,11 @@ public:
 		data::Quantity quantity,
 		const set<data::QuantityFlag> &quantity_flags,
 		data::Unit unit,
-		shared_ptr<channels::BaseChannel> parent_channel,
-		const string &custom_name = "");
+		const string &custom_name,
+		const string &parent_device_id,
+		const string &parent_device_name,
+		const set<string> &parent_channel_group_names,
+		const string &parent_channel_name);
 
 	/**
 	 * Clear all samples from this signal.
