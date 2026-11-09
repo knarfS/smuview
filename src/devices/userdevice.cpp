@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -100,16 +100,6 @@ QString UserDevice::display_name(
 {
 	(void)device_manager;
 	return full_name();
-}
-
-void UserDevice::add_channel(shared_ptr<channels::BaseChannel> channel,
-	const string &channel_group_name)
-{
-	auto sr_user_device = static_pointer_cast<sigrok::UserDevice>(sr_device_);
-	sr_user_device->add_channel(
-		channel_index_, sigrok::ChannelType::ANALOG, name());
-	channel_index_++;
-	BaseDevice::add_channel(channel, channel_group_name);
 }
 
 void UserDevice::init_configurables()

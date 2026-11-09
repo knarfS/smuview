@@ -214,7 +214,6 @@ void SourceSinkDevice::init_channels()
 
 		// Math Channels
 		string chg_name = chg_name_channels_pair.first;
-		set<string> chg_names { chg_name };
 		shared_ptr<data::AnalogTimeSignal> voltage_signal;
 		shared_ptr<data::AnalogTimeSignal> current_signal;
 		shared_ptr<data::AnalogTimeSignal> power_signal;
@@ -253,56 +252,56 @@ void SourceSinkDevice::init_channels()
 
 		// Create power channel
 		if (voltage_signal && current_signal && !power_signal) {
+			string ch_name = "P" + ch_suffix;
 			shared_ptr<channels::MultiplySSChannel> power_channel =
 				make_shared<channels::MultiplySSChannel>(
 					data::Quantity::Power,
 					set<data::QuantityFlag>(),
 					data::Unit::Watt,
 					voltage_signal, current_signal,
-					shared_from_this(),
-					chg_names, "P" + ch_suffix);
-			BaseDevice::add_math_channel(power_channel, chg_name);
+					create_math_channel_spec(ch_name, chg_name), device_ref());
+			BaseDevice::add_channel(power_channel, chg_name);
 			power_signal = static_pointer_cast<data::AnalogTimeSignal>(
 				power_channel->current_signal());
 		}
 
 		// Create resistance channel
 		if (voltage_signal && current_signal && !resistance_signal) {
+			string ch_name = "R" + ch_suffix;
 			shared_ptr<channels::DivideChannel> resistance_channel =
 				make_shared<channels::DivideChannel>(
 					data::Quantity::Resistance,
 					set<data::QuantityFlag>(),
 					data::Unit::Ohm,
 					voltage_signal, current_signal,
-					shared_from_this(),
-					chg_names, "R" + ch_suffix);
-			BaseDevice::add_math_channel(resistance_channel, chg_name);
+					create_math_channel_spec(ch_name, chg_name), device_ref());
+			BaseDevice::add_channel(resistance_channel, chg_name);
 		}
 
 		// Create Wh channel
 		if (power_signal && !wh_signal) {
+			string ch_name = "Wh" + ch_suffix;
 			shared_ptr<channels::IntegrateChannel> wh_channel =
 				make_shared<channels::IntegrateChannel>(
 					data::Quantity::Energy,
 					set<data::QuantityFlag>(),
 					data::Unit::WattHour,
 					power_signal,
-					shared_from_this(),
-					chg_names, "Wh" + ch_suffix);
-			BaseDevice::add_math_channel(wh_channel, chg_name);
+					create_math_channel_spec(ch_name, chg_name), device_ref());
+			BaseDevice::add_channel(wh_channel, chg_name); // TODO: chg_name?
 		}
 
 		// Create Ah channel
 		if (current_signal && !ah_signal) {
+			string ch_name = "Ah" + ch_suffix;
 			shared_ptr<channels::IntegrateChannel> ah_channel =
 				make_shared<channels::IntegrateChannel>(
 					data::Quantity::ElectricCharge,
 					set<data::QuantityFlag>(),
 					data::Unit::AmpereHour,
 					current_signal,
-					shared_from_this(),
-					chg_names, "Ah" + ch_suffix);
-			BaseDevice::add_math_channel(ah_channel, chg_name);
+					create_math_channel_spec(ch_name, chg_name), device_ref());
+			BaseDevice::add_channel(ah_channel, chg_name);
 		}
 	}
 }

@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,6 @@
 
 #include <cassert>
 #include <memory>
-#include <set>
 #include <string>
 
 #include <QComboBox>
@@ -44,7 +43,6 @@
 #include "src/channels/multiplysfchannel.hpp"
 #include "src/channels/multiplysschannel.hpp"
 #include "src/data/analogtimesignal.hpp"
-#include "src/data/datautil.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/ui/data/quantitycombobox.hpp"
 #include "src/ui/data/quantityflagslist.hpp"
@@ -54,7 +52,6 @@
 #include "src/ui/devices/selectsignalwidget.hpp"
 
 using std::make_shared;
-using std::set;
 using std::static_pointer_cast;
 using std::string;
 
@@ -309,8 +306,8 @@ void AddMathChannelDialog::accept()
 	}
 
 	auto device = device_box_->selected_device();
+	string ch_name = name_edit_->text().toStdString();
 	string chg_name = channel_group_name().toStdString();
-	set<string> channel_group_names { chg_name };
 
 	auto quantity = quantity_box_->selected_quantity();
 	auto quantity_flags = quantity_flags_list_->selected_quantity_flags();
@@ -341,7 +338,8 @@ void AddMathChannelDialog::accept()
 			channel_ = make_shared<channels::MultiplySSChannel>(
 				quantity, quantity_flags, unit,
 				signal_1, signal_2,
-				device, channel_group_names, name_edit_->text().toStdString());
+				device->create_math_channel_spec(ch_name, chg_name),
+				device->device_ref());
 		}
 		break;
 	case 1: {
@@ -376,7 +374,8 @@ void AddMathChannelDialog::accept()
 			channel_ = make_shared<channels::MultiplySFChannel>(
 				quantity, quantity_flags, unit,
 				signal, factor,
-				device, channel_group_names, name_edit_->text().toStdString());
+				device->create_math_channel_spec(ch_name, chg_name),
+				device->device_ref());
 		}
 		break;
 	case 2: {
@@ -403,7 +402,8 @@ void AddMathChannelDialog::accept()
 			channel_ = make_shared<channels::DivideChannel>(
 				quantity, quantity_flags, unit,
 				signal1, signal2,
-				device, channel_group_names, name_edit_->text().toStdString());
+				device->create_math_channel_spec(ch_name, chg_name),
+				device->device_ref());
 		}
 		break;
 	case 3: {
@@ -438,7 +438,8 @@ void AddMathChannelDialog::accept()
 			channel_ = make_shared<channels::AddSCChannel>(
 				quantity, quantity_flags, unit,
 				signal, constant,
-				device, channel_group_names, name_edit_->text().toStdString());
+				device->create_math_channel_spec(ch_name, chg_name),
+				device->device_ref());
 		}
 		break;
 	case 4: {
@@ -455,7 +456,8 @@ void AddMathChannelDialog::accept()
 			channel_ = make_shared<channels::IntegrateChannel>(
 				quantity, quantity_flags, unit,
 				signal,
-				device, channel_group_names, name_edit_->text().toStdString());
+				device->create_math_channel_spec(ch_name, chg_name),
+				device->device_ref());
 		}
 		break;
 	case 5: {
@@ -474,7 +476,8 @@ void AddMathChannelDialog::accept()
 			channel_ = make_shared<channels::MovingAvgChannel>(
 				quantity, quantity_flags, unit,
 				signal, num_samples,
-				device, channel_group_names, name_edit_->text().toStdString());
+				device->create_math_channel_spec(ch_name, chg_name),
+				device->device_ref());
 		}
 		break;
 	default:

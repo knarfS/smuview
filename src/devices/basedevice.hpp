@@ -30,6 +30,8 @@
 #include <QObject>
 #include <QString>
 
+#include "src/channels/channelspec.hpp"
+#include "src/devices/deviceref.hpp"
 #include "src/devices/deviceutil.hpp"
 
 using std::map;
@@ -66,15 +68,14 @@ namespace devices {
 
 class Configurable;
 
-enum class AcquisitionState {
+enum class AcquisitionState
+{
 	Stopped,
 	Running,
 	Paused
 };
 
-class BaseDevice :
-	public QObject,
-	public std::enable_shared_from_this<BaseDevice>
+class BaseDevice : public QObject
 {
 	Q_OBJECT
 
@@ -102,6 +103,11 @@ public:
 	 * Get the unique Id of the device.
 	 */
 	string id() const;
+
+	/**
+	 * Get the device reference.
+	 */
+	devices::DeviceRef device_ref() const;
 
 	/**
 	 * Builds the name
@@ -158,7 +164,7 @@ public:
 	unsigned int next_channel_index();
 
 	/**
-	 * Add a sv::channels:.Channel to the device
+	 * Add a sv::channels::Channel to the device
 	 */
 	virtual void add_channel(shared_ptr<channels::BaseChannel> channel,
 		const string &channel_group_name);
@@ -171,16 +177,17 @@ public:
 		const string &channel_group_name);
 
 	/**
-	 * Add a math channel to the device
-	 */
-	void add_math_channel(shared_ptr<channels::MathChannel> math_channel,
-		const string &channel_group_name);
-
-	/**
 	 * Add a user channel to the device
 	 */
 	shared_ptr<channels::UserChannel> add_user_channel(
 		const string &channel_name, const string &channel_group_name);
+
+	/**
+	 * Creates everything that is needed to create a new math channel, like
+	 * a sigrok channel and an unique index.
+	 */
+	channels::ChannelSpec create_math_channel_spec(const string &channel_name,
+		const string &channel_group_name);
 
 	/**
 	 * Returns a map with all configurables of this device

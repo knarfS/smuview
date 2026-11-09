@@ -28,6 +28,8 @@
 #include <QObject>
 
 #include "src/channels/basechannel.hpp"
+#include "src/channels/channelspec.hpp"
+#include "src/devices/deviceref.hpp"
 
 using std::set;
 using std::shared_ptr;
@@ -52,13 +54,11 @@ class HardwareChannel : public BaseChannel
 
 public:
 	/**
-	 * A HardwareChannel does handle interleaved samples from a
-	 * (hardware) device.
+	 * A HardwareChannel does handle samples from a (hardware) device.
 	 */
 	HardwareChannel(
-		shared_ptr<sigrok::Channel> sr_channel,
-		shared_ptr<devices::BaseDevice> parent_device,
-		const set<string> &channel_group_names);
+		const channels::ChannelSpec &channel_spec,
+		const devices::DeviceRef &parent_device);
 
 public:
 	/**

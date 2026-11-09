@@ -31,6 +31,7 @@
 
 #include "devicetab.hpp"
 #include "src/session.hpp"
+#include "src/channels/mathchannel.hpp"
 #include "src/channels/userchannel.hpp"
 #include "src/devices/basedevice.hpp"
 #include "src/devices/deviceutil.hpp"
@@ -299,10 +300,8 @@ void DeviceTab::on_action_add_math_channel_triggered()
 		return;
 
 	auto channel = dlg.channel();
-	if (channel != nullptr) {
-		device_->add_math_channel(
-			channel, dlg.channel_group_name().toStdString());
-	}
+	if (channel != nullptr)
+		device_->add_channel(channel, dlg.channel_group_name().toStdString());
 }
 
 void DeviceTab::on_action_about_triggered()

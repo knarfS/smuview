@@ -34,10 +34,12 @@
 
 #include "basechannel.hpp"
 #include "src/util.hpp"
+#include "src/channels/channelspec.hpp"
 #include "src/data/analogtimesignal.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/data/datautil.hpp"
 #include "src/devices/basedevice.hpp"
+#include "src/devices/deviceref.hpp"
 
 using std::make_pair;
 using std::make_shared;
@@ -53,17 +55,16 @@ namespace sv {
 namespace channels {
 
 BaseChannel::BaseChannel(
-		shared_ptr<sigrok::Channel> sr_channel,
-		shared_ptr<devices::BaseDevice> parent_device,
-		const set<string> &channel_group_names) :
-	sr_channel_(sr_channel),
-	parent_device_(parent_device),
-	channel_group_names_(channel_group_names),
+		const channels::ChannelSpec &channel_spec,
+		const devices::DeviceRef &parent_device) :
+	sr_channel_(channel_spec.sr_channel),
+	name_(channel_spec.name),
+	index_(channel_spec.index),
+	parent_device_ref_(parent_device),
+	channel_group_names_(channel_spec.channel_group_names),
 	fixed_signal_(false),
 	current_signal_(nullptr)
 {
-	name_ = (sr_channel_) ? sr_channel_->name() : "";
-
 	qWarning() << "Init channel " << QString::fromStdString(name_);
 }
 
@@ -80,7 +81,7 @@ shared_ptr<sigrok::Channel> BaseChannel::sr_channel() const
 
 string BaseChannel::name() const
 {
-	return (sr_channel_) ? sr_channel_->name() : name_;
+	return name_;
 }
 
 void BaseChannel::set_name(const string &name)
@@ -99,7 +100,7 @@ QString BaseChannel::display_name() const
 
 unsigned int BaseChannel::index() const
 {
-	return (sr_channel_) ? sr_channel_->index() : index_;
+	return index_;
 }
 
 ChannelType BaseChannel::type() const
@@ -125,14 +126,14 @@ bool BaseChannel::fixed_signal() const
 	return fixed_signal_;
 }
 
+const devices::DeviceRef &BaseChannel::parent_device_ref() const
+{
+	return parent_device_ref_;
+}
+
 void BaseChannel::set_fixed_signal(bool fixed_signal)
 {
 	fixed_signal_ = fixed_signal;
-}
-
-shared_ptr<devices::BaseDevice> BaseChannel::parent_device()
-{
-	return parent_device_;
 }
 
 set<string> BaseChannel::channel_group_names() const
@@ -178,7 +179,7 @@ shared_ptr<data::BaseSignal> BaseChannel::add_signal(
 		if (signal_map_.count(mq) == 0) {
 			signal = make_shared<data::AnalogTimeSignal>(
 				quantity, quantity_flags, unit, custom_name,
-				parent_device_->id(), parent_device_->name(),
+				parent_device_ref_.id, parent_device_ref_.name,
 				channel_group_names_, name_);
 			signal_map_.insert(make_pair(mq, signal));
 			sig_added = true;

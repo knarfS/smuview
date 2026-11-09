@@ -28,7 +28,9 @@
 #include <QObject>
 
 #include "src/channels/basechannel.hpp"
+#include "src/channels/channelspec.hpp"
 #include "src/data/datautil.hpp"
+#include "src/devices/deviceref.hpp"
 
 using std::set;
 using std::shared_ptr;
@@ -53,9 +55,8 @@ class UserChannel : public BaseChannel
 
 public:
 	UserChannel(
-		const string &channel_name,
-		const set<string> &channel_group_names,
-		shared_ptr<devices::BaseDevice> parent_device);
+		const channels::ChannelSpec &channel_spec,
+		const devices::DeviceRef &parent_device);
 
 	/**
 	 * Add a single sample with timestamp to the channel/signal

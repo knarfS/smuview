@@ -28,9 +28,11 @@
 #include "src/session.hpp"
 #include "src/util.hpp"
 #include "src/channels/basechannel.hpp"
+#include "src/channels/channelspec.hpp"
 #include "src/data/analogtimesignal.hpp"
 #include "src/data/datautil.hpp"
 #include "src/devices/basedevice.hpp"
+#include "src/devices/deviceref.hpp"
 
 using std::set;
 using std::static_pointer_cast;
@@ -41,15 +43,13 @@ namespace sv {
 namespace channels {
 
 HardwareChannel::HardwareChannel(
-		shared_ptr<sigrok::Channel> sr_channel,
-		shared_ptr<devices::BaseDevice> parent_device,
-		const set<string> &channel_group_names) :
-	BaseChannel(sr_channel, parent_device, channel_group_names)
+		const channels::ChannelSpec &channel_spec,
+		const devices::DeviceRef &parent_device) :
+	BaseChannel(channel_spec, parent_device)
 {
-	assert(sr_channel);
+	assert(sr_channel_);
 
 	type_ = ChannelType::AnalogChannel;
-	name_ = sr_channel_->name();
 }
 
 void HardwareChannel::push_samples(const vector<double> &samples,

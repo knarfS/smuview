@@ -27,10 +27,12 @@
 
 #include "dividechannel.hpp"
 #include "src/channels/basechannel.hpp"
+#include "src/channels/channelspec.hpp"
 #include "src/channels/mathchannel.hpp"
 #include "src/data/analogtimesignal.hpp"
 #include "src/data/datautil.hpp"
 #include "src/devices/basedevice.hpp"
+#include "src/devices/deviceref.hpp"
 
 using std::make_shared;
 using std::set;
@@ -45,11 +47,10 @@ DivideChannel::DivideChannel(
 		data::Unit unit,
 		shared_ptr<data::AnalogTimeSignal> dividend_signal,
 		shared_ptr<data::AnalogTimeSignal> divisor_signal,
-		shared_ptr<devices::BaseDevice> parent_device,
-		const set<string> &channel_group_names,
-		const string &channel_name) :
-	MathChannel(quantity, quantity_flags, unit,
-		parent_device, channel_group_names, channel_name),
+		const channels::ChannelSpec &channel_spec,
+		const devices::DeviceRef &parent_device) :
+	MathChannel(
+		quantity, quantity_flags, unit, channel_spec, parent_device),
 	dividend_signal_(dividend_signal),
 	divisor_signal_(divisor_signal),
 	dividend_signal_pos_(0),

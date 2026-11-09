@@ -32,7 +32,9 @@
 #include <QSettings>
 #include <QString>
 
+#include "src/channels/channelspec.hpp"
 #include "src/data/datautil.hpp"
+#include "src/devices/deviceref.hpp"
 
 using std::map;
 using std::mutex;
@@ -49,17 +51,13 @@ class Channel;
 namespace sv {
 
 namespace data {
-class AnalogTimeSignal;
 class BaseSignal;
-}
-
-namespace devices {
-class BaseDevice;
 }
 
 namespace channels {
 
-enum class ChannelType {
+enum class ChannelType
+{
 	/**
 	 * Channels with analog data (Power supplies, loads, DMMs)
 	 */
@@ -80,9 +78,9 @@ class BaseChannel : public QObject
 
 public:
 	BaseChannel(
-		shared_ptr<sigrok::Channel> sr_channel,
-		shared_ptr<devices::BaseDevice> parent_device,
-		const set<string> &channel_group_names);
+		const channels::ChannelSpec &channel_spec,
+		const devices::DeviceRef &parent_device);
+
 	virtual ~BaseChannel();
 
 public:
@@ -141,13 +139,13 @@ public:
 	void set_fixed_signal(bool fixed_signal);
 
 	/**
-	 * Return the device, this channel belongs to.
+	 * Return the parent device reference, this channel belongs to.
 	 */
-	shared_ptr<devices::BaseDevice> parent_device();
+	const devices::DeviceRef &parent_device_ref() const;
 
 	/**
 	 * Get the channel group name, the channel is in. Returns "" if the channel
-	 * is not in a channel group.
+	 * is not in a channel group. TODO: ""? or empty set?
 	 */
 	set<string> channel_group_names() const;
 
@@ -203,8 +201,8 @@ protected:
 	/** Type of this channel. */
 	ChannelType type_;
 
-	/** The device this channel belongs to. */
-	shared_ptr<devices::BaseDevice> parent_device_;
+	/** The parent device, this channel belongs to. */
+	devices::DeviceRef parent_device_ref_;
 	/** The channel group names this channel belongs to. */
 	set<string> channel_group_names_;
 

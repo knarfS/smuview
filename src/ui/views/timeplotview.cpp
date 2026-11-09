@@ -146,7 +146,7 @@ void TimePlotView::save_settings(QSettings &settings,
 	bool save_curves = true;
 	if (channel_) {
 		SettingsManager::save_channel(channel_->name(),
-			channel_->parent_device()->id(), settings, origin_device);
+			channel_->parent_device_ref().id, settings, origin_device);
 		save_curves = false;
 	}
 	plot_->save_settings(settings, save_curves, origin_device);
@@ -171,8 +171,10 @@ void TimePlotView::restore_settings(QSettings &settings,
 void TimePlotView::on_action_add_curve_triggered()
 {
 	shared_ptr<sv::devices::BaseDevice> selected_device;
-	if (channel_)
-		selected_device = channel_->parent_device();
+	if (channel_) {
+		selected_device = session_.get_device_by_id(
+			channel_->parent_device_ref().id);
+	}
 
 	dialogs::SelectSignalDialog dlg(session(), selected_device, this);
 	if (!dlg.exec())

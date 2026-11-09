@@ -418,7 +418,8 @@ void DeviceTreeModel::on_channel_added(
 	if (channel == nullptr)
 		return;
 
-	const auto &device = channel->parent_device();
+	const auto &device = session_.get_device_by_id(
+		channel->parent_device_ref().id);
 	if (device == nullptr)
 		return;
 

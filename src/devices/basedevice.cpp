@@ -36,11 +36,13 @@
 #include "src/settingsmanager.hpp"
 #include "src/util.hpp"
 #include "src/channels/basechannel.hpp"
+#include "src/channels/channelspec.hpp"
 #include "src/channels/hardwarechannel.hpp"
 #include "src/channels/mathchannel.hpp"
 #include "src/channels/userchannel.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/devices/configurable.hpp"
+#include "src/devices/deviceref.hpp"
 #include "src/devices/deviceutil.hpp"
 
 #define USER_CHANNEL_START_INDEX 1000
@@ -53,6 +55,7 @@ using std::make_shared;
 using std::map;
 using std::set;
 using std::shared_ptr;
+using std::static_pointer_cast;
 using std::string;
 using std::vector;
 
@@ -130,6 +133,11 @@ void BaseDevice::init_id()
 string BaseDevice::id() const
 {
 	return id_;
+}
+
+devices::DeviceRef BaseDevice::device_ref() const
+{
+	return devices::DeviceRef { id_, name(), type_ };
 }
 
 void BaseDevice::open()
@@ -364,8 +372,11 @@ shared_ptr<channels::BaseChannel> BaseDevice::add_sr_channel(
 	}
 	else {
 		set<string> chg_names { channel_group_name };
-		channel = make_shared<channels::HardwareChannel>(sr_channel,
-			shared_from_this(), chg_names);
+		channel = make_shared<channels::HardwareChannel>(
+			channels::ChannelSpec {
+				sr_channel->name(), sr_channel->index(), sr_channel,
+				set<string> { channel_group_name } },
+			device_ref());
 
 		// map<shared_ptr<sigrok::Channel>, shared_ptr<channels::BaseChannel>> sr_channel_map_;
 		sr_channel_map_.insert(make_pair(sr_channel, channel));
@@ -376,24 +387,45 @@ shared_ptr<channels::BaseChannel> BaseDevice::add_sr_channel(
 	return channel;
 }
 
-void BaseDevice::add_math_channel(
-	shared_ptr<channels::MathChannel> math_channel,
-	const string &channel_group_name)
-{
-	add_channel(math_channel, channel_group_name);
-
-}
-
 shared_ptr<channels::UserChannel> BaseDevice::add_user_channel(
 	const string &channel_name, const string &channel_group_name)
 {
-	shared_ptr<channels::UserChannel> channel =
-		make_shared<channels::UserChannel>(
-			channel_name, set<string> { channel_group_name },
-			shared_from_this());
+	unsigned int channel_index = next_channel_index();
+
+	shared_ptr<sigrok::Channel> sr_channel;
+	if (devices::deviceutil::is_user_device(type_)) {
+		auto sr_user_device =
+			static_pointer_cast<sigrok::UserDevice>(sr_device_);
+		sr_channel = sr_user_device->add_channel(
+			channel_index, sigrok::ChannelType::ANALOG, channel_name);
+	}
+
+	auto channel = make_shared<channels::UserChannel>(
+		channels::ChannelSpec {
+			channel_name, channel_index, sr_channel,
+			set<string> { channel_group_name } },
+		device_ref());
 	add_channel(channel, channel_group_name);
 
 	return channel;
+}
+
+channels::ChannelSpec BaseDevice::create_math_channel_spec(
+	const string &channel_name, const string &channel_group_name)
+{
+	unsigned int channel_index = next_channel_index();
+
+	shared_ptr<sigrok::Channel> sr_channel;
+	if (devices::deviceutil::is_user_device(type_)) {
+		auto sr_user_device =
+			static_pointer_cast<sigrok::UserDevice>(sr_device_);
+		sr_channel = sr_user_device->add_channel(
+			channel_index, sigrok::ChannelType::ANALOG, channel_name);
+	}
+
+	return channels::ChannelSpec {
+		channel_name, channel_index, sr_channel,
+		set<string> { channel_group_name } };
 }
 
 void BaseDevice::init_acquisition()

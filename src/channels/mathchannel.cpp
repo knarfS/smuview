@@ -26,10 +26,12 @@
 
 #include "mathchannel.hpp"
 #include "src/channels/basechannel.hpp"
+#include "src/channels/channelspec.hpp"
 #include "src/data/analogtimesignal.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/data/datautil.hpp"
 #include "src/devices/basedevice.hpp"
+#include "src/devices/deviceref.hpp"
 
 using std::set;
 using std::static_pointer_cast;
@@ -43,28 +45,17 @@ MathChannel::MathChannel(
 		data::Quantity quantity,
 		const set<data::QuantityFlag> &quantity_flags,
 		data::Unit unit,
-		shared_ptr<devices::BaseDevice> parent_device,
-		const set<string> &channel_group_names,
-		const string &channel_name) :
-	BaseChannel(nullptr, parent_device, channel_group_names),
+		const channels::ChannelSpec &channel_spec,
+		const devices::DeviceRef &parent_device) :
+	BaseChannel(channel_spec, parent_device),
 	total_digits_(data::DefaultTotalDigits),
 	sr_digits_(data::DefaultSRDigits),
 	quantity_(quantity),
 	quantity_flags_(quantity_flags),
 	unit_(unit)
 {
-	name_ = channel_name;
 	type_ = ChannelType::MathChannel;
-	index_ = parent_device->next_channel_index();
 	fixed_signal_ = true;
-
-	// TODO: Move to device, then we can remove shared_from_this
-	if (devices::deviceutil::is_user_device(parent_device_->type())) {
-		auto sr_udev = static_pointer_cast<sigrok::UserDevice>(
-			parent_device_->sr_device());
-		sr_channel_ = sr_udev->add_channel(
-			index_, sigrok::ChannelType::ANALOG, name_);
-	}
 
 	/*
 	 * TODO: Are the signals channel_added() and signal_added() in the

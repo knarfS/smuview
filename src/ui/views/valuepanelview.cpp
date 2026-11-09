@@ -262,7 +262,7 @@ void ValuePanelView::save_settings(QSettings &settings,
 		SettingsManager::save_signal(signal_, settings, origin_device);
 	else
 		SettingsManager::save_channel(channel_->name(),
-			channel_->parent_device()->id(), settings, origin_device);
+			channel_->parent_device_ref().id, settings, origin_device);
 }
 
 void ValuePanelView::restore_settings(QSettings &settings,

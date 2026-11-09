@@ -21,7 +21,6 @@
 #define DEVICES_OSCILLOSCOPEDEVICE_HPP
 
 #include <memory>
-#include <utility>
 
 #include "src/devices/hardwaredevice.hpp"
 
@@ -39,24 +38,10 @@ class OscilloscopeDevice : public HardwareDevice
 {
 	Q_OBJECT
 
-private:
-	explicit OscilloscopeDevice(
+public:
+	OscilloscopeDevice(
 		const shared_ptr<sigrok::Context> sr_context,
 		shared_ptr<sigrok::HardwareDevice> sr_device);
-
-public:
-	template<typename ...Arg>
-	shared_ptr<OscilloscopeDevice> static create(Arg&&...arg)
-	{
-		struct make_shared_enabler : public OscilloscopeDevice {
-			explicit make_shared_enabler(Arg&&...arg) :
-				OscilloscopeDevice(std::forward<Arg>(arg)...)
-			{
-			}
-		};
-
-		return make_shared<make_shared_enabler>(std::forward<Arg>(arg)...);
-	}
 
 protected:
 	void init_configurables() override;
