@@ -27,10 +27,12 @@
 #include "integratechannel.hpp"
 #include "src/sessionglobals.hpp"
 #include "src/channels/basechannel.hpp"
+#include "src/channels/channelspec.hpp"
 #include "src/channels/mathchannel.hpp"
 #include "src/data/analogtimesignal.hpp"
 #include "src/data/datautil.hpp"
 #include "src/devices/basedevice.hpp"
+#include "src/devices/deviceref.hpp"
 
 using std::set;
 using std::shared_ptr;
@@ -44,11 +46,10 @@ IntegrateChannel::IntegrateChannel(
 		const set<data::QuantityFlag> &quantity_flags,
 		data::Unit unit,
 		shared_ptr<data::AnalogTimeSignal> int_signal,
-		shared_ptr<devices::BaseDevice> parent_device,
-		const set<string> &channel_group_names,
-		const string &channel_name) :
-	MathChannel(quantity, quantity_flags, unit,
-		parent_device, channel_group_names, channel_name),
+		const channels::ChannelSpec &channel_spec,
+		const devices::DeviceRef &parent_device) :
+	MathChannel(
+		quantity, quantity_flags, unit, channel_spec, parent_device),
 	int_signal_(int_signal),
 	next_int_signal_pos_(0),
 	last_timestamp_(sv::sessionglobals::session_start_timestamp),

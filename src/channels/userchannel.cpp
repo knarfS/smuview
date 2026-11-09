@@ -23,10 +23,12 @@
 
 #include "userchannel.hpp"
 #include "src/channels/basechannel.hpp"
+#include "src/channels/channelspec.hpp"
 #include "src/data/analogtimesignal.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/data/datautil.hpp"
 #include "src/devices/basedevice.hpp"
+#include "src/devices/deviceref.hpp"
 
 using std::set;
 using std::static_pointer_cast;
@@ -36,23 +38,12 @@ namespace sv {
 namespace channels {
 
 UserChannel::UserChannel(
-		const string &channel_name,
-		const set<string> &channel_group_names,
-		shared_ptr<devices::BaseDevice> parent_device) :
-	BaseChannel(nullptr, parent_device, channel_group_names)
+		const channels::ChannelSpec &channel_spec,
+		const devices::DeviceRef &parent_device) :
+	BaseChannel(channel_spec, parent_device)
 {
-	name_ = channel_name;
 	type_ = ChannelType::UserChannel;
-	index_ = parent_device->next_channel_index();
 	fixed_signal_ = false;
-
-	// TODO: Move to device, then we can remove shared_from_this
-	if (devices::deviceutil::is_user_device(parent_device_->type())) {
-		auto sr_udev = static_pointer_cast<sigrok::UserDevice>(
-			parent_device_->sr_device());
-		sr_channel_ = sr_udev->add_channel(
-			index_, sigrok::ChannelType::ANALOG, name_);
-	}
 }
 
 void UserChannel::push_sample(double sample, double timestamp,

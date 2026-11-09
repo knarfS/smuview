@@ -80,7 +80,7 @@ public:
 
 	shared_ptr<devices::BaseDevice> get_device_by_id(const string &id) const;
 	shared_ptr<channels::BaseChannel> get_channel_from_device(
-		const string &device_id, const string &channel_name) const;
+		const string &device_id, const string &channel_id) const;
 
 	shared_ptr<python::SmuScriptRunner> smu_script_runner();
 	void run_smu_script(const string &script_file);

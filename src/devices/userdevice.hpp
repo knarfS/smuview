@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,9 +67,6 @@ public:
 	 * so that other similarly titled devices can be detected.
 	 */
 	QString display_name(const DeviceManager &device_manager) const override;
-
-	void add_channel(shared_ptr<channels::BaseChannel> channel,
-		const string &channel_group_name) override;
 
 protected:
 	/**

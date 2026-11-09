@@ -28,8 +28,10 @@
 #include <QObject>
 
 #include "src/channels/basechannel.hpp"
+#include "src/channels/channelspec.hpp"
 #include "src/channels/mathchannel.hpp"
 #include "src/data/datautil.hpp"
+#include "src/devices/deviceref.hpp"
 
 using std::mutex;
 using std::set;
@@ -59,9 +61,8 @@ public:
 		data::Unit unit,
 		shared_ptr<data::AnalogTimeSignal> dividend_signal,
 		shared_ptr<data::AnalogTimeSignal> divisor_signal,
-		shared_ptr<devices::BaseDevice> parent_device,
-		const set<string> &channel_group_names,
-		const string &channel_name);
+		const channels::ChannelSpec &channel_spec,
+		const devices::DeviceRef &parent_device);
 
 private:
 	shared_ptr<data::AnalogTimeSignal> dividend_signal_;

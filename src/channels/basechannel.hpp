@@ -33,7 +33,9 @@
 #include <QString>
 
 #include "src/channels/channelenums.hpp"
+#include "src/channels/channelspec.hpp"
 #include "src/data/datautil.hpp"
+#include "src/devices/deviceref.hpp"
 
 using std::map;
 using std::mutex;
@@ -50,12 +52,7 @@ class Channel;
 namespace sv {
 
 namespace data {
-class AnalogTimeSignal;
 class BaseSignal;
-}
-
-namespace devices {
-class BaseDevice;
 }
 
 namespace channels {
@@ -66,9 +63,9 @@ class BaseChannel : public QObject
 
 public:
 	BaseChannel(
-		shared_ptr<sigrok::Channel> sr_channel,
-		shared_ptr<devices::BaseDevice> parent_device,
-		const set<string> &channel_group_names);
+		const channels::ChannelSpec &channel_spec,
+		const devices::DeviceRef &parent_device);
+
 	virtual ~BaseChannel();
 
 public:
@@ -81,7 +78,12 @@ public:
 	shared_ptr<sigrok::Channel> sr_channel() const;
 
 	/**
-	 * Get the name of this channel, i.e. how the device calls it.
+	 * Get the per device unique id for this channel.
+	 */
+	string id() const;
+
+	/**
+	 * Get the immutable name of this channel.
 	 */
 	string name() const;
 
@@ -96,8 +98,8 @@ public:
 	QString display_name() const;
 
 	/**
-	 * Get the index number of this channel, i.e. a unique ID assigned by
-	 * the device driver.
+	 * Get the index number of this channel, assigned by the device driver
+	 * for hardware channels.
 	 */
 	unsigned int index() const;
 
@@ -127,20 +129,15 @@ public:
 	void set_fixed_signal(bool fixed_signal);
 
 	/**
-	 * Return the device, this channel belongs to.
+	 * Return the parent device reference, this channel belongs to.
 	 */
-	shared_ptr<devices::BaseDevice> parent_device();
+	const devices::DeviceRef &parent_device_ref() const;
 
 	/**
 	 * Get the channel group name, the channel is in. Returns "" if the channel
-	 * is not in a channel group.
+	 * is not in a channel group and directly linked to the device.
 	 */
 	set<string> channel_group_names() const;
-
-	/**
-	 * Add a channel group name
-	 */
-	void add_channel_group_name(const string &channel_group_name);
 
 	/**
 	 * Add a signal by its quantity, quantity_flags and unit, if a signal with
@@ -180,19 +177,21 @@ public:
 	virtual void restore_settings(QSettings &settings);
 
 protected:
-	/** The corresponding sigrok channel object. */
-	shared_ptr<sigrok::Channel> sr_channel_;
-	/** Name of this channel. */
-	string name_;
+	/** The underlying sigrok channel object. */
+	const shared_ptr<sigrok::Channel> sr_channel_;
+	/** The unique id of this channel. */
+	const string id_;
+	/** The immutable name of this channel. */
+	const string name_;
 	/** Index of this channel. */
 	unsigned int index_;
 	/** Type of this channel. */
 	ChannelType type_;
 
-	/** The device this channel belongs to. */
-	shared_ptr<devices::BaseDevice> parent_device_;
+	/** The parent device, this channel belongs to. */
+	const devices::DeviceRef parent_device_ref_;
 	/** The channel group names this channel belongs to. */
-	set<string> channel_group_names_;
+	const set<string> channel_group_names_;
 
 	/**
 	 * `true`, if this channel has only one signal with a fixed measurement

@@ -37,12 +37,14 @@
 #include "src/settingsmanager.hpp"
 #include "src/util.hpp"
 #include "src/channels/basechannel.hpp"
+#include "src/channels/channelspec.hpp"
 #include "src/channels/hardwarechannel.hpp"
 #include "src/channels/mathchannel.hpp"
 #include "src/channels/userchannel.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/devices/configurable.hpp"
 #include "src/devices/deviceenums.hpp"
+#include "src/devices/deviceref.hpp"
 #include "src/devices/deviceutil.hpp"
 
 #define USER_CHANNEL_START_INDEX 1000
@@ -55,6 +57,7 @@ using std::make_shared;
 using std::map;
 using std::set;
 using std::shared_ptr;
+using std::static_pointer_cast;
 using std::string;
 using std::vector;
 
@@ -96,6 +99,11 @@ DeviceType BaseDevice::type() const
 string BaseDevice::id() const
 {
 	return id_;
+}
+
+devices::DeviceRef BaseDevice::device_ref() const
+{
+	return devices::DeviceRef { id_, name(), type_ };
 }
 
 void BaseDevice::open(
@@ -301,70 +309,104 @@ unsigned int BaseDevice::next_channel_index()
 }
 
 
-void BaseDevice::add_channel(shared_ptr<channels::BaseChannel> channel,
-	const string &channel_group_name)
+void BaseDevice::add_channel(shared_ptr<channels::BaseChannel> channel)
 {
-	// Check if channel already exists. Channel names are unique per device.
-	if (channel_map_.count(channel->name()) == 0) {
-		// map<QString, shared_ptr<channels::BaseChannel>> channel_name_map_;
-		channel_map_.insert(make_pair(channel->name(), channel));
+	if (channel_map_.count(channel->id()) > 0) {
+		qWarning() << "BaseDevice::add_channel(): Channel with id "
+			<< QString::fromStdString(channel->id())
+			<< " already added to device "
+			<< QString::fromStdString(name()) << ". Doing nothing!";
+		return;
 	}
 
-	// map<QString, vector<shared_ptr<channels::BaseChannel>>> channel_group_name_map_;
-	if (channel_group_map_.count(channel_group_name) == 0) {
-		channel_group_map_.insert(make_pair(
-			channel_group_name, vector<shared_ptr<channels::BaseChannel>>()));
-	}
-	channel_group_map_[channel_group_name].push_back(channel);
+	// map<string, shared_ptr<channels::BaseChannel>> channel_map_
+	channel_map_.insert(make_pair(channel->id(), channel));
 
-	if (channel->channel_group_names().count(channel_group_name) == 0) {
-		channel->add_channel_group_name(channel_group_name);
+	// map<string, vector<shared_ptr<channels::BaseChannel>>> channel_group_map_
+	for (const string &chg_name : channel->channel_group_names()) {
+		channel_group_map_[chg_name].push_back(channel);
+	}
+
+	if (channel->sr_channel() != nullptr) {
+		sr_channel_map_.insert(make_pair(channel->sr_channel(), channel));
 	}
 
 	Q_EMIT channel_added(channel);
 }
 
 shared_ptr<channels::BaseChannel> BaseDevice::add_sr_channel(
-	shared_ptr<sigrok::Channel> sr_channel, const string &channel_group_name)
+	shared_ptr<sigrok::Channel> sr_channel, set<string> channel_group_names)
 {
-	// Check if channel already exists.
-	// NOTE: Channel names are unique per device.
-	shared_ptr<channels::BaseChannel> channel;
-	if (channel_map_.count(sr_channel->name()) > 0) {
-		channel = channel_map()[sr_channel->name()];
-	}
-	else {
-		set<string> chg_names { channel_group_name };
-		channel = make_shared<channels::HardwareChannel>(sr_channel,
-			shared_from_this(), chg_names);
-
-		// map<shared_ptr<sigrok::Channel>, shared_ptr<channels::BaseChannel>> sr_channel_map_;
-		sr_channel_map_.insert(make_pair(sr_channel, channel));
+	if (sr_channel_map_.count(sr_channel) > 0) {
+		qWarning() << "BaseDevice::add_sr_channel(): sigrok channel "
+			<< QString::fromStdString(sr_channel->name())
+			<< " already added to device "
+			<< QString::fromStdString(name()) << ". Doing nothing!";
+		return sr_channel_map_.at(sr_channel);
 	}
 
-	add_channel(channel, channel_group_name);
+	auto channel = make_shared<channels::HardwareChannel>(
+		channels::ChannelSpec {
+			generate_unique_channel_id(sr_channel->name()),
+			sr_channel->name(), sr_channel->index(), sr_channel,
+			channel_group_names },
+		device_ref());
+
+	add_channel(channel);
 
 	return channel;
-}
-
-void BaseDevice::add_math_channel(
-	shared_ptr<channels::MathChannel> math_channel,
-	const string &channel_group_name)
-{
-	add_channel(math_channel, channel_group_name);
-
 }
 
 shared_ptr<channels::UserChannel> BaseDevice::add_user_channel(
 	const string &channel_name, const string &channel_group_name)
 {
-	shared_ptr<channels::UserChannel> channel =
-		make_shared<channels::UserChannel>(
-			channel_name, set<string> { channel_group_name },
-			shared_from_this());
-	add_channel(channel, channel_group_name);
+	auto channel = make_shared<channels::UserChannel>(
+		allocate_channel_spec(channel_name, channel_group_name),
+		device_ref());
+
+	add_channel(channel);
 
 	return channel;
+}
+
+channels::ChannelSpec BaseDevice::allocate_channel_spec(
+	const string &channel_name, const string &channel_group_name)
+{
+	unsigned int channel_index = next_channel_index();
+
+	shared_ptr<sigrok::Channel> sr_channel;
+	if (devices::deviceutil::is_user_device(type_)) {
+		auto sr_user_device =
+			static_pointer_cast<sigrok::UserDevice>(sr_device_);
+		sr_channel = sr_user_device->add_channel(
+			channel_index, sigrok::ChannelType::ANALOG, channel_name);
+	}
+
+	return channels::ChannelSpec {
+		generate_unique_channel_id(channel_name),
+		channel_name, channel_index, sr_channel,
+		set<string> { channel_group_name } };
+}
+
+string BaseDevice::generate_unique_channel_id(const string &channel_name)
+{
+	if (channel_map_.count(channel_name) == 0)
+		return channel_name;
+
+	size_t cnt = 0;
+	while (true) {
+		string id = channel_name + ":" + std::to_string(cnt++);
+		if (channel_map_.count(id) == 0)
+			return id;
+	}
+}
+
+shared_ptr<channels::BaseChannel> BaseDevice::get_channel_by_id(
+	const string &id) const
+{
+	if (channel_map_.count(id) == 0)
+		return nullptr;
+	return channel_map_.at(id);
 }
 
 void BaseDevice::init_acquisition()

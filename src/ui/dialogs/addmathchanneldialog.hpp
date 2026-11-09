@@ -66,7 +66,6 @@ public:
 		QWidget *parent = nullptr);
 
 	shared_ptr<channels::MathChannel> channel() const;
-	QString channel_group_name() const;
 
 private:
 	void setup_ui();

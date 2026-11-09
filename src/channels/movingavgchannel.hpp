@@ -27,8 +27,10 @@
 #include <QObject>
 
 #include "src/channels/basechannel.hpp"
+#include "src/channels/channelspec.hpp"
 #include "src/channels/mathchannel.hpp"
 #include "src/data/datautil.hpp"
+#include "src/devices/deviceref.hpp"
 
 using std::set;
 using std::shared_ptr;
@@ -57,9 +59,8 @@ public:
 		data::Unit unit,
 		shared_ptr<data::AnalogTimeSignal> signal,
 		uint avg_sample_count,
-		shared_ptr<devices::BaseDevice> parent_device,
-		const set<string> &channel_group_names,
-		const string &channel_name);
+		const channels::ChannelSpec &channel_spec,
+		const devices::DeviceRef &parent_device);
 
 private:
 	shared_ptr<data::AnalogTimeSignal> signal_;

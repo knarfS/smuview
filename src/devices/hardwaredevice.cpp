@@ -184,25 +184,30 @@ void HardwareDevice::init_configurables()
 
 void HardwareDevice::init_channels()
 {
-	map<string, shared_ptr<sigrok::ChannelGroup>> sr_channel_groups =
-		sr_device_->channel_groups();
+	vector<shared_ptr<sigrok::Channel>> order;
+	map<shared_ptr<sigrok::Channel>, set<string>> channels;
 
-	// Init Channels from Sigrok Channel Groups
-	if (!sr_channel_groups.empty()) {
-		for (const auto &sr_cg_pair : sr_channel_groups) {
-			shared_ptr<sigrok::ChannelGroup> sr_cg = sr_cg_pair.second;
-			for (const auto &sr_channel : sr_cg->channels()) {
-				add_sr_channel(sr_channel, sr_cg->name());
-			}
+	// Get channels from sigrok channel groups
+	for (const auto &sr_cg_pair : sr_device_->channel_groups()) {
+		auto sr_cg = sr_cg_pair.second;
+		for (const auto &sr_channel : sr_cg->channels()) {
+			if (channels.count(sr_channel) == 0)
+				order.push_back(sr_channel);
+			channels[sr_channel].insert(sr_cg->name());
 		}
 	}
 
-	// Init Channels that are not in a channel group
-	vector<shared_ptr<sigrok::Channel>> sr_channels = sr_device_->channels();
-	for (const auto &sr_channel : sr_channels) {
-		if (sr_channel_map_.count(sr_channel) > 0)
-			continue;
-		add_sr_channel(sr_channel, "");
+	// Get channels that are not in a channel group
+	for (const auto &sr_channel : sr_device_->channels()) {
+		if (channels.count(sr_channel) == 0) {
+			order.push_back(sr_channel);
+			channels[sr_channel].insert("");
+		}
+	}
+
+	// Init channels
+	for (const auto &sr_channel : order) {
+		add_sr_channel(sr_channel, channels.at(sr_channel));
 	}
 }
 

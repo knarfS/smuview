@@ -28,7 +28,6 @@
 #include "src/channels/hardwarechannel.hpp"
 #include "src/data/properties/baseproperty.hpp"
 #include "src/data/analogtimesignal.hpp"
-#include "src/data/basesignal.hpp"
 #include "src/devices/configurable.hpp"
 
 namespace sv {

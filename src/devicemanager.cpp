@@ -259,15 +259,15 @@ DeviceManager::driver_scan(
 	for (const auto &sr_device : sr_devices) {
 		if (devices::deviceutil::is_source_sink_driver(sr_driver)) {
 			driver_devices.push_back(
-				devices::SourceSinkDevice::create(context_, sr_device));
+				make_shared<devices::SourceSinkDevice>(context_, sr_device));
 		}
 		else if (devices::deviceutil::is_oscilloscope_driver(sr_driver)) {
 			driver_devices.push_back(
-				devices::OscilloscopeDevice::create(context_, sr_device));
+				make_shared<devices::OscilloscopeDevice>(context_, sr_device));
 		}
 		else if (devices::deviceutil::is_measurement_driver(sr_driver)) {
 			driver_devices.push_back(
-				devices::MeasurementDevice::create(context_, sr_device));
+				make_shared<devices::MeasurementDevice>(context_, sr_device));
 		}
 	}
 

@@ -22,7 +22,6 @@
 
 #include <memory>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "src/devices/hardwaredevice.hpp"
@@ -43,27 +42,14 @@ class SourceSinkDevice : public HardwareDevice
 {
 	Q_OBJECT
 
-private:
-	explicit SourceSinkDevice(const shared_ptr<sigrok::Context> &sr_context,
+public:
+	SourceSinkDevice(const shared_ptr<sigrok::Context> &sr_context,
 		shared_ptr<sigrok::HardwareDevice> sr_device);
 
+private:
 	bool get_channel_name_suffix(string &channel_suffix,
 		const string &channel_name, const vector<string> &prefixes,
 		bool is_initialized);
-
-public:
-	template<typename ...Arg>
-	shared_ptr<SourceSinkDevice> static create(Arg&&...arg)
-	{
-		struct make_shared_enabler : public SourceSinkDevice {
-			explicit make_shared_enabler(Arg&&...arg) :
-				SourceSinkDevice(std::forward<Arg>(arg)...)
-			{
-			}
-		};
-
-		return make_shared<make_shared_enabler>(std::forward<Arg>(arg)...);
-	}
 
 protected:
 	void init_configurables() override;

@@ -228,10 +228,7 @@ shared_ptr<channels::BaseChannel> SettingsManager::restore_channel(
 		return nullptr;
 
 	string channel_id = settings.value(channel_key).toString().toStdString();
-	if (device->channel_map().count(channel_id) == 0)
-		return nullptr;
-
-	return device->channel_map().at(channel_id);
+	return device->get_channel_by_id(channel_id);
 }
 
 shared_ptr<data::BaseSignal> SettingsManager::restore_signal(
