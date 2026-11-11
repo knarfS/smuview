@@ -26,7 +26,9 @@
 #include <boost/test/unit_test.hpp>
 
 #include "src/channels/basechannel.hpp"
+#include "src/channels/channelspec.hpp"
 #include "src/data/datautil.hpp"
+#include "src/devices/deviceref.hpp"
 
 using namespace sv;
 
@@ -52,7 +54,8 @@ void run_in_thread(size_t thread_count, const std::function<void(int)> &fn)
 BOOST_AUTO_TEST_CASE(basechannel_add_signal_concurrent)
 {
 	auto channel = std::make_shared<channels::BaseChannel>(
-		nullptr, nullptr, std::set<std::string>{});
+		channels::ChannelSpec { "chName" , 0, nullptr, std::set<std::string> {} },
+		devices::DeviceRef { "devId", "devName", devices::DeviceType::Multimeter});
 
 	const std::vector<data::Quantity> quantities = {
 		data::Quantity::Voltage, data::Quantity::Current, data::Quantity::Power,
@@ -75,7 +78,8 @@ BOOST_AUTO_TEST_CASE(basechannel_add_signal_concurrent)
 BOOST_AUTO_TEST_CASE(basechannel_add_signal_same_mq_concurrent)
 {
 	auto channel = std::make_shared<channels::BaseChannel>(
-		nullptr, nullptr, std::set<std::string>{});
+		channels::ChannelSpec { "chName" , 0, nullptr, std::set<std::string> {} },
+		devices::DeviceRef { "devId", "devName", devices::DeviceType::Multimeter});
 
 	run_in_thread(50, [&](int) {
 		channel->add_signal(data::Quantity::Voltage, { data::QuantityFlag::DC },

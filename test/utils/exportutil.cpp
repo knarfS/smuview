@@ -71,7 +71,8 @@ BOOST_AUTO_TEST_CASE(align_timestamps_signal_empty_test)
 	auto result = sv::utils::exportutil::align_timestamps(signals, true, 0.);
 
 	BOOST_CHECK_EQUAL(result.headers.size(), 3);
-	BOOST_CHECK_EQUAL(result.headers, (vector<string> {"Time [s]", "S1", "S2"}));
+	BOOST_CHECK_EQUAL(result.headers,
+		(vector<string> {"Time [s]", "deviceName / channelName / S1", "deviceName / channelName / S2"}));
 	BOOST_CHECK_EQUAL(result.rows.size(), 1);
 	BOOST_CHECK_EQUAL(result.rows.at(0).time, 0.);
 	BOOST_CHECK_EQUAL(result.rows.at(0).data, (vector<optional<double>> {1., {}}));
@@ -80,7 +81,7 @@ BOOST_AUTO_TEST_CASE(align_timestamps_signal_empty_test)
 	sv::utils::exportutil::export_csv_aligned(out, result, ';');
 
 	BOOST_CHECK_EQUAL(out.str(),
-		"Time [s];S1;S2\n"
+		"Time [s];deviceName / channelName / S1;deviceName / channelName / S2\n"
 		"0.0000;1;\n");
 }
 
@@ -93,13 +94,15 @@ BOOST_AUTO_TEST_CASE(align_timestamps_signal_all_empty_test)
 	auto result = sv::utils::exportutil::align_timestamps(signals, false, 0.);
 
 	BOOST_CHECK_EQUAL(result.headers.size(), 3);
-	BOOST_CHECK_EQUAL(result.headers, (vector<string> {"Time", "S1", "S2"}));
+	BOOST_CHECK_EQUAL(result.headers,
+		(vector<string> {"Time", "deviceName / channelName / S1", "deviceName / channelName / S2"}));
 	BOOST_CHECK_EQUAL(result.rows.size(), 0);
 
 	std::ostringstream out;
 	sv::utils::exportutil::export_csv_aligned(out, result, ';');
 
-	BOOST_CHECK_EQUAL(out.str(), "Time;S1;S2\n");
+	BOOST_CHECK_EQUAL(out.str(),
+		"Time;deviceName / channelName / S1;deviceName / channelName / S2\n");
 }
 
 BOOST_AUTO_TEST_CASE(align_timestamps_absolute_test)
@@ -113,7 +116,8 @@ BOOST_AUTO_TEST_CASE(align_timestamps_absolute_test)
 	auto result = sv::utils::exportutil::align_timestamps(signals, false, 0.);
 
 	BOOST_CHECK_EQUAL(result.headers.size(), 3);
-	BOOST_CHECK_EQUAL(result.headers, (vector<string> {"Time", "S1", "S2"}));
+	BOOST_CHECK_EQUAL(result.headers,
+		(vector<string> {"Time", "deviceName / channelName / S1", "deviceName / channelName / S2"}));
 	BOOST_CHECK_EQUAL(result.rows.size(), 6);
 	BOOST_CHECK_EQUAL(result.rows.at(0).time, 1008.);
 	BOOST_CHECK_EQUAL(result.rows.at(0).data, (vector<optional<double>> {{}, 10.}));
@@ -132,7 +136,7 @@ BOOST_AUTO_TEST_CASE(align_timestamps_absolute_test)
 	sv::utils::exportutil::export_csv_aligned(out, result, ';');
 
 	BOOST_CHECK_EQUAL(out.str(),
-		"Time;S1;S2\n"
+		"Time;deviceName / channelName / S1;deviceName / channelName / S2\n"
 		+ local_ts(1008.) + ";;10\n"
 		+ local_ts(1009.) + ";;20\n"
 		+ local_ts(1010.) + ";1;30\n"
@@ -152,7 +156,8 @@ BOOST_AUTO_TEST_CASE(align_timestamps_relative_test)
 	auto result = sv::utils::exportutil::align_timestamps(signals, true, 0.);
 
 	BOOST_CHECK_EQUAL(result.headers.size(), 3);
-	BOOST_CHECK_EQUAL(result.headers, (vector<string> {"Time [s]", "S1", "S2"}));
+	BOOST_CHECK_EQUAL(result.headers,
+		(vector<string> {"Time [s]", "deviceName / channelName / S1", "deviceName / channelName / S2"}));
 	BOOST_CHECK_EQUAL(result.rows.size(), 6);
 	BOOST_CHECK_EQUAL(result.rows.at(0).time, 8.);
 	BOOST_CHECK_EQUAL(result.rows.at(0).data, (vector<optional<double>> {{}, 10.}));
@@ -171,7 +176,7 @@ BOOST_AUTO_TEST_CASE(align_timestamps_relative_test)
 	sv::utils::exportutil::export_csv_aligned(out, result, ';');
 
 	BOOST_CHECK_EQUAL(out.str(),
-		"Time [s];S1;S2\n"
+		"Time [s];deviceName / channelName / S1;deviceName / channelName / S2\n"
 		"8.0000;;10\n"
 		"9.0000;;20\n"
 		"10.0000;1;30\n"
@@ -191,7 +196,8 @@ BOOST_AUTO_TEST_CASE(align_timestamps_tolerance_test)
 	auto result = sv::utils::exportutil::align_timestamps(signals, false, 0.5);
 
 	BOOST_CHECK_EQUAL(result.headers.size(), 3);
-	BOOST_CHECK_EQUAL(result.headers, (vector<string> {"Time", "S1", "S2"}));
+	BOOST_CHECK_EQUAL(result.headers,
+		(vector<string> {"Time", "deviceName / channelName / S1", "deviceName / channelName / S2"}));
 	BOOST_CHECK_EQUAL(result.rows.size(), 6);
 	BOOST_CHECK_EQUAL(result.rows.at(0).time, 1008.);
 	BOOST_CHECK_EQUAL(result.rows.at(0).data, (vector<optional<double>> {{}, 10.}));
@@ -220,7 +226,8 @@ BOOST_AUTO_TEST_CASE(align_timestamps_tolerance_three_signals_test)
 	auto result = sv::utils::exportutil::align_timestamps(signals, false, 0.5);
 
 	BOOST_CHECK_EQUAL(result.headers.size(), 4);
-	BOOST_CHECK_EQUAL(result.headers, (vector<string> {"Time", "S1", "S2", "S3"}));
+	BOOST_CHECK_EQUAL(result.headers,
+		(vector<string> {"Time", "deviceName / channelName / S1", "deviceName / channelName / S2", "deviceName / channelName / S3"}));
 	BOOST_CHECK_EQUAL(result.rows.size(), 1);
 	BOOST_CHECK_EQUAL(result.rows.at(0).time, 1000.);
 	BOOST_CHECK_EQUAL(result.rows.at(0).data, (vector<optional<double>> {1., 2., 3.}));
@@ -256,7 +263,8 @@ BOOST_AUTO_TEST_CASE(align_timestamps_tolerance_to_small_test)
 	auto result = sv::utils::exportutil::align_timestamps(signals, false, 0.5);
 
 	BOOST_CHECK_EQUAL(result.headers.size(), 3);
-	BOOST_CHECK_EQUAL(result.headers, (vector<string> {"Time", "S1", "S2"}));
+	BOOST_CHECK_EQUAL(result.headers,
+		(vector<string> {"Time", "deviceName / channelName / S1", "deviceName / channelName / S2"}));
 	BOOST_CHECK_EQUAL(result.rows.size(), 6);
 	BOOST_CHECK_EQUAL(result.rows.at(0).time, 1008.);
 	BOOST_CHECK_EQUAL(result.rows.at(0).data, (vector<optional<double>> {{}, 10.}));
@@ -283,7 +291,8 @@ BOOST_AUTO_TEST_CASE(align_timestamps_huge_tolerance_test)
 	auto result = sv::utils::exportutil::align_timestamps(signals, false, 50.);
 
 	BOOST_CHECK_EQUAL(result.headers.size(), 3);
-	BOOST_CHECK_EQUAL(result.headers, (vector<string> {"Time", "S1", "S2"}));
+	BOOST_CHECK_EQUAL(result.headers,
+		(vector<string> {"Time", "deviceName / channelName / S1", "deviceName / channelName / S2"}));
 	BOOST_CHECK_EQUAL(result.rows.size(), 5);
 	BOOST_CHECK_EQUAL(result.rows.at(0).time, 1008.);
 	BOOST_CHECK_EQUAL(result.rows.at(0).data, (vector<optional<double>> {{}, 10.}));
@@ -325,7 +334,8 @@ BOOST_AUTO_TEST_CASE(align_timestamps_same_timestamp_test)
 	auto result = sv::utils::exportutil::align_timestamps(signals, false, 0.);
 
 	BOOST_CHECK_EQUAL(result.headers.size(), 3);
-	BOOST_CHECK_EQUAL(result.headers, (vector<string> {"Time", "S1", "S2"}));
+	BOOST_CHECK_EQUAL(result.headers,
+		(vector<string> {"Time", "deviceName / channelName / S1", "deviceName / channelName / S2"}));
 	BOOST_CHECK_EQUAL(result.rows.size(), 4);
 	BOOST_CHECK_EQUAL(result.rows.at(0).time, 1000.);
 	BOOST_CHECK_EQUAL(result.rows.at(0).data, (vector<optional<double>> {1., {}}));
@@ -348,7 +358,8 @@ BOOST_AUTO_TEST_CASE(align_timestamps_same_timestamp_with_tolerance_test)
 	auto result = sv::utils::exportutil::align_timestamps(signals, false, 5.);
 
 	BOOST_CHECK_EQUAL(result.headers.size(), 3);
-	BOOST_CHECK_EQUAL(result.headers, (vector<string> {"Time", "S1", "S2"}));
+	BOOST_CHECK_EQUAL(result.headers,
+		(vector<string> {"Time", "deviceName / channelName / S1", "deviceName / channelName / S2"}));
 	BOOST_CHECK_EQUAL(result.rows.size(), 4);
 	BOOST_CHECK_EQUAL(result.rows.at(0).time, 1000.);
 	BOOST_CHECK_EQUAL(result.rows.at(0).data, (vector<optional<double>> {1., {}}));
@@ -427,7 +438,7 @@ BOOST_AUTO_TEST_CASE(align_timestamps_special_values_test)
 	sv::utils::exportutil::export_csv_aligned(out, result, ';');
 
 	BOOST_CHECK_EQUAL(out.str(),
-		"Time [s];S1;S2\n"
+		"Time [s];deviceName / channelName / S1;deviceName / channelName / S2\n"
 		"0.0000;inf;nan\n"
 		"1.0000;-inf;inf\n"
 		"2.0000;nan;\n");
@@ -454,7 +465,7 @@ BOOST_AUTO_TEST_CASE(export_csv_parallel_signal_empty_test)
 	sv::utils::exportutil::export_csv_parallel(out, signals, ';', true);
 
 	BOOST_CHECK_EQUAL(out.str(),
-		"Time [s]: S1;S1;Time [s]: S2;S2\n"
+		"Time [s]: deviceName / channelName / S1;deviceName / channelName / S1;Time [s]: deviceName / channelName / S2;deviceName / channelName / S2\n"
 		"0.0000;1;;\n");
 }
 
@@ -467,7 +478,8 @@ BOOST_AUTO_TEST_CASE(export_csv_parallel_signal_all_empty_test)
 	std::ostringstream out;
 	sv::utils::exportutil::export_csv_parallel(out, signals, ';', false);
 
-	BOOST_CHECK_EQUAL(out.str(), "Time: S1;S1;Time: S2;S2\n");
+	BOOST_CHECK_EQUAL(out.str(),
+		"Time: deviceName / channelName / S1;deviceName / channelName / S1;Time: deviceName / channelName / S2;deviceName / channelName / S2\n");
 }
 
 BOOST_AUTO_TEST_CASE(export_csv_parallel_absolute_test)
@@ -482,7 +494,7 @@ BOOST_AUTO_TEST_CASE(export_csv_parallel_absolute_test)
 	sv::utils::exportutil::export_csv_parallel(out, signals, ';', false);
 
 	BOOST_CHECK_EQUAL(out.str(),
-		"Time: S1;S1;Time: S2;S2\n"
+		"Time: deviceName / channelName / S1;deviceName / channelName / S1;Time: deviceName / channelName / S2;deviceName / channelName / S2\n"
 		+ local_ts(1010.) + ";1;" + local_ts(1008.) + ";10\n"
 		+ local_ts(1011.) + ";2;" + local_ts(1009.) + ";20\n"
 		+ local_ts(1012.) + ";3;" + local_ts(1010.) + ";30\n"
@@ -501,7 +513,7 @@ BOOST_AUTO_TEST_CASE(export_csv_parallel_relative_test)
 	sv::utils::exportutil::export_csv_parallel(out, signals, ';', true);
 
 	BOOST_CHECK_EQUAL(out.str(),
-		"Time [s]: S1;S1;Time [s]: S2;S2\n"
+		"Time [s]: deviceName / channelName / S1;deviceName / channelName / S1;Time [s]: deviceName / channelName / S2;deviceName / channelName / S2\n"
 		"10.0000;1;8.0000;10\n"
 		"11.0000;2;9.0000;20\n"
 		"12.0000;3;10.0000;30\n"
