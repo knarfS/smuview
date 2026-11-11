@@ -26,7 +26,11 @@
 #include <boost/test/unit_test.hpp>
 
 #include "src/channels/basechannel.hpp"
-#include "src/data/datautil.hpp"
+#include "src/channels/channelenums.hpp"
+#include "src/channels/channelspec.hpp"
+#include "src/data/dataenums.hpp"
+#include "src/devices/deviceenums.hpp"
+#include "src/devices/deviceref.hpp"
 
 using namespace sv;
 
@@ -53,7 +57,6 @@ BOOST_AUTO_TEST_CASE(basechannel_add_signal_concurrent)
 {
 	auto channel = std::make_shared<channels::BaseChannel>(
 		channels::ChannelSpec { "chId", "chName" , 0, nullptr, std::set<std::string> {} },
-		channels::ChannelType::AnalogChannel,
 		devices::DeviceRef { "devId", "devName", devices::DeviceType::Multimeter});
 
 	const std::vector<data::Quantity> quantities = {
@@ -78,7 +81,6 @@ BOOST_AUTO_TEST_CASE(basechannel_add_signal_same_mq_concurrent)
 {
 	auto channel = std::make_shared<channels::BaseChannel>(
 		channels::ChannelSpec { "chId", "chName" , 0, nullptr, std::set<std::string> {} },
-		channels::ChannelType::AnalogChannel,
 		devices::DeviceRef { "devId", "devName", devices::DeviceType::Multimeter});
 
 	run_in_thread(50, [&](int) {
