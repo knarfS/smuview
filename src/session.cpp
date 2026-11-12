@@ -118,6 +118,7 @@ void Session::add_device(shared_ptr<devices::BaseDevice> device)
 	catch (const QString &e) {
 		qCritical() << e;
 		device.reset();
+		return;
 	}
 
 	connect(device.get(), &devices::BaseDevice::device_error,
