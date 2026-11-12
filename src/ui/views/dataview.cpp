@@ -244,7 +244,7 @@ void DataView::on_action_add_signal_triggered()
 	shared_ptr<sv::devices::BaseDevice> selected_device;
 	if (!signals_.empty()) {
 		selected_device = session_.get_device_by_id(
-			signals_.at(0)->parent_device_id());
+			signals_.at(0)->parent_channel_ref().device.id);
 	}
 
 	dialogs::SelectSignalDialog dlg(session(), selected_device, this);

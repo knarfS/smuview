@@ -29,6 +29,7 @@
 #include <QObject>
 #include <QString>
 
+#include "src/channels/channelref.hpp"
 #include "src/data/datautil.hpp"
 
 using std::set;
@@ -47,10 +48,7 @@ public:
 		const set<data::QuantityFlag> &quantity_flags,
 		data::Unit unit,
 		const string &custom_name,
-		const string &parent_device_id,
-		const string &parent_device_name,
-		const set<string> &parent_channel_group_names,
-		const string &parent_channel_name);
+		const channels::ChannelRef &parent_channel);
 	virtual ~BaseSignal();
 
 public:
@@ -110,24 +108,9 @@ public:
 	QString display_name() const;
 
 	/**
-	 * Get the id of the parent device.
+	 * Get parent channel reference.
 	 */
-	string parent_device_id() const;
-
-	/**
-	 * Get the name of the parent device.
-	 */
-	string parent_device_name() const;
-
-	/**
-	 * Get the name of the parent device.
-	 */
-	set<string> parent_channel_group_names() const;
-
-	/**
-	 * Get the name of the parent channel.
-	 */
-	string parent_channel_name() const;
+	const channels::ChannelRef &parent_channel_ref() const;
 
 protected:
 	data::Quantity quantity_;
@@ -139,10 +122,7 @@ protected:
 
 	string name_;
 
-	string parent_device_id_;
-	string parent_device_name_;
-	set<string> parent_channel_group_names_;
-	string parent_channel_name_;
+	const channels::ChannelRef parent_channel_ref_;
 
 Q_SIGNALS:
 	void name_changed(const std::string &name);

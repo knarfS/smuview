@@ -114,7 +114,8 @@ void SettingsManager::save_signal(
 	const QString &key_prefix)
 {
 	SettingsManager::save_channel(
-		signal->parent_channel_name(), signal->parent_device_id(),
+		signal->parent_channel_ref().name,
+		signal->parent_channel_ref().device.id,
 		settings, origin_device, key_prefix);
 
 	settings.setValue(key_prefix + "signal_sr_q",

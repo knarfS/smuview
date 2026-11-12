@@ -438,7 +438,8 @@ void DeviceTreeModel::on_channel_removed(
 void DeviceTreeModel::on_signal_added(shared_ptr<sv::data::BaseSignal> signal)
 {
 	const auto &parent_channel = session_.get_channel_from_device(
-		signal->parent_device_id(), signal->parent_channel_name());
+		signal->parent_channel_ref().device.id,
+		signal->parent_channel_ref().name);
 	on_channel_added(parent_channel);
 }
 

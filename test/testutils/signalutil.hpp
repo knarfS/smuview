@@ -26,8 +26,10 @@
 #include <utility>
 #include <vector>
 
+#include "src/channels/channelref.hpp"
 #include "src/data/analogsamplesignal.hpp"
 #include "src/data/analogtimesignal.hpp"
+#include "src/devices/deviceref.hpp"
 
 namespace sv::test::testutils {
 
@@ -54,7 +56,9 @@ public:
 			std::set<data::QuantityFlag>{data::QuantityFlag::DC},
 			data::Unit::Volt,
 			name_,
-			"deviceId", "deviceName", std::set<string>{}, "channelName");
+			channels::ChannelRef {
+				devices::DeviceRef { "devId", "devName", devices::DeviceType::Multimeter },
+				std::set<std::string> {}, "chName" });
 		for (auto [t, v] : samples_) {
 			sig->push_sample(v, t, 7, 3);
 		}
@@ -89,7 +93,9 @@ public:
 			std::set<data::QuantityFlag>{data::QuantityFlag::DC},
 			data::Unit::Volt,
 			name_,
-			"deviceId", "deviceName", std::set<string>{}, "channelName");
+			channels::ChannelRef {
+				devices::DeviceRef { "devId", "devName", devices::DeviceType::Multimeter },
+				std::set<std::string> {}, "chName" });
 		for (auto [p, v] : samples_) {
 			sig->push_sample(v, p, 7, 3);
 		}
@@ -99,6 +105,7 @@ public:
 private:
 	std::string name_ = "test";
 	std::vector<std::pair<uint32_t, double>> samples_;
+
 };
 
 } // namespace sv::test::testutils

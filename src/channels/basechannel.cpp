@@ -179,8 +179,8 @@ shared_ptr<data::BaseSignal> BaseChannel::add_signal(
 		if (signal_map_.count(mq) == 0) {
 			signal = make_shared<data::AnalogTimeSignal>(
 				quantity, quantity_flags, unit, custom_name,
-				parent_device_ref_.id, parent_device_ref_.name,
-				channel_group_names_, name_);
+				channels::ChannelRef {
+					parent_device_ref_, channel_group_names_, name_});
 			signal_map_.insert(make_pair(mq, signal));
 			sig_added = true;
 

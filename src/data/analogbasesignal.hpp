@@ -28,6 +28,7 @@
 
 #include <QObject>
 
+#include "src/channels/channelref.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/data/datautil.hpp"
 
@@ -50,10 +51,7 @@ public:
 		const set<data::QuantityFlag> &quantity_flags,
 		data::Unit unit,
 		const string &custom_name,
-		const string &parent_device_id,
-		const string &parent_device_name,
-		const set<string> &parent_channel_group_names,
-		const string &parent_channel_name);
+		const channels::ChannelRef &parent_channel);
 
 	/**
 	 * Return the number of samples in this signal.

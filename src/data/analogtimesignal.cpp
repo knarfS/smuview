@@ -32,6 +32,7 @@
 #include "src/sessionglobals.hpp"
 #include "src/util.hpp"
 #include "src/channels/basechannel.hpp"
+#include "src/channels/channelref.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/data/datautil.hpp"
 
@@ -50,13 +51,9 @@ AnalogTimeSignal::AnalogTimeSignal(
 		const set<data::QuantityFlag> &quantity_flags,
 		data::Unit unit,
 		const string &custom_name,
-		const string &parent_device_id,
-		const string &parent_device_name,
-		const set<string> &parent_channel_group_names,
-		const string &parent_channel_name) :
+		const channels::ChannelRef &parent_channel) :
 	AnalogBaseSignal(
-		quantity, quantity_flags, unit, custom_name, parent_device_id,
-		parent_device_name, parent_channel_group_names, parent_channel_name)
+		quantity, quantity_flags, unit, custom_name, parent_channel)
 {
 	qInfo() << "Init analog time signal " << display_name();
 }
