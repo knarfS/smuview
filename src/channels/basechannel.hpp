@@ -99,6 +99,13 @@ public:
 
 	/**
 	 * Set the name of the signal.
+	 *
+	 * IMPORTANT: This will only affect the UI. The channel will be restored
+	 *   with its original name. Also when exporting the channel, its original
+	 *   name will be used!
+	 *
+	 * TODO: Decide if we hould remove this function and make channel names
+	 *   immutable or to make it private so only restore_settings() can use it
 	 */
 	void set_name(const string &name);
 
