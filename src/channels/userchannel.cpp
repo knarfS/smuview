@@ -40,9 +40,8 @@ namespace channels {
 UserChannel::UserChannel(
 		const channels::ChannelSpec &channel_spec,
 		const devices::DeviceRef &parent_device) :
-	BaseChannel(channel_spec, parent_device)
+	BaseChannel(channel_spec, ChannelType::UserChannel, parent_device)
 {
-	type_ = ChannelType::UserChannel;
 	fixed_signal_ = false;
 }
 

@@ -45,11 +45,11 @@ namespace channels {
 HardwareChannel::HardwareChannel(
 		const channels::ChannelSpec &channel_spec,
 		const devices::DeviceRef &parent_device) :
-	BaseChannel(channel_spec, parent_device)
+	BaseChannel(channel_spec, ChannelType::AnalogChannel, parent_device)
 {
 	assert(sr_channel_);
 
-	type_ = ChannelType::AnalogChannel;
+	fixed_signal_ = false;
 }
 
 void HardwareChannel::push_samples(const vector<double> &samples,

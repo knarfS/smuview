@@ -57,11 +57,13 @@ namespace channels {
 
 BaseChannel::BaseChannel(
 		const channels::ChannelSpec &channel_spec,
+		channels::ChannelType type,
 		const devices::DeviceRef &parent_device) :
 	sr_channel_(channel_spec.sr_channel),
 	id_(channel_spec.id),
 	name_(channel_spec.name),
 	index_(channel_spec.index),
+	type_(type),
 	parent_device_ref_(parent_device),
 	channel_group_names_(channel_spec.channel_group_names),
 	fixed_signal_(false),
@@ -89,15 +91,6 @@ string BaseChannel::id() const
 string BaseChannel::name() const
 {
 	return name_;
-}
-
-void BaseChannel::set_name(const string &name)
-{
-	if (sr_channel_)
-		sr_channel_->set_name(name);
-
-	name_ = name;
-	Q_EMIT name_changed(name);
 }
 
 QString BaseChannel::display_name() const
@@ -133,14 +126,14 @@ bool BaseChannel::fixed_signal() const
 	return fixed_signal_;
 }
 
-const devices::DeviceRef &BaseChannel::parent_device_ref() const
-{
-	return parent_device_ref_;
-}
-
 void BaseChannel::set_fixed_signal(bool fixed_signal)
 {
 	fixed_signal_ = fixed_signal;
+}
+
+const devices::DeviceRef &BaseChannel::parent_device_ref() const
+{
+	return parent_device_ref_;
 }
 
 set<string> BaseChannel::channel_group_names() const
@@ -172,7 +165,7 @@ shared_ptr<data::BaseSignal> BaseChannel::add_signal(
 				<< " to the fixed channel " << display_name()
 				<< " with an already existing signal "
 				<< current_signal_->display_name();
-			qCritical() << "WARNING: The sigrok device driver is propably "
+			qCritical() << "WARNING: The sigrok device driver is probably "
 				<< "sending a wrong qunatity or wrong mq_flags.";
 			qCritical() << "WARNING: Please fix this in the libsigrok driver!";
 		}
@@ -233,7 +226,7 @@ vector<shared_ptr<data::BaseSignal>> BaseChannel::signals()
 
 void BaseChannel::clear_signals()
 {
-	/* TODO
+	/* TODO:
 	std::scoped_lock lock(signals_mutex_);
 
 	for (const auto &signal_pair : signal_map_) {
@@ -250,7 +243,6 @@ void BaseChannel::save_settings(QSettings &settings) const
 
 void BaseChannel::restore_settings(QSettings &settings)
 {
-	set_name(settings.value("name").toString().toStdString());
 	set_enabled(settings.value("enabled").toBool());
 }
 

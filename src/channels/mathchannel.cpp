@@ -47,14 +47,13 @@ MathChannel::MathChannel(
 		data::Unit unit,
 		const channels::ChannelSpec &channel_spec,
 		const devices::DeviceRef &parent_device) :
-	BaseChannel(channel_spec, parent_device),
+	BaseChannel(channel_spec, ChannelType::MathChannel, parent_device),
 	total_digits_(data::DefaultTotalDigits),
 	sr_digits_(data::DefaultSRDigits),
 	quantity_(quantity),
 	quantity_flags_(quantity_flags),
 	unit_(unit)
 {
-	type_ = ChannelType::MathChannel;
 	fixed_signal_ = true;
 
 	add_signal(quantity_, quantity_flags_, unit_);

@@ -118,9 +118,7 @@ void ChannelComboBox::fill_channels()
 				continue;
 		}
 
-		this->addItem(
-			QString::fromStdString(ch->name()),
-			QVariant::fromValue(ch));
+		this->addItem(ch->display_name(), QVariant::fromValue(ch));
 	}
 
 	connect(

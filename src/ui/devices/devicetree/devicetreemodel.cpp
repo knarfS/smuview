@@ -178,7 +178,7 @@ void DeviceTreeModel::add_channel(shared_ptr<channels::BaseChannel> channel,
 			beginInsertRows(new_parent_item->index(),
 				new_parent_item->rowCount(), new_parent_item->rowCount()+1);
 			channel_item = new TreeItem(TreeItemType::ChannelItem);
-			channel_item->setText(QString::fromStdString(channel->name()));
+			channel_item->setText(channel->display_name());
 			channel_item->setData(QVariant::fromValue(channel), DeviceTreeModel::DataRole);
 			channel_item->setData(channel->index(), DeviceTreeModel::SortRole);
 			channel_item->setCheckable(is_channel_checkable_);

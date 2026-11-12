@@ -64,6 +64,7 @@ class BaseChannel : public QObject
 public:
 	BaseChannel(
 		const channels::ChannelSpec &channel_spec,
+		channels::ChannelType type,
 		const devices::DeviceRef &parent_device);
 
 	virtual ~BaseChannel();
@@ -86,11 +87,6 @@ public:
 	 * Get the immutable name of this channel.
 	 */
 	string name() const;
-
-	/**
-	 * Set the name of the signal.
-	 */
-	void set_name(const string &name);
 
 	/**
 	 * Get the display name of this channel.
@@ -119,12 +115,18 @@ public:
 	void set_enabled(bool enabled);
 
 	/**
-	 * Does this channel have just one signal, thats quantity doesn't change?
+	 * Does this channel have just one signal, that quantity doesn't change.
 	 */
 	bool fixed_signal() const;
 
 	/**
-	 * Set if this channel has just one signal, thats quantity doesn't change
+	 * Set if this channel has just one signal, that quantity doesn't change.
+	 *
+	 * At the moment, this is changed/set after the channel is created,
+	 * e.g. for SourceSinkDevice::init_channels() which is called after
+	 * HardwareDevice::init_channels().
+	 *
+	 * TODO: Pass fixed_signal to make_shared in BaseDevice::create_sr_channel()
 	 */
 	void set_fixed_signal(bool fixed_signal);
 
@@ -184,9 +186,9 @@ protected:
 	/** The immutable name of this channel. */
 	const string name_;
 	/** Index of this channel. */
-	unsigned int index_;
+	const unsigned int index_;
 	/** Type of this channel. */
-	ChannelType type_;
+	const ChannelType type_;
 
 	/** The parent device, this channel belongs to. */
 	const devices::DeviceRef parent_device_ref_;
@@ -207,7 +209,6 @@ protected:
 
 Q_SIGNALS:
 	void enabled_changed(const bool enabled);
-	void name_changed(const std::string &name);
 	void signal_added(shared_ptr<sv::data::BaseSignal> signal);
 	void signal_changed(shared_ptr<sv::data::BaseSignal> signal);
 
