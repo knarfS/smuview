@@ -117,6 +117,7 @@ void Session::add_device(shared_ptr<devices::BaseDevice> device)
 	catch (const QString &e) {
 		qCritical() << e;
 		device.reset();
+		return;
 	}
 
 	device_map_.insert(make_pair(device->id(), device));
