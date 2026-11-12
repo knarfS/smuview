@@ -65,20 +65,20 @@ string get_signal_header(const shared_ptr<sv::data::AnalogTimeSignal> &signal)
 {
 	string header;
 
-	if (!signal->parent_device_name().empty())
-		header = signal->parent_device_name() + " / ";
+	if (!signal->parent_channel_ref().device.name.empty())
+		header = signal->parent_channel_ref().device.name + " / ";
 
-	if (!signal->parent_channel_group_names().empty()) {
+	if (!signal->parent_channel_ref().channel_group_names.empty()) {
 		string chg_sep = "";
-		for (const auto &chg : signal->parent_channel_group_names()) {
+		for (const auto &chg : signal->parent_channel_ref().channel_group_names) {
 			header += chg_sep + chg;
 			chg_sep = "+";
 		}
 		header += " / ";
 	}
 
-	if (!signal->parent_channel_name().empty())
-		header += signal->parent_channel_name() + " / ";
+	if (!signal->parent_channel_ref().name.empty())
+		header += signal->parent_channel_ref().name + " / ";
 
 	header += signal->name();
 	return header;

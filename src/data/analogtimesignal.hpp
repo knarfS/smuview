@@ -29,6 +29,7 @@
 
 #include <QObject>
 
+#include "src/channels/channelref.hpp"
 #include "src/data/analogbasesignal.hpp"
 #include "src/data/datautil.hpp"
 
@@ -44,7 +45,8 @@ namespace data {
 
 typedef optional<pair<double, double>> analog_time_sample_t;
 
-struct AnalogTimeSignalBoundaries {
+struct AnalogTimeSignalBoundaries
+{
 	double first_timestamp;
 	double last_timestamp;
 	double min_value;
@@ -61,10 +63,7 @@ public:
 		const set<data::QuantityFlag> &quantity_flags,
 		data::Unit unit,
 		const string &custom_name,
-		const string &parent_device_id,
-		const string &parent_device_name,
-		const set<string> &parent_channel_group_names,
-		const string &parent_channel_name);
+		const channels::ChannelRef &parent_channel);
 
 	/**
 	 * Clear all samples from this signal.
