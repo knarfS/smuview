@@ -97,7 +97,7 @@ public:
 	 * @param[in] key_prefix The prefix of the settings keys for the configurable.
 	 */
 	static void save_configurable(
-		const shared_ptr<sv::devices::Configurable> &configurable,
+		const sv::devices::Configurable &configurable,
 		QSettings &settings,
 		shared_ptr<sv::devices::BaseDevice> origin_device,
 		const QString &key_prefix = "");

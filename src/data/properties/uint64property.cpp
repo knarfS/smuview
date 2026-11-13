@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2022 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,9 +37,10 @@ namespace sv {
 namespace data {
 namespace properties {
 
-UInt64Property::UInt64Property(shared_ptr<devices::Configurable> configurable,
-		devices::ConfigKey config_key) :
-	BaseProperty(configurable, config_key),
+UInt64Property::UInt64Property(
+		devices::ConfigKey config_key,
+		devices::Configurable &configurable) :
+	BaseProperty(config_key, configurable),
 	min_(std::numeric_limits<uint64_t>::lowest()),
 	max_(std::numeric_limits<uint64_t>::max()),
 	step_(1)
@@ -56,7 +57,7 @@ QVariant UInt64Property::value() const
 uint64_t UInt64Property::uint64_value() const
 {
 	uint64_t uint64_value;
-	configurable_->get_config<uint64_t>(config_key_, uint64_value);
+	configurable_.get_config<uint64_t>(config_key_, uint64_value);
 	return uint64_value;
 }
 
@@ -108,7 +109,7 @@ bool UInt64Property::list_config()
 	values_list_.clear();
 
 	Glib::VariantContainerBase gvar;
-	if (!configurable_->list_config(config_key_, gvar))
+	if (!configurable_.list_config(config_key_, gvar))
 		return false;
 
 	if (config_key_ == devices::ConfigKey::Samplerate) {
@@ -178,7 +179,7 @@ void UInt64Property::change_value(const QVariant &qvar)
 			new_qvar.setValue((qulonglong)20000);
 	}
 
-	configurable_->set_config(config_key_, (uint64_t)new_qvar.toULongLong());
+	configurable_.set_config(config_key_, (uint64_t)new_qvar.toULongLong());
 	Q_EMIT value_changed(new_qvar);
 }
 

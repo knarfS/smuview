@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2022 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,6 @@
 #include <QVariant>
 
 #include "src/data/properties/baseproperty.hpp"
-#include "src/data/datautil.hpp"
 #include "src/devices/deviceutil.hpp"
 
 using std::shared_ptr;
@@ -48,8 +47,9 @@ class DoubleProperty : public BaseProperty
 	Q_OBJECT
 
 public:
-	DoubleProperty(shared_ptr<devices::Configurable> configurable,
-		devices::ConfigKey config_key);
+	DoubleProperty(
+		devices::ConfigKey config_key,
+		devices::Configurable &configurable);
 
 public:
 	QVariant value() const override;

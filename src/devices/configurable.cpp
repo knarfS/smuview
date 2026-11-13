@@ -66,6 +66,7 @@ Configurable::Configurable(
 	index_(configurable_index),
 	parent_device_ref_(parent_device)
 {
+	init();
 }
 
 void Configurable::init()
@@ -94,40 +95,40 @@ void Configurable::init()
 		switch (data_type) {
 		case data::DataType::Int32:
 			property = make_shared<data::properties::Int32Property>(
-				shared_from_this(), config_key);
+				config_key, *this);
 			break;
 		case data::DataType::UInt64:
 			property = make_shared<data::properties::UInt64Property>(
-				shared_from_this(), config_key);
+				config_key, *this);
 			break;
 		case data::DataType::Double:
 			property = make_shared<data::properties::DoubleProperty>(
-				shared_from_this(), config_key);
+				config_key, *this);
 			break;
 		case data::DataType::String:
 			property = make_shared<data::properties::StringProperty>(
-				shared_from_this(), config_key);
+				config_key, *this);
 			break;
 		case data::DataType::Bool:
 			property = make_shared<data::properties::BoolProperty>(
-				shared_from_this(), config_key);
+				config_key, *this);
 			break;
 		case data::DataType::MQ:
 			property = make_shared<data::properties::MeasuredQuantityProperty>(
-				shared_from_this(), config_key);
+				config_key, *this);
 			break;
 		case data::DataType::RationalPeriod:
 		case data::DataType::RationalVolt:
 			property = make_shared<data::properties::RationalProperty>(
-				shared_from_this(), config_key);
+				config_key, *this);
 			break;
 		case data::DataType::UInt64Range:
 			property = make_shared<data::properties::UInt64RangeProperty>(
-				shared_from_this(), config_key);
+				config_key, *this);
 			break;
 		case data::DataType::DoubleRange:
 			property = make_shared<data::properties::DoubleRangeProperty>(
-				shared_from_this(), config_key);
+				config_key, *this);
 			break;
 		case data::DataType::KeyValue:
 			// TODO: What is KeyValue?

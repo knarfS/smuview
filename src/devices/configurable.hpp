@@ -63,9 +63,7 @@ class BaseProperty;
 
 namespace devices {
 
-class Configurable :
-	public QObject,
-	public std::enable_shared_from_this<Configurable>
+class Configurable : public QObject
 {
 	Q_OBJECT
 
@@ -73,12 +71,6 @@ public:
 	Configurable(const shared_ptr<sigrok::Configurable> sr_configurable,
 		unsigned int configurable_index,
 		const devices::DeviceRef &parent_device);
-
-	/**
-	 * Init the properties (config keys) and default lists.
-	 * Must be called after instantiation and not from the ctor.
-	 */
-	void init();
 
 	bool has_get_config(devices::ConfigKey config_key) const;
 	template<typename T> bool get_config(
@@ -161,6 +153,11 @@ public:
 	bool feed_in_meta(shared_ptr<sigrok::Meta> sr_meta);
 
 private:
+	/**
+	 * Init the properties (config keys) and default lists.
+	 */
+	void init();
+
 	const shared_ptr<sigrok::Configurable> sr_configurable_;
 	unsigned int index_;
 	const devices::DeviceRef parent_device_ref_;

@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <limits>
 #include <string>
 #include <utility>
 #include <vector>
@@ -41,9 +40,9 @@ namespace data {
 namespace properties {
 
 UInt64RangeProperty::UInt64RangeProperty(
-		shared_ptr<devices::Configurable> configurable,
-		devices::ConfigKey config_key) :
-	BaseProperty(configurable, config_key)
+		devices::ConfigKey config_key,
+		devices::Configurable &configurable) :
+	BaseProperty(config_key, configurable)
 {
 	if (is_listable_)
 		UInt64RangeProperty::list_config();
@@ -63,7 +62,7 @@ QVariant UInt64RangeProperty::value() const
 data::uint64_range_t UInt64RangeProperty::uint64_range_value() const
 {
 	Glib::VariantContainerBase gvar;
-	configurable_->get_container_config(config_key_, gvar);
+	configurable_.get_container_config(config_key_, gvar);
 
 	size_t child_cnt = gvar.get_n_children();
 	if (child_cnt != 2) {
@@ -113,7 +112,7 @@ bool UInt64RangeProperty::list_config()
 	values_list_.clear();
 
 	Glib::VariantContainerBase gvar;
-	if (!configurable_->list_config(config_key_, gvar))
+	if (!configurable_.list_config(config_key_, gvar))
 		return false;
 
 	Glib::VariantIter iter(gvar);
@@ -148,7 +147,7 @@ void UInt64RangeProperty::change_value(const QVariant &qvar)
 	gcontainer.push_back(gvar_low);
 	gcontainer.push_back(gvar_high);
 
-	configurable_->set_container_config(config_key_, gcontainer);
+	configurable_.set_container_config(config_key_, gcontainer);
 	Q_EMIT value_changed(qvar);
 }
 

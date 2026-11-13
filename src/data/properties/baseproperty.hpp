@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,10 +49,10 @@ class BaseProperty : public QObject
 	Q_OBJECT
 
 public:
-	BaseProperty(shared_ptr<devices::Configurable> configurable,
-		devices::ConfigKey config_key);
+	BaseProperty(
+		devices::ConfigKey config_key,
+		devices::Configurable &configurable);
 
-	shared_ptr<devices::Configurable> configurable() const;
 	devices::ConfigKey config_key() const;
 	data::DataType data_type() const;
 	//data::Quantity quantity() const;
@@ -65,9 +65,9 @@ public:
 	virtual QVariant value() const = 0;
 	virtual QString to_string(const QVariant &qvar) const = 0;
 	virtual QString to_string() const = 0;
+	devices::Configurable &configurable();
 
 protected:
-	shared_ptr<devices::Configurable> configurable_;
 	devices::ConfigKey config_key_;
 	data::DataType data_type_;
 	//data::Quantity quantity_;
@@ -75,6 +75,7 @@ protected:
 	bool is_getable_;
 	bool is_setable_;
 	bool is_listable_;
+	devices::Configurable &configurable_;
 
 public Q_SLOTS:
 	/**

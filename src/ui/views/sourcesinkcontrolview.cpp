@@ -190,7 +190,7 @@ void SourceSinkControlView::save_settings(QSettings &settings,
 	shared_ptr<sv::devices::BaseDevice> origin_device) const
 {
 	BaseView::save_settings(settings, origin_device);
-	SettingsManager::save_configurable(configurable_, settings, origin_device);
+	SettingsManager::save_configurable(*configurable_, settings, origin_device);
 }
 
 void SourceSinkControlView::restore_settings(QSettings &settings,

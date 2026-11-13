@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2019-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2019-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <memory>
 #include <utility>
 #include <vector>
 
@@ -30,7 +29,6 @@
 #include "src/devices/configurable.hpp"
 
 using std::make_pair;
-using std::shared_ptr;
 using std::vector;
 
 namespace sv {
@@ -38,9 +36,9 @@ namespace data {
 namespace properties {
 
 DoubleRangeProperty::DoubleRangeProperty(
-		shared_ptr<devices::Configurable> configurable,
-		devices::ConfigKey config_key) :
-	BaseProperty(configurable, config_key)
+		devices::ConfigKey config_key,
+		devices::Configurable &configurable) :
+	BaseProperty(config_key, configurable)
 {
 	if (is_listable_)
 		DoubleRangeProperty::list_config();
@@ -54,7 +52,7 @@ QVariant DoubleRangeProperty::value() const
 double_range_t DoubleRangeProperty::double_range_value() const
 {
 	Glib::VariantContainerBase gvar;
-	configurable_->get_container_config(config_key_, gvar);
+	configurable_.get_container_config(config_key_, gvar);
 
 	size_t child_cnt = gvar.get_n_children();
 	if (child_cnt != 2) {
@@ -105,7 +103,7 @@ bool DoubleRangeProperty::list_config()
 	values_list_.clear();
 
 	Glib::VariantContainerBase gvar;
-	if (!configurable_->list_config(config_key_, gvar))
+	if (!configurable_.list_config(config_key_, gvar))
 		return false;
 
 	Glib::VariantIter iter(gvar);
@@ -140,7 +138,7 @@ void DoubleRangeProperty::change_value(const QVariant &qvar)
 	gcontainer.push_back(gvar_low);
 	gcontainer.push_back(gvar_high);
 
-	configurable_->set_container_config(config_key_, gcontainer);
+	configurable_.set_container_config(config_key_, gcontainer);
 	Q_EMIT value_changed(qvar);
 }
 

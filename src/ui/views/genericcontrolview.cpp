@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2019-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2019-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  */
 
 #include <memory>
-#include <string>
 
 #include <QDebug>
 #include <QFormLayout>
@@ -89,7 +88,7 @@ void GenericControlView::save_settings(QSettings &settings,
 	shared_ptr<sv::devices::BaseDevice> origin_device) const
 {
 	BaseView::save_settings(settings, origin_device);
-	SettingsManager::save_configurable(configurable_, settings, origin_device);
+	SettingsManager::save_configurable(*configurable_, settings, origin_device);
 }
 
 void GenericControlView::restore_settings(QSettings &settings,

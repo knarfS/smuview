@@ -72,20 +72,20 @@ bool SettingsManager::has_device_settings(
 }
 
 void SettingsManager::save_configurable(
-	const shared_ptr<devices::Configurable> &configurable,
+	const devices::Configurable &configurable,
 	QSettings &settings, shared_ptr<sv::devices::BaseDevice> origin_device,
 	const QString &key_prefix)
 {
 	if (origin_device == nullptr ||
-			origin_device->id() != configurable->parent_device_ref().id) {
+			origin_device->id() != configurable.parent_device_ref().id) {
 		// Only store the device value if this specific configurable belongs to
 		// an other device than the tab-/device-setting (origin_device) it is
 		// stored into, belongs to (>= 0.0.5).
 		settings.setValue(key_prefix + "device",
-			QVariant(QString::fromStdString(configurable->parent_device_ref().id)));
+			QVariant(QString::fromStdString(configurable.parent_device_ref().id)));
 	}
 	settings.setValue(key_prefix + "configurable",
-		QVariant(QString::fromStdString(configurable->name())));
+		QVariant(QString::fromStdString(configurable.name())));
 }
 
 void SettingsManager::save_channel(

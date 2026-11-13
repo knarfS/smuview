@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,9 +34,10 @@ namespace sv {
 namespace data {
 namespace properties {
 
-StringProperty::StringProperty(shared_ptr<devices::Configurable> configurable,
-		devices::ConfigKey config_key) :
-	BaseProperty(configurable, config_key)
+StringProperty::StringProperty(
+		devices::ConfigKey config_key,
+		devices::Configurable &configurable) :
+	BaseProperty(config_key, configurable)
 {
 	if (is_listable_) {
 		if (!StringProperty::list_config())
@@ -52,7 +53,7 @@ QVariant StringProperty::value() const
 QString StringProperty::string_value() const
 {
 	string string_value;
-	configurable_->get_config<string>(config_key_, string_value);
+	configurable_.get_config<string>(config_key_, string_value);
 	return QString::fromStdString(string_value);
 }
 
@@ -76,7 +77,7 @@ bool StringProperty::list_config()
 	string_list_.clear();
 
 	Glib::VariantContainerBase gvar;
-	if (!configurable_->list_config(config_key_, gvar))
+	if (!configurable_.list_config(config_key_, gvar))
 		return false;
 
 	Glib::VariantIter iter(gvar);
@@ -94,7 +95,7 @@ void StringProperty::change_value(const QVariant &qvar)
 {
 	// We have to use Glib::ustring here, to get a variant type of 's'.
 	// std::string will create a variant type of 'ay'
-	configurable_->set_config<Glib::ustring>(
+	configurable_.set_config<Glib::ustring>(
 		config_key_, Glib::ustring(qvar.toString().toStdString()));
 	Q_EMIT value_changed(qvar);
 }
