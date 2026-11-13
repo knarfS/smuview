@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2017-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2017-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
  */
 
 #include <memory>
-#include <string>
 
 #include <QDebug>
 #include <QSettings>
@@ -82,16 +81,18 @@ void SourceSinkControlView::setup_ui()
 	//info_layout->addWidget(enable_button_, 0, 0, 2, 1,  Qt::AlignLeft);
 	info_layout->addWidget(enable_button_, 0, 0, Qt::AlignLeft);
 
+	const auto device_typ = configurable_->parent_device_ref().type;
+
 	// Regulation selector (sinks) / range selector (power supplies)
-	if (configurable_->device_type() == devices::DeviceType::ElectronicLoad) {
+	if (device_typ == devices::DeviceType::ElectronicLoad) {
 		regulation_box_ = new ui::datatypes::StringComboBox(
 			configurable_->get_property(ConfigKey::Regulation), true, true);
 		info_layout->addWidget(regulation_box_, 1, 0, Qt::AlignLeft);
 	}
-	else if (configurable_->device_type() == devices::DeviceType::PowerSupply &&
-		(configurable_->has_get_config(ConfigKey::Range) ||
-		configurable_->has_set_config(ConfigKey::Range) ||
-		configurable_->has_list_config(ConfigKey::Range))) {
+	else if (device_typ == devices::DeviceType::PowerSupply
+		&& (configurable_->has_get_config(ConfigKey::Range)
+			|| configurable_->has_set_config(ConfigKey::Range)
+			|| configurable_->has_list_config(ConfigKey::Range))) {
 
 		range_box_ = new ui::datatypes::StringComboBox(
 			configurable_->get_property(ConfigKey::Range), true, true);
@@ -99,7 +100,7 @@ void SourceSinkControlView::setup_ui()
 	}
 
 	// Regulation indicators for power supplies
-	if (configurable_->device_type() == devices::DeviceType::PowerSupply) {
+	if (device_typ == devices::DeviceType::PowerSupply) {
 		cv_led_ = new ui::datatypes::StringLed(
 			configurable_->get_property(ConfigKey::Regulation),
 			true, green_icon, grey_icon, grey_icon,
@@ -135,8 +136,8 @@ void SourceSinkControlView::setup_ui()
 	QHBoxLayout *ctrl_layout = new QHBoxLayout();
 
 	// TODO: Change control when switching regulation mode for sinks
-	if (configurable_->has_get_config(ConfigKey::VoltageTarget) ||
-		configurable_->has_set_config(ConfigKey::VoltageTarget)) {
+	if (configurable_->has_get_config(ConfigKey::VoltageTarget)
+		|| configurable_->has_set_config(ConfigKey::VoltageTarget)) {
 
 		voltage_control_ = new ui::datatypes::DoubleControl(
 			configurable_->get_property(ConfigKey::VoltageTarget),
@@ -147,8 +148,8 @@ void SourceSinkControlView::setup_ui()
 	}
 
 	// TODO: Change control when switching regulation mode for sinks
-	if (configurable_->has_get_config(ConfigKey::CurrentLimit) ||
-		configurable_->has_set_config(ConfigKey::CurrentLimit)) {
+	if (configurable_->has_get_config(ConfigKey::CurrentLimit)
+		|| configurable_->has_set_config(ConfigKey::CurrentLimit)) {
 
 		current_control_ = new ui::datatypes::DoubleControl(
 			configurable_->get_property(ConfigKey::CurrentLimit),
