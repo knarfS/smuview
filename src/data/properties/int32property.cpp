@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,20 +19,25 @@
 
 #include <limits>
 
-#include <QDebug>
 #include <QString>
 #include <QVariant>
 
 #include "int32property.hpp"
-#include "src/devices/configurable.hpp"
+#include "src/data/dataenums.hpp"
+#include "src/data/properties/baseproperty.hpp"
+#include "src/devices/configinterface.hpp"
+#include "src/devices/configurableref.hpp"
+#include "src/devices/deviceenums.hpp"
 
 namespace sv {
 namespace data {
 namespace properties {
 
-Int32Property::Int32Property(shared_ptr<devices::Configurable> configurable,
-		devices::ConfigKey config_key) :
-	BaseProperty(configurable, config_key),
+Int32Property::Int32Property(
+		devices::ConfigKey config_key,
+		shared_ptr<devices::ConfigInterface> config_interface,
+		devices::ConfigurableRef parent_configurable) :
+	BaseProperty(config_key, config_interface, parent_configurable),
 	min_(std::numeric_limits<int32_t>::lowest()),
 	max_(std::numeric_limits<int32_t>::max()),
 	step_(1)
@@ -49,7 +54,7 @@ QVariant Int32Property::value() const
 int32_t Int32Property::int32_value() const
 {
 	int32_t int32_value;
-	configurable_->get_config<int32_t>(config_key_, int32_value);
+	config_interface_->get_config<int32_t>(config_key_, int32_value);
 	return int32_value;
 }
 
@@ -90,7 +95,7 @@ int32_t Int32Property::step() const
 bool Int32Property::list_config()
 {
 	Glib::VariantContainerBase gvar;
-	if (!configurable_->list_config(config_key_, gvar))
+	if (!config_interface_->list_config(config_key_, gvar))
 		return false;
 
 	Glib::VariantIter iter(gvar);
@@ -108,7 +113,7 @@ bool Int32Property::list_config()
 
 void Int32Property::change_value(const QVariant &qvar)
 {
-	configurable_->set_config(config_key_, qvar.toInt());
+	config_interface_->set_config(config_key_, qvar.toInt());
 	Q_EMIT value_changed(qvar);
 }
 

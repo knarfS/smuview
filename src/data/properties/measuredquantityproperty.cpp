@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,21 +18,22 @@
  */
 
 #include <set>
-#include <stdexcept>
 #include <utility>
 #include <vector>
 
 #include <glib.h>
 
-#include <QDebug>
 #include <QString>
 #include <QVariant>
 
 #include "measuredquantityproperty.hpp"
+#include "src/data/dataenums.hpp"
 #include "src/data/datautil.hpp"
-#include "src/devices/configurable.hpp"
+#include "src/data/properties/baseproperty.hpp"
+#include "src/devices/configinterface.hpp"
+#include "src/devices/configurableref.hpp"
+#include "src/devices/deviceenums.hpp"
 
-using std::make_pair;
 using std::set;
 using std::vector;
 
@@ -43,9 +44,10 @@ namespace data {
 namespace properties {
 
 MeasuredQuantityProperty::MeasuredQuantityProperty(
-		shared_ptr<devices::Configurable> configurable,
-		devices::ConfigKey config_key) :
-	BaseProperty(configurable, config_key)
+		devices::ConfigKey config_key,
+		shared_ptr<devices::ConfigInterface> config_interface,
+		devices::ConfigurableRef parent_configurable) :
+	BaseProperty(config_key, config_interface, parent_configurable)
 {
 	if (is_listable_)
 		MeasuredQuantityProperty::list_config();
@@ -60,7 +62,7 @@ data::measured_quantity_t
 MeasuredQuantityProperty::measured_quantity_value() const
 {
 	data::measured_quantity_t mq_value;
-	configurable_->get_measured_quantity_config(config_key_, mq_value);
+	config_interface_->get_measured_quantity_config(config_key_, mq_value);
 	return mq_value;
 }
 
@@ -90,7 +92,7 @@ bool MeasuredQuantityProperty::list_config()
 	measured_quantity_list_.clear();
 
 	Glib::VariantContainerBase gvar;
-	if (!configurable_->list_config(config_key_, gvar))
+	if (!config_interface_->list_config(config_key_, gvar))
 		return false;
 
 	Glib::VariantIter iter(gvar);
@@ -114,7 +116,7 @@ bool MeasuredQuantityProperty::list_config()
 void MeasuredQuantityProperty::change_value(const QVariant &qvar)
 {
 	data::measured_quantity_t mq = qvar.value<data::measured_quantity_t>();
-	configurable_->set_measured_quantity_config(config_key_, mq);
+	config_interface_->set_measured_quantity_config(config_key_, mq);
 	Q_EMIT value_changed(qvar);
 }
 

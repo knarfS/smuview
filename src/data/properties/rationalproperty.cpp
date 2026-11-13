@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2019-2022 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2019-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,18 +17,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <limits>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include <QDebug>
 #include <QString>
 #include <QVariant>
 
 #include "rationalproperty.hpp"
 #include "src/data/datautil.hpp"
-#include "src/devices/configurable.hpp"
+#include "src/data/properties/baseproperty.hpp"
+#include "src/devices/configinterface.hpp"
+#include "src/devices/configurableref.hpp"
+#include "src/devices/deviceenums.hpp"
 #include "src/util.hpp"
 
 using std::make_pair;
@@ -42,9 +43,10 @@ namespace data {
 namespace properties {
 
 RationalProperty::RationalProperty(
-		shared_ptr<devices::Configurable> configurable,
-		devices::ConfigKey config_key) :
-	BaseProperty(configurable, config_key)
+		devices::ConfigKey config_key,
+		shared_ptr<devices::ConfigInterface> config_interface,
+		devices::ConfigurableRef parent_configurable) :
+	BaseProperty(config_key, config_interface, parent_configurable)
 {
 	if (is_listable_)
 		RationalProperty::list_config();
@@ -64,7 +66,7 @@ QVariant RationalProperty::value() const
 data::rational_t RationalProperty::rational_value() const
 {
 	Glib::VariantContainerBase gvar;
-	configurable_->get_container_config(config_key_, gvar);
+	config_interface_->get_container_config(config_key_, gvar);
 
 	size_t child_cnt = gvar.get_n_children();
 	if (child_cnt != 2) {
@@ -120,7 +122,7 @@ bool RationalProperty::list_config()
 	values_list_.clear();
 
 	Glib::VariantContainerBase gvar;
-	if (!configurable_->list_config(config_key_, gvar))
+	if (!config_interface_->list_config(config_key_, gvar))
 		return false;
 
 	Glib::VariantIter iter(gvar);
@@ -159,7 +161,7 @@ void RationalProperty::change_value(const QVariant &qvar)
 	gcontainer.push_back(p);
 	gcontainer.push_back(q);
 
-	configurable_->set_container_config(config_key_, gcontainer);
+	config_interface_->set_container_config(config_key_, gcontainer);
 	Q_EMIT value_changed(qvar);
 }
 

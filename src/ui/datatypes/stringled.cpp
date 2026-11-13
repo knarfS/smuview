@@ -26,6 +26,7 @@
 #include "src/data/datautil.hpp"
 #include "src/data/properties/baseproperty.hpp"
 #include "src/devices/configurable.hpp"
+#include "src/devices/deviceutil.hpp"
 
 namespace sv {
 namespace ui {

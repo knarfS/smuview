@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,13 +23,16 @@
 #include <memory>
 #include <vector>
 
+#include <glibmm/variant.h>
+
 #include <QObject>
 #include <QString>
 #include <QVariant>
 
-#include "src/data/properties/baseproperty.hpp"
 #include "src/data/datautil.hpp"
-#include "src/devices/configurable.hpp"
+#include "src/data/properties/baseproperty.hpp"
+#include "src/devices/configurableref.hpp"
+#include "src/devices/deviceenums.hpp"
 
 using std::shared_ptr;
 using std::vector;
@@ -37,7 +40,7 @@ using std::vector;
 namespace sv {
 
 namespace devices {
-class Configurable;
+class ConfigInterface;
 }
 
 namespace data {
@@ -48,8 +51,10 @@ class MeasuredQuantityProperty : public BaseProperty
 	Q_OBJECT
 
 public:
-	MeasuredQuantityProperty(shared_ptr<devices::Configurable> configurable,
-		devices::ConfigKey config_key);
+	MeasuredQuantityProperty(
+		devices::ConfigKey config_key,
+		shared_ptr<devices::ConfigInterface> config_interface,
+		devices::ConfigurableRef parent_configurable);
 
 public:
 	QVariant value() const override;

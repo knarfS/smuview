@@ -73,19 +73,33 @@ bool SettingsManager::has_device_settings(
 
 void SettingsManager::save_configurable(
 	const shared_ptr<devices::Configurable> &configurable,
-	QSettings &settings, shared_ptr<sv::devices::BaseDevice> origin_device,
+	QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device,
+	const QString &key_prefix)
+{
+	SettingsManager::save_configurable(
+		configurable->name(),
+		configurable->parent_device_ref().id,
+		settings, origin_device, key_prefix);
+}
+
+void SettingsManager::save_configurable(
+	const string &configurable_name,
+	const string &parent_device_id,
+	QSettings &settings,
+	shared_ptr<sv::devices::BaseDevice> origin_device,
 	const QString &key_prefix)
 {
 	if (origin_device == nullptr ||
-			origin_device->id() != configurable->parent_device_ref().id) {
+			origin_device->id() != parent_device_id) {
 		// Only store the device value if this specific configurable belongs to
 		// an other device than the tab-/device-setting (origin_device) it is
 		// stored into, belongs to (>= 0.0.5).
 		settings.setValue(key_prefix + "device",
-			QVariant(QString::fromStdString(configurable->parent_device_ref().id)));
+			QVariant(QString::fromStdString(parent_device_id)));
 	}
 	settings.setValue(key_prefix + "configurable",
-		QVariant(QString::fromStdString(configurable->name())));
+		QVariant(QString::fromStdString(configurable_name)));
 }
 
 void SettingsManager::save_channel(
@@ -109,7 +123,7 @@ void SettingsManager::save_channel(
 
 void SettingsManager::save_signal(
 	const shared_ptr<data::BaseSignal> &signal,
-	QSettings& settings,
+	QSettings &settings,
 	shared_ptr<sv::devices::BaseDevice> origin_device,
 	const QString &key_prefix)
 {
@@ -130,7 +144,9 @@ void SettingsManager::save_property(
 	const QString &key_prefix)
 {
 	SettingsManager::save_configurable(
-		property->configurable(), settings, origin_device, key_prefix);
+		property->parent_configurable_ref().name,
+		property->parent_configurable_ref().device.id,
+		settings, origin_device, key_prefix);
 
 	settings.setValue(key_prefix + "property_sr_type",
 		devices::deviceutil::get_sr_config_key(property->config_key())->

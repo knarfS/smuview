@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,14 +23,15 @@
 #include <memory>
 #include <string>
 
-#include <glib.h>
+#include <glibmm/variant.h>
 
 #include <QObject>
 #include <QString>
 #include <QVariant>
 
-#include "src/data/datautil.hpp"
-#include "src/devices/deviceutil.hpp"
+#include "src/data/dataenums.hpp"
+#include "src/devices/configurableref.hpp"
+#include "src/devices/deviceenums.hpp"
 
 using std::shared_ptr;
 using std::string;
@@ -38,7 +39,7 @@ using std::string;
 namespace sv {
 
 namespace devices {
-class Configurable;
+class ConfigInterface;
 }
 
 namespace data {
@@ -49,10 +50,11 @@ class BaseProperty : public QObject
 	Q_OBJECT
 
 public:
-	BaseProperty(shared_ptr<devices::Configurable> configurable,
-		devices::ConfigKey config_key);
+	BaseProperty(
+		devices::ConfigKey config_key,
+		shared_ptr<devices::ConfigInterface> config_interface,
+		devices::ConfigurableRef parent_configurable);
 
-	shared_ptr<devices::Configurable> configurable() const;
 	devices::ConfigKey config_key() const;
 	data::DataType data_type() const;
 	//data::Quantity quantity() const;
@@ -65,9 +67,9 @@ public:
 	virtual QVariant value() const = 0;
 	virtual QString to_string(const QVariant &qvar) const = 0;
 	virtual QString to_string() const = 0;
+	const devices::ConfigurableRef &parent_configurable_ref() const;
 
 protected:
-	shared_ptr<devices::Configurable> configurable_;
 	devices::ConfigKey config_key_;
 	data::DataType data_type_;
 	//data::Quantity quantity_;
@@ -75,6 +77,8 @@ protected:
 	bool is_getable_;
 	bool is_setable_;
 	bool is_listable_;
+	shared_ptr<devices::ConfigInterface> config_interface_;
+	const devices::ConfigurableRef parent_configurable_ref_;
 
 public Q_SLOTS:
 	/**

@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2020-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2020-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -92,12 +92,29 @@ public:
 	 * Save the configurable to the settings.
 	 *
 	 * @param[in] configurable The configurable to save.
+	 * @param[in] parent_device_id The id of the parent device.
 	 * @param[in] settings The settings.
 	 * @param[in] origin_device The origin device, this settings belongs to.
 	 * @param[in] key_prefix The prefix of the settings keys for the configurable.
 	 */
 	static void save_configurable(
-		const shared_ptr<sv::devices::Configurable> &configurable,
+		const shared_ptr<devices::Configurable> &configurable,
+		QSettings &settings,
+		shared_ptr<sv::devices::BaseDevice> origin_device,
+		const QString &key_prefix = "");
+
+	/**
+	 * Save the configurable to the settings.
+	 *
+	 * @param[in] configurable_name The name of the configurable to save.
+	 * @param[in] parent_device_id The id of the parent device.
+	 * @param[in] settings The settings.
+	 * @param[in] origin_device The origin device, this settings belongs to.
+	 * @param[in] key_prefix The prefix of the settings keys for the configurable.
+	 */
+	static void save_configurable(
+		const string &configurable_name,
+		const string &parent_device_id,
 		QSettings &settings,
 		shared_ptr<sv::devices::BaseDevice> origin_device,
 		const QString &key_prefix = "");

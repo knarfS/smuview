@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,20 +17,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QDebug>
 #include <QString>
 #include <QVariant>
 
 #include "boolproperty.hpp"
-#include "src/devices/configurable.hpp"
+#include "src/data/properties/baseproperty.hpp"
+#include "src/devices/configinterface.hpp"
+#include "src/devices/configurableref.hpp"
+#include "src/devices/deviceenums.hpp"
 
 namespace sv {
 namespace data {
 namespace properties {
 
-BoolProperty::BoolProperty(shared_ptr<devices::Configurable> configurable,
-		devices::ConfigKey config_key) :
-	BaseProperty(configurable, config_key)
+BoolProperty::BoolProperty(
+		devices::ConfigKey config_key,
+		shared_ptr<devices::ConfigInterface> config_interface,
+		devices::ConfigurableRef parent_configurable) :
+	BaseProperty(config_key, config_interface, parent_configurable)
 {
 }
 
@@ -42,7 +46,7 @@ QVariant BoolProperty::value() const
 bool BoolProperty::bool_value() const
 {
 	bool bool_value;
-	configurable_->get_config<bool>(config_key_, bool_value);
+	config_interface_->get_config<bool>(config_key_, bool_value);
 	return bool_value;
 }
 
@@ -69,7 +73,7 @@ bool BoolProperty::list_config()
 
 void BoolProperty::change_value(const QVariant &qvar)
 {
-	configurable_->set_config(config_key_, qvar.toBool());
+	config_interface_->set_config(config_key_, qvar.toBool());
 	Q_EMIT value_changed(qvar);
 }
 

@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2019-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2019-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,8 @@
 
 #include "bindings.hpp"
 #include "src/config.h"
+#include "src/devices/configinterface.hpp"
+#include "src/devices/deviceenums.hpp"
 #include "src/session.hpp"
 #include "src/channels/basechannel.hpp"
 #include "src/channels/hardwarechannel.hpp"
@@ -377,7 +379,10 @@ void init_Configurable(py::module &module)
 		"-------\n"
 		"str\n"
 		"    The name of the configurable.");
-	py_configurable.def("set_config", &sv::devices::Configurable::set_config<bool>,
+	py_configurable.def("set_config",
+		[](const sv::devices::Configurable &self, sv::devices::ConfigKey config_key, bool value) {
+			self.config_interface()->set_config(config_key, value);
+		},
 		py::arg("config_key"), py::arg("value"),
 		"Set a boolean value to the given config key.\n\n"
 		"Parameters\n"
@@ -386,7 +391,10 @@ void init_Configurable(py::module &module)
 		"    The `ConfigKey` to set.\n"
 		"value : bool\n"
 		"    The bool value to set.");
-	py_configurable.def("set_config", &sv::devices::Configurable::set_config<int32_t>,
+	py_configurable.def("set_config",
+		[](const sv::devices::Configurable &self, sv::devices::ConfigKey config_key, int32_t value) {
+			self.config_interface()->set_config(config_key, value);
+		},
 		py::arg("config_key"), py::arg("value"),
 		"Set an integer value to the given config key.\n\n"
 		"Parameters\n"
@@ -395,7 +403,10 @@ void init_Configurable(py::module &module)
 		"    The `ConfigKey` to set.\n"
 		"value : int\n"
 		"    The int value to set.");
-	py_configurable.def("set_config", &sv::devices::Configurable::set_config<uint64_t>,
+	py_configurable.def("set_config",
+		[](const sv::devices::Configurable &self, sv::devices::ConfigKey config_key, uint64_t value) {
+			self.config_interface()->set_config(config_key, value);
+		},
 		py::arg("config_key"), py::arg("value"),
 		"Set an unsigned integer value to the given config key.\n\n"
 		"Parameters\n"
@@ -404,7 +415,10 @@ void init_Configurable(py::module &module)
 		"    The `ConfigKey` to set.\n"
 		"value : int\n"
 		"    The (unsigned) int value to set.");
-	py_configurable.def("set_config", &sv::devices::Configurable::set_config<double>,
+	py_configurable.def("set_config",
+		[](const sv::devices::Configurable &self, sv::devices::ConfigKey config_key, double value) {
+			self.config_interface()->set_config(config_key, value);
+		},
 		py::arg("config_key"), py::arg("value"),
 		"Set a double value to the given config key.\n\n"
 		"Parameters\n"
@@ -413,7 +427,10 @@ void init_Configurable(py::module &module)
 		"    The `ConfigKey` to set.\n"
 		"value : float\n"
 		"    The float value to set.");
-	py_configurable.def("set_config", &sv::devices::Configurable::set_config<std::string>,
+	py_configurable.def("set_config",
+		[](const sv::devices::Configurable &self, sv::devices::ConfigKey config_key, std::string value) {
+			self.config_interface()->set_config(config_key, value);
+		},
 		py::arg("config_key"), py::arg("value"),
 		"Set a string value to the given config key.\n\n"
 		"Parameters\n"
@@ -422,7 +439,10 @@ void init_Configurable(py::module &module)
 		"    The `ConfigKey` to set.\n"
 		"value : str\n"
 		"    The string value to set.");
-	py_configurable.def("set_config", &sv::devices::Configurable::set_measured_quantity_config,
+	py_configurable.def("set_config",
+		[](const sv::devices::Configurable &self, sv::devices::ConfigKey config_key, sv::data::measured_quantity_t value) {
+			self.config_interface()->set_measured_quantity_config(config_key, value);
+		},
 		py::arg("config_key"), py::arg("value"),
 		"Set a measured quantity value to the given config key.\n\n"
 		"Parameters\n"
@@ -434,7 +454,7 @@ void init_Configurable(py::module &module)
 	py_configurable.def("get_bool_config",
 		[](const sv::devices::Configurable &self, sv::devices::ConfigKey config_key) {
 			bool value;
-			self.get_config(config_key, value);
+			self.config_interface()->get_config(config_key, value);
 			return value;
 		},
 		py::arg("config_key"),
@@ -450,7 +470,7 @@ void init_Configurable(py::module &module)
 	py_configurable.def("get_int_config",
 		[](const sv::devices::Configurable &self, sv::devices::ConfigKey config_key) {
 			int32_t value;
-			self.get_config(config_key, value);
+			self.config_interface()->get_config(config_key, value);
 			return value;
 		},
 		py::arg("config_key"),
@@ -466,7 +486,7 @@ void init_Configurable(py::module &module)
 	py_configurable.def("get_uint_config",
 		[](const sv::devices::Configurable &self, sv::devices::ConfigKey config_key) {
 			uint64_t value;
-			self.get_config(config_key, value);
+			self.config_interface()->get_config(config_key, value);
 			return value;
 		},
 		py::arg("config_key"),
@@ -482,7 +502,7 @@ void init_Configurable(py::module &module)
 	py_configurable.def("get_double_config",
 		[](const sv::devices::Configurable &self, sv::devices::ConfigKey config_key) {
 			double value;
-			self.get_config(config_key, value);
+			self.config_interface()->get_config(config_key, value);
 			return value;
 		},
 		py::arg("config_key"),
@@ -498,7 +518,7 @@ void init_Configurable(py::module &module)
 	py_configurable.def("get_string_config",
 		[](const sv::devices::Configurable &self, sv::devices::ConfigKey config_key) {
 			std::string value;
-			self.get_config(config_key, value);
+			self.config_interface()->get_config(config_key, value);
 			return value;
 		},
 		py::arg("config_key"),
@@ -514,7 +534,7 @@ void init_Configurable(py::module &module)
 	py_configurable.def("get_measured_quantity_config",
 		[](const sv::devices::Configurable &self, sv::devices::ConfigKey config_key) {
 			sv::data::measured_quantity_t value;
-			self.get_measured_quantity_config(config_key, value);
+			self.config_interface()->get_measured_quantity_config(config_key, value);
 			return value;
 		},
 		py::arg("config_key"),

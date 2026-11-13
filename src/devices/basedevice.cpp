@@ -80,7 +80,6 @@ BaseDevice::BaseDevice(const shared_ptr<sigrok::Context> sr_context,
 
 BaseDevice::~BaseDevice()
 {
-	// TODO: Not called!! Maybe cyclic refernece?
 	qWarning() << "BaseDevice::~BaseDevice(): " << BaseDevice::full_name();
 	if (sr_session_)
 		BaseDevice::close();

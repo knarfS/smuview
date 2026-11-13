@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2022 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,22 +21,25 @@
 #define DATA_PROPERTIES_UINT64PROPERTY_HPP
 
 #include <memory>
+#include <vector>
 
-#include <glib.h>
+#include <glibmm/variant.h>
 
 #include <QObject>
 #include <QString>
 #include <QVariant>
 
 #include "src/data/properties/baseproperty.hpp"
-#include "src/devices/deviceutil.hpp"
+#include "src/devices/configurableref.hpp"
+#include "src/devices/deviceenums.hpp"
 
 using std::shared_ptr;
+using std::vector;
 
 namespace sv {
 
 namespace devices {
-class Configurable;
+class ConfigInterface;
 }
 
 namespace data {
@@ -47,8 +50,10 @@ class UInt64Property : public BaseProperty
 	Q_OBJECT
 
 public:
-	UInt64Property(shared_ptr<devices::Configurable> configurable,
-		devices::ConfigKey config_key);
+	UInt64Property(
+		devices::ConfigKey config_key,
+		shared_ptr<devices::ConfigInterface> config_interface,
+		devices::ConfigurableRef parent_configurable);
 
 public:
 	QVariant value() const override;

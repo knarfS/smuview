@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2019-2021 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2019-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,24 +21,26 @@
 #define DATA_PROPERTIES_RATIONALPROPERTY_HPP
 
 #include <memory>
-#include <utility>
+#include <vector>
 
-#include <glib.h>
+#include <glibmm/variant.h>
 
 #include <QObject>
 #include <QString>
 #include <QVariant>
 
-#include "src/data/properties/baseproperty.hpp"
 #include "src/data/datautil.hpp"
-#include "src/devices/deviceutil.hpp"
+#include "src/data/properties/baseproperty.hpp"
+#include "src/devices/configurableref.hpp"
+#include "src/devices/deviceenums.hpp"
 
 using std::shared_ptr;
+using std::vector;
 
 namespace sv {
 
 namespace devices {
-class Configurable;
+class ConfigInterface;
 }
 
 namespace data {
@@ -49,8 +51,10 @@ class RationalProperty : public BaseProperty
 	Q_OBJECT
 
 public:
-	RationalProperty(shared_ptr<devices::Configurable> configurable,
-		devices::ConfigKey config_key);
+	RationalProperty(
+		devices::ConfigKey config_key,
+		shared_ptr<devices::ConfigInterface> config_interface,
+		devices::ConfigurableRef parent_configurable);
 
 public:
 	QVariant value() const override;

@@ -1,7 +1,7 @@
 /*
  * This file is part of the SmuView project.
  *
- * Copyright (C) 2018-2022 Frank Stettner <frank-stettner@gmx.net>
+ * Copyright (C) 2018-2026 Frank Stettner <frank-stettner@gmx.net>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,17 +24,22 @@
 #include <QVariant>
 
 #include "doubleproperty.hpp"
-#include "src/util.hpp"
 #include "src/data/datautil.hpp"
-#include "src/devices/configurable.hpp"
+#include "src/data/properties/baseproperty.hpp"
+#include "src/devices/configinterface.hpp"
+#include "src/devices/configurableref.hpp"
+#include "src/devices/deviceenums.hpp"
+#include "src/util.hpp"
 
 namespace sv {
 namespace data {
 namespace properties {
 
-DoubleProperty::DoubleProperty(shared_ptr<devices::Configurable> configurable,
-		devices::ConfigKey config_key) :
-	BaseProperty(configurable, config_key),
+DoubleProperty::DoubleProperty(
+		devices::ConfigKey config_key,
+		shared_ptr<devices::ConfigInterface> config_interface,
+		devices::ConfigurableRef parent_configurable) :
+	BaseProperty(config_key, config_interface, parent_configurable),
 	min_(std::numeric_limits<double>::lowest()),
 	max_(std::numeric_limits<double>::max()),
 	step_(0.01), //std::numeric_limits<double>::epsilon()
@@ -53,7 +58,7 @@ QVariant DoubleProperty::value() const
 double DoubleProperty::double_value() const
 {
 	double double_value;
-	configurable_->get_config<double>(config_key_, double_value);
+	config_interface_->get_config<double>(config_key_, double_value);
 	return double_value;
 }
 
@@ -108,7 +113,7 @@ int DoubleProperty::decimal_places() const
 bool DoubleProperty::list_config()
 {
 	Glib::VariantContainerBase gvar;
-	if (!configurable_->list_config(config_key_, gvar))
+	if (!config_interface_->list_config(config_key_, gvar))
 		return false;
 
 	Glib::VariantIter iter(gvar);
@@ -129,7 +134,7 @@ bool DoubleProperty::list_config()
 
 void DoubleProperty::change_value(const QVariant &qvar)
 {
-	configurable_->set_config(config_key_, qvar.toDouble());
+	config_interface_->set_config(config_key_, qvar.toDouble());
 	Q_EMIT value_changed(qvar);
 }
 

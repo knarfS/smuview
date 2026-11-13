@@ -24,8 +24,6 @@
 #include <memory>
 #include <set>
 #include <string>
-#include <utility>
-#include <vector>
 
 #include <glib.h>
 
@@ -33,23 +31,16 @@
 #include <QString>
 #include <QVariant>
 
-#include "src/data/datautil.hpp"
+#include "src/devices/deviceenums.hpp"
 #include "src/devices/deviceref.hpp"
-#include "src/devices/deviceutil.hpp"
 
-using std::make_shared;
 using std::map;
-using std::pair;
 using std::set;
 using std::shared_ptr;
 using std::string;
-using std::vector;
 
 namespace sigrok {
-class ConfigKey;
 class Configurable;
-class Quantity;
-class QuantityFlag;
 class Meta;
 }
 
@@ -63,9 +54,9 @@ class BaseProperty;
 
 namespace devices {
 
-class Configurable :
-	public QObject,
-	public std::enable_shared_from_this<Configurable>
+class ConfigInterface;
+
+class Configurable : public QObject
 {
 	Q_OBJECT
 
@@ -73,58 +64,6 @@ public:
 	Configurable(const shared_ptr<sigrok::Configurable> sr_configurable,
 		unsigned int configurable_index,
 		const devices::DeviceRef &parent_device);
-
-	/**
-	 * Init the properties (config keys) and default lists.
-	 * Must be called after instantiation and not from the ctor.
-	 */
-	void init();
-
-	bool has_get_config(devices::ConfigKey config_key) const;
-	template<typename T> bool get_config(
-		devices::ConfigKey config_key, T &value) const;
-	/**
-	 * Special handling for Container Variants (especially std::tuple, used for
-	 * measured quantity, ranges and rationales).
-	 * Tuple types are only supported with version >= 2.52 of glibmm, but we
-	 * need to use version 2.42, because of mxe. Maybe there is also a bug in
-	 * the tuple support?
-	 *
-	 * TODO: Remove when glibmm >= 2.52
-	 */
-	bool get_container_config(
-		devices::ConfigKey config_key, Glib::VariantContainerBase &value) const;
-	/**
-	 * Helper function to map to get_container_config().
-	 *
-	 * TODO: Remove when glibmm >= 2.52
-	 */
-	bool get_measured_quantity_config(
-		devices::ConfigKey config_key, data::measured_quantity_t &value) const;
-
-	bool has_set_config(devices::ConfigKey config_key) const;
-	template<typename T> void set_config(devices::ConfigKey config_key, const T value);
-	/**
-	 * Special handling for Container Variants (especially std::tuple, used for
-	 * measured quantity, ranges and rationales).
-	 * Tuple types are only supported with version >= 2.52 of glibmm, but we
-	 * need to use version 2.42, because of mxe. Maybe there is also a bug in
-	 * the tuple support?
-	 *
-	 * TODO: Remove when glibmm >= 2.52
-	 */
-	void set_container_config(devices::ConfigKey config_key,
-		const vector<Glib::VariantBase> &childs);
-	/**
-	 * Helper function to map to set_container_config().
-	 *
-	 * TODO: Remove when glibmm >= 2.52
-	 */
-	void set_measured_quantity_config(devices::ConfigKey config_key,
-		const data::measured_quantity_t &mq);
-
-	bool has_list_config(devices::ConfigKey config_key) const;
-	bool list_config(devices::ConfigKey config_key, Glib::VariantContainerBase &gvar);
 
 	/**
 	 * Get the name of this configurable.
@@ -141,11 +80,9 @@ public:
 	 */
 	unsigned int index() const;
 
-	/**
-	 * Get the parent device reference of this configurable.
-	 */
-	const devices::DeviceRef &parent_device_ref() const;
-
+	bool has_get_config(devices::ConfigKey config_key) const;
+	bool has_set_config(devices::ConfigKey config_key) const;
+	bool has_list_config(devices::ConfigKey config_key) const;
 	set<devices::ConfigKey> getable_configs() const;
 	set<devices::ConfigKey> setable_configs() const;
 	set<devices::ConfigKey> listable_configs() const;
@@ -160,10 +97,29 @@ public:
 
 	bool feed_in_meta(shared_ptr<sigrok::Meta> sr_meta);
 
+	const shared_ptr<devices::ConfigInterface> &config_interface() const;
+
+	/**
+	 * Get the parent device reference of this configurable.
+	 */
+	const devices::DeviceRef &parent_device_ref() const;
+
 private:
+	/**
+	 * Returns the name of this configurable.
+	 */
+	string init_name(const shared_ptr<sigrok::Configurable> &sr_configurable);
+
+	/**
+	 * Init the properties (config keys) and default lists.
+	 */
+	void init_properties();
+
+	const string name_;
 	const shared_ptr<sigrok::Configurable> sr_configurable_;
-	unsigned int index_;
+	const unsigned int index_;
 	const devices::DeviceRef parent_device_ref_;
+	const shared_ptr<ConfigInterface> config_interface_;
 
 	set<devices::ConfigKey> getable_configs_;
 	set<devices::ConfigKey> setable_configs_;

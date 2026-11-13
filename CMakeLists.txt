@@ -276,6 +276,7 @@ set(smuview_SOURCES
 	src/data/properties/uint64property.cpp
 	src/data/properties/uint64rangeproperty.cpp
 	src/devices/basedevice.cpp
+	src/devices/configinterface.cpp
 	src/devices/configurable.cpp
 	src/devices/deviceutil.cpp
 	src/devices/hardwaredevice.cpp
