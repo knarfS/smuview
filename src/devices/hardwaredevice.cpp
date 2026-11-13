@@ -20,6 +20,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <memory>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -147,9 +148,8 @@ void HardwareDevice::init_configurables()
 		if (sr_cg->config_keys().empty())
 			continue;
 
-		auto cg_c = Configurable::create(
-			sr_cg, next_configurable_index_++,
-			short_name().toStdString(), type_, id_);
+		auto cg_c = make_shared<Configurable>(
+			sr_cg, next_configurable_index_++, device_ref());
 		configurable_map_.insert(make_pair(sr_cg_pair.first, cg_c));
 	}
 
@@ -167,9 +167,8 @@ void HardwareDevice::init_configurables()
 		return;
 
 	// Init Configurable from Device
-	auto d_c = Configurable::create(
-		sr_device_, next_configurable_index_++,
-		short_name().toStdString(), type_, id_);
+	auto d_c = make_shared<Configurable>(
+		sr_device_, next_configurable_index_++, device_ref());
 	configurable_map_.insert(make_pair("", d_c));
 
 	// Sample rate for interleaved samples

@@ -18,7 +18,6 @@
  */
 
 #include <cassert>
-#include <type_traits>
 #include <map>
 #include <memory>
 #include <set>
@@ -46,8 +45,10 @@
 #include "src/data/properties/stringproperty.hpp"
 #include "src/data/properties/uint64property.hpp"
 #include "src/data/properties/uint64rangeproperty.hpp"
+#include "src/devices/deviceref.hpp"
 
 using std::dynamic_pointer_cast;
+using std::map;
 using std::make_pair;
 using std::make_shared;
 using std::set;
@@ -60,31 +61,12 @@ namespace devices {
 Configurable::Configurable(
 		const shared_ptr<sigrok::Configurable> sr_configurable,
 		unsigned int configurable_index,
-		const string &device_name, const DeviceType device_type,
-		const string &device_id):
+		const devices::DeviceRef &parent_device) :
 	sr_configurable_(sr_configurable),
 	index_(configurable_index),
-	device_name_(device_name),
-	device_type_(device_type),
-	device_id_(device_id)
+	parent_device_ref_(parent_device)
 {
 }
-
-/*
-template<typename ...Arg>
-shared_ptr<Configurable> Configurable::create(Arg&&...arg)
-{
-	struct make_shared_enabler : public Configurable {
-		make_shared_enabler(Arg&&...arg) : Configurable(std::forward<Arg>(arg)...) {}
-	};
-
-	shared_ptr<Configurable> configurable =
-		make_shared<make_shared_enabler>(std::forward<Arg>(arg)...);
-	configurable->init();
-
-	return configurable;
-}
-*/
 
 void Configurable::init()
 {
@@ -403,7 +385,7 @@ QString Configurable::display_name() const
 {
 	QString display_name = QString::fromStdString(this->name());
 	if (display_name.isEmpty())
-		display_name = QString::fromStdString(device_name_);
+		display_name = QString::fromStdString(parent_device_ref_.name);
 
 	return display_name;
 }
@@ -413,14 +395,9 @@ unsigned int Configurable::index() const
 	return index_;
 }
 
-DeviceType Configurable::device_type() const
+const devices::DeviceRef &Configurable::parent_device_ref() const
 {
-	return device_type_;
-}
-
-string Configurable::device_id() const
-{
-	return device_id_;
+	return parent_device_ref_;
 }
 
 set<devices::ConfigKey> Configurable::getable_configs() const

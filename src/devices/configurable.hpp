@@ -24,7 +24,6 @@
 #include <memory>
 #include <set>
 #include <string>
-#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -35,6 +34,7 @@
 #include <QVariant>
 
 #include "src/data/datautil.hpp"
+#include "src/devices/deviceref.hpp"
 #include "src/devices/deviceutil.hpp"
 
 using std::make_shared;
@@ -69,30 +69,10 @@ class Configurable :
 {
 	Q_OBJECT
 
-private:
+public:
 	Configurable(const shared_ptr<sigrok::Configurable> sr_configurable,
 		unsigned int configurable_index,
-		const string &device_name, const DeviceType device_type,
-		const string &device_id);
-
-public:
-	template<typename ...Arg>
-	shared_ptr<Configurable> static create(Arg&&...arg)
-	{
-		struct make_shared_enabler : public Configurable {
-			explicit make_shared_enabler(Arg&&...arg) :
-				Configurable(std::forward<Arg>(arg)...)
-			{
-			}
-		};
-
-		shared_ptr<Configurable> configurable =
-			make_shared<make_shared_enabler>(std::forward<Arg>(arg)...);
-		configurable->init();
-
-		return configurable;
-	}
-
+		const devices::DeviceRef &parent_device);
 
 	/**
 	 * Init the properties (config keys) and default lists.
@@ -162,21 +142,19 @@ public:
 	unsigned int index() const;
 
 	/**
-	 * Get the type of this configurable.
+	 * Get the parent device reference of this configurable.
 	 */
-	DeviceType device_type() const;
-
-	/**
-	 * Get the id of the device this configurable belongs to.
-	 */
-	string device_id() const;
+	const devices::DeviceRef &parent_device_ref() const;
 
 	set<devices::ConfigKey> getable_configs() const;
 	set<devices::ConfigKey> setable_configs() const;
 	set<devices::ConfigKey> listable_configs() const;
 
-	map<devices::ConfigKey, shared_ptr<data::properties::BaseProperty>> property_map() const;
-	shared_ptr<data::properties::BaseProperty> get_property(devices::ConfigKey config_key) const;
+	map<devices::ConfigKey, shared_ptr<data::properties::BaseProperty>>
+	property_map() const;
+
+	shared_ptr<data::properties::BaseProperty>
+	get_property(devices::ConfigKey config_key) const;
 
 	bool is_controllable() const;
 
@@ -185,9 +163,7 @@ public:
 private:
 	const shared_ptr<sigrok::Configurable> sr_configurable_;
 	unsigned int index_;
-	const string device_name_;
-	const DeviceType device_type_;
-	const string device_id_;
+	const devices::DeviceRef parent_device_ref_;
 
 	set<devices::ConfigKey> getable_configs_;
 	set<devices::ConfigKey> setable_configs_;

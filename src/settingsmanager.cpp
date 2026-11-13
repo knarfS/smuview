@@ -77,12 +77,12 @@ void SettingsManager::save_configurable(
 	const QString &key_prefix)
 {
 	if (origin_device == nullptr ||
-			origin_device->id() != configurable->device_id()) {
+			origin_device->id() != configurable->parent_device_ref().id) {
 		// Only store the device value if this specific configurable belongs to
 		// an other device than the tab-/device-setting (origin_device) it is
 		// stored into, belongs to (>= 0.0.5).
 		settings.setValue(key_prefix + "device",
-			QVariant(QString::fromStdString(configurable->device_id())));
+			QVariant(QString::fromStdString(configurable->parent_device_ref().id)));
 	}
 	settings.setValue(key_prefix + "configurable",
 		QVariant(QString::fromStdString(configurable->name())));

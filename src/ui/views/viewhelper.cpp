@@ -68,8 +68,10 @@ vector<BaseView *> get_views_for_configurable(Session &session,
 	if (!configurable)
 		return views;
 
+	const auto device_type = configurable->parent_device_ref().type;
+
 	// Power supplies or electronic loads control view
-	if (is_source_sink_device(configurable->device_type()) &&
+	if (is_source_sink_device(device_type) &&
 		(configurable->has_get_config(ConfigKey::Enabled) ||
 		configurable->has_set_config(ConfigKey::Enabled) ||
 		configurable->has_get_config(ConfigKey::Regulation) ||
@@ -95,7 +97,7 @@ vector<BaseView *> get_views_for_configurable(Session &session,
 	}
 
 	// Vertical control for scopes
-	if (is_oscilloscope_device(configurable->device_type()) &&
+	if (is_oscilloscope_device(device_type) &&
 		(configurable->has_get_config(ConfigKey::Enabled) ||
 		configurable->has_set_config(ConfigKey::Enabled) ||
 		configurable->has_get_config(ConfigKey::VDiv) ||
@@ -109,7 +111,7 @@ vector<BaseView *> get_views_for_configurable(Session &session,
 	}
 
 	// Trigger control for scopes
-	if (is_oscilloscope_device(configurable->device_type()) &&
+	if (is_oscilloscope_device(device_type) &&
 		(configurable->has_get_config(ConfigKey::TriggerSource) ||
 		configurable->has_set_config(ConfigKey::TriggerSource) ||
 		configurable->has_get_config(ConfigKey::TriggerSlope) ||
@@ -121,7 +123,7 @@ vector<BaseView *> get_views_for_configurable(Session &session,
 	}
 
 	// Horizontal control for scopes
-	if (is_oscilloscope_device(configurable->device_type()) &&
+	if (is_oscilloscope_device(device_type) &&
 		(configurable->has_get_config(ConfigKey::TimeBase) ||
 		configurable->has_set_config(ConfigKey::TimeBase))) {
 
@@ -129,7 +131,7 @@ vector<BaseView *> get_views_for_configurable(Session &session,
 	}
 
 	// View for Demo Device
-	if (is_demo_device(configurable->device_type()) &&
+	if (is_demo_device(device_type) &&
 		(configurable->has_get_config(ConfigKey::MeasuredQuantity) ||
 		configurable->has_set_config(ConfigKey::MeasuredQuantity) ||
 		configurable->has_get_config(ConfigKey::Amplitude) ||
@@ -142,7 +144,7 @@ vector<BaseView *> get_views_for_configurable(Session &session,
 
 	// Measurement devices like DMMs, scales, LCR meters, etc.
 	// TODO: Multiplexers don't really fit in here
-	if (is_measurement_device(configurable->device_type()) &&
+	if (is_measurement_device(device_type) &&
 		(configurable->has_get_config(ConfigKey::MeasuredQuantity) ||
 		configurable->has_set_config(ConfigKey::MeasuredQuantity) ||
 		configurable->has_get_config(ConfigKey::Range) ||
