@@ -42,67 +42,82 @@
   Qt test framework for unit tests and ctest.
 - move open device from `WelcomeTab::on_add_device` and `DeviceView::on_action_add_device_triggered`
   to a common static helper function
-- User better titels for views. Depending on the device (actual device, user device),
-  the window title should not only show the channel / signal name but also the
-  device name. Should also be used for export utils CSV headers. Make testable.
 - Use util::Timestamp?
-- Plot: Sampling
 - Save all data (gnuplot, octave, ...)
 - Configurable:
 	- default check for getable/setable in get/set functions without assert(false)?
-	- add button to sink/source/demodmm/measurement-ControlViews to control non default config keys.
 	- Check getable/setable/listable also in the properties
+	- add button to sink/source/demodmm/measurement-ControlViews to control non default config keys.
 	- Enhance ThresholdControl widget (e.g for re:load pro). Maybe a dedicated property?
 		- Dedicated SvDoubleSpinBox and SvBoolButton?
+	- Implement something like ch.meanings for config keys in sigrok, so smuview
+	  known the quantity/unit of config keys.
+- Devices:
+	- BaseDevice open()/close(): move aquisition stuff to HardwareDevice
+	- move VirtualDevice stuff to BaseDevice
+Signals:
+	- Use AnalogBaseSignal in all(?) Channel classes, in View classes and in
+	  Plot classes. Depends on how ScopeSignals are implemented / used.
+	- Get fixed quantity signals from channel(/channel group) (q/qf/u is set in
+	  ch.meaning at the beginning). Implement in sigrok!
+	- Implement AnalogXYDataSignal (for python automatisation)? See scope support?
+- Session:
+	- Remove "const Session &session" form ui::devices::* ctors and more??
+	- Maybe: In all ctors "Session &session" -> "const Session &session"
+	- Session: shared_ptr or reference?
+- SettingsManager:
+	- Use singleton for SettingsManager instead of static methods?
+	- Method for getting the QSettings object and maybe load an user defined
+	  QSettings-file.
 - Breeze icons action/labplot-* for plots?
-- Get fixed quantity signals from channel(/channel group) (q/qf/u is set in ch.meaning at the beginning). Implement in sigrok!
-- Implement something like ch.meanings for config keys in sigrok, so smuview known the quantity/unit of config keys.
-- Start timestamp on_update() -> device ctor -> timestamp = .0
-- Start timestamp to session
 - Use new connect/disconnet variant whenever possible.
 - Use connect(obj, SIGNAL, SIGNAL) when possible (UIProxy/UIHelper)
-- Remove "const Session &session" form ui::devices::* ctors and more??
-- Maybe: In all ctors "Session &session" -> "const Session &session"
 - Resize the DockWidgets/Views to their best sizes (value panels minimum, plot views max, ...). Maybe with QMainWindow->resizeDocks, SizePolicy in QDockWidget does not work....
 - boost::stacktrace, see pv
-- BaseDevice open()/close(): move aquisition stuff to HardwareDevice, move VirtualDevice stuff to BaseDevice
 - util.cpp: use cmath instead of math.h, but Timestamp is boost and only works with non std::?
-- Use AnalogBaseSignal in all(?) Channel classes, in View classes and in Plot classes
-- Remove Configurable and ConfigKey from data::properties::*
-- Session: shared_ptr or reference?
 - DeviceTree: Button for expand/close all
-- Plot: Add gradient (dY/dX) to diff marker in plot marker box
-- Plot: Movable polt marker box. Maybe not possible b/c of missing stuff in qwt?
-- Plot: Highlight polt marker and plot marker box when mouse over (near by for marker)
-- Plot: Class for marker -> qwt curve tracker playground
+- Plot:
+	- Add gradient (dY/dX) to diff marker in plot marker box
+	- Movable polt marker box. Maybe not possible b/c of missing stuff in qwt?
+	- Highlight polt marker and plot marker box when mouse over (near by for marker)
+	- Class for marker -> qwt curve tracker playground
+	- Add a way to change the plot curves that have a default color to the new
+	  default color configured in the PlotConfigDialog. E.g. with a singleton to
+	  connect a dialog to multiple curves from different plots.
+	- Add AddPlotCurveDialog with channel and signals.
+	- Use sampling
+	- PlotView: Make resolution and dpi configurable when saving as image
+	- Manage axes in plot.cpp: Per Quantity and not per curve! Test: Remove all
+	  curves and add a new one....
 - SequenceView: Handle headers (order of columns, time abs/rel) in CSV
 - SequenceView: Handle units (ms, s, h, ...) in CSV
-- PlotView: Make resolution and dpi configurable when saving as image
-- Implement AnalogXYDataSignal (for python automatisation)? See scope support?
 - MonoFontDisplay/PowerPanelView: To small for neg. values (esp. W/Ah/Wh with 6632B). B/c of the decimal point?
-- Reduce/Simplyfy BaseDevice name methods
 - Python-Bindings:
 	- Implement add_math_channel()
 	- Add get_value_at_timestamp() and other missing AnalogTimeSignal methods
 	- Add missing AnlogSampleSignal methods
 	- Add Configurable list method
-- Can we inherit MathChannel from UserChannel?
+	- UiHelper/UiProxy: Remove tab_id?
 - Unify name of static (const) variables
+  - `#define USER_CHANNEL_START_INDEX 1000` vs `const int DefaultTotalDigits = 6;`
 - Remove devicetab.hpp time_unit_
-- Cycle: replace BaseChannel::parent_device_ with device_id_, and so on....
-- Add a way to change a channel/signal name in the GUI. Connect BaseSignal::name_changed() signal.
-- Add a way to change the plot curves that have a default color to the new default color configured in the PlotConfigDialog. E.g. with a singleton to connect a dialog to multiple curves from different plots.
-- Use singleton for SettingsManager instead of static methods?
+- Naming:
+	- Reduce/Simplyfy BaseDevice name methods
+	- Add a way to change a channel/signal name in the GUI. Connect BaseSignal::name_changed() signal.
+	- BaseChannel::name_ is immutable, e.g. it is used as as index for settings.
+	  Introduce a display_name_ that can be changed.
+	- User better titels for views. Depending on the device (actual device, user
+	  device), the window title should not only show the channel / signal name
+	  but also the device name. Should also be used for export utils CSV
+	  headers. Make testable.
+	- Can the name() methods from UserDevice move to BaseDevice?
 - Use deleteLater() instead of delete
-- Add AddPlotCurveDialog with channel and signals.
-- Manage axes in plot.cpp: Per Quantity and not per curve! Test: Remove all curves and add a new one....
-- UiHelper/UiProxy: Remove tab_id?
-- SettingsManager: Method for getting the QSettings object and maybe load an user defined QSettings-file.
 - example_multiplexer.py: Checkboxes in control views don't change.
 - Keyboard shortcuts (Ctrl-Q -> Close App, Ctrl-W -> Close tab)
 
 ## Documentation
 
+- Document changes in exporter and export dialog
 - "Build from source" section is working, but outdated. Either describe the
   build of `libserialport`, `libsigrok` and `smuview` or add build script to
   the smuview repo (e.g. `ci/` or `packaging`)
@@ -185,6 +200,9 @@
 - Remove LCDDisplay?
 - AnalogTimeSignal: Move signal_start_timestamp_ to BaseSignal
 - *Signal: Clean up Signal classes
+- Start timestamp to session
+- Cycle: replace BaseChannel::parent_device_ with device_id_, and so on....
+- Remove Configurable ~~and ConfigKey~~ from data::properties::*
 
 ## Won't fix
 
@@ -203,6 +221,9 @@
   ```
 - Integrate udev rules to AppImage
 - Missing msvcr100.dll (Windows Server 2016) SmuView/PulseView
+- Start timestamp on_update() -> device ctor -> timestamp = .0 (no idea what
+  this TODO is about, but start timestamps were refactored)
+- Can we inherit MathChannel from UserChannel? (We could, but why?)
 
 
 # libsigrok
