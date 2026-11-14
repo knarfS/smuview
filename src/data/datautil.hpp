@@ -30,6 +30,8 @@
 
 #include <QString>
 
+#include "src/data/dataenums.hpp"
+
 using std::pair;
 using std::set;
 using std::vector;
@@ -61,188 +63,12 @@ const int DefaultSRDigits = 0;
  */
 const int DefaultDecimalPlaces = 2;
 
-enum class Quantity
-{
-	Voltage,
-	Current,
-	Resistance,
-	Capacitance,
-	Temperature,
-	Frequency,
-	DutyCycle,
-	Continuity,
-	PulseWidth,
-	Conductance,
-	/** Electrical power, usually in W, or dBm. */
-	Power,
-	ElectricCharge,
-	/** Gain (a transistor's gain, or hFE, for example). */
-	Gain,
-	/**
-	 * Logarithmic representation of sound pressure relative to a
-	 * reference value.
-	 */
-	SoundPressureLevel,
-	CarbonMonoxide,
-	RelativeHumidity,
-	Time,
-	WindSpeed,
-	Pressure,
-	ParallelInductance,
-	ParallelCapacitance,
-	ParallelResistance,
-	SeriesInductance,
-	SeriesCapacitance,
-	SeriesResistance,
-	DissipationFactor,
-	QualityFactor,
-	PhaseAngle,
-	/** Difference from reference value. */
-	Difference,
-	Count,
-	PowerFactor,
-	ApparentPower,
-	Mass,
-	HarmonicRatio,
-	Energy,
-	Unknown,
-};
-
-enum class QuantityFlag
-{
-	AC,
-	DC,
-	RMS,
-	/** Value is voltage drop across a diode, or NAN. */
-	Diode,
-	/** Device is in "hold" mode (repeating the last measurement). */
-	Hold,
-	/** Device is in "max" mode, only updating upon a new max value. */
-	Max,
-	/** Device is in "min" mode, only updating upon a new min value. */
-	Min,
-	Autorange,
-	Relative,
-	/**
-	 * Sound pressure level is A-weighted in the frequency domain,
-	 * according to IEC 61672:2003.
-	 */
-	SplFreqWeightA,
-	/**
-	 * Sound pressure level is C-weighted in the frequency domain,
-	 * according to IEC 61672:2003.
-	 */
-	SplFreqWeightC,
-	/** Sound pressure level is Z-weighted */
-	SplFreqWeightZ,
-	/**
-	 * Sound pressure level is not weighted in the frequency domain, albeit
-	 * without standards-defined low and high frequency limits.
-	 */
-	SplFreqWeightFlat,
-	/**
-	 * Sound pressure level measurement is S-weighted (1s) in the time domain.
-	 */
-	SplTimeWeightS,
-	/**
-	 * Sound pressure level measurement is F-weighted (125ms) in the
-	 * time domain.
-	 */
-	SplTimeWeightF,
-	/**
-	 * Sound pressure level is time-averaged (LAT), also known as
-	 * Equivalent Continuous A-weighted Sound Level (LEQ).
-	 */
-	SplLAT,
-	/**
-	 * Sound pressure level represented as a percentage of measurements that
-	 * were over a preset alarm level.
-	 */
-	SplPctOverAlarm,
-	/** Time is duration (as opposed to epoch, ...). */
-	Duration,
-	/** Device is in "avg" mode, averaging upon each new value. */
-	Avg,
-	/** Reference value shown. */
-	Reference,
-	/** Unstable value (hasn't settled yet). */
-	Unstable,
-	FourWire,
-	Unknown,
-};
-
-enum class Unit
-{
-	Volt,
-	Ampere,
-	Ohm,
-	Farad,
-	Kelvin,
-	Celsius,
-	Fahrenheit,
-	Hertz,
-	Percentage,
-	Boolean,
-	Second,
-	Siemens,
-	DecibelMW,
-	DecibelVolt,
-	Unitless,
-	DecibelSpl,
-	Concentration,
-	RevolutionsPerMinute,
-	VoltAmpere,
-	Watt,
-	WattHour,
-	Joule,
-	AmpereHour,
-	Coulomb,
-	MeterPerSecond,
-	HectoPascal,
-	Humidity293K,
-	Degree,
-	Henry,
-	Gram,
-	Carat,
-	/** Avoirdupois ounce (oz) */
-	Ounce,
-	/** Troy ounce (oz t) */
-	TroyOunce,
-	/** Avoirdupois pound (lb) */
-	Pound,
-	Pennyweight,
-	Grain,
-	Tael,
-	Momme,
-	Tola,
-	Piece,
-	// TODO: Implement in libsigrok
-	//Decibel,
-	Unknown,
-};
-
-enum class DataType
-{
-	UInt64,
-	String,
-	Bool,
-	Double,
-	RationalPeriod,
-	RationalVolt,
-	KeyValue,
-	UInt64Range,
-	DoubleRange,
-	Int32,
-	MQ,
-	UInt32,
-	Unknown,
-};
-
 typedef pair<Quantity, set<QuantityFlag>> measured_quantity_t;
 typedef pair<double, double> double_range_t;
 /**
  * Normaly <int64_t, uint64_t> should be used, but <uint64_t, uint64_t>
- * is transfered in the config keys
+ * is transfered in the config keys.
+ * TODO: Fix in libsigrok
  */
 typedef pair<uint64_t, uint64_t> rational_t;
 typedef pair<uint64_t, uint64_t> uint64_range_t;

@@ -42,6 +42,7 @@
 #include "src/channels/userchannel.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/devices/configurable.hpp"
+#include "src/devices/deviceenums.hpp"
 #include "src/devices/deviceutil.hpp"
 
 #define USER_CHANNEL_START_INDEX 1000

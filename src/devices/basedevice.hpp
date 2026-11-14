@@ -31,6 +31,7 @@
 #include <QObject>
 #include <QString>
 
+#include "src/devices/deviceenums.hpp"
 #include "src/devices/deviceutil.hpp"
 
 using std::map;
@@ -66,12 +67,6 @@ class BaseSignal;
 namespace devices {
 
 class Configurable;
-
-enum class AcquisitionState {
-	Stopped,
-	Running,
-	Paused
-};
 
 class BaseDevice :
 	public QObject,

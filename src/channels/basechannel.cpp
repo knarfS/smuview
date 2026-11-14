@@ -34,6 +34,7 @@
 
 #include "basechannel.hpp"
 #include "src/util.hpp"
+#include "src/channels/channelenums.hpp"
 #include "src/data/analogtimesignal.hpp"
 #include "src/data/basesignal.hpp"
 #include "src/data/datautil.hpp"

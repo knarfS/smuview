@@ -32,6 +32,7 @@
 #include <QSettings>
 #include <QString>
 
+#include "src/channels/channelenums.hpp"
 #include "src/data/datautil.hpp"
 
 using std::map;
@@ -58,21 +59,6 @@ class BaseDevice;
 }
 
 namespace channels {
-
-enum class ChannelType {
-	/**
-	 * Channels with analog data (Power supplies, loads, DMMs)
-	 */
-	AnalogChannel,
-	/**
-	 * Virtual channel for calculated data
-	 */
-	MathChannel,
-	/**
-	 * Virtual channel for user generated data (e.g. scripts)
-	 */
-	UserChannel
-};
 
 class BaseChannel : public QObject
 {
